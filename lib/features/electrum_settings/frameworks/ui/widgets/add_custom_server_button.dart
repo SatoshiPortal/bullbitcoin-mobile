@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
@@ -27,12 +26,10 @@ class AddCustomServerButton extends StatelessWidget {
       button: true,
       onTap: () => _add(context),
       excludeSemantics: true,
-      child: BullButton.big(
+      child: BullButton.primary(
         label: context.loc.mempoolSettingsCustomServer,
         iconData: Icons.add,
         iconFirst: true,
-        bgColor: context.appColors.primary,
-        textColor: context.appColors.onPrimary,
         onPressed: () => _add(context),
       ),
     );

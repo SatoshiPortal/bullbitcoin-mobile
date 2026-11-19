@@ -10,6 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullButton,
         BullShimmerLine,
         BullSnackBar,
@@ -97,12 +98,11 @@ class SelectScriptTypePage extends StatelessWidget {
                   ),
                   const Gap(16),
 
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.importMnemonicContinue,
-                    onPressed: cubit.import,
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
-                    disabled: state.isLoading || selectedUnsupported,
+                    onPressed: (state.isLoading || selectedUnsupported)
+                        ? null
+                        : cubit.import,
                   ),
                 ],
               ),
@@ -204,16 +204,13 @@ class _WalletTypeCard extends StatelessWidget {
                         style: _mutedStyle(context),
                       ),
                       const Gap(8),
-                      BullButton.small(
+                      BullButton.secondary(
+                        size: BullButtonSize.small,
                         label: context.loc.retry,
                         onPressed: onRetry,
                         iconData: Icons.refresh,
                         iconFirst: true,
-                        outlined: true,
                         compact: true,
-                        bgColor: context.appColors.transparent,
-                        borderColor: context.appColors.border,
-                        textColor: context.appColors.text,
                       ),
                     ],
                   },

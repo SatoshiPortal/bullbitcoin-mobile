@@ -228,11 +228,9 @@ class AddRecipientButton extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: context.loc.sendRecipient,
                   onPressed: onAdd,
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                   iconData: Icons.person,
                   iconFirst: true,
                   height: 44,
@@ -241,12 +239,9 @@ class AddRecipientButton extends StatelessWidget {
               ),
               const Gap(8),
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: context.loc.sendMyWallet,
-                  onPressed: onMyWallet ?? () {},
-                  disabled: onMyWallet == null,
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
+                  onPressed: (onMyWallet == null) ? null : onMyWallet ?? () {},
                   iconData: Icons.account_balance_wallet,
                   iconFirst: true,
                   height: 44,

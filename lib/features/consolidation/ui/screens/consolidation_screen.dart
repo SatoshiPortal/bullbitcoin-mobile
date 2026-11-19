@@ -175,11 +175,9 @@ class _ReviewView extends StatelessWidget {
           const Gap(40),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BullButton.big(
+            child: BullButton.primary(
               label: context.loc.consolidationScreenTitle,
               onPressed: () => context.read<ConsolidationCubit>().consolidate(),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             ),
           ),
         ],
@@ -312,11 +310,9 @@ class _SuccessView extends StatelessWidget {
               maxLines: 4,
             ),
             const Gap(24),
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.consolidationDone,
               onPressed: () => Navigator.of(context).maybePop(),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             ),
           ],
         ),

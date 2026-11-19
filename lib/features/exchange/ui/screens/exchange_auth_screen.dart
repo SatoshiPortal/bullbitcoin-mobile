@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -288,13 +290,17 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
                   context.loc.exchangeAuthLoginFailedMessage,
             ),
             actions: [
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.exchangeAuthLoginFailedOkButton,
                 onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: Text(context.loc.exchangeAuthLoginFailedOkButton),
+                size: BullButtonSize.small,
+                compact: true,
               ),
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.retry,
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: Text(context.loc.retry),
+                size: BullButtonSize.small,
+                compact: true,
               ),
             ],
           ),

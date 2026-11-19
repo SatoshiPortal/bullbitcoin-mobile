@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullButton,
         BullPullableBody,
         BullShapesX,
@@ -385,12 +386,11 @@ class _SpScanNudgeCardState extends State<_SpScanNudgeCard> {
               // Send actions: this is a prompt, not a peer of them. It starts
               // the scan here rather than routing away: the user stays on the
               // activity list and the card gives way to the progress strip.
-              BullButton.small(
+              BullButton.primary(
+                size: BullButtonSize.small,
                 compact: true,
                 label: context.loc.spScan,
                 onPressed: () => context.read<SpCubit>().scan(),
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
                 textStyle: context.bullType.label,
               ),
             ],

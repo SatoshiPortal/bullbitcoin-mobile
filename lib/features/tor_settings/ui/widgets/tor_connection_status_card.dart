@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
@@ -116,9 +117,11 @@ class TorConnectionStatusCard extends StatelessWidget {
               const Gap(12),
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(
+                child: BullButton.secondary(
+                  label: context.loc.torSettingsRetry,
                   onPressed: onRetry,
-                  child: Text(context.loc.torSettingsRetry),
+                  size: BullButtonSize.small,
+                  compact: true,
                 ),
               ),
             ],

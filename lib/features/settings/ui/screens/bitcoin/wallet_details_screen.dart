@@ -118,14 +118,12 @@ class WalletDetailsScreen extends StatelessWidget {
                   const Gap(32),
                   WalletDiscoveryButton(walletId: walletId),
                   const Gap(16),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.addressViewAddressesTitle,
                     onPressed: () => context.pushNamed(
                       SettingsRoute.walletAddresses.name,
                       pathParameters: {'walletId': wallet.id},
                     ),
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
                     iconData: Icons.chevron_right,
                   ),
                 ],

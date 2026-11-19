@@ -81,12 +81,10 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
               style: context.bullType.body.copyWith(color: context.bull.error),
             ),
             const Gap(BullSpacing.md),
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.retry,
               onPressed: () =>
                   context.read<ExchangePreferencesCubit>().loadPreferences(),
-              bgColor: context.bull.onSurface,
-              textColor: context.bull.surface,
             ),
           ],
         ),
@@ -142,15 +140,13 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
             ],
             SizedBox(
               width: double.infinity,
-              child: BullButton.big(
+              child: BullButton.primary(
                 label: context.loc.exchangeAppSettingsSaveButton,
-                onPressed: () =>
-                    context.read<ExchangePreferencesCubit>().savePreferences(),
-                disabled: state.isSaving || hasUnsetValues,
-                bgColor: hasUnsetValues
-                    ? context.bull.outline
-                    : context.bull.onSurface,
-                textColor: context.bull.surface,
+                onPressed: (state.isSaving || hasUnsetValues)
+                    ? null
+                    : () => context
+                          .read<ExchangePreferencesCubit>()
+                          .savePreferences(),
               ),
             ),
           ],

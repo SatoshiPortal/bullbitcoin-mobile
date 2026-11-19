@@ -448,10 +448,12 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         ],
         if (state.wallets.isEmpty && state.appWallets.isEmpty) ...[
           const Gap(16),
-          TextButton(
+          BullButton.secondary(
+            label: context.loc.limitOrdersManageDefaultWallets,
             onPressed: () =>
                 context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
-            child: Text(context.loc.limitOrdersManageDefaultWallets),
+            size: BullButtonSize.small,
+            compact: true,
           ),
         ],
       ],
@@ -597,26 +599,16 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     required String label,
     required VoidCallback onPressed,
     bool disabled = false,
-  }) => BullButton.big(
+  }) => BullButton.primary(
     label: label,
-    onPressed: onPressed,
-    disabled: disabled,
-    bgColor: context.bull.secondary,
-    textColor: context.bull.onSecondary,
+    onPressed: (disabled) ? null : onPressed,
   );
 
   Widget _hollowButton(
     BuildContext context, {
     required String label,
     required VoidCallback onPressed,
-  }) => BullButton.big(
-    label: label,
-    onPressed: onPressed,
-    bgColor: context.bull.surface,
-    textColor: context.bull.text,
-    outlined: true,
-    borderColor: context.bull.border,
-  );
+  }) => BullButton.secondary(label: label, onPressed: onPressed);
 }
 
 final class _Bullet extends StatelessWidget {
@@ -659,12 +651,10 @@ final class _NoBalanceView extends StatelessWidget {
           tagColor: context.bull.onTertiary,
         ),
         const Gap(16),
-        BullButton.big(
+        BullButton.primary(
           label: context.loc.limitOrdersFundAccount,
           onPressed: () =>
               context.pushReplacementNamed(FundExchangeRoute.fundExchange.name),
-          bgColor: context.bull.primary,
-          textColor: context.bull.onPrimary,
         ),
       ],
     ),
@@ -686,11 +676,10 @@ final class _FailureView extends StatelessWidget {
         children: [
           Text(message, textAlign: TextAlign.center),
           const Gap(16),
-          BullButton.small(
+          BullButton.secondary(
+            size: BullButtonSize.small,
             label: context.loc.retry,
             onPressed: onRetry,
-            bgColor: context.bull.secondary,
-            textColor: context.bull.onSecondary,
           ),
         ],
       ),

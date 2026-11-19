@@ -116,11 +116,10 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
                 ),
               ),
             ),
-            BullButton.small(
+            BullButton.primary(
+              size: BullButtonSize.small,
               label: context.loc.recoverbullVaultKey,
               onPressed: () => setState(() => _revealed = !_revealed),
-              bgColor: context.bull.primary,
-              textColor: context.bull.onPrimary,
             ),
           ],
         ],

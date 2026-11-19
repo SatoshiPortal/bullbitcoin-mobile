@@ -28,21 +28,22 @@ class RetrySwapButton extends StatelessWidget {
 
     return Column(
       children: [
-        BullButton.big(
+        BullButton.secondary(
           label: context.loc.transactionDetailRetryClaimRefund,
-          disabled: retryingSwap,
-          onPressed: () {
-            log.info('Manual script-path retry for swap ${swap.id}');
-            final started = context.read<TransactionDetailsCubit>().retrySwap();
-            if (started) {
-              BullSnackBar.show(
-                context,
-                message: context.loc.transactionDetailSwapRetryStarted,
-              );
-            }
-          },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
+          onPressed: (retryingSwap)
+              ? null
+              : () {
+                  log.info('Manual script-path retry for swap ${swap.id}');
+                  final started = context
+                      .read<TransactionDetailsCubit>()
+                      .retrySwap();
+                  if (started) {
+                    BullSnackBar.show(
+                      context,
+                      message: context.loc.transactionDetailSwapRetryStarted,
+                    );
+                  }
+                },
         ),
         if (retryFailure != null) ...[
           const Gap(16),

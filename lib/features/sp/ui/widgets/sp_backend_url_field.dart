@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullLabeledTextInput, Gap, BullTypographyX;
+    show BullButtonSize, BullButton, BullLabeledTextInput, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 /// A backend (blindbit/electrum) URL field with an inline "Test connection"
@@ -52,15 +52,12 @@ class SpBackendUrlField extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            BullButton.small(
+            BullButton.secondary(
+              size: BullButtonSize.small,
               compact: true,
               label: context.loc.spTestButton,
-              onPressed: onTest,
-              disabled: !editable || controller.text.isEmpty,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
+              onPressed: (!editable || controller.text.isEmpty) ? null : onTest,
               textStyle: context.bullType.caption,
-              outlined: true,
             ),
           ],
         ),

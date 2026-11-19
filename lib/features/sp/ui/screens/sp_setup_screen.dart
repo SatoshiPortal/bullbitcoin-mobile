@@ -73,12 +73,9 @@ class SpSetupScreen extends StatelessWidget {
                       onChanged: cubit.setScanStart,
                       isBusy: state.isCreating,
                     ),
-                    submit: BullButton.big(
-                      onPressed: cubit.create,
+                    submit: BullButton.primary(
+                      onPressed: (!state.canCreate) ? null : cubit.create,
                       label: context.loc.spCreateButton,
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                      disabled: !state.canCreate,
                     ),
                   ),
                 ),

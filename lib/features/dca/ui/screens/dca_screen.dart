@@ -88,15 +88,13 @@ class _DcaScreenState extends State<DcaScreen> {
                           tagColor: context.appColors.onTertiary,
                         ),
                         const Gap(16.0),
-                        BullButton.big(
+                        BullButton.primary(
                           label: context.loc.dcaSetupFundAccount,
                           onPressed: () {
                             context.pushReplacementNamed(
                               FundExchangeRoute.fundExchange.name,
                             );
                           },
-                          bgColor: context.appColors.primary,
-                          textColor: context.appColors.onPrimary,
                         ),
                       ] else ...[
                         Padding(
@@ -138,7 +136,7 @@ class _DcaScreenState extends State<DcaScreen> {
                           },
                         ),
                         const Spacer(),
-                        BullButton.big(
+                        BullButton.primary(
                           label: context.loc.dcaSetupContinue,
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -151,8 +149,6 @@ class _DcaScreenState extends State<DcaScreen> {
                               );
                             }
                           },
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
                         ),
                       ],
                       const Gap(16.0),

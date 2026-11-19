@@ -259,13 +259,11 @@ class _IntroStepState extends State<_IntroStep> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-          child: BullButton.big(
+          child: BullButton.primary(
             label: context.loc.recipientsVirtualIbanActivate,
-            disabled: !_nameConfirmed || state.isCreating,
-            onPressed: () =>
-                context.read<VirtualIbanOnboardingCubit>().activate(),
-            bgColor: colors.primary,
-            textColor: colors.onPrimary,
+            onPressed: (!_nameConfirmed || state.isCreating)
+                ? null
+                : () => context.read<VirtualIbanOnboardingCubit>().activate(),
           ),
         ),
       ],
@@ -296,21 +294,15 @@ class _ActivatingStep extends StatelessWidget {
       error: failure?.toTranslated(context),
       buttons: [
         if (failure != null) ...[_RetryButton(), const Gap(12)],
-        BullButton.big(
+        BullButton.secondary(
           label: context.loc.recipientsConfidentialSepaUseRegularSepa,
           onPressed: onUseRegularSepa,
-          bgColor: colors.surface,
-          textColor: colors.text,
-          outlined: true,
-          borderColor: colors.outline,
         ),
         if (onReturnHome != null) ...[
           const Gap(12),
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.recipientsReturnHome,
             onPressed: onReturnHome,
-            bgColor: colors.primary,
-            textColor: colors.onPrimary,
           ),
         ],
       ],
@@ -337,7 +329,7 @@ class _ActiveStep extends StatelessWidget {
           context.loc.recipientsVirtualIbanActivatedFundingDescription,
       },
       buttons: [
-        BullButton.big(
+        BullButton.primary(
           label: switch (purpose) {
             VirtualIbanOnboardingPurpose.withdraw =>
               context.loc.recipientsContinue,
@@ -345,8 +337,6 @@ class _ActiveStep extends StatelessWidget {
               context.loc.recipientsVirtualIbanShowDetails,
           },
           onPressed: onActivated,
-          bgColor: colors.primary,
-          textColor: colors.onPrimary,
         ),
       ],
     );
@@ -421,12 +411,9 @@ class _StatusLayout extends StatelessWidget {
 class _RetryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final colors = context.bull;
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.retry,
       onPressed: () => context.read<VirtualIbanOnboardingCubit>().start(),
-      bgColor: colors.primary,
-      textColor: colors.onPrimary,
     );
   }
 }

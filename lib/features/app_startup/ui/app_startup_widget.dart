@@ -148,11 +148,9 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
               // backup brings it back, checked against the missing wallet.
               if (failure is AppStartupMissingDefaultSecretFailure) ...[
                 const SizedBox(height: 24),
-                BullButton.big(
+                BullButton.secondary(
                   onPressed: () => setState(() => _restoring = true),
                   label: context.loc.appStartupRestoreSecretButton,
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ],
               const SizedBox(height: 24),

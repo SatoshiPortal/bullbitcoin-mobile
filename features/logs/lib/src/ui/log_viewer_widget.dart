@@ -49,10 +49,9 @@ class _LogsViewerWidgetState extends State<LogsViewerWidget> {
                 style: TextStyle(color: context.bull.onSurface),
               ),
               const Gap(12),
-              BullButton.small(
+              BullButton.primary(
+                size: BullButtonSize.small,
                 key: const ValueKey('logs-retry'),
-                bgColor: context.bull.primary,
-                textColor: context.bull.onPrimary,
                 label: LogsLocalizations.of(context).retry,
                 onPressed: () => _refreshLogs(context),
               ),
@@ -288,13 +287,9 @@ final class _LogsFilterSheetState extends State<_LogsFilterSheet> {
   Widget _buildDateButton(
     BuildContext context,
     LogsState state,
-  ) => BullButton.small(
+  ) => BullButton.secondary(
+    size: BullButtonSize.small,
     width: double.infinity,
-    iconData: Icons.date_range,
-    bgColor: context.bull.surface,
-    textColor: context.bull.onSurface,
-    outlined: true,
-    borderColor: context.bull.border,
     label: state.startDate != null && state.endDate != null
         ? '${_formatDate(state.startDate!)} - ${_formatDate(state.endDate!)}'
         : LogsLocalizations.of(context).logsViewerFilterByDate,
@@ -524,7 +519,8 @@ Future<void> showConfirmDeleteLogsBottomSheet(BuildContext context) async {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BullButton.small(
+                BullButton.primary(
+                  size: BullButtonSize.small,
                   onPressed: () async {
                     final result = await context.read<LogsCubit>().delete();
                     if (!context.mounted) return;
@@ -544,14 +540,11 @@ Future<void> showConfirmDeleteLogsBottomSheet(BuildContext context) async {
                     }
                   },
                   label: LogsLocalizations.of(context).logsViewerDeleteButton,
-                  bgColor: context.bull.primary,
-                  textColor: context.bull.onPrimary,
                 ),
-                BullButton.small(
+                BullButton.secondary(
+                  size: BullButtonSize.small,
                   onPressed: context.pop,
                   label: LogsLocalizations.of(context).logsViewerCancelButton,
-                  bgColor: context.bull.surface,
-                  textColor: context.bull.onSurface,
                 ),
               ],
             ),

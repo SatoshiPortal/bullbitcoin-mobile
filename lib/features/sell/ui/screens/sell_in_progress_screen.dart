@@ -41,13 +41,11 @@ class SellInProgressScreen extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                BullButton.big(
+                BullButton.secondary(
                   label: context.loc.sellGoHome,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

@@ -255,12 +255,9 @@ class _ConfirmButton extends StatelessWidget {
           const Gap(16),
         ],
         const Gap(16),
-        BullButton.big(
+        BullButton.primary(
           label: context.loc.withdrawConfirmButton,
-          disabled: isConfirmingWithdrawal,
-          onPressed: onConfirmPressed,
-          bgColor: context.appColors.onSurface,
-          textColor: context.appColors.surface,
+          onPressed: (isConfirmingWithdrawal) ? null : onConfirmPressed,
         ),
       ],
     );

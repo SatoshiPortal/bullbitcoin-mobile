@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
@@ -96,21 +95,23 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                 },
               ),
               const Spacer(),
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.withdrawAmountContinue,
-                disabled: _fiatCurrency == null,
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    context.read<WithdrawBloc>().add(
-                      WithdrawEvent.amountInputContinuePressed(
-                        amountInput: _amountController.text,
-                        fiatCurrency: _fiatCurrency!,
-                      ),
-                    );
-                  }
-                },
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
+                onPressed: (_fiatCurrency == null)
+                    ? null
+                    : () {
+                        final form = _formKey.currentState;
+                        final fiatCurrency = _fiatCurrency;
+                        if (form == null || fiatCurrency == null) return;
+                        if (form.validate()) {
+                          context.read<WithdrawBloc>().add(
+                            WithdrawEvent.amountInputContinuePressed(
+                              amountInput: _amountController.text,
+                              fiatCurrency: fiatCurrency,
+                            ),
+                          );
+                        }
+                      },
               ),
               const Gap(16.0),
             ],

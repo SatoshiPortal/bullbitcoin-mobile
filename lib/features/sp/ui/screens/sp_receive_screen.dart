@@ -164,14 +164,13 @@ class _SpTaprootReceiveTab extends StatelessWidget {
           const Gap(24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BullButton.big(
+            child: BullButton.secondary(
               label: hasAddress
                   ? context.loc.spReceiveGenerateNewAddress
                   : context.loc.spReceiveGenerateAddress,
-              onPressed: cubit.generateTaprootAddress,
-              disabled: state.isGeneratingAddress,
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
+              onPressed: (state.isGeneratingAddress)
+                  ? null
+                  : cubit.generateTaprootAddress,
             ),
           ),
           const Gap(40),

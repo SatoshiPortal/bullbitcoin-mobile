@@ -262,22 +262,14 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
           ),
         ],
         const Gap(24),
-        BullButton.big(
+        BullButton.primary(
           label: context.loc.save,
-          disabled: saving,
-          onPressed: () => _save(_input),
-          bgColor: context.bull.secondary,
-          textColor: context.bull.onSecondary,
+          onPressed: (saving) ? null : () => _save(_input),
         ),
         const Gap(8),
-        BullButton.big(
+        BullButton.secondary(
           label: context.loc.swapServerReset,
-          disabled: saving,
-          outlined: true,
-          onPressed: () => _save(''),
-          bgColor: context.bull.transparent,
-          textColor: context.bull.secondary,
-          borderColor: context.bull.secondary,
+          onPressed: (saving) ? null : () => _save(''),
         ),
       ],
     );

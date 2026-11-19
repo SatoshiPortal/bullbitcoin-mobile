@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
@@ -49,19 +48,18 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                     ),
                   ),
                   const Gap(24.0),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.fundExchangeCopOpenPaymentLink,
                     iconData: Icons.open_in_new,
                     // Disabled while a launch is in flight, so a double tap
                     // cannot open the payment page twice.
-                    disabled: isOpeningPaymentLink,
-                    onPressed: () => context.read<FundExchangeBloc>().add(
-                      FundExchangeEvent.paymentLinkOpenRequested(
-                        paymentLink: details.paymentLink,
-                      ),
-                    ),
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
+                    onPressed: (isOpeningPaymentLink)
+                        ? null
+                        : () => context.read<FundExchangeBloc>().add(
+                            FundExchangeEvent.paymentLinkOpenRequested(
+                              paymentLink: details.paymentLink,
+                            ),
+                          ),
                   ),
                   if (openPaymentLinkFailure != null) ...[
                     const Gap(16.0),

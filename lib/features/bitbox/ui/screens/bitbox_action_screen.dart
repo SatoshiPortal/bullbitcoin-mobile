@@ -27,6 +27,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullBottomSheet,
         BullButton,
         BullInstructionsSheet,
@@ -628,37 +629,29 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     return Column(
       children: [
         if (state.isInitial)
-          BullButton.big(
+          BullButton.primary(
             onPressed: () => _executeAction(context),
             label: widget.action.toButtonText(context),
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
-          BullButton.big(
+          BullButton.primary(
             onPressed: () => context.read<BitBoxOperationCubit>().reset(),
             label: context.loc.bitboxScreenTryAgainButton,
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
           ),
           if (state.failure case PermissionDeniedBitBoxFailure()) ...[
             const Gap(16),
-            BullButton.big(
+            BullButton.secondary(
               onPressed: () => _openAppSettings(),
               label: context.loc.bitboxScreenManagePermissionsButton,
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
             ),
           ],
         ],
         const Gap(16),
         if (state.isInitial || state.isError)
-          BullButton.small(
+          BullButton.secondary(
+            size: BullButtonSize.small,
             label: context.loc.bitboxScreenNeedHelpButton,
             onPressed: () => _showInstructions(context),
-            bgColor: context.appColors.surface,
-            textColor: context.appColors.text,
-            outlined: true,
           ),
       ],
     );

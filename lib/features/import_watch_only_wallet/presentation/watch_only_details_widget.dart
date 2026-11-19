@@ -123,11 +123,9 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           maxLines: 1,
         ),
         const Gap(24),
-        BullButton.big(
+        BullButton.primary(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.appColors.onSurface,
-          textColor: context.appColors.surface,
         ),
         const Gap(24),
       ],
@@ -213,11 +211,9 @@ class _XpubDetailsWidget extends StatelessWidget {
           maxLines: 1,
         ),
         const Gap(24),
-        BullButton.big(
+        BullButton.primary(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.appColors.primary,
-          textColor: context.appColors.onPrimary,
         ),
         const Gap(24),
       ],

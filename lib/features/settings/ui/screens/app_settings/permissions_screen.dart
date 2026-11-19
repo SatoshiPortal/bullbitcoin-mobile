@@ -7,8 +7,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInfoBar,
         BullInfoTone,
         BullSettingsEntryItem,
-        BullSwitch,
-        BullThemeX;
+        BullSwitch;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -97,11 +96,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                                       context.loc.notificationsBlockedMessage,
                                 ),
                                 const SizedBox(height: 16),
-                                BullButton.big(
+                                BullButton.secondary(
                                   label: context.loc.openSystemSettings,
-                                  outlined: true,
-                                  bgColor: context.bull.transparent,
-                                  textColor: context.bull.onSurface,
                                   onPressed: () =>
                                       cubit.load(openSettings: true),
                                 ),

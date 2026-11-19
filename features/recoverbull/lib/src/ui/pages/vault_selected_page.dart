@@ -79,16 +79,13 @@ class VaultSelectedPage extends StatelessWidget {
                   ),
                 const Spacer(),
                 if (provider == VaultProvider.googleDrive) ...[
-                  BullButton.big(
+                  BullButton.secondary(
                     label: context.loc.recoverbullSeeMoreVaults,
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) => const DriveVaultsListPage(),
                       ),
                     ),
-                    bgColor: context.bull.transparent,
-                    textColor: context.bull.onSurface,
-                    outlined: true,
                   ),
                   const Gap(16),
                 ],
@@ -96,17 +93,16 @@ class VaultSelectedPage extends StatelessWidget {
                   padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).size.height * 0.05,
                   ),
-                  child: BullButton.big(
+                  child: BullButton.primary(
                     label: context.loc.recoverbullDecryptVault,
-                    disabled: vault == null || state.busy,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            PasswordInputPage(vaultKeyOnly: vaultKeyOnly),
-                      ),
-                    ),
-                    bgColor: context.bull.onSurface,
-                    textColor: context.bull.surface,
+                    onPressed: (vault == null || state.busy)
+                        ? null
+                        : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  PasswordInputPage(vaultKeyOnly: vaultKeyOnly),
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -176,25 +172,23 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
             mainAxisAlignment: .spaceEvenly,
             children: [
               Builder(
-                builder: (sheet) => BullButton.small(
+                builder: (sheet) => BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: sheet.loc.recoverbullGoogleDriveExportButton,
                   onPressed: () {
                     Navigator.of(sheet).pop();
                     unawaited(cubit.export(file));
                   },
-                  bgColor: sheet.bull.secondary,
-                  textColor: sheet.bull.onSecondary,
                 ),
               ),
               Builder(
-                builder: (sheet) => BullButton.small(
+                builder: (sheet) => BullButton.primary(
+                  size: BullButtonSize.small,
                   label: sheet.loc.recoverbullGoogleDriveDeleteButton,
                   onPressed: () {
                     Navigator.of(sheet).pop();
                     _confirmDelete(file);
                   },
-                  bgColor: sheet.bull.primary,
-                  textColor: sheet.bull.onPrimary,
                 ),
               ),
             ],
@@ -230,20 +224,18 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
                 Row(
                   mainAxisAlignment: .spaceEvenly,
                   children: [
-                    BullButton.small(
+                    BullButton.secondary(
+                      size: BullButtonSize.small,
                       label: sheet.loc.recoverbullGoogleDriveCancelButton,
                       onPressed: () => Navigator.of(sheet).pop(),
-                      bgColor: sheet.bull.secondary,
-                      textColor: sheet.bull.onSecondary,
                     ),
-                    BullButton.small(
+                    BullButton.primary(
+                      size: BullButtonSize.small,
                       label: sheet.loc.recoverbullGoogleDriveDeleteButton,
                       onPressed: () {
                         Navigator.of(sheet).pop();
                         unawaited(_delete(file));
                       },
-                      bgColor: sheet.bull.primary,
-                      textColor: sheet.bull.onPrimary,
                     ),
                   ],
                 ),

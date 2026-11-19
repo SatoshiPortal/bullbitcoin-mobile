@@ -87,14 +87,13 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                       const Gap(24),
                       _WalletSelector(state: state),
                       const Gap(24),
-                      BullButton.big(
+                      BullButton.primary(
                         label: context.loc.swapRescueButton,
-                        disabled: !swap.recoverable || !state.canRescue,
-                        onPressed: swap.recoverable && state.canRescue
+                        onPressed: (!swap.recoverable || !state.canRescue)
+                            ? null
+                            : swap.recoverable && state.canRescue
                             ? () => context.read<SwapRescueCubit>().rescue()
                             : () {},
-                        bgColor: context.bull.primary,
-                        textColor: context.bull.onPrimary,
                       ),
                     ],
                   ),

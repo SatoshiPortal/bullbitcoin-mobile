@@ -526,14 +526,13 @@ class _BottomButtons extends StatelessWidget {
             onAction: () => _leavePastDeadlinePayin(context),
           )
         else if (paused != null && !isPayinBroadcast)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.retry,
-            disabled: retrying || !paused.canRetryProposal,
-            onPressed: () => context.read<PayBloc>().add(
-              const PayEvent.payjoinProposalRetryRequested(),
-            ),
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (retrying || !paused.canRetryProposal)
+                ? null
+                : () => context.read<PayBloc>().add(
+                    const PayEvent.payjoinProposalRetryRequested(),
+                  ),
           )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
@@ -544,12 +543,11 @@ class _BottomButtons extends StatelessWidget {
             textStyle: context.bullType.body,
           )
         else
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.payContinue,
-            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
-            onPressed: onContinuePressed,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (!isReady || isConfirmingPayment || isPayinBroadcast)
+                ? null
+                : onContinuePressed,
           ),
       ],
     );

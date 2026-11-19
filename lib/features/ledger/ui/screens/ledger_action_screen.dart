@@ -27,6 +27,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullBottomSheet,
         BullButton,
         BullInstructionsSheet,
@@ -225,37 +226,29 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     return Column(
       children: [
         if (state.isInitial)
-          BullButton.big(
+          BullButton.primary(
             onPressed: () => _startOperation(context),
             label: widget.action.getButtonText(context),
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
-          BullButton.big(
+          BullButton.primary(
             onPressed: () => context.read<LedgerOperationCubit>().reset(),
             label: context.loc.ledgerButtonTryAgain,
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
           ),
           if (state.failure is LedgerPermissionDeniedFailure) ...[
             const Gap(16),
-            BullButton.big(
+            BullButton.secondary(
               onPressed: () => _openAppSettings(),
               label: context.loc.ledgerButtonManagePermissions,
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
             ),
           ],
         ],
         const Gap(16),
         if (state.isInitial || state.isError)
-          BullButton.small(
+          BullButton.secondary(
+            size: BullButtonSize.small,
             label: context.loc.ledgerButtonNeedHelp,
             onPressed: () => _showInstructions(context),
-            bgColor: context.appColors.surface,
-            textColor: context.appColors.text,
-            outlined: true,
           ),
       ],
     );

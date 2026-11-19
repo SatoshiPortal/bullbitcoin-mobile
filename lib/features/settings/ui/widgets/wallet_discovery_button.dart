@@ -16,13 +16,13 @@ class WalletDiscoveryButton extends StatelessWidget {
           final running = state is WalletDiscoveryRunning;
           return Column(
             children: [
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.walletDiscoveryButton,
-                onPressed: () =>
-                    context.read<WalletDiscoveryCubit>().discover(walletId),
-                disabled: running,
-                bgColor: context.bull.primary,
-                textColor: context.bull.onPrimary,
+                onPressed: (running)
+                    ? null
+                    : () => context.read<WalletDiscoveryCubit>().discover(
+                        walletId,
+                      ),
               ),
               BullFadingLinearProgress(trigger: running),
               if (state is WalletDiscoverySucceeded)

@@ -122,27 +122,27 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     ),
                 ],
                 const Gap(32),
-                BullButton.big(
+                BullButton.primary(
                   label: context.loc.dcaWalletSelectionContinueButton,
-                  disabled:
-                      _selectedNetwork == DcaNetwork.lightning &&
-                      _validatedLightningAddress == null,
-                  onPressed: () {
-                    final network = _selectedNetwork;
-                    if (_formKey.currentState?.validate() != true ||
-                        network == null) {
-                      return;
-                    }
-                    context.read<DcaBloc>().add(
-                      DcaEvent.walletSelected(
-                        network: network,
-                        lightningAddress: _validatedLightningAddress,
-                        useDefaultLightningAddress: _useDefaultLightningAddress,
-                      ),
-                    );
-                  },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
+                  onPressed:
+                      (_selectedNetwork == DcaNetwork.lightning &&
+                          _validatedLightningAddress == null)
+                      ? null
+                      : () {
+                          final network = _selectedNetwork;
+                          if (_formKey.currentState?.validate() != true ||
+                              network == null) {
+                            return;
+                          }
+                          context.read<DcaBloc>().add(
+                            DcaEvent.walletSelected(
+                              network: network,
+                              lightningAddress: _validatedLightningAddress,
+                              useDefaultLightningAddress:
+                                  _useDefaultLightningAddress,
+                            ),
+                          );
+                        },
                 ),
                 const Gap(16.0),
               ],

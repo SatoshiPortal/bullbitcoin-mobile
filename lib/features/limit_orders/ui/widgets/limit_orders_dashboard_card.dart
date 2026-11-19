@@ -53,11 +53,10 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
             style: TextStyle(color: context.bull.error),
           ),
           const Gap(12),
-          BullButton.small(
+          BullButton.secondary(
+            size: BullButtonSize.small,
             label: context.loc.retry,
             onPressed: context.read<LimitOrdersCubit>().load,
-            bgColor: context.bull.secondary,
-            textColor: context.bull.onSecondary,
           ),
         ],
       );
@@ -141,21 +140,25 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           ),
         const Gap(8),
-        Row(
+        OverflowBar(
+          alignment: MainAxisAlignment.spaceBetween,
+          spacing: 8,
+          overflowSpacing: 8,
           children: [
-            TextButton(
+            BullButton.secondary(
+              label: context.loc.limitOrdersCancelAll,
               onPressed: state.isCancellingAll
                   ? null
                   : () => _confirmCancelAll(context),
-              style: _actionButtonStyle(context),
-              child: Text(context.loc.limitOrdersCancelAll),
+              size: BullButtonSize.small,
+              compact: true,
             ),
-            const Spacer(),
             if (state.canCreate)
-              TextButton(
+              BullButton.primary(
+                label: context.loc.limitOrdersCreateNew,
                 onPressed: () => _openCreate(context),
-                style: _actionButtonStyle(context),
-                child: Text(context.loc.limitOrdersCreateNew),
+                size: BullButtonSize.small,
+                compact: true,
               ),
           ],
         ),
@@ -167,13 +170,6 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
       ],
     );
   }
-
-  ButtonStyle _actionButtonStyle(BuildContext context) => TextButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 4),
-    minimumSize: Size.zero,
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    textStyle: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-  );
 
   Future<void> _openCreate(BuildContext context) async {
     final changed = await context.pushNamed<bool>(LimitOrdersRoute.create.name);
@@ -196,20 +192,14 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
           const Gap(BullSpacing.sm),
           Text(context.loc.limitOrdersCancelAllMessage),
           const Gap(BullSpacing.lg),
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.limitOrdersDialogConfirm,
             onPressed: () => Navigator.pop(dialogContext, true),
-            bgColor: context.bull.primary,
-            textColor: context.bull.onPrimary,
           ),
           const Gap(BullSpacing.sm),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.cancel,
             onPressed: () => Navigator.pop(dialogContext, false),
-            bgColor: context.bull.surface,
-            textColor: context.bull.text,
-            outlined: true,
-            borderColor: context.bull.border,
           ),
         ],
       ),

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -24,7 +23,7 @@ class WithdrawSuccessScreen extends StatelessWidget {
       onClose: () => context.goNamed(ExchangeRoute.exchangeHome.name),
       actions: [
         if (order != null)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.withdrawSuccessOrderDetails,
             onPressed: () {
               context.pushNamed(
@@ -33,8 +32,6 @@ class WithdrawSuccessScreen extends StatelessWidget {
                 queryParameters: {'returnToExchange': 'true'},
               );
             },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
       ],
     );

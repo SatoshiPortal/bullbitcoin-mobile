@@ -13,6 +13,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullConfirmDialog,
         BullButton,
         BullFadingLinearProgress,
@@ -214,11 +215,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         ),
                         Padding(
                           padding: const EdgeInsets.all(24),
-                          child: BullButton.big(
+                          child: BullButton.secondary(
                             label: context.loc.allSeedViewShowSeedsButton,
                             onPressed: () => _showWarningDialog(context),
-                            bgColor: context.appColors.secondary,
-                            textColor: context.appColors.onSecondary,
                           ),
                         ),
                       ],
@@ -441,11 +440,10 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                               color: context.appColors.error,
                             ),
                             const Gap(16),
-                            BullButton.small(
+                            BullButton.secondary(
+                              size: BullButtonSize.small,
                               label: context.loc.retry,
                               onPressed: retry,
-                              bgColor: context.appColors.secondary,
-                              textColor: context.appColors.onSecondary,
                             ),
                           ],
                         ),

@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX;
@@ -78,14 +79,17 @@ class _ExchangeTestnetBasicAuthDialogState
         ],
       ),
       actions: [
-        TextButton(
+        BullButton.secondary(
+          label: context.loc.exchangeTestnetBasicAuthClearButton,
           onPressed: () async {
             await context.read<SettingsCubit>().setExchangeTestnetBasicAuth();
             if (context.mounted) Navigator.of(context).pop();
           },
-          child: Text(context.loc.exchangeTestnetBasicAuthClearButton),
+          size: BullButtonSize.small,
+          compact: true,
         ),
-        TextButton(
+        BullButton.primary(
+          label: context.loc.exchangeTestnetBasicAuthSaveButton,
           onPressed: () async {
             await context.read<SettingsCubit>().setExchangeTestnetBasicAuth(
               username: _usernameController.text,
@@ -93,7 +97,8 @@ class _ExchangeTestnetBasicAuthDialogState
             );
             if (context.mounted) Navigator.of(context).pop();
           },
-          child: Text(context.loc.exchangeTestnetBasicAuthSaveButton),
+          size: BullButtonSize.small,
+          compact: true,
         ),
       ],
     );

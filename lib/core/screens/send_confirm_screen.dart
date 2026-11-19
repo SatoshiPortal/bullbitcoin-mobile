@@ -737,14 +737,13 @@ class CommonConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.coreScreensConfirmButton,
-      onPressed: () {
-        _onPressed();
-      },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
-      disabled: _disableSendButton,
+      onPressed: (_disableSendButton)
+          ? null
+          : () {
+              _onPressed();
+            },
     );
   }
 }

@@ -111,14 +111,13 @@ class DcaConfirmationScreen extends StatelessWidget {
               ),
               const Gap(16),
             ],
-            BullButton.big(
+            BullButton.primary(
               label: context.loc.dcaConfirmContinue,
-              disabled: confirmationState.isConfirmingDca,
-              onPressed: () {
-                context.read<DcaBloc>().add(const DcaEvent.confirmed());
-              },
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
+              onPressed: (confirmationState.isConfirmingDca)
+                  ? null
+                  : () {
+                      context.read<DcaBloc>().add(const DcaEvent.confirmed());
+                    },
             ),
             const Gap(16.0),
           ],

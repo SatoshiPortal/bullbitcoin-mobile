@@ -15,7 +15,14 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullPasteInput, BullText, BullTopBar, Gap, BullTypographyX;
+    show
+        BullButtonSize,
+        BullButton,
+        BullPasteInput,
+        BullText,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -73,7 +80,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ],
 
                   const Gap(16),
-                  BullButton.small(
+                  BullButton.secondary(
+                    size: BullButtonSize.small,
                     label: context.loc.broadcastSignedTxCameraButton,
                     onPressed: () {
                       cubit.resetState();
@@ -81,34 +89,27 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         BroadcastSignedTxRoute.broadcastScanQr.name,
                       );
                     },
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
                     iconData: Icons.qr_code_scanner,
-                    outlined: true,
                   ),
                   const Gap(32),
-                  BullButton.small(
+                  BullButton.secondary(
+                    size: BullButtonSize.small,
                     label: context.loc.broadcastSignedTxNfcButton,
                     onPressed: () => NfcBottomSheet.showReadNfc(
                       context: context,
                       title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
                       onDataReceived: (payload) => cubit.onQrScanned(payload),
                     ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
                     iconData: Icons.nfc,
-                    outlined: true,
                   ),
                   const Gap(32),
-                  BullButton.small(
+                  BullButton.secondary(
+                    size: BullButtonSize.small,
                     label: context.loc.broadcastSignedTxPushTxButton,
                     onPressed: () => context.pushNamed(
                       BroadcastSignedTxRoute.broadcastScanNfc.name,
                     ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
                     iconData: Icons.contactless_outlined,
-                    outlined: true,
                   ),
                 ],
 
@@ -138,10 +139,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 100, right: 100),
-                    child: BullButton.big(
+                    child: BullButton.primary(
                       label: context.loc.broadcastSignedTxDoneButton,
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
                       onPressed: () =>
                           context.goNamed(WalletRoute.walletHome.name),
                     ),
@@ -175,24 +174,18 @@ class _BroadcastActions extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: BullButton.big(
+              child: BullButton.secondary(
                 label: context.loc.broadcastSignedTxPushTxButton,
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
-                onPressed: cubit.pushTxUri,
-                disabled: isBroadcasting,
+                onPressed: (isBroadcasting) ? null : cubit.pushTxUri,
               ),
             ),
           ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: BullButton.big(
+            child: BullButton.primary(
               label: context.loc.broadcastSignedTxBroadcast,
-              bgColor: context.appColors.primary,
-              textColor: context.appColors.onPrimary,
-              onPressed: cubit.broadcastTransaction,
-              disabled: isBroadcasting,
+              onPressed: (isBroadcasting) ? null : cubit.broadcastTransaction,
             ),
           ),
         ),

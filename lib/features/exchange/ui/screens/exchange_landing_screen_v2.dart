@@ -159,7 +159,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
               // Call-to-Action Button
               SizedBox(
                 width: double.infinity,
-                child: BullButton.big(
+                child: BullButton.primary(
                   label: context.loc.exchangeGoToWebsiteButton,
                   onPressed: () async {
                     final Uri url = Uri.parse('https://app.bullbitcoin.com');
@@ -170,8 +170,6 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       );
                     }
                   },
-                  bgColor: context.appColors.primary,
-                  textColor: context.appColors.onPrimary,
                 ),
               ),
               const Gap(32),

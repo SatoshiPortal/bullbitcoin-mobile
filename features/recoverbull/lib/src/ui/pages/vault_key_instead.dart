@@ -26,10 +26,8 @@ class VaultKeyInsteadButton extends StatelessWidget {
     if (!offeredFor(RecoverBullFlowScope.of(context).flow)) {
       return const SizedBox.shrink();
     }
-    return BullButton.big(
+    return BullButton.secondary(
       label: context.loc.recoverbullEnterVaultKeyInstead,
-      bgColor: context.bull.transparent,
-      textColor: context.bull.info,
       textStyle: context.bullType.label,
       onPressed: () {
         onLeave?.call();

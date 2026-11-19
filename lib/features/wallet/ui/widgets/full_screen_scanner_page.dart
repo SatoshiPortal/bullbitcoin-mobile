@@ -43,15 +43,13 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
               bottom: MediaQuery.of(context).size.height * 0.25,
               left: 24,
               right: 24,
-              child: BullButton.big(
+              child: BullButton.secondary(
                 iconData: Icons.check_circle,
                 textStyle: context.bullType.caption,
-                textColor: context.appColors.onPrimary,
                 onPressed: () {},
                 label: data.length > 30
                     ? '${data.substring(0, 10)}…${data.substring(data.length - 10)}'
                     : data,
-                bgColor: context.appColors.transparent,
               ),
             ),
 

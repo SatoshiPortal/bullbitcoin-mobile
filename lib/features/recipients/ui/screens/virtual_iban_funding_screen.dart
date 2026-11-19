@@ -178,11 +178,9 @@ class _VirtualIbanDetails extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-              child: BullButton.big(
+              child: BullButton.primary(
                 label: context.loc.recipientsVirtualIbanDone,
                 onPressed: onDone,
-                bgColor: colors.primary,
-                textColor: colors.onPrimary,
               ),
             ),
           ],

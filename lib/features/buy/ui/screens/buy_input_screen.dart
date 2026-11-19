@@ -125,15 +125,13 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BullButton.big(
+                      BullButton.primary(
                         label: context.loc.buyInputCompleteKyc,
                         onPressed: () {
                           context.pushReplacementNamed(
                             ExchangeRoute.exchangeKyc.name,
                           );
                         },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
                       ),
                     ] else if (showInsufficientBalanceError) ...[
                       BullInfoCard(
@@ -146,27 +144,24 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                         tagColor: context.appColors.onTertiary,
                       ),
                       const Gap(16.0),
-                      BullButton.big(
+                      BullButton.primary(
                         label: context.loc.buyInputFundAccount,
                         onPressed: () {
                           context.pushReplacementNamed(
                             FundExchangeRoute.fundExchange.name,
                           );
                         },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
                       ),
                     ] else
-                      BullButton.big(
+                      BullButton.primary(
                         label: context.loc.buyInputContinue,
-                        disabled: !canCreateOrder || isCreatingOrder,
-                        onPressed: () {
-                          context.read<BuyBloc>().add(
-                            const BuyEvent.createOrder(),
-                          );
-                        },
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
+                        onPressed: (!canCreateOrder || isCreatingOrder)
+                            ? null
+                            : () {
+                                context.read<BuyBloc>().add(
+                                  const BuyEvent.createOrder(),
+                                );
+                              },
                       ),
                   ] else ...[
                     const BullShimmerLine(height: 56, width: double.infinity),

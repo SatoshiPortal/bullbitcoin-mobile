@@ -115,18 +115,16 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                     tagColor: context.appColors.onTertiary,
                   ),
                   const Gap(16.0),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.buyInputCompleteKyc,
                     onPressed: () {
                       context.pushReplacementNamed(
                         ExchangeRoute.exchangeKyc.name,
                       );
                     },
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
                   ),
                 ] else
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.payContinue,
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
@@ -141,8 +139,6 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                         );
                       }
                     },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
                   ),
                 const Gap(16.0),
               ],

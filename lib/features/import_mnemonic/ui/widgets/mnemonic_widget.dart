@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButtonSize;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'dart:math';
@@ -445,13 +446,13 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                 style: context.bullType.body,
               ),
             if (matches.length == 1 && matches.single != _language)
-              TextButton(
-                onPressed: () => _selectLanguage(matches.single),
-                child: Text(
-                  context.loc.mnemonicLanguageSuggestion(
-                    context.loc.mnemonicLanguageName(matches.single.name),
-                  ),
+              BullButton.secondary(
+                label: context.loc.mnemonicLanguageSuggestion(
+                  context.loc.mnemonicLanguageName(matches.single.name),
                 ),
+                onPressed: () => _selectLanguage(matches.single),
+                size: BullButtonSize.small,
+                compact: true,
               ),
             if (ambiguous)
               Wrap(
@@ -459,11 +460,11 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                   for (final language in readings.where(
                     _entryLanguages.contains,
                   ))
-                    TextButton(
+                    BullButton.secondary(
+                      label: context.loc.mnemonicLanguageName(language.name),
                       onPressed: () => _selectLanguage(language),
-                      child: Text(
-                        context.loc.mnemonicLanguageName(language.name),
-                      ),
+                      size: BullButtonSize.small,
+                      compact: true,
                     ),
                 ],
               ),
@@ -655,11 +656,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
               top: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: BullButton.big(
+                child: BullButton.primary(
                   label: widget.submitLabel ?? context.loc.submitButton,
                   onPressed: onSubmit,
-                  bgColor: context.appColors.onSurface,
-                  textColor: context.appColors.surface,
                 ),
               ),
             );

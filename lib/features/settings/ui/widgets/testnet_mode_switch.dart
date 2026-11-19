@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
+
 import 'dart:io' show exit;
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -63,9 +65,11 @@ Future<void> showNetworkRestartDialog(
         title: Text(dialogContext.loc.networkRestartDialogTitle),
         content: Text(dialogContext.loc.networkRestartDialogMessage),
         actions: [
-          TextButton(
+          BullButton.primary(
+            label: dialogContext.loc.networkRestartDialogAction,
             onPressed: onClose ?? () => exit(0),
-            child: Text(dialogContext.loc.networkRestartDialogAction),
+            size: BullButtonSize.small,
+            compact: true,
           ),
         ],
       ),

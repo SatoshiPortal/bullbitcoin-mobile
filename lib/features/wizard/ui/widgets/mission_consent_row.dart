@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:material_ui/material_ui.dart';
@@ -63,14 +62,16 @@ class _ConsentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return BullButton.big(
-      label: label,
-      onPressed: onTap,
-      bgColor: selected ? colors.primary : colors.surface,
-      textColor: selected ? colors.onPrimary : colors.onSurface,
-      borderColor: selected ? colors.primary : colors.border,
-      outlined: !selected,
+    return Semantics(
+      selected: selected,
+      child: BullButton.secondary(
+        label: label,
+        onPressed: onTap,
+        iconData: selected
+            ? Icons.radio_button_checked
+            : Icons.radio_button_unchecked,
+        iconFirst: true,
+      ),
     );
   }
 }

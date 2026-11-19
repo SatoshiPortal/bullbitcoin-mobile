@@ -89,10 +89,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               bottom: MediaQuery.of(context).size.height * 0.25,
               left: 24,
               right: 24,
-              child: BullButton.big(
+              child: BullButton.secondary(
                 iconData: Icons.copy,
                 textStyle: context.bullType.caption,
-                textColor: context.appColors.onPrimary,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: _scanned));
                   showCopiedSnackBar(context);
@@ -100,7 +99,6 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 label: _scanned.length > 30
                     ? '${_scanned.substring(0, 10)}…${_scanned.substring(_scanned.length - 10)}'
                     : _scanned,
-                bgColor: context.appColors.transparent,
               ),
             ),
           Positioned(

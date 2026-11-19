@@ -157,7 +157,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                 OrderPaymentMethod.sinpe &&
             (tx.order! as FiatPaymentOrder).payoutCurrency == 'CRC') ...[
           const Gap(16),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.payViewReceipt,
             onPressed: () {
               showSinpeReceiptBottomSheet(
@@ -165,8 +165,6 @@ class TransactionDetailsScreen extends StatelessWidget {
                 tx.order! as FiatPaymentOrder,
               );
             },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
         ],
       ],
@@ -175,35 +173,33 @@ class TransactionDetailsScreen extends StatelessWidget {
         if (isLoading)
           const BullShimmerLine(height: 40)
         else
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.transactionDetailAddNote,
-            disabled:
-                walletTransaction == null ||
-                !TransactionLabelPolicy.canAdd(walletTransaction.labels.length),
-            onPressed: () async {
-              if (walletTransaction == null) return;
-              final cubit = context.read<TransactionDetailsCubit>();
-              final saved = await LabelEntryBottomSheet.label(
-                context,
-                title: context.loc.transactionNoteAddTitle,
-                suggestionsFuture: cubit.fetchDistinctLabels(),
-                hint: context.loc.transactionNoteHint,
-              );
-              if (saved == null || !context.mounted) return;
-              final result = await cubit.saveTransactionLabel(saved);
-              if (result case Err(:final failure)) {
-                if (context.mounted) {
-                  BullSnackBar.show(
-                    context,
-                    message: failure.toTranslated(context),
-                  );
-                }
-              }
-            },
-            bgColor: context.appColors.transparent,
-            textColor: context.appColors.onSurface,
-            outlined: true,
-            borderColor: context.appColors.onSurface,
+            onPressed:
+                (walletTransaction == null ||
+                    !TransactionLabelPolicy.canAdd(
+                      walletTransaction.labels.length,
+                    ))
+                ? null
+                : () async {
+                    final cubit = context.read<TransactionDetailsCubit>();
+                    final saved = await LabelEntryBottomSheet.label(
+                      context,
+                      title: context.loc.transactionNoteAddTitle,
+                      suggestionsFuture: cubit.fetchDistinctLabels(),
+                      hint: context.loc.transactionNoteHint,
+                    );
+                    if (saved == null || !context.mounted) return;
+                    final result = await cubit.saveTransactionLabel(saved);
+                    if (result case Err(:final failure)) {
+                      if (context.mounted) {
+                        BullSnackBar.show(
+                          context,
+                          message: failure.toTranslated(context),
+                        );
+                      }
+                    }
+                  },
           ),
         const Gap(16),
         if (isOutgoing == true &&
@@ -213,7 +209,7 @@ class TransactionDetailsScreen extends StatelessWidget {
             wallet?.signsLocally == true &&
             tx?.txId != null &&
             tx?.isSwap != true)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.transactionDetailAccelerate,
             onPressed: () {
               context.pushNamed(
@@ -221,8 +217,6 @@ class TransactionDetailsScreen extends StatelessWidget {
                 extra: walletTransaction,
               );
             },
-            bgColor: context.appColors.onSurface,
-            textColor: context.appColors.surface,
           ),
       ],
     );

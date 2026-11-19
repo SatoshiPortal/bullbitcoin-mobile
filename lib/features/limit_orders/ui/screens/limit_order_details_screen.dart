@@ -51,20 +51,17 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
     final order = state.order;
     if (order == null) return null;
     final button = order.isActive && !state.wasCancelled
-        ? BullButton.big(
+        ? BullButton.primary(
             label: context.loc.limitOrderCancel,
-            onPressed: state.isCancelling
+            onPressed: (state.isCancelling)
+                ? null
+                : state.isCancelling
                 ? () {}
                 : () => _confirmCancel(context),
-            disabled: state.isCancelling,
-            bgColor: context.bull.primary,
-            textColor: context.bull.onPrimary,
           )
-        : BullButton.big(
+        : BullButton.secondary(
             label: context.loc.limitOrdersDone,
             onPressed: () => context.pop(state.wasCancelled),
-            bgColor: context.bull.secondary,
-            textColor: context.bull.onSecondary,
           );
     return SafeArea(
       top: false,
@@ -80,11 +77,10 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
         children: [
           Text(message ?? context.loc.limitOrdersLoadError),
           const Gap(16),
-          BullButton.small(
+          BullButton.secondary(
+            size: BullButtonSize.small,
             label: context.loc.retry,
             onPressed: context.read<LimitOrderDetailsCubit>().load,
-            bgColor: context.bull.secondary,
-            textColor: context.bull.onSecondary,
           ),
         ],
       ),
@@ -174,20 +170,14 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
           const Gap(BullSpacing.sm),
           Text(context.loc.limitOrderCancelMessage),
           const Gap(BullSpacing.lg),
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.limitOrdersDialogConfirm,
             onPressed: () => Navigator.pop(dialogContext, true),
-            bgColor: context.bull.primary,
-            textColor: context.bull.onPrimary,
           ),
           const Gap(BullSpacing.sm),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.cancel,
             onPressed: () => Navigator.pop(dialogContext, false),
-            bgColor: context.bull.surface,
-            textColor: context.bull.text,
-            outlined: true,
-            borderColor: context.bull.border,
           ),
         ],
       ),

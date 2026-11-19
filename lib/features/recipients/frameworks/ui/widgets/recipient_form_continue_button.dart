@@ -48,12 +48,9 @@ class RecipientFormContinueButton extends StatelessWidget {
               ),
             ),
           ),
-        BullButton.big(
+        BullButton.primary(
           label: context.loc.recipientsContinue,
-          disabled: isLoading || formDisabled,
-          onPressed: onPressed,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
+          onPressed: (isLoading || formDisabled) ? null : onPressed,
         ),
       ],
     );

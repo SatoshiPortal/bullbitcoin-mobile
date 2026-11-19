@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, Gap, BullTypographyX;
+    show BullButtonSize, BullButton, BullInputText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -382,14 +382,12 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   runSpacing: 4,
                   children: [
                     for (final t in ticks)
-                      BullButton.small(
+                      BullButton.secondary(
+                        size: BullButtonSize.small,
                         compact: true,
                         label: t.label,
                         onPressed: () => _setHeight(t.height),
-                        bgColor: context.appColors.transparent,
-                        textColor: context.appColors.secondary,
                         textStyle: context.bullType.caption,
-                        outlined: true,
                       ),
                   ],
                 ),
@@ -579,12 +577,7 @@ class _BottomAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-      child: BullButton.big(
-        label: label,
-        onPressed: onPressed,
-        bgColor: bgColor ?? context.appColors.secondary,
-        textColor: textColor ?? context.appColors.onSecondary,
-      ),
+      child: BullButton.secondary(label: label, onPressed: onPressed),
     );
   }
 }

@@ -227,14 +227,13 @@ class _VaultProviderSelectionPageState
                           maxLines: 5,
                         ),
                         const Gap(16),
-                        BullButton.big(
+                        BullButton.secondary(
                           label: context.loc.recoverbullRetryProviderSave,
-                          bgColor: context.bull.onSurface,
-                          textColor: context.bull.surface,
-                          disabled: state.busy,
-                          onPressed: () => context
-                              .read<VaultFlowCubit>()
-                              .retryProviderSave(_provider),
+                          onPressed: (state.busy)
+                              ? null
+                              : () => context
+                                    .read<VaultFlowCubit>()
+                                    .retryProviderSave(_provider),
                         ),
                       ],
                     ),

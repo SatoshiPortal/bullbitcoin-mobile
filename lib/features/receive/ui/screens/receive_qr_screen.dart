@@ -129,15 +129,13 @@ class ReceiveQRDetails extends StatelessWidget {
           children: [
             BBText(failure.toTranslated(context), style: context.bullType.body),
             const Gap(16),
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.retry,
               onPressed: () => context.read<ReceiveBloc>().add(
                 isBitcoin
                     ? ReceiveBitcoinStarted(selectedWallet)
                     : const ReceiveLiquidStarted(),
               ),
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
             ),
           ],
         ),
@@ -706,15 +704,13 @@ class ReceiveNewAddressButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BullButton.big(
+      child: BullButton.secondary(
         label: context.loc.receiveNewAddress,
         onPressed: () {
           context.read<ReceiveBloc>().add(
             const ReceiveEvent.receiveNewAddressGenerated(),
           );
         },
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
       ),
     );
   }
@@ -727,7 +723,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BullButton.big(
+      child: BullButton.primary(
         label: context.loc.receiveVerifyAddressLedger,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
@@ -756,9 +752,6 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
             ),
           );
         },
-        bgColor: context.appColors.primary,
-        textColor: context.appColors.onPrimary,
-        outlined: true,
       ),
     );
   }
@@ -771,7 +764,7 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BullButton.big(
+      child: BullButton.primary(
         label: context.loc.bitboxActionVerifyAddressTitle,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
@@ -800,9 +793,6 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
             ),
           );
         },
-        bgColor: context.appColors.primary,
-        textColor: context.appColors.onPrimary,
-        outlined: true,
       ),
     );
   }

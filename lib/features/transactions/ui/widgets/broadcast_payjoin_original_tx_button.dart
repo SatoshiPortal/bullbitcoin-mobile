@@ -142,25 +142,24 @@ class _BroadcastPayjoinOriginalTxButtonState
     );
     return Column(
       children: [
-        BullButton.big(
+        BullButton.secondary(
           label: isSender
               ? context.loc.transactionPayjoinSendWithout
               : context.loc.receivePaymentNormally,
-          disabled: isBroadcastingPayjoinOriginalTx,
-          onPressed: () {
-            log.info('Broadcast regular transaction after payjoin abort');
-            final started = context
-                .read<TransactionDetailsCubit>()
-                .broadcastPayjoinOriginalTx();
-            if (started) {
-              BullSnackBar.show(
-                context,
-                message: context.loc.transactionPayjoinFallbackProcessing,
-              );
-            }
-          },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
+          onPressed: (isBroadcastingPayjoinOriginalTx)
+              ? null
+              : () {
+                  log.info('Broadcast regular transaction after payjoin abort');
+                  final started = context
+                      .read<TransactionDetailsCubit>()
+                      .broadcastPayjoinOriginalTx();
+                  if (started) {
+                    BullSnackBar.show(
+                      context,
+                      message: context.loc.transactionPayjoinFallbackProcessing,
+                    );
+                  }
+                },
         ),
         const Gap(16),
         if (broadcastFailure != null) ...[

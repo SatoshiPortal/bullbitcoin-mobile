@@ -307,15 +307,13 @@ class PayjoinInProgressPage extends StatelessWidget {
           ),
           const Spacer(flex: 2),
           if (isFallbackCompleted && payjoinId != null)
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.receiveViewDetails,
               onPressed: () => context.goNamed(
                 TransactionsRoute.payjoinTransactionDetails.name,
                 pathParameters: {'payjoinId': payjoinId},
                 queryParameters: {'returnHome': 'true'},
               ),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             )
           else if (canManuallyBroadcastOriginal)
             const ReceiveBroadcastPayjoinButton(),
@@ -352,17 +350,16 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
             maxLines: 2,
           ),
           const Gap(16),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.receivePaymentNormally,
-            disabled: isBroadcasting,
-            onPressed: () {
-              log.info('Receive payment normally');
-              context.read<ReceiveBloc>().add(
-                const ReceivePayjoinOriginalTxBroadcasted(),
-              );
-            },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (isBroadcasting)
+                ? null
+                : () {
+                    log.info('Receive payment normally');
+                    context.read<ReceiveBloc>().add(
+                      const ReceivePayjoinOriginalTxBroadcasted(),
+                    );
+                  },
           ),
           const Gap(16),
           if (broadcastFailure != null) ...[

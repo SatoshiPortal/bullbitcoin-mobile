@@ -195,23 +195,22 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         16,
         16 + MediaQuery.of(context).padding.bottom,
       ),
-      child: BullButton.big(
+      child: BullButton.primary(
         label: context.loc.receiveContinue,
-        onPressed: () {
-          final bloc = context.read<ReceiveBloc>();
-          if (!bloc.state.canConfirmAmount) return;
-          if (canReuseConfirmedReceiveDetails(bloc.state)) {
-            // If an amount was already confirmed previously and the user didn't
-            // change it, we don't need to confirm it again.
-            onContinueNavigation?.call() ?? context.pop();
-          } else {
-            bloc.add(const ReceiveAmountConfirmed());
-          }
-        },
-        disabled:
-            !state.canConfirmAmount || creatingSwap || hasAmountInputFailure,
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
+        onPressed:
+            (!state.canConfirmAmount || creatingSwap || hasAmountInputFailure)
+            ? null
+            : () {
+                final bloc = context.read<ReceiveBloc>();
+                if (!bloc.state.canConfirmAmount) return;
+                if (canReuseConfirmedReceiveDetails(bloc.state)) {
+                  // If an amount was already confirmed previously and the user didn't
+                  // change it, we don't need to confirm it again.
+                  onContinueNavigation?.call() ?? context.pop();
+                } else {
+                  bloc.add(const ReceiveAmountConfirmed());
+                }
+              },
       ),
     );
   }

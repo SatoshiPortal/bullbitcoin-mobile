@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -10,7 +9,13 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSnackBar, BullText, Gap, BullTypographyX;
+    show
+        BullButtonSize,
+        BullButton,
+        BullSnackBar,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
@@ -96,19 +101,18 @@ class ImportColdcardPage extends StatelessWidget {
             Column(
               children: [
                 if (signerDevice == SignerDeviceEntity.coldcardQ) ...[
-                  BullButton.small(
+                  BullButton.secondary(
+                    size: BullButtonSize.small,
                     label: context.loc.importColdcardButtonOpenCamera,
                     onPressed: () => context.pushNamed(
                       ImportWatchOnlyWalletRoutes.scan.name,
                       extra: signerDevice,
                     ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
-                    outlined: true,
                   ),
                   Gap(Device.screen.height * 0.02),
                 ],
-                BullButton.small(
+                BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: context.loc.scanNfcButton,
                   onPressed: () => NfcBottomSheet.showReadNfc(
                     context: context,
@@ -118,12 +122,10 @@ class ImportColdcardPage extends StatelessWidget {
                     onDataReceived: (payload) =>
                         _handleNfcData(context, payload),
                   ),
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
                 ),
                 Gap(Device.screen.height * 0.02),
-                BullButton.small(
+                BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed: () {
                     if (signerDevice == SignerDeviceEntity.coldcardQ) {
@@ -132,9 +134,6 @@ class ImportColdcardPage extends StatelessWidget {
                       ColdcardMk4InstructionsBottomSheet.show(context);
                     }
                   },
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
                 ),
               ],
             ),

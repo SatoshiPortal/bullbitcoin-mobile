@@ -1,12 +1,5 @@
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullScaffold,
-        BullTopBar,
-        BullButton,
-        BullText,
-        BullThemeX,
-        Gap,
-        BullTypographyX;
+    show BullScaffold, BullTopBar, BullButton, BullText, Gap, BullTypographyX;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
@@ -285,10 +278,8 @@ class _AuthAccessGate extends StatelessWidget {
                 style: context.bullType.body,
               ),
               const Gap(16),
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.exchangeTradingRetry,
-                bgColor: context.bull.primary,
-                textColor: context.bull.onPrimary,
                 onPressed: () => context.read<ExchangeCubit>().retryAccess(),
               ),
             ],

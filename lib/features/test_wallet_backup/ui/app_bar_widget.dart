@@ -107,7 +107,7 @@ Future<String?> _showWalletPicker({
                 ],
               ),
             ),
-            BullButton.big(
+            BullButton.primary(
               label: context.loc.testBackupConfirm,
               onPressed: () {
                 final wallet = wallets[controller.selectedItem];
@@ -116,8 +116,6 @@ Future<String?> _showWalletPicker({
                 );
                 Navigator.of(context).pop();
               },
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             ),
           ],
         ),

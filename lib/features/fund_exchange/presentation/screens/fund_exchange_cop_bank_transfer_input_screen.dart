@@ -310,14 +310,13 @@ class _FundExchangeCopBankTransferInputScreenState
                       FundExchangeErrorText(failure: _fundingDetailsFailure!),
                       const Gap(8.0),
                     ],
-                    BullButton.big(
+                    BullButton.primary(
                       label: context.loc.fundExchangeCopGeneratePaymentLink,
-                      disabled:
-                          isLoadingFundingDetails ||
-                          _selectedInstitution == null,
-                      onPressed: _submitForm,
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
+                      onPressed:
+                          (isLoadingFundingDetails ||
+                              _selectedInstitution == null)
+                          ? null
+                          : _submitForm,
                     ),
                   ],
                 ),

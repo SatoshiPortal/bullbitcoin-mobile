@@ -98,14 +98,13 @@ class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
         widget.networkField,
         const Gap(16),
         if (state.network == BitcoinNetwork.regtest) ...[
-          BullButton.big(
-            onPressed: state.isFetchingDefaults
+          BullButton.secondary(
+            onPressed: (state.isFetchingDefaults || widget.isBusy)
+                ? null
+                : state.isFetchingDefaults
                 ? () {}
                 : widget.onFetchDefaults,
             label: context.loc.spFetchRegtestDefaults,
-            bgColor: context.appColors.surface,
-            textColor: context.appColors.onSurface,
-            disabled: state.isFetchingDefaults || widget.isBusy,
           ),
           const Gap(16),
         ],

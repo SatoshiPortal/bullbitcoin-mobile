@@ -152,13 +152,11 @@ class ExchangeLandingScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 13.0),
               child: SizedBox(
                 width: double.infinity,
-                child: BullButton.big(
+                child: BullButton.primary(
                   label: context.loc.exchangeLoginButton,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeAuth.name);
                   },
-                  bgColor: context.appColors.primary,
-                  textColor: context.appColors.onPrimary,
                 ),
               ),
             ),

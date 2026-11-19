@@ -12,7 +12,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullShapesX, BullText, BullTypography, Gap, BullTypographyX;
+    show
+        BullAdvancedOptionsLink,
+        BullShapesX,
+        BullText,
+        BullTypography,
+        Gap,
+        BullTypographyX;
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -76,7 +82,10 @@ class OnboardingSplash extends StatelessWidget {
                       right: 16,
                       bottom: 40,
                     ),
-                    child: _Actions(loading: loading),
+                    child: Theme(
+                      data: AppTheme.themeData(AppThemeType.light),
+                      child: _Actions(loading: loading),
+                    ),
                   ),
                 ],
               ),
@@ -122,11 +131,8 @@ class _Actions extends StatelessWidget {
             const RecoverWalletButton(),
             const Gap(8),
             Center(
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(48, 48),
-                  tapTargetSize: MaterialTapTargetSize.padded,
-                ),
+              child: BullAdvancedOptionsLink(
+                label: context.loc.onboardingAdvancedOptionsTitle,
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -144,14 +150,6 @@ class _Actions extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text(
-                  context.loc.onboardingAdvancedOptionsTitle,
-                  style: context.bullType.body.copyWith(
-                    color: context.appColors.primaryFixed,
-                    decoration: TextDecoration.underline,
-                    decorationColor: context.appColors.primaryFixed,
-                  ),
-                ),
               ),
             ),
           ],

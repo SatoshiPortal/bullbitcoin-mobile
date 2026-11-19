@@ -81,13 +81,11 @@ class ExchangeSecurityScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
-                      child: BullButton.big(
+                      child: BullButton.secondary(
                         label: context.loc.exchangeSecurityAccessSettingsButton,
                         onPressed: () {
                           _openSecurityWebView(context);
                         },
-                        bgColor: context.appColors.onSurface,
-                        textColor: context.appColors.surface,
                         iconData: Icons.arrow_forward,
                       ),
                     ),

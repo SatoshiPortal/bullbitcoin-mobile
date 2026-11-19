@@ -155,31 +155,22 @@ class ExchangeHomeScreen extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: BullButton.big(
+                  child: BullButton.secondary(
                     iconData: Icons.arrow_downward,
                     label: context.loc.exchangeHomeDepositButton,
                     iconFirst: true,
                     onPressed: () =>
                         context.pushNamed(FundExchangeRoute.fundExchange.name),
-                    bgColor: context.appColors.secondaryFixed,
-                    textColor: context.appColors.onSecondaryFixed,
-                    outlined: true,
-                    borderColor: context.appColors.onSecondaryFixed,
                   ),
                 ),
                 const Gap(4),
                 Expanded(
-                  child: BullButton.big(
+                  child: BullButton.secondary(
                     iconData: Icons.arrow_upward,
                     label: context.loc.exchangeHomeWithdrawButton,
                     iconFirst: true,
-                    disabled: false,
                     onPressed: () =>
                         context.pushNamed(WithdrawRoute.withdraw.name),
-                    bgColor: context.appColors.secondaryFixed,
-                    textColor: context.appColors.onSecondaryFixed,
-                    outlined: true,
-                    borderColor: context.appColors.onSecondaryFixed,
                   ),
                 ),
               ],

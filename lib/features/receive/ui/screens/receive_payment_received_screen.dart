@@ -104,7 +104,7 @@ class ReceiveDetailsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: BullButton.big(
+      child: BullButton.secondary(
         label: context.loc.receiveDetails,
         onPressed: () {
           final target = receiveDetailsTarget(
@@ -137,8 +137,6 @@ class ReceiveDetailsButton extends StatelessWidget {
               break;
           }
         },
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
       ),
     );
   }

@@ -246,7 +246,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: BullButton.big(
+                    child: BullButton.secondary(
                       label: context.loc.payCopyInvoice,
                       onPressed: () {
                         if (bip21InvoiceData.isNotEmpty) {
@@ -259,20 +259,12 @@ class PayReceivePaymentScreen extends StatelessWidget {
                           );
                         }
                       },
-                      bgColor: context.appColors.transparent,
-                      textColor: context.appColors.secondary,
-                      outlined: true,
-                      borderColor: context.appColors.secondary,
                     ),
                   ),
                   const Gap(16),
                   Expanded(
-                    child: BullButton.big(
+                    child: BullButton.secondary(
                       label: context.loc.payShowQrCode,
-                      bgColor: context.appColors.transparent,
-                      textColor: context.appColors.secondary,
-                      outlined: true,
-                      borderColor: context.appColors.secondary,
                       onPressed: () {
                         PayQrBottomSheet.show(context, bip21InvoiceData);
                       },

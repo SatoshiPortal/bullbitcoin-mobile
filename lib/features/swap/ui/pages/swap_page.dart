@@ -434,20 +434,20 @@ class SwapPageState extends State<SwapPage> {
                 state.continueClicked ||
                 state.hasAmountError,
             builder: (context, disabled) {
-              return BullButton.big(
+              return BullButton.primary(
                 label: context.loc.swapContinueButton,
                 height: _actionHeight,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-                disabled: disabled,
-                onPressed: () {
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
-                  context.read<TransferBloc>().add(
-                    TransferEvent.swapCreated(_amountController.text),
-                  );
-                },
+                onPressed: (disabled)
+                    ? null
+                    : () {
+                        final form = _formKey.currentState;
+                        if (form == null || !form.validate()) {
+                          return;
+                        }
+                        context.read<TransferBloc>().add(
+                          TransferEvent.swapCreated(_amountController.text),
+                        );
+                      },
               );
             },
           ),

@@ -231,16 +231,17 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             );
           },
         ),
-        BullButton.big(
+        BullButton.primary(
           label: context.loc.recipientsContinue,
-          disabled: _selectedRecipient == null,
-          onPressed: () {
-            context.read<RecipientsBloc>().add(
-              RecipientsEvent.selected(_selectedRecipient!),
-            );
-          },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
+          onPressed: (_selectedRecipient == null)
+              ? null
+              : () {
+                  final selected = _selectedRecipient;
+                  if (selected == null) return;
+                  context.read<RecipientsBloc>().add(
+                    RecipientsEvent.selected(selected),
+                  );
+                },
         ),
       ],
     );
