@@ -79,6 +79,7 @@ void main() {
       'receive-qr',
       'swap',
       'multi',
+      'multi-list',
     ]) {
       testWidgets('$name ${theme.name}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
@@ -94,7 +95,7 @@ void main() {
         final settings = _Settings();
         final fiat = name.contains('fiat') || name == 'send-no-price';
         final confirmation = name.contains('confirm');
-        final multi = name == 'multi';
+        final multi = name == 'multi' || name == 'multi-list';
         final max = name == 'send-max';
         final conversion = SendAmountConversion(
           enteredText: '31.25',
@@ -261,6 +262,10 @@ void main() {
         }
         if (name == 'send-list') {
           await tester.tap(find.byTooltip('Currency: Bitcoin'));
+          await tester.pumpAndSettle();
+        }
+        if (name == 'multi-list') {
+          await tester.tap(find.byTooltip('Currency'));
           await tester.pumpAndSettle();
         }
         expect(tester.takeException(), isNull);

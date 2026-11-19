@@ -31,6 +31,9 @@ void main() {
       'picker',
       'currency',
       'settings',
+      'chip-menu',
+      'pressed',
+      'large-action',
     ]) {
       testWidgets('$state ${dark ? 'dark' : 'light'}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
@@ -124,7 +127,17 @@ void main() {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                BullFieldAction(label: 'MAX', onPressed: () {}),
+                                MediaQuery(
+                                  data: MediaQueryData(
+                                    textScaler: TextScaler.linear(
+                                      state == 'large-action' ? 3 : 1,
+                                    ),
+                                  ),
+                                  child: BullFieldAction(
+                                    label: 'MAX',
+                                    onPressed: () {},
+                                  ),
+                                ),
                                 const Gap(8),
                                 BullFieldAction(
                                   label: 'Edit recipient',
@@ -139,6 +152,24 @@ void main() {
                                 ),
                               ],
                             ),
+                            if (state == 'chip-menu') ...[
+                              const Gap(16),
+                              BullPickerChip<String>(
+                                value: 'btc',
+                                onChanged: (_) {},
+                                items: const [
+                                  BullPickerItem(
+                                    value: 'btc',
+                                    label: 'Bitcoin units',
+                                  ),
+                                  BullPickerItem(
+                                    value: 'fiat',
+                                    label:
+                                        'Fiat currencies with a longer label',
+                                  ),
+                                ],
+                              ),
+                            ],
                             if (state == 'settings') ...[
                               const Gap(16),
                               BullSettingsEntryTile(
@@ -177,6 +208,18 @@ void main() {
           await tester.tap(find.byTooltip('Currency: Bitcoin'));
           await tester.pumpAndSettle();
         }
+        if (state == 'chip-menu') {
+          await tester.tap(find.text('Bitcoin units'));
+          await tester.pumpAndSettle();
+        }
+        TestGesture? press;
+        if (state == 'pressed') {
+          press = await tester.startGesture(
+            tester.getCenter(find.byTooltip('MAX')),
+          );
+          await tester.pump(const Duration(milliseconds: 300));
+          await tester.pump(const Duration(milliseconds: 16));
+        }
         expect(tester.takeException(), isNull);
         await expectLater(
           find.byKey(key),
@@ -184,6 +227,7 @@ void main() {
             'goldens/send-kit/$state-${dark ? 'dark' : 'light'}.png',
           ),
         );
+        await press?.up();
       });
     }
   }

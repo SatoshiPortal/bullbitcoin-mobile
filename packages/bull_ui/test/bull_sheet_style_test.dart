@@ -92,6 +92,14 @@ void main() {
             builder: (context) => BullAmountInput(
               canonicalUnit: BitcoinUnit.sats,
               amountController: canonical,
+              currencies: [
+                BullAmountCurrency(
+                  code: 'CAD',
+                  decimals: 2,
+                  price: 100000,
+                  priceAt: DateTime.utc(2026, 11, 19),
+                ),
+              ],
               currencySheetStyle: redesign
                   ? BullSheetStyle.redesign(context)
                   : null,
