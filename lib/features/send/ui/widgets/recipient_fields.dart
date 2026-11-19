@@ -189,7 +189,7 @@ class _RecipientRow extends StatelessWidget {
         ),
         if (onRemove != null)
           SizedBox(
-            width: 44,
+            width: 48,
             height: 48,
             child: IconButton(
               tooltip: context.loc.sendRemoveRecipient,

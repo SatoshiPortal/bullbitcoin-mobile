@@ -333,36 +333,31 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                   }),
                                 )
                               else if (!widget.vaultKeyOnly)
-                                Row(
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
-                                    Expanded(
-                                      child: BullButton.secondary(
-                                        label: _inputType == InputType.pin
-                                            ? context
-                                                  .loc
-                                                  .recoverbullSwitchToPassword
-                                            : context
-                                                  .loc
-                                                  .recoverbullSwitchToPIN,
-                                        onPressed: () => _switchTo(
-                                          _inputType == InputType.pin
-                                              ? InputType.password
-                                              : InputType.pin,
-                                        ),
+                                    BullButton.secondary(
+                                      label: _inputType == InputType.pin
+                                          ? context
+                                                .loc
+                                                .recoverbullSwitchToPassword
+                                          : context.loc.recoverbullSwitchToPIN,
+                                      onPressed: () => _switchTo(
+                                        _inputType == InputType.pin
+                                            ? InputType.password
+                                            : InputType.pin,
                                       ),
                                     ),
                                     if (_inputType != InputType.vaultKey &&
                                         hasVaultKeyInput) ...[
                                       const Gap(8),
-                                      Expanded(
-                                        child: BullButton.secondary(
-                                          size: BullButtonSize.small,
-                                          label: context
-                                              .loc
-                                              .recoverbullEnterVaultKeyInstead,
-                                          onPressed: () =>
-                                              _switchTo(InputType.vaultKey),
-                                        ),
+                                      BullButton.secondary(
+                                        label: context
+                                            .loc
+                                            .recoverbullEnterVaultKeyInstead,
+                                        onPressed: () =>
+                                            _switchTo(InputType.vaultKey),
                                       ),
                                     ],
                                   ],
