@@ -1,5 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart' show Builder;
+import 'package:material_ui/material_ui.dart'
+    show Builder, Container, BoxDecoration;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -90,15 +91,41 @@ void main() {
       expect(await result, isFalse);
     });
 
-    testWidgets('paints a destructive confirmation with the theme error', (
-      tester,
-    ) async {
-      await open(tester, destructive: true);
+    testWidgets(
+      'paints a destructive confirmation with primary and cancel with secondary',
+      (tester) async {
+        await open(tester, destructive: true);
 
-      final confirm = button(tester, 'Delete');
-      expect(confirm.bgColor, testBullTheme.error);
-      expect(confirm.textColor, testBullTheme.onError);
-    });
+        final confirm = button(tester, 'Delete');
+        final fill =
+            tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.widgetWithText(BullButton, 'Delete'),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration;
+        expect(fill.color, testBullTheme.primary);
+        expect(confirm.outlined, isFalse);
+        final cancelFill =
+            tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.widgetWithText(BullButton, 'Cancel'),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration;
+        expect(cancelFill.color, testBullTheme.secondary);
+      },
+    );
 
     testWidgets('paints a plain confirmation with the theme primary', (
       tester,
@@ -106,8 +133,20 @@ void main() {
       await open(tester);
 
       final confirm = button(tester, 'Delete');
-      expect(confirm.bgColor, testBullTheme.primary);
-      expect(confirm.textColor, testBullTheme.onPrimary);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(
+                          of: find.widgetWithText(BullButton, 'Delete'),
+                          matching: find.byType(Container),
+                        )
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(fill.color, testBullTheme.primary);
+      expect(confirm.disabled, isFalse);
     });
   });
 }
