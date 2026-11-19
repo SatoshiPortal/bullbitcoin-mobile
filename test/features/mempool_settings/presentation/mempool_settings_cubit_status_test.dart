@@ -24,16 +24,29 @@ class _DeleteCustom extends Mock implements DeleteCustomMempoolServerUsecase {}
 
 /// Answers each probe only when the test completes the matching completer.
 class _Validator implements MempoolServerValidatorPort {
-  final probes = <String, Completer<Result<void, MempoolFailure>>>{};
+  final probes = <String, List<Completer<Result<void, MempoolFailure>>>>{};
 
   @override
   Future<Result<void, MempoolFailure>> validateServer({
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
-  }) => (probes[url] = Completer()).future;
+  }) {
+    final probe = Completer<Result<void, MempoolFailure>>();
+    (probes[url] ??= []).add(probe);
+    return probe.future;
+  }
 
-  void answer(String url) => probes[url]?.complete(const Ok(null));
+  /// Completes the [index]th probe of [url], the latest one by default.
+  void answer(String url, {int? index, bool online = true}) {
+    final sent = probes[url];
+    if (sent == null || sent.isEmpty) return;
+    sent[index ?? sent.length - 1].complete(
+      online
+          ? const Ok(null)
+          : const Err(MempoolValidationConnectionErrorFailure()),
+    );
+  }
 }
 
 MempoolServerDto _server(
@@ -112,6 +125,20 @@ void main() {
     await pumpEventQueue();
 
     expect(cubit.state.customServer, isNull);
+    await cubit.close();
+  });
+
+  test('an older probe never overwrites a newer answer', () async {
+    await cubit.loadData();
+    final refreshing = cubit.refresh();
+    await pumpEventQueue();
+    validator.answer('bitcoin.example');
+    await pumpEventQueue();
+    validator.answer('bitcoin.example', index: 0, online: false);
+    validator.answer('custom.example');
+    await refreshing;
+
+    expect(cubit.state.defaultServer?.status, MempoolServerStatus.online);
     await cubit.close();
   });
 
