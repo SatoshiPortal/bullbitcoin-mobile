@@ -17,10 +17,14 @@ class _Settings extends Mock implements SettingsCubit {}
 
 void main() {
   test('Ark notification test is shown only in developer mode', () {
-    final disabled = buildSettingsItems(localization: AppLocalizationsEn());
+    final disabled = buildSettingsItems(
+      localization: AppLocalizationsEn(),
+      environment: NetworkEnv.mainnet,
+    );
     final enabled = buildSettingsItems(
       localization: AppLocalizationsEn(),
       isDevModeEnabled: true,
+      environment: NetworkEnv.mainnet,
     );
     expect(
       disabled.where((item) => item.id == SettingsItemId.arkDebugNotification),

@@ -13,7 +13,7 @@ import 'features/wallet/data/ark_funding_test_fixture.dart';
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure, ElectrumSaveFailure;
+    show ElectrumFailure, ElectrumSaveFailure, RegtestElectrumProfile;
 
 import 'dart:io';
 
@@ -388,6 +388,7 @@ void main() {
       startPayjoinRecovery: false,
       startOrderSwapWatcher: false,
       startAutoswapWatcher: false,
+      regtestProfile: RegtestElectrumProfile(host: '127.0.0.1'),
     );
     expect(result, isA<Err<void, ElectrumFailure>>());
     expect(
