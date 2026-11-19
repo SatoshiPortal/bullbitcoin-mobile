@@ -160,16 +160,25 @@ class BullButton extends StatelessWidget {
         ? Icon(iconData, size: 20, color: foreground)
         : const SizedBox.shrink();
 
+    final labelStyle =
+        textStyle ??
+        context.bullType.subtitle.copyWith(fontWeight: FontWeight.w700);
     final labelText = Flexible(
-      child: BullText(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style:
-            textStyle ??
-            context.bullType.subtitle.copyWith(fontWeight: FontWeight.w700),
-        color: foreground,
-      ),
+      child: compact && _role != null
+          // Dialog actions measure intrinsic widths before laying out.
+          ? Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: labelStyle.copyWith(color: foreground),
+            )
+          : BullText(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: labelStyle,
+              color: foreground,
+            ),
     );
 
     final button = AnimatedOpacity(
