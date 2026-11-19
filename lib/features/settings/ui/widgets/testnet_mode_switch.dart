@@ -59,20 +59,20 @@ Future<void> showNetworkRestartDialog(
   return BullDialog.show<void>(
     context: context,
     isDismissible: false,
-    builder: (dialogContext) => PopScope(
-      canPop: false,
-      child: AlertDialog(
-        title: Text(dialogContext.loc.networkRestartDialogTitle),
-        content: Text(dialogContext.loc.networkRestartDialogMessage),
-        actions: [
-          BullButton.primary(
-            label: dialogContext.loc.networkRestartDialogAction,
-            onPressed: onClose ?? () => exit(0),
-            size: BullButtonSize.small,
-            compact: true,
-          ),
-        ],
+    builder: (dialogContext) => AlertDialog(
+      title: Text(dialogContext.loc.networkRestartDialogTitle),
+      content: PopScope(
+        canPop: false,
+        child: Text(dialogContext.loc.networkRestartDialogMessage),
       ),
+      actions: [
+        BullButton.primary(
+          label: dialogContext.loc.networkRestartDialogAction,
+          onPressed: onClose ?? () => exit(0),
+          size: BullButtonSize.small,
+          compact: true,
+        ),
+      ],
     ),
   );
 }
