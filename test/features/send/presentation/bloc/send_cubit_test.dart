@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
+
 import 'send_qr_network_regression.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
@@ -862,6 +864,121 @@ void main() {
   }
 
   test(
+    'a fixed primary request replaces the previous fiat conversion',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          amountConversion: SendAmountConversion(
+            enteredText: '31.25',
+            currencyCode: 'CAD',
+            rate: 125000,
+            quotedAt: DateTime.utc(2026),
+            sats: Sats.fromInt(25000),
+          ),
+        ),
+      );
+      when(() => detectBitcoinStringUsecase.execute(data: 'bitcoin:fixture'))
+          .thenAnswer(
+            (_) async => const PaymentRequest.bip21(
+              network: Network.bitcoinMainnet,
+              uri: 'bitcoin:fixture?amount=0.00001',
+              address: 'bc1qfixture',
+              amountSat: 1000,
+            ),
+          );
+      await cubit.onChangedText('bitcoin:fixture');
+      expect(cubit.state.paymentRequest?.amountSat, 1000);
+      expect(cubit.state.amountConversion, isNull);
+    },
+  );
+
+  test('Max discards the previous typed fiat conversion', () async {
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    final wallet = _bitcoinLocalWallet();
+    final conversion = SendAmountConversion(
+      enteredText: '31.25',
+      currencyCode: 'CAD',
+      rate: 125000,
+      quotedAt: DateTime.utc(2026),
+      sats: Sats.fromInt(25000),
+    );
+    cubit.setStateForTest(
+      SendState(
+        selectedWallet: SendWalletBitcoin(wallet),
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qfixture',
+          isTestnet: false,
+        ),
+        amount: '25000',
+        inputAmountCurrencyCode: 'sats',
+        amountConversion: conversion,
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qfixture',
+            amount: '25000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      ),
+    );
+    await cubit.amountChanged(isMax: true);
+    expect(cubit.state.amountConversion, isNull);
+  });
+
+  test(
+    'representation and price loss preserve sats but block confirmation',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final at = DateTime.utc(2026, 11, 19, 14, 32);
+      final conversion = SendAmountConversion(
+        enteredText: '31.25',
+        currencyCode: 'CAD',
+        rate: 125000,
+        quotedAt: at,
+        sats: Sats.fromInt(25000),
+      );
+      cubit.setStateForTest(
+        SendState(
+          amount: '25000',
+          inputAmountCurrencyCode: 'sats',
+          amountConversion: conversion,
+        ),
+      );
+      cubit.amountEntryChanged(
+        sats: BigInt.from(25000),
+        currencyCode: 'BTC',
+        text: '0.00025',
+        rate: null,
+        quotedAt: null,
+        isValid: true,
+        isEdit: false,
+      );
+      expect(cubit.state.inputAmountSat, 25000);
+      expect(cubit.state.amountConversion, same(conversion));
+      cubit.amountEntryChanged(
+        sats: BigInt.from(25000),
+        currencyCode: 'CAD',
+        text: '31.25',
+        rate: null,
+        quotedAt: null,
+        isValid: false,
+        isEdit: false,
+      );
+      await cubit.onAmountConfirmed();
+      expect(cubit.state.amountConfirmedClicked, isFalse);
+      expect(cubit.state.confirmedAmountSat, isNull);
+      expect(cubit.state.inputAmountSat, 25000);
+      verifyZeroInteractions(prepareBitcoinSendUsecase);
+    },
+  );
+
+  test(
     'signing without a selected wallet reports an explicit missing context',
     () async {
       final cubit = buildCubit();
@@ -1212,6 +1329,20 @@ void main() {
             hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).called(1);
+      },
+    );
+
+    test(
+      'Liquid Max keeps sats canonical with a BTC display preference',
+      () async {
+        final cubit = await start();
+        cubit.setStateForTest(
+          cubit.state.copyWith(bitcoinUnit: BitcoinUnit.btc),
+        );
+        await cubit.amountChanged(isMax: true);
+        expect(cubit.state.inputAmountCurrencyCode, 'sats');
+        expect(cubit.state.inputAmountSat, 74900);
+        expect(cubit.preparedMaxAmountSat, 74900);
       },
     );
 
@@ -7522,6 +7653,7 @@ void main() {
       // The fee comes out of the sent amount on MAX, so the confirm page must
       // show what the build produced rather than what was typed.
       expect(cubit.state.confirmedAmountSat, 19800);
+      expect(cubit.preparedMaxAmountSat, 19800);
     });
 
     test('broadcasting without a draft fails instead of sending', () async {

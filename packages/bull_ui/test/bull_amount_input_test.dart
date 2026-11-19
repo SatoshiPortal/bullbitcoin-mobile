@@ -107,6 +107,37 @@ void main() {
     expect(entry?.sats, BigInt.one);
   });
 
+  testWidgets('an inactive Max update does not replace typed fiat intent', (
+    tester,
+  ) async {
+    final canonical = TextEditingController();
+    addTearDown(canonical.dispose);
+    Widget host(double price, int max) => wrapWithTheme(
+      BullAmountInput(
+        canonicalUnit: BitcoinUnit.sats,
+        amountController: canonical,
+        initialCurrencyCode: 'CAD',
+        defaultCurrencyCode: 'CAD',
+        maxAmountSat: BigInt.from(max),
+        currencies: [
+          BullAmountCurrency(
+            code: 'CAD',
+            decimals: 2,
+            price: price,
+            priceAt: quotedAt,
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(host(125000, 50000));
+    await tester.enterText(find.byType(TextField), '31.25');
+    await tester.pumpWidget(host(125000, 100000));
+    await tester.pumpWidget(host(100000, 100000));
+    await tester.pump();
+    expect(canonical.text, '31250');
+    expect(find.text('31.25'), findsOneWidget);
+  });
+
   testWidgets('fiat intent is repriced until the caller freezes it', (
     tester,
   ) async {
