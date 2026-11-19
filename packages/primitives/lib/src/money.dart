@@ -48,7 +48,7 @@ final class Sats implements Comparable<Sats> {
     final denominator = amountDenominator * rateNumerator;
     final two = BigInt.two;
     final sats = (numerator * two + denominator) ~/ (denominator * two);
-    return sats > maxBitcoinSupply ? null : Sats(sats);
+    return Sats(sats);
   }
 
   static (BigInt, BigInt)? _decimalRatio(String text, {bool exponent = false}) {
