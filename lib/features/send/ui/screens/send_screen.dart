@@ -763,6 +763,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
                     );
 
+                    final totalCurrency =
+                        SupportedCurrency.tryFromCode(_multiCurrency ?? '') ??
+                        SupportedCurrency.tryFromCode(state.fiatCurrencyCode);
+                    final totalQuote = totalCurrency == null
+                        ? null
+                        : state.amountQuotes[totalCurrency];
                     final buildError = context.select(
                       (SendCubit cubit) => cubit.state.hasBuildFailure,
                     );
@@ -1073,11 +1079,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             color: context.appColors.textMuted,
                                             style: context.bullType.body,
                                           ),
-                                          if (state.exchangeRate
-                                              case final rate?)
+                                          if (totalQuote case final quote?)
                                             Text(
-                                              '≈ ${FormatAmount.fiat(amountSat / 100000000 * rate, state.fiatCurrencyCode)}',
-                                              style: context.bullType.body
+                                              '≈ ${FormatAmount.fiat(quote.fiatValueOf(BigInt.from(amountSat)), quote.currency.code)}',
+                                              style: context.bullType.caption
                                                   .copyWith(
                                                     color: context
                                                         .appColors
