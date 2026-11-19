@@ -8,20 +8,26 @@ import 'package:bb_mobile/features/swap/domain/entities/internal_transfer.dart';
 import 'package:bb_mobile/features/swap/presentation/internal_ark_transfer_cubit.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/internal_transfer_form.dart';
-import 'package:bb_mobile/locator.dart';
 
 import 'swap_page.dart';
 
 class InternalTransferPage extends StatefulWidget {
-  const InternalTransferPage({super.key});
+  final InternalArkTransferCubit Function() createArkCubit;
+
+  const InternalTransferPage({super.key, required this.createArkCubit});
   @override
   State<InternalTransferPage> createState() => _InternalTransferPageState();
 }
 
 class _InternalTransferPageState extends State<InternalTransferPage> {
-  late final InternalArkTransferCubit _ark = locator<InternalArkTransferCubit>()
-    ..load();
+  late final InternalArkTransferCubit _ark;
   bool _legacy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ark = widget.createArkCubit()..load();
+  }
 
   @override
   void dispose() {

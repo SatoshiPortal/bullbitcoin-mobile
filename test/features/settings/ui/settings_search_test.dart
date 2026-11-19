@@ -189,10 +189,12 @@ void main() {
         isDevModeEnabled: true,
       ).inSection(SettingsItemSection.app).map((item) => item.id).toList();
 
-      expect(ids.sublist(ids.length - 4), [
+      // Tests run in debug mode, so the debug-only Ark notification item is listed.
+      expect(ids.sublist(ids.length - 5), [
         SettingsItemId.errorReporting,
         SettingsItemId.devMode,
         SettingsItemId.testnetMode,
+        SettingsItemId.arkDebugNotification,
         SettingsItemId.testnetCredentials,
       ]);
       expect(
@@ -360,19 +362,23 @@ void main() {
       expect(searchSettings(_frenchItems(), 'zzz'), isEmpty);
     });
 
+    // Some items exist only on some networks (Ark is regtest only), so the registry is the union over every network.
     test('every item id has one authoritative registry entry', () {
-      final items = _englishItems(
-        isSuperuser: true,
-        isDevModeEnabled: true,
-        accountReady: true,
-        backgroundTasksAvailable: true,
-      );
+      final ids = <SettingsItemId>{};
+      for (final environment in NetworkEnv.values) {
+        final items = _englishItems(
+          isSuperuser: true,
+          isDevModeEnabled: true,
+          accountReady: true,
+          backgroundTasksAvailable: true,
+          environment: environment,
+        );
+        final unique = items.map((item) => item.id).toSet();
+        expect(unique, hasLength(items.length), reason: environment.name);
+        ids.addAll(unique);
+      }
 
-      expect(
-        items.map((item) => item.id).toSet(),
-        SettingsItemId.values.toSet(),
-      );
-      expect(items, hasLength(SettingsItemId.values.length));
+      expect(ids, SettingsItemId.values.toSet());
     });
   });
 }
@@ -382,10 +388,11 @@ List<SettingsItem> _englishItems({
   bool isDevModeEnabled = false,
   bool accountReady = false,
   bool backgroundTasksAvailable = false,
+  NetworkEnv environment = NetworkEnv.mainnet,
 }) {
   final localization = AppLocalizationsEn();
   return buildSettingsItems(
-    environment: NetworkEnv.mainnet,
+    environment: environment,
     localization: localization,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,

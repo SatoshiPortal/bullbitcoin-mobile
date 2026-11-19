@@ -44,9 +44,18 @@ void main() {
         scheduler: scheduler,
       );
       expect(scheduler.registered, isEmpty);
+      // Ark renewal keeps its own schedule, so turning ordinary sync off never cancels it.
       expect(
         scheduler.cancelled,
-        containsAll(BackgroundTask.values.map((task) => task.id)),
+        containsAll(
+          BackgroundTask.values
+              .where((task) => task != BackgroundTask.arkRenewal)
+              .map((task) => task.id),
+        ),
+      );
+      expect(
+        scheduler.cancelled,
+        isNot(contains(BackgroundTask.arkRenewal.id)),
       );
     },
   );

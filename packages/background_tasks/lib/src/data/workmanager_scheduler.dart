@@ -90,10 +90,8 @@ Future<void> applyBackgroundTaskSchedule({
         taskName: BackgroundTask.walletsSync.name,
         requiresNetwork: true,
         frequency: frequency,
-        // iOS ignores the frequency: the delay is its "not before" hint. The
-        // plugin (workmanager_apple 0.9.11) captures the delay when it first
-        // registers its launch handler in a process, so a changed interval is
-        // fully applied from the next app start.
+        // iOS ignores the frequency: the delay is its "not before" hint, saved by the plugin (workmanager_apple 0.9.11) on each submit.
+        // A background run reschedules with the delay registered at launch: the one saved last session, or none on a fresh install.
         initialDelay: Platform.isIOS ? frequency : null,
       );
     }

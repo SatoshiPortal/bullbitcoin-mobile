@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/ark_dashboard_entry.dart';
+import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -19,6 +20,7 @@ import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_refresh_body.dart';
 
 class WalletHomeScreen extends StatefulWidget {
+  final ArkForegroundHost? arkHost;
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
   final VoidCallback onImportNetworkWallet;
@@ -29,6 +31,7 @@ class WalletHomeScreen extends StatefulWidget {
 
   const WalletHomeScreen({
     super.key,
+    required this.arkHost,
     required this.createSetupCubit,
     required this.onEmptyMainnet,
     required this.onImportNetworkWallet,
@@ -188,7 +191,10 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 ),
               ),
               SliverToBoxAdapter(
-                child: ArkDashboardEntry(refresh: _arkRefresh),
+                child: ArkDashboardEntry(
+                  host: widget.arkHost,
+                  refresh: _arkRefresh,
+                ),
               ),
             ],
           ),

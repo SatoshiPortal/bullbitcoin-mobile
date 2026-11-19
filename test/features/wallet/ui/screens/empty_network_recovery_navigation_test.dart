@@ -105,6 +105,7 @@ void main() {
             builder: (_, _, child) => Scaffold(body: child),
             routes: [
               WalletRouter.walletHomeRoute(
+                arkHost: null,
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},

@@ -1,15 +1,12 @@
-import 'package:ark/ark.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ark/generated/l10n/ark_localizations.dart';
-import 'package:bull_ark/src/ui/ark_information_screen.dart';
+import 'package:bull_ark/ark_ui.dart' show ArkLocalizations;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
 
-import '../../../features/ark/test/ark_information_widget_test.dart'
-    show config;
+import '../../../features/ark/test/ark_visual_fixtures.dart';
 
 void main() {
   setUpAll(() async {
@@ -31,7 +28,6 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final boundary = GlobalKey();
-      final source = config();
       await tester.pumpWidget(
         MaterialApp(
           locale: const Locale('en'),
@@ -50,18 +46,7 @@ void main() {
                 isReady: true,
               ),
               writeUnit: (_) async => false,
-              child: ArkInformationScreen(
-                config: source,
-                snapshot: ArkSnapshot(
-                  account: source.id,
-                  revision: 2,
-                  observedAt: DateTime.utc(2026, 11, 18),
-                  stale: false,
-                  confirmedReserve: Sats.zero,
-                  reserveAddress:
-                      'bcrt1qpublicfeereservefixtureforhostrenderonly',
-                ),
-              ),
+              child: arkFeeReserveVisualFixture(),
             ),
           ),
         ),

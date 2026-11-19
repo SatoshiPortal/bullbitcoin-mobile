@@ -18,7 +18,10 @@ void main() {
   test('OFF acknowledges persisted work without opening any platform resources', () async {
     // No path provider, Drift, native SDK or permission plugin is installed in
     // this test. Building any of the headless graph would fail the test.
-    for (final task in BackgroundTask.values) {
+    // Ark renewal is admitted independently of the rollout gate, so it is not part of OFF.
+    for (final task in BackgroundTask.values.where(
+      (task) => task != BackgroundTask.arkRenewal,
+    )) {
       final runner = await bootstrapBackgroundRunner(
         task,
         clock: Stopwatch()..start(),

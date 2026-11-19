@@ -19,7 +19,7 @@ import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:bull_ark/generated/l10n/ark_localizations.dart';
+import 'package:bull_ark/ark_ui.dart' show ArkLocalizations;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -148,6 +148,7 @@ class ArkShellVisualFixtures {
               name: WalletRoute.walletHome.name,
               path: WalletRoute.walletHome.path,
               builder: (_, _) => WalletHomeScreen(
+                arkHost: fixture._host,
                 // A loaded, nonempty WalletState cannot enter setup. Fail if
                 // a future lifecycle change tries to do so in this fixture.
                 createSetupCubit: () => throw StateError(

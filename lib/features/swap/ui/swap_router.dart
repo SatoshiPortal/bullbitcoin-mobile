@@ -1,5 +1,6 @@
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/internal_ark_transfer_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
@@ -49,7 +50,9 @@ class SwapRouter {
             bloc.add(const TransferEvent.amountEditingResumed());
           }
         },
-        child: const InternalTransferPage(),
+        child: InternalTransferPage(
+          createArkCubit: () => locator<InternalArkTransferCubit>(),
+        ),
       ),
     ),
     routes: [
