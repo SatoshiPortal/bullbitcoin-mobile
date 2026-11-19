@@ -19,9 +19,17 @@ class _AmountPreferencesBinder extends StatelessWidget {
         unit: settings?.bitcoinUnit ?? BitcoinUnit.btc,
         hideAmounts: !isReady || (settings.hideAmounts ?? true),
         isReady: isReady,
+        startInFiat: settings?.startAmountsInFiat ?? false,
+        defaultCurrencyCode: settings?.currencyCode,
       ),
       writeUnit: (unit) async {
         final result = await context.read<SettingsCubit>().setBitcoinUnit(unit);
+        return result is Ok<void, SettingsFailure>;
+      },
+      writeInputMode: (fiat) async {
+        final result = await context
+            .read<SettingsCubit>()
+            .setStartAmountsInFiat(fiat);
         return result is Ok<void, SettingsFailure>;
       },
       overlayResolver: () => navigatorKey.currentState?.overlay,

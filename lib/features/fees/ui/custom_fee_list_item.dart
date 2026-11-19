@@ -1,5 +1,3 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -8,7 +6,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAmountInputFormatter,
@@ -504,16 +501,16 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                 textInputAction: .done,
                 inputFormatters: [
                   if (_isAbsolute)
-                    FilteringTextInputFormatter.digitsOnly
+                    BullAmountInputFormatter(
+                      'sats',
+                      enforceBitcoinSupply: false,
+                    )
                   else
                     // Cap the sat/vByte rate at 2 decimals so the typed value
                     // matches what _formatForInput renders back (also 2dp) and
                     // what the sat/kwu store can represent — no typed-vs-stored
                     // -vs-shown drift in the sub-1 regime this targets.
-                    BullAmountInputFormatter(
-                      BitcoinUnit.btc.code,
-                      maxDecimals: 2,
-                    ),
+                    BullAmountInputFormatter('sat/vByte', maxDecimals: 2),
                 ],
                 onChanged: _onValueChanged,
                 style: TextStyle(color: context.appColors.onSurface),

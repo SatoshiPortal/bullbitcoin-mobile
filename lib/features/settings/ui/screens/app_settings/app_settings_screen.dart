@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/amount_input_mode_setting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -75,6 +76,22 @@ class AppSettingsScreen extends StatelessWidget {
       _ => null,
     };
 
+    // A switch has no text of its own, so it borrows its row's title; a
+    // picker already reads its value and keeps the tile's single title.
+    Widget? namedTrailingFor(SettingsItem item) {
+      final trailing = trailingFor(item.id);
+      return switch (item.id) {
+        SettingsItemId.theme ||
+        SettingsItemId.screenPrivacy ||
+        SettingsItemId.devMode ||
+        SettingsItemId.errorReporting when trailing != null => Semantics(
+          label: item.title,
+          child: trailing,
+        ),
+        _ => trailing,
+      };
+    }
+
     return BlocListener<SettingsCubit, SettingsState>(
       // Turning dev mode off revokes the SP wallet. The revoke leaves a
       // `.revoked` sentinel even when the on-disk delete fails, so the wallet
@@ -93,8 +110,13 @@ class AppSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  for (final item in items.inSection(SettingsItemSection.app))
-                    item.buildTile(context, trailing: trailingFor(item.id)),
+                  for (final item in items.inSection(
+                    SettingsItemSection.app,
+                  )) ...[
+                    item.buildTile(context, trailing: namedTrailingFor(item)),
+                    if (item.id == SettingsItemId.currency)
+                      const AmountInputModeSetting(),
+                  ],
                 ],
               ),
             ),

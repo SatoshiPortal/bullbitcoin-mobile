@@ -85,7 +85,10 @@ class ExchangeAmountInputField extends StatelessWidget {
                             decimal: true,
                           ),
                           inputFormatters: [
-                            BullAmountInputFormatter(inputCurrency),
+                            BullAmountInputFormatter(
+                              inputCurrency,
+                              maxDecimals: amountInputDecimals,
+                            ),
                           ],
                           style: context.bullType.headline.copyWith(
                             color: context.appColors.primary,

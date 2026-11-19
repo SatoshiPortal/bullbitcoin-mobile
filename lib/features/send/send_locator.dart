@@ -1,3 +1,5 @@
+import 'domain/usecases/get_send_amount_quotes_usecase.dart';
+
 import 'package:bull_ark/bull_ark.dart' show ArkFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
@@ -292,6 +294,10 @@ class SendLocator {
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         getSendExchangeRateUsecase: locator<GetSendExchangeRateUsecase>(),
+        getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
+          settings: locator<GetSettingsUsecase>(),
+          read: Pricer.getIndexPrices,
+        ),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         prepareBitcoinSendUsecase:

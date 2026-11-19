@@ -37,8 +37,9 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ReceiveBloc, ReceiveState>(
       listenWhen: (previous, current) =>
-          // Only listen on confirmed amount changes
-          previous.confirmedAmountSat != current.confirmedAmountSat &&
+          // Metadata can change at the same rounded satoshi amount.
+          (previous.confirmedAmountSat != current.confirmedAmountSat ||
+              previous.confirmedConversion != current.confirmedConversion) &&
           // Only listen when the entered amount is valid
           current.canConfirmAmount &&
           !current.hasAmountInputFailure &&

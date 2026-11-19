@@ -1,3 +1,5 @@
+import 'domain/usecases/get_receive_amount_quotes_usecase.dart';
+
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -125,6 +127,10 @@ class ReceiveLocator {
         getReceiveWalletsUsecase: locator<GetReceiveWalletsUsecase>(),
         getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
         convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),
+        getReceiveAmountQuotesUsecase: GetReceiveAmountQuotesUsecase(
+          settings: locator<GetSettingsUsecase>(),
+          read: Pricer.getIndexPrices,
+        ),
         prepareReceiveAddressUsecase: locator<PrepareReceiveAddressUsecase>(),
         createReceiveOrderSwapUsecase: locator<CreateReceiveOrderSwapUsecase>(),
         getReceiveSwapRouteUsecase: locator<GetReceiveSwapRouteUsecase>(),

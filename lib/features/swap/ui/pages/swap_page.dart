@@ -1,11 +1,9 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -44,34 +42,12 @@ class SwapPageState extends State<SwapPage> {
   final _errorKey = GlobalKey();
   final TextEditingController _amountController = TextEditingController();
   final FocusNode _amountNode = FocusNode();
-  int _amountSat = 0;
 
   @override
   void initState() {
     super.initState();
     final bloc = context.read<TransferBloc>();
-    final bitcoinUnit = bloc.state.bitcoinUnit;
-    final initialAmount = bloc.state.amount;
-    if (initialAmount.isNotEmpty) {
-      _amountController.text = initialAmount;
-    }
-    _amountController.addListener(() {
-      // Keep the bloc in sync for programmatic changes too (Max button,
-      // initial amount) — TextField.onChanged only fires for typing.
-      context.read<TransferBloc>().add(
-        TransferEvent.amountChanged(_amountController.text),
-      );
-      // Keep the amount in satoshis updated so we can use it elsewhere to
-      // calculate fees etc. in Stateless child Widgets like SwapAmountInput
-      // and SwapFeesRow.
-      setState(() {
-        _amountSat = bitcoinUnit == BitcoinUnit.sats
-            ? int.tryParse(_amountController.text) ?? 0
-            : ConvertAmount.btcToSats(
-                double.tryParse(_amountController.text) ?? 0,
-              );
-      });
-    });
+    _amountController.text = bloc.state.amount;
   }
 
   @override
@@ -88,12 +64,6 @@ class SwapPageState extends State<SwapPage> {
       listener: (context, state) {
         if (state.amount != _amountController.text) {
           _amountController.text = state.amount;
-          final bitcoinUnit = state.bitcoinUnit;
-          setState(() {
-            _amountSat = bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(state.amount) ?? 0
-                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
-          });
         }
       },
       child: Scaffold(
@@ -261,11 +231,10 @@ class SwapPageState extends State<SwapPage> {
         const Gap(12),
         SwapAmountInput(
           amountController: _amountController,
-          amountSat: _amountSat,
           focusNode: _amountNode,
         ),
         const Gap(12),
-        SwapBalanceRow(amountController: _amountController),
+        const SwapBalanceRow(),
         const Gap(12),
         BlocSelector<TransferBloc, TransferState, bool>(
           selector: (state) => state.consolidationRequired,
@@ -428,7 +397,9 @@ class SwapPageState extends State<SwapPage> {
                 state.isStarting ||
                 state.isCreatingSwap ||
                 state.continueClicked ||
-                state.hasAmountError,
+                state.hasAmountError ||
+                !state.amountEntryValid ||
+                state.inputAmountSat <= 0,
             builder: (context, disabled) {
               return BullButton.primary(
                 label: context.loc.swapContinueButton,

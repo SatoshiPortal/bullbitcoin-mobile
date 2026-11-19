@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/data/settings_mapper.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
@@ -90,24 +92,7 @@ class SettingsRepository implements domain.SettingsRepository {
   Future<SettingsEntity> fetch() async {
     final s = await _settingsDatasource.fetch();
 
-    return SettingsEntity(
-      environment: s.environment,
-      bitcoinUnit: s.bitcoinUnit,
-      currencyCode: s.currency,
-      language: s.language,
-      hideAmounts: s.hideAmounts,
-      isSuperuser: s.isSuperuser,
-      isDevModeEnabled: s.isDevModeEnabled,
-      useTorProxy: s.useTorProxy,
-      torProxyPort: s.torProxyPort,
-      torTransportMode: s.torTransportMode,
-      lastSuccessfulTorTransport: s.lastSuccessfulTorTransport,
-      themeMode: s.themeMode,
-      isErrorReportingEnabled: s.isErrorReportingEnabled,
-      screenCaptureProtectionEnabled: s.screenCaptureProtectionEnabled,
-      exchangeTestnetBasicAuthUsername: s.exchangeTestnetBasicAuthUsername,
-      exchangeTestnetBasicAuthPassword: s.exchangeTestnetBasicAuthPassword,
-    );
+    return settingsEntityFromModel(s);
   }
 
   @override

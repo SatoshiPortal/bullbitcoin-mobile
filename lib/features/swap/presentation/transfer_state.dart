@@ -73,6 +73,11 @@ sealed class TransferState with _$TransferState {
     List<WalletUtxo>? utxos,
     int? bitcoinTxSize,
     double? exchangeRate,
+    @Default({}) Map<SupportedCurrency, BitcoinPrice> amountQuotes,
+    @Default(true) bool amountEntryValid,
+    @Default(false) bool maxSelected,
+    SwapAmountConversion? amountConversion,
+    SwapAmountConversion? confirmedConversion,
     String? fiatCurrencyCode,
   }) = _TransferState;
   const TransferState._();
@@ -124,13 +129,8 @@ sealed class TransferState with _$TransferState {
     return fees?.totalFees(fromAmountSat) ?? 0;
   }
 
-  int get inputAmountSat {
-    if (bitcoinUnit == BitcoinUnit.sats) {
-      return int.tryParse(amount) ?? 0;
-    } else {
-      return ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
-    }
-  }
+  int get inputAmountSat =>
+      Sats.tryParseBitcoin(amount, bitcoinUnit)?.value.toInt() ?? 0;
 
   String get formattedInputAmount {
     if (amount.isEmpty) return '0';
@@ -171,13 +171,8 @@ sealed class TransferState with _$TransferState {
     return fromWallet != null && !isSameChainTransfer;
   }
 
-  /// Max is a trigger, not a flag: the amount simply equals the computed
-  /// maximum, however it got there. A max send drains the wallet, which is
-  /// incompatible with guaranteeing an exact receivable amount.
-  bool get isMaxSelected {
-    final max = maxAmountSat;
-    return max != null && max > 0 && inputAmountSat == max;
-  }
+  /// Editing exits the explicit drain intent, even if the digits still equal Max.
+  bool get isMaxSelected => maxSelected;
 
   int get selectedUtxoTotalSat {
     return selectedUtxos.fold(

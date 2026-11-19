@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -86,13 +89,21 @@ SettingsEntity _settings({bool isDevModeEnabled = true}) => SettingsEntity(
   isDevModeEnabled: isDevModeEnabled,
 );
 
+class _SetAmountMode extends Mock implements SetAmountInputModeUsecase {}
+
 void main() {
   late _MockSetIsDevModeUsecase setIsDevModeUsecase;
   late _MockRevokeSpWalletUsecase revokeSpWalletUsecase;
   late _MockCheckSpWalletSetupUsecase checkSpWalletSetupUsecase;
   late SettingsCubit cubit;
+  late _SetAmountMode setAmountMode;
+  late _MockSetCurrencyUsecase setCurrency;
+  late _MockSyncExchangeCurrencyUsecase syncCurrency;
 
   setUp(() {
+    setAmountMode = _SetAmountMode();
+    setCurrency = _MockSetCurrencyUsecase();
+    syncCurrency = _MockSyncExchangeCurrencyUsecase();
     setIsDevModeUsecase = _MockSetIsDevModeUsecase();
     revokeSpWalletUsecase = _MockRevokeSpWalletUsecase();
     checkSpWalletSetupUsecase = _MockCheckSpWalletSetupUsecase();
@@ -112,9 +123,10 @@ void main() {
       getSettingsUsecase: _MockGetSettingsUsecase(),
       setEnvironmentUsecase: _MockSetEnvironmentUsecase(),
       setBitcoinUnitUsecase: _MockSetBitcoinUnitUsecase(),
+      setAmountInputModeUsecase: setAmountMode,
       setLanguageUsecase: _MockSetLanguageUsecase(),
-      setCurrencyUsecase: _MockSetCurrencyUsecase(),
-      syncExchangeCurrencyUsecase: _MockSyncExchangeCurrencyUsecase(),
+      setCurrencyUsecase: setCurrency,
+      syncExchangeCurrencyUsecase: syncCurrency,
       setHideAmountsUsecase: _MockSetHideAmountsUsecase(),
       setIsSuperuserUsecase: _MockSetIsSuperuserUsecase(),
       setIsDevModeUsecase: setIsDevModeUsecase,
@@ -134,6 +146,53 @@ void main() {
   });
 
   tearDown(() => cubit.close());
+
+  test('currency completion preserves the persisted input mode and Undo preserves currency', () async {
+    cubit.emit(cubit.state.copyWith(storedSettings: _settings()));
+    final currency = Completer<Result<void, SettingsFailure>>();
+    when(() => setCurrency.execute('CAD')).thenAnswer((_) => currency.future);
+    when(() => syncCurrency.execute('CAD'))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => setAmountMode.execute(fiat: true))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => setAmountMode.execute(fiat: false))
+        .thenAnswer((_) async => const Ok(null));
+    final changingCurrency = cubit.changeCurrency('CAD');
+    await cubit.setStartAmountsInFiat(true);
+    currency.complete(const Ok(null));
+    await changingCurrency;
+    expect(cubit.state.storedSettings?.startAmountsInFiat, isTrue);
+    expect(cubit.state.currencyCode, 'CAD');
+    await cubit.setStartAmountsInFiat(false);
+    expect(cubit.state.storedSettings?.startAmountsInFiat, isFalse);
+    expect(cubit.state.currencyCode, 'CAD');
+  });
+
+  test('input mode completion preserves a newer currency', () async {
+    cubit.emit(cubit.state.copyWith(storedSettings: _settings()));
+    final mode = Completer<Result<void, SettingsFailure>>();
+    when(() => setAmountMode.execute(fiat: true))
+        .thenAnswer((_) => mode.future);
+    when(() => setCurrency.execute('CAD'))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => syncCurrency.execute('CAD'))
+        .thenAnswer((_) async => const Ok(null));
+    final changingMode = cubit.setStartAmountsInFiat(true);
+    await cubit.changeCurrency('CAD');
+    mode.complete(const Ok(null));
+    await changingMode;
+    expect(cubit.state.currencyCode, 'CAD');
+    expect(cubit.state.storedSettings?.startAmountsInFiat, isTrue);
+  });
+
+  test('a failed input mode write keeps the stored preference', () async {
+    cubit.emit(cubit.state.copyWith(storedSettings: _settings()));
+    when(() => setAmountMode.execute(fiat: true))
+        .thenAnswer((_) async => const Err(SettingsStorageFailure()));
+    await cubit.setStartAmountsInFiat(true);
+    expect(cubit.state.storedSettings?.startAmountsInFiat, isFalse);
+    expect(cubit.state.failure, isA<SettingsStorageFailure>());
+  });
 
   group('toggleDevMode', () {
     test(

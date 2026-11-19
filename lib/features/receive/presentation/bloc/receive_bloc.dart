@@ -1,3 +1,6 @@
+import '../../domain/receive_amount_conversion.dart';
+import '../../domain/usecases/get_receive_amount_quotes_usecase.dart';
+
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, NetworkCapabilities, NetworkCapability, Ok, Result;
@@ -71,11 +74,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._getReceivePayjoinPolicyUsecase,
     required this._setReceivePayjoinEnabledUsecase,
     this._wallet,
+    this._getReceiveAmountQuotesUsecase,
   }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
     on<ReceiveAmountInputChanged>(_onAmountInputChanged);
+    on<ReceiveAmountEntryChanged>(_onAmountEntryChanged);
+    on<ReceiveAmountQuotesRequested>(
+      _onAmountQuotesRequested,
+      transformer: droppable(),
+    );
     on<ReceiveAmountConfirmed>(_onAmountConfirmed);
     on<ReceiveAmountCurrencyChanged>(_onAmountCurrencyChanged);
     on<ReceiveNoteChanged>(_onNoteChanged);
@@ -130,8 +139,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         });
     on<ReceiveOrderSwapUpdated>(_onOrderSwapUpdated);
     on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
+    if (_getReceiveAmountQuotesUsecase != null) {
+      add(const ReceiveAmountQuotesRequested());
+      _amountQuoteTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+        if (!isClosed) add(const ReceiveAmountQuotesRequested());
+      });
+    }
   }
 
+  final GetReceiveAmountQuotesUsecase? _getReceiveAmountQuotesUsecase;
+  Timer? _amountQuoteTimer;
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
@@ -172,6 +189,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
   @override
   Future<void> close() async {
+    _amountQuoteTimer?.cancel();
     _payjoinSenderWaitTimer?.cancel();
     await Future.wait([
       _payjoinSubscription?.cancel() ?? Future.value(),
@@ -284,6 +302,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       state.copyWith(
         type: ReceiveType.bitcoin,
         inputAmount: '',
+        amountConversion: null,
+        confirmedConversion: null,
+        amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
         failure: null,
@@ -532,6 +553,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         lightningSwap: null,
         orderSwap: null,
         inputAmount: '',
+        amountConversion: null,
+        confirmedConversion: null,
+        amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
         failure: null,
@@ -658,6 +682,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       state.copyWith(
         type: ReceiveType.liquid,
         inputAmount: '',
+        amountConversion: null,
+        confirmedConversion: null,
+        amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
         failure: null,
@@ -782,6 +809,60 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
+  }
+
+  Future<void> _onAmountQuotesRequested(
+    ReceiveAmountQuotesRequested event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    final quotes = _getReceiveAmountQuotesUsecase;
+    if (quotes == null || state.creatingSwap) return;
+    final result = await quotes.execute();
+    if (emit.isDone) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(state.copyWith(amountQuotes: value));
+      case Err():
+        emit(state.copyWith(amountQuotes: const {}));
+    }
+  }
+
+  void _onAmountEntryChanged(
+    ReceiveAmountEntryChanged event,
+    Emitter<ReceiveState> emit,
+  ) {
+    if (state.creatingSwap ||
+        !state.walletAdmitted ||
+        state.admissionFailure != null) {
+      return;
+    }
+    final amountFailure = ReceiveAmountConversion.validateQuantity(event.sats);
+    if (amountFailure != null) {
+      emit(state.copyWith(amountEntryValid: false, failure: amountFailure));
+      return;
+    }
+    final conversion = event.isEdit
+        ? ReceiveAmountConversion.fromEdit(
+            sats: event.sats,
+            currencyCode: event.currencyCode,
+            text: event.text,
+            rate: event.rate,
+            quotedAt: event.quotedAt,
+          )
+        : state.amountConversion;
+    emit(
+      state.copyWith(
+        amountEntryValid: event.isValid,
+        amountConversion: conversion,
+        inputAmountCurrencyCode: event.isEdit
+            ? BitcoinUnit.sats.code
+            : state.inputAmountCurrencyCode,
+        inputAmount: event.isEdit
+            ? event.sats?.toString() ?? ''
+            : state.inputAmount,
+        failure: event.isEdit ? null : state.failure,
+      ),
+    );
   }
 
   Future<void> _onAmountInputChanged(
@@ -946,13 +1027,23 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       );
       return;
     }
+    final quantity = state.inputAmountCurrencyCode == BitcoinUnit.sats.code
+        ? BigInt.tryParse(state.inputAmount)
+        : BigInt.from(state.inputAmountSat);
+    final amountFailure = ReceiveAmountConversion.validateQuantity(quantity);
+    if (amountFailure != null) {
+      emit(state.copyWith(amountEntryValid: false, failure: amountFailure));
+      return;
+    }
     final confirmedAmountSat = state.inputAmountSat;
+    final conversion = state.amountConversion;
 
     if (state.type != ReceiveType.lightning) {
       // No further checks on the amount are needed for normal
       // bitcoin and liquid transactions, they don't have receive limits.
       emit(
         state.copyWith(
+          confirmedConversion: conversion,
           confirmedAmountSat: confirmedAmountSat > 0
               ? confirmedAmountSat
               : null,
@@ -972,6 +1063,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (await _receiveLightningViaBoltz(
       wallet: wallet,
       amountSat: confirmedAmountSat,
+      conversion: conversion,
       generation: generation,
       emit: emit,
     )) {
@@ -993,6 +1085,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             confirmedAmountSat: confirmedAmountSat,
+            confirmedConversion: conversion,
             orderSwap: value,
             creatingSwap: false,
           ),
@@ -1478,6 +1571,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   Future<bool> _receiveLightningViaBoltz({
     required Wallet wallet,
     required int amountSat,
+    required ReceiveAmountConversion? conversion,
     required int generation,
     required Emitter<ReceiveState> emit,
   }) async {
@@ -1511,6 +1605,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             confirmedAmountSat: amountSat,
+            confirmedConversion: conversion,
             lightningSwap: value,
             creatingSwap: false,
           ),

@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../generated/l10n/bull_ui_localizations.dart';
-import '../inputs/bull_bitcoin_amount_text.dart';
 import '../theme/bull_tokens.dart';
 import 'bull_amount_scope.dart';
 
@@ -63,7 +62,7 @@ class _BullAmountState extends State<BullAmount> {
         (_) => symbols.GROUP_SEP,
       );
     } else {
-      var btc = BullBitcoinAmountText.format(widget.magnitude.value, unit);
+      var btc = widget.magnitude.toBitcoinText(unit);
       if (widget.magnitude.value > BigInt.zero &&
           widget.magnitude.value < BigInt.from(10000000)) {
         final parts = btc.split('.');

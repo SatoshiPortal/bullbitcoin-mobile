@@ -42,6 +42,63 @@ class _FakeWallet extends Fake implements Wallet {
 /// `b734968d…` (paid 30 sat, predicted 28) — divergences that justified
 /// removing the prediction path entirely.
 void main() {
+  test('only the active amount fields can block continuation', () {
+    const recipients = [
+      (
+        id: 0,
+        address: 'bc1qa',
+        amount: '1000',
+        receivesRemainder: false,
+        isValid: true,
+      ),
+      (
+        id: 1,
+        address: 'bc1qb',
+        amount: '2000',
+        receivesRemainder: false,
+        isValid: true,
+      ),
+    ];
+    final wallet = Wallet(
+      origin: 'test',
+      network: Network.bitcoinMainnet,
+      xpubFingerprint: '00000000',
+      scriptType: ScriptType.bip84,
+      xpub: '',
+      externalPublicDescriptor: '',
+      internalPublicDescriptor: '',
+      signer: SignerEntity.local,
+      signerDevice: null,
+      balanceSat: BigInt.zero,
+    );
+    final multi = SendState(
+      selectedWallet: SendWalletBitcoin(wallet),
+      paymentRequest: const PaymentRequest.bitcoin(
+        address: 'bc1qa',
+        isTestnet: false,
+      ),
+      inputAmountCurrencyCode: 'sats',
+      amountEntryValid: false,
+      recipientDrafts: recipients,
+      invalidAmountRecipientIds: {99},
+    );
+    expect(multi.hasValidAmountEntry, isTrue);
+    expect(
+      multi.copyWith(invalidAmountRecipientIds: {1}).hasValidAmountEntry,
+      isFalse,
+    );
+    final fixed = multi.copyWith(
+      paymentRequest: const PaymentRequest.bip21(
+        network: Network.bitcoinMainnet,
+        uri: 'bitcoin:bc1qa?amount=0.00001',
+        address: 'bc1qa',
+        amountSat: 1000,
+      ),
+      recipientDrafts: const [],
+    );
+    expect(fixed.hasValidAmountEntry, isTrue);
+  });
+
   test('a background swap poll does not pull the user back from amount', () {
     expect(
       sendStepForWatchedOrderSwap(

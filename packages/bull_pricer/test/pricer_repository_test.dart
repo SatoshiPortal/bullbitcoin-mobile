@@ -59,6 +59,118 @@ void main() {
         Err(:final failure) => failure,
       };
 
+  group('available index prices', () {
+    Map<SupportedCurrency, BitcoinPrice> quotes(
+      Result<Map<SupportedCurrency, BitcoinPrice>, PricerFailure> result,
+    ) => switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail(
+        'Expected available quotes, got ${failure.runtimeType}',
+      ),
+    };
+
+    test(
+      'partial success preserves currency, rate time and supported order',
+      () async {
+        api.respond = (request) => switch (request.params['toCurrency']) {
+          'USD' => (status: 503, body: {}),
+          'EUR' => (status: 429, body: {}),
+          _ => realisticAnswer(request),
+        };
+        final available = quotes(
+          await atNow(() => repository.indexPrices(network: mainnet)),
+        );
+        expect(
+          available.keys,
+          SupportedCurrency.values.where(
+            (currency) =>
+                currency != SupportedCurrency.usd &&
+                currency != SupportedCurrency.eur,
+          ),
+        );
+        expect(available, isNot(contains(SupportedCurrency.usd)));
+        for (final entry in available.entries) {
+          expect(entry.value.currency, entry.key);
+          expect(entry.value.fetchedAt, now);
+          expect(entry.value.fiatAmount, mainnetIndexPrice / 100);
+        }
+        expect(api.callsTo('getRate'), SupportedCurrency.values.length);
+        expect(available.clear, throwsUnsupportedError);
+        expect(SupportedCurrency.cop.decimals, 0);
+        expect(SupportedCurrency.cad.decimals, 2);
+      },
+    );
+
+    test(
+      'total failure prioritizes a rate limit and never fabricates quotes',
+      () async {
+        api.respond = (request) => (
+          status: request.params['toCurrency'] == 'EUR' ? 429 : 503,
+          body: {},
+        );
+        final result = await atNow(
+          () => repository.indexPrices(network: mainnet),
+        );
+        expect(
+          result,
+          isA<Err<Map<SupportedCurrency, BitcoinPrice>, PricerFailure>>(),
+        );
+        switch (result) {
+          case Err(:final failure):
+            expect(failure, isA<PricerRateLimitedFailure>());
+          case Ok():
+            fail('A complete failure must not publish a price book');
+        }
+        final unsupported = await repository.indexPrices(
+          network: BitcoinNetwork.regtest,
+        );
+        switch (unsupported) {
+          case Err(:final failure):
+            expect(failure, isA<PricerUnsupportedNetworkFailure>());
+          case Ok():
+            fail('A different network must not borrow cached quotes');
+        }
+        expect(api.callsTo('getRate'), SupportedCurrency.values.length);
+      },
+    );
+
+    test(
+      'a delayed batch shares each lookup and cache with single readers',
+      () async {
+        final gate = Completer<void>();
+        final requested = Completer<void>();
+        api.answerAfter = gate.future;
+        api.onRequest = (_) {
+          if (api.requests.length == SupportedCurrency.values.length &&
+              !requested.isCompleted) {
+            requested.complete();
+          }
+        };
+        final first = atNow(() => repository.indexPrices(network: mainnet));
+        final second = atNow(() => repository.indexPrices(network: mainnet));
+        final single = atNow(
+          () => repository.indexPrice(network: mainnet, currency: cad),
+        );
+        await requested.future;
+        gate.complete();
+        final (one, two, cadPrice) = await (first, second, single).wait;
+        expect(quotes(one), quotes(two));
+        expect(quotes(one)[cad], price(cadPrice));
+        expect(api.callsTo('getRate'), SupportedCurrency.values.length);
+        final fetchedAt = now;
+        now = now.add(const Duration(seconds: 30));
+        final cached = quotes(
+          await atNow(() => repository.indexPrices(network: mainnet)),
+        );
+        expect(api.callsTo('getRate'), SupportedCurrency.values.length);
+        expect(
+          cached.values.map((quote) => quote.fetchedAt),
+          everyElement(fetchedAt),
+        );
+      },
+    );
+  });
+
   group('prices', () {
     test('the index price comes from getRate, without the API key', () async {
       expect(

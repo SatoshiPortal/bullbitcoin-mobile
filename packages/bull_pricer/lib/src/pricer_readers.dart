@@ -19,3 +19,8 @@ typedef PriceHistoryReader =
       required BitcoinNetwork network,
       required SupportedCurrency currency,
     });
+
+/// The available index quotes of one captured network.
+typedef IndexPricesReader =
+    Future<Result<Map<SupportedCurrency, BitcoinPrice>, PricerFailure>>
+    Function({required BitcoinNetwork network});
