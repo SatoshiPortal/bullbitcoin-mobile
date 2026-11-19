@@ -63,4 +63,16 @@ void main() {
       isNull,
     );
   });
+
+  test('keeps the fiat intent only for the exact sats it produced', () {
+    final conversion = SendAmountConversion(
+      enteredText: '100',
+      currencyCode: 'CAD',
+      rate: 125000,
+      quotedAt: at,
+      sats: Sats.fromInt(80000),
+    );
+    expect(conversion.producedAmount(80000), isTrue);
+    expect(conversion.producedAmount(5000), isFalse);
+  });
 }
