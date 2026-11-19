@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/sepa_eur_form.dart';
-import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/new_recipient_forms/sepa_eur_form.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/confidential_sepa_availability_status.dart';
