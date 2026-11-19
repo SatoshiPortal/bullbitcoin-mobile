@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/regtest_electrum_profile.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
     show ElectrumFailure;
@@ -108,6 +109,7 @@ class AppLocator {
     bool startAutoswapWatcher = true,
     String? arkFundingDatabasePath,
     bool initializeArkFunding = false,
+    RegtestElectrumProfile? regtestProfile,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -163,7 +165,10 @@ class AppLocator {
     // This is a hack though as normally repositories should not depend on ports
     // The proper solution is to refactor the code to remove this dependency
     CoreLocator.registerPorts(locator);
-    final repositories = await CoreLocator.registerRepositories(locator);
+    final repositories = await CoreLocator.registerRepositories(
+      locator,
+      regtestProfile: regtestProfile,
+    );
     if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
