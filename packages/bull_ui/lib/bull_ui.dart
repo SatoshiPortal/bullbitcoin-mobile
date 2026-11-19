@@ -139,6 +139,8 @@ export 'src/chrome/bull_success_screen.dart';
 export 'src/chrome/bull_top_bar.dart';
 
 // Buttons.
+export 'src/buttons/bull_advanced_options_link.dart'
+    show BullAdvancedOptionsLink;
 export 'src/buttons/bull_button.dart';
 export 'src/buttons/bull_inline_buttons.dart';
 export 'src/buttons/bull_sync_button.dart';
