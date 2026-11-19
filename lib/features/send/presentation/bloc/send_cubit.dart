@@ -1146,6 +1146,17 @@ class SendCubit extends Cubit<SendState>
     required DateTime? quotedAt,
   }) {
     if (state.amountConfirmedClicked) return;
+    final amountFailure = SendAmountConversion.validateQuantity(sats);
+    if (amountFailure != null) {
+      emit(
+        state.copyWith(
+          invalidAmountRecipientIds: {...state.invalidAmountRecipientIds, id},
+          recipientConversions: {...state.recipientConversions}..remove(id),
+          failure: amountFailure,
+        ),
+      );
+      return;
+    }
     final invalid = {...state.invalidAmountRecipientIds};
     if (isValid) {
       invalid.remove(id);
@@ -2058,6 +2069,17 @@ class SendCubit extends Cubit<SendState>
     required bool isEdit,
   }) {
     if (state.hasFixedRequestAmount || state.amountConfirmedClicked) return;
+    final amountFailure = SendAmountConversion.validateQuantity(sats);
+    if (amountFailure != null) {
+      emit(
+        state.copyWith(
+          amountEntryValid: false,
+          amountConversion: null,
+          failure: amountFailure,
+        ),
+      );
+      return;
+    }
     final conversion = isEdit
         ? SendAmountConversion.fromEdit(
             sats: sats,

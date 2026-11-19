@@ -1,3 +1,5 @@
+import 'send_failure.dart';
+
 import 'package:primitives/primitives.dart';
 
 /// The user's fiat intent at the quote used to obtain the exact payable sats.
@@ -20,6 +22,11 @@ final class SendAmountConversion {
     }
   }
 
+  static SendFailure? validateQuantity(BigInt? sats) =>
+      sats != null && sats > Sats.maxBitcoinSupply
+      ? SendAmountOutOfBoundsFailure(maximumSat: Sats.maxBitcoinSupply)
+      : null;
+
   static SendAmountConversion? fromEdit({
     required BigInt? sats,
     required String currencyCode,
@@ -28,6 +35,7 @@ final class SendAmountConversion {
     required DateTime? quotedAt,
   }) {
     if (sats == null ||
+        validateQuantity(sats) != null ||
         rate == null ||
         quotedAt == null ||
         Sats.tryFromFiat(text, rate)?.value != sats) {
