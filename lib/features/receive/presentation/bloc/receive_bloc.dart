@@ -1047,6 +1047,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
     final confirmedAmountSat = state.inputAmountSat;
     final conversion = state.amountConversion;
+    final note = state.note;
 
     if (state.type != ReceiveType.lightning) {
       // No further checks on the amount are needed for normal
@@ -1075,6 +1076,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       wallet: wallet,
       amountSat: confirmedAmountSat,
       conversion: conversion,
+      note: note,
       generation: generation,
       emit: emit,
     )) {
@@ -1083,7 +1085,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     final result = await _createReceiveOrderSwapUsecase.execute(
       wallet: wallet,
       amountSat: confirmedAmountSat,
-      note: state.note,
+      note: note,
     );
     if (generation != _receiveGeneration || emit.isDone) return;
     switch (result) {
@@ -1097,7 +1099,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             confirmedAmountSat: confirmedAmountSat,
             confirmedConversion: conversion,
-            confirmedNote: state.note,
+            confirmedNote: note,
             orderSwap: value,
             creatingSwap: false,
           ),
@@ -1111,16 +1113,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    // No validation here. The only dispatcher is the note bottom sheet
-    //  (receive_amount_screen), which refuses to pop while NoteValidator
-    //  rejects the text — so an invalid note cannot reach this handler, and
-    //  the branch that used to exist put NoteValidator's hardcoded English
-    //  message straight into state.
-    //
-    //  Re-implementing the rules here instead would duplicate them and let
-    //  receive drift the day one is added. NoteValidator returns a typed
-    //  NoteViolation that the sheet maps and translates, so the rules live in
-    //  one place.
+    // The Advanced settings field dispatches only values accepted by the shared
+    // NoteValidator. The UI translates its typed violations; the bloc preserves
+    // the last valid draft and the existing trim-on-save behavior.
     emit(state.copyWith(note: event.note.trim()));
   }
 
@@ -1584,13 +1579,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required Wallet wallet,
     required int amountSat,
     required ReceiveAmountConversion? conversion,
+    required String note,
     required int generation,
     required Emitter<ReceiveState> emit,
   }) async {
     final route = await _getReceiveSwapRouteUsecase.execute();
     if (generation != _receiveGeneration || emit.isDone) return true;
     if (!route.startsWithBoltz) return false;
-    final note = state.note;
     final created = await _createBoltzReceiveSwapUsecase.execute(
       wallet: wallet,
       amountSat: amountSat,
@@ -1618,7 +1613,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             confirmedAmountSat: amountSat,
             confirmedConversion: conversion,
-            confirmedNote: state.note,
+            confirmedNote: note,
             lightningSwap: value,
             creatingSwap: false,
           ),
