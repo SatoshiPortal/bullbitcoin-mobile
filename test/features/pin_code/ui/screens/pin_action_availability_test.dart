@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate, SemanticsAction;
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
@@ -15,13 +17,20 @@ class _PinBloc extends Mock implements PinCodeSettingBloc {}
 void main() {
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     for (final confirm in [false, true]) {
-      for (final eligible in [false, true]) {
+      for (final scenario in [
+        (eligible: false, busy: false),
+        (eligible: true, busy: false),
+        if (confirm) (eligible: true, busy: true),
+      ]) {
+        final eligible = scenario.eligible;
+        final enabled = eligible && !scenario.busy;
         testWidgets(
-          'PIN action reflects eligibility (theme: $theme, confirm: $confirm, eligible: $eligible)',
+          'PIN action reflects eligibility (theme: $theme, confirm: $confirm, eligible: $eligible, busy: ${scenario.busy})',
           (tester) async {
             final semantics = tester.ensureSemantics();
             final bloc = _PinBloc();
             final state = PinCodeSettingState(
+              isConfirming: scenario.busy,
               choosePinKeyboardNumbers: List.generate(10, (i) => i),
               confirmPinKeyboardNumbers: List.generate(10, (i) => i),
               pinCode: eligible ? List.filled(4, '0').join() : '',
@@ -46,7 +55,21 @@ void main() {
               ),
             );
             final button = tester.widget<BullButton>(find.byType(BullButton));
-            expect(button.disabled, !eligible);
+            expect(button.disabled, !enabled);
+            final nodes = find.semantics.byPredicate(
+              (node) =>
+                  node.label == button.label && node.flagsCollection.isButton,
+            );
+            expect(nodes, findsOne);
+            final node = nodes.evaluate().single;
+            expect(
+              node.getSemanticsData().hasAction(SemanticsAction.tap),
+              enabled,
+            );
+            expect(
+              node.flagsCollection.isEnabled,
+              enabled ? Tristate.isTrue : Tristate.isFalse,
+            );
             final tap = tester
                 .widget<InkWell>(
                   find.descendant(
@@ -55,10 +78,10 @@ void main() {
                   ),
                 )
                 .onTap;
-            expect(tap == null, !eligible);
+            expect(tap == null, !enabled);
             await tester.tap(find.byType(BullButton), warnIfMissed: false);
             if (confirm) {
-              if (eligible) {
+              if (enabled) {
                 verify(() => bloc.add(const PinCodeSettingPinCodeConfirmed()))
                     .called(1);
               } else {
@@ -67,7 +90,7 @@ void main() {
                 );
               }
             } else {
-              if (eligible) {
+              if (enabled) {
                 verify(() => bloc.add(const PinCodeSettingPinCodeChosen()))
                     .called(1);
               } else {
