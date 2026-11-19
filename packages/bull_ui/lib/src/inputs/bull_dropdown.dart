@@ -23,6 +23,7 @@ class BullDropdown<T> extends StatelessWidget {
     required this.onChanged,
     this.validator,
     this.hint,
+    this.coverAnchor = false,
   });
 
   /// The choices, in menu order.
@@ -39,6 +40,9 @@ class BullDropdown<T> extends StatelessWidget {
 
   /// Placeholder shown while no item matches [value].
   final String? hint;
+
+  /// Opens the menu over the field instead of below it when explicitly enabled.
+  final bool coverAnchor;
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +131,7 @@ class BullDropdown<T> extends StatelessWidget {
       items: items,
       value: value,
       matchAnchorWidth: true,
+      coverAnchor: coverAnchor,
     );
     if (index == null) return;
     final picked = items[index].value;

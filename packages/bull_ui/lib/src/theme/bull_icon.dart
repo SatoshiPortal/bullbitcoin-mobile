@@ -64,6 +64,7 @@ abstract final class BullIcons {
   static const IconData language = Icons.language;
   static const IconData link = Icons.link;
   static const IconData qrCode = Icons.qr_code_2;
+  static const IconData cropFree = Icons.crop_free;
 }
 
 /// A thin wrapper over the Flutter [Icon] so feature code never touches

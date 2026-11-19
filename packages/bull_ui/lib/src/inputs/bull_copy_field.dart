@@ -26,6 +26,12 @@ class BullCopyField extends StatelessWidget {
     this.overflow,
     this.label,
     this.backgroundColor,
+    this.labelPadding = const EdgeInsets.fromLTRB(
+      BullSpacing.md,
+      BullSpacing.sm,
+      BullSpacing.md,
+      BullSpacing.zero,
+    ),
   });
 
   /// The value shown.
@@ -51,6 +57,9 @@ class BullCopyField extends StatelessWidget {
   /// Optional heading inside the field, above the public value.
   final String? label;
   final Color? backgroundColor;
+
+  /// Padding around the optional heading; copy target geometry is unchanged.
+  final EdgeInsetsGeometry labelPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +111,7 @@ class BullCopyField extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    BullSpacing.md,
-                    BullSpacing.sm,
-                    BullSpacing.md,
-                    BullSpacing.zero,
-                  ),
+                  padding: labelPadding,
                   child: Text(
                     heading,
                     style: context.bullType.body.copyWith(

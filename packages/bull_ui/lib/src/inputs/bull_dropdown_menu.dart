@@ -18,16 +18,18 @@ Future<int?> showBullDropdownMenu<T>({
   required List<BullPickerItem<T>> items,
   required T? value,
   bool matchAnchorWidth = false,
+  bool coverAnchor = false,
 }) {
   final colors = anchor.bull;
   final shapes = anchor.bullShapes;
   final box = anchor.findRenderObject();
   final overlay = Navigator.of(anchor).overlay?.context.findRenderObject();
   if (box is! RenderBox || overlay is! RenderBox) return Future.value();
+  final edge = coverAnchor ? 0.0 : box.size.height;
   final position = RelativeRect.fromRect(
     Rect.fromPoints(
-      box.localToGlobal(Offset(0, box.size.height), ancestor: overlay),
-      box.localToGlobal(box.size.bottomRight(Offset.zero), ancestor: overlay),
+      box.localToGlobal(Offset(0, edge), ancestor: overlay),
+      box.localToGlobal(Offset(box.size.width, edge), ancestor: overlay),
     ),
     Offset.zero & overlay.size,
   );
