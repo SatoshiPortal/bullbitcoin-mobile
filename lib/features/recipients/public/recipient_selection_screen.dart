@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/screens/recipients_screen.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/ui/screens/recipients_screen.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_selection.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
