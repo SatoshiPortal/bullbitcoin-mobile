@@ -2335,6 +2335,18 @@ class SendCubit extends Cubit<SendState>
       ? conversion
       : null;
 
+  /// The MAX amount in the unit the user is typing in: fiat when the input is fiat, otherwise BTC or sats.
+  String _maxAmountText(int amountSat) {
+    final rate = state.exchangeRate;
+    if (state.isInputAmountFiat && rate != null) {
+      return ConvertAmount.satsToFiat(amountSat, rate).toString();
+    }
+    final unit = state.inputAmountCurrencyCode == BitcoinUnit.btc.code
+        ? BitcoinUnit.btc
+        : BitcoinUnit.sats;
+    return Sats.fromInt(amountSat).toBitcoinText(unit);
+  }
+
   Future<void> onAmountConfirmed() async {
     if (!state.hasValidAmountEntry) return;
     _recipientPreviewTimer?.cancel();
@@ -3510,12 +3522,9 @@ class SendCubit extends Cubit<SendState>
         }
         if (state.isMaxSend && !state.usesRecipientList) {
           final maxAmountSat = state.maxSpendableBalanceSat;
-          final maxAmount = Sats.fromInt(
-            maxAmountSat,
-          ).toBitcoinText(BitcoinUnit.fromCode(state.inputAmountCurrencyCode));
           emit(
             state.copyWith(
-              amount: maxAmount.toString(),
+              amount: _maxAmountText(maxAmountSat),
               confirmedAmountSat: maxAmountSat,
             ),
           );
@@ -4483,9 +4492,7 @@ class SendCubit extends Cubit<SendState>
             ? draft.outputs.first.amountSat.value.toInt()
             : state.inputAmountSat;
         final amount = state.sendMax
-            ? Sats.fromInt(outputAmount).toBitcoinText(
-                BitcoinUnit.fromCode(state.inputAmountCurrencyCode),
-              )
+            ? _maxAmountText(outputAmount)
             : state.amount;
         emit(
           state.copyWith(
