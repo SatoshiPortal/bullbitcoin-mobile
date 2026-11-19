@@ -22,6 +22,10 @@ final class SendAmountConversion {
     }
   }
 
+  /// Whether this fiat intent produced exactly [amountSat]; an amount edited
+  /// through another path since then makes the intent stale.
+  bool producedAmount(int amountSat) => sats.value == BigInt.from(amountSat);
+
   static SendFailure? validateQuantity(BigInt? sats) =>
       sats != null && sats > Sats.maxBitcoinSupply
       ? SendAmountOutOfBoundsFailure(maximumSat: Sats.maxBitcoinSupply)

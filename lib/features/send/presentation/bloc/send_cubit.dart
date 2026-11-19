@@ -2325,6 +2325,13 @@ class SendCubit extends Cubit<SendState>
 
   void noteChanged(String note) => emit(state.copyWith(label: note));
 
+  SendAmountConversion? _conversionMatching(
+    SendAmountConversion? conversion,
+    int amountSat,
+  ) => conversion != null && conversion.producedAmount(amountSat)
+      ? conversion
+      : null;
+
   Future<void> onAmountConfirmed() async {
     if (!state.hasValidAmountEntry) return;
     _recipientPreviewTimer?.cancel();
@@ -2369,12 +2376,19 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
-        confirmedConversion: state.hasFixedRequestAmount
-            ? null
-            : state.amountConversion,
-        confirmedRecipientConversions: Map.unmodifiable(
-          state.recipientConversions,
+        confirmedConversion: _conversionMatching(
+          state.hasFixedRequestAmount || state.usesRecipientList
+              ? null
+              : state.amountConversion,
+          state.effectiveAmountSat,
         ),
+        confirmedRecipientConversions: Map.unmodifiable({
+          for (final recipient in state.recipientDrafts)
+            recipient.id: ?_conversionMatching(
+              state.recipientConversions[recipient.id],
+              state.recipientAmountSat(recipient),
+            ),
+        }),
         confirmedAmountSat: state.usesRecipientList
             ? state.totalFixedRecipientAmountSat
             : state.effectiveAmountSat,
