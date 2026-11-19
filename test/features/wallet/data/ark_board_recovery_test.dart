@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bull_ark/ark_setup.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
