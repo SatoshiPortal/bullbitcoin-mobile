@@ -211,6 +211,9 @@ graph TB
     ONBOARDING --> WALLETS
     APP_STARTUP --> IMPORT_MNEMONIC
 
+    %% Legacy Core-to-feature dependencies, pending extraction
+    CORE --> DCA
+
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ADDRESS_MGMT -->|public revision stream| WALLETS
@@ -244,6 +247,9 @@ graph TB
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
     BUY --> TX_HISTORY
+    BUY --> FUNDING
+    BUY --> LABELS
+    BUY --> SETTINGS
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS -->|public revision stream| WALLETS
@@ -282,6 +288,8 @@ graph TB
     LABELS --> CORE
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
+    PAY --> BTC_PRICE
+    PAY --> TX_HISTORY
     PIN_CODE --> CORE
     RECEIVE --> BULL_PAYJOIN
     RECEIVE -->|public targeted routine sync| WALLETS
@@ -352,6 +360,7 @@ graph TB
     WALLETS --> SETTINGS
     WALLETS -->|public orders + swap scheduling port| SWAPS
     WITHDRAWAL --> RECIPIENTS
+    WITHDRAWAL --> TX_HISTORY
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
     BITBOX[BitBox]
