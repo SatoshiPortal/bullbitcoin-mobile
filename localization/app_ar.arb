@@ -423,15 +423,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN must be at least {minLength} digits long",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "المبلغ المستلم",
   "swapInsufficientFunds": "أموال غير كافية",
   "@swapReceiveExactAmountLabel": {
@@ -11261,5 +11252,6 @@
   "permissionsTitle": "الأذونات",
   "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
-  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة.",
+  "pinCodeLengthHint": "أدخل من {min} إلى {max} أرقام"
 }

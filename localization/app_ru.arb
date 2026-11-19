@@ -154,14 +154,6 @@
     }
   },
   "sendBroadcastingTransaction": "Трансляция сделки.",
-  "pinCodeMinLengthError": "PIN должен быть как минимум {minLength} цифр",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "Получить точную сумму",
   "swapInsufficientFunds": "Недостаточно средств",
   "ledgerImportButton": "Начало",
@@ -4632,5 +4624,6 @@
   "permissionsTitle": "Разрешения",
   "settingsSearchPermissionsKeywords": "уведомления|фоновые задачи|батарея|оповещения",
   "wizardBackgroundTasksDescription": "Проверяет платежи, когда приложение закрыто.",
-  "wizardNotificationsDescription": "Узнавайте о поступлении платежей."
+  "wizardNotificationsDescription": "Узнавайте о поступлении платежей.",
+  "pinCodeLengthHint": "Введите от {min} до {max} цифр"
 }

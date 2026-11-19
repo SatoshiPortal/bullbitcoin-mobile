@@ -631,7 +631,6 @@
   "pinCodeAuthentication": "Uthibitishaji",
   "pinCodeCreateTitle": "Unda PIN mpya",
   "pinCodeCreateDescription": "PIN yako inalinda ufikiaji wa pochi yako na mipangilio. Ihifadhi kwa namna utakayoikumbuka.",
-  "pinCodeMinLengthError": "PIN lazima iwe na angalau tarakimu {minLength}",
   "pinCodeConfirmTitle": "Thibitisha PIN mpya",
   "pinCodeMismatchError": "PIN hazifanani",
   "pinCodeSecurityPinTitle": "PIN ya Usalama",
@@ -3529,5 +3528,6 @@
   "permissionsTitle": "Ruhusa",
   "settingsSearchPermissionsKeywords": "arifa|kazi za chinichini|betri|tahadhari",
   "wizardBackgroundTasksDescription": "Hukagua malipo programu ikiwa imefungwa.",
-  "wizardNotificationsDescription": "Jua malipo yanapofika."
+  "wizardNotificationsDescription": "Jua malipo yanapofika.",
+  "pinCodeLengthHint": "Weka tarakimu {min} hadi {max}"
 }

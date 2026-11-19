@@ -155,14 +155,6 @@
     }
   },
   "sendBroadcastingTransaction": "播放交易.",
-  "pinCodeMinLengthError": "PIN必须至少是{minLength}长期数字",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "收到确切数额",
   "swapInsufficientFunds": "资金不足",
   "ledgerImportButton": "开始导入",
@@ -4632,5 +4624,6 @@
   "permissionsTitle": "权限",
   "settingsSearchPermissionsKeywords": "通知|后台任务|电池|提醒",
   "wizardBackgroundTasksDescription": "在应用关闭时检查付款。",
-  "wizardNotificationsDescription": "收到付款时通知您。"
+  "wizardNotificationsDescription": "收到付款时通知您。",
+  "pinCodeLengthHint": "请输入 {min} 到 {max} 位数字"
 }

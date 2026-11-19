@@ -526,15 +526,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN трябва да има поне {minLength} цифри",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "Получете точната сума",
   "swapInsufficientFunds": "Недостатъчни средства",
   "@swapReceiveExactAmountLabel": {
@@ -9377,5 +9368,6 @@
   "permissionsTitle": "Разрешения",
   "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали",
   "wizardBackgroundTasksDescription": "Проверява плащания при затворено приложение.",
-  "wizardNotificationsDescription": "Разберете, когато пристигне плащане."
+  "wizardNotificationsDescription": "Разберете, когато пристигне плащане.",
+  "pinCodeLengthHint": "Въведете от {min} до {max} цифри"
 }
