@@ -69,17 +69,32 @@ final directories = <_widgetbook.WidgetbookNode>[
     name: 'buttons',
     children: [
       _widgetbook.WidgetbookComponent(
+        name: 'BullAdvancedOptionsLink',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullAdvancedOptionsLinkUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullButton',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Big',
+            name: 'Legacy',
             builder:
-                _bull_ui_catalogue_use_cases_use_cases.bullButtonBigUseCase,
+                _bull_ui_catalogue_use_cases_use_cases.bullButtonLegacyUseCase,
           ),
           _widgetbook.WidgetbookUseCase(
-            name: 'Small',
+            name: 'Primary',
             builder:
-                _bull_ui_catalogue_use_cases_use_cases.bullButtonSmallUseCase,
+                _bull_ui_catalogue_use_cases_use_cases.bullButtonPrimaryUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Secondary',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullButtonSecondaryUseCase,
           ),
         ],
       ),
