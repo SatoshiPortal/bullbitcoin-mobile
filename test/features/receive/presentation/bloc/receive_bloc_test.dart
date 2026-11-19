@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 
@@ -43,6 +44,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+
+class _MockGetReceiveSwapLimitsUsecase extends Mock
+    implements GetReceiveSwapLimitsUsecase {}
 
 class _MockSettings extends Mock implements GetSettingsUsecase {}
 
@@ -266,6 +270,7 @@ void main() {
   late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
   late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
   late _MockGetReceiveSwapRouteUsecase getSwapRoute;
+  late _MockGetReceiveSwapLimitsUsecase getSwapLimits;
   late _MockCreateBoltzReceiveSwapUsecase createBoltzSwap;
   late _MockWatchSwapUsecase watchSwap;
   late StreamController<bool> payjoinEnabledChangeController;
@@ -282,6 +287,7 @@ void main() {
     WatchWalletTransactionByAddressUsecase? observation,
     GetReceiveSettingsUsecase? settings,
   }) => ReceiveBloc(
+    getReceiveSwapLimitsUsecase: getSwapLimits,
     getReceiveWalletsUsecase: getWallets,
     getReceiveSettingsUsecase: settings ?? getSettings,
     convertReceiveAmountUsecase: convertSatsToCurrency,
@@ -304,13 +310,16 @@ void main() {
     watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
     getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
     setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
-    // A preset bitcoin wallet makes _onBitcoinStarted skip the wallet
-    // fetch entirely, so any getWallets stub is dead. Tests that need that
-    // path pass withPresetWallet: false.
     wallet: withPresetWallet ? (wallet ?? _testWallet()) : null,
   );
 
   setUp(() {
+    getSwapLimits = _MockGetReceiveSwapLimitsUsecase();
+    when(() => getSwapLimits.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer(
+          (_) async =>
+              const Ok(swaps.SwapLimits(min: 1, max: 2100000000000000)),
+        );
     getWallets = _MockGetReceiveWalletsUsecase();
     when(() => getWallets.execute(onlyBitcoin: true))
         .thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
@@ -676,6 +685,52 @@ void main() {
     expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
     verify(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
         .called(1);
+  });
+
+  group('redesigned Lightning limits', () {
+    test(
+      'loads the destination limits and refuses creation below the minimum',
+      () async {
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
+        when(() => getSwapLimits.execute(isLiquid: any(named: 'isLiquid')))
+            .thenAnswer(
+              (_) async => const Ok(swaps.SwapLimits(min: 2000, max: 10000)),
+            );
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveLightningStarted());
+        await pumpEventQueue();
+        expect(bloc.state.swapLimits?.min, 2000);
+        bloc.add(const ReceiveAmountInputChanged('1000'));
+        await pumpEventQueue();
+        expect(bloc.state.canCreateInvoice, isFalse);
+        bloc.add(const ReceiveAmountConfirmed());
+        await pumpEventQueue();
+        verifyNever(
+          () => createBoltzSwap.execute(
+            wallet: any(named: 'wallet'),
+            amountSat: any(named: 'amountSat'),
+            note: any(named: 'note'),
+          ),
+        );
+      },
+    );
+    test(
+      'does not load or enforce Boltz limits for exchange fallback',
+      () async {
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveLightningStarted());
+        await pumpEventQueue();
+        expect(bloc.state.swapLimits, isNull);
+        verifyNever(
+          () => getSwapLimits.execute(isLiquid: any(named: 'isLiquid')),
+        );
+      },
+    );
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
