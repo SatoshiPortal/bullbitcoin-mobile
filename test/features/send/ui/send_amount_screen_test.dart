@@ -1,3 +1,4 @@
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
@@ -566,6 +567,14 @@ void main() {
       fiatCurrencyCodes: const ['USD'],
       fiatCurrencyCode: 'USD',
       exchangeRate: 50000,
+      amountQuotes: {
+        SupportedCurrency.usd: BitcoinPrice(
+          currency: SupportedCurrency.usd,
+          fiatAmount: 100000,
+          fetchedAt: DateTime.utc(2026),
+        ),
+      },
+      recipientAmountsSat: const [10000, 10000],
       recipientDrafts: const [
         (
           id: 0,
@@ -605,6 +614,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('≈ 20.00 USD'), findsOneWidget);
     expect(find.text('Rest goes to'), findsOneWidget);
     expect(find.byType(BullDropdown<int>), findsOneWidget);
     expect(find.byType(Switch), findsNothing);
