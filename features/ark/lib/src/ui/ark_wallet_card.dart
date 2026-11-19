@@ -1,6 +1,7 @@
 import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
 
+import '../domain/ark_display_data_port.dart';
 import '../presentation/ark_l10n.dart';
 import 'ark_amount.dart';
 
@@ -8,7 +9,13 @@ import 'ark_amount.dart';
 class ArkWalletCard extends StatelessWidget {
   final ArkSnapshot? snapshot;
   final VoidCallback onOpen;
-  const ArkWalletCard({super.key, this.snapshot, required this.onOpen});
+  final ArkDisplayData? displayData;
+  const ArkWalletCard({
+    super.key,
+    this.snapshot,
+    this.displayData,
+    required this.onOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +50,19 @@ class ArkWalletCard extends StatelessWidget {
               ],
             ),
           ),
-          BullText(
-            formatArkObservedSats(context, amount),
-            role: BullTextRole.body,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BullText(
+                formatArkObservedSats(context, amount),
+                role: BullTextRole.body,
+              ),
+              if (amount != null &&
+                  observation != null &&
+                  displayData?.account == observation.account)
+                ArkFiatAmount(amount: amount, price: displayData?.price),
+            ],
           ),
           const Gap(BullSpacing.sm),
           BullIcon(BullIcons.chevronRight, color: context.bull.textMuted),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:intl/intl.dart';
 import 'package:primitives/primitives.dart' show Sats;
 
 import '../domain/ark_display_data_port.dart';
@@ -118,6 +119,9 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
     };
     final snapshot = observed?.account == account ? observed : null;
     final spendable = snapshot?.spendable;
+    final price = widget.displayData?.account == account
+        ? widget.displayData?.price
+        : null;
     return BullScaffold(
       backgroundColor: context.bull.background,
       bottomNavigationBar: SafeArea(
@@ -144,7 +148,7 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                 child: _paymentButton(
                   context,
                   l10n.send,
-                  BullIcons.arrowUpward,
+                  BullIcons.qrCodeScanner,
                   () => _open(owner, account, _AccountAction.send),
                 ),
               ),
@@ -180,7 +184,7 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                   color: context.bull.secondaryFixed,
                   border: Border(
                     bottom: BorderSide(
-                      color: context.bull.tertiary,
+                      color: context.bull.bitcoinOrange,
                       width: BullSpacing.xs,
                     ),
                   ),
@@ -196,19 +200,34 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const Gap(BullSpacing.xs),
-                    BullText(
-                      l10n.spendableInSats,
-                      role: BullTextRole.label,
-                      color: context.bull.onSecondaryFixed,
-                      textAlign: TextAlign.center,
-                    ),
-                    if (spendable != null)
-                      ArkFiatAmount(
-                        amount: spendable,
-                        price: widget.displayData?.account == account
-                            ? widget.displayData?.price
-                            : null,
-                        color: context.bull.onSecondaryFixed,
+                    if ((spendable, price)
+                        case (final amount?, final observedPrice?)
+                        when arkAmountsVisible(context) &&
+                            observedPrice.fiatValueOf(amount.value).isFinite)
+                      Container(
+                        key: const ValueKey('ark-account-fiat-chip'),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: BullSpacing.sm,
+                          vertical: BullSpacing.xxs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.bull.onSecondaryFixed.withValues(
+                            alpha: 0.1,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
+                          border: Border.all(
+                            color: context.bull.onSecondaryFixed.withValues(
+                              alpha: 0.2,
+                            ),
+                          ),
+                        ),
+                        child: ArkFiatAmount(
+                          amount: amount,
+                          price: observedPrice,
+                          color: context.bull.onSecondaryFixed,
+                        ),
                       ),
                     if (snapshot.stale || state is ArkViewFailed)
                       BullText(
@@ -246,8 +265,6 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                       const Gap(BullSpacing.md),
                       _balanceDetails(context, snapshot),
                     ],
-                    const Gap(BullSpacing.md),
-                    BullInfoBar(message: l10n.backgroundNotice),
                   ],
                 ),
               ),
@@ -333,78 +350,190 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
     iconFirst: true,
     onPressed: onPressed,
     disabled: !widget.enabled,
-    bgColor: context.bull.secondaryFixed,
-    textColor: context.bull.onSecondaryFixed,
+    bgColor: context.bull.secondary,
+    textColor: context.bull.onSecondary,
   );
+
+  String _movementLabel(BuildContext context, ArkMovement movement) {
+    if (movement.status != ArkMovementStatus.successful) {
+      return movement.kind.toTranslated(context);
+    }
+    return switch (movement.kind) {
+      ArkMovementKind.board => context.loc.movementBoardedLabel,
+      ArkMovementKind.lightningReceive => context.loc.movementReceivedLabel,
+      _ => movement.kind.toTranslated(context),
+    };
+  }
 
   // Observations have no history-completeness evidence, including empty lists.
   Widget _activity(BuildContext context, ArkSnapshot snapshot) {
     final l10n = context.loc;
-    String text(String? value) =>
-        value == null || value.trim().isEmpty ? l10n.unknown : value;
+    final locale = Localizations.localeOf(context).toString();
+    final groups = <DateTime?, List<ArkMovement>>{};
+    for (final movement in snapshot.movements) {
+      final time = movement.createdAt?.toLocal();
+      final day = time == null
+          ? null
+          : DateTime(time.year, time.month, time.day);
+      groups.putIfAbsent(day, () => []).add(movement);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Gap(BullSpacing.md),
-        if (snapshot.movements.isNotEmpty)
-          BullText(l10n.observedActivity, style: null),
         if (snapshot.movements.isEmpty)
           Padding(
             key: const ValueKey('ark-empty-activity'),
             padding: const EdgeInsets.symmetric(vertical: BullSpacing.xl),
             child: Column(
               children: [
-                BullIcon(BullIcons.history, size: 32),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.bull.surfaceContainerHighest,
+                  ),
+                  child: BullIcon(BullIcons.history, size: 26),
+                ),
                 const Gap(BullSpacing.sm),
                 BullText(
                   l10n.activityObservationsUnavailable,
+                  role: BullTextRole.body,
+                  fontWeight: FontWeight.w700,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(BullSpacing.xs),
+                BullText(
+                  l10n.activityStartHint,
                   role: BullTextRole.label,
+                  color: context.bull.textMuted,
                   textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-        for (final movement in snapshot.movements) ...[
-          const Gap(BullSpacing.xs),
-          BullText(movement.kind.toTranslated(context), style: null),
-          BullDetailsTable(
-            items: [
-              BullDetailsTableItem(
-                label: l10n.id,
-                displayValue: text(movement.id),
-              ),
-              BullDetailsTableItem(
-                label: l10n.state,
-                displayValue: movement.status.toTranslated(context),
-              ),
-              BullDetailsTableItem(
-                label: l10n.amount,
-                displayValue: formatArkObservedSats(
-                  context,
-                  movement.amount,
-                  withUnit: false,
-                ),
-              ),
-              BullDetailsTableItem(
-                label: l10n.feeInSats,
-                displayValue: formatArkObservedSats(
-                  context,
-                  movement.fee,
-                  withUnit: false,
-                ),
-              ),
-              BullDetailsTableItem(
-                label: l10n.observedTimeUtc,
-                displayValue:
-                    movement.createdAt?.toUtc().toIso8601String() ??
-                    l10n.unknown,
-              ),
-              BullDetailsTableItem(
-                label: l10n.transactionId,
-                displayValue: text(movement.transactionId),
-              ),
-            ],
+        for (final group in groups.entries) ...[
+          Semantics(
+            header: true,
+            child: BullText(switch (group.key) {
+              final day? => DateFormat.yMMMMd(locale).format(day),
+              null => l10n.unknown,
+            }, role: BullTextRole.body),
           ),
+          for (final (index, movement) in group.value.indexed) ...[
+            const Gap(BullSpacing.xs),
+            Semantics(
+              container: true,
+              label: l10n.observedActivity,
+              child: Container(
+                key: ValueKey((group.key, index)),
+                padding: const EdgeInsets.all(BullSpacing.md),
+                color: context.bull.surface,
+                child: Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: context.bull.outline),
+                        ),
+                        child: Center(
+                          child: BullIcon(switch (movement.kind) {
+                            ArkMovementKind.exit => BullIcons.arrowUpward,
+                            ArkMovementKind.board ||
+                            ArkMovementKind.lightningReceive =>
+                              BullIcons.arrowDownward,
+                            _ => BullIcons.history,
+                          }),
+                        ),
+                      ),
+                    ),
+                    const Gap(BullSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BullText(
+                            formatArkObservedSats(context, movement.amount),
+                            role: BullTextRole.body,
+                          ),
+                          const Gap(BullSpacing.xs),
+                          BullBadge(
+                            label: _movementLabel(context, movement),
+                            background: context.bull.surface,
+                            foreground: context.bull.text,
+                            border: Border.all(color: context.bull.outline),
+                            radius: context.bullShapes.input,
+                            textStyle: context.bullType.caption,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: BullSpacing.xs,
+                              vertical: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(BullSpacing.xs),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        BullBadge(
+                          label: l10n.title,
+                          background: context.bull.bitcoinOrange,
+                          foreground: context.bull.onSurfaceFixed,
+                          radius: context.bullShapes.input,
+                          textStyle: context.bullType.caption,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: BullSpacing.xs,
+                            vertical: 2,
+                          ),
+                        ),
+                        const Gap(BullSpacing.xs),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (movement.createdAt case final time?) ...[
+                              BullText(
+                                DateFormat.Hm(locale).format(time.toLocal()),
+                                role: BullTextRole.caption,
+                                color: context.bull.textMuted,
+                              ),
+                              const Gap(BullSpacing.xxs),
+                            ],
+                            Semantics(
+                              label: movement.status.toTranslated(context),
+                              child: ExcludeSemantics(
+                                child:
+                                    movement.status ==
+                                        ArkMovementStatus.successful
+                                    ? BullIcon(
+                                        BullIcons.checkCircle,
+                                        size: 16,
+                                        color: context.bull.success,
+                                      )
+                                    : BullText(
+                                        movement.status.toTranslated(context),
+                                        role: BullTextRole.caption,
+                                        color:
+                                            movement.status ==
+                                                ArkMovementStatus.failed
+                                            ? context.bull.error
+                                            : context.bull.textMuted,
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          const Gap(BullSpacing.md),
         ],
       ],
     );
@@ -420,9 +549,8 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
     child: BullButton.big(
       label: label,
       onPressed: action,
-      bgColor: context.bull.surface,
-      textColor: context.bull.text,
-      outlined: true,
+      bgColor: context.bull.secondary,
+      textColor: context.bull.onSecondary,
       disabled: disabled,
     ),
   );
@@ -477,21 +605,29 @@ class _ActionsSheetState extends State<_ActionsSheet> {
   Widget build(BuildContext context) {
     final l10n = context.loc;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(BullSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _action(l10n.refresh, _MenuAction.refresh),
-            _action(
-              l10n.boardToArk,
-              _MenuAction.board,
-              disabled: !widget.boardEnabled(),
-            ),
-            _action(l10n.vtxos, _MenuAction.vtxos),
-            _action(l10n.exits, _MenuAction.exits),
-            _action(l10n.arkInfo, _MenuAction.info),
-          ],
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(BullSpacing.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _action(l10n.refresh, _MenuAction.refresh),
+              _action(
+                l10n.boardToArk,
+                _MenuAction.board,
+                disabled: !widget.boardEnabled(),
+              ),
+              _action(l10n.vtxos, _MenuAction.vtxos),
+              _action(l10n.exits, _MenuAction.exits),
+              _action(l10n.arkInfo, _MenuAction.info),
+              const Gap(BullSpacing.sm),
+              BullText(
+                l10n.backgroundNotice,
+                role: BullTextRole.caption,
+                color: context.bull.textMuted,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -35,6 +35,30 @@ class InternalTransferForm extends StatefulWidget {
 class _InternalTransferFormState extends State<InternalTransferForm> {
   String? _from, _to;
   late String _amount = widget.initialAmount;
+  final FocusNode _amountFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _amountFocus.addListener(_focusChanged);
+  }
+
+  void _focusChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _amountFocus.removeListener(_focusChanged);
+    _amountFocus.dispose();
+    super.dispose();
+  }
+
+  String get _displayAmount {
+    if (_amountFocus.hasFocus || _amount.isEmpty) return _amount;
+    final value = BigInt.tryParse(_amount);
+    return value == null ? _amount : _format(value);
+  }
 
   List<TransferWallet> get _wallets => [
     ...widget.wallets,
@@ -50,8 +74,15 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
     ),
   ];
 
-  String _format(BigInt value) =>
-      NumberFormat.decimalPattern().format(value.toInt());
+  String _format(BigInt value) {
+    final separator = NumberFormat.decimalPattern(
+      Localizations.localeOf(context).toString(),
+    ).symbols.GROUP_SEP;
+    return value.toString().replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (_) => separator,
+    );
+  }
 
   void _pick(String id, {required bool from}) {
     widget.onEdit?.call();
@@ -76,17 +107,23 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
         BullPickerItem(
           value: wallet.id,
           label: wallet.label,
-          leading: BullIcon(
-            wallet.kind == TransferWalletKind.ark
-                ? BullIcons.accountBalanceWallet
-                : wallet.kind == TransferWalletKind.bitcoin
-                ? BullIcons.currencyBitcoin
-                : BullIcons.payments,
-            color: wallet.kind == TransferWalletKind.bitcoin
-                ? context.bull.bitcoinOrange
-                : wallet.kind == TransferWalletKind.liquid
-                ? context.bull.info
-                : context.bull.text,
+          leading: SizedBox(
+            width: 26,
+            height: 56,
+            child: Center(
+              child: BullIcon(
+                wallet.kind == TransferWalletKind.ark
+                    ? BullIcons.sailing
+                    : wallet.kind == TransferWalletKind.bitcoin
+                    ? BullIcons.currencyBitcoin
+                    : BullIcons.payments,
+                color: wallet.kind == TransferWalletKind.bitcoin
+                    ? context.bull.bitcoinOrange
+                    : wallet.kind == TransferWalletKind.liquid
+                    ? context.bull.info
+                    : context.bull.text,
+              ),
+            ),
           ),
         ),
     ],
@@ -95,6 +132,8 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
   @override
   Widget build(BuildContext context) {
     final wallets = _wallets;
+    final renderedArk = widget.ark;
+    final renderedWallets = widget.wallets;
     final defaultFrom = wallets
         .where((w) => w.id == widget.ark.boardSourceWalletId)
         .firstOrNull;
@@ -124,9 +163,15 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
       body: SafeArea(
         child: Column(
           children: [
-            BullTopBar(
-              title: context.loc.swapTransferTitle,
-              onBack: () => Navigator.pop(context),
+            Padding(
+              padding: const EdgeInsets.only(
+                top: BullSpacing.lg,
+                bottom: BullSpacing.xs,
+              ),
+              child: BullTopBar(
+                title: context.loc.swapTransferTitle,
+                onBack: () => Navigator.pop(context),
+              ),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -135,12 +180,30 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Gap(BullSpacing.xs),
-                    BullInfoCard(
-                      description: context.loc.swapInternalTransferDescription,
-                      bgColor: context.bull.surface,
-                      tagColor: context.bull.text,
+                    Container(
+                      padding: const EdgeInsets.all(BullSpacing.xs),
+                      decoration: BoxDecoration(
+                        color: context.bull.surfaceContainerHighest,
+                        border: Border(
+                          left: BorderSide(color: context.bull.text, width: 4),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BullIcon(BullIcons.info, size: 22),
+                          const Gap(BullSpacing.sm),
+                          Expanded(
+                            child: BullText(
+                              context.loc.swapInternalTransferDescription,
+                              role: BullTextRole.label,
+                              color: context.bull.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const Gap(BullSpacing.md),
+                    const Gap(BullSpacing.xs),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -149,14 +212,14 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                           role: BullTextRole.body,
                         ),
                         BullSwitch(
-                          value: false,
+                          value: true,
                           onChanged: widget.busy
                               ? null
                               : (_) => widget.onExternal(),
                         ),
                       ],
                     ),
-                    const Gap(BullSpacing.md),
+                    const Gap(BullSpacing.xxs),
                     BullText(
                       context.loc.swapFromLabel,
                       role: BullTextRole.body,
@@ -180,11 +243,14 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                                     _to = old;
                                   });
                                 },
-                          child: Padding(
-                            padding: const EdgeInsets.all(BullSpacing.sm),
-                            child: BullIcon(
-                              BullIcons.swapHoriz,
-                              color: context.bull.primary,
+                          child: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Center(
+                              child: BullIcon(
+                                BullIcons.swapVert,
+                                color: context.bull.primary,
+                              ),
                             ),
                           ),
                         ),
@@ -193,29 +259,58 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                     BullText(context.loc.swapToLabel, role: BullTextRole.body),
                     const Gap(BullSpacing.xxs),
                     _picker(to, false),
-                    const Gap(BullSpacing.lg),
+                    const Gap(BullSpacing.sm),
                     BullText(
                       context.loc.swapAmountLabel,
                       role: BullTextRole.body,
                     ),
-                    const Gap(BullSpacing.xs),
-                    BullInputText(
-                      uiKey: const ValueKey('transfer-amount'),
-                      value: _amount,
-                      hint: context.loc.swapAmountPlaceholder,
-                      suffixText: context.loc.settingsPayjoinSatsUnit,
-                      style: context.bullType.headline.copyWith(
-                        color: context.bull.primary,
+                    const Gap(BullSpacing.xxs),
+                    Container(
+                      constraints: const BoxConstraints(minHeight: 80),
+                      decoration: BoxDecoration(
+                        color: context.bull.surface,
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
+                        border: showFailure
+                            ? Border.all(color: context.bull.error)
+                            : null,
                       ),
-                      disabled: widget.busy,
-                      digitsOnly: true,
-                      onlyNumbers: true,
-                      onChanged: (value) {
-                        widget.onEdit?.call();
-                        setState(() => _amount = value);
-                      },
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: BullInputText(
+                              uiKey: const ValueKey('transfer-amount'),
+                              value: _displayAmount,
+                              hint: context.loc.swapAmountPlaceholder,
+                              hintStyle: context.bullType.headline.copyWith(
+                                color: context.bull.primary,
+                              ),
+                              style: context.bullType.headline.copyWith(
+                                color: context.bull.primary,
+                              ),
+                              focusNode: _amountFocus,
+                              hideBorder: true,
+                              disabled: widget.busy,
+                              digitsOnly: true,
+                              onlyNumbers: true,
+                              onChanged: (value) {
+                                widget.onEdit?.call();
+                                setState(() => _amount = value);
+                              },
+                            ),
+                          ),
+                          BullText(
+                            context.loc.settingsPayjoinSatsUnit,
+                            style: context.bullType.headline.copyWith(
+                              color: context.bull.primary,
+                            ),
+                          ),
+                          const Gap(BullSpacing.md),
+                        ],
+                      ),
                     ),
-                    const Gap(BullSpacing.sm),
+                    const Gap(BullSpacing.xs),
                     Row(
                       children: [
                         Expanded(
@@ -228,16 +323,64 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                             color: context.bull.textMuted,
                           ),
                         ),
-                        BullButton.small(
-                          label: context.loc.swapMaxButton,
-                          disabled: true,
-                          bgColor: context.bull.surface,
-                          textColor: context.bull.textMuted,
-                          onPressed: () {},
+                        Semantics(
+                          hint: (transfer?.isBoard ?? false)
+                              ? context.loc.swapArkMaxUnavailable
+                              : (transfer?.usesArk ?? false)
+                              ? context.loc.swapArkFeeReview
+                              : null,
+                          child: BullButton.small(
+                            label: context.loc.swapMaxButton,
+                            width: 80,
+                            height: 48,
+                            textStyle: context.bullType.label,
+                            disabled:
+                                widget.busy ||
+                                (transfer?.isBoard ?? false) ||
+                                from == null ||
+                                !from.canSend ||
+                                from.balance == null ||
+                                (from.balance ?? BigInt.zero) <= BigInt.zero,
+                            bgColor: context.bull.secondary,
+                            textColor: context.bull.onSecondary,
+                            onPressed: () {
+                              if (!mounted ||
+                                  widget.busy ||
+                                  (transfer?.isBoard ?? false) ||
+                                  !identical(widget.ark, renderedArk) ||
+                                  !identical(widget.wallets, renderedWallets) ||
+                                  from == null ||
+                                  !from.canSend ||
+                                  _from != from.id ||
+                                  _to != to.id) {
+                                return;
+                              }
+                              final current = _wallets
+                                  .where((w) => w.id == from.id)
+                                  .firstOrNull;
+                              final balance = current?.balance;
+                              if (current == null ||
+                                  !current.canSend ||
+                                  current.network != from.network ||
+                                  balance == null ||
+                                  balance != from.balance ||
+                                  balance <= BigInt.zero) {
+                                return;
+                              }
+                              widget.onEdit?.call();
+                              setState(() => _amount = balance.toString());
+                            },
+                          ),
                         ),
                       ],
                     ),
                     const Gap(BullSpacing.xs),
+                    if (transfer?.isBoard ?? false)
+                      BullText(
+                        context.loc.swapArkMaxUnavailableShort,
+                        role: BullTextRole.label,
+                        color: context.bull.textMuted,
+                      ),
                     if (showFailure)
                       BullText(
                         switch (failure) {
@@ -261,26 +404,56 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                         role: BullTextRole.label,
                         color: context.bull.textMuted,
                       ),
-                    if (transfer?.usesArk ?? false) ...[
-                      const Gap(BullSpacing.md),
-                      BullText(
-                        context.loc.swapArkFeeReview,
-                        role: BullTextRole.label,
-                        color: context.bull.textMuted,
+                    const Gap(BullSpacing.xxs),
+                    Semantics(
+                      key: const ValueKey('transfer-exact-receive'),
+                      enabled: false,
+                      hint: context.loc.swapReceiveExactAmountUnavailable,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  BullText(
+                                    context.loc.swapReceiveExactAmountLabel,
+                                    role: BullTextRole.body,
+                                  ),
+                                  BullText(
+                                    context
+                                        .loc
+                                        .swapReceiveExactAmountUnavailable,
+                                    role: BullTextRole.caption,
+                                    color: context.bull.textMuted,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const BullSwitch(value: false, onChanged: null),
+                          ],
+                        ),
                       ),
-                    ],
-                    const Gap(BullSpacing.lg),
+                    ),
+                    const Gap(BullSpacing.xs),
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(BullSpacing.lg),
+              padding: const EdgeInsets.fromLTRB(
+                BullSpacing.lg,
+                BullSpacing.xs,
+                BullSpacing.lg,
+                BullSpacing.lg,
+              ),
               child: BullButton.big(
+                height: 56,
                 label: context.loc.swapContinueButton,
                 disabled: widget.busy || transfer == null || failure != null,
-                bgColor: context.bull.text,
-                textColor: context.bull.background,
+                bgColor: context.bull.secondary,
+                textColor: context.bull.onSecondary,
                 onPressed: () {
                   if (transfer != null) widget.onContinue(transfer);
                 },

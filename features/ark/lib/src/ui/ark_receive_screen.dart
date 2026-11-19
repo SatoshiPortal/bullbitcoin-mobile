@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ark/ark.dart' show ArkDestinationKind, ArkAccountId;
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import '../domain/ark_display_data_port.dart';
 import 'ark_amount.dart';
@@ -29,13 +30,23 @@ class ArkReceiveScreen extends StatefulWidget {
 class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
   String _amount = '';
   bool _lightning = false;
+  bool _information = false;
+  final _sheetChanges = StreamController<void>.broadcast();
   late StreamSubscription<ArkReceiveState> _subscription;
+
+  void _notifySheet() {
+    if (!_sheetChanges.isClosed) _sheetChanges.add(null);
+  }
+
   @override
   void initState() {
     super.initState();
     _subscription = widget.cubit.stream.listen((_) {
-      if (mounted) setState(() {});
-    });
+      if (mounted) {
+        setState(() {});
+        _notifySheet();
+      }
+    }, onDone: _notifySheet);
   }
 
   @override
@@ -44,16 +55,22 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
     if (oldWidget.cubit != widget.cubit) {
       _subscription.cancel();
       _subscription = widget.cubit.stream.listen((_) {
-        if (mounted) setState(() {});
-      });
+        if (mounted) {
+          setState(() {});
+          _notifySheet();
+        }
+      }, onDone: _notifySheet);
       _amount = '';
       _lightning = false;
+      _information = false;
     }
+    _notifySheet();
   }
 
   @override
   void dispose() {
     _subscription.cancel();
+    unawaited(_sheetChanges.close());
     super.dispose();
   }
 
@@ -104,7 +121,10 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                         digitsOnly: true,
                         onlyNumbers: true,
                         onChanged: (value) {
-                          widget.cubit.edit();
+                          if (!_stateCurrent(owner, account, state)) {
+                            return;
+                          }
+                          owner.edit();
                           setState(() => _amount = value);
                         },
                       ),
@@ -157,16 +177,27 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                         ),
                       ),
                       const Gap(BullSpacing.md),
-                      BullCopyField(
-                        label: destination.kind == ArkDestinationKind.ark
-                            ? l10n.receiveAddress
-                            : _destinationLabel(context, destination.kind),
-                        text: destination.value,
-                        clipboardText: destination.value,
-                        copiedMessage: l10n.copied,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        backgroundColor: context.bull.surfaceContainerHighest,
+                      Semantics(
+                        key: const ValueKey('ark-receive-address-actions'),
+                        button: true,
+                        label: l10n.addressActions,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _addressActions(owner, account, ready),
+                          child: BullCopyField(
+                            label: destination.kind == ArkDestinationKind.ark
+                                ? l10n.receiveAddress
+                                : _destinationLabel(context, destination.kind),
+                            text: destination.value,
+                            clipboardText: destination.value,
+                            copiedMessage: l10n.copied,
+                            onCopy: () => _copyPage(owner, account, ready),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            backgroundColor:
+                                context.bull.surfaceContainerHighest,
+                          ),
+                        ),
                       ),
                       if (destination.fee != null ||
                           destination.net != null ||
@@ -197,40 +228,141 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                               ? widget.displayData?.price
                               : null,
                         ),
-                      const Gap(BullSpacing.md),
-                      BullButton.big(
-                        label: l10n.share,
-                        onPressed: () => _share(owner, account, ready),
-                        disabled: widget.onShare == null || !_shareable(ready),
-                        bgColor: context.bull.surface,
-                        textColor: context.bull.text,
+                      const Gap(BullSpacing.sm),
+                      BullBorderedTile(
+                        onTap: () {
+                          if (!_pageCurrent(owner, account, ready)) {
+                            return;
+                          }
+                          setState(() => _information = !_information);
+                        },
+                        child: Semantics(
+                          button: true,
+                          expanded: _information,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    BullText(
+                                      l10n.additionalInformation,
+                                      role: BullTextRole.body,
+                                    ),
+                                    const Gap(BullSpacing.xs),
+                                    BullText(
+                                      l10n.additionalInformationHint,
+                                      role: BullTextRole.label,
+                                      color: context.bull.textMuted,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Gap(BullSpacing.sm),
+                              BullIcon(BullIcons.edit, size: 22),
+                            ],
+                          ),
+                        ),
                       ),
-                      if (widget.onShare == null)
-                        BullInfoBar(message: l10n.nativeUnavailable),
-                      if (!_shareable(ready))
-                        BullInfoBar(message: l10n.unknown),
-                      const Gap(BullSpacing.md),
-                      _requestModes(context, publishedKind: destination.kind),
+                      if (_information) ...[
+                        const Gap(BullSpacing.md),
+                        BullText(
+                          l10n.arkAddressInformationUnavailable,
+                          role: BullTextRole.label,
+                        ),
+                        const Gap(BullSpacing.md),
+                        _requestModes(context, publishedKind: destination.kind),
+                      ],
                     ],
                     const Gap(BullSpacing.md),
-                    BullButton.big(
-                      label: l10n.generate,
-                      onPressed: () => widget.cubit.request(
-                        lightning: destination == null
-                            ? _lightning
-                            : destination.kind == ArkDestinationKind.bolt11,
-                        amount: _amount,
+                    if (ready == null || _information)
+                      BullButton.big(
+                        label: l10n.generate,
+                        onPressed: () {
+                          if (!_stateCurrent(owner, account, state)) {
+                            return;
+                          }
+                          unawaited(
+                            owner.request(
+                              lightning: destination == null
+                                  ? _lightning
+                                  : destination.kind ==
+                                        ArkDestinationKind.bolt11,
+                              amount: _amount,
+                            ),
+                          );
+                        },
+                        disabled: state is ArkReceiveLoading,
+                        bgColor: context.bull.secondary,
+                        textColor: context.bull.onSecondary,
                       ),
-                      disabled: state is ArkReceiveLoading,
-                      bgColor: context.bull.primary,
-                      textColor: context.bull.onPrimary,
-                    ),
                   ],
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  bool _stateCurrent(
+    ArkReceiveCubit owner,
+    ArkAccountId account,
+    ArkReceiveState state,
+  ) =>
+      mounted &&
+      !owner.isClosed &&
+      identical(widget.cubit, owner) &&
+      owner.account == account &&
+      identical(owner.state, state);
+
+  bool _current(
+    ArkReceiveCubit owner,
+    ArkAccountId account,
+    ArkReceiveReady ready,
+  ) =>
+      mounted &&
+      !owner.isClosed &&
+      identical(widget.cubit, owner) &&
+      owner.account == account &&
+      identical(owner.state, ready);
+
+  bool _pageCurrent(
+    ArkReceiveCubit owner,
+    ArkAccountId account,
+    ArkReceiveReady ready,
+  ) =>
+      _current(owner, account, ready) &&
+      ModalRoute.of(context)?.isCurrent == true;
+
+  void _copyPage(
+    ArkReceiveCubit owner,
+    ArkAccountId account,
+    ArkReceiveReady ready,
+  ) {
+    if (!_pageCurrent(owner, account, ready) || !_shareable(ready)) return;
+    unawaited(Clipboard.setData(ClipboardData(text: ready.destination.value)));
+    BullSnackBar.show(context, message: context.loc.copied);
+  }
+
+  Future<void> _addressActions(
+    ArkReceiveCubit owner,
+    ArkAccountId account,
+    ArkReceiveReady ready,
+  ) async {
+    if (!_pageCurrent(owner, account, ready)) return;
+    await BullBottomSheet.show<void>(
+      context: context,
+      child: _ReceiveAddressSheet(
+        currentReady: () => _current(owner, account, ready),
+        changes: _sheetChanges.stream,
+        canCopy: () => _shareable(ready),
+        hasShare: () => mounted && widget.onShare != null,
+        onCopy: () => unawaited(
+          Clipboard.setData(ClipboardData(text: ready.destination.value)),
+        ),
+        onShare: () => _share(owner, account, ready),
       ),
     );
   }
@@ -246,7 +378,9 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
     ArkAccountId account,
     ArkReceiveReady rendered,
   ) {
-    if (!mounted || owner.isClosed) return;
+    if (!mounted || owner.isClosed) {
+      return;
+    }
     if (!identical(widget.cubit, owner) || widget.cubit.account != account) {
       return;
     }
@@ -260,7 +394,9 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
       return;
     }
     final callback = widget.onShare;
-    if (callback == null) return;
+    if (callback == null) {
+      return;
+    }
     callback(rendered.destination.value);
   }
 
@@ -278,6 +414,9 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
     ArkDestinationKind? publishedKind,
   }) {
     final l10n = context.loc;
+    final owner = widget.cubit;
+    final account = owner.account;
+    final state = owner.state;
     return Row(
       children: [
         Expanded(
@@ -285,7 +424,10 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
             context,
             l10n.arkAddress,
             () {
-              widget.cubit.edit();
+              if (!_stateCurrent(owner, account, state)) {
+                return;
+              }
+              owner.edit();
               setState(() => _lightning = false);
             },
             selected: publishedKind == null
@@ -299,7 +441,10 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
             context,
             l10n.lightningInvoice,
             () {
-              widget.cubit.edit();
+              if (!_stateCurrent(owner, account, state)) {
+                return;
+              }
+              owner.edit();
               setState(() => _lightning = true);
             },
             selected: publishedKind == null
@@ -316,11 +461,126 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
     String label,
     VoidCallback onPressed, {
     required bool selected,
-  }) => BullButton.small(
-    label: label,
-    onPressed: onPressed,
-    bgColor: selected ? context.bull.primary : context.bull.surface,
-    textColor: selected ? context.bull.onPrimary : context.bull.text,
-    outlined: !selected,
+  }) => Semantics(
+    selected: selected,
+    child: BullButton.small(
+      label: label,
+      onPressed: onPressed,
+      bgColor: context.bull.secondary,
+      textColor: context.bull.onSecondary,
+    ),
+  );
+}
+
+/// Each opening owns its route, even when two sheets share the same Ready.
+class _ReceiveAddressSheet extends StatefulWidget {
+  final bool Function() currentReady;
+  final Stream<void> changes;
+  final bool Function() canCopy;
+  final bool Function() hasShare;
+  final VoidCallback onCopy;
+  final VoidCallback onShare;
+  const _ReceiveAddressSheet({
+    required this.currentReady,
+    required this.changes,
+    required this.canCopy,
+    required this.hasShare,
+    required this.onCopy,
+    required this.onShare,
+  });
+  @override
+  State<_ReceiveAddressSheet> createState() => _ReceiveAddressSheetState();
+}
+
+class _ReceiveAddressSheetState extends State<_ReceiveAddressSheet> {
+  ModalRoute<Object?>? _route;
+  late final StreamSubscription<void> _subscription;
+  @override
+  void initState() {
+    super.initState();
+    _subscription = widget.changes.listen(
+      (_) {
+        if (mounted) setState(() {});
+      },
+      onDone: () {
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    unawaited(_subscription.cancel());
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _route ??= ModalRoute.of(context);
+  }
+
+  bool _mayAct() {
+    if (!mounted) return false;
+    final route = _route;
+    if (route == null || !route.isCurrent) return false;
+    return widget.currentReady();
+  }
+
+  void _copy() {
+    if (!_mayAct() || !widget.canCopy()) return;
+    widget.onCopy();
+  }
+
+  void _share() {
+    if (!_mayAct() || !widget.canCopy() || !widget.hasShare()) return;
+    widget.onShare();
+  }
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: Padding(
+      padding: const EdgeInsets.all(BullSpacing.lg),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Semantics(
+            header: true,
+            child: BullText(
+              context.loc.addressActions,
+              role: BullTextRole.subtitle,
+            ),
+          ),
+          const Gap(BullSpacing.md),
+          BullButton.big(
+            label: context.loc.copy,
+            disabled: !widget.currentReady() || !widget.canCopy(),
+            bgColor: context.bull.secondary,
+            textColor: context.bull.onSecondary,
+            onPressed: _copy,
+          ),
+          const Gap(BullSpacing.xs),
+          BullButton.big(
+            label: context.loc.share,
+            disabled:
+                !widget.currentReady() ||
+                !widget.canCopy() ||
+                !widget.hasShare(),
+            bgColor: context.bull.secondary,
+            textColor: context.bull.onSecondary,
+            onPressed: _share,
+          ),
+          if (!widget.canCopy())
+            BullText(context.loc.unknown, role: BullTextRole.caption),
+          if (!widget.hasShare())
+            BullText(
+              context.loc.nativeUnavailable,
+              role: BullTextRole.caption,
+              color: context.bull.textMuted,
+            ),
+        ],
+      ),
+    ),
   );
 }
