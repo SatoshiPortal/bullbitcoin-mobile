@@ -16,10 +16,14 @@ class ArkBoardAmountScreen extends StatefulWidget {
   final void Function(ArkAccountConfig config, Sats amount)? onReviewRequest;
   final ArkDisplayData? displayData;
   final ArkFailure? failure;
+  final bool Function()? sourceReady;
+  final VoidCallback? onRefreshSource;
   const ArkBoardAmountScreen({
     super.key,
     this.displayData,
     this.failure,
+    this.sourceReady,
+    this.onRefreshSource,
     required this.config,
     this.onReviewRequest,
   });
@@ -88,7 +92,11 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
   }
 
   void _review(ArkBoardAmountScreen rendered, int epoch, String raw) {
-    if (!_current(rendered, epoch) || _amount != raw) return;
+    if (!_current(rendered, epoch) ||
+        _amount != raw ||
+        !(widget.sourceReady?.call() ?? true)) {
+      return;
+    }
     final delegate = rendered.onReviewRequest;
     final amount = _parse(raw);
     if (delegate == null || amount == null) return;
@@ -133,6 +141,7 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
             height: 56,
             disabled:
                 _consumed ||
+                !(rendered.sourceReady?.call() ?? true) ||
                 rendered.onReviewRequest == null ||
                 amount == null ||
                 insufficient,
@@ -206,6 +215,13 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                         ],
                       ),
                     ),
+                    if (rendered.onRefreshSource case final refresh?)
+                      BullButton.small(
+                        label: l10n.refresh,
+                        onPressed: refresh,
+                        bgColor: context.bull.secondaryFixed,
+                        textColor: context.bull.onSecondaryFixed,
+                      ),
                     const Gap(BullSpacing.md),
                     BullText(
                       l10n.amountToMove,

@@ -41,6 +41,21 @@ final class ForegroundWalletSync {
     bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
   }) async {
+    await synchronizeWithRevision(
+      metadata,
+      discover: discover,
+      allowInitialScan: allowInitialScan,
+      reason: reason,
+    );
+  }
+
+  /// Stamp from this exact successful pass, including the owned repair retry.
+  Future<WalletRevision?> synchronizeWithRevision(
+    WalletMetadataModel metadata, {
+    bool discover = false,
+    bool allowInitialScan = true,
+    SyncReason reason = SyncReason.auto,
+  }) async {
     final descriptor = WalletCatalogPortImpl.descriptorFromMetadata(metadata);
     switch (descriptor) {
       case Err():
@@ -69,6 +84,7 @@ final class ForegroundWalletSync {
           // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.
           throw WalletSnapshotException(failure);
         }
+        return (result as Ok<SyncCompletion, SyncFailure>).value.revision;
     }
   }
 }

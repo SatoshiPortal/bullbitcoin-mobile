@@ -30,6 +30,8 @@ import 'package:secrets/secrets.dart';
 import 'ark_board_abandonment.dart';
 import 'ark_installation_state.dart';
 import 'ark_display_data.dart';
+import 'ark_board_source_data.dart';
+import 'foreground_wallet_sync.dart';
 import 'wallet_native_runtime.dart';
 import 'sqlite_ark_funding_reservations.dart';
 
@@ -304,6 +306,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     );
     ArkForegroundMaintenance? maintenance;
     WalletArkDisplayData? displayData;
+    WalletArkBoardSourceData? boardSource;
     try {
       final locale =
           (await locator<SettingsRepository>().fetch()).language?.locale ??
@@ -338,6 +341,18 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           isActive: () => policy.active,
         );
       }
+      final display = displayData;
+      if (display != null) {
+        boardSource = WalletArkBoardSourceData(
+          display: display,
+          sync: locator<ForegroundWalletSync>(),
+          runtime: locator<WalletNativeRuntime>(),
+          metadata: locator<WalletMetadataDatasource>(),
+          account: config.id,
+          selectedSource: selection.displaySourceWalletId,
+          isActive: () => policy.active,
+        );
+      }
       final feature = ArkFeature(
         selection,
         config: config,
@@ -352,12 +367,16 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         registry: managedRegistry,
         boardFunding: board,
         displayData: displayData,
+        boardSource: boardSource,
         scanner: scanner,
       );
       final runtime = ArkForegroundRuntime._(
         feature,
         client,
-        () => _closeArkDisplayAndBoard(displayData, boardFunding.close),
+        () async {
+          await boardSource?.close();
+          await _closeArkDisplayAndBoard(displayData, boardFunding.close);
+        },
         policy,
         maintenance,
         selection,
@@ -377,6 +396,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         await maintenance?.close();
       } catch (_) {}
       try {
+        await boardSource?.close();
         await _closeArkDisplayAndBoard(displayData, boardFunding.close);
       } catch (_) {}
       try {

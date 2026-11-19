@@ -12,6 +12,8 @@ import '../data/create_ark_facade.dart';
 import '../domain/ark_account_selection_port.dart';
 import '../domain/ark_board_funding_port.dart';
 import '../domain/ark_display_data_port.dart';
+import '../domain/ark_board_source_port.dart';
+import '../domain/usecases/refresh_ark_board_source_usecase.dart';
 import '../domain/usecases/read_ark_display_data_usecase.dart';
 import '../presentation/ark_display_data_cubit.dart';
 import '../domain/ark_provisioning_port.dart';
@@ -109,6 +111,7 @@ final class ArkFeature {
   final ArkProvisioningPort _provisioning;
   final ArkBoardFundingPort _boardFunding;
   final ArkDisplayDataPort? _displayData;
+  final ArkBoardSourcePort? _boardSource;
   final ArkScanner? _scanner;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
@@ -138,6 +141,7 @@ final class ArkFeature {
     required ArkAccountRegistryRepository registry,
     required ArkBoardFundingPort boardFunding,
     this._displayData,
+    this._boardSource,
     this._scanner,
   }) : _client = client,
        _preferences = preferences,
@@ -301,6 +305,9 @@ class _ArkPageState extends State<_ArkPage> {
                   _configuration(widget.feature._config),
         _ => false,
       };
+  bool get _ordinaryBoard =>
+      widget.kind == _Kind.board && widget.entry is! ArkTransferBoardEntry;
+
   bool _live(BlocBase<Object?> owner) =>
       mounted && _validEntry() && identical(owner, _owner) && !owner.isClosed;
 
@@ -467,7 +474,8 @@ class _ArkPageState extends State<_ArkPage> {
       default:
         break;
     }
-    final displayPort = feature._displayData;
+    final boardSource = _ordinaryBoard ? feature._boardSource : null;
+    final displayPort = boardSource ?? feature._displayData;
     if (displayPort != null &&
         _owner != null &&
         const {
@@ -480,6 +488,9 @@ class _ArkPageState extends State<_ArkPage> {
       final display = ArkDisplayDataCubit(
         ReadArkDisplayDataUsecase(displayPort),
         account: account,
+        refresh: boardSource == null
+            ? null
+            : RefreshArkBoardSourceUsecase(boardSource),
       );
       _displayOwner = display;
       _displaySubscription = display.stream.listen((_) {
@@ -638,6 +649,7 @@ class _ArkPageState extends State<_ArkPage> {
     if (!_validEntry()) return const ArkUnavailableScreen();
     final owner = _owner;
     final publication = owner is ArkSettingsCubit ? owner.state : null;
+    final displayOwner = _displayOwner;
     final displayData = switch (_displayOwner?.state) {
       ArkDisplayDataReady(:final source)
           when source.account == widget.feature._config.id =>
@@ -676,6 +688,31 @@ class _ArkPageState extends State<_ArkPage> {
       ), // Share honestly absent.
       ArkBoardCubit() => ArkBoardScreen(
         cubit: owner,
+        onSourceEntry: !_ordinaryBoard || widget.feature._boardSource == null
+            ? null
+            : () async {
+                if (_live(owner) &&
+                    owner.state is ArkBoardEditing &&
+                    identical(displayOwner, _displayOwner)) {
+                  await displayOwner?.refreshSource();
+                }
+              },
+        onRefreshSource: !_ordinaryBoard || widget.feature._boardSource == null
+            ? null
+            : () {
+                if (_live(owner) &&
+                    owner.state is ArkBoardEditing &&
+                    identical(displayOwner, _displayOwner)) {
+                  unawaited(displayOwner?.refreshSource() ?? Future.value());
+                }
+              },
+        sourceReady: !_ordinaryBoard || widget.feature._boardSource == null
+            ? null
+            : () =>
+                  _live(owner) &&
+                  owner.state is ArkBoardEditing &&
+                  identical(displayOwner, _displayOwner) &&
+                  (displayOwner?.accepts(displayData) ?? false),
         displayData: displayData,
         onReconcile: () => _open(owner, _Kind.vtxos),
       ),

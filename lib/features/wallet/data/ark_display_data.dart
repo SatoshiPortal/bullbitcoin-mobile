@@ -80,7 +80,23 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
     await _changes.close();
   }
 
-  Future<Result<ArkDisplayData, ArkFailure>> _read(ArkAccountId account) async {
+  /// Board-only read bounded by an explicitly completed source scan.
+  Future<Result<ArkDisplayData, ArkFailure>> readAfterScan(
+    ArkAccountId account,
+    WalletRevision scan,
+  ) async {
+    if (account != _account || !_live) {
+      return const Err(ArkServiceUnavailableFailure());
+    }
+    final pending = _read(account, scan: scan);
+    _pending.add(pending);
+    return pending.whenComplete(() => _pending.remove(pending));
+  }
+
+  Future<Result<ArkDisplayData, ArkFailure>> _read(
+    ArkAccountId account, {
+    WalletRevision? scan,
+  }) async {
     try {
       final selected = await _selectedSource(account);
       if (!_live) return const Err(ArkServiceUnavailableFailure());
@@ -96,6 +112,12 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
       if (!_live) return const Err(ArkServiceUnavailableFailure());
       if (loaded case Err()) return const Err(ArkFeatureStorageFailure());
       final stamp = (loaded as Ok<WalletRevision, SyncFailure>).value;
+      if (scan != null &&
+          (stamp.key != scan.key ||
+              stamp.generation != scan.generation ||
+              stamp.revision < scan.revision)) {
+        return const Err(ArkFeatureStorageFailure());
+      }
       final coins = await handle.unspent();
       if (!_live) return const Err(ArkServiceUnavailableFailure());
       final reservations = await (await _runtime.foreground())

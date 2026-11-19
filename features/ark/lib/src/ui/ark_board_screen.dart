@@ -15,9 +15,15 @@ class ArkBoardScreen extends StatefulWidget {
   final ArkBoardCubit cubit;
   final VoidCallback onReconcile;
   final ArkDisplayData? displayData;
+  final Future<void> Function()? onSourceEntry;
+  final VoidCallback? onRefreshSource;
+  final bool Function()? sourceReady;
   const ArkBoardScreen({
     super.key,
     this.displayData,
+    this.onSourceEntry,
+    this.onRefreshSource,
+    this.sourceReady,
     required this.cubit,
     required this.onReconcile,
   });
@@ -28,6 +34,22 @@ class ArkBoardScreen extends StatefulWidget {
 class _ArkBoardScreenState extends State<ArkBoardScreen> {
   late StreamSubscription<ArkBoardState> _subscription;
   bool _detailsExpanded = false;
+  bool _sourceEntered = false;
+
+  void _enterSource() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          _sourceEntered ||
+          widget.cubit.state is! ArkBoardEditing) {
+        return;
+      }
+      final enter = widget.onSourceEntry;
+      if (enter == null) return;
+      _sourceEntered = true;
+      unawaited(enter());
+    });
+  }
+
   bool _current(ArkBoardCubit owner, ArkBoardState rendered) =>
       mounted &&
       identical(owner, widget.cubit) &&
@@ -36,7 +58,10 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
   void _listen() {
     final owner = widget.cubit;
     _subscription = owner.stream.listen((_) {
-      if (mounted && identical(owner, widget.cubit)) setState(() {});
+      if (mounted && identical(owner, widget.cubit)) {
+        _enterSource();
+        setState(() {});
+      }
     });
   }
 
@@ -44,6 +69,7 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
   void initState() {
     super.initState();
     _listen();
+    _enterSource();
   }
 
   @override
@@ -52,8 +78,10 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     if (!identical(oldWidget.cubit, widget.cubit)) {
       unawaited(_subscription.cancel());
       _detailsExpanded = false;
+      _sourceEntered = false;
       _listen();
     }
+    _enterSource();
   }
 
   @override
@@ -118,9 +146,28 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
         config: owner.config,
         failure: state.failure,
         displayData: widget.displayData,
+        sourceReady: widget.sourceReady == null
+            ? null
+            : () =>
+                  _current(owner, state) &&
+                  (widget.sourceReady?.call() ?? false),
+        onRefreshSource: widget.onRefreshSource == null
+            ? null
+            : () {
+                if (_current(owner, state)) widget.onRefreshSource?.call();
+              },
         onReviewRequest: (config, amount) {
-          if (_current(owner, state) && identical(config, owner.config)) {
-            unawaited(owner.prepare(amount));
+          if (_current(owner, state) &&
+              identical(config, owner.config) &&
+              (widget.sourceReady?.call() ?? true)) {
+            unawaited(
+              owner.prepare(
+                amount,
+                expectedSourceWalletId: widget.sourceReady == null
+                    ? null
+                    : widget.displayData?.walletId,
+              ),
+            );
           }
         },
       );
