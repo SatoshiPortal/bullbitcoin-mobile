@@ -5,6 +5,9 @@
 /// Internals live under `lib/src/`.
 library;
 
+export 'src/buttons/bull_field_action.dart';
+export 'src/chrome/bull_step_bar.dart';
+
 export 'package:flutter/services.dart'
     show SmartDashesType, SmartQuotesType, HapticFeedback;
 export 'package:flutter/semantics.dart' show CustomSemanticsAction;

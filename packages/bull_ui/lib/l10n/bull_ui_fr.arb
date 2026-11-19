@@ -22,5 +22,8 @@
   "amountStartChanged": "Les montants commencent désormais en {currency}",
   "amountMaxAfterFees": "MAX · solde moins les frais",
   "amountPreferenceChangeFailed": "Impossible de modifier la préférence de saisie. Réessayez.",
-  "amountIncomplete": "Terminez la saisie du montant"
+  "amountIncomplete": "Terminez la saisie du montant",
+  "amountEnterIn": "Saisir le montant en",
+  "pickerClose": "Fermer",
+  "amountBitcoinUnits": "{btc} ou {sats}"
 }

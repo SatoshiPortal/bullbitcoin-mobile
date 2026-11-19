@@ -106,9 +106,15 @@ class BullDropdownRow<T> extends StatelessWidget {
           : selected
           ? colors.primary
           : colors.text,
-      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+      fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
     );
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return Container(
+      color: selected
+          ? dark
+                ? colors.surfaceContainer
+                : colors.textMuted.withValues(alpha: 0.1)
+          : colors.transparent,
       width: fillWidth ? double.infinity : null,
       padding: const EdgeInsets.symmetric(
         horizontal: BullSpacing.xs,

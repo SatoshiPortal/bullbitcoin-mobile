@@ -93,7 +93,7 @@ class BullDropdown<T> extends StatelessWidget {
                           ),
                         ),
                         Icon(
-                          Icons.keyboard_arrow_down,
+                          Icons.expand_more,
                           color: enabled ? colors.primary : colors.textMuted,
                         ),
                       ],

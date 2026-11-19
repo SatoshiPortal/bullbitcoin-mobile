@@ -22,5 +22,8 @@
   "amountStartChanged": "Los importes ahora comienzan en {currency}",
   "amountMaxAfterFees": "MÁX. · saldo menos comisiones",
   "amountPreferenceChangeFailed": "No se pudo cambiar la preferencia de importe. Inténtalo de nuevo.",
-  "amountIncomplete": "Termina de introducir el importe"
+  "amountIncomplete": "Termina de introducir el importe",
+  "amountEnterIn": "Introducir importe en",
+  "pickerClose": "Cerrar",
+  "amountBitcoinUnits": "{btc} o {sats}"
 }
