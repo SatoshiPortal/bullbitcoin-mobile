@@ -1,4 +1,5 @@
-import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountInput, bullUiLocalizationsDelegate;
 
 import 'dart:async';
 
@@ -143,5 +144,18 @@ void main() {
     final error = tester.getRect(find.text('Insufficient Funds'));
     final actions = tester.getRect(find.text('Continue'));
     expect(error.bottom, lessThanOrEqualTo(actions.top));
+  });
+
+  testWidgets('the amount cannot be edited while the swap is created', (
+    tester,
+  ) async {
+    await continueRect(
+      tester,
+      TransferState(fromWallet: _wallet, isCreatingSwap: true),
+    );
+    expect(
+      tester.widget<BullAmountInput>(find.byType(BullAmountInput)).readOnly,
+      isTrue,
+    );
   });
 }
