@@ -972,7 +972,7 @@ void main() {
       page<ArkAccountScreen>(tester).onExits();
       await frame(tester);
       final oldClaim = tester
-          .widget<BullButton>(find.widgetWithText(BullButton, 'Review').first)
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Claim'))
           .onPressed;
       final owner = owners.created.whereType<ArkCubit>().last;
       final publication = owner.state as ArkObserved;
@@ -985,7 +985,7 @@ void main() {
         isEmpty,
       );
       tester
-          .widget<BullButton>(find.widgetWithText(BullButton, 'Review').first)
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Claim'))
           .onPressed();
       await frame(tester);
       expect(page<ArkExitRequestScreen>(tester).claimIds, ['exit']);
