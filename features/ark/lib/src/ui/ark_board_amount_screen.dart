@@ -1,14 +1,16 @@
+import 'dart:async';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/ark_display_data_port.dart';
 import '../domain/ark_failure.dart';
+import '../domain/ark_board_minimum.dart';
 import '../presentation/ark_failure_l10n.dart';
 import 'ark_amount.dart';
 
 import '../presentation/ark_l10n.dart';
-import 'ark_connection_details.dart';
 
 /// Input handoff only; no source wallet, fee estimate or funding authority.
 class ArkBoardAmountScreen extends StatefulWidget {
@@ -16,12 +18,14 @@ class ArkBoardAmountScreen extends StatefulWidget {
   final void Function(ArkAccountConfig config, Sats amount)? onReviewRequest;
   final ArkDisplayData? displayData;
   final ArkFailure? failure;
+  final ArkBoardMinimum? minimum;
   final bool Function()? sourceReady;
   final VoidCallback? onRefreshSource;
   const ArkBoardAmountScreen({
     super.key,
     this.displayData,
     this.failure,
+    this.minimum,
     this.sourceReady,
     this.onRefreshSource,
     required this.config,
@@ -36,6 +40,81 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
   int _epoch = 0;
   Object? _inputToken;
   bool _consumed = false;
+  ArkBoardMinimum? _refusedMinimum;
+  Timer? _minimumExpiry;
+  DateTime? _scheduledMinimumExpiry;
+  DateTime? _retiredMinimumThrough;
+
+  @override
+  void initState() {
+    super.initState();
+    _rememberRefusal();
+    _scheduleMinimumExpiry();
+  }
+
+  void _rememberRefusal() {
+    _refusedMinimum = switch (widget.failure) {
+      ArkBoardBelowMinimumFailure(:final minimum) => ArkBoardMinimum(
+        config: widget.config,
+        minimum: minimum,
+        observedAt: DateTime.now().toUtc(),
+      ),
+      _ => null,
+    };
+  }
+
+  Sats? get _minimum {
+    final cached = widget.minimum;
+    final refused = _refusedMinimum;
+    final cachedValue = _minimumValue(cached);
+    final refusedValue = _minimumValue(refused);
+    if (refused != null &&
+        refusedValue != null &&
+        (cached == null ||
+            cachedValue == null ||
+            refused.observedAt.isAfter(cached.observedAt))) {
+      return refusedValue;
+    }
+    return cachedValue;
+  }
+
+  Sats? _minimumValue(ArkBoardMinimum? observation) {
+    if (observation == null) return null;
+    final retired = _retiredMinimumThrough;
+    if (retired != null && !observation.expiresAt.isAfter(retired)) return null;
+    return observation.forConfig(widget.config);
+  }
+
+  void _scheduleMinimumExpiry() {
+    DateTime? next;
+    for (final observation in [widget.minimum, _refusedMinimum]) {
+      if (observation == null || _minimumValue(observation) == null) continue;
+      if (next == null || observation.expiresAt.isBefore(next)) {
+        next = observation.expiresAt;
+      }
+    }
+    if (next == _scheduledMinimumExpiry) return;
+    _minimumExpiry?.cancel();
+    _minimumExpiry = null;
+    _scheduledMinimumExpiry = next;
+    if (next == null) return;
+    final deadline = next;
+    _minimumExpiry = Timer(deadline.difference(DateTime.now()), () {
+      if (!mounted) return;
+      _minimumExpiry = null;
+      _scheduledMinimumExpiry = null;
+      // Once elapsed locally, a wall-clock rollback cannot revive this cache.
+      final retired = _retiredMinimumThrough;
+      if (retired == null || deadline.isAfter(retired)) {
+        _retiredMinimumThrough = deadline;
+      }
+      setState(() {
+        ++_epoch;
+        _inputToken = null;
+      });
+      _scheduleMinimumExpiry();
+    });
+  }
 
   Object _binding(ArkAccountConfig c) => (
     c.id,
@@ -68,6 +147,11 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
   void didUpdateWidget(ArkBoardAmountScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     final changedConfig = _binding(oldWidget.config) != _binding(widget.config);
+    if (changedConfig) {
+      _refusedMinimum = null;
+      _retiredMinimumThrough = null;
+    }
+    if (!identical(oldWidget.failure, widget.failure)) _rememberRefusal();
     if (changedConfig ||
         !identical(oldWidget.onReviewRequest, widget.onReviewRequest)) {
       ++_epoch;
@@ -75,10 +159,12 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
       if (changedConfig) _amount = '';
       // Never clear consumption: replacement is not evidence of no effect.
     }
+    _scheduleMinimumExpiry();
   }
 
   @override
   void dispose() {
+    _minimumExpiry?.cancel();
     _inputToken = null;
     super.dispose();
   }
@@ -105,6 +191,8 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
         ? display?.available
         : null;
     if (available != null && amount.value > available.value) return;
+    final minimum = _minimum;
+    if (minimum != null && amount.value < minimum.value) return;
     setState(() => _consumed = true);
     _inputToken = null;
     delegate(rendered.config, amount); // A throw is not permission to retry.
@@ -123,6 +211,9 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
     final source = display?.account == id ? display : null;
     final available = source?.available;
     final amount = _parse(raw);
+    final minimum = _minimum;
+    final belowMinimum =
+        amount != null && minimum != null && amount.value < minimum.value;
     final insufficient =
         amount != null && available != null && amount.value > available.value;
     return BullScaffold(
@@ -144,10 +235,11 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                 !(rendered.sourceReady?.call() ?? true) ||
                 rendered.onReviewRequest == null ||
                 amount == null ||
-                insufficient,
+                insufficient ||
+                belowMinimum,
             onPressed: () => _review(rendered, epoch, raw),
-            bgColor: context.bull.secondaryFixed,
-            textColor: context.bull.onSecondaryFixed,
+            bgColor: context.bull.secondary,
+            textColor: context.bull.onSecondary,
           ),
         ),
       ),
@@ -219,8 +311,8 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                       BullButton.small(
                         label: l10n.refresh,
                         onPressed: refresh,
-                        bgColor: context.bull.secondaryFixed,
-                        textColor: context.bull.onSecondaryFixed,
+                        bgColor: context.bull.secondary,
+                        textColor: context.bull.onSecondary,
                       ),
                     const Gap(BullSpacing.md),
                     BullText(
@@ -229,32 +321,73 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                     const Gap(BullSpacing.xs),
-                    BullInputText(
-                      value: raw,
-                      hint: Sats.zero.value.toString(),
-                      suffixText: l10n.satsUnit,
-                      style: context.bullType.headline,
-                      digitsOnly: true,
-                      onlyNumbers: true,
-                      disabled: _consumed,
-                      rightIcon: Padding(
-                        padding: const EdgeInsets.all(BullSpacing.xxs),
-                        child: BullButton.small(
-                          label: l10n.maxAmount,
-                          compact: true,
-                          height: 40,
-                          width: 64,
-                          disabled: true,
-                          onPressed: () {},
-                          bgColor: context.bull.surfaceContainerHighest,
-                          textColor: context.bull.textMuted,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: context.bull.surface,
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
+                        border: Border.all(
+                          color: belowMinimum || insufficient
+                              ? context.bull.primary
+                              : context.bull.outline,
                         ),
                       ),
-                      onChanged: (value) => _edit(rendered, token, value),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Semantics(
+                              label: l10n.amountToMove,
+                              textField: true,
+                              enabled: !_consumed,
+                              child: BullInputText(
+                                hideBorder: true,
+                                value: raw,
+                                hint: Sats.zero.value.toString(),
+                                style: context.bullType.headline,
+                                digitsOnly: true,
+                                onlyNumbers: true,
+                                disabled: _consumed,
+                                onChanged: (value) =>
+                                    _edit(rendered, token, value),
+                              ),
+                            ),
+                          ),
+                          BullText(l10n.satsUnit, role: BullTextRole.body),
+                          Padding(
+                            padding: const EdgeInsets.all(BullSpacing.xxs),
+                            child: BullButton.small(
+                              label: l10n.maxAmount,
+                              compact: true,
+                              height: 48,
+                              width: 64,
+                              disabled: true,
+                              onPressed: () {},
+                              bgColor: context.bull.secondary,
+                              textColor: context.bull.onSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const Gap(BullSpacing.xs),
                     if (raw.isNotEmpty && amount == null)
                       BullInfoBar(message: l10n.boardAmountInvalid),
+                    BullText(
+                      belowMinimum
+                          ? l10n.boardAmountBelowMinimum(
+                              formatArkSats(context, minimum),
+                            )
+                          : minimum == null
+                          ? l10n.boardMinimumUnavailable
+                          : l10n.boardMinimumWithNetworkFees(
+                              formatArkSats(context, minimum),
+                            ),
+                      role: BullTextRole.caption,
+                      color: belowMinimum
+                          ? context.bull.primary
+                          : context.bull.textMuted,
+                    ),
                     if (insufficient)
                       BullInfoBar(
                         message: l10n.insufficient,
@@ -273,40 +406,15 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                       color: context.bull.textMuted,
                     ),
                     const Gap(BullSpacing.md),
-                    BullText(
-                      l10n.boardFastPolicy,
-                      role: BullTextRole.caption,
-                      color: context.bull.textMuted,
-                    ),
+                    BullText(l10n.boardFeeEstimate, role: BullTextRole.label),
                     const Gap(BullSpacing.xs),
                     BullText(
-                      l10n.boardFeeReview,
+                      l10n.boardEstimateUnavailable,
                       role: BullTextRole.caption,
                       color: context.bull.textMuted,
                     ),
                     if (rendered.onReviewRequest == null)
                       BullInfoBar(message: l10n.nativeUnavailable),
-                    const Gap(BullSpacing.lg),
-                    BullDetailsTable(
-                      items: [
-                        BullDetailsTableItem(
-                          label: l10n.arkInfo,
-                          displayValue: rendered.config.arkUrl.host,
-                          expandableChild: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              BullText(
-                                l10n.boardDestination(
-                                  '${id.parent.hex}/${id.network.name}/${id.serverIdentity}',
-                                ),
-                                role: BullTextRole.caption,
-                              ),
-                              ArkConnectionDetails(config: rendered.config),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
