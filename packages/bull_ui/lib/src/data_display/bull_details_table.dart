@@ -13,7 +13,12 @@ import 'package:bull_ui/src/layout/gap.dart';
 /// [BullTheme.surface], the border and dividers use [BullTheme.outline], and a
 /// soft drop shadow derives from [BullTheme.onSurface].
 class BullDetailsTable extends StatelessWidget {
-  const BullDetailsTable({super.key, required this.items, this.flat = false});
+  const BullDetailsTable({
+    super.key,
+    required this.items,
+    this.flat = false,
+    this.dividerHeight,
+  });
 
   /// The rows to render (typically [BullDetailsTableItem]s), separated by
   /// dividers.
@@ -21,6 +26,9 @@ class BullDetailsTable extends StatelessWidget {
 
   /// Omits only the outer frame, fill, shadow and padding.
   final bool flat;
+
+  /// Null keeps the themed divider spacing.
+  final double? dividerHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +53,8 @@ class BullDetailsTable extends StatelessWidget {
         children: [
           for (int i = 0; i < items.length; i++) ...[
             items[i],
-            if (i != items.length - 1) Divider(color: colors.outline),
+            if (i != items.length - 1)
+              Divider(color: colors.outline, height: dividerHeight),
           ],
         ],
       ),
@@ -73,10 +82,14 @@ class BullDetailsTableItem extends StatefulWidget {
     this.initiallyExpanded = false,
     this.copiedMessage = 'Copied to clipboard',
     this.onCopied,
+    this.compact = false,
   });
 
   /// Left-hand row label.
   final String label;
+
+  /// Compact rows use wider labels, grow naturally and keep 48 dp actions.
+  final bool compact;
 
   /// Right-hand value rendered as text when [displayWidget] is null.
   final String? displayValue;
@@ -111,20 +124,36 @@ class BullDetailsTableItem extends StatefulWidget {
 class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
   late bool _expanded = widget.initiallyExpanded;
 
+  Widget _actionIcon(IconData data, String? label) {
+    final icon = Icon(data, size: 18, color: context.bull.primary);
+    return widget.compact
+        ? Semantics(
+            button: true,
+            label: label,
+            expanded: data == Icons.copy_outlined ? null : _expanded,
+            child: SizedBox.square(dimension: 48, child: Center(child: icon)),
+          )
+        : icon;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final labels = widget.compact ? MaterialLocalizations.of(context) : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        Container(
+          constraints: widget.compact
+              ? const BoxConstraints(minHeight: 48)
+              : null,
+          padding: EdgeInsets.symmetric(vertical: widget.compact ? 0 : 8),
           child: Row(
             children: [
               // Label
               Expanded(
-                flex: 2,
+                flex: widget.compact ? 3 : 2,
                 child: Text(
                   widget.label,
                   style: context.bullType.body.copyWith(
@@ -135,7 +164,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
 
               // Value + copy icon + expand icon
               Expanded(
-                flex: 3,
+                flex: widget.compact ? 2 : 3,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -179,10 +208,9 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                               );
                             }
                           },
-                          child: Icon(
+                          child: _actionIcon(
                             Icons.copy_outlined,
-                            size: 18,
-                            color: colors.primary,
+                            labels?.copyButtonLabel,
                           ),
                         ),
                       ),
@@ -196,10 +224,11 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                               _expanded = !_expanded;
                             });
                           },
-                          child: Icon(
+                          child: _actionIcon(
                             _expanded ? Icons.expand_less : Icons.expand_more,
-                            size: 18,
-                            color: colors.primary,
+                            _expanded
+                                ? labels?.expandedIconTapHint
+                                : labels?.collapsedIconTapHint,
                           ),
                         ),
                       ),
