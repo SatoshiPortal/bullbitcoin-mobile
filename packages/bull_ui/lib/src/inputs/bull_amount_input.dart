@@ -592,6 +592,10 @@ class _BullAmountInputState extends State<BullAmountInput> {
           textDirection: Directionality.of(context),
           textScaler: MediaQuery.textScalerOf(context),
         )..layout()).width;
+        // RenderEditable reserves one pixel plus the cursor width at the
+        // trailing edge; the hint needs the same inset as the entered digits.
+        const cursorWidth = 2.0;
+        const caretMargin = 1.0 + cursorWidth;
         final number = _shown;
         final unitPadding =
             BullSpacing.xs +
@@ -646,7 +650,10 @@ class _BullAmountInputState extends State<BullAmountInput> {
                       ],
                       readOnly: widget.readOnly,
                       style: style,
-                      textAlign: TextAlign.center,
+                      cursorWidth: cursorWidth,
+                      textAlign: widget.compact
+                          ? TextAlign.center
+                          : TextAlign.end,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         // A compact row centres its body line in the 48 dp
@@ -657,12 +664,24 @@ class _BullAmountInputState extends State<BullAmountInput> {
                               )
                             : EdgeInsets.zero,
                         isDense: true,
-                        hintText:
+                        hint: Padding(
+                          padding: EdgeInsetsDirectional.only(
+                            end: widget.compact ? 0 : caretMargin,
+                          ),
+                          child: Text(
                             _showMax &&
-                                (widget.maxLoading ||
-                                    widget.maxAmountSat == null)
-                            ? '—'
-                            : '0',
+                                    (widget.maxLoading ||
+                                        widget.maxAmountSat == null)
+                                ? '—'
+                                : '0',
+                            textAlign: widget.compact
+                                ? TextAlign.center
+                                : TextAlign.end,
+                            style: style.copyWith(
+                              color: context.bull.textMuted,
+                            ),
+                          ),
+                        ),
                         hintStyle: style.copyWith(
                           color: context.bull.textMuted,
                         ),
@@ -700,6 +719,15 @@ class _BullAmountInputState extends State<BullAmountInput> {
                   foregroundColor: context.bull.text,
                 ),
                 child: Text(_unitCode, style: style),
+              ),
+            // Keep the visible number/unit pair centred without shrinking the
+            // editor's 48 dp pointer and semantics target for a short number.
+            if (!widget.compact && widget.showControls)
+              SizedBox(
+                width: math.max(
+                  0.0,
+                  BullSpacing.xxl - numberWidth * scale - caretMargin,
+                ),
               ),
           ],
         );
