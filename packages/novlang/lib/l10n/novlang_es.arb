@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Configuración de cuenta",
   "app__exchangeTestnetBasicAuthTitle_apple": "Credenciales de la cuenta de testnet",
   "app__exchangeTestnetBasicAuthDescription_apple": "Autenticación básica HTTP para las páginas web de la cuenta de testnet (inicio de sesión y KYC).",
-  "app__exchangeAccountTitle_apple": "Cuenta",
-  "app__exchangeAccountSettingsTitle_apple": "Configuración de cuenta",
   "app__walletDeletionErrorOngoingSwaps_apple": "No se puede eliminar una billetera con transferencias en curso.",
   "app__onboardingSplashDescription_apple": "Billetera Bitcoin soberana con custodia propia y servicios exclusivamente de Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Las transferencias de Bitcoin tardarán en confirmarse.",

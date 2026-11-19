@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Kontoeinstellungen",
   "app__exchangeTestnetBasicAuthTitle_apple": "Zugangsdaten für das Testnet-Konto",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP-Basisauthentifizierung für die Webseiten des Testnet-Kontos (Anmeldung und Identitätsprüfung).",
-  "app__exchangeAccountTitle_apple": "Konto",
-  "app__exchangeAccountSettingsTitle_apple": "Kontoeinstellungen",
   "app__walletDeletionErrorOngoingSwaps_apple": "Sie können keine Wallet löschen, in der noch Transfers laufen.",
   "app__onboardingSplashDescription_apple": "Souveräne, selbstverwahrte Bitcoin-Wallet und reine Bitcoin-Dienste.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin-Transfers benötigen einige Zeit, um bestätigt zu werden.",
