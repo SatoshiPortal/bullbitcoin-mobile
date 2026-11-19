@@ -785,21 +785,25 @@ class _BullAmountInputState extends State<BullAmountInput> {
           ),
           if (_showMax) ...[
             const SizedBox(height: BullSpacing.xxs),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.bull.text,
-                borderRadius: BorderRadius.circular(context.bullShapes.button),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: BullSpacing.xs,
-                  vertical: BullSpacing.xxs,
+            Center(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: context.bull.text,
+                  borderRadius: BorderRadius.circular(
+                    context.bullShapes.button,
+                  ),
                 ),
-                child: Text(
-                  l10n.amountMaxAfterFees,
-                  style: context.bullType.caption.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: context.bull.background,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: BullSpacing.xs,
+                    vertical: BullSpacing.xxs,
+                  ),
+                  child: Text(
+                    l10n.amountMaxAfterFees,
+                    style: context.bullType.caption.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: context.bull.background,
+                    ),
                   ),
                 ),
               ),
