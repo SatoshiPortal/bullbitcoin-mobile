@@ -76,11 +76,20 @@ class AppSettingsScreen extends StatelessWidget {
       _ => null,
     };
 
+    // A switch has no text of its own, so it borrows its row's title; a
+    // picker already reads its value and keeps the tile's single title.
     Widget? namedTrailingFor(SettingsItem item) {
       final trailing = trailingFor(item.id);
-      return trailing == null
-          ? null
-          : Semantics(label: item.title, child: trailing);
+      return switch (item.id) {
+        SettingsItemId.theme ||
+        SettingsItemId.screenPrivacy ||
+        SettingsItemId.devMode ||
+        SettingsItemId.errorReporting when trailing != null => Semantics(
+          label: item.title,
+          child: trailing,
+        ),
+        _ => trailing,
+      };
     }
 
     return BlocListener<SettingsCubit, SettingsState>(
