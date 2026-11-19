@@ -38,6 +38,14 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
   late StreamSubscription<ArkOperationState> _subscription;
   Timer? _reviewExpiry;
   ArkOperationReview? _expiredReview;
+  bool _resultDetails = false, _resultLeaving = false;
+  int _resultEpoch = 0;
+
+  void _resetResult() {
+    _resultDetails = _resultLeaving = false;
+    ++_resultEpoch;
+  }
+
   bool _owns(ArkOperationCubit owner, ArkAccountId account) =>
       mounted &&
       !owner.isClosed &&
@@ -53,6 +61,7 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     final account = owner.account;
     _subscription = owner.stream.listen((_) {
       if (_owns(owner, account)) {
+        _resetResult();
         _watchExpiry(owner);
         setState(() {});
       }
@@ -105,6 +114,7 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
   void didUpdateWidget(ArkOperationReviewScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.cubit, widget.cubit)) {
+      _resetResult();
       unawaited(_subscription.cancel());
       _listen();
     }
@@ -212,6 +222,18 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     final owner = widget.cubit;
     final account = owner.account;
     final state = owner.state;
+    if (state case final ArkOperationSubmitted result
+        when result.operation.status == ArkOperationStatus.succeeded &&
+            switch ((owner.request, result.operation.kind)) {
+              (ArkRenewalQuoteRequest(), ArkOperationKind.renewal) ||
+              (
+                ArkEmergencyExitQuoteRequest(),
+                ArkOperationKind.emergencyExit,
+              ) => true,
+              _ => false,
+            }) {
+      return _result(context, owner, result);
+    }
     final title = state is ArkOperationReview && state.quote.account == account
         ? switch ((owner.request, state.quote.kind)) {
             (ArkRenewalQuoteRequest(), ArkOperationKind.renewal) => l10n.renew,
@@ -495,6 +517,150 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                 ),
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _result(
+    BuildContext context,
+    ArkOperationCubit owner,
+    ArkOperationSubmitted rendered,
+  ) {
+    final l10n = arkLocalizationsOf(context);
+    final epoch = _resultEpoch;
+    final leave = widget.onDone ?? widget.onReconcile;
+    bool current() =>
+        epoch == _resultEpoch &&
+        !_resultLeaving &&
+        _current(owner, owner.account, rendered) &&
+        ModalRoute.of(context)?.isCurrent == true;
+    void details(bool show) {
+      if (!current()) return;
+      setState(() {
+        _resultDetails = show;
+        ++_resultEpoch;
+      });
+    }
+
+    void finish() {
+      if (!current() ||
+          !identical(leave, widget.onDone ?? widget.onReconcile)) {
+        return;
+      }
+      if (widget.onDone == null) {
+        // Refresh may keep this same result route; retire only this callback.
+        setState(() => ++_resultEpoch);
+        leave();
+        return;
+      }
+      setState(() {
+        _resultLeaving = true;
+      });
+      // Rebuild PopScope before the real host navigation can pop this route.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_resultLeaving ||
+            epoch != _resultEpoch ||
+            !_current(owner, owner.account, rendered)) {
+          return;
+        }
+        if (ModalRoute.of(context)?.isCurrent != true ||
+            !identical(leave, widget.onDone ?? widget.onReconcile)) {
+          setState(() {
+            _resultLeaving = false;
+            ++_resultEpoch;
+          });
+          return;
+        }
+        leave();
+      });
+    }
+
+    return PopScope<Object?>(
+      canPop: !_resultDetails || _resultLeaving,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) details(false);
+      },
+      child: BullScaffold(
+        backgroundColor: context.bull.background,
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              BullSpacing.md,
+              0,
+              BullSpacing.md,
+              BullSpacing.lg,
+            ),
+            child: _button(
+              context,
+              widget.onDone == null ? l10n.refresh : l10n.done,
+              finish,
+              disabled: _resultLeaving,
+            ),
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_resultDetails)
+                BullTopBar(
+                  title: l10n.operationDetails,
+                  onBack: () => details(false),
+                ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, viewport) => SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: viewport.maxHeight,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(BullSpacing.md),
+                        child: Column(
+                          mainAxisAlignment: _resultDetails
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_resultDetails)
+                              BullDetailsTable(
+                                flat: true,
+                                items: [
+                                  BullDetailsTableItem(
+                                    label: l10n.id,
+                                    displayValue: rendered.operation.id,
+                                  ),
+                                  BullDetailsTableItem(
+                                    label: l10n.state,
+                                    displayValue:
+                                        l10n.operationRequestCompleted,
+                                  ),
+                                ],
+                              )
+                            else ...[
+                              _submittedHero(
+                                context,
+                                owner,
+                                rendered.operation,
+                              ),
+                              _button(
+                                context,
+                                l10n.operationDetails,
+                                () => details(true),
+                                disabled: _resultLeaving,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
