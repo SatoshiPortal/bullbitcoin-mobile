@@ -9802,10 +9802,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "Přijmout částku",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "Přihlaste se k programu",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10766,7 +10762,6 @@
   "mempoolErrorLoadFailed": "Nepodařilo se načíst data mempool serveru",
   "mempoolErrorDeleteFailed": "Nepodařilo se odstranit vlastní server",
   "receivePayjoinNoUtxos": "Nejprve přijměte prostředky, abyste to mohli povolit.\nK použití payjoin jsou potřeba UTXO.",
-  "receiveLiquidRiskDisclosureLabel": "Platby budou převedeny na Liquid L-BTC (nikoli BTC). Více informací.",
   "payViewReceipt": "Zobrazit účtenku",
   "paySinpeReceipt": "Účtenka SINPE",
   "transactionFilterWithdraw": "Výběr",
@@ -10947,11 +10942,7 @@
   "settingsPayjoinDisclaimerTitle": "Upozornění k Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Upozornění k Payjoin",
   "settingsPayjoinAdvancedTitle": "Rozšířená nastavení Payjoin",
-  "receiveAdditionalInformation": "Další informace",
-  "receiveAdditionalInformationPlaceholder": "Přidejte částku nebo zprávu pro odesílatele",
-  "receiveMessageForSender": "Zpráva pro odesílatele",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
   "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
   "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",

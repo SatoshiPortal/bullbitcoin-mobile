@@ -9287,10 +9287,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "receiveReceiveAmount": "المبلغ المستلم",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "تطبيق للانضمام إلى البرنامج هنا",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10662,7 +10658,6 @@
   "exchangeStatisticsSellAvgPriceDesc": "متوسط السعر المستلَم لكل بيتكوين عند البيع",
   "exchangeStatisticsTotalVolumeDesc": "مجموع أحجام الشراء والبيع بالعملات التقليدية",
   "receivePayjoinNoUtxos": "استلم الأموال أولاً لتفعيله.\nيتطلب استخدام Payjoin وجود مخرجات معاملات غير منفقة (UTXOs).",
-  "receiveLiquidRiskDisclosureLabel": "ستُحوَّل المدفوعات إلى L-BTC على شبكة السائل (وليس BTC). اطّلع على المزيد.",
   "payViewReceipt": "عرض الإيصال",
   "paySinpeReceipt": "إيصال SINPE",
   "transactionFilterWithdraw": "سحب",
@@ -10950,11 +10945,7 @@
   "settingsPayjoinDisclaimerTitle": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
-  "receiveAdditionalInformation": "معلومات إضافية",
-  "receiveAdditionalInformationPlaceholder": "أضف مبلغًا أو رسالة للمرسل",
-  "receiveMessageForSender": "رسالة إلى المرسل",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
   "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
   "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",

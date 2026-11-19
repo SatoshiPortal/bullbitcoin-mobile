@@ -7580,10 +7580,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "Сума за получаване",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "Кандидатствайте, за да се присъедините към програмата тук",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -8334,7 +8330,6 @@
   "mempoolErrorLoadFailed": "Неуспешно зареждане на данните на mempool сървъра",
   "mempoolErrorDeleteFailed": "Неуспешно изтриване на персонализирания сървър",
   "receivePayjoinNoUtxos": "Първо получете средства, за да го активирате.\nЗа използване на payjoin са необходими UTXO.",
-  "receiveLiquidRiskDisclosureLabel": "Плащанията ще бъдат конвертирани в Liquid L-BTC (не BTC). Научете повече.",
   "payViewReceipt": "Виж разписката",
   "paySinpeReceipt": "SINPE разписка",
   "transactionFilterWithdraw": "Тегления",
@@ -9066,11 +9061,7 @@
   "settingsPayjoinDisclaimerTitle": "Уведомление за Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
   "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
-  "receiveAdditionalInformation": "Допълнителна информация",
-  "receiveAdditionalInformationPlaceholder": "Добавете сума или съобщение за изпращача",
-  "receiveMessageForSender": "Съобщение за изпращача",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin е активиран, но този портфейл все още няма наличност за участие. Ще се активира, щом получите средства.",
   "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",

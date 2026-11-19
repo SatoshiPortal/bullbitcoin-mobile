@@ -8652,10 +8652,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "receiveReceiveAmount": "Αποδεχόμενο ποσό",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "Εφαρμογή για να ενταχθεί στο πρόγραμμα εδώ",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10766,7 +10762,6 @@
   "mempoolErrorLoadFailed": "Αποτυχία φόρτωσης δεδομένων διακομιστή mempool",
   "mempoolErrorDeleteFailed": "Αποτυχία διαγραφής προσαρμοσμένου διακομιστή",
   "receivePayjoinNoUtxos": "Λάβετε πρώτα κεφάλαια για να το ενεργοποιήσετε.\nΑπαιτούνται UTXOs για να χρησιμοποιήσετε το payjoin.",
-  "receiveLiquidRiskDisclosureLabel": "Οι πληρωμές θα μετατραπούν σε Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
   "payViewReceipt": "Προβολή απόδειξης",
   "paySinpeReceipt": "Απόδειξη SINPE",
   "transactionFilterWithdraw": "Ανάληψη",
@@ -10947,11 +10942,7 @@
   "settingsPayjoinDisclaimerTitle": "Ενημέρωση για το Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
   "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
-  "receiveAdditionalInformation": "Πρόσθετες πληροφορίες",
-  "receiveAdditionalInformationPlaceholder": "Προσθέστε ποσό ή μήνυμα για τον αποστολέα",
-  "receiveMessageForSender": "Μήνυμα για τον αποστολέα",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Το Payjoin είναι ενεργοποιημένο, αλλά αυτό το πορτοφόλι δεν έχει ακόμη υπόλοιπο για συνεισφορά. Θα ενεργοποιηθεί μόλις λάβετε χρήματα.",
   "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
   "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",

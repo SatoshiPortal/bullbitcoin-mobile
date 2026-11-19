@@ -18,9 +18,7 @@ enum ReceiveRoute {
   receiveBitcoin('/receive/bitcoin'),
   receiveLightning('/receive/lightning'),
   receiveLiquid('/receive/liquid'),
-  bitcoinAmount('amount'),
   lightningAmount('amount'),
-  liquidAmount('amount'),
   lightningQr('qr'),
   payjoinInProgress('payjoin'),
   lightningPaymentInProgress('in-progress'),
@@ -173,12 +171,6 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            name: ReceiveRoute.bitcoinAmount.name,
-            path: ReceiveRoute.bitcoinAmount.path,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveAmountScreen()),
-          ),
-          GoRoute(
             name: ReceiveRoute.payjoinInProgress.name,
             path: ReceiveRoute.payjoinInProgress.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
@@ -274,14 +266,7 @@ class ReceiveRouter {
 
           return const NoTransitionPage(child: ReceiveQrPage());
         },
-        routes: [
-          GoRoute(
-            name: ReceiveRoute.liquidAmount.name,
-            path: ReceiveRoute.liquidAmount.path,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveAmountScreen()),
-          ),
-        ],
+        routes: [],
       ),
     ],
   );

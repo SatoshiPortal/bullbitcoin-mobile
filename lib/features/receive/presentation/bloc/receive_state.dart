@@ -92,6 +92,12 @@ abstract class ReceiveState with _$ReceiveState {
     walletCount: wallets.length,
     payjoinEnabled: payjoinGloballyEnabled ?? false,
     hasMessage: note.isNotEmpty,
+    hasLocalSigner: wallet?.signsLocally ?? false,
+    hasFunds: hasUtxos,
+    payjoinSuppressedForAmount: isPayjoinSuppressedByAmount,
+    supportsDeviceVerification:
+        (wallet?.signerDevice?.isLedger ?? false) ||
+        (wallet?.signerDevice?.isBitBox ?? false),
   );
 
   ReceiveLightningLimits get lightningLimits =>

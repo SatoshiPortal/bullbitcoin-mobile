@@ -1422,11 +1422,7 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "receiveLiquidRiskDisclosureLabel": "Payments will be converted to Liquid L-BTC (not BTC). Learn more.",
-  "@receiveLiquidRiskDisclosureLabel": {
-    "description": "Small link label opening the Liquid Bitcoin risk disclosure on the Lightning receive screen"
-  },
-  "receiveAddress": "Receive Address",
+  "receiveAddress": "Address",
   "@receiveAddress": {
     "description": "Label for generated address"
   },
@@ -1442,11 +1438,11 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "receiveTotalFee": "Total Fee",
+  "receiveTotalFee": "Total fee",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
   },
-  "receiveNetworkFee": "Network Fee",
+  "receiveNetworkFee": "Network fee",
   "@receiveNetworkFee": {
     "description": "Label for the network fee in a receive transaction"
   },
@@ -1539,15 +1535,11 @@
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
   },
-  "receiveReceiveAmount": "Receive Amount",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
-  "receiveSendNetworkFee": "Send Network Fee",
+  "receiveSendNetworkFee": "Send network fee",
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "receiveServerNetworkFees": "Server Network Fees",
+  "receiveServerNetworkFees": "Server network fees",
   "@receiveServerNetworkFees": {
     "description": "Label for network fees charged by the swap server"
   },
@@ -1555,7 +1547,7 @@
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "receiveTransferFee": "Swap Fee",
+  "receiveTransferFee": "Swap fee",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -1563,7 +1555,7 @@
   "@receiveVerifyAddressError": {
     "description": "Error message when address verification is not possible"
   },
-  "receiveVerifyAddressLedger": "Verify Address on Ledger",
+  "receiveVerifyAddressLedger": "Verify on Ledger",
   "@receiveVerifyAddressLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
@@ -6914,7 +6906,7 @@
   "@receiveLiquidNetwork": {
     "description": "Liquid Network option"
   },
-  "receiveInvoice": "Lightning Invoice",
+  "receiveInvoice": "Invoice",
   "@receiveInvoice": {
     "description": "Label for Lightning invoice"
   },
@@ -12612,29 +12604,9 @@
   "@announcementDismissConfirmRead": {
     "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
   },
-  "receiveAdditionalInformation": "Additional Information",
-  "receiveMessageForSender": "Message For Sender",
-  "@receiveMessageForSender": {
-    "description": "Field on the receive additional-information page for the counterparty-visible message — becomes the BIP21 message= parameter (and the lightning swap description). Formerly called Note."
-  },
-  "receiveAdditionalInformationPlaceholder": "Add an amount or message for sender",
-  "@receiveAdditionalInformationPlaceholder": {
-    "description": "Placeholder on the Additional Information receive tile when neither amount nor message is set yet."
-  },
-  "@receiveAdditionalInformation": {
-    "description": "Receive-screen tile unifying the optional amount and message; tapping opens the additional-information page to edit both."
-  },
-  "receivePayjoinAwaitingFunds": "Payjoin is enabled, but this wallet has no balance yet to contribute. It will activate once you receive funds.",
-  "@receivePayjoinAwaitingFunds": {
-    "description": "Hint on the receive screen explaining why payjoin (enabled in settings) is not yet active for a wallet with no balance."
-  },
   "receivePayjoinQrBadge": "Payjoin",
   "@receivePayjoinQrBadge": {
     "description": "Short badge shown on the receive QR code corner when the address advertises a payjoin endpoint, signalling the sender may propose a payjoin."
-  },
-  "receivePayjoinBelowMinimumAmount": "Payjoin is off for this amount — it is below your Payjoin minimum. Request a larger amount to enable it.",
-  "@receivePayjoinBelowMinimumAmount": {
-    "description": "Hint on the receive screen when payjoin is enabled but the requested amount is below the anti-probing minimum, so the QR does not advertise a payjoin endpoint."
   },
   "dcaAccountUnavailableError": "Could not load your account. Check your connection, make sure you are logged in, and try again.",
   "@dcaAccountUnavailableError": {
@@ -15804,5 +15776,70 @@
   "exchangeSupportChatSendTooltip": "Send message",
   "@exchangeSupportChatSendTooltip": {
     "description": "Accessible tooltip for the support chat send button."
-  }
+  },
+  "receiveAdvancedSettings": "Advanced settings",
+  "@receiveAdvancedSettings": {},
+  "receiveInto": "Receive into",
+  "@receiveInto": {},
+  "receiveRecipientMessage": "Message to the recipient",
+  "@receiveRecipientMessage": {},
+  "receiveOptional": "Optional",
+  "@receiveOptional": {},
+  "receiveFees": "Fees",
+  "@receiveFees": {},
+  "receiveYouReceive": "You receive",
+  "@receiveYouReceive": {},
+  "receiveMessage": "Message",
+  "@receiveMessage": {},
+  "receiveCreateInvoice": "Create invoice",
+  "@receiveCreateInvoice": {},
+  "receiveCreatingInvoice": "Creating invoice…",
+  "@receiveCreatingInvoice": {},
+  "receivePayjoinAppliesGlobally": "Applies to all your receives",
+  "@receivePayjoinAppliesGlobally": {},
+  "receivePayjoinStartsWithFunds": "Starts once this wallet has funds",
+  "@receivePayjoinStartsWithFunds": {},
+  "receivePayjoinNotUsedForAmount": "Payjoin is not used for this amount",
+  "@receivePayjoinNotUsedForAmount": {},
+  "receivePayjoinOn": "Payjoin on",
+  "@receivePayjoinOn": {},
+  "receivePayjoinSettings": "Payjoin settings",
+  "@receivePayjoinSettings": {},
+  "receiveArrivesAsLiquid": "Arrives as L-BTC on Liquid.",
+  "@receiveArrivesAsLiquid": {},
+  "receiveEnlargeQr": "Enlarge the QR code",
+  "@receiveEnlargeQr": {},
+  "receiveLimits": "Min {min} sats · Max {max} sats",
+  "@receiveLimits": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveBelowMinimum": "Enter at least {min} sats",
+  "@receiveBelowMinimum": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveAboveMaximum": "Enter no more than {max} sats",
+  "@receiveAboveMaximum": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEditAmount": "Edit amount",
+  "@receiveEditAmount": {},
+  "receiveRecipientMessageHint": "Optional, visible to the payer",
+  "@receiveRecipientMessageHint": {},
+  "receiveVerifyBitbox": "Verify on BitBox",
+  "@receiveVerifyBitbox": {}
 }

@@ -1,0 +1,97 @@
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bull_ui/bull_ui.dart';
+
+class ReceiveEnlargedQr extends StatelessWidget {
+  const ReceiveEnlargedQr({
+    super.key,
+    required this.data,
+    required this.caption,
+  });
+  final String data;
+  final String caption;
+
+  static Future<void> show(BuildContext context, ReceiveState state) async {
+    await BullDialog.show<void>(
+      context: context,
+      fullscreen: true,
+      padding: EdgeInsets.zero,
+      barrierColor: context.appColors.scrim.withValues(alpha: 0.88),
+      builder: (context) => ReceiveEnlargedQr(
+        data: state.qrData,
+        caption: state.isLightning
+            ? '${context.loc.receiveLightningInvoice} · ${FormatAmount.sats(state.lightningAmountSat ?? state.confirmedAmountSat ?? 0)}'
+            : '${state.wallet?.displayLabel(context) ?? ''} · ${StringFormatting.truncateMiddle(state.addressOrInvoiceOnly)}',
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    fit: StackFit.expand,
+    children: [
+      GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).pop(),
+        child: Container(color: context.bull.transparent),
+      ),
+      SafeArea(
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: BullInlineIconButton(
+                tooltip: context.loc.closeDialogButton,
+                onPressed: () => Navigator.of(context).pop(),
+                icon: BullIcon(
+                  BullIcons.close,
+                  color: context.appColors.surfaceFixed,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final size = constraints.maxWidth
+                              .clamp(0, 358)
+                              .toDouble();
+                          return Container(
+                            width: size,
+                            height: size,
+                            color: context.appColors.surfaceFixed,
+                            child: BullQrCode(
+                              data: data,
+                              size: size,
+                              semanticsLabel: caption,
+                            ),
+                          );
+                        },
+                      ),
+                      const Gap(24),
+                      Text(
+                        caption,
+                        textAlign: TextAlign.center,
+                        style: context.bullType.body.copyWith(
+                          color: context.appColors.surfaceFixed,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}

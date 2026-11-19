@@ -1,93 +1,60 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_advanced_settings.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
+import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
+import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
+import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullBorderedTile,
-        BullDropdown,
-        BullPickerItem,
-        BullShapesX,
-        BullShimmerLine,
-        BullSnackBar,
-        Gap,
-        BullTypographyX;
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
 class ReceiveQrPage extends StatelessWidget {
   const ReceiveQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isLightning = context.select(
-      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
-    );
-    final isLedger = context.select(
-      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isLedger ?? false,
-    );
-    final isBitBox = context.select(
-      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
-    );
-    final showAddressVerification = !isLightning && (isLedger || isBitBox);
-    final orderSwap = context.select(
-      (ReceiveBloc bloc) => bloc.state.orderSwap,
-    );
-
-    final gap = Device.screen.height * 0.02;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          // const Gap(10),
-          // const ReceiveNetworkSelection(),
-          Gap(gap),
-          if (orderSwap?.order?.requiresManualReview == true) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: OrderSwapUnderReviewCard(orderSwap: orderSwap!),
+    final state = context.watch<ReceiveBloc>().state;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              state.isLightning ? 16 : 24,
+              16,
+              16,
             ),
-            Gap(gap),
-          ],
-          const ReceiveQRDetails(),
-          // Half-gaps below the address block: matches the address→payjoin
-          // spacing inside ReceiveQRDetails so the stack reads evenly.
-          Gap(gap / 2),
-          const ReceiveInfoDetails(),
-          Gap(gap / 2),
-          if (showAddressVerification) ...[
-            if (isLedger)
-              const Column(children: [VerifyAddressOnLedgerButton()]),
-            if (isBitBox)
-              const Column(children: [VerifyAddressOnBitBoxButton()]),
-            Gap(gap),
-          ],
-          if (!isLightning) const ReceiveNewAddressButton(),
-          Gap(gap / 2),
-        ],
-      ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (state.orderSwap case final order?
+                    when order.order?.requiresManualReview == true)
+                  OrderSwapUnderReviewCard(orderSwap: order),
+                const ReceiveQRDetails(),
+                const Gap(16),
+                const ReceiveInfoDetails(),
+              ],
+            ),
+          ),
+        ),
+        if (!state.isLightning)
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: ReceiveAdvancedSettingsLink(),
+          ),
+      ],
     );
   }
 }
@@ -97,259 +64,130 @@ class ReceiveQRDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isBitcoin = context.select(
-      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.bitcoin,
-    );
-    final isLightning = context.select(
-      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
-    );
-    final qrData = context.select((ReceiveBloc bloc) => bloc.state.qrData);
-    final clipboardData = context.select(
-      (ReceiveBloc bloc) => bloc.state.clipboardData,
-    );
-    final addressOrInvoiceOnly = context.select(
-      (ReceiveBloc bloc) => bloc.state.addressOrInvoiceOnly,
-    );
-    final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
-    final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
-    final isPayjoinAwaitingFunds = context.select(
-      (ReceiveBloc bloc) => bloc.state.isPayjoinAwaitingFunds,
-    );
-    final isPayjoinSuppressedByAmount = context.select(
-      (ReceiveBloc bloc) => bloc.state.isPayjoinSuppressedByAmount,
-    );
-
-    final failure = context.select((ReceiveBloc bloc) => bloc.state.failure);
-    if (!isLightning && qrData.isEmpty && failure != null) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            BBText(failure.toTranslated(context), style: context.bullType.body),
-            const Gap(16),
-            BullButton.secondary(
-              label: context.loc.retry,
-              onPressed: () => context.read<ReceiveBloc>().add(
-                isBitcoin
-                    ? ReceiveBitcoinStarted(selectedWallet)
-                    : const ReceiveLiquidStarted(),
-              ),
+    final state = context.watch<ReceiveBloc>().state;
+    final failure = state.failure;
+    final qrSize = state.isLightning ? 217.0 : 240.0;
+    if (!state.isLightning && state.qrData.isEmpty && failure != null) {
+      return Column(
+        children: [
+          Text(failure.toTranslated(context), style: context.bullType.body),
+          BullButton.secondary(
+            label: context.loc.retry,
+            onPressed: () => context.read<ReceiveBloc>().add(
+              state.type == ReceiveType.bitcoin
+                  ? ReceiveBitcoinStarted(state.wallet)
+                  : const ReceiveLiquidStarted(),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
-
-    final gap = Device.screen.height * 0.02;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          if (wallets.length > 1 &&
-              isBitcoin &&
-              selectedWallet != null &&
-              selectedWallet.isBitcoin)
-            BullDropdown<Wallet>(
-              value: selectedWallet,
-              items: [
-                for (final wallet in wallets)
-                  BullPickerItem(
-                    value: wallet,
-                    label: wallet.displayLabel(context),
-                  ),
-              ],
-              onChanged: (wallet) => context.read<ReceiveBloc>().add(
-                ReceiveEvent.receiveBitcoinStarted(wallet),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Semantics(
+            button: true,
+            label: context.loc.receiveEnlargeQr,
+            child: GestureDetector(
+              onTap: state.qrData.isEmpty
+                  ? null
+                  : () => ReceiveEnlargedQr.show(context, state),
+              child: state.qrData.isEmpty
+                  ? BullShimmerBox(width: qrSize, height: qrSize)
+                  : Container(
+                      width: qrSize,
+                      height: qrSize,
+                      color: context.appColors.surfaceFixed,
+                      child: BullQrCode(data: state.qrData, size: qrSize),
+                    ),
             ),
-          Gap(gap),
-          Center(child: QrDisplayWidget(data: qrData, size: 217)),
-          Gap(gap),
-          if (isBitcoin && isPayjoinAwaitingFunds) ...[
-            InfoCard(
-              description: context.loc.receivePayjoinAwaitingFunds,
-              tagColor: context.appColors.secondary,
-              bgColor: context.appColors.onSecondary,
-            ),
-            Gap(gap),
-          ],
-          if (isBitcoin && isPayjoinSuppressedByAmount) ...[
-            InfoCard(
-              description: context.loc.receivePayjoinBelowMinimumAmount,
-              tagColor: context.appColors.secondary,
-              bgColor: context.appColors.onSecondary,
-            ),
-            Gap(gap),
-          ],
-          BullBorderedTile(
-            backgroundColor: context.appColors.surfaceContainerHighest,
-            onTap: () => isLightning
+          ),
+        ),
+        const Gap(16),
+        Text(
+          state.isLightning
+              ? context.loc.receiveInvoice
+              : context.loc.receiveAddress,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
+        const Gap(6),
+        SizedBox(
+          height: 56,
+          child: BullBorderedTile(
+            backgroundColor: context.appColors.surface,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            onTap: () => state.isLightning
                 ? InvoiceViewer.showDetail(
                     context,
-                    data: addressOrInvoiceOnly,
-                    clipboardText: clipboardData,
+                    data: state.addressOrInvoiceOnly,
+                    clipboardText: state.clipboardData,
                   )
                 : AddressViewer.showDetail(
                     context,
-                    data: addressOrInvoiceOnly,
-                    clipboardText: clipboardData,
+                    data: state.addressOrInvoiceOnly,
+                    clipboardText: state.clipboardData,
                   ),
             onLongPress: () {
-              Clipboard.setData(
-                ClipboardData(
-                  text: clipboardData.isNotEmpty
-                      ? clipboardData
-                      : addressOrInvoiceOnly,
-                ),
-              );
+              Clipboard.setData(ClipboardData(text: state.clipboardData));
               BullSnackBar.show(
                 context,
                 message: context.loc.copiedToClipboard,
               );
             },
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      BBText(
-                        isLightning
-                            ? context.loc.receiveLightningInvoice
-                            : context.loc.receiveAddress,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                        color: context.appColors.secondary,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: state.isLightning
+                  ? InvoiceViewer(
+                      state.addressOrInvoiceOnly,
+                      clipboardText: state.clipboardData,
+                      style: context.bullType.body.copyWith(
+                        decorationThickness: 1.5,
                       ),
-                      const Gap(4),
-                      isLightning
-                          ? InvoiceViewer(
-                              addressOrInvoiceOnly,
-                              clipboardText: clipboardData,
-                              style: context.bullType.body.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              color: context.appColors.secondary,
-                            )
-                          : AddressViewer(
-                              addressOrInvoiceOnly,
-                              clipboardText: clipboardData,
-                              style: context.bullType.body.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              color: context.appColors.secondary,
-                            ),
-                    ],
-                  ),
-                ),
-              ],
+                    )
+                  : AddressViewer(
+                      state.addressOrInvoiceOnly,
+                      clipboardText: state.clipboardData,
+                      style: context.bullType.body.copyWith(
+                        decorationThickness: 1.5,
+                      ),
+                    ),
             ),
           ),
-          // Payjoin toggle directly under the address (self-gating: renders
-          // nothing on Liquid/Lightning or non-payjoin-capable wallets).
-          ReceivePayjoinToggleTile(topGap: gap),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class ReceiveInfoDetails extends StatelessWidget {
+class ReceiveInfoDetails extends StatefulWidget {
   const ReceiveInfoDetails({super.key});
+  @override
+  State<ReceiveInfoDetails> createState() => _ReceiveInfoDetailsState();
+}
+
+class _ReceiveInfoDetailsState extends State<ReceiveInfoDetails> {
+  final _focus = FocusNode();
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final amountSat = context.select(
-      (ReceiveBloc bloc) => bloc.state.confirmedAmountSat,
-    );
-    final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
-    final type = context.select<ReceiveBloc, ReceiveType?>(
-      (bloc) => bloc.state.type,
-    );
-    final conversion = context.select(
-      (ReceiveBloc bloc) => bloc.state.confirmedConversion,
-    );
-
-    if (type == ReceiveType.lightning) return const ReceiveLnInfoDetails();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          // Amount + note unified behind one element (product decision
-          // 2026-07-26): the sheet edits both, this tile just summarises.
-          BullBorderedTile(
-            // This tile renders for both the bitcoin and the liquid QR page;
-            // the two amount routes share the 'amount' path but live under
-            // different parents, so push the one matching the current flow.
-            onTap: () => context.pushNamed(
-              type == ReceiveType.liquid
-                  ? ReceiveRoute.liquidAmount.name
-                  : ReceiveRoute.bitcoinAmount.name,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      BBText(
-                        context.loc.receiveAdditionalInformation,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                        color: context.appColors.secondary,
-                      ),
-                      const Gap(4),
-                      if (amountSat != null)
-                        BBText(
-                          '${context.loc.coreScreensAmountLabel}: '
-                          '${FormatAmount.sats(amountSat)}',
-                          style: context.bullType.body,
-                          maxLines: 1,
-                          overflow: .ellipsis,
-                        ),
-                      if (conversion != null)
-                        BBText(
-                          context.loc.amountEnteredAtRate(
-                            conversion.enteredText,
-                            conversion.currencyCode,
-                            MaterialLocalizations.of(context).formatTimeOfDay(
-                              TimeOfDay.fromDateTime(
-                                conversion.quotedAt.toLocal(),
-                              ),
-                              alwaysUse24HourFormat: true,
-                            ),
-                          ),
-                          style: context.bullType.label.copyWith(
-                            color: context.appColors.textMuted,
-                          ),
-                        ),
-                      if (note.isNotEmpty)
-                        BBText(
-                          '${context.loc.receiveMessageForSender}: $note',
-                          style: context.bullType.body,
-                          maxLines: 2,
-                          overflow: .ellipsis,
-                        ),
-                      if (amountSat == null && note.isEmpty)
-                        BBText(
-                          context.loc.receiveAdditionalInformationPlaceholder,
-                          style: context.bullType.body,
-                          color: context.appColors.onSurfaceVariant,
-                        ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.edit, size: 20, color: context.appColors.secondary),
-              ],
-            ),
-          ),
-        ],
-      ),
+    final state = context.watch<ReceiveBloc>().state;
+    if (state.isLightning) return const ReceiveLnInfoDetails();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          context.loc.amountLabel,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
+        const Gap(6),
+        ReceiveAmountInput(focusNode: _focus, live: true, inCard: true),
+      ],
     );
   }
 }
@@ -359,459 +197,327 @@ class ReceiveLnInfoDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amountSat = context.select(
-      (ReceiveBloc bloc) => bloc.state.confirmedAmountSat,
-    );
-    final amountEquivalent = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedConfirmedAmountFiat,
-    );
-    final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
-    final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
-    final showsLiquidDisclosure = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state.wallet?.isLiquid ?? false,
-    );
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: context.appColors.cardBackground,
-        borderRadius: BorderRadius.circular(context.bullShapes.card),
-        border: Border.all(color: context.appColors.surface),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, 2),
-            color: context.appColors.surfaceContainer,
+    final state = context.watch<ReceiveBloc>().state;
+    final net = state.lightningReceivedSat;
+    final amount = state.lightningAmountSat ?? state.confirmedAmountSat;
+    final fees = state.lightningFeeSat;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ReceiveSummaryRow(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            context.loc.amountLabel,
+            style: context.bullType.label.copyWith(
+              color: context.appColors.textMuted,
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          const Gap(12),
-          const ReceiveLnSwapID(),
-          if (context.select(
-                (ReceiveBloc bloc) => bloc.state.confirmedConversion,
-              )
-              case final conversion?)
-            BBText(
-              context.loc.amountEnteredAtRate(
-                conversion.enteredText,
-                conversion.currencyCode,
-                MaterialLocalizations.of(context).formatTimeOfDay(
-                  TimeOfDay.fromDateTime(conversion.quotedAt.toLocal()),
-                  alwaysUse24HourFormat: true,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: CurrencyText(
+                  amount ?? 0,
+                  showFiat: false,
+                  textAlign: TextAlign.end,
                 ),
               ),
+              const Gap(8),
+              BullFieldAction(
+                label: context.loc.receiveEditAmount,
+                onPressed: () => context.pop(),
+                icon: BullIcons.edit,
+              ),
+            ],
+          ),
+        ),
+        _ReceiveSummaryRow(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            context.loc.receiveFees,
+            style: context.bullType.label.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (fees != null)
+                Flexible(
+                  child: CurrencyText(
+                    fees,
+                    showFiat: false,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              const Gap(8),
+              const SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(child: BullIcon(BullIcons.chevronRight)),
+              ),
+            ],
+          ),
+          onTap: () => BullBottomSheet.show<void>(
+            context: context,
+            style: BullSheetStyle.redesign(context),
+            child: BlocProvider.value(
+              value: context.read<ReceiveBloc>(),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      context.loc.receiveFees,
+                      style: context.bullType.title,
+                    ),
+                    const ReceiveLnFeesDetails(),
+                    const ReceiveLnSwapID(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        _ReceiveSummaryRow(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            context.loc.receiveYouReceive,
+            style: context.bullType.label.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+          trailing: net == null
+              ? const BullShimmerLine(width: 90, height: 16)
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CurrencyText(
+                      net,
+                      showFiat: false,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 56),
+                  ],
+                ),
+        ),
+        if (state.confirmedNote.isNotEmpty)
+          _ReceiveSummaryRow(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              context.loc.receiveMessage,
               style: context.bullType.label.copyWith(
                 color: context.appColors.textMuted,
               ),
             ),
-          const Gap(12),
-
-          Container(color: context.appColors.surface, height: 1),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 12),
-            child: Row(
-              crossAxisAlignment: .start,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  context.loc.transactionLabelSendAmount,
-                  style: context.bullType.label.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
-                  color: context.appColors.onSurfaceVariant,
+                Flexible(
+                  child: Text(state.confirmedNote, textAlign: TextAlign.end),
                 ),
-                const Spacer(),
-                Column(
-                  crossAxisAlignment: .end,
-                  children: [
-                    CurrencyText(
-                      amountSat ?? 0,
-                      showFiat: false,
-                      interactive: true,
-                      style: context.bullType.body,
-                      color: context.appColors.secondary,
-                    ),
-                    BBText(
-                      amountEquivalent.isEmpty ? '' : '~$amountEquivalent',
-                      style: context.bullType.caption,
-                      color: context.appColors.onSurfaceVariant,
-                    ),
-                  ],
-                ),
+                const SizedBox(width: 56),
               ],
             ),
           ),
-          Container(color: context.appColors.surface, height: 1),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 12),
-            child: Row(
-              crossAxisAlignment: .start,
-              children: [
-                BBText(
-                  context.loc.receiveReceiveAmount,
-                  style: context.bullType.label.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
-                  color: context.appColors.onSurfaceVariant,
-                ),
-                const Spacer(),
-                if (swap?.receieveAmount == null)
-                  const BullShimmerLine(
-                    width: 90,
-                    height: 14,
-                    padding: EdgeInsets.zero,
-                  )
-                else
-                  CurrencyText(
-                    swap!.receieveAmount!,
-                    showFiat: false,
-                    interactive: true,
-                    style: context.bullType.body,
-                    color: context.appColors.secondary,
-                  ),
-              ],
-            ),
-          ),
-          if (note.isNotEmpty) ...[
-            Container(color: context.appColors.surface, height: 1),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 12),
-              child: Row(
-                children: [
-                  BBText(
-                    context.loc.receiveNote,
-                    style: context.bullType.caption,
-                    color: context.appColors.onSurfaceVariant,
-                  ),
-                  const Gap(24),
-                  Expanded(
-                    child: BBText(
-                      note.isNotEmpty ? note : '',
-                      style: context.bullType.body,
-                      color: context.appColors.secondary,
-                      maxLines: 5,
-                      textAlign: .end,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          const ReceiveLnFeesDetails(),
-          if (showsLiquidDisclosure) ...[
-            Container(color: context.appColors.surface, height: 1),
-            DisclosureLink(
-              label: context.loc.receiveLiquidRiskDisclosureLabel,
-              semanticLabel: context.loc.liquidRiskDisclosureSemanticLabel,
-              title: context.loc.liquidRiskDisclosureTitle,
-              body: context.loc.liquidRiskDisclosureBody,
-            ),
-          ],
-        ],
-      ),
+      ],
     );
   }
 }
 
 class ReceiveLnSwapID extends StatelessWidget {
   const ReceiveLnSwapID({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
-    final orderNumber = context.select(
-      (ReceiveBloc bloc) => bloc.state.orderSwap?.order?.orderNumber,
-    );
-    final identifier = orderNumber?.toString() ?? swap?.id;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          BBText(
-            context.loc.swapTransferTitle,
-            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
-            color: context.appColors.onSurfaceVariant,
-          ),
-          const Spacer(),
-          if (identifier == null)
-            const BullShimmerLine(
-              width: 120,
-              height: 14,
-              padding: EdgeInsets.zero,
-            )
-          else ...[
-            BBText(
-              orderNumber?.toString() ??
-                  StringFormatting.truncateMiddle(identifier),
-              style: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-              color: context.appColors.secondary,
-              textAlign: .end,
-            ),
-            const Gap(4),
-            InkWell(
-              child: Icon(
-                Icons.copy,
-                color: context.appColors.primary,
-                size: 16,
-              ),
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: identifier));
+    final state = context.watch<ReceiveBloc>().state;
+    final number = state.orderSwap?.order?.orderNumber;
+    final id = number?.toString() ?? state.getSwap?.id;
+    return _ReceiveSummaryRow(
+      title: Text(context.loc.swapTransferTitle),
+      subtitle: Text(id ?? ''),
+      trailing: BullInlineIconButton(
+        tooltip: context.loc.copyDialogButton,
+        onPressed: id == null
+            ? null
+            : () {
+                Clipboard.setData(ClipboardData(text: id));
+                BullSnackBar.show(
+                  context,
+                  message: context.loc.copiedToClipboard,
+                );
               },
-            ),
-          ],
-        ],
+        icon: const BullIcon(BullIcons.contentCopy),
       ),
     );
   }
 }
 
-class ReceiveLnFeesDetails extends StatefulWidget {
+class ReceiveLnFeesDetails extends StatelessWidget {
   const ReceiveLnFeesDetails({super.key});
 
-  @override
-  State<ReceiveLnFeesDetails> createState() => _ReceiveLnFeesDetailsState();
-}
-
-class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
-  bool expanded = false;
-
-  Widget _feeRow(BuildContext context, String label, int amt) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          BBText(
-            label,
-            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
-            color: context.appColors.onSurfaceVariant,
-          ),
-          const Spacer(),
-          CurrencyText(
-            amt,
-            showFiat: false,
-            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
-            color: context.appColors.secondary,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _row(BuildContext context, String label, int amount) =>
+      _ReceiveSummaryRow(
+        contentPadding: EdgeInsets.zero,
+        title: Text(label, style: context.bullType.body),
+        trailing: CurrencyText(amount, showFiat: false),
+      );
 
   @override
   Widget build(BuildContext context) {
-    final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
-
-    if (swap == null) {
-      return Column(
-        children: [
-          Container(color: context.appColors.surface, height: 1),
-          const Gap(8),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                BBText(
-                  context.loc.receiveTotalFee,
-                  style: context.bullType.label.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
-                  color: context.appColors.onSurfaceVariant,
-                ),
-                const Spacer(),
-                const BullShimmerLine(
-                  width: 90,
-                  height: 14,
-                  padding: EdgeInsets.zero,
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
+    final state = context.watch<ReceiveBloc>().state;
+    final total = state.lightningFeeSat;
+    final swap = state.getSwap;
+    final fees = swap?.fees;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(color: context.appColors.surface, height: 1),
-        const Gap(8),
-        InkWell(
-          splashColor: context.appColors.transparent,
-          splashFactory: NoSplash.splashFactory,
-          highlightColor: context.appColors.transparent,
-          onTap: () {
-            setState(() {
-              expanded = !expanded;
-            });
-          },
-          child: Row(
-            children: [
-              BBText(
-                context.loc.receiveTotalFee,
-                style: context.bullType.label.copyWith(
-                  fontWeight: FontWeight.w400,
-                ),
-                color: context.appColors.onSurfaceVariant,
-              ),
-              const Spacer(),
-              CurrencyText(
-                swap.fees?.totalFees(swap.amountSat) ?? 0,
-                showFiat: false,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-                color: context.appColors.secondary,
-              ),
-              const Gap(4),
-              Icon(
-                expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: context.appColors.primary,
-              ),
-            ],
-          ),
-        ),
-        const Gap(12),
-        if (expanded && swap.fees != null) ...[
-          Container(color: context.appColors.surface, height: 1),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: BBText(
-              context.loc.receiveFeeExplanation,
-              style: context.bullType.caption,
-              color: context.appColors.onSurfaceVariant,
-            ),
-          ),
-          if (swap.fees!.lockupFee != null)
-            _feeRow(
-              context,
-              context.loc.receiveSendNetworkFee,
-              swap.fees!.lockupFee!,
-            ),
-          if (swap.fees!.claimFee != null)
-            _feeRow(
-              context,
-              context.loc.receiveNetworkFee,
-              swap.fees!.claimFee!,
-            ),
-          if (swap.fees!.serverNetworkFees != null)
-            _feeRow(
-              context,
-              context.loc.receiveServerNetworkFees,
-              swap.fees!.serverNetworkFees!,
-            ),
-          _feeRow(
+        if (total == null)
+          const BullShimmerLine(width: 90, height: 16)
+        else
+          _row(context, context.loc.receiveTotalFee, total),
+        if (fees != null && state.orderSwap == null) ...[
+          if (fees.lockupFee case final amount?)
+            _row(context, context.loc.receiveSendNetworkFee, amount),
+          if (fees.refundFee ?? fees.claimFee case final amount?)
+            _row(context, context.loc.receiveNetworkFee, amount),
+          if (fees.serverNetworkFees case final amount?)
+            _row(context, context.loc.receiveServerNetworkFees, amount),
+          _row(
             context,
             context.loc.receiveTransferFee,
-            swap.fees?.boltzFee ?? 0,
+            fees.boltzPercent != null
+                ? fees.boltzFeeFromPercent(swap?.amountSat ?? 0)
+                : fees.boltzFee ?? 0,
           ),
-          const Gap(16),
         ],
+        Text(
+          context.loc.receiveFeeExplanation,
+          style: context.bullType.label.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
       ],
-    );
-  }
-}
-
-class ReceiveNewAddressButton extends StatelessWidget {
-  const ReceiveNewAddressButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BullButton.secondary(
-        label: context.loc.receiveNewAddress,
-        onPressed: () {
-          context.read<ReceiveBloc>().add(
-            const ReceiveEvent.receiveNewAddressGenerated(),
-          );
-        },
-      ),
     );
   }
 }
 
 class VerifyAddressOnLedgerButton extends StatelessWidget {
   const VerifyAddressOnLedgerButton({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BullButton.primary(
-        label: context.loc.receiveVerifyAddressLedger,
-        onPressed: () {
-          final state = context.read<ReceiveBloc>().state;
-
-          if (state.wallet == null || state.bitcoinAddress == null) {
-            BullSnackBar.show(
-              context,
-              message: context.loc.receiveVerifyAddressError,
-            );
-            return;
-          }
-
-          final keyChainPath =
-              state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
-              ? "0"
-              : "1";
-          final derivationPath =
-              "${state.wallet!.derivationPath}/$keyChainPath/${state.bitcoinAddress!.index}";
-          context.pushNamed(
-            LedgerRoute.ledgerVerifyAddress.name,
-            extra: LedgerRouteParams(
-              address: state.address,
-              derivationPath: derivationPath,
-              requestedDeviceType: state.wallet!.signerDevice,
-              scriptType: state.wallet!.scriptType,
-            ),
-          );
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext context) => _ReceiveSummaryRow(
+    leading: const BullIcon(BullIcons.verified),
+    title: Text(context.loc.receiveVerifyAddressLedger),
+    onTap: () {
+      final state = context.read<ReceiveBloc>().state;
+      final wallet = state.wallet;
+      final address = state.bitcoinAddress;
+      if (wallet == null || address == null) {
+        BullSnackBar.show(
+          context,
+          message: context.loc.receiveVerifyAddressError,
+        );
+        return;
+      }
+      final chain = address.keyChain == WalletAddressKeyChain.external
+          ? '0'
+          : '1';
+      context.pushNamed(
+        LedgerRoute.ledgerVerifyAddress.name,
+        extra: LedgerRouteParams(
+          address: state.address,
+          derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
+          requestedDeviceType: wallet.signerDevice,
+          scriptType: wallet.scriptType,
+        ),
+      );
+    },
+  );
 }
 
 class VerifyAddressOnBitBoxButton extends StatelessWidget {
   const VerifyAddressOnBitBoxButton({super.key});
+  @override
+  Widget build(BuildContext context) => _ReceiveSummaryRow(
+    leading: const BullIcon(BullIcons.verified),
+    title: Text(context.loc.receiveVerifyBitbox),
+    onTap: () {
+      final state = context.read<ReceiveBloc>().state;
+      final wallet = state.wallet;
+      final address = state.bitcoinAddress;
+      if (wallet == null || address == null) {
+        BullSnackBar.show(
+          context,
+          message: context.loc.receiveVerifyAddressError,
+        );
+        return;
+      }
+      final chain = address.keyChain == WalletAddressKeyChain.external
+          ? '0'
+          : '1';
+      context.pushNamed(
+        BitBoxRoute.bitboxVerifyAddress.name,
+        extra: BitBoxRouteParams(
+          address: state.address,
+          derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
+          requestedDeviceType: wallet.signerDevice,
+          scriptType: wallet.scriptType,
+        ),
+      );
+    },
+  );
+}
+
+/// Receive summary layout; actions retain their own 48 dp kit targets.
+class _ReceiveSummaryRow extends StatelessWidget {
+  const _ReceiveSummaryRow({
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.leading,
+    this.onTap,
+    this.contentPadding,
+  });
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? trailing;
+  final Widget? leading;
+  final VoidCallback? onTap;
+  final EdgeInsetsGeometry? contentPadding;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BullButton.primary(
-        label: context.loc.bitboxActionVerifyAddressTitle,
-        onPressed: () {
-          final state = context.read<ReceiveBloc>().state;
-
-          if (state.wallet == null || state.bitcoinAddress == null) {
-            BullSnackBar.show(
-              context,
-              message: context.loc.receiveVerifyAddressError,
-            );
-            return;
-          }
-
-          final keyChainPath =
-              state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
-              ? "0"
-              : "1";
-          final derivationPath =
-              "${state.wallet!.derivationPath}/$keyChainPath/${state.bitcoinAddress!.index}";
-          context.pushNamed(
-            BitBoxRoute.bitboxVerifyAddress.name,
-            extra: BitBoxRouteParams(
-              address: state.address,
-              derivationPath: derivationPath,
-              requestedDeviceType: state.wallet!.signerDevice,
-              scriptType: state.wallet!.scriptType,
+  Widget build(BuildContext context) => Semantics(
+    button: onTap != null,
+    child: GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: context.appColors.outline)),
+        ),
+        padding: contentPadding ?? const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            if (leading case final icon?) ...[icon, const Gap(16)],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [title, ?subtitle],
+              ),
             ),
-          );
-        },
+            if (trailing case final value?) ...[
+              const Gap(8),
+              Flexible(
+                flex: 2,
+                child: Align(alignment: Alignment.centerRight, child: value),
+              ),
+            ],
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
 }
