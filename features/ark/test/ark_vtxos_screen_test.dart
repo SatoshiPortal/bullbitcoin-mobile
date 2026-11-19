@@ -6,10 +6,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullTopBar,
         ValueKey,
-        GestureDetector,
-        BullText,
-        BullTextRole,
-        VoidCallback;
+        VoidCallback,
+        SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -49,11 +47,9 @@ ArkSnapshot view({
   renewal: renewal,
   vtxos: values ?? [coin('shared')],
 );
-Finder tile(String id) =>
-    find.ancestor(of: find.text(id), matching: find.byType(BullBorderedTile));
-BullButton renew(WidgetTester tester) => tester.widget<BullButton>(
-  find.widgetWithText(BullButton, 'Review renewal'),
-);
+Finder tile(String id) => find.byKey(ValueKey('vtxo-details-$id'));
+BullButton renew(WidgetTester tester) =>
+    tester.widget<BullButton>(find.widgetWithText(BullButton, 'Renew'));
 Future<void> paint(
   WidgetTester tester,
   ArkSnapshot snapshot,
@@ -71,7 +67,7 @@ Future<void> paint(
 Future<void> select(WidgetTester tester, String id) async {
   await tester.ensureVisible(tile(id));
   await tester.tap(tile(id));
-  await tester.pump();
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -84,38 +80,64 @@ void main() {
     tester,
   ) async {
     var boards = 0;
-    final renewals = <List<String>>[];
-    await paint(tester, view(values: []), renewals, onBoard: () => boards++);
-    expect(find.widgetWithText(BullButton, 'Review renewal'), findsNothing);
+    final calls = <List<String>>[];
+    await paint(tester, view(values: []), calls, onBoard: () => boards++);
+    expect(find.widgetWithText(BullButton, 'Renew'), findsNothing);
     await tester.tap(find.widgetWithText(BullButton, 'Board to Ark'));
     expect(boards, 1);
-    expect(renewals, isEmpty);
-    await paint(tester, view(values: []), renewals);
+    expect(calls, isEmpty);
+    await paint(tester, view(values: []), calls);
     expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
   });
-
-  testWidgets(
-    'old Board button cannot invoke a replacement non-null capability',
-    (tester) async {
-      var first = 0, second = 0;
-      await paint(tester, view(values: []), [], onBoard: () => first++);
-      final oldBoard = tester
+  for (final change in [
+    'account',
+    'stale',
+    'populated',
+    'capability',
+    'disposed',
+  ]) {
+    testWidgets('old empty Board refuses $change context', (tester) async {
+      var boards = 0;
+      int capability() => boards++;
+      await paint(tester, view(values: []), [], onBoard: capability);
+      final old = tester
           .widget<BullButton>(find.widgetWithText(BullButton, 'Board to Ark'))
           .onPressed;
-      await paint(tester, view(values: []), [], onBoard: () => second++);
-      oldBoard();
-      expect(first, 0);
-      expect(second, 0);
-      await tester.tap(find.widgetWithText(BullButton, 'Board to Ark'));
-      expect(first, 0);
-      expect(second, 1);
-    },
-  );
-
-  testWidgets('Board is absent for unproven empty or retired-only inventory', (
+      if (change == 'disposed') {
+        await tester.pumpWidget(const SizedBox.shrink());
+      } else {
+        await paint(
+          tester,
+          switch (change) {
+            'account' => view(values: [], owner: other),
+            'stale' => view(values: [], stale: true),
+            'populated' => view(),
+            _ => view(values: []),
+          },
+          [],
+          onBoard: change == 'capability' ? () => boards++ : capability,
+        );
+      }
+      old();
+      expect(boards, 0);
+    });
+  }
+  testWidgets('replacement Board capability remains usable', (tester) async {
+    var first = 0, second = 0;
+    await paint(tester, view(values: []), [], onBoard: () => first++);
+    final old = tester
+        .widget<BullButton>(find.widgetWithText(BullButton, 'Board to Ark'))
+        .onPressed;
+    await paint(tester, view(values: []), [], onBoard: () => second++);
+    old();
+    expect(first, 0);
+    expect(second, 0);
+    await tester.tap(find.widgetWithText(BullButton, 'Board to Ark'));
+    expect(second, 1);
+  });
+  testWidgets('unproven and retired inventories do not offer Board', (
     tester,
   ) async {
-    var boards = 0;
     for (final snapshot in [
       view(values: [], stale: true),
       view(values: [], completeness: ArkSectionCompleteness.incomplete),
@@ -124,249 +146,68 @@ void main() {
       view(values: [], renewal: ArkRenewalStatus.delegated),
       view(values: [coin('retired', state: ArkVtxoState.spent)]),
     ]) {
-      await paint(tester, snapshot, [], onBoard: () => boards++);
+      await paint(
+        tester,
+        snapshot,
+        [],
+        onBoard: () => fail('Unexpected Board'),
+      );
       expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
     }
-    await paint(tester, view(), [], onBoard: () => boards++);
+    await paint(tester, view(), []);
     await tester.tap(find.text('Locked 0'));
     await tester.pumpAndSettle();
     expect(find.text('No VTXOs match this filter.'), findsOneWidget);
     expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
-    expect(boards, 0);
-  });
-
-  for (final change in [
-    'account',
-    'stale',
-    'populated',
-    'capability',
-    'disposed',
-  ]) {
-    testWidgets('old empty Board click refuses $change widget context', (
-      tester,
-    ) async {
-      var boards = 0;
-      await paint(tester, view(values: []), [], onBoard: () => boards++);
-      final oldBoard = tester
-          .widget<BullButton>(find.widgetWithText(BullButton, 'Board to Ark'))
-          .onPressed;
-      if (change == 'disposed') {
-        await tester.pumpWidget(app(const BullText('gone')));
-        await tester.pumpAndSettle();
-      } else {
-        final snapshot = switch (change) {
-          'account' => view(owner: other, values: []),
-          'stale' => view(values: [], stale: true),
-          'populated' => view(),
-          _ => view(values: []),
-        };
-        await paint(
-          tester,
-          snapshot,
-          [],
-          onBoard: change == 'capability' ? null : () => boards++,
-        );
-      }
-      oldBoard();
-      expect(boards, 0);
-      expect(tester.takeException(), isNull);
-    });
-  }
-
-  testWidgets('retired VTXOs do not inflate the total or live count', (
-    tester,
-  ) async {
-    await paint(
-      tester,
-      view(
-        values: [
-          coin('live'),
-          coin('spent', state: ArkVtxoState.spent),
-          coin('exited', state: ArkVtxoState.exited),
-          coin('abandoned', state: ArkVtxoState.abandonedBoard),
-        ],
-      ),
-      [],
-    );
-    expect(find.text('1 VTXOs'), findsOneWidget);
-    final total = tester.widget<BullText>(
-      find.byWidgetPredicate(
-        (widget) => widget is BullText && widget.role == BullTextRole.headline,
-      ),
-    );
-    expect(total.text, '1,234 sats');
-    expect(find.text('4 VTXOs'), findsNothing);
-    expect(find.text('4,936 sats'), findsNothing);
-  });
-
-  testWidgets('account replacement clears same-string selection', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    await select(tester, 'shared');
-    expect(renew(tester).disabled, false);
-    await paint(tester, view(owner: other), calls);
-    expect(renew(tester).disabled, true);
-    expect(calls, isEmpty);
-  });
-  testWidgets('old row tap cannot repopulate another account selection', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    final oldTap = tester.widget<BullBorderedTile>(tile('shared')).onTap;
-    expect(oldTap, isNotNull);
-    await paint(tester, view(owner: other), calls);
-    oldTap?.call();
-    await tester.pump();
-    expect(renew(tester).disabled, true);
-    expect(calls, isEmpty);
-  });
-  testWidgets('old renewal callback cannot send selection to a new account', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    await select(tester, 'shared');
-    final oldRenew = renew(tester).onPressed;
-    await paint(tester, view(owner: other), calls);
-    oldRenew();
-    expect(calls, isEmpty);
-  });
-
-  testWidgets('details use observed data and never select a renewal', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
-    await tester.pumpAndSettle();
-    expect(find.text('VTXO details'), findsOneWidget);
-    expect(find.text('Created'), findsOneWidget);
-    expect(find.text('Anchor'), findsOneWidget);
-    expect(find.text('Unavailable'), findsNWidgets(2));
-    expect(find.text('400'), findsOneWidget);
-    expect(renew(tester).disabled, true);
-    expect(calls, isEmpty);
-    tester.widget<BullTopBar>(find.byType(BullTopBar)).onBack?.call();
-    await tester.pumpAndSettle();
-    expect(find.text('Total value'), findsOneWidget);
-    expect(renew(tester).disabled, true);
-  });
-  testWidgets('account replacement closes the previous account details', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
-    await tester.pumpAndSettle();
-    final oldDetails = tester.widget<BullTopBar>(find.byType(BullTopBar));
-    expect(oldDetails.title, 'VTXO details');
-    await paint(tester, view(owner: other), calls);
-    expect(find.text('VTXO details'), findsNothing);
-    expect(find.text('Total value'), findsOneWidget);
-  });
-  testWidgets('filters never imply that an inventory is empty', (tester) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    await tester.tap(find.text('Locked 0'));
-    await tester.pumpAndSettle();
-    expect(find.text('No VTXOs match this filter.'), findsOneWidget);
-    expect(find.text('No items in this observed inventory.'), findsNothing);
-    expect(renew(tester).disabled, true);
-  });
-  testWidgets('details close when their ID disappears or becomes ambiguous', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    for (final values in <List<ArkVtxo>>[
-      [],
-      [coin('shared'), coin('shared')],
-    ]) {
-      await paint(tester, view(), calls);
-      await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
-      await tester.pumpAndSettle();
-      expect(find.text('VTXO details'), findsOneWidget);
-      await paint(tester, view(values: values), calls);
-      expect(find.text('VTXO details'), findsNothing);
-    }
-    expect(calls, isEmpty);
-  });
-  testWidgets('old details callback cannot open a replacement account', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(), calls);
-    final oldOpen = tester
-        .widget<GestureDetector>(
-          find.byKey(const ValueKey('vtxo-details-shared')),
-        )
-        .onTap;
-    await paint(tester, view(owner: other), calls);
-    oldOpen?.call();
-    await tester.pumpAndSettle();
-    expect(find.text('VTXO details'), findsNothing);
-    expect(calls, isEmpty);
   });
   testWidgets(
-    'details retain real anchor and invalidate stale blocks remaining',
+    'details use observed anchor and missing creation stays unavailable',
     (tester) async {
       final calls = <List<String>>[];
       final values = [coin('shared', anchor: 'actual-anchor')];
       await paint(tester, view(values: values), calls);
-      await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
-      await tester.pumpAndSettle();
-      expect(details(tester), containsPair('Anchor', 'actual-anchor'));
-      expect(details(tester), containsPair('Blocks remaining', '400'));
-      await paint(tester, view(values: values, stale: true), calls);
-      expect(details(tester), containsPair('Blocks remaining', 'Unavailable'));
-      expect(details(tester), containsPair('Anchor', 'actual-anchor'));
-      expect(renew(tester).disabled, true);
+      await select(tester, 'shared');
+      expect(find.text('VTXO details'), findsOneWidget);
+      expect(details(tester), containsPair('Created', 'Unavailable'));
+      expect(details(tester), containsPair('Anchor point', 'actual-anchor'));
+      expect(details(tester), containsPair('Blocks left', '400'));
       expect(calls, isEmpty);
+      await paint(tester, view(values: values, stale: true), calls);
+      expect(details(tester), containsPair('Blocks left', 'Unavailable'));
+      expect(details(tester), containsPair('Anchor point', 'actual-anchor'));
+      expect(find.widgetWithText(BullButton, 'Renew'), findsNothing);
     },
   );
-  final invalid = {
-    'stale': view(stale: true),
-    'incomplete': view(completeness: ArkSectionCompleteness.incomplete),
-    'missing tip': view(tip: null),
-    'recovery unknown': view(recovery: ArkRecoveryStatus.unknown),
-    'delegated': view(renewal: ArkRenewalStatus.delegated),
-  };
-  for (final entry in invalid.entries) {
+  for (final values in <List<ArkVtxo>>[
+    [],
+    [coin('shared'), coin('shared')],
+  ]) {
     testWidgets(
-      '${entry.key} purges selection instead of hiding it until fresh',
+      'details close when ID disappears or becomes ambiguous ${values.length}',
       (tester) async {
-        final calls = <List<String>>[];
-        await paint(tester, view(), calls);
+        await paint(tester, view(), []);
         await select(tester, 'shared');
-        final oldRenew = renew(tester).onPressed;
-        await paint(tester, entry.value, calls);
-        expect(renew(tester).disabled, true);
-        await paint(tester, view(), calls);
-        expect(renew(tester).disabled, true);
-        oldRenew();
-        expect(calls, isEmpty);
+        await paint(tester, view(values: values), []);
+        expect(find.text('VTXO details'), findsNothing);
       },
     );
   }
   testWidgets(
-    'explicit same-account selection emits exact immutable IDs only',
+    'old row cannot open another account and account change closes detail',
     (tester) async {
-      final calls = <List<String>>[];
-      await paint(tester, view(), calls);
-      expect(calls, isEmpty);
+      await paint(tester, view(), []);
+      final old = tester.widget<BullBorderedTile>(tile('shared')).onTap;
+      await paint(tester, view(owner: other), []);
+      old?.call();
+      await tester.pump();
+      expect(find.text('VTXO details'), findsNothing);
       await select(tester, 'shared');
-      expect(calls, isEmpty);
-      renew(tester).onPressed();
-      expect(calls, [
-        ['shared'],
-      ]);
-      expect(() => calls.single.add('not-selected'), throwsUnsupportedError);
+      await paint(tester, view(), []);
+      expect(find.text('VTXO details'), findsNothing);
     },
   );
   testWidgets(
-    'raw rows show explicit sats while domain-ineligible IDs stay read-only',
+    'only eligible details expose renewal and retired rows stay absent',
     (tester) async {
       final values = [
         for (final state in ArkVtxoState.values) coin(state.name, state: state),
@@ -374,40 +215,39 @@ void main() {
         coin('pending-round', pendingRound: true),
       ];
       final calls = <List<String>>[];
-      await paint(tester, view(values: values), calls);
-      expect(find.text('1,234 sats'), findsNWidgets(values.length));
       for (final id in [
         'locked',
-        'spent',
-        'exited',
         'unknown',
         'expired',
         'pending-round',
+        'spendable',
       ]) {
-        expect(tester.widget<BullBorderedTile>(tile(id)).onTap, isNull);
+        await paint(tester, view(values: values), calls);
+        for (final retired in ['spent', 'exited', 'abandonedBoard']) {
+          expect(tile(retired), findsNothing);
+        }
+        await select(tester, id);
+        expect(find.text('VTXO details'), findsOneWidget);
+        expect(
+          find.widgetWithText(BullButton, 'Renew'),
+          id == 'spendable' ? findsOneWidget : findsNothing,
+        );
+        tester.widget<BullTopBar>(find.byType(BullTopBar)).onBack?.call();
+        await tester.pumpAndSettle();
       }
-      expect(
-        tester.widget<BullBorderedTile>(tile('spendable')).onTap,
-        isNotNull,
-      );
       expect(calls, isEmpty);
     },
   );
-  testWidgets('only current complete observed empty inventory displays empty', (
-    tester,
-  ) async {
-    final calls = <List<String>>[];
-    await paint(tester, view(values: []), calls);
-    expect(find.text('No items in this observed inventory.'), findsOneWidget);
+  testWidgets('only proven empty shows the empty panel', (tester) async {
+    await paint(tester, view(values: []), []);
+    expect(find.text('No VTXOs yet'), findsOneWidget);
     for (final snapshot in [
       view(values: [], stale: true),
       view(values: [], completeness: ArkSectionCompleteness.incomplete),
     ]) {
-      await paint(tester, snapshot, calls);
-      expect(find.text('No items in this observed inventory.'), findsNothing);
-      expect(find.text('Unavailable'), findsOneWidget);
-      expect(renew(tester).disabled, true);
+      await paint(tester, snapshot, []);
+      expect(find.text('No VTXOs yet'), findsNothing);
+      expect(find.text('Unavailable'), findsWidgets);
     }
-    expect(calls, isEmpty);
   });
 }

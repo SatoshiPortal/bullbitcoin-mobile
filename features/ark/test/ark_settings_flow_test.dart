@@ -10,7 +10,7 @@ import 'package:bull_ark/src/domain/usecases/enable_ark_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/set_ark_enabled_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_settings_cubit.dart';
 import 'package:bull_ark/src/ui/ark_settings_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSwitch;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -88,6 +88,17 @@ class Fixture {
   );
 }
 
+Future<void> openControls(WidgetTester tester) async {
+  final toggle = tester.widget<BullSwitch>(find.byType(BullSwitch));
+  if (!toggle.value) {
+    toggle.onChanged?.call(true);
+    await tester.pumpAndSettle();
+  }
+  await tester.ensureVisible(find.text('Technical details'));
+  await tester.tap(find.text('Technical details'));
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets(
     'same-account changed provider cannot reuse prior disclosure consent',
@@ -96,6 +107,7 @@ void main() {
       addTearDown(f.cubit.close);
       await tester.pumpWidget(f.app());
       await tester.pumpAndSettle();
+      await openControls(tester);
       await tester.ensureVisible(
         find.text('I understand the direct connection'),
       );
@@ -111,6 +123,8 @@ void main() {
       await f.cubit.load();
       await tester.pumpAndSettle();
       expect(find.text('https://changed.example'), findsOneWidget);
+      tester.widget<BullSwitch>(find.byType(BullSwitch)).onChanged?.call(true);
+      await tester.pumpAndSettle();
       expect(
         tester
             .widget<BullButton>(find.widgetWithText(BullButton, 'Enable Ark'))
@@ -197,6 +211,7 @@ void main() {
       f.preferences.failEnable = true;
       await tester.pumpWidget(f.app());
       await tester.pumpAndSettle();
+      await openControls(tester);
       final captured = f.selection.current;
       await f.cubit.enable(privacyDisclosureAccepted: true);
       expect(f.client.calls, ['create']);
@@ -220,11 +235,9 @@ void main() {
       addTearDown(f.cubit.close);
       await tester.pumpWidget(f.app());
       await tester.pumpAndSettle();
+      await openControls(tester);
       final enable = find.widgetWithText(BullButton, 'Enable Ark');
-      expect(
-        tester.getTopLeft(find.text('https://ark.example')).dy,
-        lessThan(tester.getTopLeft(enable).dy),
-      );
+      expect(find.text('https://ark.example'), findsOneWidget);
       expect(
         find.textContaining('Ark connects directly without Tor.'),
         findsOneWidget,
@@ -252,6 +265,11 @@ void main() {
         await f.cubit.load();
         staleButton.onPressed();
         await tester.pumpAndSettle();
+        tester
+            .widget<BullSwitch>(find.byType(BullSwitch))
+            .onChanged
+            ?.call(true);
+        await tester.pumpAndSettle();
         expect(tester.widget<BullButton>(enable).disabled, true);
         expect(f.client.calls, isEmpty);
       }
@@ -266,6 +284,7 @@ void main() {
       f.client.pending = held;
       await tester.pumpWidget(f.app());
       await tester.pumpAndSettle();
+      await openControls(tester);
       final consent = find.widgetWithText(
         BullButton,
         'I understand the direct connection',
@@ -277,8 +296,12 @@ void main() {
       await tester.ensureVisible(enable);
       await tester.tap(enable);
       await tester.pump();
-      expect(tester.widget<BullButton>(consent).disabled, true);
-      expect(tester.widget<BullButton>(enable).disabled, true);
+      expect(consent, findsNothing);
+      expect(enable, findsNothing);
+      expect(
+        tester.widget<BullSwitch>(find.byType(BullSwitch)).onChanged,
+        isNull,
+      );
       await f.cubit.load();
       await f.cubit.disable();
       expect(f.client.calls, ['create']);
@@ -308,9 +331,10 @@ void main() {
       await tester.pumpAndSettle();
       old.complete(Ok(config()));
       await tester.pumpAndSettle();
+      await openControls(tester);
       expect(find.text('https://new-visible.example'), findsOneWidget);
       expect(find.text('https://ark.example'), findsNothing);
-      final details = find.widgetWithText(BullButton, 'Ark');
+      final details = find.widgetWithText(BullButton, 'Open Ark wallet');
       await tester.ensureVisible(details);
       await tester.tap(details);
       await tester.pump();

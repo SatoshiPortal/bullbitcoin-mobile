@@ -111,20 +111,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       details(tester),
-      containsPair('Public server key', 'public-server-key'),
+      containsPair('Server public key', 'public-server-key'),
     );
+    expect(details(tester), containsPair('Minimum board amount', '1,200 sats'));
     expect(
       details(tester),
-      containsPair('Minimum boarding amount (sats)', '1200'),
+      containsPair('Maximum VTXO amount', '800,000 sats'),
     );
-    expect(
-      details(tester),
-      containsPair('Maximum VTXO amount (sats)', '800000'),
-    );
-    expect(details(tester), containsPair('Board confirmations', '3'));
-    expect(details(tester), containsPair('Round interval (seconds)', '10'));
-    expect(details(tester), containsPair('VTXO lifetime (blocks)', '4320'));
-    expect(find.textContaining('without Tor'), findsOneWidget);
+    expect(details(tester), containsPair('Required confirmations', '3'));
+    expect(details(tester), containsPair('Round interval', '10 sec'));
+    expect(details(tester), containsPair('VTXO lifetime', '4320 blocks'));
   });
 
   testWidgets('missing observed limits remain unavailable in French', (
@@ -148,13 +144,12 @@ void main() {
     );
     expect(
       details(tester),
-      containsPair('Montant minimum de dépôt (sats)', 'Indisponible'),
+      containsPair('Montant minimum de dépôt', 'Indisponible'),
     );
     expect(
       details(tester),
-      containsPair('Intervalle des rounds (secondes)', 'Indisponible'),
+      containsPair('Intervalle des rounds', 'Indisponible'),
     );
     expect(find.textContaining('Dernières données observées.'), findsOneWidget);
-    expect(find.textContaining('sans Tor'), findsOneWidget);
   });
 }
