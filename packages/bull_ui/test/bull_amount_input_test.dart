@@ -347,4 +347,63 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
+
+  testWidgets(
+    'on a phone the whole currency list and its preference fit on screen',
+    (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 2.75;
+      addTearDown(tester.view.reset);
+      final canonical = TextEditingController();
+      addTearDown(canonical.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullAmountScope(
+            snapshot: const BullAmountSnapshot(
+              unit: BitcoinUnit.sats,
+              hideAmounts: false,
+              isReady: true,
+              defaultCurrencyCode: 'USD',
+              startInFiat: false,
+            ),
+            writeUnit: (_) async => true,
+            writeInputMode: (_) async => true,
+            child: Column(
+              children: [
+                const SizedBox(height: 380),
+                BullAmountInput(
+                  canonicalUnit: BitcoinUnit.sats,
+                  amountController: canonical,
+                  currencies: [
+                    for (final code in [
+                      'USD',
+                      'CAD',
+                      'MXN',
+                      'CRC',
+                      'EUR',
+                      'ARS',
+                      'COP',
+                    ])
+                      BullAmountCurrency(
+                        code: code,
+                        decimals: 2,
+                        price: 100000,
+                        priceAt: quotedAt,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.byTooltip('Currency: Bitcoin'));
+      await tester.pumpAndSettle();
+      final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+      final preference = tester.getRect(find.text('Always start in Bitcoin'));
+      expect(preference.bottom, lessThanOrEqualTo(screen.height));
+      expect(find.byType(PopupMenuDivider), findsNWidgets(2));
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 }
