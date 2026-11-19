@@ -103,10 +103,10 @@ until the dependency is abstracted out of the widget:
 | Widget | Blocker |
 | --- | --- |
 | `CopyInput`, `BBKeyboardActions` | depend on `package:bb_mobile/*` localization / app utils. |
-| `BBButton` (`buttons/button.dart`) | already superseded by `BullButton`; not a 1:1 copy. |
+| `BBButton` (`buttons/button.dart`) | removed; its callers now use `BullButton`. |
 | Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |
 | `BBKeyboardActions` | needs `package:keyboard_actions/keyboard_actions.dart`, not declared in `bull_ui/pubspec.yaml` (no new deps rule). |
 | Bottom sheets: `AdvancedOptions`, `ComingSoon`, `Warning`, `NotLoggedIn`, `DeleteAccount*`, `Logout*`, `TranslationWarning` | `context.loc` localization and/or `package:bb_mobile/*` router & assets. |
 | Cards: `AutoswapWarningCard` | `context.loc` (`autoswapWarningCard*` strings) + `context.font` from `package:bb_mobile/core/utils/build_context_x.dart`. |
-| Loading: `ProgressScreen`, `StatusScreen` | `ProgressScreen` imports `package:bb_mobile/generated/flutter_gen/assets.gen.dart`; `StatusScreen` uses `context.loc` + `BBButton`. |
+| Loading: `ProgressScreen`, `StatusScreen` | `ProgressScreen` imports `package:bb_mobile/generated/flutter_gen/assets.gen.dart`; `StatusScreen` uses `context.loc` + `BullButton`. |
 | Viewers: `AddressViewer`, `TransactionViewer`, `InvoiceViewer`, `LogViewer`, `QrScanner`, `NfcScanner`, `ShareLogs`, `Bip85Derivation`, `MnemonicWidget`, `CoinSelectionBottomSheet`, `AppLanguagePicker`, `BackupSuccessScreen`, `PriceInput`, `TransactionsByDayList`, `BalanceRow`, `RecoverbullVaultProviderSelector` | `package:bb_mobile/*` (entities, l10n, assets, feature blocs). |

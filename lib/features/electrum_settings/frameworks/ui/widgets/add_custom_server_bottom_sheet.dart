@@ -303,7 +303,7 @@ class _AddCustomServerBottomSheetState
                     ),
                   ),
                   const Gap(24),
-                  BullButton.secondary(
+                  BullButton.primary(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
                   ),

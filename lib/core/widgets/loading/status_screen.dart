@@ -39,7 +39,7 @@ class StatusScreen extends StatelessWidget {
                     (hasError
                         ? context.loc.statusScreenTryAgain
                         : context.loc.statusScreenContinue),
-                onPressed: onTap!,
+                onPressed: onTap,
               )
             : const SizedBox.shrink(),
         child: SafeArea(

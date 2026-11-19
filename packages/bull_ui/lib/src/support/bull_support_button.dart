@@ -15,7 +15,7 @@ enum _BullSupportButtonVariant { big, icon, text, tile }
 /// decides what support means. Without a scope it renders disabled and a tap
 /// does nothing.
 class BullSupportButton extends StatelessWidget {
-  /// Full-width [BullButton.secondary].
+  /// Full-width [BullButton.big]. Defaults to the secondary colours.
   const BullSupportButton.big({
     super.key,
     required this.label,
@@ -70,10 +70,10 @@ class BullSupportButton extends StatelessWidget {
   /// Icon (and `.tile` label) colour for `.icon` and `.tile`.
   final Color? color;
 
-  /// Legacy appearance input, retained for source compatibility and ignored.
+  /// Background of `.big`; defaults to `context.bull.secondary`.
   final Color? bgColor;
 
-  /// Legacy appearance input, retained for source compatibility and ignored.
+  /// Label colour of `.big`; defaults to `context.bull.onSecondary`.
   final Color? textColor;
 
   final _BullSupportButtonVariant _variant;
@@ -89,10 +89,13 @@ class BullSupportButton extends StatelessWidget {
 
     switch (_variant) {
       case _BullSupportButtonVariant.big:
-        return BullButton.secondary(
+        return BullButton.big(
           label: label,
           iconData: icon,
-          onPressed: onTap,
+          bgColor: bgColor ?? context.bull.secondary,
+          textColor: textColor ?? context.bull.onSecondary,
+          onPressed: onTap ?? () {},
+          disabled: onTap == null,
         );
       case _BullSupportButtonVariant.icon:
         final button = IconButton(

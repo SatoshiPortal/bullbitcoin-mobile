@@ -486,7 +486,9 @@ class _SetAdvancedOptionsBottomSheetState
                                   onPressed: (state.isSavingAdvancedOptions)
                                       ? null
                                       : () {
-                                          _formKey.currentState!.reset();
+                                          final form = _formKey.currentState;
+                                          if (form == null) return;
+                                          form.reset();
                                           final options = context
                                               .read<ElectrumSettingsBloc>()
                                               .state

@@ -13,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 /// outcome that ends with a reference and an exit. The kit has no
 /// localisation, so every string comes translated from the caller. Colours
 /// default to the theme's tertiary tint for the card and secondary for the
-/// action. Card colors can be overridden.
+/// action, and can each be overridden.
 class BullReferenceNotice extends StatelessWidget {
   const BullReferenceNotice({
     super.key,
@@ -51,10 +51,10 @@ class BullReferenceNotice extends StatelessWidget {
   /// Fill of the info card; the theme's tertiary container when null.
   final Color? bgColor;
 
-  /// Legacy appearance input, retained for source compatibility and ignored.
+  /// Fill of the action; the theme's secondary when null.
   final Color? actionBgColor;
 
-  /// Legacy appearance input, retained for source compatibility and ignored.
+  /// Text of the action; the theme's on-secondary when null.
   final Color? actionTextColor;
 
   @override
@@ -77,7 +77,12 @@ class BullReferenceNotice extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         const Gap(16),
-        BullButton.secondary(label: actionLabel, onPressed: onAction),
+        BullButton.big(
+          label: actionLabel,
+          onPressed: onAction,
+          bgColor: actionBgColor ?? colors.secondary,
+          textColor: actionTextColor ?? colors.onSecondary,
+        ),
       ],
     );
   }
