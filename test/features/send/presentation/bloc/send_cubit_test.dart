@@ -894,6 +894,28 @@ void main() {
     },
   );
 
+  test(
+    'a fiat amount beyond the protocol limit cannot reuse the previous amount',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(amount: '10000', inputAmountCurrencyCode: 'sats'),
+      );
+      cubit.amountEntryChanged(
+        sats: BigInt.from(3000000000000000),
+        currencyCode: 'USD',
+        text: '3000000000000',
+        rate: 100000,
+        quotedAt: DateTime.utc(2026),
+        isValid: true,
+        isEdit: true,
+      );
+      expect(cubit.state.hasValidAmountEntry, isFalse);
+      expect(cubit.state.failure, isA<SendAmountOutOfBoundsFailure>());
+    },
+  );
+
   test('Max discards the previous typed fiat conversion', () async {
     final cubit = buildCubit();
     addTearDown(cubit.close);
