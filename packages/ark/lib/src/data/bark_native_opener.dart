@@ -239,6 +239,24 @@ final class BarkNativeSession implements ArkNativeSession {
             (e) => ArkExit(
               id: e.vtxoId,
               amount: Sats.fromInt(e.amountSats),
+              phase: switch (e.state) {
+                bark.StartExitState() => ArkExitPhase.start,
+                bark.ProcessingExitState() => ArkExitPhase.unrolling,
+                bark.AwaitingDeltaExitState() => ArkExitPhase.delay,
+                bark.ClaimableExitState() => ArkExitPhase.claimable,
+                bark.ClaimInProgressExitState() => ArkExitPhase.claiming,
+                bark.ClaimedExitState() => ArkExitPhase.claimed,
+                bark.VtxoSweptExitState() ||
+                bark.VtxoAlreadySpentExitState() => ArkExitPhase.failed,
+                bark.CanceledExitState() => ArkExitPhase.canceled,
+                _ => null,
+              },
+              confirmedHeight: switch (e.state) {
+                bark.AwaitingDeltaExitState(:final confirmedBlock) =>
+                  confirmedBlock.height,
+                bark.ClaimedExitState(:final block) => block.height,
+                _ => null,
+              },
               status: switch (e.state) {
                 bark.ClaimableExitState() => ArkExitStatus.claimable,
                 bark.ClaimInProgressExitState() => ArkExitStatus.submitted,
@@ -326,6 +344,11 @@ final class BarkNativeSession implements ArkNativeSession {
                 null => null,
               },
               boardConfirmations: info.requiredBoardConfirmations,
+              serverUri: _config.arkUrl,
+              vtxoExitDelta: info.vtxoExitDelta,
+              htlcSendExpiryDelta: info.htlcSendExpiryDelta,
+              htlcExpiryDelta: info.htlcExpiryDelta,
+              roundNonceCount: info.nbRoundNonces,
             ),
       renewal: pendingIds.isNotEmpty
           ? ArkRenewalStatus.delegated

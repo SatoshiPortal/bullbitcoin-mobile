@@ -90,22 +90,46 @@ ArkMovement movementFromJson(Map<String, Object?> m) => _decode(
     outputVtxoIds: strings(m['outputs']),
   ),
 );
+Uri? _displayServerUri(Object? value) {
+  if (value is! String) return null;
+  final uri = Uri.tryParse(value);
+  return uri != null &&
+          uri.hasAuthority &&
+          uri.host.isNotEmpty &&
+          uri.userInfo.isEmpty &&
+          !uri.hasFragment &&
+          !uri.hasQuery &&
+          (uri.scheme == 'https' || uri.scheme == 'http')
+      ? uri
+      : null;
+}
+
 Map<String, Object?> serverToJson(ArkServerInfo v) => {
+  'serverUri': v.serverUri?.toString(),
   'key': v.publicKey,
   'interval': v.roundIntervalSeconds,
   'lifetime': v.vtxoLifetimeBlocks,
   'minimum': v.minimumBoard?.toString(),
   'maximum': v.maximumVtxo?.toString(),
   'confirmations': v.boardConfirmations,
+  'exitDelta': v.vtxoExitDelta,
+  'htlcSendDelta': v.htlcSendExpiryDelta,
+  'htlcDelta': v.htlcExpiryDelta,
+  'roundNonces': v.roundNonceCount,
 };
 ArkServerInfo serverFromJson(Map<String, Object?> m) => _decode(
   () => ArkServerInfo(
+    serverUri: _displayServerUri(m['serverUri']),
     publicKey: m['key'] as String,
     roundIntervalSeconds: m['interval'] as int?,
     vtxoLifetimeBlocks: m['lifetime'] as int?,
     minimumBoard: nullableSats(m['minimum']),
     maximumVtxo: nullableSats(m['maximum']),
     boardConfirmations: m['confirmations'] as int?,
+    vtxoExitDelta: m['exitDelta'] as int?,
+    htlcSendExpiryDelta: m['htlcSendDelta'] as int?,
+    htlcExpiryDelta: m['htlcDelta'] as int?,
+    roundNonceCount: m['roundNonces'] as int?,
   ),
 );
 Map<String, Object?> snapshotToJson(ArkSnapshot v) => {
@@ -130,6 +154,8 @@ Map<String, Object?> snapshotToJson(ArkSnapshot v) => {
           'status': e.status.name,
           'claimableHeight': e.claimableHeight,
           'claimTxid': e.claimTxid,
+          'phase': e.phase?.name,
+          'confirmedHeight': e.confirmedHeight,
         },
       )
       .toList(),
@@ -181,6 +207,8 @@ ArkSnapshot snapshotFromJson(Map<String, Object?> m) => _decode(
             status: ArkExitStatus.values.byName(e['status'] as String),
             claimableHeight: e['claimableHeight'] as int?,
             claimTxid: e['claimTxid'] as String?,
+            phase: ArkExitPhase.values.asNameMap()[e['phase']],
+            confirmedHeight: e['confirmedHeight'] as int?,
           ),
         )
         .toList(),

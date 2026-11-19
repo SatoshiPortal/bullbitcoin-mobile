@@ -73,19 +73,31 @@ final class ArkMovement {
 }
 
 final class ArkServerInfo {
+  /// Configured endpoint supplied when opening the native session. This does
+  /// not attest a live response or authenticate the server's cached facts.
+  final Uri? serverUri;
   final String publicKey;
   final int? roundIntervalSeconds;
   final int? vtxoLifetimeBlocks;
   final Sats? minimumBoard;
   final Sats? maximumVtxo;
   final int? boardConfirmations;
+  final int? vtxoExitDelta;
+  final int? htlcSendExpiryDelta;
+  final int? htlcExpiryDelta;
+  final int? roundNonceCount;
   const ArkServerInfo({
     required this.publicKey,
+    this.serverUri,
     this.roundIntervalSeconds,
     this.vtxoLifetimeBlocks,
     this.minimumBoard,
     this.maximumVtxo,
     this.boardConfirmations,
+    this.vtxoExitDelta,
+    this.htlcSendExpiryDelta,
+    this.htlcExpiryDelta,
+    this.roundNonceCount,
   });
 }
 
@@ -219,18 +231,37 @@ enum ArkStage {
 
 enum ArkSectionCompleteness { unknown, complete, incomplete }
 
+/// Native observations for presentation only; claim admission uses ArkExitStatus.
+enum ArkExitPhase {
+  start,
+  unrolling,
+  delay,
+  claimable,
+  claiming,
+  claimed,
+  failed,
+  canceled,
+}
+
 final class ArkExit {
   final String id;
   final Sats amount;
   final ArkExitStatus status;
   final int? claimableHeight;
   final String? claimTxid;
+  final ArkExitPhase? phase;
+
+  /// The exit confirmation in delay phase, or the claim confirmation in claimed
+  /// phase. Never infer the transaction kind without its phase.
+  final int? confirmedHeight;
   const ArkExit({
     required this.id,
     required this.amount,
     required this.status,
     this.claimableHeight,
     this.claimTxid,
+    this.phase,
+    this.confirmedHeight,
   });
 }
 
