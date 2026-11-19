@@ -1,6 +1,6 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -26,7 +26,7 @@ void main() {
           ),
         ),
       );
-      final buttons = tester.widgetList<BBButton>(find.byType(BBButton));
+      final buttons = tester.widgetList<BullButton>(find.byType(BullButton));
       expect(buttons, hasLength(2));
       for (final button in buttons) {
         expect(button.bgColor, colors.actionButton);
