@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_inp
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network;
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network;
 

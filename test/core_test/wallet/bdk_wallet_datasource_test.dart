@@ -51,7 +51,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

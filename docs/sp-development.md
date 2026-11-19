@@ -11,9 +11,9 @@
 | Android SDK | `compileSdk` 37 (SDK platform 37.0) | Android Studio SDK Manager |
 | Android NDK | `29.0.14206865` (see `android/gradle.properties`) | Android Studio SDK Manager |
 
-The bwk bindings the SP feature calls come from the `bull_sdk` package (see `pubspec.yaml`), not a local crate. Its native Rust library (`rust_lib_bull_sdk`) is compiled by Native Assets hooks during the Android/iOS build, which is why the pinned Rust toolchains and platform targets are required. The accepted wrappers use Flutter Rust Bridge 2.13 and hooks 2; BDK uses UniFFI through its own Native Assets hook.
+The bwk bindings the SP feature calls come from the `rust_bindings` workspace package (its `rust/crates/bwk` crate). Its native Rust library (`rust_lib_bull_sdk`) is compiled by Native Assets hooks during the Android/iOS build, which is why the pinned Rust toolchains and platform targets are required. The accepted wrappers use Flutter Rust Bridge 2.13 and hooks 2; BDK uses UniFFI through its own Native Assets hook.
 
-`bull_sdk` is pinned directly to an accepted SatoshiPortal commit in the workspace manifests. `make deps` enforces the shared lockfile. Official hosted Payjoin selects Rust 1.85.1 explicitly; `RUSTUP_TOOLCHAIN=1.100.0` does not override that explicit selection. The makefile exports the SatoshiPortal compiler pin and disables implicit Rust toolchain installation.
+`rust_bindings` builds from its own locked Cargo graph (`packages/rust_bindings/rust/Cargo.lock`); `make deps` enforces the shared Dart lockfile. Official hosted Payjoin selects Rust 1.85.1 explicitly; `RUSTUP_TOOLCHAIN=1.100.0` does not override that explicit selection. The makefile exports the SatoshiPortal compiler pin and disables implicit Rust toolchain installation.
 
 Run `make fvm-check` to install the pinned Flutter, then `make deps` to fetch dependencies before starting.
 

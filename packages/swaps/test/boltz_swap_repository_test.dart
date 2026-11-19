@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:bull_sdk/boltz.dart' as frb;
+import 'package:rust_bindings/boltz.dart' as frb;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:swaps/src/data/boltz_api.dart';

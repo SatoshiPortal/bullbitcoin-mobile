@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 import 'package:primitives/primitives.dart';
 
 /// Maps between the shared [BitcoinNetwork] primitive and the bwk FFI

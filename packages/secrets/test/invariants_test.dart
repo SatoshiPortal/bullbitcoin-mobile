@@ -177,7 +177,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     // the part that needs no device to be verified; `public/` orchestrates
     // and computes nothing.
     const owner = {
-      'bull_sdk': {'crypto'},
+      'rust_bindings': {'crypto'},
       'recoverbull': {'crypto'},
       // `testing/` is a keystore too — the in-memory one the tests install.
       'flutter_secure_storage': {'data', 'testing'},

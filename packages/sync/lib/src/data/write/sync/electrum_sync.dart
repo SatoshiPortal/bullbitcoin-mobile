@@ -7,7 +7,7 @@ import 'dart:isolate';
 import '../../writer_diagnostics.dart';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';

@@ -6,7 +6,7 @@
 # change. When both parallel jobs miss the same key (lockfile just changed),
 # both build and both try to save — the first save wins, the second logs a
 # benign "cache already exists" warning. No restore-keys on the pub cache on
-# purpose: it holds the bull_sdk git clone, and a fuzzy fallback can restore a
+# purpose: it holds git dependency clones, and a fuzzy fallback can restore a
 # checkout from an OLDER lock whose pinned commit differs; pub then resolves
 # against that stale clone and `pub get --enforce-lockfile` fails wanting to
 # drop deps. The exact key already pins the commit via pubspec.lock.
@@ -105,7 +105,7 @@ runs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-        key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+        key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}
         restore-keys: cargo-${{ runner.os }}-
 
     - name: Install FVM
@@ -182,9 +182,9 @@ runs:
           .dart_tool/hooks_runner/*/*/hook.dill.d
           .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
           .dart_tool/hooks_runner/shared/*/build/download-*/*.so
-        key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+        key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}-${{ github.sha }}
         restore-keys: |
-          hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
+          hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}-
           hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-
 
     - name: Generate code (build_runner)

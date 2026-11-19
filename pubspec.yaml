@@ -33,6 +33,11 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - packages/rust_bindings
+  - packages/onion
+  - packages/boltz_stream
+  - packages/bitbox_transport
+  - packages/satoshifier
 
 dependencies:
   ark:
@@ -78,21 +83,9 @@ dependencies:
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
   file_picker: ^13.3.3
-  bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/bull_sdk
+  rust_bindings:
   boltz_stream:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/boltz-stream
   bitbox_transport:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/bitbox-transport
   universal_ble: ^3.3.0
   auto_size_text: ^3.0.0
   freezed_annotation: ^3.1.0
@@ -135,10 +128,6 @@ dependencies:
       url: https://github.com/fusion44/dart_bolt11_decoder
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
   satoshifier:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
   ledger_bitcoin:
@@ -176,6 +165,8 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^6.11.2
   mocktail: ^1.0.4
+  # Its plugin integration test runs in integration_test/onion.
+  onion:
   # Direct dep for the webview test fake: the Platform* types and callback typedefs it extends are not re-exported by webview_flutter.
   webview_flutter_platform_interface: ^2.15.1
   path_provider_platform_interface: ^2.1.2

@@ -13,7 +13,7 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

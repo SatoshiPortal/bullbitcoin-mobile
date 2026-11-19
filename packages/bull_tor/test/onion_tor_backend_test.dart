@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bull_sdk/onion.dart' as onion;
+import 'package:rust_bindings/onion.dart' as onion;
 import 'package:bull_tor/src/data/onion_tor_backend.dart';
 import 'package:bull_tor/src/data/tor_logger.dart';
 import 'package:bull_tor/src/domain/entities/tor_proxy_endpoint.dart';

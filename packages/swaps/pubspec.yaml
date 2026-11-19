@@ -14,16 +14,8 @@ environment:
 resolution: workspace
 
 dependencies:
-  bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/bull_sdk
+  rust_bindings:
   boltz_stream:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/boltz-stream
   bolt11_decoder:
     git:
       url: https://github.com/fusion44/dart_bolt11_decoder

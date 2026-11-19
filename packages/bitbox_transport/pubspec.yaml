@@ -1,0 +1,29 @@
+name: bitbox_transport
+description: USB and Bluetooth transport for BitBox02 hardware wallet
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rust_bindings:
+  universal_ble: ^3.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.bitbox.bitbox_flutter
+        pluginClass: BitboxFlutterPlugin

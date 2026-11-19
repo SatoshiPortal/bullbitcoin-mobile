@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/derivers/liquid_deriver.dart'
     show liquidSeed, lwkLiquidNetwork;

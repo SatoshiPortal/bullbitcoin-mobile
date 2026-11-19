@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';

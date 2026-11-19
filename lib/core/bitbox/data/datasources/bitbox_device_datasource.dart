@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
-import 'package:bull_sdk/bitbox.dart' as bitbox;
+import 'package:rust_bindings/bitbox.dart' as bitbox;
 import 'package:universal_ble/universal_ble.dart';
 
 class BitBoxDeviceDatasource {

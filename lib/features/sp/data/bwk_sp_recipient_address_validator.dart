@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/sp/data/mappers/sp_network_mapper.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_recipient_address_validator_port.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 import 'package:primitives/primitives.dart';
 
 class BwkSpRecipientAddressValidator
