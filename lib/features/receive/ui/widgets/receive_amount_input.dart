@@ -52,6 +52,7 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
         canonicalUnit: BitcoinUnit.sats,
         amountController: _amountController,
         focusNode: widget.focusNode,
+        readOnly: state.creatingSwap,
         isLiquid: state.type == ReceiveType.liquid,
         defaultCurrencyCode: state.fiatCurrencyCode,
         initialCurrencyCode: state.amountConversion?.currencyCode,
