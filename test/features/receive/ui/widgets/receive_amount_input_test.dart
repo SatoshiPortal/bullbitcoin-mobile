@@ -59,4 +59,38 @@ void main() {
       expect(canonical().text, '5000');
     },
   );
+
+  testWidgets('the amount cannot be edited while the request is created', (
+    tester,
+  ) async {
+    final bloc = _Receive();
+    final focus = FocusNode();
+    addTearDown(focus.dispose);
+    const state = ReceiveState(
+      type: ReceiveType.lightning,
+      walletAdmitted: true,
+      inputAmount: '1000',
+      inputAmountCurrencyCode: 'sats',
+      fiatCurrencyCode: 'CAD',
+      creatingSwap: true,
+    );
+    when(() => bloc.state).thenReturn(state);
+    when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: bullUiLocalizationsDelegates,
+        supportedLocales: BullUiLocalizations.supportedLocales,
+        home: BlocProvider<ReceiveBloc>.value(
+          value: bloc,
+          child: Scaffold(body: ReceiveAmountInput(focusNode: focus)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<BullAmountInput>(find.byType(BullAmountInput)).readOnly,
+      isTrue,
+    );
+  });
 }
