@@ -216,7 +216,7 @@ void main() {
         await tester.pumpAndSettle();
         await openCoin(tester, 'threshold');
         expect(
-          find.textContaining('Auto-renew is configured 1008 blocks'),
+          find.textContaining('Auto-renew is configured 1,008 blocks'),
           remaining < 1008 ? findsOneWidget : findsNothing,
         );
         expect(find.widgetWithText(BullButton, 'Renew'), findsOneWidget);

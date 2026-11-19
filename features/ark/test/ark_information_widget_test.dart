@@ -120,7 +120,7 @@ void main() {
     );
     expect(details(tester), containsPair('Required confirmations', '3'));
     expect(details(tester), containsPair('Round interval', '10 sec'));
-    expect(details(tester), containsPair('VTXO lifetime', '4320 blocks'));
+    expect(details(tester), containsPair('VTXO lifetime', '4,320 blocks'));
   });
 
   testWidgets('missing observed limits remain unavailable in French', (
