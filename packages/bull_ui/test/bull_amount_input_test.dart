@@ -7,6 +7,43 @@ import 'package:primitives/primitives.dart';
 void main() {
   final quotedAt = DateTime.utc(2026, 11, 19, 14, 32);
 
+  testWidgets('currency and conversion icons use the amount text color', (
+    tester,
+  ) async {
+    final canonical = TextEditingController(text: '25000');
+    addTearDown(canonical.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullAmountInput(
+          canonicalUnit: BitcoinUnit.sats,
+          amountController: canonical,
+          defaultCurrencyCode: 'CAD',
+          currencies: [
+            BullAmountCurrency(
+              code: 'CAD',
+              decimals: 2,
+              price: 125000,
+              priceAt: quotedAt,
+            ),
+          ],
+        ),
+      ),
+    );
+    void expectIcons() {
+      final context = tester.element(find.byType(BullAmountInput));
+      for (final icon in [Icons.arrow_drop_down, Icons.swap_vert]) {
+        final widget = tester.widget<Icon>(find.byIcon(icon));
+        expect(widget.color, context.bull.text);
+        expect(widget.size, 24);
+      }
+    }
+
+    expectIcons();
+    await tester.tap(find.byTooltip('Enter the amount in CAD'));
+    await tester.pump();
+    expectIcons();
+  });
+
   testWidgets('representation round trips preserve one satoshi', (
     tester,
   ) async {
