@@ -656,4 +656,7 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get boardConfirmation => 'Confirmer le dépôt';
+
+  @override
+  String get arkActions => 'Actions Ark';
 }

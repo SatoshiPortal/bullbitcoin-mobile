@@ -649,4 +649,7 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get boardConfirmation => 'Confirm board';
+
+  @override
+  String get arkActions => 'Ark actions';
 }

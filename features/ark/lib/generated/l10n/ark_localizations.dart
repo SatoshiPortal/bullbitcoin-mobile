@@ -1285,6 +1285,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Confirm board'**
   String get boardConfirmation;
+
+  /// Accessible name for the menu of Ark account actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Ark actions'**
+  String get arkActions;
 }
 
 class _ArkLocalizationsDelegate
