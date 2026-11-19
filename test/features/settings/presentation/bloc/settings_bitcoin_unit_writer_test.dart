@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -79,11 +81,14 @@ class _MockSetPayjoinExpireAfterSecUsecase extends Mock
 class _MockWatchPayjoinPolicyUsecase extends Mock
     implements WatchPayjoinPolicyUsecase {}
 
+class _SetAmountMode extends Mock implements SetAmountInputModeUsecase {}
+
 class _TestSettingsCubit extends SettingsCubit {
   _TestSettingsCubit({
     required super.getSettingsUsecase,
     required super.setEnvironmentUsecase,
     required super.setBitcoinUnitUsecase,
+    required super.setAmountInputModeUsecase,
     required super.setLanguageUsecase,
     required super.setCurrencyUsecase,
     required super.syncExchangeCurrencyUsecase,
@@ -126,6 +131,7 @@ void main() {
     cubit = _TestSettingsCubit(
       getSettingsUsecase: _MockGetSettingsUsecase(),
       setEnvironmentUsecase: _MockSetEnvironmentUsecase(),
+      setAmountInputModeUsecase: _SetAmountMode(),
       setBitcoinUnitUsecase: setBitcoinUnit,
       setLanguageUsecase: _MockSetLanguageUsecase(),
       setCurrencyUsecase: _MockSetCurrencyUsecase(),

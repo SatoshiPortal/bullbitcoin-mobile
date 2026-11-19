@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -86,6 +87,8 @@ SettingsEntity _settings({bool isDevModeEnabled = true}) => SettingsEntity(
   isDevModeEnabled: isDevModeEnabled,
 );
 
+class _SetAmountMode extends Mock implements SetAmountInputModeUsecase {}
+
 void main() {
   late _MockSetIsDevModeUsecase setIsDevModeUsecase;
   late _MockRevokeSpWalletUsecase revokeSpWalletUsecase;
@@ -112,6 +115,7 @@ void main() {
       getSettingsUsecase: _MockGetSettingsUsecase(),
       setEnvironmentUsecase: _MockSetEnvironmentUsecase(),
       setBitcoinUnitUsecase: _MockSetBitcoinUnitUsecase(),
+      setAmountInputModeUsecase: _SetAmountMode(),
       setLanguageUsecase: _MockSetLanguageUsecase(),
       setCurrencyUsecase: _MockSetCurrencyUsecase(),
       syncExchangeCurrencyUsecase: _MockSyncExchangeCurrencyUsecase(),

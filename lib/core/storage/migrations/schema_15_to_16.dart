@@ -16,6 +16,11 @@ class Schema15To16 {
   // Keep the backfill and table replacement atomic even when migration tools
   // invoke this step directly, without SqliteDatabase's reporting wrapper.
   static Future<void> _migrate(Migrator m, Schema16 schema16) async {
+    if (!await m.hasColumn('settings', 'start_amounts_in_fiat')) {
+      await m.database.customStatement(
+        'ALTER TABLE settings ADD COLUMN start_amounts_in_fiat INTEGER NOT NULL DEFAULT 0 CHECK (start_amounts_in_fiat IN (0, 1))',
+      );
+    }
     if (!await m.hasColumn('wallet_metadatas', 'network')) {
       await m.addColumn(
         schema16.walletMetadatas,

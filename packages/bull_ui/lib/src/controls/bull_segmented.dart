@@ -4,6 +4,8 @@ import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../theme/bull_tokens.dart';
+
 /// Full-width sliding segmented control.
 class BullSegmented extends StatefulWidget {
   const BullSegmented({
@@ -12,6 +14,7 @@ class BullSegmented extends StatefulWidget {
     this.initialValue,
     required this.onSelected,
     this.disabledItems = const {},
+    this.height = BullSpacing.xl + BullSpacing.xs,
   }) : assert(items.length > 0, 'BullSegmented requires at least one item');
 
   /// The ordered set of segment labels.
@@ -25,6 +28,7 @@ class BullSegmented extends StatefulWidget {
 
   /// Labels that cannot be selected.
   final Set<String> disabledItems;
+  final double height;
 
   @override
   State<BullSegmented> createState() => _BullSegmentedState();
@@ -62,6 +66,7 @@ class _BullSegmentedState extends State<BullSegmented> {
         borderRadius: BorderRadius.circular(context.bullShapes.button),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
+          height: widget.height,
           initialValue: widget.initialValue ?? widget.items.first,
           onValueChanged: (v) {
             if (widget.disabledItems.contains(v)) return;
@@ -87,19 +92,25 @@ class _BullSegmentedState extends State<BullSegmented> {
             for (final item in widget.items)
               // One role for every segment, so a control reads at the same
               // size on every screen; the selection shows by colour and weight.
-              item: Text(
-                item,
-                style: item == selectedSegment
-                    ? context.bullType.label.copyWith(color: colors.primary)
-                    : widget.disabledItems.contains(item)
-                    ? context.bullType.label.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: colors.outline.withValues(alpha: 0.5),
-                      )
-                    : context.bullType.label.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: colors.secondary,
-                      ),
+              item: Semantics(
+                button: true,
+                enabled: !widget.disabledItems.contains(item),
+                selected: item == selectedSegment,
+                inMutuallyExclusiveGroup: true,
+                child: Text(
+                  item,
+                  style: item == selectedSegment
+                      ? context.bullType.label.copyWith(color: colors.primary)
+                      : widget.disabledItems.contains(item)
+                      ? context.bullType.label.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: colors.outline.withValues(alpha: 0.5),
+                        )
+                      : context.bullType.label.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: colors.secondary,
+                        ),
+                ),
               ),
           },
         ),

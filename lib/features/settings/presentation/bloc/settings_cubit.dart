@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
+
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -38,6 +40,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._getSettingsUsecase,
     required this._setEnvironmentUsecase,
     required this._setBitcoinUnitUsecase,
+    required this._setAmountInputModeUsecase,
     required this._setLanguageUsecase,
     required this._setCurrencyUsecase,
     required this._syncExchangeCurrencyUsecase,
@@ -66,6 +69,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetEnvironmentUsecase _setEnvironmentUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
+  final SetAmountInputModeUsecase _setAmountInputModeUsecase;
   final SetLanguageUsecase _setLanguageUsecase;
   final SetCurrencyUsecase _setCurrencyUsecase;
   final SyncExchangeCurrencyUsecase _syncExchangeCurrencyUsecase;
@@ -143,7 +147,9 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(environment: environment),
+        storedSettings: state.storedSettings?.copyWith(
+          environment: environment,
+        ),
       ),
     );
     return previous != null &&
@@ -161,6 +167,25 @@ class SettingsCubit extends Cubit<SettingsState> {
           storedSettings: state.storedSettings?.copyWith(bitcoinUnit: unit),
         ),
       );
+    }
+    return result;
+  }
+
+  Future<Result<void, SettingsFailure>> setStartAmountsInFiat(bool fiat) async {
+    final result = await _setAmountInputModeUsecase.execute(fiat: fiat);
+    if (!isClosed) {
+      switch (result) {
+        case Ok():
+          emit(
+            state.copyWith(
+              storedSettings: state.storedSettings?.copyWith(
+                startAmountsInFiat: fiat,
+              ),
+            ),
+          );
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+      }
     }
     return result;
   }
@@ -186,7 +211,9 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
 
     emit(
-      state.copyWith(storedSettings: settings?.copyWith(language: language)),
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(language: language),
+      ),
     );
   }
 
@@ -203,7 +230,9 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(currencyCode: currencyCode),
+        storedSettings: state.storedSettings?.copyWith(
+          currencyCode: currencyCode,
+        ),
       ),
     );
 
@@ -223,7 +252,11 @@ class SettingsCubit extends Cubit<SettingsState> {
       return;
     }
 
-    emit(state.copyWith(storedSettings: settings?.copyWith(hideAmounts: hide)));
+    emit(
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(hideAmounts: hide),
+      ),
+    );
   }
 
   Future<void> toggleSuperuserMode(bool active) async {
@@ -236,7 +269,9 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
 
     emit(
-      state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(isSuperuser: active),
+      ),
     );
   }
 
@@ -252,7 +287,9 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
 
     emit(
-      state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
+      state.copyWith(
+        storedSettings: state.storedSettings?.copyWith(themeMode: themeMode),
+      ),
     );
   }
 
@@ -285,11 +322,14 @@ class SettingsCubit extends Cubit<SettingsState> {
       return;
     }
 
+    final currentSettings = state.storedSettings;
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(
+        storedSettings: currentSettings?.copyWith(
           isDevModeEnabled: isEnabled,
-          environment: isEnabled ? settings.environment : Environment.mainnet,
+          environment: isEnabled
+              ? currentSettings.environment
+              : Environment.mainnet,
         ),
         revokeSpFailed: false,
       ),
@@ -302,7 +342,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     String? username,
     String? password,
   }) async {
-    final settings = state.storedSettings;
     final trimmedUsername = username?.trim();
     final trimmedPassword = password?.trim();
     final user = (trimmedUsername?.isEmpty ?? true) ? null : trimmedUsername;
@@ -318,7 +357,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
           exchangeTestnetBasicAuthUsername: user,
           exchangeTestnetBasicAuthPassword: pass,
         ),
@@ -339,7 +378,9 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(isErrorReportingEnabled: enabled),
+        storedSettings: state.storedSettings?.copyWith(
+          isErrorReportingEnabled: enabled,
+        ),
       ),
     );
   }
@@ -364,7 +405,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     ScreenCaptureProtection.instance.enabledByUser = enabled;
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(
+        storedSettings: state.storedSettings?.copyWith(
           screenCaptureProtectionEnabled: enabled,
         ),
       ),

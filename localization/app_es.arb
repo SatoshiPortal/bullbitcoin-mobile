@@ -5071,5 +5071,9 @@
   "permissionsTitle": "Permisos",
   "settingsSearchPermissionsKeywords": "notificaciones|tareas en segundo plano|batería|alertas",
   "wizardBackgroundTasksDescription": "Comprueba pagos con la app cerrada.",
-  "wizardNotificationsDescription": "Entérate cuando llega un pago."
+  "wizardNotificationsDescription": "Entérate cuando llega un pago.",
+  "amountInputBitcoin": "Bitcoin",
+  "amountInputTitle": "Introducir importes en",
+  "amountInputSettingsHint": "También disponible en la lista de monedas de cualquier campo de importe.",
+  "amountInputStartChanged": "Los importes ahora comienzan en {currency}"
 }
