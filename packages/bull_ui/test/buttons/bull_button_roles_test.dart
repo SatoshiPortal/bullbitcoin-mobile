@@ -9,6 +9,29 @@ import 'dart:ui' show Tristate;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('compact action works in AlertDialog intrinsic layout', (
+    tester,
+  ) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        AlertDialog(
+          title: const Text('Try again'),
+          actions: [
+            BullButton.secondary(
+              label: 'Retry',
+              compact: true,
+              size: BullButtonSize.small,
+              onPressed: () => taps++,
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Retry'));
+    expect(taps, 1);
+  });
   testWidgets(
     'legacy constructors preserve explicit appearance and disable taps',
     (tester) async {
