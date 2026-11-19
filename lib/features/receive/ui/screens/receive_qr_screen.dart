@@ -659,7 +659,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
               ),
               const Spacer(),
               CurrencyText(
-                swap.fees?.totalFees(null) ?? 0,
+                swap.fees?.totalFees(swap.amountSat) ?? 0,
                 showFiat: false,
                 style: context.bullType.body.copyWith(
                   fontWeight: FontWeight.w500,
