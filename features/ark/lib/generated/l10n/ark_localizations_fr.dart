@@ -496,7 +496,7 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get paymentScanHint =>
-      'Scannez une adresse de paiement ou une facture.';
+      'Scannez un code QR pour payer instantanément via Ark.';
 
   @override
   String get openCamera => 'Ouvrir la caméra';
@@ -659,4 +659,311 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get arkActions => 'Actions Ark';
+
+  @override
+  String get arkOffTitle => 'Ark est désactivé';
+
+  @override
+  String get arkOffBody =>
+      'Activez Ark pour envoyer des bitcoins instantanément et à moindre coût.';
+
+  @override
+  String get inventoryActive => 'Actifs';
+
+  @override
+  String get inventoryExpiring => 'Expiration proche';
+
+  @override
+  String get inventoryRenew => 'Renouveler';
+
+  @override
+  String get inventoryKeys => 'Clés';
+
+  @override
+  String get inventoryBoardingLimits => 'Limites de dépôt';
+
+  @override
+  String get inventoryTiming => 'Délais';
+
+  @override
+  String get inventoryMailboxKey => 'Clé publique de messagerie';
+
+  @override
+  String get inventoryExitDelta => 'Délai de sortie VTXO';
+
+  @override
+  String get inventoryAutoRenew => 'Renouveler avant expiration';
+
+  @override
+  String get inventoryOnline => 'En ligne';
+
+  @override
+  String get inventoryOffline => 'Hors ligne';
+
+  @override
+  String get inventoryServerError => 'Serveur Ark inaccessible';
+
+  @override
+  String get inventoryServerErrorBody =>
+      'Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get inventoryCachedInfo =>
+      'Serveur Ark inaccessible. Informations de la dernière connexion.';
+
+  @override
+  String inventoryBlocks(String count) {
+    return '$count blocs';
+  }
+
+  @override
+  String inventorySeconds(String count) {
+    return '$count s';
+  }
+
+  @override
+  String inventoryExpiresIn(String count) {
+    return 'Expire dans $count blocs';
+  }
+
+  @override
+  String inventoryExpiringIn(String count) {
+    return 'Expiration proche · dans $count blocs';
+  }
+
+  @override
+  String inventoryNextExpiry(String count) {
+    return 'Prochaine expiration dans $count blocs';
+  }
+
+  @override
+  String get inventoryExpiredNote =>
+      'Ce VTXO a expiré et ne peut plus être renouvelé.';
+
+  @override
+  String get inventoryLockedNote =>
+      'Ce VTXO ne peut être dépensé ni renouvelé avant la fin de son opération en cours.';
+
+  @override
+  String inventoryRenewNote(String count) {
+    return 'Le renouvellement automatique est configuré $count blocs avant expiration. Ouvrez régulièrement l’application pour garder vos VTXOs à jour.';
+  }
+
+  @override
+  String get inventoryVtxoId => 'Identifiant VTXO';
+
+  @override
+  String get inventoryAnchor => 'Point d’ancrage';
+
+  @override
+  String get inventoryExpires => 'Expiration';
+
+  @override
+  String get inventoryBlocksLeft => 'Blocs restants';
+
+  @override
+  String get inventoryTotal => 'Total hors VTXOs expirés';
+
+  @override
+  String get inventoryEmptyTitle => 'Aucun VTXO pour le moment';
+
+  @override
+  String get inventoryEmptyBody => 'Les bitcoins reçus apparaissent ici.';
+
+  @override
+  String get inventoryTechnicalDetails => 'Détails techniques';
+
+  @override
+  String get inventoryOpenAccount => 'Ouvrir le portefeuille Ark';
+
+  @override
+  String get inventoryServerPublicKey => 'Clé publique du serveur';
+
+  @override
+  String get inventoryMinimumBoard => 'Montant minimum de dépôt';
+
+  @override
+  String get inventoryMaximumVtxo => 'Montant maximum d’un VTXO';
+
+  @override
+  String get inventoryConfirmations => 'Confirmations requises';
+
+  @override
+  String get inventoryLifetime => 'Durée de vie des VTXOs';
+
+  @override
+  String get inventoryRoundInterval => 'Intervalle des rounds';
+
+  @override
+  String get payFrom => 'Payer depuis';
+
+  @override
+  String get additionalInformation => 'Informations supplémentaires';
+
+  @override
+  String get additionalInformationHint =>
+      'Ajouter un montant ou un message pour l’expéditeur';
+
+  @override
+  String get arkAddressInformationUnavailable =>
+      'Aucun montant ni message ne peut être ajouté à cette adresse Ark. Utilisez une facture Lightning pour demander un montant.';
+
+  @override
+  String get noteOptional => 'Note (facultative)';
+
+  @override
+  String get paymentNoteUnavailable =>
+      'Les notes ne sont pas prises en charge pour ce paiement.';
+
+  @override
+  String get addressActions => 'Adresse';
+
+  @override
+  String get maxBalanceInputHint =>
+      'Le montant final et les frais réseau sont vérifiés avant confirmation.';
+
+  @override
+  String boardMinimumWithNetworkFees(String minimum) {
+    return 'Montant minimum : $minimum + frais de réseau';
+  }
+
+  @override
+  String boardAmountBelowMinimum(String minimum) {
+    return 'Montant trop faible. Minimum : $minimum + frais';
+  }
+
+  @override
+  String get boardFeeEstimate => 'Estimation des frais';
+
+  @override
+  String get boardArkBalanceReceives => 'Solde Ark crédité';
+
+  @override
+  String get boardArkBoardingFee => 'Frais de dépôt sur Ark';
+
+  @override
+  String get boardEstimateUnavailable => 'Estimation des frais indisponible';
+
+  @override
+  String get boardMinimumUnavailable => 'Montant minimum indisponible';
+
+  @override
+  String get boardStarted => 'Dépôt sur Ark démarré';
+
+  @override
+  String get boardStartedDescription =>
+      'Votre bitcoin on-chain est en cours de transfert vers Ark. Il sera disponible une fois le dépôt terminé.';
+
+  @override
+  String get boardFundingTransaction => 'Transaction de financement';
+
+  @override
+  String get boardFundingId => 'Identifiant de financement';
+
+  @override
+  String boardFundingOptions(String id) {
+    return 'Transaction de financement $id. Afficher les options';
+  }
+
+  @override
+  String get boardFundingIdCopied => 'Identifiant de financement copié';
+
+  @override
+  String get boardFundingUnavailable =>
+      'Transaction de financement indisponible';
+
+  @override
+  String get boardCopyFundingId => 'Copier l’identifiant de transaction';
+
+  @override
+  String get boardCopyLink => 'Copier le lien';
+
+  @override
+  String get boardViewInExplorer => 'Voir dans l’explorateur';
+
+  @override
+  String get boardLinkCopied => 'Lien copié';
+
+  @override
+  String get boardVerificationPending => 'Le statut du dépôt doit être vérifié';
+
+  @override
+  String get exitHoldToStart => 'Maintenez pour démarrer la sortie';
+
+  @override
+  String get exitKeepHolding => 'Continuez à maintenir…';
+
+  @override
+  String get exitConfirmAccessible => 'Confirmer la sortie d’urgence';
+
+  @override
+  String get exitNoCancellation =>
+      'Une sortie démarrée ne peut pas être annulée dans cette app. La progression et la réclamation restent des actions explicites.';
+
+  @override
+  String get exitIntendedDestination =>
+      'Destination prévue pour la réclamation';
+
+  @override
+  String get exitReserveFees =>
+      'Les frais des transactions de sortie sont payés par la réserve on-chain Ark. Les frais de réclamation seront revus séparément avant la réclamation.';
+
+  @override
+  String get exitUnrolling => 'Déploiement des transactions de sortie';
+
+  @override
+  String get exitDelay => 'Délai de sortie';
+
+  @override
+  String get exitManualClaim =>
+      'Revoyez une réclamation quand la sortie est réclamable. Aucune réclamation automatique n’est autorisée.';
+
+  @override
+  String get exitYourExits => 'Vos sorties';
+
+  @override
+  String get exitReviewTitle => 'Revoir la sortie';
+
+  @override
+  String get exitClaimAction => 'Réclamer';
+
+  @override
+  String get exitDetailsTitle => 'Détails de la sortie';
+
+  @override
+  String exitConfirmedAtBlock(String height) {
+    return 'Confirmée au bloc $height';
+  }
+
+  @override
+  String exitBlocksRemaining(String count) {
+    return '$count blocs restants';
+  }
+
+  @override
+  String get exitCanceled => 'Sortie annulée';
+
+  @override
+  String get movementBoardedLabel => 'Déposé';
+
+  @override
+  String get movementReceivedLabel => 'Reçu';
+
+  @override
+  String get activityStartHint =>
+      'Recevez des bitcoins ou déposez-en depuis votre portefeuille on-chain pour commencer à utiliser Ark.';
+
+  @override
+  String get pasteAddress => 'Coller l’adresse du destinataire';
+
+  @override
+  String get inventoryHtlcSendExpiryDelta =>
+      'Délai d’expiration des HTLC sortants';
+
+  @override
+  String get inventoryHtlcExpiryDelta =>
+      'Écart d’expiration des HTLC Lightning / Ark';
+
+  @override
+  String get inventoryRoundNonceCount => 'Nonces par round';
 }

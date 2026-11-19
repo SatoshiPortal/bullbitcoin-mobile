@@ -989,7 +989,7 @@ abstract class ArkLocalizations {
   /// Ark payment journey label
   ///
   /// In en, this message translates to:
-  /// **'Scan a payment address or invoice.'**
+  /// **'Scan a QR code to pay instantly over Ark.'**
   String get paymentScanHint;
 
   /// Ark payment journey label
@@ -1291,6 +1291,540 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Ark actions'**
   String get arkActions;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Ark is off'**
+  String get arkOffTitle;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on Ark to send bitcoin instantly and with lower fees.'**
+  String get arkOffBody;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get inventoryActive;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring'**
+  String get inventoryExpiring;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Renew'**
+  String get inventoryRenew;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Keys'**
+  String get inventoryKeys;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Boarding limits'**
+  String get inventoryBoardingLimits;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Timing'**
+  String get inventoryTiming;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Mailbox public key'**
+  String get inventoryMailboxKey;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'VTXO exit delta'**
+  String get inventoryExitDelta;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-renew before expiry'**
+  String get inventoryAutoRenew;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get inventoryOnline;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get inventoryOffline;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t reach the Ark server'**
+  String get inventoryServerError;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get inventoryServerErrorBody;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t reach the Ark server. Showing info from the last connection.'**
+  String get inventoryCachedInfo;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'{count} blocks'**
+  String inventoryBlocks(String count);
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sec'**
+  String inventorySeconds(String count);
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in {count} blocks'**
+  String inventoryExpiresIn(String count);
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring · in {count} blocks'**
+  String inventoryExpiringIn(String count);
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Next expiry in {count} blocks'**
+  String inventoryNextExpiry(String count);
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'This VTXO has expired and can’t be renewed.'**
+  String get inventoryExpiredNote;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'This VTXO can’t be spent or renewed until its pending operation finishes.'**
+  String get inventoryLockedNote;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-renew is configured {count} blocks before expiry. Open the app regularly to keep your VTXOs current.'**
+  String inventoryRenewNote(String count);
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'VTXO ID'**
+  String get inventoryVtxoId;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Anchor point'**
+  String get inventoryAnchor;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get inventoryExpires;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks left'**
+  String get inventoryBlocksLeft;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Total excluding expired VTXOs'**
+  String get inventoryTotal;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'No VTXOs yet'**
+  String get inventoryEmptyTitle;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin you receive shows up here.'**
+  String get inventoryEmptyBody;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Technical details'**
+  String get inventoryTechnicalDetails;
+
+  /// Ark inventory/settings parity with design source
+  ///
+  /// In en, this message translates to:
+  /// **'Open Ark wallet'**
+  String get inventoryOpenAccount;
+
+  /// Ark information mockup label; units are part of the value
+  ///
+  /// In en, this message translates to:
+  /// **'Server public key'**
+  String get inventoryServerPublicKey;
+
+  /// Ark information mockup label; units are part of the value
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum board amount'**
+  String get inventoryMinimumBoard;
+
+  /// Ark information mockup label; units are part of the value
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum VTXO amount'**
+  String get inventoryMaximumVtxo;
+
+  /// Ark information mockup label; units are part of the value
+  ///
+  /// In en, this message translates to:
+  /// **'Required confirmations'**
+  String get inventoryConfirmations;
+
+  /// Ark information mockup label; units are part of the value
+  ///
+  /// In en, this message translates to:
+  /// **'VTXO lifetime'**
+  String get inventoryLifetime;
+
+  /// Ark information mockup label; units are part of the value
+  ///
+  /// In en, this message translates to:
+  /// **'Round interval'**
+  String get inventoryRoundInterval;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Pay from'**
+  String get payFrom;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get additionalInformation;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Add an amount or message for sender'**
+  String get additionalInformationHint;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts and messages cannot be added to this Ark address. Use a Lightning invoice to request an amount.'**
+  String get arkAddressInformationUnavailable;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get noteOptional;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Notes are not supported for this payment.'**
+  String get paymentNoteUnavailable;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get addressActions;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'The final amount and network fees are checked before confirmation.'**
+  String get maxBalanceInputHint;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum amount {minimum} + network fees'**
+  String boardMinimumWithNetworkFees(String minimum);
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is too low. Minimum is {minimum} + fees'**
+  String boardAmountBelowMinimum(String minimum);
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Fee estimate'**
+  String get boardFeeEstimate;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Ark balance receives'**
+  String get boardArkBalanceReceives;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Ark boarding fee'**
+  String get boardArkBoardingFee;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Fee estimate unavailable'**
+  String get boardEstimateUnavailable;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum amount unavailable'**
+  String get boardMinimumUnavailable;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Boarding started'**
+  String get boardStarted;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Your on-chain bitcoin is moving into Ark. It will become spendable after the board completes.'**
+  String get boardStartedDescription;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Funding transaction'**
+  String get boardFundingTransaction;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Funding ID'**
+  String get boardFundingId;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Funding transaction {id}. Show options'**
+  String boardFundingOptions(String id);
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Funding ID copied'**
+  String get boardFundingIdCopied;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Funding transaction unavailable'**
+  String get boardFundingUnavailable;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Copy transaction ID'**
+  String get boardCopyFundingId;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get boardCopyLink;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'View in explorer'**
+  String get boardViewInExplorer;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get boardLinkCopied;
+
+  /// Ark UI parity with the supplied screen designs
+  ///
+  /// In en, this message translates to:
+  /// **'Boarding status needs verification'**
+  String get boardVerificationPending;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to start exit'**
+  String get exitHoldToStart;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Keep holding…'**
+  String get exitKeepHolding;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm emergency exit'**
+  String get exitConfirmAccessible;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'A started exit cannot be canceled from this app. Progress and claim remain explicit actions.'**
+  String get exitNoCancellation;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Intended claim destination'**
+  String get exitIntendedDestination;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Exit transaction fees are paid from the Ark on-chain reserve. Claim fees are reviewed separately before claiming.'**
+  String get exitReserveFees;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Unrolling exit transactions'**
+  String get exitUnrolling;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Exit delay'**
+  String get exitDelay;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Review a claim when the exit is claimable. No automatic claim is authorized.'**
+  String get exitManualClaim;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Your exits'**
+  String get exitYourExits;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Review exit'**
+  String get exitReviewTitle;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Claim'**
+  String get exitClaimAction;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Exit details'**
+  String get exitDetailsTitle;
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed at block {height}'**
+  String exitConfirmedAtBlock(String height);
+
+  /// Emergency exit presentation over explicitly reviewed native operations
+  ///
+  /// In en, this message translates to:
+  /// **'{count} blocks remaining'**
+  String exitBlocksRemaining(String count);
+
+  /// Observed native exit canceled phase; does not authorize a claim
+  ///
+  /// In en, this message translates to:
+  /// **'Exit canceled'**
+  String get exitCanceled;
+
+  /// Ark wallet and transfer parity presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Boarded'**
+  String get movementBoardedLabel;
+
+  /// Ark wallet and transfer parity presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get movementReceivedLabel;
+
+  /// Ark wallet and transfer parity presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Receive bitcoin or board from your on-chain wallet to start using Ark.'**
+  String get activityStartHint;
+
+  /// Ark wallet and transfer parity presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Paste recipient’s address'**
+  String get pasteAddress;
+
+  /// Observed native Ark server parameter; unknown without matching configured endpoint
+  ///
+  /// In en, this message translates to:
+  /// **'Outgoing HTLC expiry delta'**
+  String get inventoryHtlcSendExpiryDelta;
+
+  /// Observed native Ark server parameter; unknown without matching configured endpoint
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning / Ark HTLC expiry difference'**
+  String get inventoryHtlcExpiryDelta;
+
+  /// Observed native Ark server parameter; unknown without matching configured endpoint
+  ///
+  /// In en, this message translates to:
+  /// **'Nonces per round'**
+  String get inventoryRoundNonceCount;
 }
 
 class _ArkLocalizationsDelegate
