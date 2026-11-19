@@ -717,6 +717,28 @@ void main() {
       },
     );
     test(
+      'a late Lightning limits result cannot change a new Bitcoin receive',
+      () async {
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
+        final pending = Completer<Result<swaps.SwapLimits, ReceiveFailure>>();
+        when(() => getSwapLimits.execute(isLiquid: any(named: 'isLiquid')))
+            .thenAnswer((_) => pending.future);
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+        bloc.add(const ReceiveLightningStarted());
+        await pumpEventQueue();
+        bloc.add(ReceiveBitcoinStarted(_testWallet()));
+        await pumpEventQueue();
+        pending.complete(const Ok(swaps.SwapLimits(min: 2000, max: 10000)));
+        await pumpEventQueue();
+        expect(bloc.state.type, ReceiveType.bitcoin);
+        expect(bloc.state.swapLimits, isNull);
+        expect(bloc.state.walletAdmitted, isTrue);
+      },
+    );
+
+    test(
       'does not load or enforce Boltz limits for exchange fallback',
       () async {
         when(() => getSwapRoute.execute())

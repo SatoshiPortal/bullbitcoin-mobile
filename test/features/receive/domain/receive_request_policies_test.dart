@@ -62,6 +62,7 @@ void main() {
         walletCount: 2,
         payjoinEnabled: true,
         hasMessage: true,
+        hasLocalSigner: true,
       );
       expect(options.showWalletPicker, isTrue);
       expect(options.summary, ReceiveAdvancedSummaryPart.values);
@@ -86,6 +87,65 @@ void main() {
           hasMessage: false,
         ).summary,
         isEmpty,
+      );
+    },
+  );
+
+  test('advanced actions follow the rail and signing capabilities', () {
+    for (final network in ReceiveNetworkType.values) {
+      final options = ReceiveAdvancedOptions(
+        network: network,
+        walletCount: 2,
+        payjoinEnabled: true,
+        hasMessage: false,
+        hasLocalSigner: true,
+        supportsDeviceVerification: true,
+      );
+      expect(options.showPayjoin, network == ReceiveNetworkType.bitcoin);
+      expect(
+        options.showHardwareVerification,
+        network == ReceiveNetworkType.bitcoin,
+      );
+      expect(options.showNewAddress, network != ReceiveNetworkType.lightning);
+    }
+    const hardware = ReceiveAdvancedOptions(
+      network: ReceiveNetworkType.bitcoin,
+      walletCount: 1,
+      payjoinEnabled: true,
+      hasMessage: false,
+      supportsDeviceVerification: true,
+    );
+    expect(hardware.showPayjoin, isFalse);
+    expect(hardware.showHardwareVerification, isTrue);
+    expect(hardware.summary, isEmpty);
+  });
+
+  test(
+    'Payjoin explains empty funds, then suppressed amounts, then global scope',
+    () {
+      ReceiveAdvancedOptions options({
+        required bool funds,
+        bool suppressed = false,
+      }) => ReceiveAdvancedOptions(
+        network: ReceiveNetworkType.bitcoin,
+        walletCount: 1,
+        payjoinEnabled: true,
+        hasMessage: false,
+        hasLocalSigner: true,
+        hasFunds: funds,
+        payjoinSuppressedForAmount: suppressed,
+      );
+      expect(
+        options(funds: false, suppressed: true).payjoinExplanation,
+        ReceivePayjoinExplanation.awaitingFunds,
+      );
+      expect(
+        options(funds: true, suppressed: true).payjoinExplanation,
+        ReceivePayjoinExplanation.belowMinimum,
+      );
+      expect(
+        options(funds: true).payjoinExplanation,
+        ReceivePayjoinExplanation.global,
       );
     },
   );
