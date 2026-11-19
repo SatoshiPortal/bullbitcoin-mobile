@@ -314,46 +314,30 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
 
-    // If no bitcoin wallet is passed through the constructor, get the
-    // default bitcoin wallet. The network check on _wallet matters: the
-    // preselected wallet survives tab switches (the shell's bloc is
-    // created once), so entering receive from a liquid wallet and
-    // switching to the Bitcoin tab must not resurrect the liquid wallet
-    // here — its balance would drive the payjoin gates (hasUtxos,
-    // _isPayjoinEligible) and its id the generated address.
-    final presetWallet = _wallet != null && _wallet.isBitcoin ? _wallet : null;
-    Wallet? wallet = presetWallet ?? state.wallet;
-    if (wallet == null) {
-      final walletsResult = await _getReceiveWalletsUsecase.execute(
-        onlyBitcoin: true,
-      );
-      if (generation != _receiveGeneration || emit.isDone) return;
-      switch (walletsResult) {
-        case Ok(:final value):
-          // firstWhere's orElse and .first both throw on an empty list, and
-          //  there is no try/catch above this any more. An empty list is a
-          //  legitimate Ok from the use-case, so it is checked here.
-          if (value.isEmpty) {
-            log.warning('No bitcoin wallet available to receive into');
-            emit(
-              state.copyWith(
-                failure: const ReceiveAddressUnavailableFailure(),
-                payjoinAttemptSettled: true,
-              ),
-            );
-            return;
-          }
-          emit(state.copyWith(wallets: value));
-          wallet = value.firstWhere(
-            (w) => w.isDefault,
-            orElse: () => value.first,
-          );
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
-          return;
-      }
+    final walletsResult = await _getReceiveWalletsUsecase.execute(
+      onlyBitcoin: true,
+    );
+    if (generation != _receiveGeneration || emit.isDone) return;
+    final Wallet wallet;
+    switch (GetReceiveWalletsUsecase.selectBitcoin(
+      catalog: walletsResult,
+      explicitWallet: eventWallet,
+      entryWallet: _wallet,
+      currentWallet: state.wallet,
+    )) {
+      case Ok(:final value):
+        wallet = value.wallet;
+        emit(
+          state.copyWith(
+            wallet: wallet,
+            wallets: value.choices,
+            walletAdmitted: true,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+        return;
     }
-    emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     if (state.bitcoinUnit == null) {
       // If the bitcoin unit is not set yet, we need to get it from the settings
