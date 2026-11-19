@@ -93,8 +93,8 @@ class PinSettingsScreen extends StatelessWidget {
                     BullButton.big(
                       label: context.loc.pinCodeRemoveButton,
                       onPressed: () => bloc.add(const PinCodeDelete()),
-                      bgColor: context.appColors.error,
-                      textColor: context.appColors.onError,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
                     ),
                   const Gap(24),
                 ],
