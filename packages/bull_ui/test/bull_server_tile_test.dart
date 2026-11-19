@@ -20,7 +20,7 @@ void main() {
       ),
     );
 
-    expect(find.text('host:50002'), findsOneWidget);
+    expect(find.bySemanticsLabel('host:50002'), findsOneWidget);
     expect(find.text('Encrypted'), findsOneWidget);
     expect(find.byTooltip('Delete server'), findsOneWidget);
     expect(

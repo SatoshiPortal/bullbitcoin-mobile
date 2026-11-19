@@ -86,6 +86,8 @@ class ElectrumSettingsScreen extends StatelessWidget {
                 context.loc.electrumAdvancedOptions,
                 style: context.bullType.body.copyWith(
                   color: context.appColors.primary,
+                  decoration: TextDecoration.underline,
+                  decorationColor: context.appColors.primary,
                 ),
               ),
             ),

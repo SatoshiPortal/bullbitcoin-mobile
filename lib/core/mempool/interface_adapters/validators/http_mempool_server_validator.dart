@@ -94,11 +94,7 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
 
       final statusCode = response.statusCode;
       if (statusCode == null || statusCode < 200 || statusCode >= 300) {
-        log.severe(
-          message: 'Validation failed: Invalid status code $statusCode',
-          error: 'status $statusCode',
-          trace: StackTrace.current,
-        );
+        log.warning('Validation failed: Invalid status code $statusCode');
         return const Err(MempoolValidationNotMempoolServerFailure());
       }
 
@@ -117,30 +113,38 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
         return const Err(MempoolValidationInvalidResponseFailure());
       }
 
-      final genesis = await dio.get<String>('/api/block-height/0');
-      final reportedGenesis = genesis.data?.trim();
       final expected = _knownGenesisHashes[network];
       if (expected != null) {
-        if (reportedGenesis != expected) {
+        // Ask for the expected genesis block itself: every Esplora backend
+        // serves it, unlike `/api/block-height/0`, and another chain answers 404.
+        final genesis = await dio.get<Object?>(
+          '/api/block/$expected',
+          options: Options(validateStatus: (s) => s == 200 || s == 404),
+        );
+        final body = genesis.data;
+        if (body is! Map || body['id'] != expected) {
           return const Err(MempoolValidationNetworkMismatchFailure());
         }
-      } else if (reportedGenesis == null ||
-          _knownGenesisHashes.values.contains(reportedGenesis)) {
-        // No genesis hash is pinned for this network yet (Liquid). Accepting
-        // anything would let a Bitcoin server pose as a Liquid one, so at
-        // minimum refuse a chain we can positively identify as a different
-        // one — and refuse an unusable empty answer.
+      } else {
+        // No genesis hash is pinned for Liquid yet. Accepting anything would
+        // let a Bitcoin server pose as a Liquid one, so refuse a chain we can
+        // identify as a different one, and an unusable empty answer.
         // TODO(mempool): pin the Liquid mainnet/testnet genesis hashes.
-        return const Err(MempoolValidationNetworkMismatchFailure());
+        final genesis = await dio.get<String>('/api/block-height/0');
+        final reported = genesis.data?.trim();
+        if (reported == null || _knownGenesisHashes.values.contains(reported)) {
+          return const Err(MempoolValidationNetworkMismatchFailure());
+        }
       }
 
       log.fine('Mempool server validation successful');
       return const Ok(null);
-    } on DioException catch (e, st) {
-      log.severe(
-        message: 'Validation failed with DioException',
-        error: e,
-        trace: st,
+    } on DioException catch (e) {
+      // An unreachable or non-mempool server is an expected answer, not an
+      // app error: keep it in the support log without reporting it, and
+      // without the exception text, which can carry the server URL.
+      log.warning(
+        'Validation failed: ${e.type.name}, status ${e.response?.statusCode}',
       );
       return Err(_dioFailure(e, url));
     } catch (e, st) {

@@ -55,13 +55,17 @@ class CoreLocator {
   }
 
   static Future<Result<void, ElectrumFailure>> registerRepositories(
-    GetIt locator,
-  ) async {
+    GetIt locator, {
+    RegtestElectrumProfile? regtestProfile,
+  }) async {
     await SettingsLocator.registerRepositories(locator);
     final settingsRepository = locator<settings.SettingsRepository>();
     final appSettings = await settingsRepository.fetch();
     final prepared = await locator<ElectrumSettingsFacade>()
-        .prepareForegroundStorage(appSettings.environment.networkEnv);
+        .prepareForegroundStorage(
+          appSettings.environment.networkEnv,
+          regtestProfile: regtestProfile,
+        );
     if (prepared case Err()) return prepared;
     bull_tor.TorLocator.registerRepositories(
       locator,

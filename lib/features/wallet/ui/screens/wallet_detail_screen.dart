@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -13,6 +11,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/coins_entry_subtitle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
@@ -203,18 +202,6 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
     }
   }
 
-  /// `{n} UTXOs · {frozen} frozen`, with the frozen clause omitted when none
-  /// are frozen. (Shown only once [_utxos] has loaded — see [_buildCard].)
-  String _subtitle(BuildContext context, List<WalletUtxo> utxos) {
-    final utxosLabel = context.loc.walletCoinsEntryUtxoCount(utxos.length);
-    final frozenSat = utxos
-        .where((u) => u.isFrozen)
-        .fold<BigInt>(BigInt.zero, (sum, u) => sum + u.amountSat);
-    if (frozenSat <= BigInt.zero) return utxosLabel;
-    final frozen = FormatAmount.btc(ConvertAmount.satsToBtc(frozenSat.toInt()));
-    return '$utxosLabel · ${context.loc.walletCoinsEntryFrozen(frozen)}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<WalletBloc, WalletState>(
@@ -228,7 +215,6 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
   Widget _buildCard(BuildContext context) {
     final radius = BorderRadius.circular(context.bullShapes.card);
     final utxos = _utxos;
-    final subtitle = utxos == null ? null : _subtitle(context, utxos);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
@@ -285,13 +271,16 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
                                       .copyWith(fontWeight: FontWeight.w500)
                                       .copyWith(fontWeight: FontWeight.w600),
                                 ),
-                                if (subtitle != null) ...[
+                                if (utxos != null) ...[
                                   const Gap(2),
-                                  BullText(
-                                    subtitle,
-                                    style: context.bullType.caption.copyWith(
-                                      color: context.appColors.textMuted,
-                                    ),
+                                  CoinsEntrySubtitle(
+                                    utxoCount: utxos.length,
+                                    frozenSat: utxos
+                                        .where((u) => u.isFrozen)
+                                        .fold<BigInt>(
+                                          BigInt.zero,
+                                          (sum, u) => sum + u.amountSat,
+                                        ),
                                   ),
                                 ],
                               ],
