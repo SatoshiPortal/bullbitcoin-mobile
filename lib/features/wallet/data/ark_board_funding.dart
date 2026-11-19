@@ -92,7 +92,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         await _authority.pendingForAccount(config.id.canonical),
       );
       if (existing != null) {
-        await reconcileSource(existing);
+        await reconcileSource(existing, account: config.id);
         final remaining = _sync(
           await _authority.pendingForAccount(config.id.canonical),
         );
@@ -338,6 +338,13 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       if (entry.phase == 'broadcast') {
         return Ok(_packageOperation(_ark(await _client.read(account)), review));
       }
+      if (entry.signedPsbt != null) {
+        admitted = true;
+        _arkHost(await reconcileSource(operationId, account: account));
+        final latest = _sync(await _authority.readBoardReview(operationId));
+        _require(latest.phase == 'broadcast');
+        return Ok(_packageOperation(_ark(await _client.read(account)), review));
+      }
       if (entry.phase != 'prepared') {
         return Err(ArkSubmissionUncertainFailure(operationId));
       }
@@ -438,8 +445,9 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   /// history, package acknowledgement or absence proof. The only local closure
   /// is a request that never reserved, fenced against every future old reserve.
   Future<Result<void, ArkFailure>> reconcileSource(
-    String operationId,
-  ) => _track(() async {
+    String operationId, {
+    ArkAccountId? account,
+  }) => _track(() async {
     try {
       final request = _sync(
         await _authority.readUnpreparedRequest(operationId),
@@ -447,6 +455,12 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       final binding = request == null
           ? _sync(await _authority.readBinding(operationId))
           : null;
+      if (account != null) {
+        _require(
+          (request?.accountIdentity ?? binding?.accountIdentity) ==
+              account.canonical,
+        );
+      }
       final key = request?.key ?? binding?.key;
       final parent = request?.sourceParent ?? binding?.sourceParent;
       if (key == null || parent == null) {
@@ -516,6 +530,19 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       } finally {
         lease.close();
       }
+      // Source confirmation/conflict wins even when Ark funding is too old to
+      // publish. Only a still-pending journal may deliver persisted signatures.
+      if (binding != null &&
+          _sync(await _authority.pendingForAccount(binding.accountIdentity)) ==
+              operationId) {
+        final journal = await _authority.readBoardReview(operationId);
+        if (journal case Ok(:final value)
+            when account != null &&
+                value.signedPsbt != null &&
+                value.phase != 'broadcast') {
+          await _deliverSaved(value, account);
+        }
+      }
       return const Ok(null);
     } catch (error) {
       if (error is Error) rethrow;
@@ -523,8 +550,73 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     }
   });
 
-  Future<void> _fresh(_Review review) async {
-    _unexpired(review);
+  Future<void> _deliverSaved(
+    ArkBoardJournalEntry entry,
+    ArkAccountId account,
+  ) async {
+    final binding = entry.binding;
+    _require(account.canonical == binding.accountIdentity);
+    final review = _Review(entry, account);
+    final signed = entry.signedPsbt;
+    _require(signed != null);
+    if (signed == null) throw const _HostFailure(ArkFeatureStorageFailure());
+    final metadata = await _eligible(binding.key.id, expected: binding);
+    final handle = await _runtime.wallet(metadata.id);
+    final loaded = _sync(await handle.load());
+    final ownership = _sync(await handle.ownership());
+    _require(loaded == ownership.revision);
+    _checkOutputs(
+      _sync(sync.inspectBitcoinPsbt(binding.unsignedPsbt)),
+      review.address,
+      review.display.fundingAmount,
+      ownership,
+    );
+    await _fresh(review, persisted: true);
+    final gate = (await _runtime.foreground()).stores.spendGate;
+    final lease = await gate.acquire(binding.key);
+    if (lease is! BitcoinSpendAdmission) {
+      throw const _HostFailure(ArkOperationBusyFailure());
+    }
+    try {
+      _require(lease.revision == loaded);
+      _sync(
+        await _authority.resumeBoardBroadcast(
+          expected: binding,
+          admittedRevision: lease.revision,
+          signedPsbt: signed,
+        ),
+      );
+    } finally {
+      lease.close();
+    }
+    await _fresh(review, persisted: true);
+    final latest = _sync(await _authority.readBoardReview(binding.operationId));
+    _require(latest.signedPsbt == signed);
+    if (latest.phase == 'broadcast') return;
+    _require(latest.phase == 'broadcasting');
+    final receipt = _sync(
+      await _runtime.broadcast(
+        metadata.id,
+        sync.SignedPsbt(signed),
+        network: BitcoinNetwork.regtest,
+        built: sync.UnsignedSpend(
+          revision: binding.revision,
+          encoded: binding.unsignedPsbt,
+          inputs: binding.inputs,
+          owner: sync.SpendOwner(protocol: 'ark', session: binding.operationId),
+        ),
+      ),
+    );
+    _require(
+      receipt.guarded &&
+          receipt.durable &&
+          receipt.txid == binding.unsignedTxid,
+    );
+    _sync(await _authority.finishBoardBroadcast(binding.operationId, receipt));
+  }
+
+  Future<void> _fresh(_Review review, {bool persisted = false}) async {
+    if (!persisted) _unexpired(review);
     final pass = _ark(await _client.synchronize(review.account, renew: false));
     final snapshot = pass.snapshot;
     final tip = snapshot.tipHeight;
@@ -547,6 +639,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           : review.display.chainSource.toString() == review._request['primary'],
     );
     _packageOperation(snapshot, review);
+    if (persisted) return;
     // Native quote reads current provider/config/fees. Never rebuild funding.
     final fresh = _ark(
       await _client.quote(
@@ -563,6 +656,11 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     );
     _unexpired(review);
   }
+
+  static T _arkHost<T>(Result<T, ArkFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw _HostFailure(failure),
+  };
 
   ArkOperation _packageOperation(ArkSnapshot snapshot, _Review review) {
     final matches = snapshot.operations

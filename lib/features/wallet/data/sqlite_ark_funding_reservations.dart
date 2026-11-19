@@ -994,6 +994,12 @@ final class SqliteArkFundingReservations
       return null;
     }
     final binding = _binding(row);
+    // No review means the local closure cannot attest Bark funding facts.
+    if (_db.select('SELECT 1 FROM ark_board_reviews WHERE operation=?', [
+      operationId,
+    ]).isEmpty) {
+      return null;
+    }
     final review = _boardReview(operationId);
     if (review['phase'] != 'prepared' || row['signed_psbt'] != null) _storage();
     final payload = jsonDecode(review['payload'] as String);
@@ -1086,20 +1092,23 @@ final class SqliteArkFundingReservations
       'SELECT 1 FROM ark_board_reviews WHERE operation=?',
       [operationId],
     );
-    if (reviews.isEmpty) return false; // Legacy has no positive Board review.
-    final review = _boardReview(operationId);
-    if (review['phase'] != 'prepared') return false;
+    final review = reviews.isEmpty ? null : _boardReview(operationId);
+    if (review != null && review['phase'] != 'prepared') return false;
     final binding = _binding(
       row,
     ); // Reapplies all unsigned/native-SegWit facts.
     final request = jsonDecode(binding.context);
-    final payload = jsonDecode(review['payload'] as String);
+    if (review != null) {
+      final payload = jsonDecode(review['payload'] as String);
+      if (payload is! Map<String, dynamic> ||
+          payload['request'] != binding.context) {
+        _storage();
+      }
+    }
     if (request is! Map<String, dynamic> ||
-        payload is! Map<String, dynamic> ||
         request['version'] is! int ||
         request['version'] != 1 ||
         request['account'] != binding.accountIdentity ||
-        payload['request'] != binding.context ||
         request['validUntil'] is! String) {
       _storage();
     }
@@ -1153,6 +1162,33 @@ final class SqliteArkFundingReservations
       nextPhase,
       operationId,
     ]);
+  }, write: true);
+
+  @useResult
+  Future<Result<void, SyncFailure>> resumeBoardBroadcast({
+    required ArkFundingBinding expected,
+    required WalletRevision admittedRevision,
+    required String signedPsbt,
+  }) async => _run(() {
+    final row = _match(expected, admittedRevision);
+    final phase = _boardReview(expected.operationId)['phase'];
+    if (_state(row) != 'signed' ||
+        _authority(row)?['signing'] != 'started' ||
+        row['signed_psbt'] != signedPsbt ||
+        !const [
+          'signing',
+          'signed',
+          'broadcasting',
+          'broadcast',
+        ].contains(phase)) {
+      _refuse();
+    }
+    if (phase != 'broadcast') {
+      _db.execute(
+        "UPDATE ark_board_reviews SET phase='broadcasting' WHERE operation=?",
+        [expected.operationId],
+      );
+    }
   }, write: true);
 
   @useResult
