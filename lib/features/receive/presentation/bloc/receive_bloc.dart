@@ -1,3 +1,7 @@
+import '../../domain/receive_live_amount.dart';
+import '../../domain/receive_advanced_options.dart';
+import '../../domain/receive_lightning_limits.dart';
+import '../../domain/usecases/get_receive_swap_limits_usecase.dart';
 import '../../domain/receive_amount_conversion.dart';
 import '../../domain/usecases/get_receive_amount_quotes_usecase.dart';
 
@@ -75,6 +79,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._setReceivePayjoinEnabledUsecase,
     this._wallet,
     this._getReceiveAmountQuotesUsecase,
+    this._getReceiveSwapLimitsUsecase,
   }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
@@ -149,6 +154,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
   final GetReceiveAmountQuotesUsecase? _getReceiveAmountQuotesUsecase;
   Timer? _amountQuoteTimer;
+  final GetReceiveSwapLimitsUsecase? _getReceiveSwapLimitsUsecase;
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
@@ -307,6 +313,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
+        confirmedNote: '',
         failure: null,
         // The eligibility decision for this address starts here and is only
         // settled after the block below. Until then the QR must wait.
@@ -534,6 +541,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(
         type: ReceiveType.lightning,
+        swapRoute: null,
+        swapLimits: null,
         lightningSwap: null,
         orderSwap: null,
         inputAmount: '',
@@ -542,6 +551,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
+        confirmedNote: '',
         failure: null,
       ),
     );
@@ -619,6 +629,21 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
+    final route = await _getReceiveSwapRouteUsecase.execute();
+    if (generation != _receiveGeneration || emit.isDone) return;
+    emit(state.copyWith(wallet: wallet, swapRoute: route, swapLimits: null));
+    final getLimits = _getReceiveSwapLimitsUsecase;
+    if (state.lightningLimits.requiresBounds && getLimits != null) {
+      switch (await getLimits.execute(isLiquid: wallet.isLiquid)) {
+        case Ok(:final value):
+          if (generation != _receiveGeneration || emit.isDone) return;
+          emit(state.copyWith(swapLimits: value));
+        case Err(:final failure):
+          if (generation != _receiveGeneration || emit.isDone) return;
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
     emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     if (state.exchangeRate == null) {
@@ -671,6 +696,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
+        confirmedNote: '',
         failure: null,
       ),
     );
@@ -1035,6 +1061,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       );
       return;
     }
+    if (state.lightningLimits.requiresBounds && !state.canCreateInvoice) return;
     emit(
       state.copyWith(
         creatingSwap: true,
@@ -1070,6 +1097,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             confirmedAmountSat: confirmedAmountSat,
             confirmedConversion: conversion,
+            confirmedNote: state.note,
             orderSwap: value,
             creatingSwap: false,
           ),
@@ -1590,6 +1618,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             confirmedAmountSat: amountSat,
             confirmedConversion: conversion,
+            confirmedNote: state.note,
             lightningSwap: value,
             creatingSwap: false,
           ),

@@ -28,8 +28,10 @@ abstract class ReceiveState with _$ReceiveState {
     LnReceiveSwap? lightningSwap,
     OrderSwapRecord? orderSwap,
     SwapLimits? swapLimits,
+    SwapRoute? swapRoute,
     WalletAddress? liquidAddress,
     @Default('') String note,
+    @Default('') String confirmedNote,
     PayjoinReceiverSession? payjoin,
     // The global payjoin setting as last read by the bloc. Tri-state on
     // purpose: null = settings not fetched yet (treat as "may become
@@ -70,6 +72,40 @@ abstract class ReceiveState with _$ReceiveState {
   /// True while the entered amount itself is invalid, so continuing cannot
   /// possibly succeed. Distinct from any other [failure] — a failed swap
   /// creation must leave the user able to retry.
+  ReceiveNetworkType? get networkType => switch (type) {
+    ReceiveType.bitcoin => ReceiveNetworkType.bitcoin,
+    ReceiveType.liquid => ReceiveNetworkType.liquid,
+    ReceiveType.lightning => ReceiveNetworkType.lightning,
+    null => null,
+  };
+
+  ReceiveLiveAmount get liveAmount => ReceiveLiveAmount(
+    network: networkType,
+    walletId: wallet?.id,
+    canonicalAmount: inputAmount,
+    admitted: canConfirmAmount,
+    conversion: amountConversion,
+  );
+
+  ReceiveAdvancedOptions get advancedOptions => ReceiveAdvancedOptions(
+    network: networkType,
+    walletCount: wallets.length,
+    payjoinEnabled: payjoinGloballyEnabled ?? false,
+    hasMessage: note.isNotEmpty,
+  );
+
+  ReceiveLightningLimits get lightningLimits =>
+      GetReceiveSwapRouteUsecase.limitsFor(
+        route: swapRoute,
+        minimumSat: swapLimits?.min,
+        maximumSat: swapLimits?.max,
+      );
+
+  bool get canCreateInvoice =>
+      canConfirmAmount &&
+      !creatingSwap &&
+      lightningLimits.permits(inputAmountSat);
+
   bool get hasAmountInputFailure =>
       failure is ReceiveAmountAboveProtocolLimitFailure;
 
@@ -466,18 +502,23 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isLightning => type == ReceiveType.lightning;
 
-  bool get isInputAmountBelowLimit {
-    if (isLightning && swapLimits != null) {
-      return inputAmountSat < swapLimits!.min;
-    }
-    return false;
-  }
+  bool get isInputAmountBelowLimit =>
+      isLightning && lightningLimits.below(inputAmountSat);
 
-  bool get isInputAmountAboveLimit {
-    if (isLightning && swapLimits != null) {
-      return inputAmountSat > swapLimits!.max;
-    }
-    return false;
+  bool get isInputAmountAboveLimit =>
+      isLightning && lightningLimits.above(inputAmountSat);
+
+  int? get lightningAmountSat =>
+      orderSwap?.order?.payinAmountSat.toInt() ?? lightningSwap?.amountSat;
+
+  int? get lightningReceivedSat =>
+      orderSwap?.order?.payoutAmountSat.toInt() ??
+      lightningSwap?.receieveAmount;
+
+  int? get lightningFeeSat {
+    final amount = lightningAmountSat;
+    final received = lightningReceivedSat;
+    return amount == null || received == null ? null : amount - received;
   }
 
   LnReceiveSwap? get getSwap {
