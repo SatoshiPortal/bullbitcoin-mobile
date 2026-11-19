@@ -159,6 +159,11 @@ void main() {
         );
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
         await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        // A picker row reads its title once, followed by its value.
+        expect(
+          find.bySemanticsLabel(RegExp('Currency\nCurrency')),
+          findsNothing,
+        );
         await expectLater(
           find.byKey(boundary),
           matchesGoldenFile('goldens/amount-input-settings-${theme.name}.png'),
