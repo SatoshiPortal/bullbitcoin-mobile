@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -7,7 +9,6 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -143,7 +144,9 @@ void main() {
         );
         addTearDown(actions.close);
         await actions.load();
+        final navigatorKey = GlobalKey<NavigatorState>();
         final router = GoRouter(
+          navigatorKey: navigatorKey,
           initialLocation: '/wallet',
           routes: [
             GoRoute(
@@ -212,6 +215,10 @@ void main() {
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.themeData(type),
                 routerConfig: router,
+                builder: (context, child) => SettingsFacade.amountScope(
+                  navigatorKey: navigatorKey,
+                  child: child ?? const SizedBox.shrink(),
+                ),
                 localizationsDelegates: const [
                   QuickActionsLocalizations.delegate,
                   ...bullUiLocalizationsDelegates,
@@ -223,7 +230,24 @@ void main() {
           ),
         );
         await tester.pump();
-        await tester.pump(const Duration(milliseconds: 400));
+        final images = <ImageProvider<Object>>{
+          ...tester
+              .widgetList<Image>(find.byType(Image))
+              .map((widget) => widget.image),
+          ...tester
+              .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+              .map((widget) => widget.decoration)
+              .whereType<BoxDecoration>()
+              .map((decoration) => decoration.image?.image)
+              .whereType<ImageProvider<Object>>(),
+        };
+        final context = tester.element(find.byType(Scaffold).first);
+        await tester.runAsync(() async {
+          await Future.wait(
+            images.map((image) => precacheImage(image, context)),
+          );
+        });
+        await tester.pumpAndSettle();
         if (scene == 'legacy-sheet') {
           await tester.tap(find.text('Open legacy sheet'));
           await tester.pumpAndSettle();
