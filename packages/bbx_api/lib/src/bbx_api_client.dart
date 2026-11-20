@@ -1,5 +1,6 @@
 import 'package:bbx_api/src/bbx_api_exception.dart';
 import 'package:bbx_api/src/commcenter/commcenter_api.dart';
+import 'package:bbx_api/src/kyc/kyc_api.dart';
 import 'package:bbx_api/src/order_triggers/order_triggers_api.dart';
 import 'package:bbx_api/src/orders/orders_api.dart';
 import 'package:bbx_api/src/prices/prices_api.dart';
@@ -18,6 +19,7 @@ class BbxApiClient {
   BbxApiClient(this._http);
 
   late final CommcenterApi commcenter = CommcenterApi(this);
+  late final KycApi kyc = KycApi(this);
   late final OrderTriggersApi orderTriggers = OrderTriggersApi(this);
   late final OrdersApi orders = OrdersApi(this);
   late final PricesApi prices = PricesApi(this);
@@ -56,4 +58,41 @@ class BbxApiClient {
     }
     return body['result'];
   }
+
+  /// Posts a `multipart/form-data` request to [path] with [fields] and
+  /// [files], keyed by form field name, and returns the response body.
+  ///
+  /// Throws a [BbxApiHttpException] for a non-200 status.
+  Future<Object?> upload(
+    String path, {
+    Map<String, String> fields = const {},
+    Map<String, BbxApiFile> files = const {},
+  }) async {
+    final form = FormData()
+      ..fields.addAll(fields.entries)
+      ..files.addAll([
+        for (final MapEntry(:key, :value) in files.entries)
+          MapEntry(
+            key,
+            MultipartFile.fromBytes(value.bytes, filename: value.fileName),
+          ),
+      ]);
+    final response = await _http.post<Object?>(
+      path,
+      data: form,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+    if (response.statusCode != 200) {
+      throw BbxApiHttpException(response.statusCode);
+    }
+    return response.data;
+  }
+}
+
+/// A file sent in a multipart upload.
+class BbxApiFile {
+  final List<int> bytes;
+  final String fileName;
+
+  const BbxApiFile(this.bytes, {required this.fileName});
 }

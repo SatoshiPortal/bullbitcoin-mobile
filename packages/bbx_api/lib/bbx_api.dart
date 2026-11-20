@@ -8,6 +8,8 @@ export 'src/bbx_api_client.dart';
 export 'src/bbx_api_exception.dart';
 export 'src/commcenter/announcement.dart';
 export 'src/commcenter/commcenter_api.dart';
+export 'src/commcenter/support_message.dart';
+export 'src/kyc/kyc_api.dart';
 export 'src/order_triggers/dca.dart';
 export 'src/order_triggers/limit_order.dart';
 export 'src/order_triggers/order_triggers_api.dart';
