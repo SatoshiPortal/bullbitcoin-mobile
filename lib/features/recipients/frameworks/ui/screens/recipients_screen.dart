@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/new_recipient_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
@@ -11,7 +10,12 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, Gap, BullTypographyX;
+    show
+        BullFadingLinearProgress,
+        BullSegmented,
+        BullSpacing,
+        BullTypographyX,
+        Gap;
 
 enum RecipientsTab { newRecipient, recipientsList }
 
@@ -103,15 +107,19 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
               ),
               const Gap(16.0),
               // Tab selector
-              BBSegmentedButton(
+              BullSegmented(
                 items: RecipientsTab.values.map((e) => e.name).toSet(),
-                labels: {
-                  RecipientsTab.newRecipient.name: context.loc.recipientsTabNew,
-                  RecipientsTab.recipientsList.name:
-                      context.loc.recipientsTabList,
-                },
-                selected: _currentTab.name,
-                onChanged: (value) {
+                labelBuilder: (value) =>
+                    ({
+                      RecipientsTab.newRecipient.name:
+                          context.loc.recipientsTabNew,
+                      RecipientsTab.recipientsList.name:
+                          context.loc.recipientsTabList,
+                    })[value] ??
+                    value,
+                height: BullSpacing.xxl,
+                initialValue: _currentTab.name,
+                onSelected: (value) {
                   setState(() {
                     _currentTab = RecipientsTab.values.firstWhere(
                       (element) => element.name == value,
