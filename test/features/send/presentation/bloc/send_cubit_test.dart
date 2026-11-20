@@ -954,6 +954,24 @@ void main() {
         'mono-max-preview',
       );
     });
+    test(
+      'restores a real MAX preview after cancelling an edited custom fee',
+      () async {
+        final cubit = startMono();
+        stubPreview(() async => slot);
+        final preview = await cubit.previewMonoMax();
+        expect(preview, isNotNull);
+        if (preview == null) return;
+        expect(await cubit.acceptMonoMax(preview), isTrue);
+        cubit.armCustomFee(const RelativeFee(1000));
+        cubit.disarmCustomFee();
+        cubit.clearBitcoinFeePreviews();
+        expect(cubit.preparedMaxAmountSat, isNull);
+        cubit.refreshMonoPreview();
+        await Future<void>.delayed(const Duration(milliseconds: 450));
+        expect(cubit.preparedMaxAmountSat, 99800);
+      },
+    );
     test('rejects acceptance after an RBF change', () async {
       final cubit = startMono();
       stubPreview(() async => slot);
