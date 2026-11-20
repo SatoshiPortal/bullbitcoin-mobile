@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
+    show AddressViewer;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -23,6 +24,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullCountdown,
+        BullDetailsTableItem,
         BullReferenceNotice,
         BullSwitch,
         Gap,
@@ -175,28 +177,33 @@ class PaySendPaymentScreen extends StatelessWidget {
                       ),
 
                       const Gap(8.0),
-                      PaymentDetailRow(
-                        title: context.loc.payOrderNumber,
-                        value: order?.orderNumber.toString(),
+                      BullDetailsTableItem(
+                        label: context.loc.payOrderNumber,
+                        displayValue: order?.orderNumber.toString(),
                         copyValue: order?.orderNumber.toString(),
+                        copiedMessage: context.loc.copiedToClipboard,
                       ),
                       // The payin goes to this address: showing it is the user's only
                       // way to notice if it ever changed under them.
-                      PaymentDetailRow(
-                        title: context.loc.payDepositAddress,
-                        isAddress: true,
-                        value: order?.toAddress,
-                        copyValue: order?.toAddress,
+                      BullDetailsTableItem(
+                        label: context.loc.payDepositAddress,
+                        displayWidget: switch (order?.toAddress) {
+                          final address? => AddressViewer(
+                            address,
+                            textAlign: TextAlign.end,
+                          ),
+                          null => null,
+                        },
                       ),
                       if (order?.paymentDescription case final description?
                           when description.isNotEmpty)
-                        PaymentDetailRow(
-                          title: context.loc.payPaymentDescription,
-                          value: description,
+                        BullDetailsTableItem(
+                          label: context.loc.payPaymentDescription,
+                          displayValue: description,
                         ),
-                      PaymentDetailRow(
-                        title: context.loc.payRecipientType,
-                        value: recipient != null
+                      BullDetailsTableItem(
+                        label: context.loc.payRecipientType,
+                        displayValue: recipient != null
                             ? switch (recipient.type) {
                                 // TODO: Use localization labels instead of hardcoded strings.
                                 // CANADA types
@@ -227,35 +234,35 @@ class PaySendPaymentScreen extends StatelessWidget {
                               }
                             : null,
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.payRecipientName,
-                        value: recipient?.displayName,
+                      BullDetailsTableItem(
+                        label: context.loc.payRecipientName,
+                        displayValue: recipient?.displayName,
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.payRecipientDetails,
-                        value: recipient != null
+                      BullDetailsTableItem(
+                        label: context.loc.payRecipientDetails,
+                        displayValue: recipient != null
                             ? _getRecipientInfoValue(recipient)
                             : null,
                       ),
                       const _Divider(),
-                      PaymentDetailRow(
-                        title: context.loc.payPayinAmount,
-                        value: order == null
+                      BullDetailsTableItem(
+                        label: context.loc.payPayinAmount,
+                        displayValue: order == null
                             ? null
                             : FormatAmount.btc(order.payinAmount),
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.payPayoutAmount,
-                        value: order == null
+                      BullDetailsTableItem(
+                        label: context.loc.payPayoutAmount,
+                        displayValue: order == null
                             ? null
                             : FormatAmount.fiat(
                                 order.payoutAmount,
                                 order.payoutCurrency,
                               ),
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.payExchangeRate,
-                        value: order == null
+                      BullDetailsTableItem(
+                        label: context.loc.payExchangeRate,
+                        displayValue: order == null
                             ? null
                             : FormatAmount.fiat(
                                 order.exchangeRateAmount ??
@@ -265,9 +272,9 @@ class PaySendPaymentScreen extends StatelessWidget {
                               ),
                       ),
                       const _Divider(),
-                      PaymentDetailRow(
-                        title: context.loc.payPayFromWallet,
-                        value:
+                      BullDetailsTableItem(
+                        label: context.loc.payPayFromWallet,
+                        displayValue:
                             wallet?.label ??
                             (wallet?.isDefault == true
                                 ? wallet?.isLiquid == true
@@ -278,9 +285,9 @@ class PaySendPaymentScreen extends StatelessWidget {
                       // Liquid payins pay the network minimum, so there is nothing to pick.
                       if (wallet != null && !wallet.isLiquid)
                         const _FeePriorityRow(),
-                      PaymentDetailRow(
-                        title: context.loc.payNetworkFees,
-                        value: context.select((PayBloc bloc) {
+                      BullDetailsTableItem(
+                        label: context.loc.payNetworkFees,
+                        displayValue: context.select((PayBloc bloc) {
                           final state = bloc.state;
                           if (state case PayPaymentState(
                             absoluteFees: final fees?,
@@ -387,15 +394,15 @@ class _FeePriorityRow extends StatelessWidget {
       return (state.selectedFeeOption, state.customFee, state.canEditFees);
     });
 
-    return PaymentDetailRow(
-      title: context.loc.payFeePriority,
-      value: feeSelectionRowLabel(
+    return BullDetailsTableItem(
+      label: context.loc.payFeePriority,
+      displayValue: feeSelectionRowLabel(
         context,
         selection: selectedFeeOption,
         customFee: customFee,
         fastestLabel: context.loc.payFastest,
       ),
-      onTap: canEditFees
+      onValueTap: canEditFees
           ? () async {
               final bloc = context.read<PayBloc>();
               final selected = await BullBottomSheet.show<String>(

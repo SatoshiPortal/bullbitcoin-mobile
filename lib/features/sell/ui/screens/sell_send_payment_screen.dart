@@ -1,7 +1,8 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
-import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
+    show AddressViewer;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -26,6 +27,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullCountdown,
+        BullDetailsTableItem,
         BullReferenceNotice,
         BullSwitch,
         Gap,
@@ -153,25 +155,30 @@ class SellSendPaymentScreen extends StatelessWidget {
                       ),
 
                       const Gap(8.0),
-                      PaymentDetailRow(
-                        title: context.loc.sellOrderNumber,
-                        value: order?.orderNumber.toString(),
+                      BullDetailsTableItem(
+                        label: context.loc.sellOrderNumber,
+                        displayValue: order?.orderNumber.toString(),
                         copyValue: order?.orderNumber.toString(),
+                        copiedMessage: context.loc.copiedToClipboard,
                       ),
                       // The payin goes to this address: showing it is the user's only
                       // way to notice if it ever changed under them.
-                      PaymentDetailRow(
-                        title: context.loc.sellDepositAddress,
-                        isAddress: true,
-                        value: order?.sellPayinAddress,
-                        copyValue: order?.sellPayinAddress,
+                      BullDetailsTableItem(
+                        label: context.loc.sellDepositAddress,
+                        displayWidget: switch (order?.sellPayinAddress) {
+                          final address? => AddressViewer(
+                            address,
+                            textAlign: TextAlign.end,
+                          ),
+                          null => null,
+                        },
                       ),
                       if (recipient != null)
                         SellPayoutDetailsV2(recipient: recipient)
                       else
-                        PaymentDetailRow(
-                          title: context.loc.sellPayoutRecipient,
-                          value: switch (order?.payoutMethod) {
+                        BullDetailsTableItem(
+                          label: context.loc.sellPayoutRecipient,
+                          displayValue: switch (order?.payoutMethod) {
                             OrderPaymentMethod.cadBalance =>
                               context.loc.sellCadBalance,
                             OrderPaymentMethod.crcBalance =>
@@ -190,9 +197,9 @@ class SellSendPaymentScreen extends StatelessWidget {
                           },
                         ),
                       const _Divider(),
-                      PaymentDetailRow(
-                        title: context.loc.sellPayinAmount,
-                        value: order == null
+                      BullDetailsTableItem(
+                        label: context.loc.sellPayinAmount,
+                        displayValue: order == null
                             ? null
                             : bitcoinUnit == BitcoinUnit.btc
                             ? FormatAmount.btc(order.payinAmount)
@@ -200,18 +207,18 @@ class SellSendPaymentScreen extends StatelessWidget {
                                 ConvertAmount.btcToSats(order.payinAmount),
                               ),
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.sellPayoutAmount,
-                        value: order == null
+                      BullDetailsTableItem(
+                        label: context.loc.sellPayoutAmount,
+                        displayValue: order == null
                             ? null
                             : FormatAmount.fiat(
                                 order.payoutAmount,
                                 order.payoutCurrency,
                               ),
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.sellExchangeRate,
-                        value: order == null
+                      BullDetailsTableItem(
+                        label: context.loc.sellExchangeRate,
+                        displayValue: order == null
                             ? null
                             : FormatAmount.fiat(
                                 order.sellExchangeRateAmount ??
@@ -221,9 +228,9 @@ class SellSendPaymentScreen extends StatelessWidget {
                               ),
                       ),
                       const _Divider(),
-                      PaymentDetailRow(
-                        title: context.loc.sellPayFromWallet,
-                        value:
+                      BullDetailsTableItem(
+                        label: context.loc.sellPayFromWallet,
+                        displayValue:
                             wallet?.label ??
                             (wallet?.isDefault == true
                                 ? wallet?.isLiquid == true
@@ -234,9 +241,9 @@ class SellSendPaymentScreen extends StatelessWidget {
                       // Liquid payins pay the network minimum, so there is nothing to pick.
                       if (wallet != null && !wallet.isLiquid)
                         const _FeePriorityRow(),
-                      PaymentDetailRow(
-                        title: context.loc.sellSendPaymentNetworkFees,
-                        value: context.select((SellBloc bloc) {
+                      BullDetailsTableItem(
+                        label: context.loc.sellSendPaymentNetworkFees,
+                        displayValue: context.select((SellBloc bloc) {
                           final state = bloc.state;
                           if (state case SellPaymentState(
                             absoluteFees: final fees?,
@@ -312,15 +319,15 @@ class _FeePriorityRow extends StatelessWidget {
       return (state.selectedFeeOption, state.customFee, state.canEditFees);
     });
 
-    return PaymentDetailRow(
-      title: context.loc.sellFeePriority,
-      value: feeSelectionRowLabel(
+    return BullDetailsTableItem(
+      label: context.loc.sellFeePriority,
+      displayValue: feeSelectionRowLabel(
         context,
         selection: selectedFeeOption,
         customFee: customFee,
         fastestLabel: context.loc.sellFastest,
       ),
-      onTap: canEditFees
+      onValueTap: canEditFees
           ? () async {
               final bloc = context.read<SellBloc>();
               final selected = await BullBottomSheet.show<String>(
