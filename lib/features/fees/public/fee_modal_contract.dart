@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'fee_modal_controller.freezed.dart';
+part 'fee_modal_contract.freezed.dart';
 
 /// State slice the fee-selection modal reads. Whichever cubit/bloc owns
 /// the actual feature state maps its own state down to this snapshot
@@ -25,7 +25,7 @@ abstract class FeeModalSnapshot with _$FeeModalSnapshot {
 /// Read-only port the shared fee modal subscribes to. Adapters
 /// (cubits/blocs) implement [snapshot] / [snapshots] by mapping their
 /// own state down to a [FeeModalSnapshot].
-abstract class FeeModalViewState {
+abstract interface class FeeModalStatePort {
   /// Synchronous current value — used by `StreamBuilder.initialData`
   /// and by widget `initState` to avoid a frame of empty state.
   FeeModalSnapshot get snapshot;
@@ -39,10 +39,10 @@ abstract class FeeModalViewState {
 /// (cubits) implement these as direct method calls; adapters (blocs)
 /// implement them by adding the corresponding event.
 ///
-/// Kept separate from [FeeModalViewState] so a future caller — e.g.
+/// Kept separate from [FeeModalStatePort] so a future caller — e.g.
 /// a read-only summary widget — could subscribe to the state without
 /// being handed a way to mutate it.
-abstract class FeeModalActions {
+abstract interface class FeeModalActionsPort {
   /// Builds the three preset PSBTs in parallel and writes the slots
   /// into the cache. Idempotent; safe to call on every modal open.
   void requestPresetPreviews();

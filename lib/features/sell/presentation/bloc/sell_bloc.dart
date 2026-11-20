@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/broadcast_payjoin_original_usecase.dart';
@@ -51,7 +51,7 @@ part 'sell_event.dart';
 part 'sell_state.dart';
 
 class SellBloc extends Bloc<SellEvent, SellState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   SellBloc({
     required this._loadSellContextUsecase,
     required this._createSellOrderUsecase,
@@ -2049,8 +2049,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
     );
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
-  // The shared modal in lib/core/widgets/fees/ sees the same snapshot and
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
+  // The shared modal in lib/features/fees/public/ sees the same snapshot and
   // action surface it gets from SendCubit and TransferBloc; the sell flow's
   // own state shape and event dispatch collapse here. Fee state only exists
   // on SellPaymentState, so every other state maps to the neutral defaults

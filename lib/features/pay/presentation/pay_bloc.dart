@@ -33,7 +33,7 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
@@ -50,7 +50,7 @@ part 'pay_event.dart';
 part 'pay_state.dart';
 
 class PayBloc extends Bloc<PayEvent, PayState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   PayBloc({
     required this._loadPayUserSummaryUsecase,
     required this._placePayOrderUsecase,
@@ -1689,8 +1689,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     );
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
-  // The shared modal in lib/core/widgets/fees/ sees the same snapshot and
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
+  // The shared modal in lib/features/fees/public/ sees the same snapshot and
   // action surface it gets from SendCubit and TransferBloc; the pay flow's own
   // state shape and event dispatch collapse here. Fee state only exists on
   // PayPaymentState, so every other state maps to the neutral defaults (the

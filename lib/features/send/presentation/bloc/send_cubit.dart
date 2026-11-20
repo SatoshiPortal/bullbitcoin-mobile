@@ -47,7 +47,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -120,7 +120,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'send_mono_actions.dart';
 
 class SendCubit extends Cubit<SendState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   SendCubit({
     this._prepareInternalRecipientUsecase,
     this._getSendAmountQuotesUsecase,
@@ -5200,9 +5200,9 @@ class SendCubit extends Cubit<SendState>
         });
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
   // SendCubit is the driving adapter for the Bitcoin-send path; the
-  // shared modal in lib/core/widgets/fees/ depends on these ports.
+  // shared modal in lib/features/fees/public/ depends on these ports.
   // Method bodies just delegate to the existing internal API so the
   // port surface stays a stable contract while the cubit's own
   // naming can evolve.
