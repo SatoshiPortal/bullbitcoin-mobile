@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_field.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullKeyboardActions, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class SellScreen extends StatefulWidget {
@@ -38,7 +38,8 @@ class _SellScreenState extends State<SellScreen> {
         title: Text(context.loc.sellTitle),
       ),
       body: SafeArea(
-        child: BBKeyboardActions(
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
           disableScroll: true,
           child: Form(
             key: _formKey,

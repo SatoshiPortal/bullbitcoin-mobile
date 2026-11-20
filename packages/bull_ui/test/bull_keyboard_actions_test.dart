@@ -1,9 +1,11 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+
+import 'test_app.dart';
+
+const _done = 'Terminé';
 
 void main() {
   for (final navigation in [true, false]) {
@@ -20,17 +22,15 @@ void main() {
         addTearDown(second.dispose);
         await tester.pumpWidget(
           MaterialApp(
-            locale: const Locale('fr'),
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: appLocalizationsDelegates,
-            theme: AppTheme.themeData(AppThemeType.dark),
+            theme: ThemeData(extensions: testBullExtensions),
             // The official bridge supports keyboard_actions' SDK widgets.
             // ignore: deprecated_member_use
             builder: (context, child) => MaterialUiCompatibilityBridge(
               child: child ?? const SizedBox.shrink(),
             ),
             home: Scaffold(
-              body: BBKeyboardActions(
+              body: BullKeyboardActions(
+                doneText: _done,
                 nextFocus: navigation,
                 child: ListView(
                   children: [
@@ -45,8 +45,7 @@ void main() {
         await tester.showKeyboard(find.byKey(const Key('first')));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
-        final done = lookupAppLocalizations(const Locale('fr')).doneButton;
-        expect(find.text(done), findsOneWidget);
+        expect(find.text(_done), findsOneWidget);
         if (navigation) {
           await tester.tap(find.byTooltip('Next'));
           await tester.pumpAndSettle();
@@ -54,7 +53,7 @@ void main() {
         } else {
           expect(find.byTooltip('Next'), findsNothing);
         }
-        await tester.tap(find.text(done));
+        await tester.tap(find.text(_done));
         await tester.pumpAndSettle();
         expect(first.hasFocus || second.hasFocus, isFalse);
         expect(tester.takeException(), isNull);
@@ -71,24 +70,21 @@ void main() {
     addTearDown(tester.view.resetViewInsets);
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        theme: AppTheme.themeData(AppThemeType.dark),
+        theme: ThemeData(extensions: testBullExtensions),
         // The official bridge supports keyboard_actions' SDK widgets.
         // ignore: deprecated_member_use
         builder: (context, child) => MaterialUiCompatibilityBridge(
           child: child ?? const SizedBox.shrink(),
         ),
-        home: const Scaffold(body: BBKeyboardActions(child: TextField())),
+        home: const Scaffold(
+          body: BullKeyboardActions(doneText: _done, child: TextField()),
+        ),
       ),
     );
     await tester.showKeyboard(find.byType(TextField));
     await tester.pumpAndSettle();
     expect(tester.testTextInput.isVisible, isTrue);
-    expect(
-      find.text(lookupAppLocalizations(const Locale('en')).doneButton),
-      findsNothing,
-    );
+    expect(find.text(_done), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

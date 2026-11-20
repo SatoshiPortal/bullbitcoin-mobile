@@ -37,7 +37,6 @@ import 'package:bb_mobile/core/utils/payment_request.dart'
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -67,6 +66,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullAdvancedOptionsLink,
         BullFieldAction,
         BullIcons,
@@ -768,7 +768,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             foregroundColor: context.appColors.primary,
           ),
           Expanded(
-            child: BBKeyboardActions(
+            child: BullKeyboardActions(
+              doneText: context.loc.doneButton,
               disableScroll: true,
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>

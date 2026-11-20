@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullBottomSheet,
         BullButton,
         BullShapesX,
@@ -81,7 +81,8 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
           top: Radius.circular(context.bullShapes.sheet),
         ),
       ),
-      child: BBKeyboardActions(
+      child: BullKeyboardActions(
+        doneText: context.loc.doneButton,
         child: Form(
           key: _formKey,
           child: Column(

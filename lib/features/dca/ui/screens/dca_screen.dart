@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullButton,
         BullErrorState,
         BullInfoCard,
@@ -68,7 +68,8 @@ class _DcaScreenState extends State<DcaScreen> {
               DcaInitialState(:final failure) => _DcaInitialContent(
                 failure: failure,
               ),
-              _ => BBKeyboardActions(
+              _ => BullKeyboardActions(
+                doneText: context.loc.doneButton,
                 disableScroll: true,
                 child: Form(
                   key: _formKey,
