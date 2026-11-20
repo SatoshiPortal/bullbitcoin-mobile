@@ -52,4 +52,36 @@ Section paragraph.
     expect(find.text('Plain bullet'), findsOneWidget);
     expect(find.textContaining('**'), findsNothing);
   });
+
+  testWidgets('disclosure link and close action are named 48 dp targets', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        const BullDisclosureLink(
+          label: 'Learn more',
+          semanticLabel: 'Learn more about Liquid',
+          title: 'Liquid disclosure',
+          body: 'Disclosure details.',
+          closeLabel: 'Close disclosure',
+        ),
+      ),
+    );
+
+    final link = find.byType(InkWell);
+    expect(tester.getSize(link).shortestSide, greaterThanOrEqualTo(48));
+    expect(
+      find.bySemanticsLabel(RegExp('Learn more about Liquid')),
+      findsWidgets,
+    );
+
+    await tester.tap(link);
+    await tester.pumpAndSettle();
+    expect(find.text('Disclosure details.'), findsOneWidget);
+    final close = find.byTooltip('Close disclosure');
+    expect(tester.getSize(close).shortestSide, greaterThanOrEqualTo(48));
+    await tester.tap(close);
+    await tester.pumpAndSettle();
+    expect(find.byType(BullDisclosureSheet), findsNothing);
+  });
 }
