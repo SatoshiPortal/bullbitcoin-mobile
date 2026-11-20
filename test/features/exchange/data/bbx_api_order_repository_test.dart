@@ -1,20 +1,19 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../../core/exchange/order_json_fixture.dart';
 import 'bbx_api_test_http.dart';
-
-class _Writes extends Mock implements ExchangeOrderRepository {}
 
 const _rpcError = {
   'error': {'code': -1, 'message': 'rejected for sat@example.com'},
@@ -65,19 +64,11 @@ Map<String, Object?> _list(List<Object?> elements) => {
   'result': {'elements': elements},
 };
 
-BbxApiOrderRepository _repository(
-  FakeBbxHttp http, {
-  ExchangeOrderRepository? writes,
-  bool isTestnet = false,
-}) => BbxApiOrderRepository(
-  api: http.client(),
-  writes: writes ?? _Writes(),
-  isTestnet: isTestnet,
-);
+BbxApiOrderRepository _repository(FakeBbxHttp http, {bool isTestnet = false}) =>
+    BbxApiOrderRepository(api: http.client(), isTestnet: isTestnet);
 
 BbxApiOrderRepository _signedOut(FakeBbxHttp http) => BbxApiOrderRepository(
   api: http.client(readApiKey: () async => const Ok(null)),
-  writes: _Writes(),
   isTestnet: false,
 );
 
@@ -85,7 +76,6 @@ BbxApiOrderRepository _unreadableKey(FakeBbxHttp http) => BbxApiOrderRepository(
   api: http.client(
     readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
   ),
-  writes: _Writes(),
   isTestnet: false,
 );
 
@@ -954,35 +944,161 @@ void main() {
     });
   });
 
-  test('createDca goes to the old repository', () async {
-    final writes = _Writes();
-    final dca = Dca(
-      amount: 10,
-      currency: FiatCurrency.cad,
-      frequency: DcaBuyFrequency.weekly,
-      network: DcaNetwork.bitcoin,
-      address: 'bc1address',
-      nextPurchaseDate: DateTime.utc(2026, 12),
-    );
-    when(
-      () => writes.createDca(
-        amount: 10,
-        currency: FiatCurrency.cad,
-        frequency: DcaBuyFrequency.weekly,
-        network: DcaNetwork.bitcoin,
-        address: 'bc1address',
-      ),
-    ).thenAnswer((_) async => dca);
+  group('createDca', () {
+    const dca = {
+      'userId': 'u-1',
+      'userNbr': 7,
+      'amountStr': '25.5',
+      'currencyCode': 'CAD',
+      'recurringFrequency': 'WEEKLY',
+      'recipientType': 'OUT_LIQUID_ADDRESS',
+      'nextRunAt': '2026-11-27T00:00:00Z',
+      'createdAt': '2026-11-20T00:00:00Z',
+      'address': 'lq1address',
+    };
 
-    final http = FakeBbxHttp();
-    final created = await _repository(http, writes: writes).createDca(
-      amount: 10,
+    Future<Dca> create(
+      FakeBbxHttp http, {
+      DcaBuyFrequency frequency = DcaBuyFrequency.weekly,
+      DcaNetwork network = DcaNetwork.liquid,
+    }) => _repository(http).createDca(
+      amount: 25.5,
       currency: FiatCurrency.cad,
-      frequency: DcaBuyFrequency.weekly,
-      network: DcaNetwork.bitcoin,
-      address: 'bc1address',
+      frequency: frequency,
+      network: network,
+      address: 'lq1address',
     );
-    expect(created, same(dca));
-    expect(http.requests, isEmpty);
+
+    test('sends the same request as the old client', () async {
+      final http = FakeBbxHttp(
+        body: {
+          'result': {'element': dca},
+        },
+      );
+
+      await create(http);
+
+      final request = http.requests.single;
+      expect(request.path, '/ak/api-ordertrigger');
+      expect(
+        jsonEncode(request.data),
+        '{"jsonrpc":"2.0","id":"1","method":"createDCA","params":{"element":'
+        '{"amountStr":"25.5","currencyCode":"CAD","recurringFrequency":'
+        '"WEEKLY","recipientType":"OUT_LIQUID_ADDRESS",'
+        '"address":"lq1address"}}}',
+      );
+    });
+
+    test('sends every frequency and network as before', () async {
+      for (final (frequency, wire) in [
+        (DcaBuyFrequency.hourly, 'HOURLY'),
+        (DcaBuyFrequency.daily, 'DAILY'),
+        (DcaBuyFrequency.weekly, 'WEEKLY'),
+        (DcaBuyFrequency.monthly, 'MONTHLY'),
+      ]) {
+        final http = FakeBbxHttp(
+          body: {
+            'result': {'element': dca},
+          },
+        );
+        await create(http, frequency: frequency);
+        expect((_params(http)['element']! as Map)['recurringFrequency'], wire);
+      }
+      for (final (network, wire) in [
+        (DcaNetwork.bitcoin, 'OUT_BITCOIN_ADDRESS'),
+        (DcaNetwork.lightning, 'OUT_LIGHTNING_ADDRESS'),
+        (DcaNetwork.liquid, 'OUT_LIQUID_ADDRESS'),
+      ]) {
+        final http = FakeBbxHttp(
+          body: {
+            'result': {'element': dca},
+          },
+        );
+        await create(http, network: network);
+        expect((_params(http)['element']! as Map)['recipientType'], wire);
+      }
+    });
+
+    test('maps the created DCA', () async {
+      final created = await create(
+        FakeBbxHttp(
+          body: {
+            'result': {'element': dca},
+          },
+        ),
+      );
+
+      expect(created.amount, 25.5);
+      expect(created.currency, FiatCurrency.cad);
+      expect(created.frequency, DcaBuyFrequency.weekly);
+      expect(created.network, DcaNetwork.liquid);
+      expect(created.address, 'lq1address');
+      expect(created.nextPurchaseDate, DateTime.utc(2026, 11, 27));
+    });
+
+    test('an unknown frequency is a generic exception', () async {
+      await expectLater(
+        create(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'element': {...dca, 'recurringFrequency': 'YEARLY'},
+              },
+            },
+          ),
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (e) => '$e',
+            'message',
+            contains('Unknown frequency: YEARLY'),
+          ),
+        ),
+      );
+    });
+
+    test('a refusal is a generic exception without the message', () async {
+      await expectLater(
+        create(FakeBbxHttp(body: _rpcError)),
+        throwsA(
+          isA<Exception>()
+              .having((e) => e, 'type', isNot(isA<bbx.BbxApiException>()))
+              .having(
+                (e) => '$e',
+                'message',
+                allOf(
+                  contains('Failed to create DCA'),
+                  isNot(contains('sat@example.com')),
+                ),
+              ),
+        ),
+      );
+    });
+
+    test('no stored key is ApiKeyNotFoundException', () async {
+      await expectLater(
+        _signedOut(FakeBbxHttp()).createDca(
+          amount: 1,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: DcaNetwork.bitcoin,
+          address: 'bc1',
+        ),
+        throwsA(isA<ApiKeyNotFoundException>()),
+      );
+    });
+
+    test('an unreadable key is a credential exception', () async {
+      await expectLater(
+        _unreadableKey(FakeBbxHttp()).createDca(
+          amount: 1,
+          currency: FiatCurrency.cad,
+          frequency: DcaBuyFrequency.daily,
+          network: DcaNetwork.bitcoin,
+          address: 'bc1',
+        ),
+        throwsA(isA<ExchangeCredentialUnavailableException>()),
+      );
+    });
   });
 }
