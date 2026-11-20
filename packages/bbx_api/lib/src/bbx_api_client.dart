@@ -3,6 +3,7 @@ import 'package:bbx_api/src/commcenter/commcenter_api.dart';
 import 'package:bbx_api/src/order_triggers/order_triggers_api.dart';
 import 'package:bbx_api/src/orders/orders_api.dart';
 import 'package:bbx_api/src/prices/prices_api.dart';
+import 'package:bbx_api/src/recipients/recipients_api.dart';
 import 'package:bbx_api/src/users/users_api.dart';
 import 'package:dio/dio.dart';
 
@@ -20,6 +21,7 @@ class BbxApiClient {
   late final OrderTriggersApi orderTriggers = OrderTriggersApi(this);
   late final OrdersApi orders = OrdersApi(this);
   late final PricesApi prices = PricesApi(this);
+  late final RecipientsApi recipients = RecipientsApi(this);
   late final UsersApi users = UsersApi(this);
 
   /// Calls [method] on [endpoint] and returns the JSON-RPC `result`.
@@ -27,18 +29,20 @@ class BbxApiClient {
   /// Throws a [BbxApiException] for a non-200 status, a JSON-RPC error or a
   /// body that is not a JSON-RPC response. [rpcError] reads the JSON-RPC
   /// error object into the exception to throw. [id] is the JSON-RPC request
-  /// id.
+  /// id. [headers] are added to the request's headers.
   Future<Object?> call(
     String endpoint,
     String method, {
     Map<String, Object?> params = const {},
     String id = '0',
+    Map<String, Object?>? headers,
     BbxApiRpcException Function(Object error) rpcError =
         BbxApiRpcException.fromJson,
   }) async {
     final response = await _http.post<Object?>(
       endpoint,
       data: {'jsonrpc': '2.0', 'id': id, 'method': method, 'params': params},
+      options: headers == null ? null : Options(headers: headers),
     );
     if (response.statusCode != 200) {
       throw BbxApiHttpException(response.statusCode);

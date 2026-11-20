@@ -18,8 +18,9 @@ import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
 import 'package:bb_mobile/features/exchange/exchange_locator.dart'
     as feature_exchange;
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:flutter/widgets.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:primitives/primitives.dart';
@@ -380,10 +381,8 @@ void main() {
               isTrue,
               reason: 'preprod history read must succeed',
             );
-            final recipients = await BullbitcoinApiRecipientsRepository(
-              authenticatedApiClient: locator<Dio>(
-                instanceName: 'authenticatedBullBitcoinApiTestClient',
-              ),
+            final recipients = await BbxApiRecipientsRepository(
+              api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
             ).listRecipients(isTestnet: true);
             expect(
               recipients is Ok,

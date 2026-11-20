@@ -8,11 +8,10 @@ import 'package:bb_mobile/features/recipients/domain/usecases/get_preferred_juri
 import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/list_cad_billers_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
-import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_virtual_iban_datasource.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/interac_security_details_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
@@ -21,12 +20,11 @@ import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/update_interac_security_details_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/data/recipients_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/sepa_virtual_payee_activation_cubit.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:dio/dio.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
@@ -42,40 +40,24 @@ class RecipientsLocator {
     // used directly/independently for now.
     locator.registerLazySingleton<RecipientsRepository>(
       () => RecipientsRepositoryImpl(
-        bullbitcoinApiClient: BullbitcoinApiRecipientsRepository(
-          authenticatedApiClient: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiClient',
-          ),
+        bullbitcoinApiClient: BbxApiRecipientsRepository(
+          api: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
         ),
-        bullBitcoinTestnetApiClient: BullbitcoinApiRecipientsRepository(
-          authenticatedApiClient: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
-          ),
+        bullBitcoinTestnetApiClient: BbxApiRecipientsRepository(
+          api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
         ),
       ),
     );
     locator.registerLazySingleton<VirtualIbanRepository>(
-      () => VirtualIbanRepositoryImpl(
-        mainnetDatasource: BullbitcoinApiVirtualIbanDatasource(
-          http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
-        ),
-        testnetDatasource: BullbitcoinApiVirtualIbanDatasource(
-          http: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
-          ),
-        ),
+      () => BbxApiVirtualIbanRepository(
+        mainnet: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
+        testnet: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
       ),
     );
     locator.registerLazySingleton<SepaVirtualPayeeRepository>(
-      () => SepaVirtualPayeeRepositoryImpl(
-        mainnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
-          http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
-        ),
-        testnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
-          http: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
-          ),
-        ),
+      () => BbxApiSepaVirtualPayeeRepository(
+        mainnet: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
+        testnet: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
       ),
     );
   }
