@@ -164,8 +164,8 @@ class BullQuickActionBar extends StatelessWidget {
   /// The actions, left to right.
   final List<Widget> children;
 
-  /// Minimum height, shared with the home wallet cards.
-  static const double minHeight = 90;
+  /// Minimum height of the card.
+  static const double minHeight = 72;
 
   /// Padding above the icon and below the label.
   static const double _verticalPadding = BullSpacing.xs;
