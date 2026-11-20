@@ -11,16 +11,16 @@ import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
-class CommonCoinSelectionBottomSheet extends StatefulWidget {
+class WalletCoinSelectionBottomSheet extends StatefulWidget {
   final BitcoinUnit bitcoinUnit;
   final double? exchangeRate;
   final String fiatCurrency;
   final List<WalletUtxo> utxos;
   final List<WalletUtxo> initialSelectedUtxos;
   final int amountToSendSat;
-  final Function(List<WalletUtxo>) onDone;
+  final ValueChanged<List<WalletUtxo>> onDone;
 
-  const CommonCoinSelectionBottomSheet({
+  const WalletCoinSelectionBottomSheet({
     super.key,
     required this.bitcoinUnit,
     required this.exchangeRate,
@@ -32,12 +32,12 @@ class CommonCoinSelectionBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<CommonCoinSelectionBottomSheet> createState() =>
-      _CommonCoinSelectionBottomSheetState();
+  State<WalletCoinSelectionBottomSheet> createState() =>
+      _WalletCoinSelectionBottomSheetState();
 }
 
-class _CommonCoinSelectionBottomSheetState
-    extends State<CommonCoinSelectionBottomSheet> {
+class _WalletCoinSelectionBottomSheetState
+    extends State<WalletCoinSelectionBottomSheet> {
   late List<WalletUtxo> _selectedUtxos;
 
   @override
@@ -101,24 +101,27 @@ class _CommonCoinSelectionBottomSheetState
       child: Column(
         mainAxisSize: .min,
         children: [
-          Stack(
-            alignment: Alignment.center,
+          Row(
             children: [
-              Center(
-                child: BullText(
-                  context.loc.selectAmountTitle,
-                  style: context.bullType.subtitle
-                      .copyWith(fontWeight: FontWeight.w500)
-                      .copyWith(color: context.appColors.secondary),
+              const SizedBox(width: 48),
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  child: BullText(
+                    context.loc.selectAmountTitle,
+                    textAlign: TextAlign.center,
+                    style: context.bullType.subtitle
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: context.appColors.secondary),
+                  ),
                 ),
               ),
-              Positioned(
-                right: 0,
-                child: IconButton(
-                  iconSize: 24,
-                  icon: Icon(Icons.close, color: context.appColors.secondary),
-                  onPressed: context.pop,
-                ),
+              IconButton(
+                tooltip: context.loc.closeDialogButton,
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                iconSize: 24,
+                icon: Icon(Icons.close, color: context.appColors.secondary),
+                onPressed: context.pop,
               ),
             ],
           ),
@@ -159,7 +162,7 @@ class _CommonCoinSelectionBottomSheetState
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, index) {
               final utxo = widget.utxos[index];
-              return CommonCoinSelectTile(
+              return _CoinSelectTile(
                 utxo: utxo,
                 selected: _selectedUtxos.any(
                   (u) => u.outpoint == utxo.outpoint,
@@ -177,11 +180,7 @@ class _CommonCoinSelectionBottomSheetState
           const Gap(24),
           BullButton.secondary(
             label: context.loc.doneButton,
-            onPressed: (selectedUtxoTotalSat < widget.amountToSendSat)
-                ? null
-                : selectedUtxoTotalSat >= widget.amountToSendSat
-                ? _onDonePressed
-                : () {},
+            onPressed: isAmountSufficient ? _onDonePressed : null,
           ),
           const Gap(24),
         ],
@@ -190,7 +189,7 @@ class _CommonCoinSelectionBottomSheetState
   }
 }
 
-class CommonCoinSelectTile extends StatelessWidget {
+class _CoinSelectTile extends StatelessWidget {
   final WalletUtxo utxo;
   final bool selected;
   final VoidCallback onTap;
@@ -198,8 +197,7 @@ class CommonCoinSelectTile extends StatelessWidget {
   final double? exchangeRate;
   final String fiatCurrency;
 
-  const CommonCoinSelectTile({
-    super.key,
+  const _CoinSelectTile({
     required this.utxo,
     required this.selected,
     required this.onTap,
@@ -224,8 +222,8 @@ class CommonCoinSelectTile extends StatelessWidget {
 
     final address = utxo.address;
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
-        ? 'Receive'
-        : 'Change';
+        ? context.loc.coinsKeychainReceive
+        : context.loc.coinsKeychainChange;
 
     return GestureDetector(
       onTap: onTap,
