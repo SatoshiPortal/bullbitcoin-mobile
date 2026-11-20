@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/nfc_payload_parser.dart';
-import 'package:bb_mobile/core/widgets/nfc_scanner_widget.dart';
+import 'package:bb_mobile/features/scanning/ui/widgets/nfc_scanner_widget.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:ndef/ndef.dart' as ndef;
@@ -122,13 +122,16 @@ class NfcBottomSheet {
             ),
             child: Column(
               children: [
-                BullText(
-                  title,
-                  style: sheetContext.bullType.subtitle.copyWith(
-                    fontWeight: FontWeight.w400,
+                Semantics(
+                  header: true,
+                  child: BullText(
+                    title,
+                    style: sheetContext.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                    color: sheetContext.appColors.text,
+                    textAlign: TextAlign.center,
                   ),
-                  color: sheetContext.appColors.text,
-                  textAlign: TextAlign.center,
                 ),
                 Expanded(
                   child: NfcScannerWidget(
