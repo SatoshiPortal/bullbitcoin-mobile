@@ -1,34 +1,32 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
+import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit_v2.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
-import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_method_option_v2.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_method_option.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/widgets.dart' show PopScope, RadioGroup;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-enum _PayoutMethod { balance, sepa, confidential }
+typedef _PayoutOption = ({RecipientType? type});
 
-// Interim EUR Sell flow while the broader exchange refactor is underway.
-// The v2 screens and limited duplication deliberately isolate this addition from Withdraw, Pay and shared recipient navigation.
-// The broader refactor will unify payout-method selection, recipient UI and order creation, and remove this temporary split.
-class SellPayoutMethodScreenV2 extends StatefulWidget {
-  final SellPayinSourceV2 source;
+const _PayoutOption _balance = (type: null);
 
-  const SellPayoutMethodScreenV2({required this.source, super.key});
+class SellPayoutMethodScreen extends StatefulWidget {
+  final SellPayinSource source;
+
+  const SellPayoutMethodScreen({required this.source, super.key});
 
   @override
-  State<SellPayoutMethodScreenV2> createState() =>
-      _SellPayoutMethodScreenV2State();
+  State<SellPayoutMethodScreen> createState() => _SellPayoutMethodScreenState();
 }
 
-class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
-  _PayoutMethod? _method;
+class _SellPayoutMethodScreenState extends State<SellPayoutMethodScreen> {
+  _PayoutOption? _selected;
   RecipientSelection? _lastRecipient;
   bool _isNavigating = false;
 
@@ -52,7 +50,7 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
 
   Future<RecipientSelection?> _activate(RecipientSelection recipient) async {
     final choice = await context.pushNamed<RecipientType>(
-      SellRoute.sellVirtualPayeeV2.name,
+      SellRoute.sellVirtualPayee.name,
       extra: recipient.id,
     );
     if (!mounted) return null;
@@ -64,47 +62,40 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
   }
 
   Future<void> _continue() async {
-    if (_isNavigating || _method == null) return;
-    if (_method == _PayoutMethod.balance) {
+    if (_isNavigating) return;
+    final selected = _selected;
+    if (selected == null) return;
+    final selectedType = selected.type;
+    if (selectedType == null) {
       _preparePayment(null);
       return;
     }
     setState(() => _isNavigating = true);
     try {
-      var type = _method == _PayoutMethod.confidential
-          ? RecipientType.confidentialSepaEur
-          : RecipientType.sepaEur;
+      var type = selectedType;
       if (type == RecipientType.confidentialSepaEur &&
-          context.read<SellPayoutCubitV2>().state.availability ==
+          context.read<SellPayoutCubit>().state.availability ==
               ConfidentialSepaAvailability.needsVirtualIban) {
         final choice = await context.pushNamed<RecipientType>(
-          SellRoute.sellVirtualIbanV2.name,
+          SellRoute.sellVirtualIban.name,
         );
         if (!mounted || choice == null) return;
         type = choice;
         if (choice == RecipientType.confidentialSepaEur) {
-          context.read<SellPayoutCubitV2>().virtualIbanActivated();
+          context.read<SellPayoutCubit>().virtualIbanActivated();
         }
-        setState(
-          () => _method = type == RecipientType.confidentialSepaEur
-              ? _PayoutMethod.confidential
-              : _PayoutMethod.sepa,
-        );
+        setState(() => _selected = (type: choice));
       }
-      final selected = await context.pushNamed<RecipientSelection>(
-        SellRoute.sellRecipientsV2.name,
+      final picked = await context.pushNamed<RecipientSelection>(
+        SellRoute.sellRecipients.name,
         extra: type,
       );
-      if (!mounted || selected == null) return;
-      final recipient = selected.requiresVirtualPayeeActivation
-          ? await _activate(selected)
-          : selected;
+      if (!mounted || picked == null) return;
+      final recipient = picked.requiresVirtualPayeeActivation
+          ? await _activate(picked)
+          : picked;
       if (!mounted || recipient == null) return;
-      setState(
-        () => _method = recipient.type == RecipientType.confidentialSepaEur
-            ? _PayoutMethod.confidential
-            : _PayoutMethod.sepa,
-      );
+      setState(() => _selected = (type: recipient.type));
       _preparePayment(recipient);
     } finally {
       if (mounted) setState(() => _isNavigating = false);
@@ -120,11 +111,7 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
       try {
         final activated = await _activate(recipient);
         if (!mounted || activated == null) return;
-        setState(
-          () => _method = activated.type == RecipientType.confidentialSepaEur
-              ? _PayoutMethod.confidential
-              : _PayoutMethod.sepa,
-        );
+        setState(() => _selected = (type: activated.type));
         _preparePayment(activated);
       } finally {
         if (mounted) setState(() => _isNavigating = false);
@@ -137,26 +124,32 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
   @override
   Widget build(BuildContext context) {
     final payment = context.watch<SellBloc>().state;
-    final payout = context.watch<SellPayoutCubitV2>().state;
+    final payout = context.watch<SellPayoutCubit>().state;
     final preparing =
         payment is SellPreparingPaymentState && payment.error == null;
     final error = payment is SellPreparingPaymentState ? payment.error : null;
     final busy = preparing || _isNavigating || payout.isLoading;
-    final confidentialAvailable =
-        payout.availability != null &&
-        payout.availability != ConfidentialSepaAvailability.unavailable;
-    final options = {
-      _PayoutMethod.balance: (context.loc.sellPayoutBalance, ''),
-      _PayoutMethod.sepa: (
-        context.loc.fundExchangeMethodInstantSepa,
-        context.loc.sellPayoutSepaDescription,
-      ),
-      if (confidentialAvailable)
-        _PayoutMethod.confidential: (
-          payout.availability == ConfidentialSepaAvailability.needsVirtualIban
+    final currency = payment.fiatCurrency;
+    final needsVirtualIban =
+        payout.availability == ConfidentialSepaAvailability.needsVirtualIban;
+    final options = <_PayoutOption, (String, String, String?)>{
+      _balance: (context.loc.sellPayoutBalance, '', null),
+      for (final type in RecipientType.typesForCurrency(currency.code))
+        (type: type): type == RecipientType.sepaEur
+            ? (
+                context.loc.fundExchangeMethodInstantSepa,
+                context.loc.sellPayoutSepaDescription,
+                null,
+              )
+            : (type.label(context), '', null),
+      if (payout.availability case final availability?
+          when availability != ConfidentialSepaAvailability.unavailable)
+        (type: RecipientType.confidentialSepaEur): (
+          needsVirtualIban
               ? context.loc.recipientsVirtualIbanActivate
               : context.loc.recipientsTypeConfidentialSepa,
           context.loc.recipientsTypeConfidentialSepaDescription,
+          needsVirtualIban ? context.loc.sellPayoutNewBadge : null,
         ),
     };
     return PopScope<Object?>(
@@ -191,9 +184,10 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
                     ),
                     const Gap(24),
                     if (payout.failure case final failure?) ...[
-                      _ErrorRetryV2(
+                      _ErrorRetry(
                         failure: failure,
-                        onRetry: () => context.read<SellPayoutCubitV2>().load(),
+                        onRetry: () =>
+                            context.read<SellPayoutCubit>().load(currency),
                       ),
                       const Gap(16),
                     ],
@@ -209,11 +203,11 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
                         ],
                       )
                     else
-                      RadioGroup<_PayoutMethod>(
-                        groupValue: _method,
-                        onChanged: (method) {
-                          if (busy || method == null) return;
-                          setState(() => _method = method);
+                      RadioGroup<_PayoutOption>(
+                        groupValue: _selected,
+                        onChanged: (option) {
+                          if (busy || option == null) return;
+                          setState(() => _selected = option);
                           if (error != null) {
                             context.read<SellBloc>().add(
                               const SellEvent.paymentPreparationAbandoned(),
@@ -224,20 +218,16 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
                           crossAxisAlignment: .stretch,
                           children: [
                             for (final entry in options.entries) ...[
-                              SellPayoutMethodOptionV2<_PayoutMethod>(
-                                key: ValueKey(entry.key.name),
+                              SellPayoutMethodOption<_PayoutOption>(
+                                key: ValueKey(
+                                  entry.key.type?.name ?? 'balance',
+                                ),
                                 value: entry.key,
-                                selected: _method == entry.key,
+                                selected: _selected == entry.key,
                                 enabled: !busy,
                                 title: entry.value.$1,
                                 description: entry.value.$2,
-                                tag:
-                                    entry.key == _PayoutMethod.confidential &&
-                                        payout.availability ==
-                                            ConfidentialSepaAvailability
-                                                .needsVirtualIban
-                                    ? context.loc.sellPayoutNewBadge
-                                    : null,
+                                tag: entry.value.$3,
                               ),
                               const Gap(12),
                             ],
@@ -245,7 +235,7 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
                         ),
                       ),
                     if (error != null)
-                      _ErrorRetryV2(
+                      _ErrorRetry(
                         failure: error,
                         onRetry: busy ? null : () => _retryPayment(error),
                       ),
@@ -256,7 +246,7 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                 child: BullButton.primary(
                   label: context.loc.recipientsContinue,
-                  onPressed: (busy || !options.containsKey(_method))
+                  onPressed: (busy || !options.containsKey(_selected))
                       ? null
                       : _continue,
                 ),
@@ -269,11 +259,11 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
   }
 }
 
-class _ErrorRetryV2 extends StatelessWidget {
+class _ErrorRetry extends StatelessWidget {
   final SellFailure failure;
   final VoidCallback? onRetry;
 
-  const _ErrorRetryV2({required this.failure, required this.onRetry});
+  const _ErrorRetry({required this.failure, required this.onRetry});
 
   @override
   Widget build(BuildContext context) => BullErrorState(

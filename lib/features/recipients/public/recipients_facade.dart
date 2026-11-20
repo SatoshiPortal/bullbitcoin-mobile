@@ -6,13 +6,12 @@ import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_s
 import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
 import 'package:meta/meta.dart';
 
-export '../ui/screens/recipient_selection_screen_v2.dart'
-    show RecipientSelectionScreenV2;
 export '../ui/screens/virtual_iban_onboarding_screen.dart'
     show VirtualIbanOnboardingScreen;
 export '../domain/entities/confidential_sepa_availability.dart';
 export '../domain/entities/recipient_type.dart' show RecipientType;
 
+export '../presentation/recipient_type_l10n.dart';
 export '../recipients_locator.dart' show RecipientsLocator;
 export '../ui/screens/recipients_screen.dart' show RecipientsScreen;
 export '../ui/screens/sepa_virtual_payee_activation_screen.dart'

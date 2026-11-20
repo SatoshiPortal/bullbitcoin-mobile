@@ -150,7 +150,7 @@ void main() {
     verifyZeroInteractions(payjoinPolicy);
   });
 
-  group('EUR recipient payouts', () {
+  group('recipient payouts', () {
     for (final network in OrderBitcoinNetwork.values) {
       for (final type in [
         RecipientType.sepaEur,
@@ -166,7 +166,7 @@ void main() {
                 ? SepaPaymentProcessor.confidential
                 : SepaPaymentProcessor.regular;
             when(
-              () => mainnet.placeSellToRecipientOrderV2(
+              () => mainnet.placePayOrder(
                 orderAmount: const FiatAmount(100),
                 recipientId: 'own-account',
                 network: network,
@@ -228,7 +228,36 @@ void main() {
       },
     );
 
-    test('rejects recipient payouts outside the EUR SEPA path', () async {
+    test('sends a non-SEPA recipient without a SEPA processor', () async {
+      final order = _MockFiatPaymentOrder();
+      when(
+        () => mainnet.placePayOrder(
+          orderAmount: const FiatAmount(100),
+          recipientId: 'interac',
+          network: OrderBitcoinNetwork.liquid,
+        ),
+      ).thenAnswer((_) async => order);
+      final result = await usecase.execute(
+        walletId: 'wallet-1',
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        network: OrderBitcoinNetwork.liquid,
+        recipient: const RecipientSelection(
+          id: 'interac',
+          type: RecipientType.interacEmailCad,
+        ),
+      );
+      expect(
+        result,
+        isA<Ok<Order, SellFailure>>().having(
+          (r) => r.value,
+          'order',
+          same(order),
+        ),
+      );
+    });
+
+    test('rejects a recipient in another currency', () async {
       for (final (currency, type) in [
         (FiatCurrency.cad, RecipientType.sepaEur),
         (FiatCurrency.eur, RecipientType.interacEmailCad),
@@ -249,7 +278,7 @@ void main() {
       'an expired recipient activation returns a recoverable failure',
       () async {
         when(
-          () => mainnet.placeSellToRecipientOrderV2(
+          () => mainnet.placePayOrder(
             orderAmount: any(named: 'orderAmount'),
             recipientId: 'own-account',
             network: OrderBitcoinNetwork.bitcoin,

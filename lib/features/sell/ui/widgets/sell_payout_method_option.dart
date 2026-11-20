@@ -2,7 +2,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart'
     show Material, RadioListTile, RoundedRectangleBorder;
 
-class SellPayoutMethodOptionV2<T> extends StatelessWidget {
+class SellPayoutMethodOption<T> extends StatelessWidget {
   final T value;
   final bool selected;
   final bool enabled;
@@ -10,7 +10,7 @@ class SellPayoutMethodOptionV2<T> extends StatelessWidget {
   final String description;
   final String? tag;
 
-  const SellPayoutMethodOptionV2({
+  const SellPayoutMethodOption({
     required this.value,
     required this.selected,
     required this.enabled,

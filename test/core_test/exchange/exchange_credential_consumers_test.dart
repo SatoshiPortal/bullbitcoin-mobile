@@ -92,7 +92,7 @@ void main() {
             ? const Err(ExchangeApiKeyReadFailure())
             : const Ok(null);
         await expectLater(
-          orders.placeSellToRecipientOrderV2(
+          orders.placePayOrder(
             orderAmount: const FiatAmount(100),
             recipientId: 'own-account',
             paymentProcessor: SepaPaymentProcessor.regular,

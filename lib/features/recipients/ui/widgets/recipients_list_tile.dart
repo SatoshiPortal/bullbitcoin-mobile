@@ -1,15 +1,13 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipient_type_text.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
-import 'package:material_ui/material_ui.dart';
 
 class RecipientsListTile extends StatelessWidget {
   final RecipientViewModel recipient;
   final bool selected;
-  final void Function() onTap;
+  final VoidCallback? onTap;
 
   const RecipientsListTile({
     super.key,
@@ -22,125 +20,121 @@ class RecipientsListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = recipient.displayName;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(context.bullShapes.card),
-          border: Border.all(
-            color: selected
-                ? context.appColors.primary
-                : context.appColors.surface,
-          ),
-          color: context.appColors.onSecondary,
-        ),
-        child: Column(
-          crossAxisAlignment: .start,
-          mainAxisSize: .min,
-          children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              crossAxisAlignment: .center,
+    return MergeSemantics(
+      child: Semantics(
+        checked: selected,
+        inMutuallyExclusiveGroup: true,
+        enabled: onTap != null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: BullBorderedTile(
+            onTap: onTap,
+            backgroundColor: selected ? context.bull.surfaceContainer : null,
+            child: Column(
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
               children: [
-                Expanded(
-                  child: Text(
-                    name ?? '-',
-                    style: context.bullType.subtitle
-                        .copyWith(fontWeight: FontWeight.w700)
-                        .copyWith(color: context.appColors.secondary),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        name ?? '-',
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const Gap(8),
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: selected
+                          ? BullIcon(
+                              BullIcons.checkCircle,
+                              color: context.bull.primary,
+                            )
+                          : null,
+                    ),
+                  ],
                 ),
-                RadioGroup<bool>(
-                  groupValue: selected,
-                  onChanged: (_) => onTap(),
-                  child: Radio<bool>(
-                    value: true,
-                    activeColor: context.appColors.primary,
-                    materialTapTargetSize: .shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  ),
+                const Gap(8),
+                RecipientTypeText(
+                  recipientType: recipient.type,
+                  style: context.bullType.body,
                 ),
+                switch (recipient.type) {
+                  RecipientType.interacEmailCad => _InfoRow(
+                    label: context.loc.recipientsInfoEmail,
+                    value: recipient.email,
+                  ),
+                  RecipientType.billPaymentCad => Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      _InfoRow(
+                        label: context.loc.recipientsInfoPayee,
+                        value: recipient.payeeName,
+                      ),
+                      _InfoRow(
+                        label: context.loc.recipientsFieldAccountNumber,
+                        value: recipient.payeeAccountNumber,
+                      ),
+                    ],
+                  ),
+                  RecipientType.bankTransferCad => _InfoRow(
+                    label: context.loc.recipientsInfoAccount,
+                    value:
+                        '${recipient.institutionNumber ?? ''}-${recipient.transitNumber ?? ''}-${recipient.accountNumber ?? ''}',
+                  ),
+                  RecipientType.sepaEur ||
+                  RecipientType.confidentialSepaEur => _InfoRow(
+                    label: context.loc.recipientsFieldIban,
+                    value: recipient.iban,
+                  ),
+                  RecipientType.speiClabeMxn => _InfoRow(
+                    label: context.loc.recipientsFieldClabe,
+                    value: recipient.clabe,
+                  ),
+                  RecipientType.speiSmsMxn => _InfoRow(
+                    label: context.loc.recipientsInfoPhone,
+                    value: recipient.phoneNumber,
+                  ),
+                  RecipientType.speiCardMxn => _InfoRow(
+                    label: context.loc.recipientsInfoCard,
+                    value: recipient.debitcard,
+                  ),
+                  RecipientType.sinpeIbanUsd => _InfoRow(
+                    label: context.loc.recipientsFieldIban,
+                    value: recipient.iban,
+                  ),
+                  RecipientType.sinpeIbanCrc => _InfoRow(
+                    label: context.loc.recipientsFieldIban,
+                    value: recipient.iban,
+                  ),
+                  RecipientType.sinpeMovilCrc => _InfoRow(
+                    label: context.loc.recipientsInfoPhone,
+                    value: recipient.phoneNumber,
+                  ),
+                  RecipientType.bankAccountArgentina => _InfoRow(
+                    label: context.loc.recipientsFieldCvuCbu,
+                    value: recipient.bankAccount,
+                  ),
+                  RecipientType.pseColombia => _InfoRow(
+                    label: context.loc.recipientsFieldAccountNumber,
+                    value: recipient.bankAccount,
+                  ),
+                  RecipientType.nequiColombia => _InfoRow(
+                    label: context.loc.recipientsInfoPhone,
+                    value: recipient.phoneNumber,
+                  ),
+                },
+                if (recipient.label != null)
+                  _InfoRow(
+                    label: context.loc.recipientsInfoLabel,
+                    value: recipient.label,
+                  ),
               ],
             ),
-            RecipientTypeText(
-              recipientType: recipient.type,
-              style: context.bullType.body.copyWith(
-                color: context.appColors.secondary,
-              ),
-            ),
-            switch (recipient.type) {
-              RecipientType.interacEmailCad => _InfoRow(
-                label: context.loc.recipientsInfoEmail,
-                value: recipient.email,
-              ),
-              RecipientType.billPaymentCad => Column(
-                crossAxisAlignment: .start,
-                children: [
-                  _InfoRow(
-                    label: context.loc.recipientsInfoPayee,
-                    value: recipient.payeeName,
-                  ),
-                  _InfoRow(
-                    label: context.loc.recipientsFieldAccountNumber,
-                    value: recipient.payeeAccountNumber,
-                  ),
-                ],
-              ),
-              RecipientType.bankTransferCad => _InfoRow(
-                label: context.loc.recipientsInfoAccount,
-                value:
-                    '${recipient.institutionNumber ?? ''}-${recipient.transitNumber ?? ''}-${recipient.accountNumber ?? ''}',
-              ),
-              RecipientType.sepaEur ||
-              RecipientType.confidentialSepaEur => _InfoRow(
-                label: context.loc.recipientsFieldIban,
-                value: recipient.iban,
-              ),
-              RecipientType.speiClabeMxn => _InfoRow(
-                label: context.loc.recipientsFieldClabe,
-                value: recipient.clabe,
-              ),
-              RecipientType.speiSmsMxn => _InfoRow(
-                label: context.loc.recipientsInfoPhone,
-                value: recipient.phoneNumber,
-              ),
-              RecipientType.speiCardMxn => _InfoRow(
-                label: context.loc.recipientsInfoCard,
-                value: recipient.debitcard,
-              ),
-              RecipientType.sinpeIbanUsd => _InfoRow(
-                label: context.loc.recipientsFieldIban,
-                value: recipient.iban,
-              ),
-              RecipientType.sinpeIbanCrc => _InfoRow(
-                label: context.loc.recipientsFieldIban,
-                value: recipient.iban,
-              ),
-              RecipientType.sinpeMovilCrc => _InfoRow(
-                label: context.loc.recipientsInfoPhone,
-                value: recipient.phoneNumber,
-              ),
-              RecipientType.bankAccountArgentina => _InfoRow(
-                label: context.loc.recipientsFieldCvuCbu,
-                value: recipient.bankAccount,
-              ),
-              RecipientType.pseColombia => _InfoRow(
-                label: context.loc.recipientsFieldAccountNumber,
-                value: recipient.bankAccount,
-              ),
-              RecipientType.nequiColombia => _InfoRow(
-                label: context.loc.recipientsInfoPhone,
-                value: recipient.phoneNumber,
-              ),
-            },
-            if (recipient.label != null)
-              _InfoRow(
-                label: context.loc.recipientsInfoLabel,
-                value: recipient.label,
-              ),
-          ],
+          ),
         ),
       ),
     );
@@ -158,10 +152,8 @@ class _InfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Text(
-        '$label: ${value != null && value!.isNotEmpty ? value : '-'}',
-        style: context.bullType.body.copyWith(
-          color: context.appColors.secondary,
-        ),
+        '$label: ${value?.isNotEmpty == true ? value : '-'}',
+        style: context.bullType.body,
       ),
     );
   }

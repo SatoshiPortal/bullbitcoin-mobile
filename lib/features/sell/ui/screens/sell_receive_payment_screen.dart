@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
@@ -153,7 +153,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
               ),
               const Gap(16),
               if (recipient != null)
-                SellPayoutDetailsV2(recipient: recipient)
+                SellPayoutDetails(recipient: recipient)
               else
                 _buildDetailRow(
                   context,

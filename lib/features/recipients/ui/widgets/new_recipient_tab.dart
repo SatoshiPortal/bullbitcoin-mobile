@@ -26,9 +26,10 @@ import 'package:bull_ui/bull_ui.dart'
     show BullScrollableColumn, Gap, BullTypographyX;
 
 class NewRecipientTab extends StatefulWidget {
-  const NewRecipientTab({this.hookError, super.key});
+  const NewRecipientTab({this.hookError, this.fixedRecipientType, super.key});
 
   final String? hookError;
+  final RecipientType? fixedRecipientType;
 
   @override
   NewRecipientTabState createState() => NewRecipientTabState();
@@ -83,37 +84,48 @@ class NewRecipientTabState extends State<NewRecipientTab> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<RecipientsBloc>().state;
+    final selectedType = widget.fixedRecipientType ?? _selectedRecipientType;
+    if (widget.fixedRecipientType != null &&
+        (!state.selectableRecipientTypes.contains(selectedType) ||
+            (selectedType == RecipientType.confidentialSepaEur &&
+                state.failedToLoadConfidentialSepaAvailability != null))) {
+      return const SizedBox.shrink();
+    }
     return BullScrollableColumn(
       // Padding is already handled by the parent widget
       padding: EdgeInsets.zero,
       crossAxisAlignment: .start,
       children: [
-        JurisdictionsDropdown(
-          selectedJurisdiction: _selectedJurisdiction,
-          onChanged: (newJurisdiction) {
-            if (newJurisdiction == null) return;
-            setState(() {
-              _selectedJurisdiction = newJurisdiction;
-              // Reset selected type as well since for the possible types
-              // depend on the selected jurisdiction
-              _selectedRecipientType = null;
-            });
-          },
-        ),
-        const Gap(16.0),
-        Text(
-          context.loc.recipientsPayoutMethod,
-          style: context.bullType.body
-              .copyWith(fontWeight: FontWeight.w500)
-              .copyWith(color: context.appColors.secondary, fontWeight: .w500),
-        ),
-        const Gap(12),
-        RecipientTypeSelector(
-          selectedJurisdiction: _selectedJurisdiction,
-          selectedType: _selectedRecipientType,
-          onTypeSelected: _onTypeSelected,
-        ),
-        if (_selectedRecipientType == RecipientType.confidentialSepaEur) ...[
+        if (widget.fixedRecipientType == null) ...[
+          JurisdictionsDropdown(
+            selectedJurisdiction: _selectedJurisdiction,
+            onChanged: (newJurisdiction) {
+              if (newJurisdiction == null) return;
+              setState(() {
+                _selectedJurisdiction = newJurisdiction;
+                // Reset selected type as well since for the possible types
+                // depend on the selected jurisdiction
+                _selectedRecipientType = null;
+              });
+            },
+          ),
+          const Gap(16.0),
+          Text(
+            context.loc.recipientsPayoutMethod,
+            style: context.bullType.body.copyWith(
+              color: context.appColors.secondary,
+              fontWeight: .w500,
+            ),
+          ),
+          const Gap(12),
+          RecipientTypeSelector(
+            selectedJurisdiction: _selectedJurisdiction,
+            selectedType: _selectedRecipientType,
+            onTypeSelected: _onTypeSelected,
+          ),
+        ],
+        if (selectedType == RecipientType.confidentialSepaEur) ...[
           const Gap(8),
           Text(
             context.loc.recipientsTypeConfidentialSepaDescription,
@@ -121,7 +133,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
         ],
         const Gap(16.0),
-        switch (_selectedRecipientType) {
+        switch (selectedType) {
           // CANADA types
           RecipientType.interacEmailCad => InteracEmailCadForm(
             hookError: widget.hookError,

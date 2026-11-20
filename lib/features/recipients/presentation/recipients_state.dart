@@ -93,8 +93,9 @@ sealed class RecipientsState with _$RecipientsState {
   }
 
   List<RecipientViewModel>? get selectableRecipients {
-    if (recipients == null) return null;
+    final loaded = recipients;
+    if (loaded == null) return null;
     final seen = <String>{};
-    return recipients!.where((recipient) => seen.add(recipient.id)).toList();
+    return loaded.where((recipient) => seen.add(recipient.id)).toList();
   }
 }

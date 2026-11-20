@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase_v2.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
+import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit_v2.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen_v2.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
@@ -26,62 +26,67 @@ class _MockSellBloc extends MockBloc<SellEvent, SellState>
     implements SellBloc {}
 
 class _MockLoadMethods extends Mock
-    implements GetSellConfidentialSepaAvailabilityUsecaseV2 {}
+    implements GetSellConfidentialSepaAvailabilityUsecase {}
+
+SellWalletSelectionState _walletSelection(FiatCurrency currency) =>
+    SellWalletSelectionState(
+      userSummary: const UserSummary(
+        userNumber: 1,
+        groups: ['KYC_IDENTITY_VERIFIED', 'JURI_EU'],
+        profile: UserProfile(firstName: 'Satoshi', lastName: 'Nakamoto'),
+        email: 'satoshi@example.com',
+        balances: [],
+        currency: 'EUR',
+        dca: UserDca(isActive: false),
+        autoBuy: UserAutoBuy(
+          isActive: false,
+          addresses: UserAutoBuyAddresses(),
+        ),
+      ),
+      bitcoinUnit: BitcoinUnit.sats,
+      orderAmount: const FiatAmount(100),
+      fiatCurrency: currency,
+    );
 
 void main() {
   late _MockSellBloc bloc;
   late _MockLoadMethods load;
-  late SellPayoutCubitV2 payout;
+  late SellPayoutCubit payout;
   late GoRouter router;
   RecipientType? selectedType;
 
-  setUpAll(() => registerFallbackValue(const SellEvent.started()));
+  setUpAll(() {
+    registerFallbackValue(const SellEvent.started());
+    registerFallbackValue(FiatCurrency.eur);
+  });
 
   for (final currency in [FiatCurrency.eur, FiatCurrency.cad]) {
     for (final hasArguments in [true, false]) {
       testWidgets(
-        'real payout route guards arguments and currency, then cancels preparation: $currency/$hasArguments',
+        'real payout route guards arguments, then cancels preparation: $currency/$hasArguments',
         (tester) async {
           final sell = _MockSellBloc();
-          final input = SellWalletSelectionState(
-            userSummary: const UserSummary(
-              userNumber: 1,
-              groups: ['KYC_IDENTITY_VERIFIED', 'JURI_EU'],
-              profile: UserProfile(firstName: 'Satoshi', lastName: 'Nakamoto'),
-              email: 'satoshi@example.com',
-              balances: [],
-              currency: 'EUR',
-              dca: UserDca(isActive: false),
-              autoBuy: UserAutoBuy(
-                isActive: false,
-                addresses: UserAutoBuyAddresses(),
-              ),
-            ),
-            bitcoinUnit: BitcoinUnit.sats,
-            orderAmount: const FiatAmount(100),
-            fiatCurrency: currency,
-          );
+          final input = _walletSelection(currency);
           whenListen(
             sell,
             const Stream<SellState>.empty(),
             initialState: input,
           );
           final methods = _MockLoadMethods();
-          when(methods.execute).thenAnswer(
+          when(() => methods.execute(any())).thenAnswer(
             (_) async => const Ok(ConfidentialSepaAvailability.ready),
           );
-          locator
-              .registerSingleton<GetSellConfidentialSepaAvailabilityUsecaseV2>(
-                methods,
-              );
+          locator.registerSingleton<GetSellConfidentialSepaAvailabilityUsecase>(
+            methods,
+          );
           addTearDown(
             () => locator
-                .unregister<GetSellConfidentialSepaAvailabilityUsecaseV2>(),
+                .unregister<GetSellConfidentialSepaAvailabilityUsecase>(),
           );
           addTearDown(sell.close);
           final sellRoot = SellRouter.route.routes.single as GoRoute;
           final payoutRoute = sellRoot.routes.whereType<GoRoute>().singleWhere(
-            (route) => route.name == SellRoute.sellPayoutV2.name,
+            (route) => route.name == SellRoute.sellPayout.name,
           );
           final appRouter = GoRouter(
             routes: [
@@ -117,20 +122,21 @@ void main() {
           );
           await tester.pumpAndSettle();
           final popped = appRouter.pushNamed<Object?>(
-            SellRoute.sellPayoutV2.name,
+            SellRoute.sellPayout.name,
             extra: hasArguments
-                ? const SellPayinSourceV2.external(OrderBitcoinNetwork.bitcoin)
+                ? const SellPayinSource.external(OrderBitcoinNetwork.bitcoin)
                 : null,
           );
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
-          if (!hasArguments || currency != FiatCurrency.eur) {
+          if (!hasArguments) {
             expect(find.text('Wallet selection fallback'), findsOneWidget);
-            expect(find.byType(SellPayoutMethodScreenV2), findsNothing);
-            verifyNever(methods.execute);
+            expect(find.byType(SellPayoutMethodScreen), findsNothing);
+            verifyNever(() => methods.execute(any()));
             return;
           }
-          expect(find.byType(SellPayoutMethodScreenV2), findsOneWidget);
+          expect(find.byType(SellPayoutMethodScreen), findsOneWidget);
+          verify(() => methods.execute(currency)).called(1);
           when(() => sell.state)
               .thenReturn(SellPreparingPaymentState(input: input));
           appRouter.pop();
@@ -151,37 +157,39 @@ void main() {
     bool useRegularDuringSetup = false,
     Completer<Result<ConfidentialSepaAvailability, SellFailure>>?
     availabilityResponse,
+    FiatCurrency currency = FiatCurrency.eur,
   }) async {
     bloc = _MockSellBloc();
     whenListen(
       bloc,
       const Stream<SellState>.empty(),
-      initialState: const SellState.initial(),
+      initialState: _walletSelection(currency),
     );
     load = _MockLoadMethods();
-    when(load.execute).thenAnswer(
+    when(() => load.execute(any())).thenAnswer(
       (_) async =>
           failLookup ? const Err(SellNetworkFailure()) : Ok(availability),
     );
-    payout = SellPayoutCubitV2(load);
+    payout = SellPayoutCubit(load);
     if (availabilityResponse != null) {
-      when(load.execute).thenAnswer((_) => availabilityResponse.future);
-      unawaited(payout.load());
+      when(() => load.execute(any()))
+          .thenAnswer((_) => availabilityResponse.future);
+      unawaited(payout.load(currency));
     } else {
-      await payout.load();
+      await payout.load(currency);
     }
     selectedType = null;
     router = GoRouter(
       routes: [
         GoRoute(
           path: '/',
-          builder: (_, _) => const SellPayoutMethodScreenV2(
-            source: SellPayinSourceV2.external(OrderBitcoinNetwork.bitcoin),
+          builder: (_, _) => const SellPayoutMethodScreen(
+            source: SellPayinSource.external(OrderBitcoinNetwork.bitcoin),
           ),
         ),
         GoRoute(
           path: '/recipient',
-          name: SellRoute.sellRecipientsV2.name,
+          name: SellRoute.sellRecipients.name,
           builder: (context, state) {
             final type = state.extra as RecipientType;
             selectedType = type;
@@ -202,7 +210,7 @@ void main() {
         ),
         GoRoute(
           path: '/iban',
-          name: SellRoute.sellVirtualIbanV2.name,
+          name: SellRoute.sellVirtualIban.name,
           builder: (context, _) => Scaffold(
             body: TextButton(
               onPressed: () => context.pop(
@@ -216,7 +224,7 @@ void main() {
         ),
         GoRoute(
           path: '/payee',
-          name: SellRoute.sellVirtualPayeeV2.name,
+          name: SellRoute.sellVirtualPayee.name,
           builder: (context, state) {
             expect(state.extra, 'own-account');
             return Scaffold(
@@ -252,7 +260,7 @@ void main() {
       await tester.pump();
     }
     return AppLocalizations.of(
-      tester.element(find.byType(SellPayoutMethodScreenV2)),
+      tester.element(find.byType(SellPayoutMethodScreen)),
     );
   }
 
@@ -295,7 +303,7 @@ void main() {
       findsOneWidget,
     );
     final balance = tester.getRect(find.byKey(const ValueKey('balance')));
-    for (final key in ['sepa', 'confidential']) {
+    for (final key in ['sepaEur', 'confidentialSepaEur']) {
       final rect = tester.getRect(find.byKey(ValueKey(key)));
       expect(rect.left, closeTo(balance.left, 0.1));
       expect(rect.width, closeTo(balance.width, 0.1));
@@ -393,10 +401,34 @@ void main() {
     expect(find.text(loc.recipientsTypeConfidentialSepa), findsNothing);
     expect(find.textContaining(loc.oopsSomethingWentWrong), findsOneWidget);
     expect(find.textContaining(loc.recipientsErrorNetwork), findsOneWidget);
-    when(load.execute)
+    when(() => load.execute(any()))
         .thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
     await tester.tap(find.widgetWithText(BullButton, loc.retry));
     await tester.pumpAndSettle();
     expect(find.text(loc.recipientsTypeConfidentialSepa), findsOneWidget);
+  });
+
+  testWidgets('non-EUR currencies offer balance and their recipient types', (
+    tester,
+  ) async {
+    final loc = await pumpFlow(
+      tester,
+      currency: FiatCurrency.cad,
+      availability: ConfidentialSepaAvailability.unavailable,
+    );
+    expect(find.text(loc.sellPayoutBalance), findsOneWidget);
+    expect(find.text(loc.recipientsTypeInteracEmail), findsOneWidget);
+    expect(find.text(loc.recipientsTypeBillPayment), findsOneWidget);
+    expect(find.text(loc.recipientsTypeBankTransfer), findsOneWidget);
+    expect(find.text(loc.fundExchangeMethodInstantSepa), findsNothing);
+    expect(find.text(loc.recipientsTypeConfidentialSepa), findsNothing);
+    await choose(tester, loc.recipientsTypeInteracEmail, loc);
+    expect(selectedType, RecipientType.interacEmailCad);
+    await tester.tap(find.text('Select account'));
+    await tester.pumpAndSettle();
+    final event =
+        verify(() => bloc.add(captureAny())).captured.single
+            as SellExternalWalletNetworkSelected;
+    expect(event.recipient?.type, RecipientType.interacEmailCad);
   });
 }
