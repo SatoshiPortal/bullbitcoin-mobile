@@ -63,6 +63,38 @@ final testBullExtensions = bullUiExtensions(
 Widget wrapWithTheme(Widget child) {
   return MaterialApp(
     theme: ThemeData(
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: testBullTheme.primary,
+        selectionHandleColor: testBullTheme.primary,
+        selectionColor: testBullTheme.primary.withValues(alpha: 0.3),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: testBullTheme.background,
+        modalBackgroundColor: testBullTheme.background,
+        modalBarrierColor: testBullTheme.scrim.withValues(alpha: 0.45),
+        constraints: const BoxConstraints(minWidth: double.infinity),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(BullShapes.standard.sheet),
+          ),
+        ),
+        elevation: 0,
+        modalElevation: 0,
+      ),
+      inputDecorationTheme: InputDecorationThemeData(
+        filled: true,
+        fillColor: testBullTheme.surface,
+        border: WidgetStateInputBorder.resolveWith(
+          (states) => OutlineInputBorder(
+            borderRadius: BorderRadius.circular(BullShapes.standard.input),
+            borderSide: BorderSide(
+              color: states.contains(WidgetState.error)
+                  ? testBullTheme.error
+                  : testBullTheme.border,
+            ),
+          ),
+        ),
+      ),
       extensions: testBullExtensions,
       textTheme: testBullTypography.toTextTheme(),
     ),

@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/buttons/bull_button.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -100,15 +102,10 @@ class _BullPaymentDestinationInputState
                 ),
               ),
               if (widget.onRemove != null)
-                SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    tooltip: widget.removeLabel,
-                    onPressed: widget.enabled ? widget.onRemove : null,
-                    icon: Icon(Icons.close, size: 20, color: colors.text),
-                  ),
+                BullFieldAction(
+                  label: widget.removeLabel ?? widget.clearLabel,
+                  onPressed: widget.enabled ? widget.onRemove : null,
+                  icon: Icons.close,
                 ),
             ],
           ),
@@ -157,17 +154,12 @@ class _BullPaymentDestinationInputState
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        tooltip: widget.clearLabel,
-                        onPressed: widget.enabled ? widget.onClear : null,
-                        icon: Icon(Icons.close, size: 20, color: colors.text),
-                      ),
+                    BullFieldAction(
+                      label: widget.clearLabel,
+                      onPressed: widget.enabled ? widget.onClear : null,
+                      icon: Icons.close,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8),
                   ],
                 )
               : TextField(

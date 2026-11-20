@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
@@ -53,10 +55,9 @@ class BullPasteInput extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
           ),
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            iconSize: 20,
-            icon: Icon(Icons.paste_sharp, color: colors.onSurface),
+          BullFieldAction(
+            label: MaterialLocalizations.of(context).pasteButtonLabel,
+            icon: Icons.paste_sharp,
             onPressed: () {
               Clipboard.getData(Clipboard.kTextPlain).then((value) {
                 if (value != null) {
