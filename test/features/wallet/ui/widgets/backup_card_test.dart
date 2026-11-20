@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/backup_card.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
