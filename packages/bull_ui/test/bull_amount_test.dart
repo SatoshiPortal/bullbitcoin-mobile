@@ -66,6 +66,40 @@ class Probe extends StatelessWidget {
 void main() {
   tearDown(() => BullSnackBar.dismiss());
 
+  for (final interactive in [false, true]) {
+    testWidgets(
+      'unit style preserves the full amount, interactive=$interactive',
+      (tester) async {
+        await tester.pumpWidget(
+          host(
+            Builder(
+              builder: (context) => BullAmount(
+                magnitude: Sats.fromInt(12345),
+                interactive: interactive,
+                style: context.bullType.headline,
+                unitStyle: context.bullType.body,
+              ),
+            ),
+          ),
+        );
+        final text = tester.widget<Text>(find.text('12,345 sats'));
+        switch (text.textSpan) {
+          case TextSpan(
+            children: [_, TextSpan(text: 'sats', style: final style)],
+          ):
+            expect(style?.fontSize, BullTypography.standard.body.fontSize);
+          default:
+            fail('Expected a separately styled denomination');
+        }
+        if (interactive) {
+          await tester.tap(find.text('12,345 sats'));
+          await tester.pump();
+          expect(find.text('0.00012345 BTC'), findsOneWidget);
+        }
+      },
+    );
+  }
+
   testWidgets('tap remains local, has no icon and consumes parent navigation', (
     tester,
   ) async {

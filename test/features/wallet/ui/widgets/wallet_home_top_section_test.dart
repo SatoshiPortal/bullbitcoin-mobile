@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -126,6 +127,40 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
+  testWidgets('BTC and fiat units share a size and right edge', (tester) async {
+    for (final scale in [1.0, 2.0]) {
+      await _pumpTopSection(
+        tester,
+        textScale: scale,
+        unconfirmedIncomingBalance: 0,
+      );
+      Rect unitRect(String unit) {
+        final finder = find.byWidgetPredicate(
+          (widget) =>
+              widget is RichText &&
+              widget.text.toPlainText().endsWith(' $unit'),
+        );
+        final paragraph = tester.renderObject<RenderParagraph>(finder);
+        final text = paragraph.text.toPlainText();
+        final box = paragraph
+            .getBoxesForSelection(
+              TextSelection(
+                baseOffset: text.length - unit.length,
+                extentOffset: text.length,
+              ),
+            )
+            .single
+            .toRect();
+        return box.shift(paragraph.localToGlobal(Offset.zero));
+      }
+
+      final bitcoin = unitRect('BTC');
+      final fiat = unitRect('CAD');
+      expect(bitcoin.height, closeTo(fiat.height, 0.01));
+      expect(bitcoin.right, closeTo(fiat.right, 0.01));
+    }
+  });
+
   testWidgets('top bar settings gear is named and opens settings', (
     tester,
   ) async {
