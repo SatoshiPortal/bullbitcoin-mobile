@@ -174,7 +174,7 @@ void main() {
                               const Gap(16),
                               BullSettingsEntryTile(
                                 label: 'Advanced settings',
-                                summary: 'Fast',
+                                summary: 'Custom network fee summary',
                                 onPressed: () {},
                               ),
                             ],

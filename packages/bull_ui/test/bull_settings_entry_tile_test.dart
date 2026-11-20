@@ -105,6 +105,9 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
+    final summary = tester.widget<Text>(find.text('Custom network fee'));
+    expect(summary.maxLines, 1);
+    expect(summary.overflow, TextOverflow.ellipsis);
     expect(
       tester.getSize(find.byType(BullSettingsEntryTile)).height,
       greaterThan(56),
