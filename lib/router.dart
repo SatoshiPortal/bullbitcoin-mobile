@@ -251,6 +251,8 @@ class AppRouter {
         sendRouteName: SendRoute.send.name,
         sendRouteExtra: const SendRouteArgs.sp(),
         exitRedirectPath: WalletRoute.walletHome.path,
+        fiatBalanceBuilder: (balanceSat) =>
+            HomeFiatBalance(balanceSat: balanceSat),
       ),
       ...ImportQrDeviceRouter.routes,
       locator<RecoverBullFeature>().route(
