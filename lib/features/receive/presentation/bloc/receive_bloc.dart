@@ -200,6 +200,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   Timer? _payjoinSenderWaitTimer;
   Wallet? _pendingNewAddressWallet;
   bool _newAddressInFlight = false;
+  bool _noteEdited = false;
 
   @override
   Future<void> close() async {
@@ -294,13 +295,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
-  ReceiveState _withoutAmountDraft(ReceiveState current) => current.copyWith(
-    inputAmount: '',
-    amountConversion: null,
-    confirmedConversion: null,
-    amountEntryValid: true,
-    confirmedAmountSat: null,
-  );
+  ReceiveState _clearOnChainDraft(ReceiveState current) {
+    _noteEdited = false;
+    return current.copyWith(
+      inputAmount: '',
+      amountConversion: null,
+      confirmedConversion: null,
+      amountEntryValid: true,
+      confirmedAmountSat: null,
+      note: '',
+      confirmedNote: '',
+    );
+  }
 
   Future<void> _onBitcoinStarted(
     ReceiveBitcoinStarted event,
@@ -350,12 +356,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     // Start presenting Bitcoin while the address is loading. Only an
-    // address retry for the admitted wallet keeps the live amount.
+    // address retry for the admitted wallet keeps the draft.
     emit(
-      (retryWallet == null ? _withoutAmountDraft(state) : state).copyWith(
+      (retryWallet == null ? _clearOnChainDraft(state) : state).copyWith(
         type: ReceiveType.bitcoin,
-        note: '',
-        confirmedNote: '',
         failure: null,
         // The eligibility decision for this address starts here and is only
         // settled after the block below. Until then the QR must wait.
@@ -378,7 +382,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = value.wallet;
         emit(
           (retryWallet != null && (wallet.id, wallet.network) != retryWallet
-                  ? _withoutAmountDraft(state)
+                  ? _clearOnChainDraft(state)
                   : state)
               .copyWith(
                 wallet: wallet,
@@ -454,7 +458,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           final note = await _loadAddressLabel(bitcoinAddress.address);
           if (generation != _receiveGeneration || emit.isDone) return;
-          emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
+          if (!_noteEdited) emit(state.copyWith(note: note));
         case Err(:final failure):
           emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
           return;
@@ -740,10 +744,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     );
     _pendingNewAddressWallet = null;
     emit(
-      (retryWallet == null ? _withoutAmountDraft(state) : state).copyWith(
+      (retryWallet == null ? _clearOnChainDraft(state) : state).copyWith(
         type: ReceiveType.liquid,
-        note: '',
-        confirmedNote: '',
         failure: null,
       ),
     );
@@ -826,7 +828,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
     emit(
       (retryWallet != null && (wallet.id, wallet.network) != retryWallet
-              ? _withoutAmountDraft(state)
+              ? _clearOnChainDraft(state)
               : state)
           .copyWith(
             wallet: wallet,
@@ -857,7 +859,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           final note = await _loadAddressLabel(liquidAddress.address);
           if (generation != _receiveGeneration || emit.isDone) return;
-          emit(state.copyWith(liquidAddress: liquidAddress, note: note));
+          if (!_noteEdited) emit(state.copyWith(note: note));
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -1194,6 +1196,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // The Advanced settings field dispatches only values accepted by the shared
     // NoteValidator. The UI translates its typed violations; the bloc preserves
     // the last valid draft and the existing trim-on-save behavior.
+    // An explicit clear is also a draft edit and must beat label hydration.
+    _noteEdited = true;
     emit(state.copyWith(note: event.note.trim()));
   }
 
