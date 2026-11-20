@@ -10,6 +10,8 @@ graph TD
   style background_tasks stroke:#e69535
   bb_mobile["bb_mobile"]
   style bb_mobile stroke:#8b5641
+  bbx_api["bbx_api"]
+  style bbx_api stroke:#3c2ed2
   bitbox_transport["bitbox_transport"]
   style bitbox_transport stroke:#b095db
   boltz_stream["boltz_stream"]
@@ -122,6 +124,7 @@ graph TD
   subgraph packages0 ["packages"]
     ark
     background_tasks
+    bbx_api
     bitbox_transport
     boltz_stream
     bull_logger

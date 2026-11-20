@@ -67,6 +67,8 @@ graph TB
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
+    BBX_API[BBX API Package<br/>Exchange transport and wire models]
+    EXCHANGE_SETTINGS -->|order statistics| BBX_API
 
     %% Feature modules
     ARK[Ark Journeys<br/>Workspace Feature]
@@ -498,6 +500,8 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Backups**: Depends on BIP85, Tor, Wallets
 
 ### Exchange-Related Features
+
+- **Exchange Settings** uses the `packages/bbx_api` workspace member for order statistics. The pure-Dart SDK owns the JSON-RPC transport and wire models and has no workspace dependencies.
 
 - **Buy, Sell, Funding**: All depend on Exchange
 - **Recipients**: Depends on Exchange
