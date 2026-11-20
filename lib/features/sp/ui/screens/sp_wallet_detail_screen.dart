@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
@@ -36,12 +35,15 @@ class SpWalletDetailScreen extends StatelessWidget {
   const SpWalletDetailScreen({
     super.key,
     required this.exitRedirectPath,
+    required this.fiatBalanceBuilder,
     this.onSend,
   });
 
   /// Where the back button leaves SP for; supplied by the composition root so
   /// this screen never imports another feature's router.
   final String exitRedirectPath;
+
+  final Widget Function(int balanceSat) fiatBalanceBuilder;
 
   final VoidCallback? onSend;
 
@@ -87,8 +89,8 @@ class SpWalletDetailScreen extends StatelessWidget {
                   showFiat: false,
                 ),
                 eyeToggle: const EyeToggle(),
-                fiatBalance: HomeFiatBalance(
-                  balanceSat: state.totalBalance.value.toInt(),
+                fiatBalance: fiatBalanceBuilder(
+                  state.totalBalance.value.toInt(),
                 ),
               ),
             ),
