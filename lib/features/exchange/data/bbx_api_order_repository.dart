@@ -12,9 +12,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
-/// [ExchangeOrderRepository] whose order reads go through the `bbx_api`
-/// package. Order creation, confirmation, acceleration and DCA are delegated
-/// to [_writes] until they move too.
+/// [ExchangeOrderRepository] on the `bbx_api` package. DCA creation is
+/// delegated to [_writes] until it moves too.
 class BbxApiOrderRepository implements ExchangeOrderRepository {
   final bbx.BbxApiClient _api;
   final ExchangeOrderRepository _writes;
@@ -230,14 +229,32 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     required OrderBitcoinNetwork network,
     required bool isOwner,
     String? payjoinBip21,
-  }) => _writes.placeBuyOrder(
-    toAddress: toAddress,
-    orderAmount: orderAmount,
-    currency: currency,
-    network: network,
-    isOwner: isOwner,
-    payjoinBip21: payjoinBip21,
-  );
+  }) async {
+    try {
+      final summary = await _placeOrder(
+        'Failed to create buy order',
+        () => _api.orders.createOrderBuy(
+          fiatCurrency: currency.code,
+          network: network.value,
+          isOwner: isOwner,
+          address: payjoinBip21 == null ? toAddress : null,
+          bip21URI: payjoinBip21,
+          fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+          bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
+        ),
+      );
+      return _toOrder(summary) as BuyOrder;
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to place buy order: ${_describe(e)}');
+    }
+  }
 
   @override
   Future<SellOrder> placeSellOrder({
@@ -245,12 +262,30 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
-  }) => _writes.placeSellOrder(
-    orderAmount: orderAmount,
-    currency: currency,
-    network: network,
-    usePayjoin: usePayjoin,
-  );
+  }) async {
+    try {
+      final summary = await _placeOrder(
+        'Failed to create sell order',
+        () => _api.orders.sellToBalance(
+          fiatCurrency: currency.code,
+          bitcoinNetwork: network.value,
+          usePayjoin: usePayjoin,
+          fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+          bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
+        ),
+      );
+      return _toOrder(summary) as SellOrder;
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to place sell order: ${_describe(e)}');
+    }
+  }
 
   @override
   Future<FiatPaymentOrder> placePayOrder({
@@ -260,14 +295,44 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
-  }) => _writes.placePayOrder(
-    orderAmount: orderAmount,
-    recipientId: recipientId,
-    network: network,
-    paymentDescription: paymentDescription,
-    paymentProcessor: paymentProcessor,
-    usePayjoin: usePayjoin,
-  );
+  }) async {
+    try {
+      final summary = await _placeOrder(
+        'Failed to create sell to recipient order',
+        () => _api.orders.sellToRecipient(
+          recipientId: recipientId,
+          paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
+          bitcoinNetwork: network.value,
+          usePayjoin: usePayjoin,
+          fiatAmount: orderAmount.isFiat ? orderAmount.amount : null,
+          bitcoinAmount: orderAmount.isBitcoin ? orderAmount.amount : null,
+          paymentDescription:
+              paymentDescription != null && paymentDescription.isNotEmpty
+              ? paymentDescription
+              : null,
+        ),
+        redactError: true,
+      );
+      return _toOrder(summary) as FiatPaymentOrder;
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on BullBitcoinApiConfidentialSepaNotActivatedException {
+      rethrow;
+    } on BullBitcoinApiOrderException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      // Keep the original trace: see refreshPayOrder.
+      Error.throwWithStackTrace(
+        Exception('Failed to place pay order: ${_describe(e)}'),
+        st,
+      );
+    }
+  }
 
   @override
   Future<WithdrawOrder> placeWithdrawalOrder({
@@ -276,25 +341,86 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
-  }) => _writes.placeWithdrawalOrder(
-    fiatAmount: fiatAmount,
-    recipientId: recipientId,
-    paymentProcessor: paymentProcessor,
-    securityQuestion: securityQuestion,
-    securityAnswer: securityAnswer,
-  );
+  }) async {
+    try {
+      final summary = await _placeOrder(
+        'Failed to create withdrawal order',
+        () => _api.orders.createWithdrawalOrder(
+          fiatAmount: fiatAmount,
+          recipientId: recipientId,
+          paymentProcessor: _sepaPaymentProcessor(paymentProcessor),
+          securityQuestion: securityQuestion,
+          securityAnswer: securityAnswer,
+        ),
+      );
+      return _toOrder(summary) as WithdrawOrder;
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on BullBitcoinApiConfidentialSepaNotActivatedException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      // Keep the original trace. The error itself is dropped because the
+      // request carries the Interac security answer.
+      Error.throwWithStackTrace(
+        Exception('Failed to create withdrawal order'),
+        st,
+      );
+    }
+  }
 
   @override
-  Future<BuyOrder> confirmBuyOrder(String orderId) =>
-      _writes.confirmBuyOrder(orderId);
+  Future<BuyOrder> confirmBuyOrder(String orderId) async {
+    try {
+      final order = _toOrder(await _api.orders.confirmOrderSummary(orderId));
+      if (order is! BuyOrder) {
+        throw UnexpectedOrderTypeException('BuyOrder');
+      }
+      return order;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to confirm buy order: ${_describe(e)}');
+    }
+  }
 
   @override
-  Future<WithdrawOrder> confirmWithdrawOrder(String orderId) =>
-      _writes.confirmWithdrawOrder(orderId);
+  Future<WithdrawOrder> confirmWithdrawOrder(String orderId) async {
+    try {
+      final order = _toOrder(await _api.orders.confirmOrderSummary(orderId));
+      if (order is! WithdrawOrder) {
+        throw UnexpectedOrderTypeException('WithdrawOrder');
+      }
+      return order;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      // Keep the original trace: see refreshPayOrder.
+      Error.throwWithStackTrace(
+        Exception('Failed to confirm withdraw order: ${_describe(e)}'),
+        st,
+      );
+    }
+  }
 
   @override
-  Future<BuyOrder> accelerateBuyOrder(String orderId) =>
-      _writes.accelerateBuyOrder(orderId);
+  Future<BuyOrder> accelerateBuyOrder(String orderId) async {
+    try {
+      return _toOrder(await _api.orders.unbatchAndExpressOrder(orderId))
+          as BuyOrder;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to dequeue and pay order: ${_describe(e)}');
+    }
+  }
 
   @override
   Future<Dca> createDca({
@@ -310,6 +436,56 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     network: network,
     address: address,
   );
+
+  /// Runs an order creation [call] and turns the server's refusal into the
+  /// app exception the old client threw. With [redactError], any other
+  /// refusal keeps only its codes.
+  static Future<bbx.OrderSummary> _placeOrder(
+    String contextMessage,
+    Future<bbx.OrderSummary> Function() call, {
+    bool redactError = false,
+  }) async {
+    try {
+      return await call();
+    } on bbx.BbxApiRpcException catch (e) {
+      throw switch (e) {
+        bbx.BbxApiConfidentialSepaNotActivatedException() =>
+          const BullBitcoinApiConfidentialSepaNotActivatedException(),
+        bbx.BbxApiOrderLimitException(
+          bound: bbx.BbxApiOrderLimitBound.minimum,
+          :final amount,
+          :final currency,
+        ) =>
+          BullBitcoinApiMinAmountException(
+            minAmount: amount,
+            currency: currency,
+          ),
+        bbx.BbxApiOrderLimitException(
+          bound: bbx.BbxApiOrderLimitBound.maximum,
+          :final amount,
+          :final currency,
+        ) =>
+          BullBitcoinApiMaxAmountException(
+            maxAmount: amount,
+            currency: currency,
+          ),
+        _ when redactError => BullBitcoinApiOrderException(
+          apiCode: e.apiCode,
+          rpcCode: e.code,
+        ),
+        // The server's message can quote the request, so it is not kept.
+        _ => Exception(contextMessage),
+      };
+    }
+  }
+
+  static bbx.SepaPaymentProcessor? _sepaPaymentProcessor(
+    SepaPaymentProcessor? processor,
+  ) => switch (processor) {
+    null => null,
+    SepaPaymentProcessor.regular => bbx.SepaPaymentProcessor.regular,
+    SepaPaymentProcessor.confidential => bbx.SepaPaymentProcessor.confidential,
+  };
 
   Future<Order> _refresh(String orderId) async =>
       _toOrder(await _api.orders.refreshOrderSummary(orderId));
