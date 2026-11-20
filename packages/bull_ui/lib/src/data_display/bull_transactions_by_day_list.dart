@@ -1,21 +1,24 @@
+import 'package:bull_ui/src/data_display/bull_date_locale.dart';
+import 'package:bull_ui/src/data_display/bull_text.dart';
+import 'package:bull_ui/src/layout/gap.dart';
+import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/widgets.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullText, BullTypographyX, Gap, bullDateLocale;
 import 'package:material_ui/material_ui.dart';
 
 /// Items grouped by day, each group under its day label.
 ///
 /// The caller owns the item type and its row, so this widget stays free of
 /// feature imports.
-class TransactionsByDayList<T> extends StatelessWidget {
-  const TransactionsByDayList({
+class BullTransactionsByDayList<T> extends StatelessWidget {
+  const BullTransactionsByDayList({
     super.key,
     required this.itemsByDay,
     required this.itemBuilder,
     required this.loadingMessage,
+    required this.pendingLabel,
+    required this.todayLabel,
+    required this.yesterdayLabel,
     required this.emptyMessage,
     this.header,
     this.errorMessage,
@@ -27,6 +30,9 @@ class TransactionsByDayList<T> extends StatelessWidget {
   final Map<int, List<T>>? itemsByDay;
   final Widget Function(BuildContext, T) itemBuilder;
   final String loadingMessage;
+  final String pendingLabel;
+  final String todayLabel;
+  final String yesterdayLabel;
   final String emptyMessage;
 
   /// Rendered above the first day group, and counts as content: while it is
@@ -58,7 +64,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
                 maxLines: 2,
                 textAlign: .center,
                 style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+                  color: context.bull.error,
                 ),
               ),
             ],
@@ -76,7 +82,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
                 maxLines: 2,
                 textAlign: .center,
                 style: context.bullType.body.copyWith(
-                  color: context.appColors.onSurface,
+                  color: context.bull.onSurface,
                 ),
               ),
             ],
@@ -94,7 +100,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
                 maxLines: 2,
                 textAlign: .center,
                 style: context.bullType.body.copyWith(
-                  color: context.appColors.onSurface,
+                  color: context.bull.onSurface,
                 ),
               ),
             ],
@@ -115,11 +121,14 @@ class TransactionsByDayList<T> extends StatelessWidget {
         return Column(
           crossAxisAlignment: .start,
           children: [
-            BullText(
-              dayLabel?.call(context, entry.key) ??
-                  _transactionDayLabel(context, date),
-              style: context.bullType.label.copyWith(
-                color: context.appColors.onSurface,
+            Semantics(
+              header: true,
+              child: BullText(
+                dayLabel?.call(context, entry.key) ??
+                    _transactionDayLabel(context, date),
+                style: context.bullType.label.copyWith(
+                  color: context.bull.onSurface,
+                ),
               ),
             ),
             const Gap(16),
@@ -145,22 +154,22 @@ class TransactionsByDayList<T> extends StatelessWidget {
       );
     }
   }
-}
 
-/// Header for a day group in a transaction list: the pending bucket, the two
-/// most recent days by name, then a date that keeps the year only once it is
-/// no longer the current one.
-String _transactionDayLabel(BuildContext context, DateTime date) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final yesterday = DateTime(now.year, now.month, now.day - 1);
+  /// Header for a day group in a transaction list: the pending bucket, the two
+  /// most recent days by name, then a date that keeps the year only once it is
+  /// no longer the current one.
+  String _transactionDayLabel(BuildContext context, DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
 
-  if (date.compareTo(today) > 0) return context.loc.transactionListPending;
-  if (date.isAtSameMomentAs(today)) return context.loc.transactionListToday;
-  if (date.isAtSameMomentAs(yesterday)) {
-    return context.loc.transactionListYesterday;
+    if (date.compareTo(today) > 0) return pendingLabel;
+    if (date.isAtSameMomentAs(today)) return todayLabel;
+    if (date.isAtSameMomentAs(yesterday)) {
+      return yesterdayLabel;
+    }
+    return date.year == now.year
+        ? DateFormat.MMMMd(bullDateLocale(context)).format(date)
+        : DateFormat.yMMMMd(bullDateLocale(context)).format(date);
   }
-  return date.year == now.year
-      ? DateFormat.MMMMd(bullDateLocale(context)).format(date)
-      : DateFormat.yMMMMd(bullDateLocale(context)).format(date);
 }

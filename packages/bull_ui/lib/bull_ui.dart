@@ -226,6 +226,7 @@ export 'src/data_display/bull_stat_tile.dart';
 export 'src/data_display/bull_text.dart';
 export 'src/data_display/bull_time_ago.dart';
 export 'src/data_display/bull_transaction_direction_badge.dart';
+export 'src/data_display/bull_transactions_by_day_list.dart';
 
 // Support.
 export 'src/support/bull_support_button.dart';
