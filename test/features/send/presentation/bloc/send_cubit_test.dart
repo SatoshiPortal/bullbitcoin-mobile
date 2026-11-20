@@ -870,6 +870,195 @@ void main() {
     return cubit;
   }
 
+  group('first Send fee load', () {
+    for (final selection in [
+      FeeSelection.fastest,
+      FeeSelection.slow,
+      FeeSelection.custom,
+    ]) {
+      test(
+        'preserves ${selection.name} chosen before wallet selection',
+        () async {
+          final wallet = _bitcoinLocalWallet();
+          final fees = _feeOptions();
+          const custom = RelativeFee(750);
+          when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+              .thenAnswer((_) async => const []);
+          when(
+            () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+          ).thenAnswer((_) => const Stream<Wallet>.empty());
+          when(
+            () => getNetworkFeesUsecase.execute(
+              isLiquid: any(named: 'isLiquid'),
+              network: any(named: 'network'),
+            ),
+          ).thenAnswer((_) async => fees);
+
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+          expect(cubit.state.selectedWallet, isNull);
+          expect(cubit.state.bitcoinFeesList, isNull);
+
+          if (selection == FeeSelection.slow) {
+            await cubit.feeOptionSelected(selection);
+          } else if (selection == FeeSelection.custom) {
+            await cubit.customFeesChanged(custom);
+          }
+          expect(cubit.state.selectedFeeOption, selection);
+
+          await cubit.updateSelectedWallet(wallet);
+          expect(cubit.state.bitcoinFeesList, isNull);
+          await cubit.loadFees();
+
+          expect(cubit.state.failure, isNull);
+          expect(cubit.state.bitcoinFeesList, fees);
+          expect(cubit.state.selectedFeeOption, selection);
+          expect(cubit.state.selectedFee, switch (selection) {
+            FeeSelection.fastest => fees.fastest,
+            FeeSelection.slow => fees.slow,
+            FeeSelection.custom => custom,
+            FeeSelection.economic => fees.economic,
+          });
+        },
+      );
+    }
+  });
+
+  test(
+    'commits a custom fee before a wallet without a build failure',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      const custom = RelativeFee(750);
+      expect(cubit.state.selectedWallet, isNull);
+
+      await cubit.customFeesChanged(custom);
+
+      expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+      expect(cubit.state.selectedFee, custom);
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.buildingTransaction, isFalse);
+      verifyZeroInteractions(getWalletUtxosUsecase);
+      verifyZeroInteractions(prepareBitcoinSendUsecase);
+    },
+  );
+
+  group('mono MAX preview', () {
+    _TestableSendCubit startMono() {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1qfixture',
+            isTestnet: false,
+          ),
+          amount: '10000',
+          inputAmountCurrencyCode: 'sats',
+          bitcoinFeesList: _feeOptions(),
+          recipientDrafts: const [
+            (
+              id: 0,
+              address: 'bc1qfixture',
+              amount: '10000',
+              receivesRemainder: false,
+              isValid: true,
+            ),
+          ],
+        ),
+      );
+      return cubit;
+    }
+
+    const slot = BitcoinFeePreviewSlot(
+      feeSat: 200,
+      txSize: 140,
+      unsignedPsbt: 'mono-max-preview',
+      recipientAmountsSat: [99800],
+    );
+    void stubPreview(Future<BitcoinFeePreviewSlot> Function() result) {
+      when(
+        () => previewBitcoinFeeUsecase.execute(
+          walletId: any(named: 'walletId'),
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          replaceByFee: any(named: 'replaceByFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: any(named: 'selectedOnly'),
+        ),
+      ).thenAnswer((_) => result());
+    }
+
+    test('reads real drain facts without applying MAX', () async {
+      final cubit = startMono();
+      final before = cubit.state;
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview?.recipientSat, 99800);
+      expect(preview?.availableSat, 100000);
+      expect(cubit.state, before);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+    test('discards a late preview after the payment changes', () async {
+      final cubit = startMono();
+      final pending = Completer<BitcoinFeePreviewSlot>();
+      stubPreview(() => pending.future);
+      final result = cubit.previewMonoMax();
+      cubit.setStateForTest(cubit.state.copyWith(amount: '20000'));
+      pending.complete(slot);
+      expect(await result, isNull);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+    test('explicit acceptance reuses the exact preview PSBT', () async {
+      final cubit = startMono();
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview, isNotNull);
+      if (preview == null) return;
+      expect(await cubit.acceptMonoMax(preview), isTrue);
+      expect(cubit.state.isMaxSend, isTrue);
+      expect(cubit.preparedMaxAmountSat, 99800);
+      expect(
+        cubit.state.feePreviewCache
+            .slotFor(cubit.state.selectedFeeOption)
+            .unsignedPsbt,
+        'mono-max-preview',
+      );
+    });
+    test(
+      'restores a real MAX preview after cancelling an edited custom fee',
+      () async {
+        final cubit = startMono();
+        stubPreview(() async => slot);
+        final preview = await cubit.previewMonoMax();
+        expect(preview, isNotNull);
+        if (preview == null) return;
+        expect(await cubit.acceptMonoMax(preview), isTrue);
+        cubit.armCustomFee(const RelativeFee(1000));
+        cubit.disarmCustomFee();
+        cubit.clearBitcoinFeePreviews();
+        expect(cubit.preparedMaxAmountSat, isNull);
+        cubit.refreshMonoPreview();
+        await Future<void>.delayed(const Duration(milliseconds: 450));
+        expect(cubit.preparedMaxAmountSat, 99800);
+      },
+    );
+    test('rejects acceptance after an RBF change', () async {
+      final cubit = startMono();
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview, isNotNull);
+      if (preview == null) return;
+      cubit.setStateForTest(
+        cubit.state.copyWith(replaceByFee: !cubit.state.replaceByFee),
+      );
+      expect(await cubit.acceptMonoMax(preview), isFalse);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+  });
+
   test(
     'a fixed primary request replaces the previous fiat conversion',
     () async {
@@ -1063,6 +1252,86 @@ void main() {
         network: any(named: 'network'),
       ),
     ).thenAnswer((_) async => _sweepFeeOptions);
+  }
+
+  for (final builtSats in [25000, 25001]) {
+    test(
+      'matches a single Bitcoin fiat quote to the confirmed $builtSats-sat output',
+      () async {
+        final wallet = _bitcoinLocalWallet();
+        stubSweepLoad(wallet: wallet, utxos: const []);
+        const address = 'bc1qfixture';
+        when(
+          () => detectBitcoinStringUsecase.execute(data: address),
+        ).thenAnswer(
+          (_) async =>
+              const PaymentRequest.bitcoin(address: address, isTestnet: false),
+        );
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: wallet.id,
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok((
+            unsignedPsbt: 'unsigned',
+            txSize: 140,
+            isToSelf: false,
+            recipientAmountsSat: [Sats.fromInt(builtSats)],
+          )),
+        );
+        when(
+          () => signBitcoinTxUsecase.execute(
+            psbt: 'unsigned',
+            walletId: wallet.id,
+          ),
+        ).thenAnswer((_) async => (signedPsbt: 'signed', txSize: 140));
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async => 140);
+
+        final cubit = buildCubit(wallet: wallet);
+        addTearDown(cubit.close);
+        await cubit.loadWalletWithRatesAndFees();
+        await cubit.onChangedText(address);
+        await cubit.continueOnAddressConfirmed();
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.usesRecipientList, isTrue);
+        expect(cubit.state.recipientDrafts, hasLength(1));
+
+        final quotedAt = DateTime.utc(2026, 11, 20, 12, 34);
+        cubit.amountEntryChanged(
+          sats: BigInt.from(25000),
+          currencyCode: 'USD',
+          text: '12.50',
+          rate: 50000,
+          quotedAt: quotedAt,
+          isValid: true,
+          isEdit: true,
+        );
+        await pumpEventQueue();
+        final conversion = cubit.state.amountConversion;
+        expect(conversion?.enteredText, '12.50');
+        expect(conversion?.quotedAt, quotedAt);
+
+        await cubit.onAmountConfirmed();
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.confirmedAmountSat, builtSats);
+        expect(cubit.state.recipientAmountsSat, [builtSats]);
+        expect(
+          cubit.state.confirmedConversion,
+          builtSats == 25000 ? conversion : null,
+        );
+      },
+    );
   }
 
   test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {

@@ -117,6 +117,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'send_mono_actions.dart';
+
 class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
@@ -207,6 +209,8 @@ class SendCubit extends Cubit<SendState>
       _onWalletRevision,
     );
   }
+
+  void _applyMonoState(SendState next) => emit(next);
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
@@ -2388,6 +2392,18 @@ class SendCubit extends Cubit<SendState>
       return;
     }
 
+    // A plain Bitcoin send still uses the recipient list for its one output.
+    final paymentRequest = state.paymentRequest;
+    final singleBitcoinConversion =
+        paymentRequest is BitcoinPaymentRequest &&
+            state.usesRecipientList &&
+            state.recipientDrafts.length == 1 &&
+            !state.isMaxSend
+        ? _conversionMatching(
+            state.amountConversion,
+            state.totalFixedRecipientAmountSat,
+          )
+        : null;
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
@@ -2552,8 +2568,17 @@ class SendCubit extends Cubit<SendState>
     }
     // Any other failure keeps the user here.
     if (state.failure == null) {
+      final recipientConversion =
+          state.paymentRequest == paymentRequest &&
+              state.recipientAmountsSat.length == 1
+          ? _conversionMatching(
+              singleBitcoinConversion,
+              state.recipientAmountsSat.single,
+            )
+          : null;
       emit(
         state.copyWith(
+          confirmedConversion: recipientConversion ?? state.confirmedConversion,
           step: SendStep.confirm,
           confirmedAmountSat: state.usesRecipientList && !state.isChainSwap
               ? state.recipientAmountsSat.fold<int>(
@@ -2947,17 +2972,10 @@ class SendCubit extends Cubit<SendState>
       final ratesChanged =
           state.bitcoinFeesList != bitcoinFees ||
           state.liquidFeesList != liquidFees;
-      // Default to Fastest only on the first successful load. Once a
-      // selection exists, a fee refresh must preserve it — silently
-      // resetting to Fastest would clobber a committed tier (or custom).
-      final isFirstLoad = state.bitcoinFeesList == null;
       emit(
         state.copyWith(
           bitcoinFeesList: bitcoinFees,
           liquidFeesList: liquidFees,
-          selectedFeeOption: isFirstLoad
-              ? FeeSelection.fastest
-              : state.selectedFeeOption,
         ),
       );
       // Mempool rates changed — preset PSBTs were built at the old
@@ -3011,6 +3029,8 @@ class SendCubit extends Cubit<SendState>
       ),
     );
 
+    // The settings sheet can commit a fee before Send has selected a wallet.
+    if (state.selectedWallet == null) return;
     await createTransaction();
     // updateSwapLockupFees();
   }

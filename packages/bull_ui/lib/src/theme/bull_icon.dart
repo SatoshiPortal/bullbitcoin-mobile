@@ -23,6 +23,7 @@ abstract final class BullIcons {
   static const IconData acUnit = Icons.ac_unit;
   static const IconData edit = Icons.edit;
   static const IconData expandMore = Icons.expand_more;
+  static const IconData lock = Icons.lock;
   static const IconData lockOpen = Icons.lock_open;
   static const IconData sync = Icons.sync;
   static const IconData checkCircle = Icons.check_circle;

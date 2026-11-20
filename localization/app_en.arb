@@ -1282,7 +1282,7 @@
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
   },
-  "sendCustomFee": "Custom Fee",
+  "sendCustomFee": "Custom fee",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
@@ -1298,7 +1298,7 @@
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
@@ -1358,7 +1358,7 @@
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
-  "sendAdvancedSettings": "Advanced Settings",
+  "sendAdvancedSettings": "Advanced settings",
   "@sendAdvancedSettings": {
     "description": "Title for advanced settings in the send flow"
   },
@@ -1382,7 +1382,7 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "sendNetworkFees": "Network fees",
+  "sendNetworkFees": "Network fee",
   "@sendNetworkFees": {
     "description": "Label for network transaction fees"
   },
@@ -15804,5 +15804,134 @@
   "exchangeSupportChatSendTooltip": "Send message",
   "@exchangeSupportChatSendTooltip": {
     "description": "Accessible tooltip for the support chat send button."
+  },
+  "sendAmountLocked": "Enter a valid recipient first",
+  "@sendAmountLocked": {},
+  "sendWholeBalanceTitle": "Send your whole balance?",
+  "@sendWholeBalanceTitle": {},
+  "sendWholeBalanceDescription": "Everything in {wallet} leaves this wallet. The network fee is taken from it, so nothing stays.",
+  "@sendWholeBalanceDescription": {
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      }
+    }
+  },
+  "sendAvailableBalanceTitle": "Send your available balance?",
+  "@sendAvailableBalanceTitle": {},
+  "sendAvailableBalanceDescription": "The available balance in {wallet} leaves this wallet. The network fee is taken from it. Protected coins stay in the wallet.",
+  "@sendAvailableBalanceDescription": {
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      }
+    }
+  },
+  "sendSelectedCoinsTitle": "Send all selected coins?",
+  "@sendSelectedCoinsTitle": {},
+  "sendSelectedCoinsDescription": "The selected spendable coins leave {wallet}. The network fee is taken from them. Other coins stay in the wallet.",
+  "@sendSelectedCoinsDescription": {
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipientGets": "Recipient gets",
+  "@sendRecipientGets": {},
+  "sendAllAction": "Send all",
+  "@sendAllAction": {},
+  "sendYouSend": "You send",
+  "@sendYouSend": {},
+  "sendCustomRateMode": "Rate (sat/vB)",
+  "@sendCustomRateMode": {},
+  "sendCustomTotalMode": "Total (sats)",
+  "@sendCustomTotalMode": {},
+  "sendCustomApplyHint": "Apply with the keyboard checkmark.",
+  "@sendCustomApplyHint": {},
+  "sendCustomInvalid": "Enter a valid fee.",
+  "@sendCustomInvalid": {},
+  "sendCustomSizeUnavailable": "Enter an amount first to calculate the transaction size.",
+  "@sendCustomSizeUnavailable": {},
+  "sendCustomSubOne": "Sub-1 sat/vB transactions may take longer to confirm.",
+  "@sendCustomSubOne": {},
+  "sendPaymentChanged": "The payment changed. Please check it again.",
+  "@sendPaymentChanged": {},
+  "sendCustomMinimumRate": "Minimum {rate} sat/vB.",
+  "@sendCustomMinimumRate": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCustomMinimumTotal": "Minimum {amount} sats ({rate} sat/vB).",
+  "@sendCustomMinimumTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "sendCustomEffectiveRate": "Effective rate: {rate} sat/vB",
+  "@sendCustomEffectiveRate": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEdit": "Edit",
+  "@sendEdit": {},
+  "sendClose": "Close",
+  "@sendClose": {},
+  "sendBack": "Back",
+  "@sendBack": {},
+  "sendBalance": "Balance",
+  "@sendBalance": {},
+  "sendEnteredQuote": "You entered {amount} {currency} · rate of {time}",
+  "@sendEnteredQuote": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sendFeeCustom": "Custom",
+  "@sendFeeCustom": {
+    "description": "Mono Send payment interface"
+  },
+  "sendFeeTimeFast": "~10 min",
+  "@sendFeeTimeFast": {
+    "description": "Mono Send payment interface"
+  },
+  "sendCoinsInstead": "Send UTXOs instead",
+  "@sendCoinsInstead": {
+    "description": "Mono Send payment interface"
+  },
+  "sendLeavePaymentTitle": "Leave this payment?",
+  "@sendLeavePaymentTitle": {
+    "description": "Mono Send payment interface"
+  },
+  "sendLeavePaymentDescription": "The recipient and amount you entered will be cleared. Coins opens so you can pick what to spend.",
+  "@sendLeavePaymentDescription": {
+    "description": "Mono Send payment interface"
+  },
+  "sendOpenCoins": "Open Coins",
+  "@sendOpenCoins": {
+    "description": "Mono Send payment interface"
+  },
+  "sendSecureWalletDescription": "Secure Bitcoin wallet",
+  "@sendSecureWalletDescription": {
+    "description": "Mono Send payment interface"
   }
 }
