@@ -112,11 +112,20 @@ class AppRouter {
     }
   }
 
+  static bool _activatingExchange = false;
+
   static Future<void> _activateExchange(BuildContext context) async {
-    final enabled = await SettingsFacade.enableExchange(
-      context,
-      createCubit: () => locator<ExchangeAccessSettingsCubit>(),
-    );
+    if (_activatingExchange) return;
+    _activatingExchange = true;
+    final bool enabled;
+    try {
+      enabled = await SettingsFacade.enableExchange(
+        context,
+        createCubit: () => locator<ExchangeAccessSettingsCubit>(),
+      );
+    } finally {
+      _activatingExchange = false;
+    }
     if (!enabled || !context.mounted) return;
     final signedIn = ExchangeAvailability.canManageAccount(
       locator<ExchangeFacade>().currentAccess,
