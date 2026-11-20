@@ -870,6 +870,104 @@ void main() {
     return cubit;
   }
 
+  group('mono MAX preview', () {
+    _TestableSendCubit startMono() {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1qfixture',
+            isTestnet: false,
+          ),
+          amount: '10000',
+          inputAmountCurrencyCode: 'sats',
+          bitcoinFeesList: _feeOptions(),
+          recipientDrafts: const [
+            (
+              id: 0,
+              address: 'bc1qfixture',
+              amount: '10000',
+              receivesRemainder: false,
+              isValid: true,
+            ),
+          ],
+        ),
+      );
+      return cubit;
+    }
+
+    const slot = BitcoinFeePreviewSlot(
+      feeSat: 200,
+      txSize: 140,
+      unsignedPsbt: 'mono-max-preview',
+      recipientAmountsSat: [99800],
+    );
+    void stubPreview(Future<BitcoinFeePreviewSlot> Function() result) {
+      when(
+        () => previewBitcoinFeeUsecase.execute(
+          walletId: any(named: 'walletId'),
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          replaceByFee: any(named: 'replaceByFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: any(named: 'selectedOnly'),
+        ),
+      ).thenAnswer((_) => result());
+    }
+
+    test('reads real drain facts without applying MAX', () async {
+      final cubit = startMono();
+      final before = cubit.state;
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview?.recipientSat, 99800);
+      expect(preview?.availableSat, 100000);
+      expect(cubit.state, before);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+    test('discards a late preview after the payment changes', () async {
+      final cubit = startMono();
+      final pending = Completer<BitcoinFeePreviewSlot>();
+      stubPreview(() => pending.future);
+      final result = cubit.previewMonoMax();
+      cubit.setStateForTest(cubit.state.copyWith(amount: '20000'));
+      pending.complete(slot);
+      expect(await result, isNull);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+    test('explicit acceptance reuses the exact preview PSBT', () async {
+      final cubit = startMono();
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview, isNotNull);
+      if (preview == null) return;
+      expect(await cubit.acceptMonoMax(preview), isTrue);
+      expect(cubit.state.isMaxSend, isTrue);
+      expect(cubit.preparedMaxAmountSat, 99800);
+      expect(
+        cubit.state.feePreviewCache
+            .slotFor(cubit.state.selectedFeeOption)
+            .unsignedPsbt,
+        'mono-max-preview',
+      );
+    });
+    test('rejects acceptance after an RBF change', () async {
+      final cubit = startMono();
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview, isNotNull);
+      if (preview == null) return;
+      cubit.setStateForTest(
+        cubit.state.copyWith(replaceByFee: !cubit.state.replaceByFee),
+      );
+      expect(await cubit.acceptMonoMax(preview), isFalse);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+  });
+
   test(
     'a fixed primary request replaces the previous fiat conversion',
     () async {
