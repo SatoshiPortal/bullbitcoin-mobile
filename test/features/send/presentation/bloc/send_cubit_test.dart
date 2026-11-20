@@ -924,6 +924,25 @@ void main() {
     }
   });
 
+  test(
+    'commits a custom fee before a wallet without a build failure',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      const custom = RelativeFee(750);
+      expect(cubit.state.selectedWallet, isNull);
+
+      await cubit.customFeesChanged(custom);
+
+      expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+      expect(cubit.state.selectedFee, custom);
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.buildingTransaction, isFalse);
+      verifyZeroInteractions(getWalletUtxosUsecase);
+      verifyZeroInteractions(prepareBitcoinSendUsecase);
+    },
+  );
+
   group('mono MAX preview', () {
     _TestableSendCubit startMono() {
       final cubit = buildCubit();
