@@ -66,6 +66,42 @@ void main() {
       }
     });
   }
+  for (final network in [
+    Network.bitcoinTestnet,
+    Network.liquidTestnet,
+    Network.liquidMainnet,
+  ]) {
+    test('Receive serializes 1–99 sats as decimal BTC on $network', () {
+      final wallet = _wallet(network);
+      final address = _address(
+        network.isBitcoin ? 'tb1fixture' : 'tlq1fixture',
+        walletId: wallet.id,
+      );
+      final draft = ReceiveState(
+        type: network.isBitcoin ? ReceiveType.bitcoin : ReceiveType.liquid,
+        wallet: wallet,
+        bitcoinAddress: network.isBitcoin ? address : null,
+        liquidAddress: network.isBitcoin ? null : address,
+        payjoinAttemptSettled: true,
+      );
+      final values = [
+        for (var sats = 1; sats <= 99; sats++)
+          (
+            sats,
+            '0.${sats.toString().padLeft(8, '0').replaceFirst(RegExp(r'0+$'), '')}',
+          ),
+        (100, '0.000001'),
+        (2100000000000000, '21000000'),
+      ];
+      for (final (sats, decimal) in values) {
+        final state = draft.copyWith(confirmedAmountSat: sats);
+        final uri = Uri.parse(state.paymentRequest);
+        expect(uri.queryParameters['amount'], decimal, reason: '$sats sats');
+        expect(state.clipboardData, state.paymentRequest);
+      }
+    });
+  }
+
   test('Liquid never exposes an address owned by a different wallet', () {
     final state = ReceiveState(
       type: ReceiveType.liquid,
