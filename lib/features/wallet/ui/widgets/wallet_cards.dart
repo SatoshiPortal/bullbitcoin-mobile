@@ -89,6 +89,7 @@ class WalletCards extends StatelessWidget {
               ),
           ],
           if (showSpWallet) ...[
+            if (wallets.isNotEmpty) const Gap(8),
             WalletCard(
               tagColor: context.appColors.tertiary,
               title: context.loc.walletSpTitle,
@@ -97,7 +98,6 @@ class WalletCards extends StatelessWidget {
               isSyncing: isSpWalletLoading,
               onTap: () => context.pushNamed(SpRoute.spWalletDetail.name),
             ),
-            const Gap(8),
           ],
         ],
       ),
