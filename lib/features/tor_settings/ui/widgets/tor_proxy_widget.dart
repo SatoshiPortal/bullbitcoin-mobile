@@ -1,4 +1,3 @@
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
@@ -8,6 +7,8 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullDropdown,
         BullInfoCard,
+        BullInlineTextButton,
+        BullText,
         BullPickerItem,
         BullSettingsEntryItem,
         BullSnackBar,
@@ -78,13 +79,21 @@ class TorProxyWidget extends StatelessWidget {
                 ),
           ),
         ),
-        const Gap(8),
-        BullButton.secondary(
-          label: context.loc.torSettingsLearnAboutOrbot,
-          onPressed: () => _learnAboutOrbot(context),
-          size: BullButtonSize.small,
-          compact: true,
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: BullInlineTextButton(
+              onPressed: () => _learnAboutOrbot(context),
+              child: BullText(
+                context.loc.torSettingsLearnAboutOrbot,
+                style: context.bullType.label,
+                color: context.appColors.primary,
+              ),
+            ),
+          ),
         ),
+        const Gap(8),
         Card(
           child: BullSettingsEntryItem(
             icon: Icons.settings_ethernet,
