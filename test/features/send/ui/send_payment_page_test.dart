@@ -1,4 +1,7 @@
-import 'package:bb_mobile/features/send/ui/screens/send_payment_page.dart';
+// Keep Send tests independent of the application namespace.
+// ignore: avoid_relative_lib_imports
+import '../../../../lib/features/send/ui/screens/send_payment_page.dart';
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
