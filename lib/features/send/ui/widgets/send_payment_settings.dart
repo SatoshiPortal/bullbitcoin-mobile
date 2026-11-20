@@ -124,15 +124,31 @@ class SendPaymentSettings extends StatelessWidget {
                   onChanged: onMultipleRecipients,
                 ),
                 const Gap(BullSpacing.md),
-                BullInlineTextButton(
-                  onPressed: onCoins,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(coinsLabel, style: context.bullType.body),
+                Semantics(
+                  button: true,
+                  enabled: onCoins != null,
+                  label: coinsLabel,
+                  excludeSemantics: true,
+                  onTap: onCoins,
+                  child: GestureDetector(
+                    onTap: onCoins,
+                    child: Container(
+                      color: context.bull.transparent,
+                      constraints: const BoxConstraints(
+                        minHeight: BullSpacing.xxl,
                       ),
-                      const BullIcon(BullIcons.chevronRight),
-                    ],
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              coinsLabel,
+                              style: context.bullType.body,
+                            ),
+                          ),
+                          const BullIcon(BullIcons.chevronRight),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 const Gap(BullSpacing.lg),

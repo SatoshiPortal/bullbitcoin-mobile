@@ -416,12 +416,11 @@ final class _SendPaymentSession {
                 feeChoices: choices.keys.toSet(),
                 selectedFee: feeName(context, state.selectedFeeOption),
                 feeDetail: Wrap(
-                  spacing: BullSpacing.xs,
                   children: [
                     if (detail.isNotEmpty)
                       Text(detail, style: context.bullType.label),
                     if (real != null && detail.isNotEmpty)
-                      Text('·', style: context.bullType.label),
+                      Text(' · ', style: context.bullType.label),
                     if (real != null)
                       money(context, real, style: context.bullType.label),
                   ],

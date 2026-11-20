@@ -71,9 +71,11 @@ class SendPaymentReview extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: BullSpacing.lg,
-                vertical: BullSpacing.xs,
+              padding: const EdgeInsets.fromLTRB(
+                BullSpacing.md,
+                BullSpacing.lg,
+                BullSpacing.md,
+                BullSpacing.xs,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
