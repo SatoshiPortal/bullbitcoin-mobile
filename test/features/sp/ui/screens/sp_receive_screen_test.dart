@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSegmented, BullShimmerBox;
 import 'package:material_ui/material_ui.dart';
@@ -112,7 +111,8 @@ void main() {
 
     expect(find.byType(BullShimmerBox), findsOneWidget);
     expect(find.byType(QrDisplayWidget), findsNothing);
-    expect(find.byType(CopyInput), findsNothing);
+    expect(find.byIcon(Icons.copy_sharp), findsNothing);
+    expect(find.byIcon(Icons.visibility_outlined), findsNothing);
   });
 
   testWidgets('SP tab empty address state does not render QR or copy input', (
@@ -132,7 +132,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(QrDisplayWidget), findsNothing);
-    expect(find.byType(CopyInput), findsNothing);
+    expect(find.byIcon(Icons.copy_sharp), findsNothing);
+    expect(find.byIcon(Icons.visibility_outlined), findsNothing);
   });
 
   testWidgets(
