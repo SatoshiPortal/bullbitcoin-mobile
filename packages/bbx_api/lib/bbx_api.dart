@@ -2,6 +2,8 @@
 ///
 /// Transport and wire models only. Callers configure the [Dio] client (base
 /// URL, timeouts, authentication) and map the wire models to their own types.
+/// [BbxNotificationSocket] is the notification websocket; the caller supplies
+/// the base URL and reads the API key.
 library;
 
 export 'src/bbx_api_client.dart';
@@ -10,6 +12,7 @@ export 'src/commcenter/announcement.dart';
 export 'src/commcenter/commcenter_api.dart';
 export 'src/commcenter/support_message.dart';
 export 'src/kyc/kyc_api.dart';
+export 'src/notifications/notification_socket.dart';
 export 'src/order_triggers/dca.dart';
 export 'src/order_triggers/limit_order.dart';
 export 'src/order_triggers/order_triggers_api.dart';
