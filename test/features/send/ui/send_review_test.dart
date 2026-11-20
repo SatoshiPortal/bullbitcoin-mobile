@@ -56,6 +56,12 @@ void main() {
         tester.getBottomRight(find.text('bitcoin')).dx,
         closeTo(tester.getBottomRight(find.text('200 sats')).dx, 1),
       );
+      expect(tester.getTopLeft(find.text('From')).dx, 16);
+      expect(
+        tester.getTopLeft(find.text('You send')).dy -
+            tester.getBottomLeft(find.byType(BullStepBar)).dy,
+        greaterThanOrEqualTo(24),
+      );
       expect(find.byType(TextField), findsNothing);
       expect(find.byType(BullSegmented), findsNothing);
       expect(find.byType(BullSettingsEntryTile), findsNothing);

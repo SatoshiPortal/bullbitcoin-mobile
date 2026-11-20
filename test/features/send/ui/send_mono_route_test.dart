@@ -135,6 +135,29 @@ void main() {
   }
 
   testWidgets(
+    'Advanced fee summary has single-spaced separators and no layout gaps',
+    (tester) async {
+      await pump(tester, state());
+      await tester.tap(find.byType(BullSettingsEntryTile));
+      await tester.pumpAndSettle();
+      final line = find
+          .ancestor(
+            of: find.text('~10 min · 2 sat/vB'),
+            matching: find.byType(Wrap),
+          )
+          .first;
+      expect(tester.widget<Wrap>(line).spacing, 0);
+      final text = tester
+          .widgetList<Text>(
+            find.descendant(of: line, matching: find.byType(Text)),
+          )
+          .map((text) => text.data ?? '')
+          .join();
+      expect(text, '~10 min · 2 sat/vB · 200 sats');
+    },
+  );
+
+  testWidgets(
     'Coins leave Cancel preserves payment; Open replaces Send and Back returns origin',
     (tester) async {
       Object? source;

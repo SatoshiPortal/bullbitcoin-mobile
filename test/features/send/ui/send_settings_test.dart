@@ -42,6 +42,14 @@ void main() {
   testWidgets('row label and switch each toggle exactly once', (tester) async {
     final values = <bool>[];
     await tester.pumpWidget(settings(onRbf: values.add));
+    expect(
+      tester.getTopLeft(find.text('Send UTXOs instead')).dx,
+      tester.getTopLeft(find.text('Replace by fee')).dx,
+    );
+    expect(
+      tester.getBottomRight(find.byType(BullIcon).last).dx,
+      tester.getBottomRight(find.byType(BullSwitch).last).dx,
+    );
     await tester.tap(find.text('Replace by fee'));
     expect(values, [true]);
     await tester.tap(find.byType(BullSwitch).first);
