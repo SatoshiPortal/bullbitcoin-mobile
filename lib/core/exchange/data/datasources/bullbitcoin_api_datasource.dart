@@ -275,21 +275,14 @@ class BullbitcoinApiDatasource {
   /// makes it publish a `bip21URI` on the order. Only meaningful on
   /// [OrderBitcoinNetwork.bitcoin]. Omitted rather than sent as false so a
   /// backend without the flag is unaffected.
-  /// EUR bank payouts temporarily share this Sell entry point to keep Pay's existing request contract stable.
-  /// The broader exchange refactor is underway and will consolidate the overlap with [createPayOrder].
   Future<OrderModel> createSellOrder({
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
-    String? recipientId,
-    SepaPaymentProcessor? paymentProcessor,
   }) async {
     final params = <String, dynamic>{
-      if (recipientId == null) 'fiatCurrency': fiatCurrency.code,
-      'recipientId': ?recipientId,
-      if (recipientId != null && paymentProcessor != null)
-        'paymentProcessor': _sepaPaymentProcessorValue(paymentProcessor),
+      'fiatCurrency': fiatCurrency.code,
       'bitcoinNetwork': network.value,
       if (usePayjoin) 'usePayjoin': true,
     };
@@ -305,7 +298,7 @@ class BullbitcoinApiDatasource {
       data: {
         'jsonrpc': '2.0',
         'id': '0',
-        'method': recipientId == null ? 'sellToBalance' : 'sellToRecipient',
+        'method': 'sellToBalance',
         'params': params,
       },
     );
@@ -313,11 +306,7 @@ class BullbitcoinApiDatasource {
     final error = _body(resp)['error'];
     if (statusCode != 200) throw Exception('Failed to create sell order');
     if (error != null) {
-      _throwOrderApiError(
-        error,
-        'Failed to create sell order',
-        redactError: recipientId != null,
-      );
+      _throwOrderApiError(error, 'Failed to create sell order');
     }
     return OrderModel.fromJson(_result(resp));
   }
@@ -329,10 +318,13 @@ class BullbitcoinApiDatasource {
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,
+      if (paymentProcessor != null)
+        'paymentProcessor': _sepaPaymentProcessorValue(paymentProcessor),
       'bitcoinNetwork': network.value,
       if (usePayjoin) 'usePayjoin': true,
     };
@@ -361,7 +353,11 @@ class BullbitcoinApiDatasource {
       throw Exception('Failed to create sell to recipient order');
     }
     if (error != null) {
-      _throwOrderApiError(error, 'Failed to create sell to recipient order');
+      _throwOrderApiError(
+        error,
+        'Failed to create sell to recipient order',
+        redactError: true,
+      );
     }
 
     return OrderModel.fromJson(_result(resp));

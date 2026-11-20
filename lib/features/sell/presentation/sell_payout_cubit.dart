@@ -1,15 +1,16 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase_v2.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-final class SellPayoutStateV2 {
+final class SellPayoutState {
   final bool isLoading;
   final ConfidentialSepaAvailability? availability;
   final SellFailure? failure;
 
-  const SellPayoutStateV2({
+  const SellPayoutState({
     this.isLoading = false,
     this.availability,
     this.failure,
@@ -18,7 +19,7 @@ final class SellPayoutStateV2 {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SellPayoutStateV2 &&
+      other is SellPayoutState &&
           isLoading == other.isLoading &&
           availability == other.availability &&
           failure == other.failure;
@@ -27,28 +28,26 @@ final class SellPayoutStateV2 {
   int get hashCode => Object.hash(isLoading, availability, failure);
 }
 
-class SellPayoutCubitV2 extends Cubit<SellPayoutStateV2> {
-  final GetSellConfidentialSepaAvailabilityUsecaseV2 _getAvailability;
+class SellPayoutCubit extends Cubit<SellPayoutState> {
+  final GetSellConfidentialSepaAvailabilityUsecase _getAvailability;
 
-  SellPayoutCubitV2(this._getAvailability) : super(const SellPayoutStateV2());
+  SellPayoutCubit(this._getAvailability) : super(const SellPayoutState());
 
-  Future<void> load() async {
+  Future<void> load(FiatCurrency currency) async {
     if (state.isLoading || isClosed) return;
-    emit(const SellPayoutStateV2(isLoading: true));
-    final result = await _getAvailability.execute();
+    emit(const SellPayoutState(isLoading: true));
+    final result = await _getAvailability.execute(currency);
     if (isClosed) return;
     emit(switch (result) {
-      Ok(:final value) => SellPayoutStateV2(availability: value),
-      Err(:final failure) => SellPayoutStateV2(failure: failure),
+      Ok(:final value) => SellPayoutState(availability: value),
+      Err(:final failure) => SellPayoutState(failure: failure),
     });
   }
 
   void virtualIbanActivated() {
     if (!isClosed) {
       emit(
-        const SellPayoutStateV2(
-          availability: ConfidentialSepaAvailability.ready,
-        ),
+        const SellPayoutState(availability: ConfidentialSepaAvailability.ready),
       );
     }
   }

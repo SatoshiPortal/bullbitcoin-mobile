@@ -34,6 +34,7 @@ class _MockGetAccountOwnerName extends Mock
 
 const _recipient = RecipientViewModel(
   id: 'saved-sepa',
+  isOwner: true,
   type: RecipientType.sepaEur,
   firstname: 'Satoshi',
   lastname: 'Nakamoto',
@@ -71,22 +72,28 @@ void main() {
     WidgetTester tester, {
     ConfidentialSepaAvailability availability =
         ConfidentialSepaAvailability.needsVirtualIban,
+    RecipientsState? initialState,
+    Stream<RecipientsState> updates = const Stream.empty(),
+    bool isHookRunning = false,
+    bool enforceRecipientFilter = false,
   }) async {
     whenListen(
       bloc,
-      const Stream<RecipientsState>.empty(),
-      initialState: RecipientsState(
-        allowedRecipientFilters: RecipientFilterCriteria(
-          types: const [
-            RecipientType.sepaEur,
-            RecipientType.confidentialSepaEur,
-          ],
-          isOwner: true,
-        ),
-        jurisdictionFilter: 'EU',
-        confidentialSepaAvailability: availability,
-        recipients: const [_recipient],
-      ),
+      updates,
+      initialState:
+          initialState ??
+          RecipientsState(
+            allowedRecipientFilters: RecipientFilterCriteria(
+              types: const [
+                RecipientType.sepaEur,
+                RecipientType.confidentialSepaEur,
+              ],
+              isOwner: true,
+            ),
+            jurisdictionFilter: 'EU',
+            confidentialSepaAvailability: availability,
+            recipients: const [_recipient],
+          ),
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -96,7 +103,10 @@ void main() {
         home: Scaffold(
           body: BlocProvider<RecipientsBloc>.value(
             value: bloc,
-            child: const RecipientsListTab(),
+            child: RecipientsListTab(
+              isHookRunning: isHookRunning,
+              enforceRecipientFilter: enforceRecipientFilter,
+            ),
           ),
         ),
       ),
@@ -246,4 +256,272 @@ void main() {
     ).called(1);
     verifyNever(() => bloc.add(const RecipientsEvent.virtualIbanActivated()));
   });
+
+  testWidgets('a saved recipient advances only after Continue', (tester) async {
+    final loc = await pumpList(tester);
+    await tester.tap(find.text('Satoshi Nakamoto'));
+    await tester.pump();
+    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+    expect(
+      tester.widget<BullButton>(find.byType(BullButton)).disabled,
+      isFalse,
+    );
+    await tester.tap(find.text(loc.recipientsContinue));
+    verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
+        .called(1);
+  });
+
+  testWidgets('search immediately clears a saved selection', (tester) async {
+    await pumpList(tester);
+    await tester.tap(find.text('Satoshi Nakamoto'));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), 'another account');
+    await tester.pump();
+    expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
+    verify(
+      () => bloc.add(const RecipientsEvent.searchChanged('another account')),
+    ).called(1);
+    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+  });
+
+  testWidgets('loading and missing rows block selection', (tester) async {
+    final updates = StreamController<RecipientsState>.broadcast();
+    addTearDown(updates.close);
+    final initial = RecipientsState(
+      allowedRecipientFilters: RecipientFilterCriteria(
+        types: [RecipientType.sepaEur],
+        isOwner: true,
+      ),
+      jurisdictionFilter: 'EU',
+      recipients: const [_recipient],
+    );
+    await pumpList(tester, initialState: initial, updates: updates.stream);
+    await tester.tap(find.text('Satoshi Nakamoto'));
+    await tester.pump();
+    expect(
+      tester.widget<BullButton>(find.byType(BullButton)).disabled,
+      isFalse,
+    );
+    for (final next in [
+      initial.copyWith(isLoadingRecipients: true),
+      initial.copyWith(recipients: []),
+    ]) {
+      updates.add(next);
+      await tester.pump();
+      expect(
+        tester.widget<BullButton>(find.byType(BullButton)).disabled,
+        isTrue,
+      );
+    }
+    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+  });
+
+  testWidgets('an active caller hook blocks another selection', (tester) async {
+    await pumpList(tester, isHookRunning: true);
+    await tester.tap(find.text('Satoshi Nakamoto'));
+    await tester.pump();
+    expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
+    verifyNever(() => bloc.add(const RecipientsEvent.selected(_recipient)));
+  });
+
+  testWidgets('a failed confidentiality check still permits regular SEPA', (
+    tester,
+  ) async {
+    final loc = await pumpList(
+      tester,
+      initialState: RecipientsState(
+        allowedRecipientFilters: RecipientFilterCriteria(
+          types: [RecipientType.sepaEur, RecipientType.confidentialSepaEur],
+          isOwner: true,
+        ),
+        jurisdictionFilter: 'EU',
+        failedToLoadConfidentialSepaAvailability:
+            const RecipientsNetworkFailure(),
+        recipients: const [_recipient],
+      ),
+    );
+    await tester.tap(find.text('Satoshi Nakamoto'));
+    await tester.pump();
+    expect(
+      tester.widget<BullButton>(find.byType(BullButton)).disabled,
+      isFalse,
+    );
+    await tester.tap(find.text(loc.recipientsContinue));
+    verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
+        .called(1);
+  });
+
+  testWidgets('a failed confidentiality check blocks confidential rows', (
+    tester,
+  ) async {
+    final confidential = _recipient.copyWith(
+      type: RecipientType.confidentialSepaEur,
+    );
+    await pumpList(
+      tester,
+      initialState: RecipientsState(
+        allowedRecipientFilters: RecipientFilterCriteria(
+          types: [RecipientType.confidentialSepaEur],
+          isOwner: true,
+        ),
+        jurisdictionFilter: 'EU',
+        confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
+        failedToLoadConfidentialSepaAvailability:
+            const RecipientsNetworkFailure(),
+        recipients: [confidential],
+      ),
+    );
+    await tester.tap(find.text('Satoshi Nakamoto'));
+    await tester.pump();
+    expect(tester.widget<BullButton>(find.byType(BullButton)).disabled, isTrue);
+    verifyNever(() => bloc.add(RecipientsEvent.selected(confidential)));
+  });
+
+  testWidgets('a short page loads more without a scroll gesture', (
+    tester,
+  ) async {
+    await pumpList(
+      tester,
+      initialState: RecipientsState(
+        allowedRecipientFilters: RecipientFilterCriteria(
+          types: [RecipientType.sepaEur],
+          isOwner: true,
+        ),
+        jurisdictionFilter: 'EU',
+        recipients: const [_recipient],
+        loadedPages: 1,
+        totalRecipients: 100,
+      ),
+    );
+    await tester.pump();
+    verify(() => bloc.add(const RecipientsEvent.moreLoaded()))
+        .called(greaterThanOrEqualTo(1));
+  });
+
+  testWidgets(
+    'refresh clears selection and completes after the picker closes',
+    (tester) async {
+      final updates = StreamController<RecipientsState>.broadcast();
+      await pumpList(tester, updates: updates.stream);
+      await tester.tap(find.text('Satoshi Nakamoto'));
+      await tester.pump();
+      final refresh = tester
+          .widget<RefreshIndicator>(find.byType(RefreshIndicator))
+          .onRefresh();
+      await tester.pump();
+      expect(
+        tester.widget<BullButton>(find.byType(BullButton)).disabled,
+        isTrue,
+      );
+      verify(() => bloc.add(const RecipientsEvent.refreshed())).called(1);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await updates.close();
+      await refresh;
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'callback list accepts backend-supplied non-EUR rows with unknown ownership',
+    (tester) async {
+      const recipient = RecipientViewModel(
+        id: 'sinpe',
+        type: RecipientType.sinpeMovilCrc,
+        ownerName: 'Saved SINPE',
+        phoneNumber: '88888888',
+      );
+      final loc = await pumpList(
+        tester,
+        initialState: RecipientsState(
+          allowedRecipientFilters: RecipientFilterCriteria(
+            types: [RecipientType.sinpeMovilCrc],
+            isOwner: true,
+          ),
+          jurisdictionFilter: 'CR',
+          recipients: const [recipient],
+        ),
+      );
+      await tester.tap(find.text('Saved SINPE'));
+      await tester.pump();
+      expect(
+        tester.widget<BullButton>(find.byType(BullButton)).disabled,
+        isFalse,
+      );
+      await tester.tap(find.text(loc.recipientsContinue));
+      verify(() => bloc.add(const RecipientsEvent.selected(recipient)))
+          .called(1);
+    },
+  );
+
+  testWidgets(
+    'returning list hides rows outside its explicit owner and type criteria',
+    (tester) async {
+      final unknown = _recipient.copyWith(
+        id: 'unknown',
+        name: 'Unknown owner',
+        isOwner: null,
+      );
+      final other = _recipient.copyWith(
+        id: 'other',
+        name: 'Other owner',
+        isOwner: false,
+      );
+      const wrongType = RecipientViewModel(
+        id: 'wrong-type',
+        type: RecipientType.interacEmailCad,
+        name: 'Wrong type',
+        isOwner: true,
+      );
+      await pumpList(
+        tester,
+        enforceRecipientFilter: true,
+        initialState: RecipientsState(
+          allowedRecipientFilters: RecipientFilterCriteria(
+            types: [RecipientType.sepaEur],
+            isOwner: true,
+          ),
+          jurisdictionFilter: 'EU',
+          recipients: [_recipient, unknown, other, wrongType],
+        ),
+      );
+      expect(find.text('Satoshi Nakamoto'), findsOneWidget);
+      expect(find.text('Unknown owner'), findsNothing);
+      expect(find.text('Other owner'), findsNothing);
+      expect(find.text('Wrong type'), findsNothing);
+    },
+  );
+
+  for (final enforceFilter in [false, true]) {
+    testWidgets(
+      'unavailable confidentiality cannot advance (strict rows: $enforceFilter)',
+      (tester) async {
+        final confidential = _recipient.copyWith(
+          type: RecipientType.confidentialSepaEur,
+        );
+        await pumpList(
+          tester,
+          enforceRecipientFilter: enforceFilter,
+          initialState: RecipientsState(
+            allowedRecipientFilters: RecipientFilterCriteria(
+              types: [RecipientType.confidentialSepaEur],
+              isOwner: true,
+            ),
+            jurisdictionFilter: 'EU',
+            confidentialSepaAvailability:
+                ConfidentialSepaAvailability.unavailable,
+            recipients: [confidential],
+          ),
+        );
+        expect(
+          find.text('Satoshi Nakamoto'),
+          enforceFilter ? findsNothing : findsOneWidget,
+        );
+        expect(
+          tester.widget<BullButton>(find.byType(BullButton)).disabled,
+          isTrue,
+        );
+        verifyNever(() => bloc.add(RecipientsEvent.selected(confidential)));
+      },
+    );
+  }
 }

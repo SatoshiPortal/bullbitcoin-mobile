@@ -69,6 +69,7 @@ export 'package:flutter/widgets.dart'
         MainAxisAlignment,
         MainAxisSize,
         MediaQuery,
+        MergeSemantics,
         Navigator,
         NeverScrollableScrollPhysics,
         Opacity,

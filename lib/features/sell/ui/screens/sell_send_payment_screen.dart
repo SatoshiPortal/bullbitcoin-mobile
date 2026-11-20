@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
-import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -167,7 +167,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                         copyValue: order?.sellPayinAddress,
                       ),
                       if (recipient != null)
-                        SellPayoutDetailsV2(recipient: recipient)
+                        SellPayoutDetails(recipient: recipient)
                       else
                         PaymentDetailRow(
                           title: context.loc.sellPayoutRecipient,

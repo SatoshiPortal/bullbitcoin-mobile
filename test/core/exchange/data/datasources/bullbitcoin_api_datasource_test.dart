@@ -75,7 +75,7 @@ void main() {
     ).thenAnswer((_) async => _elements(elements));
   }
 
-  group('EUR Sell payout requests', () {
+  group('sell order requests', () {
     test('keeps rejection codes without exposing account details', () async {
       stubPost(
         _rpcError({
@@ -91,8 +91,7 @@ void main() {
       );
 
       await expectLater(
-        datasource.createSellOrder(
-          fiatCurrency: FiatCurrency.eur,
+        datasource.createPayOrder(
           recipientId: 'own-account',
           paymentProcessor: SepaPaymentProcessor.regular,
           orderAmount: const FiatAmount(100),
@@ -132,8 +131,7 @@ void main() {
         'bank payout sends ${processor.name} processor and recipient',
         () async {
           stubPost(_order(orderJsonFixture(orderType: 'Fiat Payment')));
-          final model = await datasource.createSellOrder(
-            fiatCurrency: FiatCurrency.eur,
+          final model = await datasource.createPayOrder(
             recipientId: 'own-account',
             paymentProcessor: processor,
             orderAmount: const BitcoinAmount(0.001),
@@ -168,8 +166,7 @@ void main() {
           }),
         );
         await expectLater(
-          datasource.createSellOrder(
-            fiatCurrency: FiatCurrency.eur,
+          datasource.createPayOrder(
             recipientId: 'own-account',
             paymentProcessor: SepaPaymentProcessor.confidential,
             orderAmount: const FiatAmount(100),
