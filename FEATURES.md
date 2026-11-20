@@ -220,7 +220,6 @@ graph TB
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     WALLETS --> BTC_PRICE
-    SP --> BTC_PRICE
     BTC_PRICE --> SETTINGS
     BUY -->|public routine sync and destination validation| WALLETS
     BUY --> EXCHANGE
