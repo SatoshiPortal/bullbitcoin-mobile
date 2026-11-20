@@ -16,7 +16,9 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bb_mobile/localizations.dart';
+import 'package:flutter/foundation.dart' show SynchronousFuture;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,8 +29,34 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 class _Cubit extends Mock implements SendCubit {}
 
+class _DuplicateFeeLabels extends AppLocalizationsEn {
+  @override
+  String get sendFastFee => 'Same preset label';
+
+  @override
+  String get sendEconomyFee => 'Same preset label';
+}
+
+class _DuplicateFeeLabelsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _DuplicateFeeLabelsDelegate();
+
+  @override
+  bool isSupported(Locale locale) => locale.languageCode == 'en';
+
+  @override
+  Future<AppLocalizations> load(Locale locale) =>
+      SynchronousFuture(_DuplicateFeeLabels());
+
+  @override
+  bool shouldReload(_DuplicateFeeLabelsDelegate old) => false;
+}
+
 void main() {
-  setUpAll(() => registerFallbackValue(const RelativeFee(500)));
+  setUpAll(() {
+    registerFallbackValue(const RelativeFee(500));
+    registerFallbackValue(FeeSelection.fastest);
+  });
   final wallet = Wallet(
     origin: 'mono',
     network: Network.bitcoinMainnet,
@@ -85,6 +113,7 @@ void main() {
     SendState value, {
     Stream<SendState>? updates,
     GoRouter? router,
+    LocalizationsDelegate<AppLocalizations>? localizationOverride,
   }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -122,7 +151,8 @@ void main() {
             extensions: testBullExtensions,
             textTheme: testBullTypography.toTextTheme(),
           ),
-          localizationsDelegates: const [
+          localizationsDelegates: [
+            ?localizationOverride,
             ...bullUiLocalizationsDelegates,
             ...appLocalizationsDelegates,
           ],
@@ -133,6 +163,34 @@ void main() {
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  testWidgets('identical fee labels keep distinct preset actions', (
+    tester,
+  ) async {
+    final cubit = await pump(
+      tester,
+      state(),
+      localizationOverride: const _DuplicateFeeLabelsDelegate(),
+    );
+    when(() => cubit.feeOptionSelected(any())).thenAnswer((_) async {});
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+
+    final duplicate = find.descendant(
+      of: find.byType(BullSegmented),
+      matching: find.text('Same preset label'),
+    );
+    expect(duplicate, findsNWidgets(2));
+    await tester.tap(duplicate.at(1));
+    await tester.pumpAndSettle();
+    await tester.tap(duplicate.at(0));
+    await tester.pumpAndSettle();
+
+    verifyInOrder([
+      () => cubit.feeOptionSelected(FeeSelection.economic),
+      () => cubit.feeOptionSelected(FeeSelection.fastest),
+    ]);
+  });
 
   testWidgets('Advanced settings opens and reopens without a wallet', (
     tester,

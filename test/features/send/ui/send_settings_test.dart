@@ -1,7 +1,7 @@
-// Keep new Send tests independent of the application package namespace.
 // ignore: avoid_relative_lib_imports
 import '../../../../lib/features/send/ui/widgets/send_payment_settings.dart';
 
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,8 +20,12 @@ void main() {
           title: 'Advanced settings',
           closeLabel: 'Close',
           feeLabel: 'Network fee',
-          feeChoices: const {'Fast', 'Economy', 'Custom'},
-          selectedFee: 'Fast',
+          feeChoices: const {
+            FeeSelection.fastest: 'Fast',
+            FeeSelection.economic: 'Economy',
+            FeeSelection.custom: 'Custom',
+          },
+          selectedFee: FeeSelection.fastest,
           feeDetail: const Text('140 sats'),
           editLabel: 'Edit',
           rbfLabel: 'Replace by fee',
