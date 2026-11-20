@@ -242,6 +242,7 @@ class _ReceiveAdvancedSettingsState extends State<ReceiveAdvancedSettings> {
             if (state.advancedOptions.showNewAddress) ...[
               BullSettingsEntryItem(
                 icon: BullIcons.sync,
+                contentPadding: EdgeInsets.zero,
                 title: context.loc.receiveNewAddress,
                 trailing: const SizedBox.shrink(),
                 subtitle: StringFormatting.truncateMiddle(
