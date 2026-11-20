@@ -194,7 +194,6 @@ final class _SendPaymentSession {
           onBitcoinUnitChanged: (value) => unit.value = value,
           amountController: amountController,
           focusNode: amountFocus,
-          currencySheetStyle: BullSheetStyle.redesign(context),
           defaultCurrencyCode: state.fiatCurrencyCode,
           currencies: [
             for (final currency in SupportedCurrency.values)
@@ -285,7 +284,6 @@ final class _SendPaymentSession {
         .toList();
     final selected = await BullBottomSheet.show<Wallet>(
       context: context,
-      style: BullSheetStyle.redesign(context),
       child: BullPickerSheet<Wallet>(
         title: context.loc.sendFrom,
         options: wallets,
@@ -313,7 +311,6 @@ final class _SendPaymentSession {
     final protected = preview.protectedCoinsRemain;
     final accepted = await BullDialog.show<bool>(
       context: context,
-      barrierColor: BullSheetStyle.redesign(context).barrierColor,
       builder: (dialogContext) => SendWholeBalanceDialog(
         title: selected
             ? context.loc.sendSelectedCoinsTitle
@@ -374,7 +371,6 @@ final class _SendPaymentSession {
     final openCoins = await BullBottomSheet.show<bool>(
       context: context,
       avoidKeyboard: true,
-      style: BullSheetStyle.redesign(context),
       child: StatefulBuilder(
         builder: (sheetContext, setLocal) => BlocBuilder<SendCubit, SendState>(
           bloc: cubit,
@@ -604,7 +600,6 @@ final class _SendPaymentSession {
     }
     return await BullDialog.show<bool>(
           context: context,
-          barrierColor: BullSheetStyle.redesign(context).barrierColor,
           builder: (dialogContext) => SendLeavePaymentDialog(
             title: context.loc.sendLeavePaymentTitle,
             description: context.loc.sendLeavePaymentDescription,

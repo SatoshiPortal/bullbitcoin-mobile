@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'test_app.dart';
 
 void main() {
-  testWidgets('opens on the app background with 8px bordered top corners', (
+  testWidgets('opens on the app background with 8px borderless top corners', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -34,6 +34,6 @@ void main() {
       shape.borderRadius,
       BorderRadius.vertical(top: Radius.circular(BullShapes.standard.sheet)),
     );
-    expect(shape.side.color, testBullTheme.secondaryFixedDim);
+    expect(shape.side, BorderSide.none);
   });
 }

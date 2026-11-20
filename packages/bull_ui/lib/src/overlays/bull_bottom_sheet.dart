@@ -2,12 +2,10 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'bull_sheet_style.dart';
-
 /// Modal bottom sheet.
 ///
 /// Use [BullBottomSheet.show] to present a sheet with app-consistent chrome:
-/// the app background, 8px top corners with a hairline border, a light scrim
+/// the themed sheet surface, borderless 8px top corners, a dark scrim
 /// and the safe area.
 class BullBottomSheet extends StatelessWidget {
   const BullBottomSheet({super.key, required this.child});
@@ -24,9 +22,6 @@ class BullBottomSheet extends StatelessWidget {
     bool isScrollControlled = true,
     bool isDismissible = true,
     bool avoidKeyboard = false,
-    BullSheetStyle? style,
-    Color? barrierColor,
-    Color? backgroundColor,
   }) {
     final colors = context.bull;
     return showModalBottomSheet<T>(
@@ -34,10 +29,14 @@ class BullBottomSheet extends StatelessWidget {
       isScrollControlled: isScrollControlled,
       isDismissible: isDismissible,
       useSafeArea: true,
-      backgroundColor:
-          backgroundColor ?? style?.backgroundColor ?? colors.background,
-      barrierColor:
-          barrierColor ?? style?.barrierColor ?? colors.surface.withAlpha(100),
+      backgroundColor: Theme.of(context).brightness == Brightness.light
+          ? colors.background
+          : colors.surface,
+      barrierColor: colors.scrim.withValues(
+        alpha: Theme.of(context).brightness == Brightness.light ? 0.45 : 0.60,
+      ),
+      constraints: const BoxConstraints(minWidth: double.infinity),
+      elevation: 0,
       // The sheet owns the shape and clips its content to it, so a child's
       // own decoration can never show a mismatched corner.
       clipBehavior: Clip.antiAlias,
@@ -45,7 +44,7 @@ class BullBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(context.bullShapes.sheet),
         ),
-        side: BorderSide(color: colors.secondaryFixedDim),
+        side: BorderSide.none,
       ),
       builder: (sheetContext) => Padding(
         padding: EdgeInsets.only(

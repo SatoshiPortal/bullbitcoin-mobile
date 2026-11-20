@@ -12,7 +12,7 @@ const defaults = [
   QuickAction.map,
   QuickAction.transfer,
   QuickAction.history,
-  QuickAction.settings,
+  QuickAction.toggleAmounts,
 ];
 const available = {...defaults, QuickAction.support, QuickAction.priceHistory};
 
@@ -117,12 +117,12 @@ void main() {
     await tester.tap(find.text('More'));
     await tester.pumpAndSettle();
     expect(find.text('Edit'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Show'), findsOneWidget);
     expect(find.text('Support'), findsOneWidget);
     expect(find.text('Price'), findsOneWidget);
-    final settings = tester.getCenter(find.text('Settings'));
+    final amounts = tester.getCenter(find.text('Show'));
     final support = tester.getCenter(find.text('Support'));
-    expect(settings.dy, closeTo(support.dy, .01));
+    expect(amounts.dy, closeTo(support.dy, .01));
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
     expect(edits, 1);

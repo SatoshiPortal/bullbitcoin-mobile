@@ -47,7 +47,13 @@ class BullDialog extends StatelessWidget {
       context: context,
       barrierDismissible: isDismissible,
       useSafeArea: !fullscreen,
-      barrierColor: barrierColor ?? colors.surface.withAlpha(100),
+      barrierColor:
+          barrierColor ??
+          colors.scrim.withValues(
+            alpha: Theme.of(context).brightness == Brightness.light
+                ? 0.45
+                : 0.60,
+          ),
       builder: (dialogContext) => BullDialog(
         padding: padding,
         fullscreen: fullscreen,
@@ -76,7 +82,7 @@ class BullDialog extends StatelessWidget {
       backgroundColor: colors.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(context.bullShapes.sheet),
-        side: BorderSide(color: colors.secondaryFixedDim),
+        side: BorderSide(color: colors.border),
       ),
       child: Padding(padding: padding, child: child),
     );

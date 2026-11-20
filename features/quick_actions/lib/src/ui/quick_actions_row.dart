@@ -55,6 +55,8 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
   Widget build(BuildContext context) {
     final l10n = QuickActionsLocalizations.of(context);
     final loading = widget.cubit.state.initialized == false;
+    final amounts = BullAmountScope.maybeOf(context)?.snapshot;
+    final amountsHidden = amounts?.hideAmounts ?? true;
     final layout = QuickActionsLayout.resolve(
       available: widget.cubit.state.available,
       selection: widget.cubit.state.selection,
@@ -63,10 +65,12 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
     final controls = <Widget>[
       for (final action in layout.primary)
         BullQuickAction(
-          label: action.label(l10n),
-          semanticLabel: action.fullLabel(l10n),
+          label: action.label(l10n, amountsHidden: amountsHidden),
+          semanticLabel: action.fullLabel(l10n, amountsHidden: amountsHidden),
           icon: action.icon,
-          disabled: loading,
+          disabled:
+              loading ||
+              (action == QuickAction.toggleAmounts && amounts?.isReady != true),
           onPressed: () => widget.onAction(action),
           onLongPress: widget.onCustomize,
         ),
@@ -120,6 +124,8 @@ class _MoreSheet extends StatelessWidget {
     initialValue: cubit.state,
     builder: (context, value) {
       final l10n = QuickActionsLocalizations.of(context);
+      final amounts = BullAmountScope.maybeOf(context)?.snapshot;
+      final amountsHidden = amounts?.hideAmounts ?? true;
       final actions = QuickActionsLayout.resolve(
         available: value.available,
         selection: value.selection,
@@ -168,9 +174,15 @@ class _MoreSheet extends StatelessWidget {
                   children: [
                     for (final action in actions)
                       BullQuickAction(
-                        label: action.label(l10n),
-                        semanticLabel: action.fullLabel(l10n),
+                        label: action.label(l10n, amountsHidden: amountsHidden),
+                        semanticLabel: action.fullLabel(
+                          l10n,
+                          amountsHidden: amountsHidden,
+                        ),
                         icon: action.icon,
+                        disabled:
+                            action == QuickAction.toggleAmounts &&
+                            amounts?.isReady != true,
                         onPressed: () =>
                             Navigator.pop(context, _MoreChoice.action(action)),
                         onLongPress: () =>

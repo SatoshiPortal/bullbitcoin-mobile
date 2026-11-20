@@ -158,6 +158,7 @@ void main() {
             onlyNumbers: true,
             rightIcon: const Text('sats', key: iconKey),
             onRightTap: onRightTap,
+            rightActionLabel: onRightTap == null ? null : 'Change unit',
             onChanged: (_) {},
           ),
         ),

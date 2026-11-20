@@ -22,7 +22,7 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bull_ui/testing.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -107,20 +107,6 @@ void main() {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    final colors = dark
-        ? testBullTheme.copyWith(
-            background: const Color(0xFF000000),
-            surface: const Color(0xFF1C1C1E),
-            surfaceContainer: const Color(0xFF2C2C2E),
-            secondary: const Color(0xFFFFFFFF),
-            onSecondary: const Color(0xFF15171C),
-            text: const Color(0xFFFFFFFF),
-            onSurface: const Color(0xFFFFFFFF),
-            textMuted: const Color(0xFF8E8E93),
-            border: const Color(0xFF58585A),
-          )
-        : testBullTheme;
-    final typography = BullTypography.standard.resolved(colors.text);
     final cubit = _Cubit();
     when(() => cubit.state).thenReturn(value);
     when(() => cubit.stream)
@@ -138,33 +124,8 @@ void main() {
         key: const ValueKey('mono-review'),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            brightness: dark ? Brightness.dark : Brightness.light,
-            textSelectionTheme: TextSelectionThemeData(
-              cursorColor: colors.primary,
-              selectionHandleColor: colors.primary,
-              selectionColor: colors.primary.withValues(alpha: .3),
-            ),
-            scaffoldBackgroundColor: colors.background,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: colors.primary,
-              brightness: dark ? Brightness.dark : Brightness.light,
-              primary: colors.primary,
-              onPrimary: colors.onPrimary,
-              secondary: colors.secondary,
-              onSecondary: colors.onSecondary,
-              surface: colors.surface,
-              onSurface: colors.onSurface,
-              onSurfaceVariant: colors.onSurfaceVariant,
-              error: colors.error,
-              onError: colors.onError,
-            ),
-            extensions: bullUiExtensions(
-              colors: colors,
-              brightness: dark ? Brightness.dark : Brightness.light,
-              typography: typography,
-            ),
-            textTheme: typography.toTextTheme(),
+          theme: AppTheme.themeData(
+            dark ? AppThemeType.dark : AppThemeType.light,
           ),
           localizationsDelegates: const [
             ...bullUiLocalizationsDelegates,
@@ -345,7 +306,6 @@ void main() {
           unawaited(
             BullDialog.show<void>(
               context: context,
-              barrierColor: BullSheetStyle.redesign(context).barrierColor,
               builder: (dialogContext) => SendWholeBalanceDialog(
                 title: 'Send your whole balance?',
                 description: 'Everything in bitcoin leaves this wallet. The network fee is taken from it, so nothing stays.',

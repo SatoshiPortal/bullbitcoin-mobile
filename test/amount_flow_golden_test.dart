@@ -268,6 +268,24 @@ void main() {
           await tester.tap(find.byTooltip('Currency'));
           await tester.pumpAndSettle();
         }
+        final images = <ImageProvider<Object>>{
+          ...tester
+              .widgetList<Image>(find.byType(Image))
+              .map((widget) => widget.image),
+          ...tester
+              .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+              .map((widget) => widget.decoration)
+              .whereType<BoxDecoration>()
+              .map((decoration) => decoration.image?.image)
+              .whereType<ImageProvider<Object>>(),
+        };
+        final context = tester.element(find.byType(Scaffold).first);
+        await tester.runAsync(() async {
+          await Future.wait(
+            images.map((image) => precacheImage(image, context)),
+          );
+        });
+        await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         await expectLater(
           find.byKey(const ValueKey('golden')),

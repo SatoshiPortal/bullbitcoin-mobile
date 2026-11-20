@@ -15,7 +15,6 @@ import 'bull_amount_input_value.dart';
 import '../buttons/bull_field_action.dart';
 import '../overlays/bull_bottom_sheet.dart';
 import '../overlays/bull_picker_sheet.dart';
-import '../overlays/bull_sheet_style.dart';
 import 'bull_picker_item.dart';
 
 /// One amount editor. The controller is canonical; changing its representation never writes rounded fiat digits back into it. The caller owns prices, validation, Max calculation and the conversion record.
@@ -26,7 +25,6 @@ class BullAmountInput extends StatefulWidget {
     required this.amountController,
     this.amountEquivalent = '',
     this.emptyEquivalent,
-    this.currencySheetStyle,
     this.bitcoinDisplayUnit,
     this.onBitcoinUnitChanged,
     this.currencies = const [],
@@ -53,9 +51,6 @@ class BullAmountInput extends StatefulWidget {
   /// Supporting text for an empty editor (for example a localized “Optional”).
   /// An explicit zero and MAX still show their calculated equivalent.
   final String? emptyEquivalent;
-
-  /// Opt-in colors for the currency picker sheet.
-  final BullSheetStyle? currencySheetStyle;
 
   /// Optional shared display denomination, independent of the canonical unit.
   /// Incomplete edits retain their representation until they can be converted.
@@ -572,7 +567,6 @@ class _BullAmountInputState extends State<BullAmountInput> {
         ),
     ];
     final chosen = await BullBottomSheet.show<String>(
-      style: widget.currencySheetStyle,
       context: context,
       child: BullPickerSheet<BullPickerItem<String>>(
         title: l10n.amountEnterIn,
@@ -798,7 +792,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
             padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
             decoration: BoxDecoration(
               color: context.bull.surface,
-              border: Border.all(color: context.bull.secondaryFixedDim),
+              border: Border.all(color: context.bull.border),
               borderRadius: BorderRadius.circular(context.bullShapes.input),
             ),
             child: Row(
@@ -881,7 +875,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
             padding: const EdgeInsets.all(BullSpacing.xs),
             decoration: BoxDecoration(
               color: context.bull.surface,
-              border: Border.all(color: context.bull.secondaryFixedDim),
+              border: Border.all(color: context.bull.border),
               borderRadius: BorderRadius.circular(context.bullShapes.input),
             ),
             child: amount,

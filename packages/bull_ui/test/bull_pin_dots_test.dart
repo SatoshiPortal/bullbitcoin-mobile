@@ -50,7 +50,7 @@ void main() {
     expect(find.text('1'), findsNothing);
     expect(find.text('Enter 4 to 8 digits'), findsOneWidget);
     expect(find.byTooltip('Show PIN'), findsOneWidget);
-    await tester.tap(find.byType(IconButton));
+    await tester.tap(find.byTooltip('Show PIN'));
     expect(toggles, 1);
     await pumpDots(tester, value: '1234', obscure: false);
     expect(find.text('1'), findsOneWidget);

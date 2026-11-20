@@ -9,7 +9,7 @@ void main() {
     QuickAction.map,
     QuickAction.transfer,
     QuickAction.history,
-    QuickAction.settings,
+    QuickAction.toggleAmounts,
   };
 
   test('stored selection projects three and retains its stored order', () {
@@ -18,7 +18,7 @@ void main() {
       QuickAction.map,
       QuickAction.transfer,
       QuickAction.history,
-      QuickAction.settings,
+      QuickAction.toggleAmounts,
     ]);
     final layout = QuickActionsLayout.resolve(
       available: available,
@@ -30,13 +30,13 @@ void main() {
       QuickAction.transfer,
       QuickAction.history,
     ]);
-    expect(layout.more, [QuickAction.settings]);
+    expect(layout.more, [QuickAction.toggleAmounts]);
     expect(selection.actions, [
       QuickAction.buy,
       QuickAction.map,
       QuickAction.transfer,
       QuickAction.history,
-      QuickAction.settings,
+      QuickAction.toggleAmounts,
     ]);
   });
 
@@ -47,7 +47,7 @@ void main() {
       QuickAction.sell,
       QuickAction.transfer,
       QuickAction.history,
-      QuickAction.settings,
+      QuickAction.toggleAmounts,
     ]);
     final demoted = QuickActionsEditorLayout(
       selection: selection,
@@ -84,14 +84,14 @@ void main() {
     expect(editor.moveToMore(QuickAction.buy), same(selection));
   });
 
-  test('empty selection uses settings only as an unrevised fallback', () {
+  test('empty selection keeps Home empty without rewriting', () {
     final selection = QuickActionSelection([]);
     final layout = QuickActionsLayout.resolve(
       available: available,
 
       selection: selection,
     );
-    expect(layout.primary, [QuickAction.settings]);
+    expect(layout.primary, isEmpty);
     expect(selection.actions, isEmpty);
   });
 

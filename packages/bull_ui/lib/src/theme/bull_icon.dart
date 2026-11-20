@@ -60,6 +60,7 @@ abstract final class BullIcons {
   static const IconData emailOutlined = Icons.email_outlined;
   static const IconData language = Icons.language;
   static const IconData link = Icons.link;
+  static const IconData privacy = Icons.shield_outlined;
   static const IconData qrCode = Icons.qr_code_2;
 }
 

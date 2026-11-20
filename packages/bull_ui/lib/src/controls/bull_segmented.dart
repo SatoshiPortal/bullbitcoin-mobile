@@ -95,7 +95,7 @@ class _BullSegmentedState extends State<BullSegmented> {
             borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           thumbDecoration: BoxDecoration(
-            color: dark ? colors.background : colors.surface,
+            color: colors.background,
             borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           children: {

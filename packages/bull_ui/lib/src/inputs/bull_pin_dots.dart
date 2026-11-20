@@ -1,10 +1,12 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The PIN typed so far, the field above a [BullPinPad]: one small dot per
-/// digit inside a box outlined in [BullTheme.text], a show/hide eye at its
+/// digit inside a box outlined in [BullTheme.border], a show/hide eye at its
 /// end and an optional [hint] under it.
 ///
 /// The dots only appear as digits are typed, so the field never suggests a
@@ -54,8 +56,9 @@ class BullPinDots extends StatelessWidget {
         Container(
           height: 56,
           decoration: BoxDecoration(
-            // The same outline and corner as the keypad keys under it.
-            border: Border.all(color: colors.text),
+            // Field contour with the keypad corner radius.
+            color: colors.surface,
+            border: Border.all(color: colors.border),
             borderRadius: BorderRadius.circular(context.bullShapes.key),
           ),
           child: Row(
@@ -96,16 +99,14 @@ class BullPinDots extends StatelessWidget {
                   ),
                 ),
               ),
-              IconButton(
-                tooltip: obscure ? showLabel : hideLabel,
+              BullFieldAction(
+                label: obscure ? showLabel : hideLabel,
                 onPressed: onToggleObscure,
-                icon: Icon(
-                  obscure
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: colors.text,
-                ),
+                icon: obscure
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
               ),
+              const SizedBox(width: 8),
             ],
           ),
         ),

@@ -15,7 +15,7 @@ const defaults = [
   QuickAction.map,
   QuickAction.transfer,
   QuickAction.history,
-  QuickAction.settings,
+  QuickAction.toggleAmounts,
 ];
 
 Future<void> openEditor(
@@ -577,7 +577,8 @@ void main() {
     tester,
   ) async {
     final storage = _EditorStorage()
-      ..value = '{"home":["map","transfer","history","settings"],"more":[]}';
+      ..value =
+          '{"home":["map","transfer","history","toggleAmounts"],"more":[]}';
     await openEditor(
       tester,
       createQuickActionsCubit(
@@ -587,15 +588,18 @@ void main() {
       ),
     );
     final l10n = localizations(tester);
-    expect(homeValue(storage.value), '["map","transfer","history","settings"]');
+    expect(
+      homeValue(storage.value),
+      '["map","transfer","history","toggleAmounts"]',
+    );
     await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pumpAndSettle();
     expect(homeValue(storage.value), '["transfer","history"]');
     await tester.scrollUntilVisible(
-      find.byKey(const ValueKey('settings')),
+      find.byKey(const ValueKey('toggleAmounts')),
       120,
     );
-    expect(find.byKey(const ValueKey('settings')), findsOneWidget);
+    expect(find.byKey(const ValueKey('toggleAmounts')), findsOneWidget);
   });
 }
 

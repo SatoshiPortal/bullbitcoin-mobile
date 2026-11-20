@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
@@ -125,9 +127,11 @@ class _BullSearchBarState extends State<BullSearchBar> {
     final onCleared = widget.onCleared;
     return _Frame(
       trailing: hasQuery && onCleared != null
-          ? IconButton(
-              icon: BullIcon(BullIcons.close, color: colors.textMuted),
-              tooltip: widget.clearTooltip,
+          ? BullFieldAction(
+              icon: BullIcons.close,
+              label:
+                  widget.clearTooltip ??
+                  MaterialLocalizations.of(context).deleteButtonTooltip,
               onPressed: onCleared,
             )
           : const Gap(16),
@@ -183,8 +187,11 @@ class _Frame extends StatelessWidget {
       ),
     );
     return Material(
-      color: colors.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(context.bullShapes.input),
+      color: colors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
+        side: BorderSide(color: colors.border),
+      ),
       clipBehavior: Clip.antiAlias,
       child: onTap == null ? content : InkWell(onTap: onTap, child: content),
     );

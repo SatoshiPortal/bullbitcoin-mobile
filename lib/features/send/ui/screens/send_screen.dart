@@ -73,7 +73,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullSpacing,
         BullThemeX,
         BullPickerSheet,
-        BullSheetStyle,
         BullAmountInput,
         BullAmountCurrency,
         BullAmountInputValue,

@@ -187,7 +187,7 @@ void main() {
     largeView(tester);
     final original = jsonEncode({
       'home': ['transfer'],
-      'more': ['history', 'buy', 'map', 'settings'],
+      'more': ['history', 'buy', 'map', 'toggleAmounts'],
     });
     final storage = _Storage()..value = original;
     await openEditor(
