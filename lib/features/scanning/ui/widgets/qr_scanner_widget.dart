@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
@@ -93,20 +94,22 @@ class _ScannerState extends State<QrScannerWidget> {
       setState(() {
         if (_urReader.expectedParts != null) {
           final percent = (_urReader.progress * 100).toInt();
-          _progressText = 'Scanning: $percent%';
+          _progressText = context.loc.scanningProgressLabel('$percent');
         } else {
-          _progressText = 'UR Progress: ${_urReader.processedParts} parts';
+          _progressText = context.loc.urProgressLabel(
+            '${_urReader.processedParts}',
+          );
         }
       });
 
       if (_urReader.isComplete) {
         if (_urReader.decoded != null) {
-          setState(() => _progressText = 'Scanning completed');
+          setState(() => _progressText = context.loc.scanningCompletedMessage);
           final decoded = _urReader.decoded!.toString();
           _urReader.reset();
           widget.onScanned(decoded);
         } else {
-          setState(() => _progressText = 'UR decoding failed');
+          setState(() => _progressText = context.loc.urDecodingFailedMessage);
         }
       }
     } catch (e) {
@@ -116,7 +119,7 @@ class _ScannerState extends State<QrScannerWidget> {
         trace: StackTrace.current,
       );
       _urReader.reset();
-      setState(() => _progressText = 'UR processing failed');
+      setState(() => _progressText = context.loc.urProcessingFailedMessage);
     }
   }
 }
