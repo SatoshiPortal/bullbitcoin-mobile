@@ -59,6 +59,33 @@ void main() {
       expect(find.text('Copied to clipboard'), findsNothing);
     });
 
+    testWidgets('exposes a 48 dp action when a fee value is editable', (
+      tester,
+    ) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullDetailsTableItem(
+            label: 'Fee',
+            displayValue: 'Fastest',
+            onValueTap: () => taps++,
+          ),
+        ),
+      );
+
+      final action = find
+          .ancestor(
+            of: find.byIcon(Icons.chevron_right),
+            matching: find.byType(GestureDetector),
+          )
+          .first;
+      expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
+      expect(tester.getSize(action).width, greaterThanOrEqualTo(48));
+      await tester.tap(action);
+      expect(taps, 1);
+      expect(find.byIcon(Icons.copy_outlined), findsNothing);
+    });
+
     testWidgets('hides the copy icon without a copy value', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
