@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
@@ -14,7 +13,9 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullRefreshIndicator,
+        BullSegmented,
         BullShapesX,
+        BullSpacing,
         BullShimmerBox,
         Gap,
         BullTypographyX;
@@ -165,20 +166,23 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
-                  BBSegmentedButton(
+                  BullSegmented(
                     key: _sepaTypeSelectorKey,
                     items: {
                       RecipientType.sepaEur.name,
                       RecipientType.confidentialSepaEur.name,
                     },
-                    labels: {
-                      RecipientType.sepaEur.name:
-                          context.loc.recipientsTypeSepa,
-                      RecipientType.confidentialSepaEur.name:
-                          context.loc.recipientsTypeConfidentialSepa,
-                    },
-                    selected: state.sepaType.name,
-                    onChanged: (value) =>
+                    labelBuilder: (value) =>
+                        ({
+                          RecipientType.sepaEur.name:
+                              context.loc.recipientsTypeSepa,
+                          RecipientType.confidentialSepaEur.name:
+                              context.loc.recipientsTypeConfidentialSepa,
+                        })[value] ??
+                        value,
+                    height: BullSpacing.xxl,
+                    initialValue: state.sepaType.name,
+                    onSelected: (value) =>
                         _onSepaTypeChanged(RecipientType.values.byName(value)),
                   ),
                   if (state.sepaType == RecipientType.confidentialSepaEur) ...[
