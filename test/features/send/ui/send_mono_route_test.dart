@@ -113,6 +113,7 @@ void main() {
     SendState value, {
     Stream<SendState>? updates,
     GoRouter? router,
+    Locale? locale,
     LocalizationsDelegate<AppLocalizations>? localizationOverride,
   }) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -134,6 +135,7 @@ void main() {
       BlocProvider<SendCubit>.value(
         value: cubit,
         child: MaterialApp.router(
+          locale: locale,
           routerConfig:
               router ??
               GoRouter(
@@ -413,6 +415,51 @@ void main() {
       }
     },
   );
+  const failureLocale = Locale('fr');
+  final failureLabels = lookupAppLocalizations(failureLocale);
+  for (final (kind, failure, messages) in <(String, SendFailure, List<String>)>[
+    (
+      'build',
+      const SendTransactionBuildFailure('internal build detail'),
+      [failureLabels.sendErrorBuildFailed],
+    ),
+    (
+      'confirmation',
+      const SendTransactionConfirmationFailure(
+        logMessage: 'internal signing detail',
+      ),
+      [failureLabels.sendErrorConfirmationFailed],
+    ),
+    (
+      'broadcast',
+      const SendTransactionConfirmationFailure(
+        isBroadcastFailure: true,
+        logMessage: 'internal broadcast detail',
+      ),
+      [
+        failureLabels.sendErrorConfirmationFailed,
+        failureLabels.sendErrorBroadcastFailed,
+      ],
+    ),
+  ]) {
+    testWidgets('mono review presents localized $kind failure', (tester) async {
+      await pump(
+        tester,
+        state(step: SendStep.confirm).copyWith(failure: failure),
+        locale: failureLocale,
+      );
+
+      for (final message in messages) {
+        expect(find.text(message).hitTestable(), findsOneWidget);
+      }
+      expect(find.textContaining('internal '), findsNothing);
+      expect(
+        tester.widget<BullButton>(find.byType(BullButton)).disabled,
+        failure is SendTransactionBuildFailure,
+      );
+    });
+  }
+
   testWidgets('mono fiat review retains entered amount and rate time', (
     tester,
   ) async {
