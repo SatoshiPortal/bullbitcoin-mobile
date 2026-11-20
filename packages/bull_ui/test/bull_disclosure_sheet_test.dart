@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'test_app.dart';
 
 void main() {
   testWidgets('renders headings, callouts, and bullet lists', (tester) async {
@@ -23,12 +23,11 @@ Section paragraph.
 ''';
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: const Scaffold(
-          body: DisclosureBottomSheet(title: 'Disclosure', body: body),
+      wrapWithTheme(
+        const BullDisclosureSheet(
+          title: 'Disclosure',
+          body: body,
+          closeLabel: 'Close',
         ),
       ),
     );

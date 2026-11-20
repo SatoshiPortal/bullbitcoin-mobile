@@ -1,26 +1,32 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullShapesX, BullText, Gap, BullTypographyX;
 
-class DisclosureLink extends StatelessWidget {
-  const DisclosureLink({
+import '../data_display/bull_text.dart';
+import '../layout/gap.dart';
+import '../theme/bull_shapes.dart';
+import '../theme/bull_theme.dart';
+import '../theme/bull_typography.dart';
+import 'bull_bottom_sheet.dart';
+
+/// A named action that opens a disclosure supplied by its caller.
+class BullDisclosureLink extends StatelessWidget {
+  const BullDisclosureLink({
     super.key,
     required this.label,
     required this.semanticLabel,
     required this.title,
     required this.body,
+    required this.closeLabel,
   });
 
   final String label;
   final String semanticLabel;
   final String title;
   final String body;
+  final String closeLabel;
 
   @override
   Widget build(BuildContext context) {
-    final color = context.appColors.onSurfaceVariant;
+    final color = context.bull.onSurfaceVariant;
 
     return Semantics(
       button: true,
@@ -28,11 +34,15 @@ class DisclosureLink extends StatelessWidget {
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
-          onTap: () =>
-              DisclosureBottomSheet.show(context, title: title, body: body),
+          onTap: () => BullDisclosureSheet.show(
+            context,
+            title: title,
+            body: body,
+            closeLabel: closeLabel,
+          ),
           borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 44),
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -54,24 +64,32 @@ class DisclosureLink extends StatelessWidget {
   }
 }
 
-class DisclosureBottomSheet extends StatelessWidget {
-  const DisclosureBottomSheet({
+/// Presents headings, paragraphs, warning callouts and lists in a Bull sheet.
+class BullDisclosureSheet extends StatelessWidget {
+  const BullDisclosureSheet({
     super.key,
     required this.title,
     required this.body,
+    required this.closeLabel,
   });
 
   final String title;
   final String body;
+  final String closeLabel;
 
   static Future<void> show(
     BuildContext context, {
     required String title,
     required String body,
+    required String closeLabel,
   }) {
     return BullBottomSheet.show(
       context: context,
-      child: DisclosureBottomSheet(title: title, body: body),
+      child: BullDisclosureSheet(
+        title: title,
+        body: body,
+        closeLabel: closeLabel,
+      ),
     );
   }
 
@@ -82,7 +100,7 @@ class DisclosureBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.82,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.surface,
+        color: context.bull.surface,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(context.bullShapes.sheet),
         ),
@@ -97,15 +115,22 @@ class DisclosureBottomSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: BullText(
-                    title,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w500,
+                  child: Semantics(
+                    header: true,
+                    child: BullText(
+                      title,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: context.loc.closeDialogButton,
+                  tooltip: closeLabel,
+                  constraints: const BoxConstraints(
+                    minWidth: 48,
+                    minHeight: 48,
+                  ),
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.close),
                 ),
@@ -163,7 +188,7 @@ class _DisclosureBody extends StatelessWidget {
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)
               .copyWith(fontWeight: .w600),
-          color: context.appColors.text,
+          color: context.bull.text,
         ),
       );
     }
@@ -176,7 +201,7 @@ class _DisclosureBody extends StatelessWidget {
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)
               .copyWith(fontWeight: .w600),
-          color: context.appColors.text,
+          color: context.bull.text,
         ),
       );
     }
@@ -200,7 +225,7 @@ class _DisclosureBody extends StatelessWidget {
     return BullText(
       block,
       style: context.bullType.body,
-      color: context.appColors.text,
+      color: context.bull.text,
     );
   }
 
@@ -212,8 +237,8 @@ class _DisclosureBody extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.appColors.warningContainer,
-        border: Border.all(color: context.appColors.warning),
+        color: context.bull.warningContainer,
+        border: Border.all(color: context.bull.warning),
         borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: Row(
@@ -222,7 +247,7 @@ class _DisclosureBody extends StatelessWidget {
           Icon(
             Icons.warning_amber_rounded,
             size: 22,
-            color: context.appColors.warning,
+            color: context.bull.warning,
           ),
           const Gap(12),
           Expanded(
@@ -234,13 +259,13 @@ class _DisclosureBody extends StatelessWidget {
                   style: context.bullType.body
                       .copyWith(fontWeight: FontWeight.w500)
                       .copyWith(fontWeight: .w600),
-                  color: context.appColors.text,
+                  color: context.bull.text,
                 ),
                 const Gap(6),
                 BullText(
                   body,
                   style: context.bullType.body,
-                  color: context.appColors.text,
+                  color: context.bull.text,
                 ),
               ],
             ),
@@ -264,7 +289,7 @@ class _DisclosureBody extends StatelessWidget {
                 child: BullText(
                   '•',
                   style: context.bullType.body,
-                  color: context.appColors.text,
+                  color: context.bull.text,
                 ),
               ),
               Expanded(child: _buildBulletText(context, items[index])),
@@ -276,7 +301,7 @@ class _DisclosureBody extends StatelessWidget {
   }
 
   Widget _buildBulletText(BuildContext context, String item) {
-    final style = context.bullType.body.copyWith(color: context.appColors.text);
+    final style = context.bullType.body.copyWith(color: context.bull.text);
     final match = RegExp(r'^\*\*(.+?)\*\*(.*)$').firstMatch(item);
 
     if (match == null) return Text(item, style: style);
