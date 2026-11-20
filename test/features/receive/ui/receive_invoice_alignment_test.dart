@@ -1,7 +1,11 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +23,7 @@ const _invoice =
     'dq5xysxxatsyp3k7enxv4jsxqzpuaztrnwngzn3kdzw5hydlzf03qdgm2hdq27cqv3agm2aw'
     'hz5se903vruatfhq77w3ls4evs3ch9zw97j25emudupq63nyw24cg27h2rspfj9srp';
 
-Future<void> _mount(WidgetTester tester) async {
+Future<void> _mount(WidgetTester tester, {Network? destination}) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
@@ -27,11 +31,13 @@ Future<void> _mount(WidgetTester tester) async {
   final swap = Swap.lnReceive(
     id: 'public-swap-1234',
     keyIndex: 0,
-    type: SwapType.lightningToLiquid,
+    type: destination?.isBitcoin == true
+        ? SwapType.lightningToBitcoin
+        : SwapType.lightningToLiquid,
     status: SwapStatus.pending,
     environment: SwapEnvironment.mainnet,
     creationTime: DateTime.utc(2026),
-    receiveWalletId: 'liquid',
+    receiveWalletId: 'destination',
     invoice: _invoice,
     fees: const SwapFees(
       boltzPercent: 0.5,
@@ -43,6 +49,20 @@ Future<void> _mount(WidgetTester tester) async {
   when(() => bloc.state).thenReturn(
     ReceiveState(
       type: ReceiveType.lightning,
+      wallet: destination == null
+          ? null
+          : Wallet(
+              origin: 'destination',
+              network: destination,
+              xpubFingerprint: '00000000',
+              scriptType: ScriptType.bip84,
+              xpub: '',
+              externalPublicDescriptor: '',
+              internalPublicDescriptor: '',
+              signer: SignerEntity.local,
+              signerDevice: null,
+              balanceSat: BigInt.zero,
+            ),
       lightningSwap: swap,
       confirmedNote: 'Coffee',
     ),
@@ -88,6 +108,35 @@ void main() {
       'MaterialIcons',
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
+  for (final destination in [Network.liquidMainnet, Network.bitcoinMainnet]) {
+    testWidgets('Lightning invoice Liquid disclosure for $destination', (
+      tester,
+    ) async {
+      await _mount(tester, destination: destination);
+      final context = tester.element(find.byType(ReceiveLnInfoDetails));
+      final loc = context.loc;
+      final link = find.byType(DisclosureLink);
+      if (destination.isBitcoin) {
+        expect(link, findsNothing);
+        return;
+      }
+      expect(link, findsOneWidget);
+      final disclosure = tester.widget<DisclosureLink>(link);
+      expect(
+        disclosure.label,
+        'Payments will be converted to Liquid L-BTC (not BTC). Learn more.',
+      );
+      expect(disclosure.semanticLabel, loc.liquidRiskDisclosureSemanticLabel);
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+      final sheet = tester.widget<DisclosureBottomSheet>(
+        find.byType(DisclosureBottomSheet),
+      );
+      expect(sheet.title, loc.liquidRiskDisclosureTitle);
+      expect(sheet.body, loc.liquidRiskDisclosureBody);
+    });
+  }
+
   testWidgets('invoice values share the same edge with an inset action slot', (
     tester,
   ) async {
