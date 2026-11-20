@@ -821,11 +821,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       (retryWallet != null && (wallet.id, wallet.network) != retryWallet
               ? _withoutAmountDraft(state)
               : state)
-          .copyWith(wallet: wallet, walletAdmitted: true),
+          .copyWith(
+            wallet: wallet,
+            walletAdmitted: true,
+            liquidAddress:
+                state.liquidAddress?.walletId == wallet.id &&
+                    state.wallet?.network == wallet.network
+                ? state.liquidAddress
+                : null,
+          ),
     );
 
     var liquidAddress = state.liquidAddress;
-    if (liquidAddress == null || liquidAddress.walletId != wallet.id) {
+    if (liquidAddress == null) {
       // If the liquid address is not set yet, we need to get it from the wallet
       final addressResult = await _prepareReceiveAddressUsecase.execute(
         walletId: wallet.id,

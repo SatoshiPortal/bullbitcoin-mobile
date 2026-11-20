@@ -161,6 +161,16 @@ abstract class ReceiveState with _$ReceiveState {
 
   // The QR code data should always show the full payment request when all parameters are available,
   //  this way the QR code doesn't change from an address only QR to a BIP21 uri with payjoin parameters while loading.
+  WalletAddress? get _ownedLiquidAddress {
+    final address = liquidAddress;
+    final selectedWallet = wallet;
+    return selectedWallet != null &&
+            selectedWallet.isLiquid &&
+            address?.walletId == selectedWallet.id
+        ? address
+        : null;
+  }
+
   String get qrData => paymentRequest;
 
   // The clipboard data should permit the user to copy just the address or invoice
@@ -219,7 +229,7 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return lightningInvoiceNormalized;
       case ReceiveType.liquid:
-        final address = liquidAddress;
+        final address = _ownedLiquidAddress;
         final network = wallet?.network;
         if (address == null || network == null || !network.isLiquid) return '';
         final profile = switch (network) {
@@ -260,7 +270,7 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return lightningInvoiceNormalized;
       case ReceiveType.liquid:
-        return liquidAddress?.address ?? '';
+        return _ownedLiquidAddress?.address ?? '';
       case _:
         return '';
     }
@@ -568,7 +578,7 @@ abstract class ReceiveState with _$ReceiveState {
     ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
     ReceiveType.lightning =>
       orderSwap?.destination ?? lightningSwap?.receiveAddress ?? '',
-    ReceiveType.liquid => liquidAddress?.address ?? '',
+    ReceiveType.liquid => _ownedLiquidAddress?.address ?? '',
     _ => '',
   };
 
