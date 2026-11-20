@@ -21,11 +21,14 @@ class BbxApiClient {
   /// Calls [method] on [endpoint] and returns the JSON-RPC `result`.
   ///
   /// Throws a [BbxApiException] for a non-200 status, a JSON-RPC error or a
-  /// body that is not a JSON-RPC response.
+  /// body that is not a JSON-RPC response. [rpcError] reads the JSON-RPC
+  /// error object into the exception to throw.
   Future<Object?> call(
     String endpoint,
     String method, {
     Map<String, Object?> params = const {},
+    BbxApiRpcException Function(Object error) rpcError =
+        BbxApiRpcException.fromJson,
   }) async {
     final response = await _http.post<Object?>(
       endpoint,
@@ -39,7 +42,7 @@ class BbxApiClient {
       throw const BbxApiFormatException('response is not a JSON object');
     }
     if (body['error'] case final Object error) {
-      throw BbxApiRpcException.fromJson(error);
+      throw rpcError(error);
     }
     return body['result'];
   }
