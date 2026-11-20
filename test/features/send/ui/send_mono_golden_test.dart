@@ -241,6 +241,39 @@ void main() {
           );
         }
         await pump(tester, value, dark: dark);
+        if (scene == 'amount') {
+          final expectedBorder = dark
+              ? const Color(0xFF58585A)
+              : const Color(0xFFC9CACD);
+          final expectedFill = dark
+              ? const Color(0xFF1C1C1E)
+              : const Color(0xFFF5F5F5);
+          for (final field in [
+            find.byType(BullBorderedTile).first,
+            find.byType(BullAmountInput),
+          ]) {
+            final decorations = tester
+                .widgetList<DecoratedBox>(
+                  find.descendant(
+                    of: field,
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .map((widget) => widget.decoration)
+                .whereType<BoxDecoration>();
+            expect(
+              decorations.any(
+                (decoration) =>
+                    decoration.color == expectedFill &&
+                    decoration.border is Border &&
+                    (decoration.border! as Border).top.color == expectedBorder,
+              ),
+              isTrue,
+              reason: 'To and amount fields must share actual theme surface and border',
+            );
+          }
+        }
+
         if (scene == 'settings' ||
             scene == 'leave-payment' ||
             scene.startsWith('custom-')) {
