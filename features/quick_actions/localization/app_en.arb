@@ -9,8 +9,6 @@
   "@transfer": {},
   "map": "Map",
   "@map": {},
-  "settings": "Settings",
-  "@settings": {},
   "more": "More",
   "@more": {},
   "customize": "Customize",
@@ -59,7 +57,7 @@
   "@saving": {
     "description": "Wallet quick action customization."
   },
-  "emptyHint": "No actions selected. Settings stays on Home.",
+  "emptyHint": "No actions selected. All actions are in More.",
   "@emptyHint": {
     "description": "Wallet quick action customization."
   },
@@ -86,5 +84,13 @@
   "dragHint": "Touch and hold an action to move it. Home holds up to 3 actions.",
   "@dragHint": {
     "description": "Explains whole-row long press and the Home capacity."
-  }
+  },
+  "hideAmounts": "Hide amounts",
+  "@hideAmounts": {},
+  "showAmounts": "Show amounts",
+  "@showAmounts": {},
+  "hide": "Hide",
+  "@hide": {},
+  "show": "Show",
+  "@show": {}
 }

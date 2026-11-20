@@ -23,6 +23,13 @@ part '../ui/amount_preferences_binder.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {
+  static Future<void> toggleAmountVisibility(BuildContext context) async {
+    final cubit = context.read<SettingsCubit>();
+    final settings = cubit.state.storedSettings;
+    if (settings == null) return;
+    await cubit.toggleHideAmounts(!(settings.hideAmounts ?? true));
+  }
+
   static Widget amountScope({
     required Widget child,
     required GlobalKey<NavigatorState> navigatorKey,
