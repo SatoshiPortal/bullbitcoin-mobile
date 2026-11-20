@@ -1,8 +1,15 @@
+import 'dart:async';
+
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/fiat_amount_text.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
+class _PriceBloc extends Mock implements BitcoinPriceBloc {}
 
 Widget host(Widget child, {bool hide = false}) => wrapWithTheme(
   BullAmountScope(
@@ -64,5 +71,38 @@ void main() {
     expect(find.text('** sats'), findsOneWidget);
     expect(find.text('12,345 sats'), findsOneWidget);
     expect(find.text('** USD'), findsOneWidget);
+  });
+
+  testWidgets('live fiat waits for a quote and masks the quoted amount', (
+    tester,
+  ) async {
+    final bloc = _PriceBloc();
+    final quotes = StreamController<BitcoinPriceState>();
+    addTearDown(quotes.close);
+    when(() => bloc.stream).thenAnswer((_) => quotes.stream);
+    when(() => bloc.state).thenReturn(const BitcoinPriceState());
+
+    await tester.pumpWidget(
+      host(
+        BlocProvider<BitcoinPriceBloc>.value(
+          value: bloc,
+          child: const Column(
+            children: [
+              FiatAmountText.quote(12500, hideAmounts: false),
+              FiatAmountText.quote(12500, hideAmounts: true),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('CAD'), findsNothing);
+
+    const priced = BitcoinPriceState(currency: 'CAD', bitcoinPrice: 100000);
+    when(() => bloc.state).thenReturn(priced);
+    quotes.add(priced);
+    await tester.pump();
+
+    expect(find.text('12.50 CAD'), findsOneWidget);
+    expect(find.text('** CAD'), findsOneWidget);
   });
 }
