@@ -96,6 +96,7 @@ export 'package:flutter/widgets.dart'
         TextAlign,
         TextBaseline,
         TextDecoration,
+        TextDecorationStyle,
         TextDirection,
         TextEditingController,
         TextOverflow,

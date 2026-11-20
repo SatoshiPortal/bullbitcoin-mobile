@@ -1,6 +1,17 @@
+import '../widgets/send_grouped_address.dart';
+
+import 'dart:async';
+
+import 'send_payment_page.dart';
+import 'send_payment_review.dart';
+import '../widgets/send_payment_settings.dart';
+import '../widgets/send_custom_fee_editor.dart';
+import '../widgets/send_whole_balance_dialog.dart';
+import '../../domain/send_custom_fee_policy.dart';
+
 import '../widgets/send_ark_routing_actions.dart';
 
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Sats;
 
 import 'dart:math' as math;
 
@@ -20,7 +31,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart'
-    show Bip21PaymentRequest;
+    show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
@@ -55,6 +66,12 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAdvancedOptionsLink,
+        BullFieldAction,
+        BullIcons,
+        BullSpacing,
+        BullThemeX,
+        BullPickerSheet,
+        BullSheetStyle,
         BullAmountInput,
         BullAmountCurrency,
         BullAmountInputValue,
@@ -83,6 +100,8 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
+part 'send_payment_binding.dart';
+
 String _sendFlowTitle(BuildContext context) {
   final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
   return isSweep ? context.loc.coinsSweepTitle : context.loc.sendTitle;
@@ -97,12 +116,33 @@ class SendScreen extends StatefulWidget {
 
 class _SendScreenState extends State<SendScreen> {
   bool multipleRecipients = false;
+  late final _SendPaymentSession _payment;
+
+  @override
+  void initState() {
+    super.initState();
+    _payment = _SendPaymentSession(context.read<SendCubit>());
+  }
+
+  @override
+  void dispose() {
+    _payment.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select<SendCubit, SendStep>(
-      (cubit) => cubit.state.step,
-    );
+    final state = context.watch<SendCubit>().state;
+    final step = state.step;
+    if (_payment.supports(state) &&
+        (step == SendStep.address ||
+            step == SendStep.amount ||
+            step == SendStep.confirm)) {
+      return BlocListener<SendCubit, SendState>(
+        listener: (_, state) => _payment.update(state),
+        child: _payment.build(context, state),
+      );
+    }
     switch (step) {
       case SendStep.address:
         return SendAddressScreen(
@@ -434,9 +474,16 @@ class SendContinueWithAddressButton extends StatelessWidget {
 }
 
 class AddressField extends StatelessWidget {
-  const AddressField({super.key, this.multipleRecipients = false});
+  const AddressField({
+    super.key,
+    this.multipleRecipients = false,
+    this.onInput,
+    this.onScanned,
+  });
 
   final bool multipleRecipients;
+  final Future<void> Function(String)? onInput;
+  final Future<void> Function(String)? onScanned;
 
   @override
   Widget build(BuildContext context) {
@@ -464,23 +511,27 @@ class AddressField extends StatelessWidget {
       value: state.copiedRawPaymentRequest,
       enabled: !state.selectedInputsUnavailable,
       hint: context.loc.sendPasteAddressOrInvoice,
-      onChanged: cubit.onChangedText,
+      onChanged: onInput ?? cubit.onChangedText,
       pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
       scanLabel: context.loc.spScan,
       clearLabel: context.loc.spClearButton,
-      onClear: () => cubit.onChangedText(''),
+      onClear: () => (onInput ?? cubit.onChangedText)(''),
       onPaste: () async {
         final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
         final text = clipboard?.text;
-        if (context.mounted && text != null) await cubit.onChangedText(text);
+        if (context.mounted && text != null) {
+          await (onInput ?? cubit.onChangedText)(text);
+        }
       },
       onScan: () => Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder: (_) => FullScreenScannerPage(
-            onScannedPaymentRequest: (raw) => cubit.onScannedPaymentRequest(
-              raw,
-              autoContinue: !multipleRecipients,
-            ),
+            onScannedPaymentRequest:
+                onScanned ??
+                (raw) => cubit.onScannedPaymentRequest(
+                  raw,
+                  autoContinue: !multipleRecipients,
+                ),
           ),
         ),
       ),

@@ -24,6 +24,7 @@ class BullInputText extends StatefulWidget {
     this.focusNode,
     this.onEnter,
     this.onDone,
+    this.onEditingComplete,
     this.maxLength,
     this.onlyPaste = false,
     this.onlyNumbers = false,
@@ -76,6 +77,9 @@ class BullInputText extends StatefulWidget {
 
   /// Called on submit.
   final Function(String)? onDone;
+
+  /// Overrides the default keyboard completion behavior when supplied.
+  final VoidCallback? onEditingComplete;
 
   /// Maximum input length.
   final int? maxLength;
@@ -212,6 +216,7 @@ class _BullInputTextState extends State<BullInputText> {
           context.bullType.body.copyWith(color: colors.onSurface),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
+      onEditingComplete: widget.onEditingComplete,
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
