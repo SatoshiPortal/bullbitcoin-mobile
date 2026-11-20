@@ -6009,7 +6009,7 @@
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },

@@ -72,6 +72,8 @@ class SendPaymentPage extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
+              reverse:
+                  recipientReady && MediaQuery.viewInsetsOf(context).bottom > 0,
               padding: const EdgeInsets.all(BullSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -80,18 +82,29 @@ class SendPaymentPage extends StatelessWidget {
                   const Gap(BullSpacing.xs),
                   recipient,
                   const Gap(BullSpacing.lg),
-                  Text(amountLabel, style: context.bullType.body),
+                  Text(
+                    amountLabel,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   const Gap(BullSpacing.xs),
                   if (recipientReady) ...[
                     amount,
-                    const Gap(BullSpacing.xs),
+                    const Gap(BullSpacing.md),
                     Row(
                       children: [
                         Expanded(child: balance),
-                        BullFieldAction(label: maxLabel, onPressed: onMax),
+                        Padding(
+                          padding: const EdgeInsets.only(right: BullSpacing.xs),
+                          child: BullFieldAction(
+                            label: maxLabel,
+                            onPressed: onMax,
+                          ),
+                        ),
                       ],
                     ),
-                    const Gap(BullSpacing.md),
+                    const Gap(BullSpacing.xs),
                     Text(fromLabel, style: context.bullType.body),
                     const Gap(BullSpacing.xs),
                     Semantics(

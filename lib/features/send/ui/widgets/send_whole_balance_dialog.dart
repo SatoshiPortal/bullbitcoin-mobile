@@ -81,18 +81,29 @@ class _PreviewRow extends StatelessWidget {
   final bool strong;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: Text(
-          label,
-          style: context.bullType.body.copyWith(
-            fontWeight: strong ? FontWeight.w700 : FontWeight.w400,
-          ),
-        ),
+  Widget build(BuildContext context) {
+    final title = Text(
+      label,
+      style: context.bullType.label.copyWith(
+        fontWeight: strong ? FontWeight.w500 : FontWeight.w400,
       ),
-      const Gap(BullSpacing.xs),
-      Flexible(child: value),
-    ],
-  );
+    );
+    if (MediaQuery.textScalerOf(context).scale(14) > 17) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          title,
+          const Gap(BullSpacing.xxs),
+          Align(alignment: Alignment.centerRight, child: value),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: title),
+        const Gap(BullSpacing.xs),
+        value,
+      ],
+    );
+  }
 }

@@ -1,7 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 
-/// Read-only payment facts. Amount and destination widgets may expose viewing,
-/// copying and shared denomination changes; only the note can edit intent.
+/// Payment facts with viewing/copying callbacks; only the note edits intent.
 class SendPaymentReview extends StatelessWidget {
   const SendPaymentReview({
     super.key,
@@ -16,6 +15,7 @@ class SendPaymentReview extends StatelessWidget {
     required this.source,
     required this.noteLabel,
     required this.note,
+    required this.editLabel,
     required this.feeLabel,
     required this.fee,
     required this.feeDetail,
@@ -25,6 +25,7 @@ class SendPaymentReview extends StatelessWidget {
     required this.onBack,
     required this.onNote,
     required this.onConfirm,
+    this.totalEquivalent,
     this.enteredDetail,
     this.changeLabel,
     this.change,
@@ -37,8 +38,6 @@ class SendPaymentReview extends StatelessWidget {
   final Widget amount;
   final String equivalent;
   final String? enteredDetail;
-
-  /// Ordered destination blocks, grouped exactly as on the recipient page.
   final List<Widget> recipients;
   final String fromLabel;
   final Widget source;
@@ -46,11 +45,13 @@ class SendPaymentReview extends StatelessWidget {
   final Widget? change;
   final String noteLabel;
   final String note;
+  final String editLabel;
   final String feeLabel;
   final Widget fee;
   final String feeDetail;
   final String totalLabel;
   final Widget total;
+  final String? totalEquivalent;
   final String confirmLabel;
   final VoidCallback onBack;
   final VoidCallback onNote;
@@ -58,6 +59,7 @@ class SendPaymentReview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BullScaffold(
+    backgroundColor: context.bull.background,
     body: SafeArea(
       child: Column(
         children: [
@@ -69,62 +71,132 @@ class SendPaymentReview extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(BullSpacing.md),
+              padding: const EdgeInsets.symmetric(
+                horizontal: BullSpacing.lg,
+                vertical: BullSpacing.xs,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(youSendLabel, style: context.bullType.body),
-                  const Gap(BullSpacing.xs),
-                  amount,
-                  Text(
-                    equivalent,
-                    style: context.bullType.label.copyWith(
-                      color: context.bull.textMuted,
-                    ),
-                  ),
-                  if (enteredDetail case final entered?) ...[
-                    const Gap(BullSpacing.xs),
-                    Text(
-                      entered,
-                      style: context.bullType.label.copyWith(
-                        color: context.bull.textMuted,
-                      ),
-                    ),
-                  ],
-                  const Gap(BullSpacing.lg),
-                  for (final recipient in recipients) ...[
-                    recipient,
-                    const Gap(BullSpacing.md),
-                  ],
-                  _ReviewFact(label: fromLabel, child: source),
-                  if ((changeLabel, change) case (
-                    final label?,
-                    final destination?,
-                  ))
-                    _ReviewFact(label: label, child: destination),
-                  BullInlineTextButton(
-                    onPressed: onNote,
-                    child: _ReviewFact(
-                      label: noteLabel,
-                      child: Text(note, style: context.bullType.body),
-                    ),
-                  ),
-                  _ReviewFact(
-                    label: feeLabel,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: BullSpacing.lg),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        fee,
                         Text(
-                          feeDetail,
+                          youSendLabel,
+                          style: context.bullType.body.copyWith(
+                            color: context.bull.textMuted,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const Gap(BullSpacing.xxs),
+                        amount,
+                        const Gap(BullSpacing.xxs),
+                        Text(
+                          equivalent,
+                          textAlign: TextAlign.center,
                           style: context.bullType.label.copyWith(
                             color: context.bull.textMuted,
+                          ),
+                        ),
+                        if (enteredDetail case final entered?) ...[
+                          const Gap(BullSpacing.xxs),
+                          Text(
+                            entered,
+                            textAlign: TextAlign.center,
+                            style: context.bullType.caption.copyWith(
+                              color: context.bull.textMuted,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: context.bull.border),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final recipient in recipients)
+                          _ReviewBorder(child: recipient),
+                        _ReviewFact(label: fromLabel, child: source),
+                        if ((changeLabel, change) case (
+                          final label?,
+                          final destination?,
+                        ))
+                          _ReviewFact(label: label, child: destination),
+                        Semantics(
+                          button: true,
+                          label: noteLabel,
+                          value: note,
+                          excludeSemantics: true,
+                          onTap: onNote,
+                          child: GestureDetector(
+                            onTap: onNote,
+                            child: _ReviewFact(
+                              label: noteLabel,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      note,
+                                      textAlign: TextAlign.end,
+                                      style: context.bullType.body,
+                                    ),
+                                  ),
+                                  const Gap(BullSpacing.xxs),
+                                  BullFieldAction(
+                                    label: editLabel,
+                                    icon: BullIcons.edit,
+                                    onPressed: onNote,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        _ReviewFact(
+                          label: feeLabel,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              fee,
+                              Text(
+                                feeDetail,
+                                textAlign: TextAlign.end,
+                                style: context.bullType.caption.copyWith(
+                                  color: context.bull.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _ReviewFact(
+                          label: totalLabel,
+                          strong: true,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              total,
+                              if (totalEquivalent case final fiat?)
+                                Text(
+                                  fiat,
+                                  textAlign: TextAlign.end,
+                                  style: context.bullType.caption.copyWith(
+                                    color: context.bull.textMuted,
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  _ReviewFact(label: totalLabel, child: total),
                 ],
               ),
             ),
@@ -145,23 +217,47 @@ class SendPaymentReview extends StatelessWidget {
   );
 }
 
+class _ReviewBorder extends StatelessWidget {
+  const _ReviewBorder({required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(vertical: BullSpacing.sm),
+    decoration: BoxDecoration(
+      border: Border(bottom: BorderSide(color: context.bull.border)),
+    ),
+    child: child,
+  );
+}
+
 class _ReviewFact extends StatelessWidget {
-  const _ReviewFact({required this.label, required this.child});
+  const _ReviewFact({
+    required this.label,
+    required this.child,
+    this.strong = false,
+  });
   final String label;
   final Widget child;
-
+  final bool strong;
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: BullSpacing.sm),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget build(BuildContext context) => _ReviewBorder(
+    child: Row(
       children: [
-        Text(
-          label,
-          style: context.bullType.label.copyWith(color: context.bull.textMuted),
+        Expanded(
+          child: Text(
+            label,
+            style: strong
+                ? context.bullType.body.copyWith(fontWeight: FontWeight.w500)
+                : context.bullType.label.copyWith(
+                    color: context.bull.textMuted,
+                    fontWeight: FontWeight.w400,
+                  ),
+          ),
         ),
-        const Gap(BullSpacing.xs),
-        child,
+        const Gap(BullSpacing.md),
+        Flexible(
+          child: Align(alignment: Alignment.centerRight, child: child),
+        ),
       ],
     ),
   );

@@ -1,3 +1,5 @@
+import '../../../coins/public/coins_facade.dart' show CoinsRoute;
+import '../widgets/send_leave_payment_dialog.dart';
 import '../widgets/send_grouped_address.dart';
 
 import 'dart:async';

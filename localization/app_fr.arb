@@ -236,7 +236,7 @@
   "sendAbsoluteFees": "Frais absolus",
   "sendRelativeFees": "Frais relatifs",
   "sendSats": "sats",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "sendConfirmCustomFee": "Confirmer les frais personnalisés",
   "sendEstimatedDelivery10Minutes": "10 minutes",
   "sendEstimatedDelivery10to30Minutes": "10-30 minutes",
@@ -4870,5 +4870,12 @@
   "sendClose": "Fermer",
   "sendBack": "Retour",
   "sendBalance": "Solde",
-  "sendEnteredQuote": "Vous avez saisi {amount} {currency} · taux de {time}"
+  "sendEnteredQuote": "Vous avez saisi {amount} {currency} · taux de {time}",
+  "sendFeeCustom": "Personnalisés",
+  "sendFeeTimeFast": "~10 min",
+  "sendCoinsInstead": "Envoyer des UTXO plutôt",
+  "sendLeavePaymentTitle": "Quitter ce paiement ?",
+  "sendLeavePaymentDescription": "Le destinataire et le montant saisis seront effacés. La page des UTXO s’ouvrira pour choisir lesquels dépenser.",
+  "sendOpenCoins": "Ouvrir les UTXO",
+  "sendSecureWalletDescription": "Portefeuille Bitcoin sécurisé"
 }

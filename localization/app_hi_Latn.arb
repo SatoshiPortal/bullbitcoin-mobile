@@ -1175,7 +1175,7 @@
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },

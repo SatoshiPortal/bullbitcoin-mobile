@@ -1282,7 +1282,7 @@
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
   },
-  "sendCustomFee": "Custom Fee",
+  "sendCustomFee": "Custom fee",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
@@ -1298,7 +1298,7 @@
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
@@ -1358,7 +1358,7 @@
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
-  "sendAdvancedSettings": "Advanced Settings",
+  "sendAdvancedSettings": "Advanced settings",
   "@sendAdvancedSettings": {
     "description": "Title for advanced settings in the send flow"
   },
@@ -1382,7 +1382,7 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "sendNetworkFees": "Network fees",
+  "sendNetworkFees": "Network fee",
   "@sendNetworkFees": {
     "description": "Label for network transaction fees"
   },
@@ -15905,5 +15905,33 @@
         "type": "String"
       }
     }
+  },
+  "sendFeeCustom": "Custom",
+  "@sendFeeCustom": {
+    "description": "Mono Send payment interface"
+  },
+  "sendFeeTimeFast": "~10 min",
+  "@sendFeeTimeFast": {
+    "description": "Mono Send payment interface"
+  },
+  "sendCoinsInstead": "Send UTXOs instead",
+  "@sendCoinsInstead": {
+    "description": "Mono Send payment interface"
+  },
+  "sendLeavePaymentTitle": "Leave this payment?",
+  "@sendLeavePaymentTitle": {
+    "description": "Mono Send payment interface"
+  },
+  "sendLeavePaymentDescription": "The recipient and amount you entered will be cleared. Coins opens so you can pick what to spend.",
+  "@sendLeavePaymentDescription": {
+    "description": "Mono Send payment interface"
+  },
+  "sendOpenCoins": "Open Coins",
+  "@sendOpenCoins": {
+    "description": "Mono Send payment interface"
+  },
+  "sendSecureWalletDescription": "Secure Bitcoin wallet",
+  "@sendSecureWalletDescription": {
+    "description": "Mono Send payment interface"
   }
 }

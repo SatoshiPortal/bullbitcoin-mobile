@@ -10,6 +10,7 @@ final class _SendPaymentSession {
   final FocusNode amountFocus = FocusNode();
   final ValueNotifier<BitcoinUnit> unit;
   int _inputRevision = 0;
+  bool _openingCoins = false;
   bool _disposed = false;
   bool _initializedUnit = false;
   String _canonicalText = '';
@@ -96,12 +97,12 @@ final class _SendPaymentSession {
         FeeSelection.fastest => context.loc.sendFastFee,
         FeeSelection.economic => context.loc.sendEconomyFee,
         FeeSelection.slow => context.loc.feePrioritySlow,
-        FeeSelection.custom => context.loc.sendCustomFee,
+        FeeSelection.custom => context.loc.sendFeeCustom,
       };
 
   String feeTime(BuildContext context, FeeSelection selection) =>
       switch (selection) {
-        FeeSelection.fastest => context.loc.sendEstimatedDelivery10Minutes,
+        FeeSelection.fastest => context.loc.sendFeeTimeFast,
         FeeSelection.economic => context.loc.sendEstimatedDelivery10to30Minutes,
         FeeSelection.slow => context.loc.sendEstimatedDeliveryHours,
         FeeSelection.custom => '',
@@ -122,7 +123,10 @@ final class _SendPaymentSession {
             : BitcoinUnit.btc,
         child: Text(
           '${negative ? '− ' : ''}${value == BitcoinUnit.sats ? FormatAmount.sats(sats) : '${Sats.fromInt(sats).toBitcoinText(value)} ${value.code}'}',
-          style: style ?? context.bullType.body,
+          textAlign: TextAlign.end,
+          style: (style ?? context.bullType.body).copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
         ),
       ),
     ),
@@ -223,13 +227,16 @@ final class _SendPaymentSession {
         ),
       ),
       balance: Wrap(
-        spacing: BullSpacing.xs,
+        spacing: BullSpacing.xxs,
         children: [
-          Text(context.loc.sendBalance, style: context.bullType.label),
+          Text(
+            context.loc.sendBalance,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+          ),
           money(
             context,
             state.maxAvailableBalanceSat,
-            style: context.bullType.label,
+            style: context.bullType.body,
           ),
         ],
       ),
@@ -285,7 +292,7 @@ final class _SendPaymentSession {
         isSelected: (wallet) => wallet.id == cubit.state.selectedWallet?.id,
         label: (wallet) => wallet.displayLabel(context),
         subtitle: (wallet) =>
-            '${wallet.scriptType.name} · ${FormatAmount.sats(wallet.balanceSat?.toInt() ?? 0)}',
+            '${wallet.isWatchOnly || wallet.isWatchSigner ? wallet.typeLabel(context) : context.loc.sendSecureWalletDescription} · ${FormatAmount.sats(wallet.balanceSat?.toInt() ?? 0)}',
       ),
     );
     if (!_disposed && selected != null) {
@@ -364,7 +371,7 @@ final class _SendPaymentSession {
       armed = false;
     }
 
-    await BullBottomSheet.show<void>(
+    final openCoins = await BullBottomSheet.show<bool>(
       context: context,
       avoidKeyboard: true,
       style: BullSheetStyle.redesign(context),
@@ -396,12 +403,12 @@ final class _SendPaymentSession {
                 feeName(context, selection): selection,
             };
             if (!custom) {
-              final fee = state.selectedFee;
               final real =
                   state.feePreviewCache
                       .slotFor(state.selectedFeeOption)
                       .feeSat ??
                   state.absoluteFees;
+              final detail = feeDescription(context, state);
               return SendPaymentSettings(
                 title: context.loc.sendAdvancedSettings,
                 closeLabel: context.loc.sendClose,
@@ -411,10 +418,10 @@ final class _SendPaymentSession {
                 feeDetail: Wrap(
                   spacing: BullSpacing.xs,
                   children: [
-                    Text(
-                      '${feeTime(context, state.selectedFeeOption)} · ${fee is RelativeFee ? fee.satPerVbyte : ''} ${context.loc.sendSatsPerVB}',
-                      style: context.bullType.label,
-                    ),
+                    if (detail.isNotEmpty)
+                      Text(detail, style: context.bullType.label),
+                    if (real != null && detail.isNotEmpty)
+                      Text('·', style: context.bullType.label),
                     if (real != null)
                       money(context, real, style: context.bullType.label),
                   ],
@@ -424,7 +431,7 @@ final class _SendPaymentSession {
                 replaceByFee: state.replaceByFee,
                 multipleLabel: context.loc.sendMultipleRecipients,
                 multipleRecipients: false,
-                coinsLabel: context.loc.sendSelectCoinsManually,
+                coinsLabel: context.loc.sendCoinsInstead,
                 onClose: () => Navigator.pop(sheetContext),
                 onFeeSelected: (label) {
                   final selection = choices[label];
@@ -436,7 +443,20 @@ final class _SendPaymentSession {
                 },
                 onReplaceByFee: (value) => cubit.replaceByFeeChanged(value),
                 onMultipleRecipients: null,
-                onCoins: null,
+                onCoins: state.selectedBitcoinWallet == null
+                    ? null
+                    : () async {
+                        if (_openingCoins) return;
+                        _openingCoins = true;
+                        try {
+                          final leave = await confirmLeave(context);
+                          if (leave && sheetContext.mounted) {
+                            Navigator.pop(sheetContext, true);
+                          }
+                        } finally {
+                          _openingCoins = false;
+                        }
+                      },
                 onCustomFeeEdit: state.selectedFeeOption == FeeSelection.custom
                     ? openCustom
                     : null,
@@ -569,6 +589,59 @@ final class _SendPaymentSession {
     );
     timer?.cancel();
     if (custom && !_disposed) cancelDraft();
+    if (openCoins == true && !_disposed && context.mounted) {
+      final wallet = cubit.state.selectedBitcoinWallet;
+      if (wallet != null) {
+        context.pushReplacementNamed(CoinsRoute.coins.name, extra: wallet);
+      }
+    }
+  }
+
+  Future<bool> confirmLeave(BuildContext context) async {
+    final state = cubit.state;
+    if (state.copiedRawPaymentRequest.trim().isEmpty &&
+        amountController.text.trim().isEmpty) {
+      return true;
+    }
+    return await BullDialog.show<bool>(
+          context: context,
+          barrierColor: BullSheetStyle.redesign(context).barrierColor,
+          builder: (dialogContext) => SendLeavePaymentDialog(
+            title: context.loc.sendLeavePaymentTitle,
+            description: context.loc.sendLeavePaymentDescription,
+            cancelLabel: context.loc.cancel,
+            openLabel: context.loc.sendOpenCoins,
+            onCancel: () => Navigator.pop(dialogContext, false),
+            onOpen: () => Navigator.pop(dialogContext, true),
+          ),
+        ) ??
+        false;
+  }
+
+  String feeDescription(
+    BuildContext context,
+    SendState state, {
+    bool confirmed = false,
+  }) {
+    final slot = state.feePreviewCache.slotFor(state.selectedFeeOption);
+    final fee = state.selectedFee;
+    final (feeSat, size) = confirmed
+        ? (state.absoluteFees, state.bitcoinTxSize)
+        : slot.feeSat != null && slot.txSize != null
+        ? (slot.feeSat, slot.txSize)
+        : (state.absoluteFees, state.bitcoinTxSize);
+    final rate = !confirmed && fee is RelativeFee
+        ? fee.satPerVbyte
+        : feeSat != null && size != null && size > 0
+        ? feeSat / size
+        : null;
+    final formatted = rate
+        ?.toStringAsFixed(3)
+        .replaceFirst(RegExp(r'\.?0+$'), '');
+    return [
+      feeTime(context, state.selectedFeeOption),
+      if (formatted != null) '$formatted ${context.loc.sendSatsPerVB}',
+    ].where((part) => part.isNotEmpty).join(' · ');
   }
 
   Widget review(BuildContext context, SendState state) {
@@ -583,7 +656,15 @@ final class _SendPaymentSession {
       stepLabels: steps(context),
       stepSemanticLabel: (i, label) => '${i + 1}: $label',
       youSendLabel: context.loc.sendYouSend,
-      amount: money(context, sats, style: context.bullType.headline),
+      amount: money(
+        context,
+        sats,
+        style: context.bullType.headline.copyWith(
+          fontSize: 28,
+          height: 36 / 28,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       equivalent: fiat(state, sats),
       enteredDetail: entered == null || quoteTime == null
           ? null
@@ -593,20 +674,29 @@ final class _SendPaymentSession {
               '${quoteTime.hour.toString().padLeft(2, '0')}:${quoteTime.minute.toString().padLeft(2, '0')}',
             ),
       recipients: [
-        Text(
-          '${context.loc.sendTo} · ${context.loc.exchangeDcaAddressLabelBitcoin}',
-          style: context.bullType.label,
-        ),
-        SendGroupedAddress(
-          address: state.paymentRequestAddress,
-          onOpen: () => AddressViewer.showDetail(
-            context,
-            data: state.paymentRequestAddress,
-            clipboardText: state.copiedRawPaymentRequest,
-          ),
-          onCopy: () => Clipboard.setData(
-            ClipboardData(text: state.paymentRequestAddress),
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              '${context.loc.sendTo} · ${context.loc.exchangeDcaAddressLabelBitcoin}',
+              style: context.bullType.label.copyWith(
+                color: context.bull.textMuted,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            const Gap(BullSpacing.xs),
+            SendGroupedAddress(
+              address: state.paymentRequestAddress,
+              onOpen: () => AddressViewer.showDetail(
+                context,
+                data: state.paymentRequestAddress,
+                clipboardText: state.copiedRawPaymentRequest,
+              ),
+              onCopy: () => Clipboard.setData(
+                ClipboardData(text: state.paymentRequestAddress),
+              ),
+            ),
+          ],
         ),
       ],
       fromLabel: context.loc.sendFrom,
@@ -614,18 +704,28 @@ final class _SendPaymentSession {
         state.selectedWallet?.displayLabel(context) ?? '',
         style: context.bullType.body,
       ),
+      editLabel: context.loc.sendEdit,
       noteLabel: context.loc.transactionNoteHint,
       note: state.label.isEmpty
           ? context.loc.transactionNoteAddTitle
           : state.label,
       feeLabel: context.loc.sendNetworkFees,
       fee: fee == null ? const BullLoader.small() : money(context, fee),
-      feeDetail:
-          '${feeName(context, state.selectedFeeOption)} · ${feeTime(context, state.selectedFeeOption)} · ${state.selectedFee is RelativeFee ? (state.selectedFee as RelativeFee).satPerVbyte : ''} ${context.loc.sendSatsPerVB}',
+      feeDetail: [
+        feeName(context, state.selectedFeeOption),
+        feeDescription(context, state, confirmed: true),
+      ].where((part) => part.isNotEmpty).join(' · '),
       totalLabel: context.loc.sendTotalDebited,
       total: fee == null
           ? const BullLoader.small()
-          : money(context, sats + fee, style: context.bullType.subtitle),
+          : money(
+              context,
+              sats + fee,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+      totalEquivalent: fee == null ? null : fiat(state, sats + fee),
       confirmLabel: context.loc.sendConfirm,
       onBack: cubit.backClicked,
       onNote: () async {
