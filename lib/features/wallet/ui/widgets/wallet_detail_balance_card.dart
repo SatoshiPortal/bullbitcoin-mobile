@@ -15,6 +15,15 @@ class WalletDetailBalanceCard extends StatelessWidget {
     this.syncingIndicator,
   });
 
+  const WalletDetailBalanceCard.localBitcoin({
+    super.key,
+    required this.balanceText,
+    required this.fiatBalance,
+    this.eyeToggle,
+    this.syncingIndicator,
+  }) : isLiquid = false,
+       signer = SignerEntity.local;
+
   final bool isLiquid;
   final SignerEntity signer;
   final Widget balanceText;

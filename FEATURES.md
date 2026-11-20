@@ -302,7 +302,7 @@ graph TB
     SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM_SETTINGS
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
-    SP -->|legacy: wallet repository via core barrel| WALLETS
+    SP -->|wallet balance view and legacy repository| WALLETS
     SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
