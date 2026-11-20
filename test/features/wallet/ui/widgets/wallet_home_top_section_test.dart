@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -30,6 +31,7 @@ const _actionKey = ValueKey('actions');
 Future<void> _pumpTopSection(
   WidgetTester tester, {
   required double textScale,
+  VoidCallback? onSettings,
   double? actionsHeight,
   required int unconfirmedIncomingBalance,
 }) async {
@@ -75,10 +77,20 @@ Future<void> _pumpTopSection(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: [
         ...AppLocalizations.localizationsDelegates,
+        ...GlobalMaterialLocalizations.delegates,
         bullUiLocalizationsDelegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
+        appBar: onSettings == null
+            ? null
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(kToolbarHeight),
+                child: BlocProvider<SettingsCubit>.value(
+                  value: settings,
+                  child: WalletHomeAppBar(onSettings: onSettings),
+                ),
+              ),
         body: MediaQuery(
           data: MediaQueryData(
             size: const Size(360, 800),
@@ -114,29 +126,35 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
-  testWidgets('keeps 16 between the balance and the eye badge', (tester) async {
+  testWidgets('top bar settings gear is named and opens settings', (
+    tester,
+  ) async {
+    var opened = false;
+    await _pumpTopSection(
+      tester,
+      textScale: 1,
+      unconfirmedIncomingBalance: 0,
+      onSettings: () => opened = true,
+    );
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    final gear = find.byTooltip(l10n.settingsScreenTitle);
+    expect(tester.getSize(gear).width, greaterThanOrEqualTo(48));
+    expect(tester.getSize(gear).height, greaterThanOrEqualTo(48));
+    await tester.tap(gear);
+    expect(opened, isTrue);
+  });
+
+  testWidgets('home balance has no eye toggle', (tester) async {
     await _pumpTopSection(
       tester,
       textScale: 1,
       actionsHeight: 100,
       unconfirmedIncomingBalance: 0,
     );
-    final row = find.ancestor(
-      of: find.byType(EyeToggle),
-      matching: find.byType(Row),
-    );
-    final balance = tester.getRect(
-      find.descendant(of: row.first, matching: find.byType(Flexible)).first,
-    );
-    final badge = tester.getRect(
-      find
-          .descendant(
-            of: find.byType(EyeToggle),
-            matching: find.byType(Container),
-          )
-          .first,
-    );
-    expect(badge.left - balance.right, 16);
+    expect(find.byType(EyeToggle), findsNothing);
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.byTooltip(l10n.walletShowAmountsTooltip), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(
