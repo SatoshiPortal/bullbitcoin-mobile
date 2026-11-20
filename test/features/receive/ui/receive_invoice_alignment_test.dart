@@ -98,9 +98,36 @@ void main() {
     expect(tester.getTopRight(values.at(1)).dx, right);
     expect(tester.getTopRight(values.at(2)).dx, right);
     expect(tester.getTopRight(find.text('Coffee')).dx, right);
-    final actionRight = tester.getTopRight(find.byType(BullFieldAction)).dx;
+    final actionRight = tester
+        .getTopRight(find.byType(BullFieldAction).first)
+        .dx;
     expect(actionRight, 366);
     expect(right, actionRight - 56);
+  });
+
+  testWidgets('fee details uses the filled field action and opens the sheet', (
+    tester,
+  ) async {
+    await _mount(tester);
+    final action = find.byWidgetPredicate(
+      (widget) => widget is BullFieldAction && widget.label == 'Fee details',
+    );
+    expect(action, findsOneWidget);
+    expect(tester.getSize(action), const Size(48, 48));
+    expect(
+      tester.getTopRight(action).dx,
+      tester.getTopRight(find.byType(BullFieldAction).first).dx,
+    );
+    await tester.tap(action);
+    await tester.pumpAndSettle();
+    expect(find.byType(ReceiveLnFeesDetails), findsOneWidget);
+    final copy = find.byWidgetPredicate(
+      (widget) => widget is BullFieldAction && widget.label == 'Copy',
+    );
+    expect(copy, findsOneWidget);
+    expect(tester.getTopRight(copy).dx, 366);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('fees sheet has a close action and single-line muted labels', (
