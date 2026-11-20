@@ -1,6 +1,7 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'test_app.dart';
@@ -60,6 +61,27 @@ void main() {
       },
     );
   }
+
+  testWidgets('forwards scroll policy and uses the design-system palette', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        const BullKeyboardActions(
+          doneText: _done,
+          disableScroll: true,
+          child: TextField(),
+        ),
+      ),
+    );
+
+    final accessory = tester.widget<KeyboardActions>(
+      find.byType(KeyboardActions),
+    );
+    expect(accessory.ensureVisible, isFalse);
+    expect(accessory.theme?.barColor, testBullTheme.surface);
+    expect(accessory.theme?.foregroundColor, testBullTheme.onSurface);
+  });
 
   testWidgets('Android retains the system keyboard without an accessory bar', (
     tester,
