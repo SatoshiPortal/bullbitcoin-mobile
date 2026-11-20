@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullText, Gap, BullTypographyX;
 
 class AccountOwnershipWidget extends StatelessWidget {
   const AccountOwnershipWidget({
@@ -19,7 +19,7 @@ class AccountOwnershipWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           context.loc.withdrawOwnershipQuestion,
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)
@@ -80,7 +80,7 @@ class AccountOwnershipWidget extends StatelessWidget {
                   ),
                   const Gap(8),
                   Expanded(
-                    child: BBText(
+                    child: BullText(
                       label,
                       style: context.bullType.subtitle
                           .copyWith(fontWeight: FontWeight.w400)

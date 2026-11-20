@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,7 +71,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
                   crossAxisAlignment: .start,
                   mainAxisSize: .min,
                   children: [
-                    BBText(
+                    BullText(
                       context.loc.exchangeSecurityManage2FAPasswordLabel,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)

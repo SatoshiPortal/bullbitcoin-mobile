@@ -1,15 +1,14 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_detail.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInfoCard, BullText, Gap, BullTypographyX;
 
 class FundExchangeInstantSepaScreen extends StatelessWidget {
   const FundExchangeInstantSepaScreen({super.key});
@@ -34,7 +33,7 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
             mainAxisAlignment: .center,
             crossAxisAlignment: .start,
             children: [
-              BBText(
+              BullText(
                 context.loc.fundExchangeSepaTitle,
                 style: context.bullType.headline,
               ),
@@ -61,7 +60,7 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                 const FundExchangeDetailsErrorCard(),
                 const Gap(24.0),
               ] else ...[
-                InfoCard(
+                BullInfoCard(
                   description: context.loc.fundExchangeInstantSepaInfo,
                   tagColor: context.appColors.secondary,
                   bgColor: context.appColors.inverseSurface.withValues(
@@ -79,7 +78,7 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                   value: details?.beneficiaryName,
                 ),
                 const Gap(16.0),
-                InfoCard(
+                BullInfoCard(
                   bgColor: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
@@ -93,7 +92,7 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                   value: details?.code,
                 ),
                 const Gap(16.0),
-                InfoCard(
+                BullInfoCard(
                   bgColor: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
@@ -106,7 +105,7 @@ class FundExchangeInstantSepaScreen extends StatelessWidget {
                   value: details?.bankAccountCountry,
                 ),
                 const Gap(16.0),
-                InfoCard(
+                BullInfoCard(
                   bgColor: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),

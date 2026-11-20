@@ -1,15 +1,14 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_detail.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInfoCard, BullText, Gap, BullTypographyX;
 
 class FundExchangeCrIbanCrcScreen extends StatelessWidget {
   const FundExchangeCrIbanCrcScreen({super.key});
@@ -35,7 +34,7 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
             mainAxisAlignment: .center,
             crossAxisAlignment: .start,
             children: [
-              BBText(
+              BullText(
                 context.loc.fundExchangeCrIbanCrcTitle,
                 style: context.bullType.headline,
               ),
@@ -83,7 +82,7 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
                       context.loc.fundExchangeCrIbanCrcPaymentDescriptionHelp,
                 ),
                 const Gap(16.0),
-                InfoCard(
+                BullInfoCard(
                   description:
                       context.loc.fundExchangeCrIbanCrcTransferCodeWarning,
                   bgColor: context.appColors.inverseSurface.withValues(

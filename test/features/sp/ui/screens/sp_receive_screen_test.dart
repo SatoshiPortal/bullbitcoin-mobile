@@ -4,9 +4,8 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSegmented, BullShimmerBox;
+    show BullQrCode, BullButton, BullSegmented, BullShimmerBox;
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,7 +168,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(BullShimmerBox), findsOneWidget);
-    expect(find.byType(QrDisplayWidget), findsNothing);
+    expect(find.byType(BullQrCode), findsNothing);
     expect(find.byIcon(Icons.copy_sharp), findsNothing);
     expect(find.byIcon(Icons.visibility_outlined), findsNothing);
   });
@@ -190,7 +189,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byType(QrDisplayWidget), findsNothing);
+    expect(find.byType(BullQrCode), findsNothing);
     expect(find.byIcon(Icons.copy_sharp), findsNothing);
     expect(find.byIcon(Icons.visibility_outlined), findsNothing);
   });

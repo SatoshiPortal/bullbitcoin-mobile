@@ -1,6 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FundExchangeMethodListTile extends StatelessWidget {
@@ -20,11 +19,11 @@ class FundExchangeMethodListTile extends StatelessWidget {
     return ListTile(
       tileColor: context.appColors.transparent,
       shape: const RoundedRectangleBorder(),
-      title: BBText(
+      title: BullText(
         title,
         style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
       ),
-      subtitle: BBText(
+      subtitle: BullText(
         subtitle,
         style: context.bullType.caption,
         color: context.appColors.outline,

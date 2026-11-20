@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -18,6 +17,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullText,
         BullFadingLinearProgress,
         BullShimmerBox,
         BullShimmerLine,
@@ -131,7 +131,7 @@ class _FundExchangeMethodSelectionScreenState
                   ),
                 ),
                 const Gap(8.0),
-                BBText(
+                BullText(
                   context.loc.fundExchangeAccountTitle,
                   style: context.bullType.headline,
                 ),
@@ -140,7 +140,7 @@ class _FundExchangeMethodSelectionScreenState
                   const Gap(16.0),
                   const FundExchangeRestrictedCard(),
                 ] else ...[
-                  BBText(
+                  BullText(
                     context.loc.fundExchangeAccountSubtitle,
                     style: context.bullType.subtitle.copyWith(
                       fontWeight: FontWeight.w400,

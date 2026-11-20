@@ -1,13 +1,12 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShimmerBox, BullText, BullQrCode, Gap, BullTypographyX;
 
 class FundExchangeCanadaPostScreen extends StatelessWidget {
   const FundExchangeCanadaPostScreen({super.key});
@@ -32,7 +31,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
             mainAxisAlignment: .center,
             crossAxisAlignment: .start,
             children: [
-              BBText(
+              BullText(
                 context.loc.fundExchangeCanadaPostTitle,
                 style: context.bullType.headline,
               ),
@@ -49,7 +48,9 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                 (step) => Row(
                   crossAxisAlignment: .start,
                   children: [
-                    Expanded(child: BBText(step, style: context.bullType.body)),
+                    Expanded(
+                      child: BullText(step, style: context.bullType.body),
+                    ),
                   ],
                 ),
               ),
@@ -62,13 +63,21 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                 Center(
                   child: Column(
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.fundExchangeCanadaPostQrCodeLabel,
                         style: context.bullType.body,
                         textAlign: .center,
                       ),
                       const Gap(8.0),
-                      QrDisplayWidget(data: details?.code ?? '', size: 250),
+                      BullQrCode(
+                        data: details?.code ?? '',
+                        size: 250,
+                        semanticsLabel:
+                            context.loc.fundExchangeCanadaPostQrCodeLabel,
+                        errorBuilder: (_) => (details?.code.isEmpty ?? true)
+                            ? const BullShimmerBox(height: 250, width: 250)
+                            : const SizedBox.shrink(),
+                      ),
                       const Gap(24.0),
                     ],
                   ),

@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:flutter/widgets.dart';
 
-/// Text primitive — duplicated from `core/widgets/text/text.dart`.
+/// Text primitive with an optional line bound.
 ///
 /// When [maxLines] is set it auto-sizes to fit; otherwise it renders a plain
 /// [Text]. (AutoSizeText needs a line bound to shrink meaningfully and
