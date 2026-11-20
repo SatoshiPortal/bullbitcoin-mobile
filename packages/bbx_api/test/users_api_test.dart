@@ -127,6 +127,8 @@ void main() {
       null,
       {'success': false},
       <String, Object?>{},
+      true,
+      'ok',
     ]) {
       test('$result is not a success', () async {
         expect(
