@@ -2436,6 +2436,56 @@ void main() {
     );
   }
 
+  test(
+    'editing after address failure keeps Retry and updates its URI',
+    () async {
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+      );
+      final wallet = _testWallet();
+      final address = _testAddress(walletId: wallet.id);
+      final firstLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+      const unavailable = ReceiveAddressUnavailableFailure('busy');
+      var lookups = 0;
+      when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+        (_) async => ++lookups == 1 ? firstLookup.future : Ok(address),
+      );
+      final bloc = buildBloc(wallet: wallet);
+      addTearDown(bloc.close);
+      bloc.add(ReceiveBitcoinStarted(wallet));
+      await pumpEventQueue();
+      enterSats(bloc, 321);
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      firstLookup.complete(const Err(unavailable));
+      await pumpEventQueue();
+      expect(bloc.state.qrData, isEmpty);
+      expect(bloc.state.failure, same(unavailable));
+
+      enterSats(bloc, 654);
+      await pumpEventQueue();
+      expect(bloc.state.inputAmount, '654');
+      expect(bloc.state.failure, same(unavailable));
+      expect(bloc.state.hasAmountInputFailure, isFalse);
+
+      enterSats(bloc, 3000000000000000);
+      await pumpEventQueue();
+      expect(bloc.state.amountEntryValid, isFalse);
+      expect(bloc.state.failure, same(unavailable));
+      enterSats(bloc, 654);
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      bloc.add(const ReceiveAddressRetried());
+      await pumpEventQueue();
+      expect(lookups, 2);
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.qrData, 'bitcoin:${address.address}?amount=0.00000654');
+      expect(bloc.state.clipboardData, bloc.state.qrData);
+    },
+  );
+
   test('Bitcoin address Retry retains the live 321-sat request', () async {
     when(() => getPayjoinPolicy.execute()).thenAnswer(
       (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
