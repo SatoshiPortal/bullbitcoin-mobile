@@ -181,45 +181,56 @@ void main() {
     }
   });
 
-  testWidgets('Bitcoin and fiat frames have matching size and colors', (
-    tester,
-  ) async {
-    for (final hidden in [false, true]) {
-      for (final scale in [1.0, 2.0]) {
-        await _pumpTopSection(
-          tester,
-          textScale: scale,
-          hideAmounts: hidden,
-          unconfirmedIncomingBalance: 0,
-        );
-        Finder amount(String unit) => find.byWidgetPredicate(
-          (widget) =>
-              widget is RichText &&
-              widget.text.toPlainText().endsWith(' $unit'),
-        );
-        Finder frame(String unit) => find
-            .ancestor(of: amount(unit), matching: find.byType(DecoratedBox))
-            .first;
-        expect(tester.getSize(frame('BTC')), tester.getSize(frame('CAD')));
-        final bitcoin =
-            tester.widget<DecoratedBox>(frame('BTC')).decoration
-                as BoxDecoration;
-        final fiat =
-            tester.widget<DecoratedBox>(frame('CAD')).decoration
-                as BoxDecoration;
-        expect(bitcoin.color, fiat.color);
-        expect(bitcoin.border, fiat.border);
-        expect(bitcoin.borderRadius, fiat.borderRadius);
-        final btcText =
-            tester.renderObject<RenderParagraph>(amount('BTC')).text
-                as TextSpan;
-        final fiatText =
-            tester.renderObject<RenderParagraph>(amount('CAD')).text
-                as TextSpan;
-        expect(btcText.style?.color, fiatText.style?.color);
+  testWidgets(
+    'Balance frames match in size with neutral fiat and orange Bitcoin tints',
+    (tester) async {
+      for (final hidden in [false, true]) {
+        for (final scale in [1.0, 2.0]) {
+          await _pumpTopSection(
+            tester,
+            textScale: scale,
+            hideAmounts: hidden,
+            unconfirmedIncomingBalance: 0,
+          );
+          Finder amount(String unit) => find.byWidgetPredicate(
+            (widget) =>
+                widget is RichText &&
+                widget.text.toPlainText().endsWith(' $unit'),
+          );
+          Finder frame(String unit) => find
+              .ancestor(of: amount(unit), matching: find.byType(DecoratedBox))
+              .first;
+          expect(tester.getSize(frame('BTC')), tester.getSize(frame('CAD')));
+          final bitcoin =
+              tester.widget<DecoratedBox>(frame('BTC')).decoration
+                  as BoxDecoration;
+          final fiat =
+              tester.widget<DecoratedBox>(frame('CAD')).decoration
+                  as BoxDecoration;
+          final colors = tester.element(amount('CAD')).appColors;
+          expect(fiat.color, colors.border.withValues(alpha: 0.3));
+          expect(bitcoin.color, colors.bitcoinOrange.withValues(alpha: 0.3));
+          expect(
+            fiat.border,
+            Border.all(color: colors.border.withValues(alpha: 0.3)),
+          );
+          expect(
+            bitcoin.border,
+            Border.all(color: colors.bitcoinOrange.withValues(alpha: 0.3)),
+          );
+          expect(bitcoin.borderRadius, fiat.borderRadius);
+          final btcText =
+              tester.renderObject<RenderParagraph>(amount('BTC')).text
+                  as TextSpan;
+          final fiatText =
+              tester.renderObject<RenderParagraph>(amount('CAD')).text
+                  as TextSpan;
+          expect(btcText.style?.color, colors.onPrimary);
+          expect(fiatText.style?.color, colors.onPrimary);
+        }
       }
-    }
-  });
+    },
+  );
 
   testWidgets('top bar settings gear is named and opens settings', (
     tester,
