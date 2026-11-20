@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullReceiveSendButtons, BuildContext, StatelessWidget, Widget;
 import 'package:go_router/go_router.dart';
 
 class WalletBottomButtons extends StatelessWidget {
@@ -15,7 +15,7 @@ class WalletBottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReceiveSendButtons(
+    return BullReceiveSendButtons(
       receiveLabel: context.loc.walletButtonReceive,
       sendLabel: context.loc.walletButtonSend,
       onReceive: () {
@@ -28,8 +28,9 @@ class WalletBottomButtons extends StatelessWidget {
         };
         context.pushNamed(routeName, extra: wallet);
       },
-      onSend: () => context.pushNamed(SendRoute.send.name, extra: wallet),
-      sendDisabled: wallet?.isWatchOnly ?? false,
+      onSend: wallet?.isWatchOnly == true
+          ? null
+          : () => context.pushNamed(SendRoute.send.name, extra: wallet),
     );
   }
 }
