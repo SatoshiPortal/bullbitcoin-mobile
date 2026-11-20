@@ -4861,5 +4861,6 @@
   "receiveAboveMaximum": "Saisissez au maximum {max} sats",
   "receiveEditAmount": "Modifier le montant",
   "receiveRecipientMessageHint": "Facultatif, visible par le payeur",
-  "receiveVerifyBitbox": "Vérifier sur BitBox"
+  "receiveVerifyBitbox": "Vérifier sur BitBox",
+  "receiveFeeDetails": "Détail des frais"
 }

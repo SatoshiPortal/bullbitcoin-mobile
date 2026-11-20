@@ -234,10 +234,10 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           value: fees == null
               ? const BullShimmerLine(width: 90, height: 16)
               : CurrencyText(fees, showFiat: false, textAlign: TextAlign.end),
-          action: BullInlineIconButton(
-            tooltip: context.loc.receiveFees,
+          action: BullFieldAction(
+            label: context.loc.receiveFeeDetails,
             onPressed: () => _showFees(context),
-            icon: const BullIcon(BullIcons.chevronRight),
+            icon: BullIcons.chevronRight,
           ),
           onTap: () => _showFees(context),
         ),
@@ -301,8 +301,8 @@ class ReceiveLnSwapID extends StatelessWidget {
         textAlign: TextAlign.end,
         style: context.bullType.body,
       ),
-      action: BullInlineIconButton(
-        tooltip: context.loc.copyDialogButton,
+      action: BullFieldAction(
+        label: context.loc.copyDialogButton,
         onPressed: id == null
             ? null
             : () {
@@ -312,7 +312,7 @@ class ReceiveLnSwapID extends StatelessWidget {
                   message: context.loc.copiedToClipboard,
                 );
               },
-        icon: const BullIcon(BullIcons.contentCopy),
+        icon: BullIcons.contentCopy,
       ),
     );
   }

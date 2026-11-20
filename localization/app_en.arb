@@ -15841,5 +15841,9 @@
   "receiveRecipientMessageHint": "Optional, visible to the payer",
   "@receiveRecipientMessageHint": {},
   "receiveVerifyBitbox": "Verify on BitBox",
-  "@receiveVerifyBitbox": {}
+  "@receiveVerifyBitbox": {},
+  "receiveFeeDetails": "Fee details",
+  "@receiveFeeDetails": {
+    "description": "Accessible label for the filled action opening the Lightning fee breakdown."
+  }
 }
