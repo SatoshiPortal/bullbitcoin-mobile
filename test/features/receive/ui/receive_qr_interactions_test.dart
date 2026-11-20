@@ -85,7 +85,9 @@ void main() {
           tester.widget<BullQrCode>(find.byType(BullQrCode)).data,
           state.paymentRequest,
         );
-        await tester.tap(find.byType(BullQrCode));
+        await tester.tapAt(
+          tester.getTopLeft(find.byType(BullQrCode)) + const Offset(1, 1),
+        );
         await tester.pumpAndSettle();
         expect(find.byType(ReceiveEnlargedQr), findsOneWidget);
         if (closeWithX) {
@@ -98,6 +100,27 @@ void main() {
       },
     );
   }
+
+  testWidgets('the normal QR opens from its outer tap target', (tester) async {
+    final bloc = _Receive();
+    when(() => bloc.state).thenReturn(_state());
+    when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+    await tester.pumpWidget(
+      _app(
+        BlocProvider<ReceiveBloc>.value(
+          value: bloc,
+          child: const Scaffold(body: ReceiveQRDetails()),
+        ),
+      ),
+    );
+
+    await tester.tapAt(
+      tester.getTopLeft(find.byType(BullQrCode)) + const Offset(1, 1),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ReceiveEnlargedQr), findsOneWidget);
+  });
 
   testWidgets(
     'long press on the real address viewer copies the live amount and message',
