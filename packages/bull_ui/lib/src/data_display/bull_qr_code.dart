@@ -51,7 +51,7 @@ final class BullQrCode extends StatelessWidget {
           size: total,
           padding: EdgeInsets.all(4 * step),
           gapless: true,
-          backgroundColor: colors.surfaceFixed,
+          backgroundColor: colors.onSecondaryFixed,
           semanticsLabel: '',
           eyeStyle: QrEyeStyle(
             eyeShape: QrEyeShape.square,
