@@ -1,14 +1,26 @@
 {
-  "buy": "Buy",
-  "@buy": {},
-  "sell": "Sell",
-  "@sell": {},
+  "exchangeOff": "Exchange is off",
+  "@exchangeOff": {
+    "description": "Exchange activation prompt in the More sheet."
+  },
+  "activate": "Activate",
+  "@activate": {
+    "description": "Exchange activation prompt in the More sheet."
+  },
+  "dismiss": "Dismiss",
+  "@dismiss": {
+    "description": "Exchange activation prompt in the More sheet."
+  },
   "pay": "Pay",
   "@pay": {},
   "transfer": "Swap",
   "@transfer": {},
   "map": "Map",
   "@map": {},
+  "history": "History",
+  "@history": {},
+  "settings": "Settings",
+  "@settings": {},
   "more": "More",
   "@more": {},
   "customize": "Customize",
@@ -25,13 +37,11 @@
   "@saveFailed": {},
   "loading": "Loading",
   "@loading": {},
-  "history": "History",
-  "@history": {},
   "support": "Support",
   "@support": {},
   "priceHistory": "Price",
   "@priceHistory": {},
-  "quickActionTrade": "Trade",
+  "quickActionTrade": "Exchange",
   "@quickActionTrade": {},
   "onHome": "On Home",
   "@onHome": {

@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/backup_card.dart';
 import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSizes;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -10,7 +11,7 @@ void main() {
     (AppThemeType.light, AppColors.light),
     (AppThemeType.dark, AppColors.dark),
   ]) {
-    testWidgets('paints the banner roles with 16 around the content ($type)', (
+    testWidgets('paints the banner roles at the home card height ($type)', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -32,10 +33,11 @@ void main() {
       expect(decoration?.boxShadow?.single.color, colors.scrim);
       final icon = find.byType(Image);
       expect(tester.widget<Image>(icon).color, colors.onBanner);
-      expect(
-        tester.getTopLeft(icon) - tester.getTopLeft(card.first),
-        const Offset(16, 16),
-      );
+      final cardRect = tester.getRect(card.first);
+      final iconRect = tester.getRect(icon);
+      expect(cardRect.height, greaterThanOrEqualTo(BullSizes.homeCard));
+      expect(iconRect.left - cardRect.left, 16);
+      expect(iconRect.center.dy, cardRect.center.dy);
     });
   }
 }

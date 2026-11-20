@@ -1,3 +1,10 @@
+/// Brightness-invariant component sizes (px).
+abstract final class BullSizes {
+  /// Minimum height shared by the cards stacked on a home screen: the quick
+  /// action bar, a wallet card and the banners above them.
+  static const double homeCard = 90;
+}
+
 /// Brightness-invariant spacing scale (px).
 ///
 /// A fixed design-system scale — spacing never scales with screen size.

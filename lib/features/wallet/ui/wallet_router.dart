@@ -24,6 +24,8 @@ class WalletRouter {
     required QuickActionsCubit quickActions,
     required void Function(BuildContext, QuickAction) onQuickAction,
     required void Function(BuildContext) onCustomizeQuickActions,
+    required ExchangePromptCubit exchangePrompt,
+    required void Function(BuildContext) onActivateExchange,
     required NetworkWalletSetupCubit Function() createSetupCubit,
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
@@ -43,6 +45,8 @@ class WalletRouter {
           quickActions: quickActions,
           onQuickAction: onQuickAction,
           onCustomizeQuickActions: onCustomizeQuickActions,
+          exchangePrompt: exchangePrompt,
+          onActivateExchange: onActivateExchange,
         ),
       );
     },

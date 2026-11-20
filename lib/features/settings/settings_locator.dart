@@ -2,11 +2,11 @@ import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_fa
 
 import 'dart:io';
 
+import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/data/quick_actions_storage.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
@@ -78,6 +78,15 @@ class SettingsLocator {
               .where((state) => state.storedSettings != null)
               .map((state) => !Platform.isIOS || state.isSuperuser == true),
         ).execute(),
+        exchangeEntry: _exchangeActivationOffer(locator, onlyWhileOff: false),
+      ),
+      dispose: (cubit) => cubit.close(),
+    );
+    locator.registerLazySingleton<ExchangePromptCubit>(
+      () => createExchangePromptCubit(
+        storage: SettingsQuickActionsStorage(),
+        warning: log.warning,
+        offered: _exchangeActivationOffer(locator, onlyWhileOff: true),
       ),
       dispose: (cubit) => cubit.close(),
     );
@@ -262,4 +271,17 @@ class SettingsLocator {
       ),
     );
   }
+
+  static Stream<bool> _exchangeActivationOffer(
+    GetIt locator, {
+    required bool onlyWhileOff,
+  }) => WatchExchangeActivationOfferUsecase(
+    exchange: locator<ExchangeFacade>(),
+    platformAllowed: () =>
+        !Platform.isIOS || locator<SettingsCubit>().state.isSuperuser == true,
+    platformChanges: locator<SettingsCubit>().stream
+        .where((state) => state.storedSettings != null)
+        .map((state) => !Platform.isIOS || state.isSuperuser == true),
+    onlyWhileOff: onlyWhileOff,
+  ).execute();
 }

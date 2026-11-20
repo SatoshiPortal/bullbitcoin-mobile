@@ -1,16 +1,17 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/backup_card.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCarousel, BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullCarousel, BullInfoCard, BullSizes, Gap;
 import 'package:go_router/go_router.dart';
 
 class HomeWarnings extends StatelessWidget {
@@ -73,7 +74,18 @@ class HomeWarnings extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (errorCards.isNotEmpty) BullCarousel(children: errorCards),
+              if (errorCards.isNotEmpty)
+                BullCarousel(
+                  children: [
+                    for (final card in errorCards)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: BullSizes.homeCard,
+                        ),
+                        child: card,
+                      ),
+                  ],
+                ),
               if (showBackupWarning) ...[
                 if (errorCards.isNotEmpty) const Gap(5),
                 BackupCard(

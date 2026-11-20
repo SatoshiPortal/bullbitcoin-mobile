@@ -148,19 +148,21 @@ class ExchangeLandingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: BullButton.primary(
-                  label: context.loc.exchangeLoginButton,
-                  onPressed: () {
-                    context.goNamed(ExchangeRoute.exchangeAuth.name);
-                  },
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(13, 8, 13, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: BullButton.primary(
+                    label: context.loc.exchangeLoginButton,
+                    onPressed: () {
+                      context.goNamed(ExchangeRoute.exchangeAuth.name);
+                    },
+                  ),
                 ),
               ),
             ),
-            const Gap(16),
           ],
         ),
       ),

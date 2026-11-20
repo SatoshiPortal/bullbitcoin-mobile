@@ -6,9 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const all = QuickAction.values;
   const defaults = [
-    QuickAction.map,
-    QuickAction.transfer,
+    QuickAction.settings,
     QuickAction.history,
+    QuickAction.transfer,
     QuickAction.toggleAmounts,
   ];
 
@@ -16,13 +16,12 @@ void main() {
     final layout = QuickActionsLayout.resolve(available: all.toSet());
     expect(layout.primary, defaults.take(3));
     expect(layout.more, [
-      QuickAction.buy,
-      QuickAction.sell,
       QuickAction.pay,
       QuickAction.exchange,
       QuickAction.toggleAmounts,
       QuickAction.support,
       QuickAction.priceHistory,
+      QuickAction.map,
     ]);
     final disabled = QuickActionsLayout.resolve(available: defaults.toSet());
     expect(disabled.primary, defaults.take(3));
@@ -30,29 +29,47 @@ void main() {
   });
 
   test('injected defaults drive the row and its complement in More', () {
+    const injected = [
+      QuickAction.toggleAmounts,
+      QuickAction.map,
+      QuickAction.transfer,
+    ];
     final layout = QuickActionsLayout.resolve(
       available: all.toSet(),
-      defaults: QuickActionsLayout.iosDefaults,
+      defaults: injected,
     );
-    expect(layout.primary, QuickActionsLayout.iosDefaults);
-    expect(layout.more, contains(QuickAction.map));
+    expect(layout.primary, injected);
+    expect(layout.more, contains(QuickAction.support));
     expect(layout.more, isNot(contains(QuickAction.toggleAmounts)));
-    expect(layout.more, isNot(contains(QuickAction.history)));
+    expect(layout.more, isNot(contains(QuickAction.map)));
     expect(layout.more, isNot(contains(QuickAction.transfer)));
+  });
+
+  test('the catalogue has nine actions and iOS shares the default row', () {
+    expect(all, hasLength(9));
+    expect(all.map((action) => action.id), isNot(contains('buy')));
+    expect(all.map((action) => action.id), isNot(contains('sell')));
+    expect(QuickActionsLayout.defaults, [
+      QuickAction.settings,
+      QuickAction.history,
+      QuickAction.transfer,
+    ]);
+    expect(QuickActionsLayout.iosDefaults, QuickActionsLayout.defaults);
+    expect(QuickActionsLayout.moreOrder.toSet(), all.toSet());
   });
 
   test('unavailable custom actions retain their position when restored', () {
     final selection = QuickActionSelection([
-      QuickAction.buy,
+      QuickAction.pay,
       QuickAction.transfer,
-      QuickAction.map,
+      QuickAction.settings,
     ]);
     final unavailable = QuickActionsLayout.resolve(
       available: defaults.toSet(),
 
       selection: selection,
     );
-    expect(unavailable.primary, [QuickAction.transfer, QuickAction.map]);
+    expect(unavailable.primary, [QuickAction.transfer, QuickAction.settings]);
     expect(unavailable.more, [QuickAction.toggleAmounts, QuickAction.history]);
     final restored = QuickActionsLayout.resolve(
       available: all.toSet(),
@@ -60,9 +77,9 @@ void main() {
       selection: selection,
     );
     expect(restored.primary, [
-      QuickAction.buy,
+      QuickAction.pay,
       QuickAction.transfer,
-      QuickAction.map,
+      QuickAction.settings,
     ]);
   });
 
@@ -71,21 +88,21 @@ void main() {
     () {
       final reordered = QuickActionSelection([
         QuickAction.transfer,
-        QuickAction.sell,
-        QuickAction.map,
-        QuickAction.buy,
+        QuickAction.exchange,
+        QuickAction.settings,
+        QuickAction.pay,
       ]);
       final hidden = QuickActionsLayout.resolve(
         available: defaults.toSet(),
 
         selection: reordered,
       );
-      expect(hidden.primary, [QuickAction.transfer, QuickAction.map]);
+      expect(hidden.primary, [QuickAction.transfer, QuickAction.settings]);
       expect(reordered.actions, [
         QuickAction.transfer,
-        QuickAction.sell,
-        QuickAction.map,
-        QuickAction.buy,
+        QuickAction.exchange,
+        QuickAction.settings,
+        QuickAction.pay,
       ]);
       final restored = QuickActionsLayout.resolve(
         available: reordered.actions.toSet(),
@@ -93,7 +110,7 @@ void main() {
         selection: reordered,
       );
       expect(restored.primary, reordered.actions.take(3));
-      expect(restored.more, [QuickAction.buy]);
+      expect(restored.more, [QuickAction.pay]);
     },
   );
 
@@ -106,19 +123,19 @@ void main() {
     expect(layout.primary, isEmpty);
     expect(layout.more, [
       QuickAction.toggleAmounts,
-      QuickAction.map,
       QuickAction.transfer,
       QuickAction.history,
+      QuickAction.settings,
     ]);
   });
 
   test('more includes overflow favorites in canonical order', () {
     final selected = QuickActionSelection([
       QuickAction.exchange,
-      QuickAction.buy,
+      QuickAction.pay,
       QuickAction.map,
       QuickAction.toggleAmounts,
-      QuickAction.sell,
+      QuickAction.history,
     ]);
     final layout = QuickActionsLayout.resolve(
       available: selected.actions.toSet(),
@@ -127,16 +144,16 @@ void main() {
     );
     expect(layout.primary, [
       QuickAction.exchange,
-      QuickAction.buy,
+      QuickAction.pay,
       QuickAction.map,
     ]);
-    expect(layout.more, [QuickAction.sell, QuickAction.toggleAmounts]);
+    expect(layout.more, [QuickAction.toggleAmounts, QuickAction.history]);
     expect(selected.actions, hasLength(5));
   });
 
   test('selection rejects duplicates while allowing more than four', () {
     expect(
-      () => QuickActionSelection([QuickAction.buy, QuickAction.buy]),
+      () => QuickActionSelection([QuickAction.pay, QuickAction.pay]),
       throwsArgumentError,
     );
     expect(QuickActionSelection(all.take(5)).actions, hasLength(5));
@@ -147,7 +164,7 @@ void main() {
     () async {
       final storage = MemoryStorage()
         ..value = jsonEncode({
-          'home': ['buy', 'future', 'map'],
+          'home': ['pay', 'future', 'map'],
           'more': [],
         });
       final facade = createQuickActionsCubit(
@@ -156,13 +173,13 @@ void main() {
         exchangeVisible: Stream.value(true),
       );
       expect((await facade.load())?.actions, [
-        QuickAction.buy,
+        QuickAction.pay,
         QuickAction.map,
       ]);
       expect(
         storage.value,
         jsonEncode({
-          'home': ['buy', 'future', 'map'],
+          'home': ['pay', 'future', 'map'],
           'more': [],
         }),
       );
@@ -171,8 +188,23 @@ void main() {
     },
   );
 
+  test('retired buy and sell ids are ignored without rewriting', () async {
+    const raw = '{"home":["map","buy","transfer"],"more":["sell"]}';
+    final storage = MemoryStorage()..value = raw;
+    final cubit = createQuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
+    addTearDown(cubit.close);
+    final selection = await cubit.load();
+    expect(selection?.actions, [QuickAction.map, QuickAction.transfer]);
+    expect(selection?.more, isEmpty);
+    expect(storage.value, raw);
+  });
+
   test(
-    'a retired settings-only selection leaves every action in More',
+    'a stored settings-only selection keeps Settings alone on Home',
     () async {
       final storage = MemoryStorage()
         ..value = '{"home":["settings"],"more":[]}';
@@ -187,8 +219,8 @@ void main() {
         available: cubit.state.available,
         selection: selection,
       );
-      expect(layout.primary, isEmpty);
-      expect(layout.more, contains(QuickAction.toggleAmounts));
+      expect(layout.primary, [QuickAction.settings]);
+      expect(layout.more, contains(QuickAction.history));
       expect(storage.value, '{"home":["settings"],"more":[]}');
     },
   );

@@ -9,12 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'quick_actions_test.dart' show MemoryStorage;
 
 const defaults = [
-  QuickAction.map,
+  QuickAction.support,
+  QuickAction.priceHistory,
   QuickAction.transfer,
-  QuickAction.history,
   QuickAction.toggleAmounts,
 ];
-const available = {...defaults, QuickAction.support, QuickAction.priceHistory};
+const available = {...defaults, QuickAction.map};
 
 class DelayedStorage extends MemoryStorage {
   final ready = Completer<String?>();
@@ -118,11 +118,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Edit'), findsOneWidget);
     expect(find.text('Show'), findsOneWidget);
-    expect(find.text('Support'), findsOneWidget);
-    expect(find.text('Price'), findsOneWidget);
+    expect(find.text('Map'), findsOneWidget);
+    expect(find.text('Exchange'), findsOneWidget);
     final amounts = tester.getCenter(find.text('Show'));
-    final support = tester.getCenter(find.text('Support'));
-    expect(amounts.dy, closeTo(support.dy, .01));
+    final exchange = tester.getCenter(find.text('Exchange'));
+    expect(amounts.dy, closeTo(exchange.dy, .01));
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
     expect(edits, 1);

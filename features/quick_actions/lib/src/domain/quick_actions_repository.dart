@@ -20,4 +20,8 @@ abstract interface class QuickActionsRepository {
   );
   @useResult
   Future<Result<void, QuickActionsFailure>> reset();
+  @useResult
+  Future<Result<bool, QuickActionsFailure>> exchangePromptDismissed();
+  @useResult
+  Future<Result<void, QuickActionsFailure>> dismissExchangePrompt();
 }

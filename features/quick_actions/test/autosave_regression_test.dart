@@ -32,13 +32,13 @@ void main() {
     );
     await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pumpAndSettle();
-    expect(homeValue(storage.value), '["transfer","history"]');
+    expect(homeValue(storage.value), '["transfer","support"]');
     expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
 }
 
 class _Storage implements QuickActionsStorage {
-  String? value = '{"home":["map","transfer","history"],"more":[]}';
+  String? value = '{"home":["map","transfer","support"],"more":[]}';
 
   @override
   Future<String?> read(String key) async => value;

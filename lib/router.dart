@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -75,11 +77,11 @@ class AppRouter {
     onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
-    onAction: (context, action) => _openQuickAction(context, switch (action) {
-      ExchangeHomeAction.buy => QuickAction.buy,
-      ExchangeHomeAction.sell => QuickAction.sell,
-      ExchangeHomeAction.pay => QuickAction.pay,
-      ExchangeHomeAction.transfer => QuickAction.transfer,
+    onAction: (context, action) => context.pushNamed(switch (action) {
+      ExchangeHomeAction.buy => BuyRoute.buy.name,
+      ExchangeHomeAction.sell => SellRoute.sell.name,
+      ExchangeHomeAction.pay => PayRoute.pay.name,
+      ExchangeHomeAction.transfer => SwapRoute.swap.name,
     }),
   );
 
@@ -93,18 +95,45 @@ class AppRouter {
         context.pushNamed(SwapRoute.swap.name);
       case QuickAction.history:
         context.pushNamed(TransactionsRoute.transactions.name);
+      case QuickAction.settings:
+        context.pushNamed(SettingsRoute.settings.name);
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
         context.pushNamed(SettingsRoute.priceHistory.name);
-      case QuickAction.buy:
-        context.pushNamed(BuyRoute.buy.name);
-      case QuickAction.sell:
-        context.pushNamed(SellRoute.sell.name);
       case QuickAction.pay:
         context.pushNamed(PayRoute.pay.name);
       case QuickAction.exchange:
-        context.pushNamed(ExchangeRoute.exchangeHome.name);
+        if (locator<ExchangeFacade>().currentAccess is ExchangeAccessDisabled) {
+          unawaited(_activateExchange(context));
+        } else {
+          context.pushNamed(ExchangeRoute.exchangeHome.name);
+        }
+    }
+  }
+
+  static bool _activatingExchange = false;
+
+  static Future<void> _activateExchange(BuildContext context) async {
+    if (_activatingExchange) return;
+    _activatingExchange = true;
+    final bool enabled;
+    try {
+      enabled = await SettingsFacade.enableExchange(
+        context,
+        createCubit: () => locator<ExchangeAccessSettingsCubit>(),
+      );
+    } finally {
+      _activatingExchange = false;
+    }
+    if (!enabled || !context.mounted) return;
+    final signedIn = ExchangeAvailability.canManageAccount(
+      locator<ExchangeFacade>().currentAccess,
+    );
+    if (signedIn) {
+      context.pushNamed(ExchangeRoute.exchangeHome.name);
+    } else {
+      context.goNamed(ExchangeRoute.exchangeAuth.name);
     }
   }
 
@@ -166,12 +195,7 @@ class AppRouter {
                 child: Scaffold(
                   // The app bar of the exchange tab is rendered by the
                   // ExchangeHomeScreen itself, as an overlay.
-                  appBar: tabIndex == 0
-                      ? WalletHomeAppBar(
-                          onSettings: () =>
-                              context.pushNamed(SettingsRoute.settings.name),
-                        )
-                      : null,
+                  appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
                 ),
@@ -188,6 +212,8 @@ class AppRouter {
             onQuickAction: _openQuickAction,
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
+            exchangePrompt: locator<ExchangePromptCubit>(),
+            onActivateExchange: _activateExchange,
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),

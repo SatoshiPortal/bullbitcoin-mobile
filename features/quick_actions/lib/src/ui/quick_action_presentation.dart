@@ -7,12 +7,11 @@ extension QuickActionPresentation on QuickAction {
   String label(QuickActionsLocalizations l10n, {bool amountsHidden = false}) =>
       switch (this) {
         QuickAction.toggleAmounts => amountsHidden ? l10n.show : l10n.hide,
-        QuickAction.buy => l10n.buy,
-        QuickAction.sell => l10n.sell,
         QuickAction.pay => l10n.pay,
         QuickAction.transfer => l10n.transfer,
         QuickAction.map => l10n.map,
         QuickAction.history => l10n.history,
+        QuickAction.settings => l10n.settings,
         QuickAction.support => l10n.support,
         QuickAction.priceHistory => l10n.priceHistory,
         QuickAction.exchange => l10n.quickActionTrade,
@@ -32,12 +31,11 @@ extension QuickActionPresentation on QuickAction {
 
   IconData get icon => switch (this) {
     QuickAction.toggleAmounts => BullIcons.currencyBitcoin,
-    QuickAction.buy => BullIcons.addCircleOutline,
-    QuickAction.sell => BullIcons.sell,
     QuickAction.pay => BullIcons.receiptLong,
     QuickAction.transfer => BullIcons.swapHoriz,
     QuickAction.map => BullIcons.map,
     QuickAction.history => BullIcons.history,
+    QuickAction.settings => BullIcons.settings,
     QuickAction.support => BullIcons.supportAgent,
     QuickAction.priceHistory => BullIcons.showChart,
     QuickAction.exchange => BullIcons.candlestickChart,
