@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullTransactionListItem;
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
@@ -12,7 +14,6 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletDetailBalanceCard;
-import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
@@ -222,7 +223,7 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.byType(TxListItem), findsOneWidget);
+    expect(find.byType(BullTransactionListItem), findsOneWidget);
   });
 
   // The flag itself is computed by LoadSpWalletDataUsecase (see its test); the
@@ -341,7 +342,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Verification failed'), findsOneWidget);
-    expect(find.byType(TxListItem), findsOneWidget);
+    expect(find.byType(BullTransactionListItem), findsOneWidget);
   });
 
   testWidgets('a confirmed payment with no time sits under Verifying', (
