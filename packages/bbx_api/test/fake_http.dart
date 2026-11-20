@@ -9,6 +9,9 @@ class FakeHttp implements HttpClientAdapter {
   final Object? body;
   final List<RequestOptions> requests = [];
 
+  /// The encoded body of each request that had one.
+  final List<List<int>> bodies = [];
+
   FakeHttp({this.status = 200, this.body});
 
   static Dio dio({int status = 200, Object? body}) =>
@@ -22,6 +25,9 @@ class FakeHttp implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     requests.add(options);
+    if (requestStream != null) {
+      bodies.add([for (final chunk in await requestStream.toList()) ...chunk]);
+    }
     return ResponseBody.fromString(
       jsonEncode(body),
       status,

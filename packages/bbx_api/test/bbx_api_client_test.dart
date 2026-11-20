@@ -71,4 +71,47 @@ void main() {
       ),
     );
   });
+
+  group('upload', () {
+    test(
+      'posts the fields and files as multipart and returns the body',
+      () async {
+        final dio = FakeHttp.dio(body: {'ok': true});
+        final body = await BbxApiClient(dio).upload(
+          '/ak/api-x/upload',
+          fields: {'meta': '{}'},
+          files: {
+            'file': const BbxApiFile([7, 8], fileName: 'f.bin'),
+          },
+        );
+
+        expect(body, {'ok': true});
+        final http = dio.httpClientAdapter as FakeHttp;
+        final request = http.requests.single;
+        expect(request.path, '/ak/api-x/upload');
+        expect(request.method, 'POST');
+        final form = request.data as FormData;
+        expect(
+          request.contentType,
+          'multipart/form-data; boundary=${form.boundary}',
+        );
+        expect(
+          [for (final f in form.fields) (f.key, f.value)],
+          [('meta', '{}')],
+        );
+        expect(form.files.single.key, 'file');
+        expect(form.files.single.value.filename, 'f.bin');
+        expect(http.bodies.single, containsAllInOrder([7, 8]));
+      },
+    );
+
+    test('a non-200 status throws its status', () async {
+      await expectLater(
+        BbxApiClient(FakeHttp.dio(status: 201)).upload('/x'),
+        throwsA(
+          isA<BbxApiHttpException>().having((e) => e.statusCode, 'status', 201),
+        ),
+      );
+    });
+  });
 }

@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_d
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
@@ -22,6 +21,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_me
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
@@ -78,6 +78,10 @@ class ExchangeLocator {
           ),
         ),
         instanceName: '${environment}BbxApiClient',
+      );
+      locator.registerLazySingleton<BbxApiClient>(
+        () => BbxApiClient(_authenticatedClient(locator, isTestnet: isTestnet)),
+        instanceName: '${environment}BbxApiClientWithoutTimeout',
       );
       locator.registerLazySingleton<ExchangeSupportChatDatasource>(
         () => ExchangeSupportChatDatasource(
@@ -158,31 +162,19 @@ class ExchangeLocator {
       );
     }
 
-    locator.registerLazySingleton<ExchangeSupportChatRepository>(
-      () => ExchangeSupportChatRepositoryImpl(
-        datasource: locator<ExchangeSupportChatDatasource>(
-          instanceName: 'mainnetExchangeSupportChatDatasource',
+    for (final environment in ['mainnet', 'testnet']) {
+      locator.registerLazySingleton<ExchangeSupportChatRepository>(
+        () => BbxApiSupportChatRepository(
+          users: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClient',
+          ).users,
+          commcenter: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClientWithoutTimeout',
+          ).commcenter,
         ),
-
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'mainnetExchangeSupportChatRepository',
-    );
-
-    locator.registerLazySingleton<ExchangeSupportChatRepository>(
-      () => ExchangeSupportChatRepositoryImpl(
-        datasource: locator<ExchangeSupportChatDatasource>(
-          instanceName: 'testnetExchangeSupportChatDatasource',
-        ),
-
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'testnetExchangeSupportChatRepository',
-    );
+        instanceName: '${environment}ExchangeSupportChatRepository',
+      );
+    }
   }
 
   static void registerUseCases(GetIt locator) {
