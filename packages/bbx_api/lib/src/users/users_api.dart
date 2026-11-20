@@ -22,13 +22,14 @@ class UsersApi {
   }
 
   /// Records the user's consent to the scam warning. Returns whether the
-  /// server reported `success: true`.
+  /// server reported `success: true`; any other result, including one that
+  /// is not an object, is `false`.
   Future<bool> registerResponsibilityConsent() async {
-    final result = read<Map<String, dynamic>?>(
-      await _client.call(endpoint, 'registerResponsibilityConsent'),
-      'result',
+    final result = await _client.call(
+      endpoint,
+      'registerResponsibilityConsent',
     );
-    return result?['success'] == true;
+    return result is Map<String, dynamic> && result['success'] == true;
   }
 
   /// Saves [preferences], replacing the stored set.

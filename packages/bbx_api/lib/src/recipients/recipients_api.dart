@@ -3,12 +3,14 @@ import 'package:bbx_api/src/bbx_api_exception.dart';
 import 'package:bbx_api/src/json.dart';
 import 'package:bbx_api/src/recipients/cad_biller.dart';
 import 'package:bbx_api/src/recipients/fiat_recipient.dart';
+import 'package:bbx_api/src/recipients/institution.dart';
 import 'package:bbx_api/src/recipients/my_recipient.dart';
 import 'package:bbx_api/src/recipients/new_fiat_recipient.dart';
+import 'package:bbx_api/src/recipients/payment_processor_details.dart';
 import 'package:bbx_api/src/recipients/virtual_accounts.dart';
 
-/// The `api-recipients` endpoint: payout recipients, the virtual IBAN and
-/// SEPA virtual payees.
+/// The `api-recipients` endpoint: payout recipients, the virtual IBAN, SEPA
+/// virtual payees and funding instructions.
 ///
 /// The fiat recipient calls ask for version 2 of the API with the
 /// `x-api-version` header; the others use the default version.
@@ -151,6 +153,40 @@ class RecipientsApi {
       CadBiller.fromJson,
     );
     return CadBillerSearch(billers: billers, skippedElements: skipped);
+  }
+
+  /// The user's funding instructions for the incoming payment processor
+  /// [paymentProcessorCode], e.g. `IN_CAD_EMAIL_TRANSFER_APL`.
+  ///
+  /// The request also carries `bankCode`, `amount` and `callbackUrl` as
+  /// null, like the app always sent them.
+  Future<PaymentProcessorDetails> getUserPaymentProcessorCode(
+    String paymentProcessorCode,
+  ) async => PaymentProcessorDetails.fromJson(
+    await _result('getUserPaymentProcessorCode', {
+      'paymentProcessorCode': paymentProcessorCode,
+      'bankCode': null,
+      'amount': null,
+      'callbackUrl': null,
+    }),
+  );
+
+  /// The banks of the country [countryCode] (lowercase ISO 3166-1 alpha-2).
+  /// A missing element list is empty.
+  Future<InstitutionList> listInstitutionCodes({
+    required String countryCode,
+  }) async {
+    final result = await _result('listInstitutionCodes', {
+      'countryCode': countryCode,
+    });
+    final (institutions, skipped) = _lenientList(
+      result['elements'],
+      Institution.fromJson,
+    );
+    return InstitutionList(
+      institutions: institutions,
+      skippedElements: skipped,
+    );
   }
 
   /// The user's virtual IBAN, or null when they have none.

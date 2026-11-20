@@ -194,6 +194,29 @@ class OrdersApi {
       },
   });
 
+  /// The payment link for a COP bank transfer of [amount] pesos from the
+  /// bank [bankCode]; the bank sends the user back to [callbackUrl].
+  ///
+  /// The request also carries `paymentProcessorCode` as null, like the app
+  /// always sent it.
+  Future<String> getCopPaymentLink({
+    required String bankCode,
+    required int amount,
+    required String callbackUrl,
+  }) async => read<String>(
+    await _client.call(
+      endpoint,
+      'getCopPaymentLink',
+      params: {
+        'paymentProcessorCode': null,
+        'bankCode': bankCode,
+        'amount': amount,
+        'callbackUrl': callbackUrl,
+      },
+    ),
+    'result',
+  );
+
   /// Confirms the order [orderId] and returns it.
   Future<OrderSummary> confirmOrderSummary(String orderId) =>
       _orderCall('confirmOrderSummary', {'orderId': orderId});

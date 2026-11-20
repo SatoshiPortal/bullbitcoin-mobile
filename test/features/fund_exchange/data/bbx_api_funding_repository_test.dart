@@ -1,0 +1,583 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
+import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
+import 'package:bb_mobile/features/fund_exchange/data/bullbitcoin_api_funding_repository.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:bbx_api/bbx_api.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+
+import '../../exchange/data/bbx_api_test_http.dart';
+import '../result_helpers.dart';
+
+const _iban = 'DE89370400440532013000';
+
+const _methods = <FundingMethod>[
+  EmailETransfer(),
+  BankTransferWire(),
+  OnlineBillPayment(),
+  CanadaPost(),
+  InstantSepa(),
+  RegularSepa(),
+  SpeiTransfer(),
+  Sinpe(),
+  CrIbanCrc(),
+  CrIbanUsd(),
+  ArsBankTransfer(),
+  CopBankTransfer(bankCode: 'BC01', amountCop: 50000),
+];
+
+/// Funding instructions with every field any method reads, split between
+/// `element` and `ppExtraData` like the server does, with a numeric value.
+const _details = {
+  'result': {
+    'element': {'code': 'ABC123', 'userNbr': 7, 'IBAN': 'overridden'},
+    'ppExtraData': {
+      'BENEFICIARY NAME': 'Bull Bitcoin',
+      'BENEFICIARY EMAIL': 'pay@example.com',
+      'BANK ACCOUNT DETAILS': 'details',
+      'IBAN': _iban,
+      'SWIFT': 'SWIFTXX',
+      'INSTITUTION NUMBER': 1,
+      'TRANSIT NUMBER': '12345',
+      'ACCOUNT NUMBER': '1234567',
+      'ROUTING NUMBER': '021000021',
+      'BENEFICIARY ADDRESS': '1 Main St',
+      'BANK ADDRESS': '2 Bank St',
+      'BANK NAME': 'Bank',
+      'BILLER NAME': 'Bull Bitcoin Biller',
+      'BIC': 'BICXX',
+      'BANK ACCOUNT COUNTRY': 'FR',
+      'BANK COUNTRY': 'DE',
+      'CLABE': '002010077777777771',
+      'CÉDULA JURÍDICA': '3-101-123456',
+      'CVU': '0000003100010000000001',
+      'NUM TELEFONO': 88888888,
+    },
+  },
+};
+
+Map<String, dynamic> _rpcError(Object? code) => {
+  'error': {
+    'code': -32000,
+    'message': 'Internal error',
+    'data': {
+      'apiError': {'code': code, 'en': 'Recipient $_iban is not active'},
+    },
+  },
+};
+
+/// Everything the app reads from funding details.
+Map<String, Object?> _canonical(FundingDetails d) => switch (d) {
+  ETransferFundingDetails() => {
+    'type': 'etransfer',
+    'secretQuestion': d.secretQuestion,
+    'beneficiaryName': d.beneficiaryName,
+    'beneficiaryEmail': d.beneficiaryEmail,
+  },
+  CanadaPostFundingDetails() => {'type': 'canadaPost', 'code': d.code},
+  BillPaymentFundingDetails() => {
+    'type': 'bill',
+    'code': d.code,
+    'billerName': d.billerName,
+  },
+  InstantSepaFundingDetails() => {
+    'type': 'instantSepa',
+    'code': d.code,
+    'iban': d.iban,
+    'bic': d.bic,
+    'beneficiaryName': d.beneficiaryName,
+    'beneficiaryAddress': d.beneficiaryAddress,
+    'bankAccountCountry': d.bankAccountCountry,
+  },
+  RegularSepaFundingDetails() => {
+    'type': 'regularSepa',
+    'code': d.code,
+    'iban': d.iban,
+    'bic': d.bic,
+    'beneficiaryName': d.beneficiaryName,
+    'beneficiaryAddress': d.beneficiaryAddress,
+    'bankCountry': d.bankCountry,
+  },
+  WireFundingDetails() => {
+    'type': 'wire',
+    'code': d.code,
+    'beneficiaryName': d.beneficiaryName,
+    'bankAccountDetails': d.bankAccountDetails,
+    'iban': d.iban,
+    'swift': d.swift,
+    'institutionNumber': d.institutionNumber,
+    'transitNumber': d.transitNumber,
+    'accountNumber': d.accountNumber,
+    'routingNumber': d.routingNumber,
+    'beneficiaryAddress': d.beneficiaryAddress,
+    'bankAddress': d.bankAddress,
+    'bankName': d.bankName,
+  },
+  SpeiFundingDetails() => {
+    'type': 'spei',
+    'code': d.code,
+    'bankName': d.bankName,
+    'beneficiaryName': d.beneficiaryName,
+    'clabe': d.clabe,
+  },
+  SinpeFundingDetails() => {
+    'type': 'sinpe',
+    'number': d.number,
+    'beneficiaryName': d.beneficiaryName,
+  },
+  CrIbanCrcFundingDetails() => {
+    'type': 'crIbanCrc',
+    'iban': d.iban,
+    'code': d.code,
+    'beneficiaryName': d.beneficiaryName,
+    'cedulaJuridica': d.cedulaJuridica,
+  },
+  CrIbanUsdFundingDetails() => {
+    'type': 'crIbanUsd',
+    'iban': d.iban,
+    'code': d.code,
+    'beneficiaryName': d.beneficiaryName,
+    'cedulaJuridica': d.cedulaJuridica,
+  },
+  ArsBankTransferFundingDetails() => {
+    'type': 'ars',
+    'beneficiaryName': d.beneficiaryName,
+    'cvu': d.cvu,
+  },
+  CopBankTransferFundingDetails() => {
+    'type': 'cop',
+    'paymentLink': d.paymentLink,
+  },
+};
+
+Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
+  final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
+    ..httpClientAdapter = http;
+  if (readApiKey != null) addExchangeAuthentication(dio, readApiKey);
+  return dio;
+}
+
+FundingRepository _old(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
+    BullBitcoinApiFundingRepository(
+      authenticatedApiClient: _dio(http, readApiKey: key),
+    );
+
+FundingRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
+    BbxApiFundingRepository(api: BbxApiClient(_dio(http, readApiKey: key)));
+
+/// The path and JSON text of each request.
+List<(String, String)> _sent(FakeBbxHttp http) => [
+  for (final r in http.requests) (r.path, jsonEncode(r.data)),
+];
+
+typedef _Operation = Future<Result<Object?, FundExchangeFailure>> Function(
+  FundingRepository,
+);
+
+final _operations = <String, _Operation>{
+  'getFundingDetails': (r) =>
+      r.getFundingDetails(fundingMethod: const RegularSepa()),
+  'getFundingDetails (COP)': (r) => r.getFundingDetails(
+    fundingMethod: const CopBankTransfer(bankCode: 'BC01', amountCop: 1),
+  ),
+  'listInstitutions': (r) =>
+      r.listInstitutions(jurisdiction: FundingJurisdiction.colombia),
+  'registerResponsibilityConsent': (r) => r.registerResponsibilityConsent(),
+};
+
+/// Runs [call] on the old and the new repository against the same answer.
+Future<
+  (
+    (List<(String, String)>, Result<Object?, FundExchangeFailure>),
+    (List<(String, String)>, Result<Object?, FundExchangeFailure>),
+  )
+>
+_both(
+  _Operation call, {
+  Object? body,
+  int status = 200,
+  DioExceptionType? error,
+  ReadExchangeApiKey? key,
+}) async {
+  final oldHttp = FakeBbxHttp(body: body, status: status, error: error);
+  final newHttp = FakeBbxHttp(body: body, status: status, error: error);
+  final oldResult = await call(_old(oldHttp, key: key));
+  final newResult = await call(_new(newHttp, key: key));
+  return ((_sent(oldHttp), oldResult), (_sent(newHttp), newResult));
+}
+
+void main() {
+  group('getFundingDetails matches the old repository', () {
+    for (final method in _methods) {
+      test(method.runtimeType.toString(), () async {
+        final isCop = method is CopBankTransfer;
+        final ((oldSent, oldResult), (sent, result)) = await _both(
+          (r) => r.getFundingDetails(fundingMethod: method),
+          body: isCop ? {'result': 'https://pay.example/cop'} : _details,
+        );
+
+        expect(sent, oldSent);
+        expect(sent.single.$1, isCop ? '/ak/api-orders' : '/ak/api-recipients');
+        expect(
+          _canonical(valueOf(result)! as FundingDetails),
+          _canonical(valueOf(oldResult)! as FundingDetails),
+        );
+      });
+    }
+
+    test('sends the COP bank, amount and app callback', () async {
+      final http = FakeBbxHttp(body: {'result': 'https://pay.example/cop'});
+
+      final result = await _new(http).getFundingDetails(
+        fundingMethod: const CopBankTransfer(
+          bankCode: 'BC01',
+          amountCop: 50000,
+        ),
+      );
+
+      expect(
+        _sent(http).single.$2,
+        '{"jsonrpc":"2.0","id":"0","method":"getCopPaymentLink","params":'
+        '{"paymentProcessorCode":null,"bankCode":"BC01","amount":50000,'
+        '"callbackUrl":"${ApiServiceConstants.bbAppUrl}"}}',
+      );
+      expect(
+        (valueOf(result) as CopBankTransferFundingDetails).paymentLink,
+        'https://pay.example/cop',
+      );
+    });
+
+    test('reads the phone number aliases and the extra data', () async {
+      for (final alias in [
+        'NUM TELEFONO',
+        'NUM_TELEFONO',
+        'PHONE NUMBER',
+        'phoneNumber',
+      ]) {
+        final http = FakeBbxHttp(
+          body: {
+            'result': {
+              'element': {alias: 88888888},
+              'ppExtraData': {'BENEFICIARY NAME': 'Bull Bitcoin'},
+            },
+          },
+        );
+
+        final details = valueOf(
+          await _new(http).getFundingDetails(fundingMethod: const Sinpe()),
+        ) as SinpeFundingDetails;
+
+        expect(details.number, '88888888', reason: alias);
+        expect(details.beneficiaryName, 'Bull Bitcoin');
+      }
+    });
+  });
+
+  group('listInstitutions matches the old repository', () {
+    for (final jurisdiction in FundingJurisdiction.values) {
+      test('sends the lowercase country code of $jurisdiction', () async {
+        final ((oldSent, _), (sent, _)) = await _both(
+          (r) => r.listInstitutions(jurisdiction: jurisdiction),
+          body: {
+            'result': {'elements': <Object?>[]},
+          },
+        );
+
+        expect(sent, oldSent);
+        expect(
+          sent.single.$2,
+          '{"jsonrpc":"2.0","id":"0","method":"listInstitutionCodes",'
+          '"params":{"countryCode":"${jurisdiction.code.toLowerCase()}"}}',
+        );
+      });
+    }
+
+    test('keeps and skips the same elements', () async {
+      const type = {
+        'code': 'SAVINGS',
+        'name': 'Savings',
+        'minAddressLength': 8,
+        'maxAddressLength': 16,
+      };
+      final ((_, oldResult), (_, result)) = await _both(
+        (r) => r.listInstitutions(jurisdiction: FundingJurisdiction.colombia),
+        body: {
+          'result': {
+            'elements': [
+              {
+                'code': ' BC01 ',
+                'name': 'Bancolombia',
+                'accountTypes': [type],
+              },
+              {
+                'code': 'DV01',
+                'name': 'Davivienda',
+                'accounTypes': [type],
+              },
+              {'code': '', 'name': 'Blank', 'accountTypes': <Object?>[]},
+              {'code': 'NM01', 'name': '  ', 'accountTypes': <Object?>[]},
+              {'code': 'NT01', 'name': 'No types'},
+              {
+                'code': 'BT01',
+                'name': 'Bad type',
+                'accountTypes': [
+                  {'code': 'X'},
+                ],
+              },
+              {'code': 1, 'name': 'Numeric', 'accountTypes': <Object?>[]},
+              'not an object',
+            ],
+          },
+        },
+      );
+
+      List<(String, String)> institutions(
+        Result<Object?, FundExchangeFailure> r,
+      ) => [
+        for (final i in valueOf(r)! as List<FundingInstitution>)
+          (i.code, i.name),
+      ];
+      expect(institutions(result), institutions(oldResult));
+      expect(institutions(result), [
+        ('BC01', 'Bancolombia'),
+        ('DV01', 'Davivienda'),
+      ]);
+    });
+
+    for (final body in [
+      {
+        'result': {'elements': <Object?>[]},
+      },
+      {'result': <String, Object?>{}},
+      {
+        'result': {
+          'elements': [
+            {'code': '', 'name': '', 'accountTypes': <Object?>[]},
+          ],
+        },
+      },
+    ]) {
+      test('$body is NoInstitutionsFailure', () async {
+        final ((_, oldResult), (_, result)) = await _both(
+          (r) => r.listInstitutions(jurisdiction: FundingJurisdiction.canada),
+          body: body,
+        );
+
+        expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
+        expect(failureOf(oldResult), isA<FundExchangeNoInstitutionsFailure>());
+      });
+    }
+  });
+
+  group('registerResponsibilityConsent matches the old repository', () {
+    for (final result in <Object?>[
+      true,
+      null,
+      {'success': true},
+      {'success': false},
+      'ok',
+    ]) {
+      test('a result of $result is a consent', () async {
+        final ((oldSent, oldResult), (sent, newResult)) = await _both(
+          (r) => r.registerResponsibilityConsent(),
+          body: {'result': result},
+        );
+
+        expect(sent, oldSent);
+        expect(sent.single, (
+          '/ak/api-users',
+          '{"jsonrpc":"2.0","id":"0","method":'
+              '"registerResponsibilityConsent","params":{}}',
+        ));
+        expect(newResult, isA<Ok<void, FundExchangeFailure>>());
+        expect(oldResult, isA<Ok<void, FundExchangeFailure>>());
+      });
+    }
+  });
+
+  group('failures match the old repository', () {
+    final answers =
+        <String, ({Object? body, int status, DioExceptionType? error})>{
+          for (final code in [
+            'ERR_ORD_PO404',
+            'ERR_RCP_PO404',
+            'ERR_RCP_POSINPE404',
+            'ERR_ORD_KYC400',
+            'ERR_ORD_COP400',
+            'ERR_ORD_CSRCP400',
+            'ERR_RCP_400',
+            'ERR_SOMETHING_NEW',
+          ])
+            code: (body: _rpcError(code), status: 200, error: null),
+          'a numeric API code': (
+            body: _rpcError(400),
+            status: 200,
+            error: null,
+          ),
+          'a JSON-RPC error without data': (
+            body: {
+              'error': {'message': 'refused'},
+            },
+            status: 200,
+            error: null,
+          ),
+          for (final error in <Object>['refused', 42, true, <Object?>[]])
+            'a non-object error $error': (
+              body: {'error': error},
+              status: 200,
+              error: null,
+            ),
+          'status 503': (body: {}, status: 503, error: null),
+          'status 204': (body: {}, status: 204, error: null),
+          'a body that is not an object': (
+            body: 'oops',
+            status: 200,
+            error: null,
+          ),
+          'a result that is not an object': (
+            body: {'result': 42},
+            status: 200,
+            error: null,
+          ),
+          'a missing result': (
+            body: {'result': null},
+            status: 200,
+            error: null,
+          ),
+          for (final type in DioExceptionType.values)
+            if (type != DioExceptionType.unknown &&
+                type != DioExceptionType.cancel)
+              'a $type': (body: null, status: 200, error: type),
+        };
+
+    for (final MapEntry(key: name, value: call) in _operations.entries) {
+      for (final MapEntry(key: answer, value: a) in answers.entries) {
+        test('$name: $answer', () async {
+          final ((_, oldResult), (_, result)) = await _both(
+            call,
+            body: a.body,
+            status: a.status,
+            error: a.error,
+          );
+
+          switch ((oldResult, result)) {
+            case (Ok(), Ok()):
+              break;
+            case (Err(failure: final old), Err(:final failure)):
+              expect(failure.runtimeType, old.runtimeType);
+            default:
+              fail('old: $oldResult, new: $result');
+          }
+        });
+      }
+
+      test('$name: a missing API key is NotAuthenticated', () async {
+        final ((oldSent, oldResult), (sent, result)) = await _both(
+          call,
+          key: () async => const Ok(null),
+        );
+
+        expect(sent, isEmpty);
+        expect(oldSent, isEmpty);
+        expect(failureOf(result), isA<FundExchangeNotAuthenticatedFailure>());
+        expect(
+          failureOf(oldResult),
+          isA<FundExchangeNotAuthenticatedFailure>(),
+        );
+      });
+
+      test('$name: an unreadable API key is unexpected', () async {
+        final ((_, oldResult), (_, result)) = await _both(
+          call,
+          key: () async => const Err(ExchangeApiKeyReadFailure()),
+        );
+
+        expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+        expect(failureOf(result).logMessage, 'Exchange credential unavailable');
+        expect(failureOf(oldResult).logMessage, failureOf(result).logMessage);
+      });
+
+      test('$name: a programmer error is rethrown', () async {
+        await expectLater(
+          call(_new(_ThrowingAdapter(StateError('defect')))),
+          throwsStateError,
+        );
+      });
+
+      test('$name: an unknown adapter exception is unexpected', () async {
+        final repository = _new(_ThrowingAdapter(Exception('boom')));
+
+        final failure = failureOf(await call(repository));
+
+        expect(
+          failure,
+          name == 'registerResponsibilityConsent'
+              ? isA<FundExchangeConsentRegistrationFailure>()
+              : isA<FundExchangeUnexpectedFailure>(),
+        );
+      });
+    }
+
+    test('the failures keep the old log messages', () async {
+      Future<String?> logMessage(FakeBbxHttp http) async => failureOf(
+        await _new(http).getFundingDetails(fundingMethod: const RegularSepa()),
+      ).logMessage;
+
+      expect(await logMessage(FakeBbxHttp(status: 503)), 'HTTP 503');
+      expect(
+        await logMessage(FakeBbxHttp(error: DioExceptionType.connectionError)),
+        'Unreachable: connectionError',
+      );
+      expect(
+        await logMessage(FakeBbxHttp(error: DioExceptionType.badCertificate)),
+        'Transport failure: badCertificate',
+      );
+      // The JSON-RPC message, not the server's sentence, which can name the
+      // user's IBAN.
+      expect(
+        await logMessage(FakeBbxHttp(body: _rpcError('ERR_ORD_KYC400'))),
+        'Internal error',
+      );
+    });
+
+    test('a malformed element is unexpected, not a crash', () async {
+      final result = await _new(
+        FakeBbxHttp(
+          body: {
+            'result': {'element': 'ABC123'},
+          },
+        ),
+      ).getFundingDetails(fundingMethod: const CanadaPost());
+
+      expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+    });
+  });
+}
+
+class _ThrowingAdapter implements HttpClientAdapter {
+  final Object _error;
+
+  _ThrowingAdapter(this._error);
+
+  @override
+  void close({bool force = false}) {}
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw _error;
+}

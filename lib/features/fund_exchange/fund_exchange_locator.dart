@@ -12,10 +12,10 @@ import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_pa
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/data/settings_exchange_environment_adapter.dart';
 import 'package:bb_mobile/features/fund_exchange/data/url_launcher_external_link_adapter.dart';
-import 'package:bb_mobile/features/fund_exchange/data/bullbitcoin_api_funding_repository.dart';
+import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/data/funding_repository_impl.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
-import 'package:dio/dio.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:get_it/get_it.dart';
 
 class FundExchangeLocator {
@@ -38,15 +38,11 @@ class FundExchangeLocator {
 
     locator.registerLazySingleton<FundingRepository>(
       () => FundingRepositoryImpl(
-        bullbitcoinFundingRepository: BullBitcoinApiFundingRepository(
-          authenticatedApiClient: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiClient',
-          ),
+        bullbitcoinFundingRepository: BbxApiFundingRepository(
+          api: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
         ),
-        bullBitcoinTestnetFundingRepository: BullBitcoinApiFundingRepository(
-          authenticatedApiClient: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
-          ),
+        bullBitcoinTestnetFundingRepository: BbxApiFundingRepository(
+          api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
         ),
         exchangeEnvironment: locator<ExchangeEnvironmentPort>(),
       ),
