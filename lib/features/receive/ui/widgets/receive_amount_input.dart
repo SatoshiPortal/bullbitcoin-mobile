@@ -77,7 +77,6 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
         key: ValueKey((state.walletAdmitted, state.wallet?.id, state.type)),
         canonicalUnit: BitcoinUnit.sats,
         framed: widget.inCard,
-        currencySheetStyle: BullSheetStyle.redesign(context),
         emptyEquivalent: widget.live ? context.loc.receiveOptional : null,
         amountController: _amountController,
         focusNode: widget.focusNode,

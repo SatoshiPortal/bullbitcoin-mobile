@@ -199,7 +199,6 @@ class ReceiveLnInfoDetails extends StatelessWidget {
   static void _showFees(BuildContext context) {
     BullBottomSheet.show<void>(
       context: context,
-      style: BullSheetStyle.redesign(context),
       child: BlocProvider.value(
         value: context.read<ReceiveBloc>(),
         child: const _ReceiveLnFeesSheet(),

@@ -44,7 +44,6 @@ class ReceiveAdvancedSettings extends StatefulWidget {
     await BullBottomSheet.show<void>(
       context: context,
       avoidKeyboard: true,
-      style: BullSheetStyle.redesign(context),
       child: BlocProvider.value(
         value: bloc,
         child: const ReceiveAdvancedSettings(),
@@ -123,7 +122,6 @@ class _ReceiveAdvancedSettingsState extends State<ReceiveAdvancedSettings> {
     final bloc = context.read<ReceiveBloc>();
     await BullBottomSheet.show<void>(
       context: context,
-      style: BullSheetStyle.redesign(context),
       child: BullPickerSheet(
         title: context.loc.receiveInto,
         options: state.wallets,
