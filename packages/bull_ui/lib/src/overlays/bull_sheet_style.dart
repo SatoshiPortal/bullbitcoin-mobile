@@ -15,7 +15,9 @@ class BullSheetStyle {
     barrierColor: context.bull.scrim.withValues(
       alpha: Theme.of(context).brightness == Brightness.dark ? 0.60 : 0.45,
     ),
-    backgroundColor: context.bull.surface,
+    backgroundColor: Theme.of(context).brightness == Brightness.light
+        ? context.bull.background
+        : context.bull.surface,
   );
 
   final Color barrierColor;
