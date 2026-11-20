@@ -78,13 +78,22 @@ void main() {
         recipientAmountsSat: max ? [80000] : [10000],
       );
 
-  Future<_Cubit> pump(WidgetTester tester, SendState value) async {
+  Future<_Cubit> pump(
+    WidgetTester tester,
+    SendState value, {
+    Stream<SendState>? updates,
+  }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final cubit = _Cubit();
     when(() => cubit.state).thenReturn(value);
-    when(() => cubit.stream).thenAnswer((_) => const Stream<SendState>.empty());
+    when(() => cubit.stream)
+        .thenAnswer((_) => updates ?? const Stream<SendState>.empty());
+    final subscription = updates?.listen(
+      (next) => when(() => cubit.state).thenReturn(next),
+    );
+    if (subscription != null) addTearDown(subscription.cancel);
     when(() => cubit.isSpMode).thenReturn(false);
     when(() => cubit.preparedMaxAmountSat)
         .thenReturn(value.isMaxSend ? 80000 : null);
@@ -222,5 +231,39 @@ void main() {
       ),
     );
     expect(find.text('You entered 31.25 CAD · rate of 14:32'), findsOneWidget);
+  });
+  testWidgets('mono Total adopts a slow preset preview without reopening', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast(sync: true);
+    addTearDown(updates.close);
+    final initial = state().copyWith(
+      feePreviewCache: BitcoinFeePreviewCache.empty,
+    );
+    await pump(tester, initial, updates: updates.stream);
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Custom Fee'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Total (sats)'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(BullInputText),
+        matching: find.byType(TextField),
+      ),
+      '200',
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<BullInputText>(find.byType(BullInputText)).onDone,
+      isNull,
+    );
+    updates.add(initial.copyWith(feePreviewCache: state().feePreviewCache));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<BullInputText>(find.byType(BullInputText)).onDone,
+      isNotNull,
+    );
   });
 }
