@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -66,7 +65,7 @@ void main() {
     )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
   });
   for (final type in AppThemeType.values) {
-    for (final scene in ['home', 'settings', 'wallet', 'legacy-sheet']) {
+    for (final scene in ['home', 'settings', 'wallet', 'shared-sheet']) {
       testWidgets('untouched $scene ${type.name}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
@@ -176,17 +175,17 @@ void main() {
                     onOpenCoins: (_, _) async {},
                   ),
                   _ => Scaffold(
-                    appBar: AppBar(title: const Text('Legacy sheet exception')),
+                    appBar: AppBar(title: const Text('Shared bottom sheet')),
                     body: Builder(
                       builder: (context) => Center(
                         child: BullButton.secondary(
-                          label: 'Open legacy sheet',
-                          onPressed: () => BlurredBottomSheet.show<void>(
+                          label: 'Open shared sheet',
+                          onPressed: () => BullBottomSheet.show<void>(
                             context: context,
                             child: const Padding(
                               padding: EdgeInsets.all(24),
                               child: Text(
-                                'Untouched legacy modal with explicit overrides.',
+                                'Modal using the shared theme defaults.',
                               ),
                             ),
                           ),
@@ -248,8 +247,8 @@ void main() {
           );
         });
         await tester.pumpAndSettle();
-        if (scene == 'legacy-sheet') {
-          await tester.tap(find.text('Open legacy sheet'));
+        if (scene == 'shared-sheet') {
+          await tester.tap(find.text('Open shared sheet'));
           await tester.pumpAndSettle();
         }
         await tester.pump(const Duration(milliseconds: 16));

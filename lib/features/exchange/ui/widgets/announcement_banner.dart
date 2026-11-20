@@ -1,11 +1,16 @@
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullBottomSheet,
+        BullInlineIconButton,
+        BullShapesX,
+        Gap,
+        BullTypographyX;
 
 class AnnouncementBanner extends StatelessWidget {
   const AnnouncementBanner({super.key});
@@ -108,7 +113,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
   final Announcement announcement;
 
   static Future<void> show(BuildContext context, Announcement announcement) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show<void>(
       context: context,
       child: _AnnouncementBottomSheet(announcement: announcement),
     );
@@ -116,15 +121,9 @@ class _AnnouncementBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(context.bullShapes.sheet),
-        ),
       ),
       child: SafeArea(
         child: Column(
@@ -156,17 +155,22 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                   ),
                   const Gap(12),
                   Expanded(
-                    child: BBText(
-                      announcement.title,
-                      style: context.bullType.title.copyWith(
-                        fontWeight: FontWeight.bold,
+                    child: Semantics(
+                      header: true,
+                      child: BBText(
+                        announcement.title,
+                        style: context.bullType.title.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                   const Gap(12),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Icon(
+                  BullInlineIconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: MaterialLocalizations.of(context)
+                        .closeButtonTooltip,
+                    icon: Icon(
                       Icons.close,
                       color: context.appColors.onSurface,
                       size: 24,

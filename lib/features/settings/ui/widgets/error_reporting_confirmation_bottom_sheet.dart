@@ -1,7 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,7 +10,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
   const ErrorReportingConfirmationBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show<void>(
       context: context,
       child: const ErrorReportingConfirmationBottomSheet(),
     );
@@ -19,114 +18,110 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(context.bullShapes.sheet),
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: context.appColors.outline.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(context.bullShapes.dot),
-                  ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.appColors.outline.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(context.bullShapes.dot),
                 ),
-                const SizedBox(height: 24),
-                Icon(
-                  Icons.bug_report,
-                  size: 48,
-                  color: context.appColors.primary,
-                ),
-                const SizedBox(height: 16),
-                BBText(
+              ),
+              const SizedBox(height: 24),
+              Icon(
+                Icons.bug_report,
+                size: 48,
+                color: context.appColors.primary,
+              ),
+              const SizedBox(height: 16),
+              Semantics(
+                header: true,
+                child: BBText(
                   context.loc.errorReportingProgramTitle,
-                  style: context.bullType.subtitle
-                      .copyWith(fontWeight: FontWeight.w400)
-                      .copyWith(fontWeight: FontWeight.bold),
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  context.loc.errorReportingProgramDescriptionP1,
-                  style: context.bullType.body.copyWith(
-                    color: context.appColors.secondary.withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                context.loc.errorReportingProgramDescriptionP1,
+                style: context.bullType.body.copyWith(
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  context.loc.errorReportingProgramDescriptionP2,
-                  style: context.bullType.body.copyWith(
-                    color: context.appColors.secondary.withValues(alpha: 0.7),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.justify,
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                context.loc.errorReportingProgramDescriptionP2,
+                style: context.bullType.body.copyWith(
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  context.loc.errorReportingProgramDescriptionP3,
-                  style: context.bullType.body.copyWith(
-                    color: context.appColors.secondary.withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.justify,
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                context.loc.errorReportingProgramDescriptionP3,
+                style: context.bullType.body.copyWith(
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  context.loc.errorReportingProgramDescriptionP4,
-                  style: context.bullType.body.copyWith(
-                    color: context.appColors.secondary.withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.justify,
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                context.loc.errorReportingProgramDescriptionP4,
+                style: context.bullType.body.copyWith(
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  context.loc.errorReportingProgramDescriptionP5,
-                  style: context.bullType.body.copyWith(
-                    color: context.appColors.secondary.withValues(alpha: 0.7),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.justify,
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                context.loc.errorReportingProgramDescriptionP5,
+                style: context.bullType.body.copyWith(
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: BullButton.secondary(
-                        label: context.loc.errorReportingCancelButton,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                textAlign: TextAlign.justify,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: BullButton.secondary(
+                      label: context.loc.errorReportingCancelButton,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: BullButton.primary(
-                        label: context.loc.errorReportingAcceptButton,
-                        onPressed: () {
-                          context.read<SettingsCubit>().toggleErrorReporting(
-                            true,
-                          );
-                          Navigator.of(context).pop();
-                          BullSnackBar.show(
-                            context,
-                            message: context.loc.errorReportingRestartSnackbar,
-                          );
-                        },
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: BullButton.primary(
+                      label: context.loc.errorReportingAcceptButton,
+                      onPressed: () {
+                        context.read<SettingsCubit>().toggleErrorReporting(
+                          true,
+                        );
+                        Navigator.of(context).pop();
+                        BullSnackBar.show(
+                          context,
+                          message: context.loc.errorReportingRestartSnackbar,
+                        );
+                      },
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
