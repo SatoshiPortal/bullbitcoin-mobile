@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.d
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
+import 'package:flutter/widgets.dart' show Widget;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -100,6 +101,7 @@ class SpRouter {
     required String sendRouteName,
     required Object sendRouteExtra,
     required String exitRedirectPath,
+    required Widget Function(int balanceSat) fiatBalanceBuilder,
   }) => ShellRoute(
     builder: (context, state, child) {
       // The SP session lives in the SpAccountRepository (lazySingleton); the
@@ -116,6 +118,7 @@ class SpRouter {
         path: SpRoute.spWalletDetail.path,
         builder: (context, state) => SpWalletDetailScreen(
           exitRedirectPath: exitRedirectPath,
+          fiatBalanceBuilder: fiatBalanceBuilder,
           onSend: () => context.pushNamed(sendRouteName, extra: sendRouteExtra),
         ),
       ),

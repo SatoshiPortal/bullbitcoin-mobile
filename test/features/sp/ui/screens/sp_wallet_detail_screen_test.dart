@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
@@ -76,7 +77,11 @@ Widget _buildPage({
       ],
       child: SettingsFacade.amountScope(
         navigatorKey: navigatorKey,
-        child: const SpWalletDetailScreen(exitRedirectPath: '/exit-target'),
+        child: SpWalletDetailScreen(
+          exitRedirectPath: '/exit-target',
+          fiatBalanceBuilder: (balanceSat) =>
+              HomeFiatBalance(balanceSat: balanceSat),
+        ),
       ),
     ),
   );
