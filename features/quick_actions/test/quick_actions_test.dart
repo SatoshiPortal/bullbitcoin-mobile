@@ -9,7 +9,7 @@ void main() {
     QuickAction.map,
     QuickAction.transfer,
     QuickAction.history,
-    QuickAction.settings,
+    QuickAction.toggleAmounts,
   ];
 
   test('automatic layout uses defaults and canonical complement', () {
@@ -20,13 +20,13 @@ void main() {
       QuickAction.sell,
       QuickAction.pay,
       QuickAction.exchange,
-      QuickAction.settings,
+      QuickAction.toggleAmounts,
       QuickAction.support,
       QuickAction.priceHistory,
     ]);
     final disabled = QuickActionsLayout.resolve(available: defaults.toSet());
     expect(disabled.primary, defaults.take(3));
-    expect(disabled.more, [QuickAction.settings]);
+    expect(disabled.more, [QuickAction.toggleAmounts]);
   });
 
   test('injected defaults drive the row and its complement in More', () {
@@ -36,7 +36,7 @@ void main() {
     );
     expect(layout.primary, QuickActionsLayout.iosDefaults);
     expect(layout.more, contains(QuickAction.map));
-    expect(layout.more, isNot(contains(QuickAction.settings)));
+    expect(layout.more, isNot(contains(QuickAction.toggleAmounts)));
     expect(layout.more, isNot(contains(QuickAction.history)));
     expect(layout.more, isNot(contains(QuickAction.transfer)));
   });
@@ -53,7 +53,7 @@ void main() {
       selection: selection,
     );
     expect(unavailable.primary, [QuickAction.transfer, QuickAction.map]);
-    expect(unavailable.more, [QuickAction.settings, QuickAction.history]);
+    expect(unavailable.more, [QuickAction.toggleAmounts, QuickAction.history]);
     final restored = QuickActionsLayout.resolve(
       available: all.toSet(),
 
@@ -103,8 +103,9 @@ void main() {
 
       selection: QuickActionSelection([]),
     );
-    expect(layout.primary, [QuickAction.settings]);
+    expect(layout.primary, isEmpty);
     expect(layout.more, [
+      QuickAction.toggleAmounts,
       QuickAction.map,
       QuickAction.transfer,
       QuickAction.history,
@@ -116,7 +117,7 @@ void main() {
       QuickAction.exchange,
       QuickAction.buy,
       QuickAction.map,
-      QuickAction.settings,
+      QuickAction.toggleAmounts,
       QuickAction.sell,
     ]);
     final layout = QuickActionsLayout.resolve(
@@ -129,7 +130,7 @@ void main() {
       QuickAction.buy,
       QuickAction.map,
     ]);
-    expect(layout.more, [QuickAction.sell, QuickAction.settings]);
+    expect(layout.more, [QuickAction.sell, QuickAction.toggleAmounts]);
     expect(selected.actions, hasLength(5));
   });
 
@@ -167,6 +168,28 @@ void main() {
       );
       expect(await facade.reset(), isA<Ok<void, QuickActionsFailure>>());
       expect(storage.value, isNull);
+    },
+  );
+
+  test(
+    'a retired settings-only selection leaves every action in More',
+    () async {
+      final storage = MemoryStorage()
+        ..value = '{"home":["settings"],"more":[]}';
+      final cubit = createQuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(false),
+      );
+      addTearDown(cubit.close);
+      final selection = await cubit.load();
+      final layout = QuickActionsLayout.resolve(
+        available: cubit.state.available,
+        selection: selection,
+      );
+      expect(layout.primary, isEmpty);
+      expect(layout.more, contains(QuickAction.toggleAmounts));
+      expect(storage.value, '{"home":["settings"],"more":[]}');
     },
   );
 

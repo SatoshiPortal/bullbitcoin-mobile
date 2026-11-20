@@ -4,13 +4,90 @@ import 'customization_test.dart'
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQuickAction, BullText, BullTypographyX;
+    show
+        BullQuickAction,
+        BullText,
+        BullTypographyX,
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullIcons;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 import 'quick_actions_test.dart' show MemoryStorage;
 
 void main() {
+  for (final pinned in [false, true]) {
+    testWidgets('amount visibility toggles in ${pinned ? 'Home' : 'More'}', (
+      tester,
+    ) async {
+      final cubit = createQuickActionsCubit(
+        storage: MemoryStorage(),
+        warning: (_) {},
+        exchangeVisible: Stream.value(false),
+      );
+      addTearDown(cubit.close);
+      if (pinned) {
+        await cubit.save(QuickActionSelection([QuickAction.toggleAmounts]));
+      }
+      var hidden = false;
+      var calls = 0;
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) => BullAmountScope(
+            snapshot: BullAmountSnapshot(
+              unit: BitcoinUnit.btc,
+              hideAmounts: hidden,
+              isReady: true,
+            ),
+            writeUnit: (_) async => true,
+            child: MaterialApp(
+              theme: ThemeData(extensions: testBullExtensions),
+              localizationsDelegates: const [
+                QuickActionsLocalizations.delegate,
+              ],
+              home: Scaffold(
+                body: QuickActionsRow(
+                  cubit: cubit,
+                  onAction: (action) {
+                    expect(action, QuickAction.toggleAmounts);
+                    calls++;
+                    setState(() => hidden = !hidden);
+                  },
+                  onCustomize: () {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      for (final label in ['Hide', 'Show']) {
+        if (!pinned) {
+          await tester.tap(find.text('More'));
+          await tester.pumpAndSettle();
+        }
+        final control = find.byWidgetPredicate(
+          (widget) => widget is BullQuickAction && widget.label == label,
+        );
+        expect(
+          tester.widget<BullQuickAction>(control).semanticLabel,
+          '$label amounts',
+        );
+        expect(
+          tester.widget<BullQuickAction>(control).icon,
+          BullIcons.currencyBitcoin,
+        );
+        await tester.tap(control);
+        await tester.pumpAndSettle();
+      }
+      expect(calls, 2);
+      expect(hidden, isFalse);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   testWidgets('More shows the complement and dispatches the chosen action', (
     tester,
   ) async {

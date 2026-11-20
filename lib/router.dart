@@ -85,14 +85,14 @@ class AppRouter {
 
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
+      case QuickAction.toggleAmounts:
+        SettingsFacade.toggleAmountVisibility(context);
       case QuickAction.map:
         context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
         context.pushNamed(SwapRoute.swap.name);
       case QuickAction.history:
         context.pushNamed(TransactionsRoute.transactions.name);
-      case QuickAction.settings:
-        context.pushNamed(SettingsRoute.settings.name);
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
@@ -166,7 +166,12 @@ class AppRouter {
                 child: Scaffold(
                   // The app bar of the exchange tab is rendered by the
                   // ExchangeHomeScreen itself, as an overlay.
-                  appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+                  appBar: tabIndex == 0
+                      ? WalletHomeAppBar(
+                          onSettings: () =>
+                              context.pushNamed(SettingsRoute.settings.name),
+                        )
+                      : null,
                   extendBodyBehindAppBar: true,
                   body: child,
                 ),

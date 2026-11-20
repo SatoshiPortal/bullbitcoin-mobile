@@ -131,12 +131,6 @@ abstract class QuickActionsLocalizations {
   /// **'Map'**
   String get map;
 
-  /// No description provided for @settings.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
-
   /// No description provided for @more.
   ///
   /// In en, this message translates to:
@@ -248,7 +242,7 @@ abstract class QuickActionsLocalizations {
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'No actions selected. Settings stays on Home.'**
+  /// **'No actions selected. All actions are in More.'**
   String get emptyHint;
 
   /// Full accessible quick action name.
@@ -286,6 +280,30 @@ abstract class QuickActionsLocalizations {
   /// In en, this message translates to:
   /// **'Touch and hold an action to move it. Home holds up to 3 actions.'**
   String get dragHint;
+
+  /// No description provided for @hideAmounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide amounts'**
+  String get hideAmounts;
+
+  /// No description provided for @showAmounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Show amounts'**
+  String get showAmounts;
+
+  /// No description provided for @hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hide;
+
+  /// No description provided for @show.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get show;
 }
 
 class _QuickActionsLocalizationsDelegate
