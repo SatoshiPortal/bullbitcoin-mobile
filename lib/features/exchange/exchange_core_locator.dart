@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
@@ -143,26 +144,24 @@ class ExchangeLocator {
       );
     }
 
-    locator.registerLazySingleton<ExchangeOrderRepository>(
-      () => ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+    for (final isTestnet in [false, true]) {
+      final environment = isTestnet ? 'testnet' : 'mainnet';
+      locator.registerLazySingleton<ExchangeOrderRepository>(
+        () => BbxApiOrderRepository(
+          api: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClient',
+          ),
+          writes: ExchangeOrderRepositoryImpl(
+            bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+              instanceName: '${environment}ExchangeApiDatasource',
+            ),
+            isTestnet: isTestnet,
+          ),
+          isTestnet: isTestnet,
         ),
-
-        isTestnet: false,
-      ),
-      instanceName: 'mainnetExchangeOrderRepository',
-    );
-    locator.registerLazySingleton<ExchangeOrderRepository>(
-      () => ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-
-        isTestnet: true,
-      ),
-      instanceName: 'testnetExchangeOrderRepository',
-    );
+        instanceName: '${environment}ExchangeOrderRepository',
+      );
+    }
 
     locator.registerLazySingleton<ExchangeSupportChatRepository>(
       () => ExchangeSupportChatRepositoryImpl(
