@@ -4167,6 +4167,7 @@
   "transactionFilterRefund": "Повернення",
   "transactionListLoadingFailed": "Не вдалося завантажити транзакції.",
   "transactionLabelNetworkFees": "Мережеві збори",
+  "receiveLiquidRiskDisclosureLabel": "Платежі буде конвертовано в Liquid L-BTC (не BTC). Дізнатися більше.",
   "walletLiquidRiskDisclosureLabel": "Ці кошти — це Liquid L-BTC (не BTC). Дізнатися більше.",
   "liquidRiskDisclosureSemanticLabel": "Відкрити розкриття ризиків Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Розкриття ризиків Liquid Bitcoin гаманця миттєвих платежів",

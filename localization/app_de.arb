@@ -4114,6 +4114,7 @@
   "swapRescueButton": "Wiederherstellen",
   "swapRescueSuccess": "Swap wiederhergestellt — er wird nun fortgesetzt",
   "transactionLabelNetworkFees": "Netzwerkgebühren",
+  "receiveLiquidRiskDisclosureLabel": "Zahlungen werden in Liquid L-BTC umgewandelt (nicht BTC). Mehr erfahren.",
   "walletLiquidRiskDisclosureLabel": "Dieses Guthaben besteht aus Liquid L-BTC (nicht BTC). Mehr erfahren.",
   "liquidRiskDisclosureSemanticLabel": "Liquid-Bitcoin-Risikohinweis öffnen",
   "liquidRiskDisclosureTitle": "Risikohinweis zu Liquid Bitcoin in der Wallet für Sofortzahlungen",

@@ -4170,6 +4170,7 @@
   "transactionFilterRefund": "Rimborso",
   "transactionListLoadingFailed": "Impossibile caricare le transazioni.",
   "transactionLabelNetworkFees": "Commissioni di rete",
+  "receiveLiquidRiskDisclosureLabel": "I pagamenti saranno convertiti in Liquid L-BTC (non BTC). Scopri di più.",
   "walletLiquidRiskDisclosureLabel": "Questi fondi sono Liquid L-BTC (non BTC). Scopri di più.",
   "liquidRiskDisclosureSemanticLabel": "Apri l'informativa sui rischi di Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Informativa sui rischi di Liquid Bitcoin del Portafoglio Pagamenti Istantanei",

@@ -8105,6 +8105,7 @@
   "swapRescueSuccess": "Swap পুনৰুদ্ধাৰ কৰা হ'ল — ই এতিয়া পুনৰ আৰম্ভ হ'ব",
   "receivePayjoinNoUtxos": "ইয়াক সক্ষম কৰিবলৈ প্ৰথমে পুঁজি গ্ৰহণ কৰক।\npayjoin ব্যৱহাৰ কৰিবলৈ UTXO প্ৰয়োজন।",
   "transactionLabelNetworkFees": "নেটৱৰ্ক ফি",
+  "receiveLiquidRiskDisclosureLabel": "পৰিশোধবোৰ Liquid L-BTC (BTC নহয়) লৈ ৰূপান্তৰিত কৰা হ'ব। অধিক জানক।",
   "walletLiquidRiskDisclosureLabel": "এই পুঁজিবোৰ Liquid L-BTC (BTC নহয়)। অধিক জানক।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ খোলক",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin জোখাম সম্পৰ্কীয় প্ৰকাশ",

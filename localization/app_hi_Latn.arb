@@ -10991,6 +10991,7 @@
   "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
   "receivePayjoinNoUtxos": "Pehle funds receive karo ise enable karne ke liye.\nPayjoin use karne ke liye UTXOs zaroori hain.",
   "transactionLabelNetworkFees": "Network fees",
+  "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
   "walletLiquidRiskDisclosureLabel": "Ye funds Liquid L-BTC hain (BTC nahi). Aur jaano.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk disclosure kholo",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin Risk Jaankari",

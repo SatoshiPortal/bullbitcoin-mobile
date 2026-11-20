@@ -10889,6 +10889,7 @@
   "swapRescueSuccess": "Swap रिस्टोर हो गया — यह अब फिर से शुरू होगा",
   "receivePayjoinNoUtxos": "इसे सक्षम करने के लिए पहले फंड प्राप्त करें।\npayjoin का उपयोग करने के लिए UTXO आवश्यक हैं।",
   "transactionLabelNetworkFees": "नेटवर्क शुल्क",
+  "receiveLiquidRiskDisclosureLabel": "भुगतान Liquid L-BTC (BTC नहीं) में बदल दिए जाएंगे। और जानें।",
   "walletLiquidRiskDisclosureLabel": "यह फंड Liquid L-BTC (BTC नहीं) है। और जानें।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin जोखिम प्रकटीकरण खोलें",
   "liquidRiskDisclosureTitle": "तत्काल भुगतान वॉलेट Liquid Bitcoin जोखिम प्रकटीकरण",

@@ -1285,6 +1285,7 @@
   "transactionDetailLabelPayjoinCreationTime": "Muda wa kuundwa kwa payjoin",
   "globalDefaultBitcoinWalletLabel": "Bitcoin Salama",
   "globalDefaultLiquidWalletLabel": "Malipo ya papo hapo",
+  "receiveLiquidRiskDisclosureLabel": "Malipo yatabadilishwa kuwa Liquid L-BTC (siyo BTC). Jifunze zaidi.",
   "walletLiquidRiskDisclosureLabel": "Fedha hizi ni Liquid L-BTC (siyo BTC). Jifunze zaidi.",
   "liquidRiskDisclosureSemanticLabel": "Fungua ufafanuzi wa hatari za Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Ufafanuzi wa Hatari za Liquid Bitcoin kwa Pochi ya Malipo ya Papo Hapo",

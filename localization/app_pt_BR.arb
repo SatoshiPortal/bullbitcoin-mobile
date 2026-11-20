@@ -10785,6 +10785,7 @@
   "transactionFilterRefund": "Reembolso",
   "transactionListLoadingFailed": "Não foi possível carregar as transações.",
   "transactionLabelNetworkFees": "Taxas de rede",
+  "receiveLiquidRiskDisclosureLabel": "Os pagamentos serão convertidos para Liquid L-BTC (não BTC). Saiba mais.",
   "walletLiquidRiskDisclosureLabel": "Estes fundos são Liquid L-BTC (não BTC). Saiba mais.",
   "liquidRiskDisclosureSemanticLabel": "Abrir divulgação de risco do Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Divulgação de Risco do Liquid Bitcoin da Carteira de Pagamento Instantânea",

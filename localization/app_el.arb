@@ -10771,6 +10771,7 @@
   "transactionFilterRefund": "Επιστροφή",
   "transactionListLoadingFailed": "Δεν ήταν δυνατή η φόρτωση των συναλλαγών.",
   "transactionLabelNetworkFees": "Τέλη δικτύου",
+  "receiveLiquidRiskDisclosureLabel": "Οι πληρωμές θα μετατραπούν σε Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
   "walletLiquidRiskDisclosureLabel": "Αυτά τα κεφάλαια είναι Liquid L-BTC (όχι BTC). Μάθετε περισσότερα.",
   "liquidRiskDisclosureSemanticLabel": "Άνοιγμα γνωστοποίησης κινδύνου Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Γνωστοποίηση Κινδύνου Liquid Bitcoin του Instant Payments Wallet",

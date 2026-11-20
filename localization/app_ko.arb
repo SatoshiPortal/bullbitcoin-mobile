@@ -10665,6 +10665,7 @@
   "transactionFilterRefund": "환불",
   "transactionListLoadingFailed": "거래 내역을 불러올 수 없습니다.",
   "transactionLabelNetworkFees": "네트워크 수수료",
+  "receiveLiquidRiskDisclosureLabel": "결제는 Liquid L-BTC로 전환됩니다(BTC 아님). 자세히 알아보기.",
   "walletLiquidRiskDisclosureLabel": "이 자금은 Liquid L-BTC입니다(BTC 아님). 자세히 알아보기.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
   "liquidRiskDisclosureTitle": "Instant Payment Wallet Liquid Bitcoin 위험 고지",

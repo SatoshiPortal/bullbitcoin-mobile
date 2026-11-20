@@ -10663,6 +10663,7 @@
   "transactionFilterRefund": "İade",
   "transactionListLoadingFailed": "İşlemler yüklenemedi.",
   "transactionLabelNetworkFees": "Ağ ücretleri",
+  "receiveLiquidRiskDisclosureLabel": "Ödemeler Liquid L-BTC'ye dönüştürülecektir (BTC değil). Daha fazla bilgi edinin.",
   "walletLiquidRiskDisclosureLabel": "Bu fonlar Liquid L-BTC'dir (BTC değil). Daha fazla bilgi edinin.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk bildirimini aç",
   "liquidRiskDisclosureTitle": "Anında Ödeme Cüzdanı Liquid Bitcoin Risk Bildirimi",

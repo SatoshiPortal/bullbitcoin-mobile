@@ -10667,6 +10667,7 @@
   "transactionFilterRefund": "คืนเงิน",
   "transactionListLoadingFailed": "ไม่สามารถโหลดธุรกรรมได้",
   "transactionLabelNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "receiveLiquidRiskDisclosureLabel": "การชำระเงินจะถูกแปลงเป็น Liquid L-BTC (ไม่ใช่ BTC) เรียนรู้เพิ่มเติม",
   "walletLiquidRiskDisclosureLabel": "เงินจำนวนนี้เป็น Liquid L-BTC (ไม่ใช่ BTC) เรียนรู้เพิ่มเติม",
   "liquidRiskDisclosureSemanticLabel": "เปิดคำชี้แจงความเสี่ยงของ Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "คำชี้แจงความเสี่ยงของ Liquid Bitcoin สำหรับกระเป๋า Instant Payments",

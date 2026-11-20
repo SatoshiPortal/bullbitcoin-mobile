@@ -1272,6 +1272,7 @@
   "transactionDetailLabelPayjoinCreationTime": "Payjoin-ի ստեղծման ժամանակ",
   "globalDefaultBitcoinWalletLabel": "Անվտանգ Bitcoin",
   "globalDefaultLiquidWalletLabel": "Ակնթարթային վճարումներ",
+  "receiveLiquidRiskDisclosureLabel": "Վճարումները կփոխարկվեն Liquid L-BTC-ի (ոչ BTC)։ Իմանալ ավելին։",
   "walletLiquidRiskDisclosureLabel": "Այս միջոցները Liquid L-BTC են (ոչ BTC)։ Իմանալ ավելին։",
   "liquidRiskDisclosureSemanticLabel": "Բացել Liquid Bitcoin-ի ռիսկի բացահայտումը",
   "liquidRiskDisclosureTitle": "Ակնթարթային վճարումների դրամապանակի Liquid Bitcoin ռիսկի բացահայտում",

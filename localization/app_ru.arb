@@ -4176,6 +4176,7 @@
   "transactionFilterRefund": "Возврат",
   "transactionListLoadingFailed": "Не удалось загрузить транзакции.",
   "transactionLabelNetworkFees": "Сетевые сборы",
+  "receiveLiquidRiskDisclosureLabel": "Платежи будут конвертированы в Liquid L-BTC (не BTC). Подробнее.",
   "walletLiquidRiskDisclosureLabel": "Эти средства — Liquid L-BTC (не BTC). Подробнее.",
   "liquidRiskDisclosureSemanticLabel": "Открыть предупреждение о рисках Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Предупреждение о рисках Liquid Bitcoin в Кошельке мгновенных платежей",

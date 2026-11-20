@@ -10663,6 +10663,7 @@
   "transactionFilterRefund": "بازپرداخت",
   "transactionListLoadingFailed": "بارگذاری تراکنش‌ها ممکن نشد.",
   "transactionLabelNetworkFees": "هزینه‌های شبکه",
+  "receiveLiquidRiskDisclosureLabel": "پرداخت‌ها به Liquid L-BTC (نه BTC) تبدیل خواهند شد. بیشتر بدانید.",
   "walletLiquidRiskDisclosureLabel": "این وجوه Liquid L-BTC هستند (نه BTC). بیشتر بدانید.",
   "liquidRiskDisclosureSemanticLabel": "باز کردن افشای ریسک Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "افشای ریسک Liquid Bitcoin کیف پول پرداخت فوری",

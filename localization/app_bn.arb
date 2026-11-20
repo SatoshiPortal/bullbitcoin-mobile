@@ -10909,6 +10909,7 @@
   "swapRescueSuccess": "সোয়াপ পুনরুদ্ধার হয়েছে — এটি এখন আবার শুরু হবে",
   "receivePayjoinNoUtxos": "এটি সক্রিয় করতে প্রথমে তহবিল গ্রহণ করুন।\nPayjoin ব্যবহার করতে UTXO প্রয়োজন।",
   "transactionLabelNetworkFees": "নেটওয়ার্ক ফি",
+  "receiveLiquidRiskDisclosureLabel": "পেমেন্ট Liquid L-BTC-এ রূপান্তরিত হবে (BTC নয়)। আরও জানুন।",
   "walletLiquidRiskDisclosureLabel": "এই তহবিল Liquid L-BTC (BTC নয়)। আরও জানুন।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin ঝুঁকি প্রকাশ খুলুন",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin ঝুঁকি প্রকাশ",

@@ -4155,6 +4155,7 @@
   "transactionFilterRefund": "Remboursement",
   "transactionListLoadingFailed": "Impossible de charger les transactions.",
   "transactionLabelNetworkFees": "Frais de réseau",
+  "receiveLiquidRiskDisclosureLabel": "Les paiements seront convertis en Liquid L-BTC (pas en BTC). En savoir plus.",
   "walletLiquidRiskDisclosureLabel": "Ces fonds sont en Liquid L-BTC (pas en BTC). En savoir plus.",
   "liquidRiskDisclosureSemanticLabel": "Ouvrir l'avertissement sur les risques du Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Avertissement sur les risques du Liquid Bitcoin pour le portefeuille de paiements instantanés",

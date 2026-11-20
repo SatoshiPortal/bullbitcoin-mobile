@@ -1407,6 +1407,7 @@
   "transactionDetailLabelPayjoinCreationTime": "Payjoin შექმნის დრო",
   "globalDefaultBitcoinWalletLabel": "Secure Bitcoin",
   "globalDefaultLiquidWalletLabel": "მყისიერი გადახდები",
+  "receiveLiquidRiskDisclosureLabel": "გადახდები კონვერტირდება Liquid L-BTC-ში (არა BTC). გაიგეთ მეტი.",
   "walletLiquidRiskDisclosureLabel": "ეს თანხები არის Liquid L-BTC (არა BTC). გაიგეთ მეტი.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin-ის რისკის შესახებ ინფორმაციის გახსნა",
   "liquidRiskDisclosureTitle": "Instant Payments საფულის Liquid Bitcoin რისკის შესახებ ინფორმაცია",

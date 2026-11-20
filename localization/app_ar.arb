@@ -10667,6 +10667,7 @@
   "transactionFilterRefund": "استرداد",
   "transactionListLoadingFailed": "تعذّر تحميل المعاملات.",
   "transactionLabelNetworkFees": "رسوم الشبكة",
+  "receiveLiquidRiskDisclosureLabel": "ستُحوَّل المدفوعات إلى L-BTC على شبكة السائل (وليس BTC). اطّلع على المزيد.",
   "walletLiquidRiskDisclosureLabel": "هذه الأموال هي L-BTC على شبكة السائل (وليست BTC). اطّلع على المزيد.",
   "liquidRiskDisclosureSemanticLabel": "فتح بيان مخاطر بيتكوين السائل",
   "liquidRiskDisclosureTitle": "بيان مخاطر بيتكوين السائل لمحفظة المدفوعات الفورية",

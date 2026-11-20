@@ -8356,6 +8356,7 @@
   "transactionSwapDescLnSendPending": "Обменът ви е инициран. Излъчваме верижната транзакция, за да заключим средствата ви.",
   "transactionListLoadingFailed": "Транзакциите не можаха да бъдат заредени.",
   "transactionLabelNetworkFees": "Мрежови такси",
+  "receiveLiquidRiskDisclosureLabel": "Плащанията ще бъдат конвертирани в Liquid L-BTC (не BTC). Научете повече.",
   "walletLiquidRiskDisclosureLabel": "Тези средства са Liquid L-BTC (не BTC). Научете повече.",
   "liquidRiskDisclosureSemanticLabel": "Отвори разкриването на риска за Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Разкриване на риска за Liquid Bitcoin в Портфейла за мигновени плащания",

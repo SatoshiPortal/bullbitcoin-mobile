@@ -10771,6 +10771,7 @@
   "transactionFilterRefund": "Vrácení",
   "transactionListLoadingFailed": "Transakce se nepodařilo načíst.",
   "transactionLabelNetworkFees": "Síťové poplatky",
+  "receiveLiquidRiskDisclosureLabel": "Platby budou převedeny na Liquid L-BTC (nikoli BTC). Více informací.",
   "walletLiquidRiskDisclosureLabel": "Tyto prostředky jsou Liquid L-BTC (nikoli BTC). Více informací.",
   "liquidRiskDisclosureSemanticLabel": "Otevřít upozornění na rizika Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Upozornění na rizika Liquid Bitcoin v peněžence Instant Payments",

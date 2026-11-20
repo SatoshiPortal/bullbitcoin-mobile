@@ -4062,6 +4062,7 @@
   "transactionFilterRefund": "退款",
   "transactionListLoadingFailed": "无法加载交易记录。",
   "transactionLabelNetworkFees": "网络费",
+  "receiveLiquidRiskDisclosureLabel": "款项将转换为 Liquid L-BTC（而非 BTC）。了解更多。",
   "walletLiquidRiskDisclosureLabel": "这些资金是 Liquid L-BTC（而非 BTC）。了解更多。",
   "liquidRiskDisclosureSemanticLabel": "打开 Liquid Bitcoin 风险披露",
   "liquidRiskDisclosureTitle": "即时支付钱包 Liquid Bitcoin 风险披露",

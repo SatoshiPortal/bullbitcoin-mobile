@@ -4158,6 +4158,7 @@
   "transactionFilterRefund": "Hyvitys",
   "transactionListLoadingFailed": "Tapahtumia ei voitu ladata.",
   "transactionLabelNetworkFees": "Verkkokulut",
+  "receiveLiquidRiskDisclosureLabel": "Maksut muunnetaan Liquid L-BTC:ksi (ei BTC:ksi). Lue lisää.",
   "walletLiquidRiskDisclosureLabel": "Nämä varat ovat Liquid L-BTC:tä (ei BTC:tä). Lue lisää.",
   "liquidRiskDisclosureSemanticLabel": "Avaa Liquid Bitcoinin riskiselvitys",
   "liquidRiskDisclosureTitle": "Pikamaksulompakon Liquid Bitcoin -riskiselvitys",

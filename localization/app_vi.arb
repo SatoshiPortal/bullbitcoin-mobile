@@ -1272,6 +1272,7 @@
   "transactionDetailLabelPayjoinCreationTime": "Thời gian tạo payjoin",
   "globalDefaultBitcoinWalletLabel": "Bitcoin an toàn",
   "globalDefaultLiquidWalletLabel": "Thanh toán tức thời",
+  "receiveLiquidRiskDisclosureLabel": "Khoản thanh toán sẽ được chuyển đổi sang Liquid L-BTC (không phải BTC). Tìm hiểu thêm.",
   "walletLiquidRiskDisclosureLabel": "Số tiền này là Liquid L-BTC (không phải BTC). Tìm hiểu thêm.",
   "liquidRiskDisclosureSemanticLabel": "Mở phần công bố rủi ro về Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Công bố rủi ro Liquid Bitcoin của Ví Thanh Toán Tức Thời",
