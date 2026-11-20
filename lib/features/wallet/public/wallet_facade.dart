@@ -1,6 +1,9 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
+export '../ui/widgets/wallet_detail_balance_card.dart'
+    show WalletDetailBalanceCard;
+
 export '../domain/wallet_spend_failure.dart';
 
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'

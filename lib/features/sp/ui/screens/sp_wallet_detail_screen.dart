@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletDetailBalanceCard;
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
@@ -78,9 +78,7 @@ class SpWalletDetailScreen extends StatelessWidget {
           onRefresh: cubit.pullToRefresh,
           slivers: [
             SliverToBoxAdapter(
-              child: WalletDetailBalanceCard(
-                isLiquid: false,
-                signer: SignerEntity.local,
+              child: WalletDetailBalanceCard.localBitcoin(
                 balanceText: CurrencyText(
                   state.totalBalance.value.toInt(),
                   style: context.bullType.headline.copyWith(

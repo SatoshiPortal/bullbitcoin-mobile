@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletDetailBalanceCard;
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
