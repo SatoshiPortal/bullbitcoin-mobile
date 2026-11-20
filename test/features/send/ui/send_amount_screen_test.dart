@@ -137,8 +137,11 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
     Device.screen = const Size(800, 1600);
+    final wallet = _wallet().copyWith(signer: SignerEntity.remote);
     final state = SendState(
       sendType: SendType.bitcoin,
+      wallets: [wallet],
+      selectedWallet: SendWalletBitcoin(wallet),
       paymentRequest: const PaymentRequest.bitcoin(
         address: 'bc1qfirst',
         isTestnet: false,
@@ -176,6 +179,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(SendAddressScreen), findsOneWidget);
     expect(find.text('Add'), findsNothing);
     await tester.tap(find.byType(Switch));
     await tester.pumpAndSettle();
