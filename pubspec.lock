@@ -1343,7 +1343,7 @@ packages:
     source: hosted
     version: "6.15.2"
   keyboard_actions:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: keyboard_actions
       sha256: b87ce4217ca4c31c735c81734d34a9ce08f27b056c1500fd5a1bc87a0cdc36b1

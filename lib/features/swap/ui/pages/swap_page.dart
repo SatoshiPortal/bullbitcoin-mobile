@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dar
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
@@ -18,6 +17,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullAdvancedOptionsLink,
         BullBottomSheet,
         BullButton,
@@ -83,7 +83,8 @@ class SwapPageState extends State<SwapPage> {
           ),
         ),
         body: SafeArea(
-          child: BBKeyboardActions(
+          child: BullKeyboardActions(
+            doneText: context.loc.doneButton,
             disableScroll: true,
             child: Form(
               key: _formKey,

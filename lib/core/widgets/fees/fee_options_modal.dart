@@ -5,10 +5,10 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fees/public/custom_fee_list_item.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullSelectableList,
         BullSelectableListItem,
         BullText,
@@ -67,7 +67,7 @@ class FeeOptionsModal extends StatefulWidget {
 }
 
 class _FeeOptionsModalState extends State<FeeOptionsModal> {
-  // Owned here so [BBKeyboardActions] can attach its "Done" toolbar to the
+  // Owned here so [BullKeyboardActions] can attach its "Done" toolbar to the
   // custom-fee field; passed down to [CustomFeeListItem.focusNode].
   final _customFeeNode = FocusNode();
 
@@ -100,7 +100,8 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
           initialData: widget.viewState.snapshot,
           builder: (context, async) {
             final snapshot = async.data ?? widget.viewState.snapshot;
-            return BBKeyboardActions(
+            return BullKeyboardActions(
+              doneText: context.loc.doneButton,
               child: Column(
                 crossAxisAlignment: .stretch,
                 children: [

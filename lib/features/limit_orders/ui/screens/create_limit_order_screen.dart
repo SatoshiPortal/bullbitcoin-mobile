@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -94,7 +93,8 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
                   : null,
             ),
             Expanded(
-              child: BBKeyboardActions(
+              child: BullKeyboardActions(
+                doneText: context.loc.doneButton,
                 disableScroll: true,
                 nextFocus: false,
                 child: _body(context, state),

@@ -150,7 +150,6 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.26.0
-  keyboard_actions: ^5.0.3
 
 dev_dependencies:
   # Parse import, conditional export and part directives in the shell boundary test.

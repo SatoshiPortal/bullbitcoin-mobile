@@ -1,20 +1,23 @@
-import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
 
-class BBKeyboardActions extends StatelessWidget {
-  const BBKeyboardActions({
+import '../theme/bull_theme.dart';
+import '../theme/bull_typography.dart';
+
+/// Adds a themed iOS keyboard accessory to the fields in [child].
+class BullKeyboardActions extends StatelessWidget {
+  final Widget child;
+  final String doneText;
+  final bool nextFocus;
+  final bool disableScroll;
+
+  const BullKeyboardActions({
     super.key,
     required this.child,
+    required this.doneText,
     this.nextFocus = true,
     this.disableScroll = false,
   });
-
-  final Widget child;
-  final bool nextFocus;
-  final bool disableScroll;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +25,10 @@ class BBKeyboardActions extends StatelessWidget {
       enabled: Theme.of(context).platform == TargetPlatform.iOS,
       navigation: nextFocus ? KeyboardNavigation.auto : KeyboardNavigation.none,
       ensureVisible: !disableScroll,
-      doneText: context.loc.doneButton,
+      doneText: doneText,
       theme: KeyboardActionsThemeData(
-        barColor: context.appColors.surface,
-        foregroundColor: context.appColors.onSurface,
+        barColor: context.bull.surface,
+        foregroundColor: context.bull.onSurface,
         doneTextStyle: context.bullType.subtitle.copyWith(
           fontWeight: FontWeight.w500,
         ),
