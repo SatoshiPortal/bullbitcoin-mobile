@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
@@ -93,7 +94,7 @@ class ExchangeLocator {
         instanceName: '${environment}ExchangeSupportChatDatasource',
       );
       locator.registerLazySingleton<ExchangeNotificationDatasource>(
-        () => ExchangeNotificationDatasource(
+        () => BbxApiNotificationDatasource(
           baseUrl: isTestnet
               ? ApiServiceConstants.bbApiTestUrl
               : ApiServiceConstants.bbApiUrl,
