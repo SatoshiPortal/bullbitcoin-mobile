@@ -1,13 +1,6 @@
 # bull_ui
 
-The Bull Bitcoin design-system component library — the go-forward source of truth for
-shared UI primitives. It is the first melos workspace member (`packages/bull_ui`).
-
-Every public widget is prefixed `Bull*` (e.g. `BullText`, `BullButton`, `BullScaffold`).
-This prefix is provenance: **`BB*` = legacy widgets in `lib/core/widgets`, `Bull*` = here**.
-The two coexist during the incremental migration; `BB*` originals are retired
-feature-by-feature in later scoped PRs as usages migrate. Nothing is moved or renamed —
-`bull_ui` components are duplicated copies, so existing app code is untouched.
+The Bull Bitcoin design system publishes reusable Flutter components through `package:bull_ui/bull_ui.dart`. Shared component names use the `Bull*` prefix. App features supply localized copy, assets and callbacks and compose the components into their own screens.
 
 ## Theme injection
 
@@ -59,8 +52,7 @@ symbols plus every `Bull*` component and the theme. Internals live under `lib/sr
 
 ## Components
 
-Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
-`BB*`/core originals are left untouched). Grouped by barrel category:
+The public barrel groups components by role.
 
 **Buttons** — `BullButton`, `BullToolButton`, `BullTabMenuVerticalButton`,
 `BullViewerActionButton`.
@@ -68,44 +60,26 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 **Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
 `BullLabeledTextInput`, `BullSecretTextInput`, `BullPasteInput`, `BullDropdown`,
 `BullSelectableList` + `BullSelectableListItem`, `BullMnemonicKeyboard`, `BullPinPad`,
-`BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
+`BullAmountInputFormatter`, `BullLowerCaseTextFormatter`, `BullKeyboardActions`.
 
 **Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.
 
 **Feedback** — `BullRefreshIndicator`, `BullShimmerBox`/`BullShimmerLine`,
 `BullSnackBar`, `BullCountdown`, `BullFadingLinearProgress`, `BullLoader`
 (`.large()` on a progress screen, `.small()` inline; its GIF ships in this package's `assets/`),
-`BullErrorState` (`BBErrorRetry`).
+`BullErrorState`.
 
-**Layout** — `BullScrollableColumn` (`ScrollableColumn`), `BullStackedPage`
-(`StackedPage`), `BullPullableBody` (`BBPullableBody`).
+**Layout** — `BullScrollableColumn`, `BullStackedPage`, `BullPullableBody`.
 
 **Data display** — `BullAddressText`, `BullBadge`, `BullInfoBar`,
-`BullLabelChip`, `BullStatTile`, `BullText` (`BBText`), `BullOptionsTag`,
-`BullInfoCard` (`InfoCard`), `BullPriceCard` (`PriceCard`),
+`BullLabelChip`, `BullStatTile`, `BullText`, `BullOptionsTag`,
+`BullInfoCard`, `BullAlertCard`, `BullPriceCard`,
 `BullBackupOptionCard`, `BullBorderedTile`, `BullTransactionDirectionBadge`,
-`BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`.
+`BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`, `BullQrCode`, `BullInvoiceViewer`, `BullTransactionViewer`, `BullConfirmationHeader`, and `BullConfirmationRow`.
 
 **Overlays** — `BullBottomSheet`, `BullDialog`, `BullConfirmDialog`,
-`BullPickerSheet` (`BBPickerSheet`), `BullInstructionsSheet`
-(`InstructionsBottomSheet`).
+`BullPickerSheet`, `BullInstructionsSheet`, `BullDisclosureLink`, and `BullDisclosureSheet`.
 
 **Chrome** — `BullScaffold`, `BullTopBar`, `BullSelectionActionBar`.
 
 **Support** — `BullSupportButton` (`.big`, `.icon`, `.text`, `.tile`) and `BullSupportScope`, which the app places above its screens to supply the contact-support action. Without a scope the button renders disabled.
-
-## Not yet migrated (needs dep abstraction)
-
-These `core/widgets` widgets still reach into `package:bb_mobile/*` (or otherwise
-can't preserve their public API on top of the clean kit) and are **deferred**
-until the dependency is abstracted out of the widget:
-
-| Widget | Blocker |
-| --- | --- |
-| `BBButton` (`buttons/button.dart`) | removed; its callers now use `BullButton`. |
-| Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |
-| `BBKeyboardActions` | needs `package:keyboard_actions/keyboard_actions.dart`, not declared in `bull_ui/pubspec.yaml` (no new deps rule). |
-| Bottom sheets: `AdvancedOptions`, `ComingSoon`, `Warning`, `NotLoggedIn`, `DeleteAccount*`, `Logout*`, `TranslationWarning` | `context.loc` localization and/or `package:bb_mobile/*` router & assets. |
-| Cards: `AutoswapWarningCard` | `context.loc` (`autoswapWarningCard*` strings) + `context.font` from `package:bb_mobile/core/utils/build_context_x.dart`. |
-| Loading: `ProgressScreen`, `StatusScreen` | `ProgressScreen` imports `package:bb_mobile/generated/flutter_gen/assets.gen.dart`; `StatusScreen` uses `context.loc` + `BullButton`. |
-| Viewers: `AddressViewer`, `TransactionViewer`, `InvoiceViewer`, `LogViewer`, `QrScanner`, `NfcScanner`, `ShareLogs`, `Bip85Derivation`, `MnemonicWidget`, `CoinSelectionBottomSheet`, `AppLanguagePicker`, `BackupSuccessScreen`, `PriceInput`, `TransactionsByDayList`, `BalanceRow`, `RecoverbullVaultProviderSelector` | `package:bb_mobile/*` (entities, l10n, assets, feature blocs). |

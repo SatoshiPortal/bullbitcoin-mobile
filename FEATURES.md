@@ -9,7 +9,7 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     ARK[Ark]
     ARK_PROTOCOL[Ark Protocol Package]
@@ -445,7 +445,6 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
    - API Clients (REST/GraphQL clients)
    - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
    - Explicit local SOCKS5 override for Bitcoin Electrum and encrypted backups
-   - UI Kit (shared widgets, theme)
    - DI setup and interfaces (Service Locator pattern)
    - Router setup and interfaces (Navigation)
    - PIN encrypted storage
@@ -457,6 +456,8 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
    - Immutable, validated value objects that ensure domain integrity
 
 > Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+Shared widgets are published by `bull_ui`. App-specific screens, adapters and localized content belong to their respective features. The late-2026 UI migration removed the shared Core widget and screen directories.
 
 ## Key Dependency Patterns
 
