@@ -39,7 +39,7 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(top: topGap),
         child: BullSettingsEntryItem(
-          icon: BullIcons.link,
+          icon: BullIcons.privacy,
           contentPadding: EdgeInsets.zero,
           title: context.loc.receivePayjoinQrBadge,
           subtitle: subtitle,
