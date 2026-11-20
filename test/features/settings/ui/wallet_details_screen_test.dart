@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bull_ui/bull_ui.dart' show BullIcon;
+import 'package:bull_ui/bull_ui.dart' show BullFieldAction, BullIcon;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -99,21 +99,19 @@ void main() {
   testWidgets('names each copy button with the translated Copy label', (
     tester,
   ) async {
-    final semantics = tester.ensureSemantics();
     await _pumpScreen(tester, isDefault: false);
 
     final buttons = find.ancestor(
       of: find.byIcon(Icons.copy_sharp),
-      matching: find.byType(IconButton),
+      matching: find.byType(BullFieldAction),
     );
     expect(buttons, findsNWidgets(2));
+    expect(find.byTooltip('Copy'), findsNWidgets(2));
     for (final button in buttons.evaluate()) {
-      expect(
-        tester.getSemantics(find.byWidget(button.widget)),
-        isSemantics(tooltip: 'Copy', isButton: true),
-      );
+      final node = tester.getSemantics(find.byWidget(button.widget));
+      expect(node.label.split('\n').last, 'Copy');
+      expect(node, isSemantics(isButton: true, hasTapAction: true));
     }
-    semantics.dispose();
   });
 
   testWidgets('confirms a copied public key with a toast', (tester) async {
