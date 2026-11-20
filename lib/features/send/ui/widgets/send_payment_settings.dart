@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Shared mono/multi settings content. The owner applies each change and owns
@@ -29,8 +30,8 @@ class SendPaymentSettings extends StatelessWidget {
   final String title;
   final String closeLabel;
   final String feeLabel;
-  final Set<String> feeChoices;
-  final String selectedFee;
+  final Map<FeeSelection, String> feeChoices;
+  final FeeSelection selectedFee;
   final Widget feeDetail;
   final String editLabel;
   final String rbfLabel;
@@ -39,7 +40,7 @@ class SendPaymentSettings extends StatelessWidget {
   final bool multipleRecipients;
   final String coinsLabel;
   final VoidCallback onClose;
-  final ValueChanged<String> onFeeSelected;
+  final ValueChanged<FeeSelection> onFeeSelected;
   final ValueChanged<bool>? onReplaceByFee;
   final ValueChanged<bool>? onMultipleRecipients;
   final VoidCallback? onCoins;
@@ -87,9 +88,12 @@ class SendPaymentSettings extends StatelessWidget {
                 ),
                 const Gap(BullSpacing.sm),
                 BullSegmented(
-                  items: feeChoices,
-                  initialValue: selectedFee,
-                  onSelected: onFeeSelected,
+                  items: {for (final fee in feeChoices.keys) fee.name},
+                  initialValue: selectedFee.name,
+                  labelBuilder: (value) =>
+                      feeChoices[FeeSelection.values.byName(value)]!,
+                  onSelected: (value) =>
+                      onFeeSelected(FeeSelection.values.byName(value)),
                   height: BullSpacing.xxl,
                   fitLabels: true,
                 ),

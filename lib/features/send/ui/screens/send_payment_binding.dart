@@ -394,10 +394,6 @@ final class _SendPaymentSession {
               setLocal(() => custom = true);
             }
 
-            final choices = {
-              for (final selection in FeeSelection.values)
-                feeName(context, selection): selection,
-            };
             if (!custom) {
               final real =
                   state.feePreviewCache
@@ -409,8 +405,11 @@ final class _SendPaymentSession {
                 title: context.loc.sendAdvancedSettings,
                 closeLabel: context.loc.sendClose,
                 feeLabel: context.loc.sendNetworkFees,
-                feeChoices: choices.keys.toSet(),
-                selectedFee: feeName(context, state.selectedFeeOption),
+                feeChoices: {
+                  for (final fee in FeeSelection.values)
+                    fee: feeName(context, fee),
+                },
+                selectedFee: state.selectedFeeOption,
                 feeDetail: Wrap(
                   children: [
                     if (detail.isNotEmpty)
@@ -428,11 +427,10 @@ final class _SendPaymentSession {
                 multipleRecipients: false,
                 coinsLabel: context.loc.sendCoinsInstead,
                 onClose: () => Navigator.pop(sheetContext),
-                onFeeSelected: (label) {
-                  final selection = choices[label];
+                onFeeSelected: (selection) {
                   if (selection == FeeSelection.custom) {
                     openCustom();
-                  } else if (selection != null) {
+                  } else {
                     cubit.feeOptionSelected(selection);
                   }
                 },

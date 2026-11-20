@@ -15,21 +15,25 @@ class BullSegmented extends StatefulWidget {
     required this.items,
     this.initialValue,
     required this.onSelected,
+    this.labelBuilder,
     this.disabledItems = const {},
     this.fitLabels = false,
     this.height = BullSpacing.xl + BullSpacing.xs,
   }) : assert(items.length > 0, 'BullSegmented requires at least one item');
 
-  /// The ordered set of segment labels.
+  /// The ordered set of segment values, displayed as labels by default.
   final Set<String> items;
 
-  /// The initially selected label (defaults to the first item).
+  /// The initially selected value (defaults to the first item).
   final String? initialValue;
 
-  /// Fired with the selected label.
+  /// Fired with the selected value.
   final ValueChanged<String> onSelected;
 
-  /// Labels that cannot be selected.
+  /// Resolves a display label without changing the identity of the segment.
+  final String Function(String)? labelBuilder;
+
+  /// Values that cannot be selected.
   final Set<String> disabledItems;
   final double height;
 
@@ -70,6 +74,7 @@ class _BullSegmentedState extends State<BullSegmented> {
     // away from it, in both themes: light thumb on a grey track, black thumb
     // on a dark grey track.
     final dark = Theme.of(context).brightness == Brightness.dark;
+    String labelFor(String item) => widget.labelBuilder?.call(item) ?? item;
     Widget control(double height) => Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(context.bullShapes.button),
@@ -108,7 +113,7 @@ class _BullSegmentedState extends State<BullSegmented> {
                 selected: item == selectedSegment,
                 inMutuallyExclusiveGroup: true,
                 child: Text(
-                  item,
+                  labelFor(item),
                   style: item == selectedSegment
                       ? context.bullType.label.copyWith(color: colors.primary)
                       : widget.disabledItems.contains(item)
@@ -136,7 +141,8 @@ class _BullSegmentedState extends State<BullSegmented> {
               2 * _segmentPadding,
         );
         var height = widget.height;
-        for (final label in widget.items) {
+        for (final item in widget.items) {
+          final label = labelFor(item);
           for (final weight in [
             context.bullType.label.fontWeight,
             FontWeight.w400,

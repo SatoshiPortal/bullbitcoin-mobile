@@ -5753,7 +5753,7 @@
   "@swapProgressRefundedMessage": {
     "description": "Refunded transfer message"
   },
-  "sendEconomyFee": "Čeština",
+  "sendEconomyFee": "Úsporný",
   "@sendEconomyFee": {
     "description": "Lowest fee tier"
   },
@@ -6457,7 +6457,7 @@
   "@leaveYourPhone": {
     "description": "Middle part of privacy assurance message"
   },
-  "sendFastFee": "Čeština",
+  "sendFastFee": "Rychlý",
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
