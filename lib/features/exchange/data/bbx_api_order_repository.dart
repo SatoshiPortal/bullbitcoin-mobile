@@ -12,18 +12,12 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
-/// [ExchangeOrderRepository] on the `bbx_api` package. DCA creation is
-/// delegated to [_writes] until it moves too.
+/// [ExchangeOrderRepository] on the `bbx_api` package.
 class BbxApiOrderRepository implements ExchangeOrderRepository {
   final bbx.BbxApiClient _api;
-  final ExchangeOrderRepository _writes;
   final bool _isTestnet;
 
-  BbxApiOrderRepository({
-    required this._api,
-    required this._writes,
-    required this._isTestnet,
-  });
+  BbxApiOrderRepository({required this._api, required this._isTestnet});
 
   @override
   Future<Order> getOrder(String orderId) async {
@@ -429,12 +423,50 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
     required String address,
-  }) => _writes.createDca(
-    amount: amount,
-    currency: currency,
-    frequency: frequency,
-    network: network,
-    address: address,
+  }) async {
+    try {
+      return _toDca(
+        await _api.orderTriggers.createDca(
+          amount: amount,
+          currencyCode: currency.code,
+          frequency: switch (frequency) {
+            DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
+            DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
+            DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
+            DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
+          },
+          recipientType: switch (network) {
+            DcaNetwork.bitcoin => bbx.DcaRecipientType.bitcoinAddress,
+            DcaNetwork.lightning => bbx.DcaRecipientType.lightningAddress,
+            DcaNetwork.liquid => bbx.DcaRecipientType.liquidAddress,
+          },
+          address: address,
+        ),
+      );
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to create DCA: ${_describe(e)}');
+    }
+  }
+
+  static Dca _toDca(bbx.Dca dca) => Dca(
+    amount: double.parse(dca.amountStr),
+    currency: FiatCurrency.fromCode(dca.currencyCode),
+    frequency: switch (dca.recurringFrequency) {
+      'HOURLY' => DcaBuyFrequency.hourly,
+      'DAILY' => DcaBuyFrequency.daily,
+      'WEEKLY' => DcaBuyFrequency.weekly,
+      'MONTHLY' => DcaBuyFrequency.monthly,
+      _ => throw Exception('Unknown frequency: ${dca.recurringFrequency}'),
+    },
+    network: switch (dca.recipientType) {
+      'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
+      'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
+      'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
+      _ => throw Exception('Unknown network: ${dca.recipientType}'),
+    },
+    address: dca.address,
+    nextPurchaseDate: DateTime.parse(dca.nextRunAt),
   );
 
   /// Runs an order creation [call] and turns the server's refusal into the

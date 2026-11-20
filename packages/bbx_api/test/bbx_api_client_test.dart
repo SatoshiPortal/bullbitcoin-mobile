@@ -22,6 +22,14 @@ void main() {
     });
   });
 
+  test('sends the given request id', () async {
+    final dio = FakeHttp.dio(body: {'result': null});
+    await BbxApiClient(dio).call('/x', 'm', id: '1');
+
+    final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+    expect((request.data as Map)['id'], '1');
+  });
+
   test('a JSON-RPC error throws its code and message', () async {
     final client = BbxApiClient(
       FakeHttp.dio(

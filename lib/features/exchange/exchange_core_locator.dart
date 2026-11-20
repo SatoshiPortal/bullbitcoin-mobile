@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_d
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
@@ -150,12 +149,6 @@ class ExchangeLocator {
         () => BbxApiOrderRepository(
           api: locator<BbxApiClient>(
             instanceName: '${environment}BbxApiClient',
-          ),
-          writes: ExchangeOrderRepositoryImpl(
-            bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-              instanceName: '${environment}ExchangeApiDatasource',
-            ),
-            isTestnet: isTestnet,
           ),
           isTestnet: isTestnet,
         ),
