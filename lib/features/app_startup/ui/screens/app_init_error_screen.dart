@@ -1,9 +1,8 @@
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show Language, LanguageExtension;
+    show Language, LanguageExtension, TranslationWarningBottomSheet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
