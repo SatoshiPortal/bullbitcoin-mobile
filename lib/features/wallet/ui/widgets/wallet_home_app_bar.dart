@@ -31,6 +31,7 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: onSettings,
           icon: BullIcon(
             BullIcons.settings,
+            size: 20,
             color: context.appColors.onPrimary,
           ),
         ),
