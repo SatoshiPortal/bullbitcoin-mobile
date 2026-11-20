@@ -214,6 +214,7 @@ export 'src/data_display/bull_badge.dart';
 export 'src/data_display/bull_bordered_tile.dart';
 export 'src/data_display/bull_date_locale.dart';
 export 'src/data_display/bull_details_table.dart';
+export 'src/data_display/bull_payment_confirmation.dart';
 export 'src/data_display/bull_info_bar.dart';
 export 'src/data_display/bull_info_card.dart';
 export 'src/data_display/bull_label_chip.dart';

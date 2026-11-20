@@ -73,13 +73,16 @@ class AddressViewer extends StatelessWidget {
             effectiveStyle,
             constraints.maxWidth,
           );
-          return BullText(
+          final label = BullText(
             truncated,
             style: effectiveStyle,
             maxLines: 1,
             overflow: TextOverflow.clip,
             textAlign: textAlign,
           );
+          return constraints.minHeight == 0
+              ? label
+              : Align(alignment: Alignment.centerLeft, child: label);
         },
       ),
     );
