@@ -636,7 +636,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
         const caretMargin = 1.0 + cursorWidth;
         final number = _shown;
         const unitPadding = BullSpacing.xs;
-        final available = constraints.maxWidth - BullSpacing.xxs;
+        final available = widget.compact
+            ? constraints.maxWidth - BullSpacing.xxs
+            : constraints.maxWidth - BullSpacing.xs - caretMargin;
         final numberWidth = measure(number).width;
         final unitWidth = measure(_unitCode).width;
         final needed = numberWidth + unitWidth;
@@ -655,18 +657,36 @@ class _BullAmountInputState extends State<BullAmountInput> {
         final style = size == null
             ? base
             : base.copyWith(fontSize: size * scale);
+        final numberSize = measure(number, textStyle: style);
         final verticalPadding = math.max(
           0.0,
-          (BullSpacing.xxl - measure(number, textStyle: style).height) / 2,
+          (BullSpacing.xxl - numberSize.height) / 2,
         );
+        final fieldWidth = math.max(
+          BullSpacing.xxl,
+          numberSize.width + caretMargin,
+        );
+        final hintInset = Directionality.of(context) == TextDirection.ltr
+            ? caretMargin
+            : 0.0;
+        final fieldInset = fieldWidth - numberSize.width - hintInset;
+        final labelWidth = measure(_unitCode, textStyle: style).width;
+        final unitInset = math.max(
+          BullSpacing.xxs,
+          (BullSpacing.xxl - labelWidth) / 2,
+        );
+        final centerControls = !widget.compact && widget.showControls;
         return Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (centerControls && unitInset > fieldInset)
+              SizedBox(width: unitInset - fieldInset),
             Flexible(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minWidth: BullSpacing.xxl,
+                constraints: BoxConstraints(
+                  minWidth: widget.compact ? BullSpacing.xxl : fieldWidth,
+                  maxWidth: widget.compact ? double.infinity : fieldWidth,
                   minHeight: BullSpacing.xxl,
                 ),
                 child: IntrinsicWidth(
@@ -696,6 +716,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
                           : TextAlign.end,
                       decoration: InputDecoration(
                         border: InputBorder.none,
+                        // This editor shares its surrounding payment surface.
+                        // Avoid the filled decorator's extra horizontal inset.
+                        filled: widget.compact ? null : false,
                         // A compact row centres its body line in the 48 dp
                         // target, on the same line as its unit.
                         contentPadding: widget.compact
@@ -721,8 +744,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
                                 color: context.bull.textMuted,
                               ),
                             ),
-                            if (!widget.compact)
-                              const SizedBox(width: caretMargin),
+                            if (!widget.compact) SizedBox(width: hintInset),
                           ],
                         ),
                         hintStyle: style.copyWith(
@@ -765,13 +787,8 @@ class _BullAmountInputState extends State<BullAmountInput> {
               ),
             // Keep the visible number/unit pair centred without shrinking the
             // editor's 48 dp pointer and semantics target for a short number.
-            if (!widget.compact && widget.showControls)
-              SizedBox(
-                width: math.max(
-                  0.0,
-                  BullSpacing.xxl - numberWidth * scale - caretMargin,
-                ),
-              ),
+            if (centerControls && fieldInset > unitInset)
+              SizedBox(width: fieldInset - unitInset),
           ],
         );
       },
