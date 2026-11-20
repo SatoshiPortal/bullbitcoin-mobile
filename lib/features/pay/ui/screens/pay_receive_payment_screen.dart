@@ -1,7 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
-import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -21,6 +20,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullCountdown,
+        BullPaymentPreparationView,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -67,7 +67,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
           : null,
     );
     if (preparation != null) {
-      return PaymentPreparationView(
+      return BullPaymentPreparationView(
         title: context.loc.payPleasePayInvoice,
         detailLabels: [
           context.loc.payDepositAddress,

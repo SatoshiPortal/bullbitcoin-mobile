@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
-import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -21,6 +20,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullCountdown,
+        BullPaymentPreparationView,
         BullShimmerLine,
         BullSnackBar,
         BullText,
@@ -39,7 +39,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
           : null,
     );
     if (preparation != null) {
-      return PaymentPreparationView(
+      return BullPaymentPreparationView(
         title: context.loc.sellPleasePayInvoice,
         detailLabels: [
           context.loc.sellDepositAddress,

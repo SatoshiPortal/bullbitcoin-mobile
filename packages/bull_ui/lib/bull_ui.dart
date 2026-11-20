@@ -192,6 +192,7 @@ export 'src/feedback/bull_reference_notice.dart';
 export 'src/feedback/bull_refresh_indicator.dart';
 export 'src/feedback/bull_shimmer.dart';
 export 'src/feedback/bull_loader.dart';
+export 'src/feedback/bull_payment_preparation_view.dart';
 export 'src/feedback/bull_snack_bar.dart';
 
 // Layout.
