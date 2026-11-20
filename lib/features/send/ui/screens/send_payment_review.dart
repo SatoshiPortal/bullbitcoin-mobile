@@ -28,6 +28,7 @@ class SendPaymentReview extends StatelessWidget {
     this.totalEquivalent,
     this.enteredDetail,
     this.error,
+    this.feeWarning,
     this.changeLabel,
     this.change,
   }) : assert((change == null) == (changeLabel == null));
@@ -40,6 +41,7 @@ class SendPaymentReview extends StatelessWidget {
   final String equivalent;
   final String? enteredDetail;
   final Widget? error;
+  final Widget? feeWarning;
   final List<Widget> recipients;
   final String fromLabel;
   final Widget source;
@@ -118,6 +120,10 @@ class SendPaymentReview extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (feeWarning case final warning?) ...[
+                    warning,
+                    const Gap(BullSpacing.md),
+                  ],
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
