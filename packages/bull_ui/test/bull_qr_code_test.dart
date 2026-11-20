@@ -56,7 +56,9 @@ void main() {
     );
   }
   for (final brightness in Brightness.values) {
-    testWidgets('fixed opaque theme roles in $brightness', (tester) async {
+    testWidgets('white fixed quiet zone and dark modules in $brightness', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         app(
           const BullQrCode(data: 'public', size: 100),
@@ -64,7 +66,7 @@ void main() {
         ),
       );
       final image = tester.widget<QrImageView>(find.byType(QrImageView));
-      expect(image.backgroundColor, testBullTheme.surfaceFixed);
+      expect(image.backgroundColor, testBullTheme.onSecondaryFixed);
       expect(image.backgroundColor.a, 1);
       expect(painter(tester).eyeStyle.color, testBullTheme.onSurfaceFixed);
       expect(
