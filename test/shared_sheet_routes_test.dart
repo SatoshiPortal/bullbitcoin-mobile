@@ -7,6 +7,9 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
+import 'package:flutter/services.dart'
+    show FontLoader, TextSelection, rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -17,15 +20,22 @@ class _Exchange extends Mock implements ExchangeCubit {}
 class _Settings extends Mock implements SettingsCubit {}
 
 void main() {
+  setUpAll(() async {
+    await (FontLoader(
+      'Golos Text',
+    )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
+  });
+
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     testWidgets('exchange announcement sheet in ${theme.name}', (tester) async {
+      const title = 'Scheduled maintenance';
       final exchange = _Exchange();
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
       when(() => exchange.state).thenReturn(
         ExchangeState(
           announcements: [
             Announcement(
-              title: 'Scheduled maintenance',
+              title: title,
               description: 'Exchange services will be unavailable during scheduled maintenance.',
               updatedAt: DateTime.utc(2026, 11, 20),
             ),
@@ -41,7 +51,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Scheduled maintenance'));
+      await tester.tap(find.text(title));
       await tester.pumpAndSettle();
       expect(find.byType(BottomSheet), findsOneWidget);
       expect(find.byType(BullBottomSheet), findsOneWidget);
@@ -49,6 +59,30 @@ void main() {
         tester.element(find.byType(BottomSheet)),
       ).closeButtonTooltip;
       final closeButton = find.byTooltip(close);
+      expect(
+        tester.getSize(closeButton).shortestSide,
+        greaterThanOrEqualTo(48),
+      );
+
+      final sheetTitle = find.descendant(
+        of: find.byType(BullBottomSheet),
+        matching: find.text(title),
+      );
+      Set<double> titleLines() => tester
+          .renderObject<RenderParagraph>(sheetTitle)
+          .getBoxesForSelection(
+            TextSelection(baseOffset: 0, extentOffset: title.length),
+          )
+          .map((box) => box.top)
+          .toSet();
+
+      expect(titleLines(), hasLength(1));
+      expect(tester.getCenter(closeButton).dx, 354);
+
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpAndSettle();
+      expect(titleLines().length, greaterThan(1));
       expect(
         tester.getSize(closeButton).shortestSide,
         greaterThanOrEqualTo(48),
@@ -126,11 +160,6 @@ Future<void> _pump(
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(body: Center(child: content)),
   );
-  await tester.pumpWidget(
-    RepaintBoundary(
-      key: const ValueKey('review'),
-      child: wrap?.call(app) ?? app,
-    ),
-  );
+  await tester.pumpWidget(wrap?.call(app) ?? app);
   await tester.pumpAndSettle();
 }
