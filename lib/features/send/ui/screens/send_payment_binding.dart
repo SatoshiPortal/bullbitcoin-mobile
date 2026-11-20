@@ -354,6 +354,7 @@ final class _SendPaymentSession {
     Timer? timer;
     var armed = false;
     int? previewSize;
+    var previewSelection = cubit.state.selectedFeeOption;
     void cancelDraft() {
       timer?.cancel();
       if (!armed) return;
@@ -372,6 +373,7 @@ final class _SendPaymentSession {
           bloc: cubit,
           builder: (_, state) {
             void openCustom() {
+              previewSelection = state.selectedFeeOption;
               previewSize =
                   state.feePreviewCache
                       .slotFor(state.selectedFeeOption)
@@ -440,7 +442,10 @@ final class _SendPaymentSession {
                     : null,
               );
             }
-            previewSize = state.feePreviewCache.custom.txSize ?? previewSize;
+            previewSize =
+                (armed ? state.feePreviewCache.custom.txSize : null) ??
+                state.feePreviewCache.slotFor(previewSelection).txSize ??
+                previewSize;
             SendFeeEvaluation evaluate(String text) =>
                 const SendCustomFeePolicy().evaluate(
                   text: text,
