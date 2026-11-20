@@ -30,9 +30,8 @@ extension QuickActionPresentation on QuickAction {
     _ => label(l10n, amountsHidden: amountsHidden),
   };
 
-  IconData icon({bool amountsHidden = false}) => switch (this) {
-    QuickAction.toggleAmounts =>
-      amountsHidden ? BullIcons.visibility : BullIcons.visibilityOff,
+  IconData get icon => switch (this) {
+    QuickAction.toggleAmounts => BullIcons.currencyBitcoin,
     QuickAction.buy => BullIcons.addCircleOutline,
     QuickAction.sell => BullIcons.sell,
     QuickAction.pay => BullIcons.receiptLong,

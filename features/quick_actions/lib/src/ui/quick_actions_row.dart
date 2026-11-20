@@ -67,7 +67,7 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
         BullQuickAction(
           label: action.label(l10n, amountsHidden: amountsHidden),
           semanticLabel: action.fullLabel(l10n, amountsHidden: amountsHidden),
-          icon: action.icon(amountsHidden: amountsHidden),
+          icon: action.icon,
           disabled:
               loading ||
               (action == QuickAction.toggleAmounts && amounts?.isReady != true),
@@ -179,7 +179,7 @@ class _MoreSheet extends StatelessWidget {
                           l10n,
                           amountsHidden: amountsHidden,
                         ),
-                        icon: action.icon(amountsHidden: amountsHidden),
+                        icon: action.icon,
                         disabled:
                             action == QuickAction.toggleAmounts &&
                             amounts?.isReady != true,

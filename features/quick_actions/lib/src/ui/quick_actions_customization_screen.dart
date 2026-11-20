@@ -266,7 +266,7 @@ class _QuickActionsCustomizationScreenState
     final items = editor.items;
     final index = items.indexOf(action);
     final onHome = editor.home.contains(action);
-    final face = _face(action.label(l10n), action.icon());
+    final face = _face(action.label(l10n), action.icon);
     return Semantics(
       key: ValueKey(action.id),
       container: true,
