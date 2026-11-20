@@ -1,6 +1,6 @@
+import 'package:bull_ui/bull_ui.dart' show BullQrCode;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
@@ -43,7 +43,7 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(find.byType(QrDisplayWidget), findsNothing);
+      expect(find.byType(BullQrCode), findsNothing);
       await tester.tap(find.text('Retry'));
       verify(() => bloc.add(const ReceiveAddressRetried())).called(1);
     });

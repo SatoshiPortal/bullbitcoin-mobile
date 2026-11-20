@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmount, BullTopBar, Gap, BullTypographyX;
+    show BullText, BullAmount, BullTopBar, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ReceivePaymentInProgressScreen extends StatelessWidget {
@@ -58,21 +57,21 @@ class PaymentInProgressPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: .center,
         children: [
-          BBText(
+          BullText(
             context.loc.receivePaymentInProgress,
             style: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
           if (isBitcoin) ...[
-            BBText(
+            BullText(
               context.loc.receiveBitcoinConfirmationMessage,
               style: context.bullType.subtitle.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
           ] else ...[
-            BBText(
+            BullText(
               context.loc.receiveLiquidConfirmationMessage,
               style: context.bullType.subtitle.copyWith(
                 fontWeight: FontWeight.w500,
@@ -88,7 +87,7 @@ class PaymentInProgressPage extends StatelessWidget {
             ),
           ),
           const Gap(4),
-          BBText(
+          BullText(
             '~$amountFiat',
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.surface,

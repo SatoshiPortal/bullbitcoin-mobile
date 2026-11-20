@@ -1,7 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,7 +41,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
               const SizedBox(height: 16),
               Semantics(
                 header: true,
-                child: BBText(
+                child: BullText(
                   context.loc.errorReportingProgramTitle,
                   style: context.bullType.subtitle.copyWith(
                     fontWeight: FontWeight.bold,

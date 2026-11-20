@@ -1,14 +1,20 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullCopyField, BullIcon, BullIcons, Gap, BullTypographyX;
+    show
+        BullText,
+        BullButton,
+        BullCopyField,
+        BullIcon,
+        BullIcons,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
@@ -57,7 +63,7 @@ class WalletDetailsScreen extends StatelessWidget {
                   children: [
                     const CircularProgressIndicator(),
                     const Gap(16),
-                    BBText(
+                    BullText(
                       context.loc.walletDetailsDeletingMessage,
                       style: context.bullType.body.copyWith(
                         color: context.appColors.textMuted,
@@ -142,14 +148,14 @@ class _InfoField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           label,
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)
               .copyWith(color: context.appColors.textMuted),
         ),
         const Gap(4),
-        BBText(
+        BullText(
           value,
           style: context.bullType.body.copyWith(
             color: context.appColors.onSurface,
@@ -170,7 +176,7 @@ class _CopyField extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
+        BullText(
           label,
           style: context.bullType.body
               .copyWith(fontWeight: FontWeight.w500)

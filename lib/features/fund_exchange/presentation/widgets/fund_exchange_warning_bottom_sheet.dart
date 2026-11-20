@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
@@ -11,6 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullText,
         BullButton,
         BullFadingLinearProgress,
         BullShapesX,
@@ -103,13 +103,13 @@ class _FundExchangeWarningBottomSheetState
                   ),
                 ),
                 const Gap(8.0),
-                BBText(
+                BullText(
                   context.loc.fundExchangeWarningTitle,
                   style: context.bullType.headline,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(4.0),
-                BBText(
+                BullText(
                   context.loc.fundExchangeWarningDescription,
                   style: context.bullType.subtitle.copyWith(
                     fontWeight: FontWeight.w400,
@@ -153,7 +153,7 @@ class _FundExchangeWarningBottomSheetState
                           _hasConfirmedNoCoercion = value;
                         });
                       },
-                title: BBText(
+                title: BullText(
                   context.loc.fundExchangeWarningConfirmation,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
@@ -163,7 +163,7 @@ class _FundExchangeWarningBottomSheetState
               ),
               const Gap(16.0),
               if (_submitConsentFailure != null) ...[
-                BBText(
+                BullText(
                   // Through the sealed extension, not a hardcoded key, so the
                   // sheet cannot drift from the failure's own message.
                   _submitConsentFailure!.toTranslated(context),

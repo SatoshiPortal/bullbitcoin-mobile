@@ -1,5 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -12,7 +12,7 @@ const _rawReason =
     'DioException [bad response]: apiKey bbk_live_7f3a9c2e '
     'rejected for sat@example.com';
 
-Future<InfoCard> _pump(WidgetTester tester, ExchangeFailure failure) async {
+Future<BullInfoCard> _pump(WidgetTester tester, ExchangeFailure failure) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
@@ -23,7 +23,7 @@ Future<InfoCard> _pump(WidgetTester tester, ExchangeFailure failure) async {
   );
   await tester.pumpAndSettle();
 
-  return tester.widget<InfoCard>(find.byType(InfoCard));
+  return tester.widget<BullInfoCard>(find.byType(BullInfoCard));
 }
 
 void main() {
@@ -83,7 +83,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(InfoCard));
+    await tester.tap(find.byType(BullInfoCard));
     await tester.pumpAndSettle();
 
     expect(retried, isTrue);

@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullText,
         BullBottomSheet,
         BullInlineIconButton,
         BullShapesX,
@@ -75,7 +75,7 @@ class _AnnouncementItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(
+                  BullText(
                     announcement.title,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class _AnnouncementItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     announcement.description,
                     style: context.bullType.label.copyWith(
                       fontWeight: FontWeight.w400,
@@ -162,7 +162,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                   Expanded(
                     child: Semantics(
                       header: true,
-                      child: BBText(
+                      child: BullText(
                         announcement.title,
                         style: context.bullType.title.copyWith(
                           fontWeight: FontWeight.bold,
@@ -187,7 +187,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: BBText(
+                child: BullText(
                   announcement.description,
                   style: context.bullType.body.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.8),

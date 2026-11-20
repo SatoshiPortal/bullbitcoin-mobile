@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -9,7 +8,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmount, BullButton, BullTopBar, Gap, BullTypographyX;
+    show BullText, BullAmount, BullButton, BullTopBar, Gap, BullTypographyX;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -68,7 +67,7 @@ class PaymentReceivedPage extends StatelessWidget {
             width: 100,
           ),
           const Gap(20),
-          BBText(
+          BullText(
             context.loc.receivePaymentReceived,
             style: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w700,
@@ -81,7 +80,7 @@ class PaymentReceivedPage extends StatelessWidget {
             style: context.bullType.headline,
           ),
           const Gap(4),
-          BBText(
+          BullText(
             '~$amountFiat',
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.onSurfaceVariant,

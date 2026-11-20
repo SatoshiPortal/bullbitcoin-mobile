@@ -1,10 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullShapesX, BullTypography, Gap, BullTypographyX;
+    show
+        BullText,
+        BullButton,
+        BullShapesX,
+        BullTypography,
+        Gap,
+        BullTypographyX;
 import 'package:url_launcher/url_launcher.dart';
 
 class ExchangeLandingScreenV2 extends StatelessWidget {
@@ -46,7 +51,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       height: 120,
                     ),
                     const Gap(16),
-                    BBText(
+                    BullText(
                       context.loc.exchangeBrandName,
                       style: TextStyle(
                         fontFamily: BullTypography.brandFamily,
@@ -55,7 +60,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       ),
                     ),
                     const Gap(12),
-                    BBText(
+                    BullText(
                       context.loc.exchangeLandingRecommendedExchange,
                       style: context.bullType.subtitle
                           .copyWith(fontWeight: FontWeight.w400)
@@ -78,42 +83,42 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: .start,
                   children: [
-                    BBText(
+                    BullText(
                       context.loc.exchangeFeatureSelfCustody,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
                           .copyWith(color: context.appColors.onSurface),
                     ),
                     const Gap(12),
-                    BBText(
+                    BullText(
                       context.loc.exchangeFeatureDcaOrders,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
                           .copyWith(color: context.appColors.onSurface),
                     ),
                     const Gap(12),
-                    BBText(
+                    BullText(
                       context.loc.exchangeFeatureSellBitcoin,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
                           .copyWith(color: context.appColors.onSurface),
                     ),
                     const Gap(12),
-                    BBText(
+                    BullText(
                       context.loc.exchangeFeatureBankTransfers,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
                           .copyWith(color: context.appColors.onSurface),
                     ),
                     const Gap(12),
-                    BBText(
+                    BullText(
                       context.loc.exchangeFeatureCustomerSupport,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
                           .copyWith(color: context.appColors.onSurface),
                     ),
                     const Gap(12),
-                    BBText(
+                    BullText(
                       context.loc.exchangeFeatureUnifiedHistory,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
@@ -143,7 +148,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: .start,
                         children: [
-                          BBText(
+                          BullText(
                             context.loc.exchangeLandingDisclaimerNotAvailable,
                             style: context.bullType.label
                                 .copyWith(fontWeight: FontWeight.w400)
