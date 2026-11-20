@@ -47,7 +47,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -86,7 +86,7 @@ part 'transfer_state.dart';
 part 'transfer_bloc.freezed.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   TransferBloc({
     required this._getSettingsUsecase,
     this._getSwapAmountQuotesUsecase,
@@ -2853,7 +2853,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         .listen((result) => add(TransferEvent.orderSwapUpdated(result)));
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
   // Mirrors SendCubit's adoption. The shared modal sees an identical
   // [FeeModalSnapshot] / action surface regardless of whether it's
   // mounted by send or swap; differences in state-field naming and

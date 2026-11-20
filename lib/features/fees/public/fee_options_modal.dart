@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fees/public/custom_fee_list_item.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -17,12 +17,12 @@ import 'package:bull_ui/bull_ui.dart'
 
 /// Shared fee-selection bottom sheet — mounted by both the Bitcoin send
 /// confirm screen and the swap confirm page. The widget depends only on
-/// [FeeModalViewState] (state slice) and [FeeModalActions] (dispatch),
+/// [FeeModalStatePort] (state slice) and [FeeModalActionsPort] (dispatch),
 /// so it has no knowledge of the underlying `SendCubit` / `TransferBloc`
 /// shapes. Each caller supplies its own concrete adapter — the shared
 /// cubits already `implements` both ports.
 ///
-/// On open, the modal fires [FeeModalActions.requestPresetPreviews] so
+/// On open, the modal fires [FeeModalActionsPort.requestPresetPreviews] so
 /// every tile gets its real `psbt.fee()` from an unsigned PSBT build.
 /// While that's in flight the rows shimmer. Custom-fee typing is
 /// debounced inside [CustomFeeListItem]; the value persists across
@@ -32,9 +32,9 @@ import 'package:bull_ui/bull_ui.dart'
 /// Dismissal semantics:
 /// - User picks a preset → `Navigator.pop(selectionTitle)`; caller
 ///   reads it back via [FeeSelectionName.fromString] and dispatches
-///   [FeeModalActions.selectFeeOption].
+///   [FeeModalActionsPort.selectFeeOption].
 /// - User dismisses without picking → caller dispatches
-///   [FeeModalActions.finalizeArmedCustomFee]; below-floor values roll
+///   [FeeModalActionsPort.finalizeArmedCustomFee]; below-floor values roll
 ///   back to the pre-arm selection.
 class FeeOptionsModal extends StatefulWidget {
   const FeeOptionsModal({
@@ -47,12 +47,12 @@ class FeeOptionsModal extends StatefulWidget {
 
   /// Read-only view of the modal's state slice. Concrete adapters in
   /// `presentation/`: `SendCubit`, `TransferBloc`.
-  final FeeModalViewState viewState;
+  final FeeModalStatePort viewState;
 
   /// Dispatch port. Same adapter as [viewState] in practice; kept
   /// separate so a future read-only embedding could subscribe to
   /// [viewState] without being able to mutate it.
-  final FeeModalActions actions;
+  final FeeModalActionsPort actions;
 
   /// Theme tokens for the custom-fee tile — differ per surface.
   final FeeModalCustomFeeColors customFeeColors;
@@ -133,7 +133,7 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
                     onDisarm: widget.actions.disarmCustomFee,
                     onPreview: widget.actions.requestCustomFeePreview,
                     // Modal mode: the parent screen runs
-                    // [FeeModalActions.finalizeArmedCustomFee] on
+                    // [FeeModalActionsPort.finalizeArmedCustomFee] on
                     // dismissal — no per-keystroke commit.
                     onCommit: (_) async {},
                   ),
