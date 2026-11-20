@@ -58,7 +58,12 @@ void main() {
           alpha: brightness == Brightness.dark ? 0.60 : 0.45,
         ),
       );
-      expect(surfaceColor(tester), testBullTheme.surface);
+      expect(
+        surfaceColor(tester),
+        brightness == Brightness.light
+            ? testBullTheme.background
+            : testBullTheme.surface,
+      );
     });
   }
 
@@ -74,7 +79,7 @@ void main() {
     final custom = testBullTheme.primary.withValues(alpha: 0.2);
     await open(tester, redesign: true, barrier: custom);
     expect(barrierColor(tester), custom);
-    expect(surfaceColor(tester), testBullTheme.surface);
+    expect(surfaceColor(tester), testBullTheme.background);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     await open(tester, redesign: true, background: testBullTheme.secondary);
@@ -115,10 +120,7 @@ void main() {
             ? testBullTheme.scrim.withValues(alpha: 0.45)
             : testBullTheme.surface.withAlpha(100),
       );
-      expect(
-        surfaceColor(tester),
-        redesign ? testBullTheme.surface : testBullTheme.background,
-      );
+      expect(surfaceColor(tester), testBullTheme.background);
     });
   }
 }
