@@ -117,6 +117,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'send_mono_actions.dart';
+
 class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
@@ -207,6 +209,8 @@ class SendCubit extends Cubit<SendState>
       _onWalletRevision,
     );
   }
+
+  void _applyMonoState(SendState next) => emit(next);
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
