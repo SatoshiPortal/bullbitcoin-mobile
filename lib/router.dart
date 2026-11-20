@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubi
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
+    show RouteErrorScreen;
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';

@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show Language, LanguageExtension;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -11,9 +12,13 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullLanguagePicker,
         BullPickerItem,
+        BullScaffold,
         BullShapesX,
         BullSnackBar,
         BullSupportButton,
+        BullText,
+        BullTextRole,
+        BullThemeX,
         BullTypographyX,
         Gap;
 
@@ -86,7 +91,8 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
           // Seed Device.screen so TranslationWarningBottomSheet
           // (which read it synchronously) work on this pre-init screen.
           Device.init(context);
-          return Scaffold(
+          return BullScaffold(
+            backgroundColor: context.bull.background,
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -97,11 +103,13 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: Text(
-                            loc.appInitErrorTitle,
-                            style: context.bullType.subtitle
-                                .copyWith(fontWeight: FontWeight.w400)
-                                .copyWith(fontWeight: FontWeight.bold),
+                          child: Semantics(
+                            header: true,
+                            child: BullText(
+                              loc.appInitErrorTitle,
+                              role: BullTextRole.subtitle,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -206,17 +214,17 @@ class _BackupSection extends StatelessWidget {
           ),
         ),
         const Gap(16),
-        Text(
-          title,
-          style: context.bullType.title.copyWith(fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
+        Semantics(
+          header: true,
+          child: BullText(
+            title,
+            role: BullTextRole.title,
+            fontWeight: FontWeight.bold,
+            textAlign: TextAlign.center,
+          ),
         ),
         const Gap(8),
-        Text(
-          message,
-          style: context.bullType.body,
-          textAlign: TextAlign.center,
-        ),
+        BullText(message, role: BullTextRole.body, textAlign: TextAlign.center),
       ],
     );
   }
@@ -239,11 +247,14 @@ class _ErrorDetailsState extends State<_ErrorDetails> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BullButton.secondary(
-          label: widget.label,
-          iconData: _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-          iconFirst: true,
-          onPressed: () => setState(() => _expanded = !_expanded),
+        Semantics(
+          expanded: _expanded,
+          child: BullButton.secondary(
+            label: widget.label,
+            iconData: _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+            iconFirst: true,
+            onPressed: () => setState(() => _expanded = !_expanded),
+          ),
         ),
         if (_expanded) ...[
           const SizedBox(height: 12),
