@@ -188,6 +188,7 @@ class _FiatAmt extends StatelessWidget {
     return HomeFiatBalance(
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
+      showFrame: false,
     );
   }
 }
