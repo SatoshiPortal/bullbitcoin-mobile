@@ -68,6 +68,7 @@ class ReceiveQRDetails extends StatelessWidget {
     final state = context.watch<ReceiveBloc>().state;
     final failure = state.failure;
     final qrSize = state.isLightning ? 217.0 : 240.0;
+    final displayQrData = state.displayQrData;
     if (!state.isLightning && state.qrData.isEmpty && failure != null) {
       return Column(
         children: [
@@ -89,14 +90,14 @@ class ReceiveQRDetails extends StatelessWidget {
             label: context.loc.receiveEnlargeQr,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: state.qrData.isEmpty
-                  ? null
-                  : () => ReceiveEnlargedQr.show(context, state),
-              child: state.qrData.isEmpty
+              onTap: state.canOpenEnlargedQr
+                  ? () => ReceiveEnlargedQr.show(context)
+                  : null,
+              child: displayQrData.isEmpty
                   ? BullShimmerBox(width: qrSize, height: qrSize)
                   : SizedBox.square(
                       dimension: qrSize,
-                      child: BullQrCode(data: state.qrData, size: qrSize),
+                      child: BullQrCode(data: displayQrData, size: qrSize),
                     ),
             ),
           ),

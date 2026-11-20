@@ -159,8 +159,6 @@ abstract class ReceiveState with _$ReceiveState {
     return rate == null ? null : ConvertAmount.btcToFiat(inputAmountBtc, rate);
   }
 
-  // The QR code data should always show the full payment request when all parameters are available,
-  //  this way the QR code doesn't change from an address only QR to a BIP21 uri with payjoin parameters while loading.
   WalletAddress? get _ownedLiquidAddress {
     final address = liquidAddress;
     final selectedWallet = wallet;
@@ -171,7 +169,27 @@ abstract class ReceiveState with _$ReceiveState {
         : null;
   }
 
+  /// The complete request, including Payjoin once its preparation settles.
   String get qrData => paymentRequest;
+
+  bool get canOpenEnlargedQr {
+    if (isLightning) return qrData.isNotEmpty;
+    if (!canConfirmAmount) return false;
+    return switch (type) {
+      ReceiveType.bitcoin =>
+        bitcoinAddress != null && bitcoinAddress?.walletId == wallet?.id,
+      ReceiveType.liquid => _ownedLiquidAddress != null,
+      _ => false,
+    };
+  }
+
+  /// Visible QR bytes must describe the current live draft. The tap target
+  /// may already be active while its amount is still being confirmed.
+  String get displayQrData {
+    if (!canOpenEnlargedQr) return '';
+    if (!isLightning && inputAmountSat != (confirmedAmountSat ?? 0)) return '';
+    return qrData;
+  }
 
   // The clipboard data should permit the user to copy just the address or invoice
   // from the moment it is available and not wait for the full payment request like payjoin

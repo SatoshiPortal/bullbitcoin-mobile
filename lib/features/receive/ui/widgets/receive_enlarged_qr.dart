@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveEnlargedQr extends StatelessWidget {
   const ReceiveEnlargedQr({
@@ -14,17 +15,21 @@ class ReceiveEnlargedQr extends StatelessWidget {
   final String data;
   final String caption;
 
-  static Future<void> show(BuildContext context, ReceiveState state) async {
+  static Future<void> show(BuildContext context) async {
+    final bloc = context.read<ReceiveBloc>();
     await BullDialog.show<void>(
       context: context,
       fullscreen: true,
       padding: EdgeInsets.zero,
       barrierColor: context.appColors.scrim.withValues(alpha: 0.88),
-      builder: (context) => ReceiveEnlargedQr(
-        data: state.qrData,
-        caption: state.isLightning
-            ? '${context.loc.receiveLightningInvoice} · ${FormatAmount.sats(state.lightningAmountSat ?? state.confirmedAmountSat ?? 0)}'
-            : '${state.wallet?.displayLabel(context) ?? ''} · ${StringFormatting.truncateMiddle(state.addressOrInvoiceOnly)}',
+      builder: (_) => BlocBuilder<ReceiveBloc, ReceiveState>(
+        bloc: bloc,
+        builder: (context, state) => ReceiveEnlargedQr(
+          data: state.displayQrData,
+          caption: state.isLightning
+              ? '${context.loc.receiveLightningInvoice} · ${FormatAmount.sats(state.lightningAmountSat ?? state.confirmedAmountSat ?? 0)}'
+              : '${state.wallet?.displayLabel(context) ?? ''} · ${StringFormatting.truncateMiddle(state.addressOrInvoiceOnly)}',
+        ),
       ),
     );
   }
@@ -73,11 +78,13 @@ class ReceiveEnlargedQr extends StatelessWidget {
                           return AbsorbPointer(
                             child: SizedBox.square(
                               dimension: size,
-                              child: BullQrCode(
-                                data: data,
-                                size: size,
-                                semanticsLabel: caption,
-                              ),
+                              child: data.isEmpty
+                                  ? const Center(child: BullLoader.small())
+                                  : BullQrCode(
+                                      data: data,
+                                      size: size,
+                                      semanticsLabel: caption,
+                                    ),
                             ),
                           );
                         },
