@@ -2,7 +2,6 @@
 enum QuickAction {
   map('map'),
   transfer('transfer'),
-  history('history'),
   buy('buy'),
   sell('sell'),
   pay('pay'),
@@ -37,17 +36,13 @@ final class QuickActionsLayout {
   QuickActionsLayout._(this.primary, this.more);
 
   static const defaults = [
-    QuickAction.map,
+    QuickAction.support,
+    QuickAction.priceHistory,
     QuickAction.transfer,
-    QuickAction.history,
   ];
 
   /// The Home row on iOS, where the exchange stays hidden.
-  static const iosDefaults = [
-    QuickAction.toggleAmounts,
-    QuickAction.history,
-    QuickAction.transfer,
-  ];
+  static const iosDefaults = defaults;
 
   static const int maximumCells = 4;
   static const int maximumHomeActions = 3;
@@ -62,7 +57,6 @@ final class QuickActionsLayout {
     QuickAction.priceHistory,
     QuickAction.map,
     QuickAction.transfer,
-    QuickAction.history,
   ];
 
   final List<QuickAction> primary;

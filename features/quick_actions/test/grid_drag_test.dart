@@ -54,8 +54,12 @@ void main() {
     tester,
   ) async {
     final storage = await _open(tester);
-    await _drag(tester, _tile(QuickAction.map), _tile(QuickAction.history));
-    expect(homeValue(storage.value), '["transfer","history","map"]');
+    await _drag(
+      tester,
+      _tile(QuickAction.support),
+      _tile(QuickAction.transfer),
+    );
+    expect(homeValue(storage.value), '["priceHistory","transfer","support"]');
     expect(storage.writes, 1);
   });
 
@@ -63,9 +67,9 @@ void main() {
     tester,
   ) async {
     final storage = await _open(tester);
-    await _drag(tester, _tile(QuickAction.sell), _tile(QuickAction.map));
-    expect(homeValue(storage.value), '["sell","map","transfer"]');
-    expect(_more(storage.value).first, 'history');
+    await _drag(tester, _tile(QuickAction.sell), _tile(QuickAction.support));
+    expect(homeValue(storage.value), '["sell","support","priceHistory"]');
+    expect(_more(storage.value).first, 'transfer');
     expect(storage.writes, 1);
   });
 
@@ -91,19 +95,22 @@ void main() {
     await _drag(tester, moreTile, _tile(QuickAction.buy));
     expect(storage.writes, 0);
     expect(storage.value, isNull);
-    await _drag(tester, _tile(QuickAction.transfer), moreTile);
-    expect(homeValue(storage.value), '["map","history"]');
-    expect(_more(storage.value).first, 'transfer');
+    await _drag(tester, _tile(QuickAction.priceHistory), moreTile);
+    expect(homeValue(storage.value), '["support","transfer"]');
+    expect(_more(storage.value).first, 'priceHistory');
     expect(storage.writes, 1);
   });
 
   testWidgets('a drop on an empty Home slot appends to Home', (tester) async {
     final storage = await _open(tester);
-    await _drag(tester, _tile(QuickAction.history), _tile(QuickAction.buy));
-    expect(homeValue(storage.value), '["map","transfer"]');
+    await _drag(tester, _tile(QuickAction.transfer), _tile(QuickAction.buy));
+    expect(homeValue(storage.value), '["support","priceHistory"]');
     final slot = tester
-        .getRect(_tile(QuickAction.transfer))
-        .translate(tester.getSize(_tile(QuickAction.transfer)).width + 8, 0);
+        .getRect(_tile(QuickAction.priceHistory))
+        .translate(
+          tester.getSize(_tile(QuickAction.priceHistory)).width + 8,
+          0,
+        );
     final gesture = await tester.startGesture(
       tester.getCenter(_tile(QuickAction.pay)),
     );
@@ -112,7 +119,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await gesture.up();
     await tester.pumpAndSettle();
-    expect(homeValue(storage.value), '["map","transfer","pay"]');
+    expect(homeValue(storage.value), '["support","priceHistory","pay"]');
     expect(storage.writes, 2);
   });
 }

@@ -101,6 +101,24 @@ abstract class QuickActionsLocalizations {
     Locale('fr'),
   ];
 
+  /// Exchange activation prompt in the More sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange is off'**
+  String get exchangeOff;
+
+  /// Exchange activation prompt in the More sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get activate;
+
+  /// Exchange activation prompt in the More sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
   /// No description provided for @buy.
   ///
   /// In en, this message translates to:
@@ -179,12 +197,6 @@ abstract class QuickActionsLocalizations {
   /// **'Loading'**
   String get loading;
 
-  /// No description provided for @history.
-  ///
-  /// In en, this message translates to:
-  /// **'History'**
-  String get history;
-
   /// No description provided for @support.
   ///
   /// In en, this message translates to:
@@ -200,7 +212,7 @@ abstract class QuickActionsLocalizations {
   /// No description provided for @quickActionTrade.
   ///
   /// In en, this message translates to:
-  /// **'Trade'**
+  /// **'Exchange'**
   String get quickActionTrade;
 
   /// Wallet quick action customization.

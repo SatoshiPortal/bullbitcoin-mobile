@@ -12,9 +12,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'quick_actions_test.dart' show MemoryStorage;
 
 const defaults = [
-  QuickAction.map,
+  QuickAction.support,
+  QuickAction.priceHistory,
   QuickAction.transfer,
-  QuickAction.history,
   QuickAction.toggleAmounts,
 ];
 
@@ -148,8 +148,8 @@ void main() {
         exchangeVisible: Stream.value(true),
       ),
     );
-    final from = tester.getRect(find.byKey(const ValueKey('transfer')));
-    final to = tester.getRect(find.byKey(const ValueKey('map')));
+    final from = tester.getRect(find.byKey(const ValueKey('priceHistory')));
+    final to = tester.getRect(find.byKey(const ValueKey('support')));
     final gesture = await tester.startGesture(from.center);
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pump(const Duration(milliseconds: 300));
@@ -164,7 +164,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 350));
     await gesture.up();
     await tester.pumpAndSettle();
-    expect(homeValue(storage.value), '["transfer","map","history"]');
+    expect(homeValue(storage.value), '["priceHistory","support","transfer"]');
     expect(storage.writes, 1);
     expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
@@ -234,9 +234,9 @@ void main() {
     );
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.buy, l10n.moveToHome);
-    expect(homeValue(storage.value), '["map","transfer","buy"]');
+    expect(homeValue(storage.value), '["support","priceHistory","buy"]');
     final value = jsonDecode(storage.value ?? '{}') as Map;
-    expect((value['more'] as List).first, 'history');
+    expect((value['more'] as List).first, 'transfer');
     expect(storage.writes, 1);
   });
 
@@ -294,7 +294,7 @@ void main() {
   testWidgets(
     'Restore defaults persists immediately and Undo restores the complete previous list',
     (tester) async {
-      final original = '{"home":["buy","map","transfer","history"],"more":[]}';
+      final original = '{"home":["buy","map","transfer","support"],"more":[]}';
       final storage = _EditorStorage()..value = original;
       final facade = createQuickActionsCubit(
         storage: storage,
@@ -578,7 +578,7 @@ void main() {
   ) async {
     final storage = _EditorStorage()
       ..value =
-          '{"home":["map","transfer","history","toggleAmounts"],"more":[]}';
+          '{"home":["map","transfer","support","toggleAmounts"],"more":[]}';
     await openEditor(
       tester,
       createQuickActionsCubit(
@@ -590,11 +590,11 @@ void main() {
     final l10n = localizations(tester);
     expect(
       homeValue(storage.value),
-      '["map","transfer","history","toggleAmounts"]',
+      '["map","transfer","support","toggleAmounts"]',
     );
     await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pumpAndSettle();
-    expect(homeValue(storage.value), '["transfer","history"]');
+    expect(homeValue(storage.value), '["transfer","support"]');
     await tester.scrollUntilVisible(
       find.byKey(const ValueKey('toggleAmounts')),
       120,
@@ -605,7 +605,7 @@ void main() {
 
 void stressEditorTests() {
   for (final locale in ['en', 'fr']) {
-    for (final count in [0, 1, 4, 10]) {
+    for (final count in [0, 1, 4, 9]) {
       for (final dark in [false, true]) {
         testWidgets('editor $locale $count choices dark=$dark at 200 percent', (
           tester,

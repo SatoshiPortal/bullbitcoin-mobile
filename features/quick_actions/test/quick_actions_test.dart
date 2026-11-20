@@ -6,9 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const all = QuickAction.values;
   const defaults = [
-    QuickAction.map,
+    QuickAction.support,
+    QuickAction.priceHistory,
     QuickAction.transfer,
-    QuickAction.history,
     QuickAction.toggleAmounts,
   ];
 
@@ -21,8 +21,7 @@ void main() {
       QuickAction.pay,
       QuickAction.exchange,
       QuickAction.toggleAmounts,
-      QuickAction.support,
-      QuickAction.priceHistory,
+      QuickAction.map,
     ]);
     final disabled = QuickActionsLayout.resolve(available: defaults.toSet());
     expect(disabled.primary, defaults.take(3));
@@ -30,30 +29,50 @@ void main() {
   });
 
   test('injected defaults drive the row and its complement in More', () {
+    const injected = [
+      QuickAction.toggleAmounts,
+      QuickAction.map,
+      QuickAction.transfer,
+    ];
     final layout = QuickActionsLayout.resolve(
       available: all.toSet(),
-      defaults: QuickActionsLayout.iosDefaults,
+      defaults: injected,
     );
-    expect(layout.primary, QuickActionsLayout.iosDefaults);
-    expect(layout.more, contains(QuickAction.map));
+    expect(layout.primary, injected);
+    expect(layout.more, contains(QuickAction.support));
     expect(layout.more, isNot(contains(QuickAction.toggleAmounts)));
-    expect(layout.more, isNot(contains(QuickAction.history)));
+    expect(layout.more, isNot(contains(QuickAction.map)));
     expect(layout.more, isNot(contains(QuickAction.transfer)));
+  });
+
+  test('the catalogue has nine actions and iOS shares the default row', () {
+    expect(all, hasLength(9));
+    expect(all.map((action) => action.id), isNot(contains('history')));
+    expect(QuickActionsLayout.defaults, [
+      QuickAction.support,
+      QuickAction.priceHistory,
+      QuickAction.transfer,
+    ]);
+    expect(QuickActionsLayout.iosDefaults, QuickActionsLayout.defaults);
+    expect(QuickActionsLayout.moreOrder.toSet(), all.toSet());
   });
 
   test('unavailable custom actions retain their position when restored', () {
     final selection = QuickActionSelection([
       QuickAction.buy,
       QuickAction.transfer,
-      QuickAction.map,
+      QuickAction.support,
     ]);
     final unavailable = QuickActionsLayout.resolve(
       available: defaults.toSet(),
 
       selection: selection,
     );
-    expect(unavailable.primary, [QuickAction.transfer, QuickAction.map]);
-    expect(unavailable.more, [QuickAction.toggleAmounts, QuickAction.history]);
+    expect(unavailable.primary, [QuickAction.transfer, QuickAction.support]);
+    expect(unavailable.more, [
+      QuickAction.toggleAmounts,
+      QuickAction.priceHistory,
+    ]);
     final restored = QuickActionsLayout.resolve(
       available: all.toSet(),
 
@@ -62,7 +81,7 @@ void main() {
     expect(restored.primary, [
       QuickAction.buy,
       QuickAction.transfer,
-      QuickAction.map,
+      QuickAction.support,
     ]);
   });
 
@@ -72,7 +91,7 @@ void main() {
       final reordered = QuickActionSelection([
         QuickAction.transfer,
         QuickAction.sell,
-        QuickAction.map,
+        QuickAction.support,
         QuickAction.buy,
       ]);
       final hidden = QuickActionsLayout.resolve(
@@ -80,11 +99,11 @@ void main() {
 
         selection: reordered,
       );
-      expect(hidden.primary, [QuickAction.transfer, QuickAction.map]);
+      expect(hidden.primary, [QuickAction.transfer, QuickAction.support]);
       expect(reordered.actions, [
         QuickAction.transfer,
         QuickAction.sell,
-        QuickAction.map,
+        QuickAction.support,
         QuickAction.buy,
       ]);
       final restored = QuickActionsLayout.resolve(
@@ -106,9 +125,9 @@ void main() {
     expect(layout.primary, isEmpty);
     expect(layout.more, [
       QuickAction.toggleAmounts,
-      QuickAction.map,
+      QuickAction.support,
+      QuickAction.priceHistory,
       QuickAction.transfer,
-      QuickAction.history,
     ]);
   });
 
@@ -170,6 +189,21 @@ void main() {
       expect(storage.value, isNull);
     },
   );
+
+  test('a retired history id is ignored without rewriting', () async {
+    const raw = '{"home":["map","history","transfer"],"more":["history"]}';
+    final storage = MemoryStorage()..value = raw;
+    final cubit = createQuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
+    addTearDown(cubit.close);
+    final selection = await cubit.load();
+    expect(selection?.actions, [QuickAction.map, QuickAction.transfer]);
+    expect(selection?.more, isEmpty);
+    expect(storage.value, raw);
+  });
 
   test(
     'a retired settings-only selection leaves every action in More',

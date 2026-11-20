@@ -10,6 +10,15 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   QuickActionsLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get exchangeOff => 'L\'Exchange est désactivé';
+
+  @override
+  String get activate => 'Activer';
+
+  @override
+  String get dismiss => 'Ignorer';
+
+  @override
   String get buy => 'Acheter';
 
   @override
@@ -49,16 +58,13 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get loading => 'Chargement';
 
   @override
-  String get history => 'Historique';
-
-  @override
   String get support => 'Aide';
 
   @override
   String get priceHistory => 'Prix';
 
   @override
-  String get quickActionTrade => 'Trade';
+  String get quickActionTrade => 'Exchange';
 
   @override
   String get onHome => 'Sur l’accueil';

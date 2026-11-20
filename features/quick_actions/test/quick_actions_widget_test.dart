@@ -130,7 +130,7 @@ void main() {
       tester.widget<BullText>(edit).style,
       tester.element(edit).bullType.label,
     );
-    expect(find.text('Trade'), findsOneWidget);
+    expect(find.text('Exchange'), findsOneWidget);
     await tester.tap(find.text('Buy'));
     await tester.pumpAndSettle();
     expect(chosen, QuickAction.buy);
@@ -170,9 +170,9 @@ void main() {
     );
     await openEditor(tester, facade);
     final l10n = localizations(tester);
-    await semanticMove(tester, QuickAction.map, l10n.moveToMore);
+    await semanticMove(tester, QuickAction.support, l10n.moveToMore);
     await tester.pumpAndSettle();
-    expect(homeValue(storage.value), '["transfer","history"]');
+    expect(homeValue(storage.value), '["priceHistory","transfer"]');
     expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
   testWidgets('four cells stay on one line at 360 pixels with large text', (
@@ -245,7 +245,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
-        find.text(locale.languageCode == 'fr' ? 'Carte' : 'Map'),
+        find.text(locale.languageCode == 'fr' ? 'Aide' : 'Support'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);

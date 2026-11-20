@@ -15802,5 +15802,9 @@
   "exchangeSupportChatSendTooltip": "Send message",
   "@exchangeSupportChatSendTooltip": {
     "description": "Accessible tooltip for the support chat send button."
+  },
+  "walletHomeHistoryTooltip": "History",
+  "@walletHomeHistoryTooltip": {
+    "description": "Home top bar: opens the transactions history"
   }
 }

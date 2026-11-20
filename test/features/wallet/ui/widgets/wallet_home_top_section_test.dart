@@ -93,7 +93,10 @@ Future<void> _pumpTopSection(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: BlocProvider<SettingsCubit>.value(
                   value: settings,
-                  child: WalletHomeAppBar(onSettings: onSettings),
+                  child: WalletHomeAppBar(
+                    onSettings: onSettings,
+                    onHistory: () {},
+                  ),
                 ),
               ),
         body: MediaQuery(

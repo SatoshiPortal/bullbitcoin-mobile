@@ -46,7 +46,7 @@ void main() {
     },
   );
 
-  test('non-iOS visibility follows exchange access', () async {
+  test('non-iOS visibility follows a signed-in exchange session', () async {
     final exchange = _Exchange();
     when(exchange.networkUnavailable).thenAnswer((_) async => false);
     final settings = _Settings();
@@ -64,6 +64,9 @@ void main() {
     ).execute().listen(values.add);
     await Future<void>.delayed(Duration.zero);
     access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    await Future<void>.delayed(Duration.zero);
+    expect(values, [false]);
+    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
     access.add(const ExchangeAccessSignOutIncomplete());
     await Future<void>.delayed(Duration.zero);
     expect(values, [false, true, false]);
@@ -153,7 +156,7 @@ void main() {
 
     // Switching back to a supported network reconciles access again.
     unavailable = false;
-    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
     expect(values, [false, true]);

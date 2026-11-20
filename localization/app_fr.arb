@@ -4844,5 +4844,6 @@
   "pinCodeHidePin": "Masquer le code PIN",
   "exchangeSupportChatAttachFileTooltip": "Joindre un fichier",
   "exchangeSupportChatAttachLogsTooltip": "Joindre les journaux",
-  "exchangeSupportChatSendTooltip": "Envoyer le message"
+  "exchangeSupportChatSendTooltip": "Envoyer le message",
+  "walletHomeHistoryTooltip": "Historique"
 }

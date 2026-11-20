@@ -6,9 +6,14 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const WalletHomeAppBar({super.key, required this.onSettings});
+  const WalletHomeAppBar({
+    super.key,
+    required this.onSettings,
+    required this.onHistory,
+  });
 
   final VoidCallback onSettings;
+  final VoidCallback onHistory;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -21,6 +26,17 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       automaticallyImplyLeading: false,
+      leading: IconButton(
+        tooltip: context.loc.walletHomeHistoryTooltip,
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+        visualDensity: VisualDensity.standard,
+        onPressed: onHistory,
+        icon: BullIcon(
+          BullIcons.history,
+          size: 32,
+          color: context.appColors.onPrimary,
+        ),
+      ),
       centerTitle: true,
       title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),
       actions: [

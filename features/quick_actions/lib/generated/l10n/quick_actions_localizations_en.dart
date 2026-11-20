@@ -10,6 +10,15 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   QuickActionsLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get exchangeOff => 'Exchange is off';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
   String get buy => 'Buy';
 
   @override
@@ -49,16 +58,13 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get loading => 'Loading';
 
   @override
-  String get history => 'History';
-
-  @override
   String get support => 'Support';
 
   @override
   String get priceHistory => 'Price';
 
   @override
-  String get quickActionTrade => 'Trade';
+  String get quickActionTrade => 'Exchange';
 
   @override
   String get onHome => 'On Home';

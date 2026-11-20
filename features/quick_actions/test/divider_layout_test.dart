@@ -25,12 +25,12 @@ class FakeStorage implements QuickActionsStorage {
 void main() {
   const map = QuickAction.map;
   const transfer = QuickAction.transfer;
-  const history = QuickAction.history;
+  const support = QuickAction.support;
   const buy = QuickAction.buy;
   const sell = QuickAction.sell;
   const pay = QuickAction.pay;
   const amounts = QuickAction.toggleAmounts;
-  const available = {map, transfer, history, buy, sell, pay, amounts};
+  const available = {map, transfer, support, buy, sell, pay, amounts};
 
   QuickActionsEditorLayout editor(QuickActionSelection selection) =>
       QuickActionsEditorLayout(selection: selection, available: available);
@@ -48,14 +48,14 @@ void main() {
         sell,
         pay,
         amounts,
-        history,
+        support,
       ]);
       final moved = layout.move(0, 1);
       expect(moved.actions, [transfer, map]);
-      expect(moved.more, [buy, sell, pay, amounts, history]);
+      expect(moved.more, [buy, sell, pay, amounts, support]);
       final toMore = layout.move(0, 2);
       expect(toMore.actions, [transfer]);
-      expect(toMore.more, [map, buy, sell, pay, amounts, history]);
+      expect(toMore.more, [map, buy, sell, pay, amounts, support]);
       expect(layout.move(2, 0).actions, [map, transfer]);
       expect(layout.move(2, 0).more, [buy, sell]);
     });
@@ -64,11 +64,11 @@ void main() {
       'inserting More at the end of full Home ejects the old third item',
       () {
         final layout = editor(
-          QuickActionSelection([map, transfer, history], more: [buy, sell]),
+          QuickActionSelection([map, transfer, support], more: [buy, sell]),
         );
         final moved = layout.move(4, 3);
         expect(moved.actions, [map, transfer, buy]);
-        expect(moved.more, [history, sell, pay, amounts]);
+        expect(moved.more, [support, sell, pay, amounts]);
       },
     );
 
@@ -76,14 +76,14 @@ void main() {
       final layout = editor(QuickActionSelection([], more: [sell, buy, pay]));
       final moved = layout.move(2, 0);
       expect(moved.actions, [buy]);
-      expect(moved.more, [sell, pay, amounts, map, transfer, history]);
+      expect(moved.more, [sell, pay, amounts, support, map, transfer]);
       final reordered = editor(moved).move(2, 4);
-      expect(reordered.more, [pay, amounts, sell, map, transfer, history]);
+      expect(reordered.more, [pay, amounts, sell, support, map, transfer]);
     });
 
     test('semantic moves match their drag destinations', () {
       final layout = editor(
-        QuickActionSelection([map, transfer, history], more: [buy, sell]),
+        QuickActionSelection([map, transfer, support], more: [buy, sell]),
       );
       final home = layout.moveToHome(buy);
       final dragHome = layout.move(
@@ -103,12 +103,12 @@ void main() {
 
     test('a drop on a tile of the same zone takes that cell', () {
       final layout = editor(
-        QuickActionSelection([map, transfer, history], more: [buy, sell]),
+        QuickActionSelection([map, transfer, support], more: [buy, sell]),
       );
-      expect(layout.dropOn(map, history).actions, [transfer, history, map]);
-      expect(layout.dropOn(history, map).actions, [history, map, transfer]);
+      expect(layout.dropOn(map, support).actions, [transfer, support, map]);
+      expect(layout.dropOn(support, map).actions, [support, map, transfer]);
       final more = layout.dropOn(buy, pay);
-      expect(more.actions, [map, transfer, history]);
+      expect(more.actions, [map, transfer, support]);
       expect(more.more, [sell, pay, buy, amounts]);
       expect(layout.dropOn(map, map), same(layout.move(0, 0)));
     });
@@ -119,19 +119,19 @@ void main() {
       );
       final toMore = layout.dropOn(map, sell);
       expect(toMore.actions, [transfer]);
-      expect(toMore.more, [buy, map, sell, pay, amounts, history]);
+      expect(toMore.more, [buy, map, sell, pay, amounts, support]);
       final toHome = layout.dropOn(sell, transfer);
       expect(toHome.actions, [map, sell, transfer]);
-      expect(toHome.more, [buy, pay, amounts, history]);
+      expect(toHome.more, [buy, pay, amounts, support]);
     });
 
     test('a drop on a full Home ejects its last action into More', () {
       final layout = editor(
-        QuickActionSelection([map, transfer, history], more: [buy, sell]),
+        QuickActionSelection([map, transfer, support], more: [buy, sell]),
       );
       final onTile = layout.dropOn(sell, map);
       expect(onTile.actions, [sell, map, transfer]);
-      expect(onTile.more, [history, buy, pay, amounts]);
+      expect(onTile.more, [support, buy, pay, amounts]);
       final atEnd = layout.dropAtEnd(sell, onHome: true);
       expect(atEnd.actions, layout.moveToHome(sell).actions);
       expect(atEnd.more, layout.moveToHome(sell).more);
@@ -145,7 +145,7 @@ void main() {
       expect(layout.dropAtEnd(buy, onHome: true).actions, [map, transfer, buy]);
       final toMore = layout.dropAtEnd(map, onHome: false);
       expect(toMore.actions, [transfer]);
-      expect(toMore.more, [buy, sell, pay, amounts, history, map]);
+      expect(toMore.more, [buy, sell, pay, amounts, support, map]);
       expect(layout.dropAtEnd(transfer, onHome: true), same(layout.move(1, 1)));
     });
 
@@ -166,7 +166,7 @@ void main() {
       'stored selections over three are displayed without a write',
       () async {
         final storage = FakeStorage()
-          ..value = '{"home":["map","transfer","history","buy"],"more":[]}';
+          ..value = '{"home":["map","transfer","support","buy"],"more":[]}';
         final facade = createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
@@ -174,14 +174,14 @@ void main() {
         );
         final selection = await facade.load();
         expect(selection, isNotNull);
-        expect(selection?.actions, [map, transfer, history, buy]);
+        expect(selection?.actions, [map, transfer, support, buy]);
         final layout = editor(selection as QuickActionSelection);
-        expect(layout.home, [map, transfer, history]);
+        expect(layout.home, [map, transfer, support]);
         expect(layout.more.first, buy);
         expect(storage.writes, 0);
         expect(
           storage.value,
-          '{"home":["map","transfer","history","buy"],"more":[]}',
+          '{"home":["map","transfer","support","buy"],"more":[]}',
         );
         facade.close();
       },

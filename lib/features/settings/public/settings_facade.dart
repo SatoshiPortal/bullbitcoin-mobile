@@ -2,6 +2,8 @@ export 'active_network_scope.dart';
 export 'network_capability_visibility.dart';
 
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +16,8 @@ import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 export '../domain/settings_entity.dart';
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
+export '../presentation/exchange_access_settings_cubit.dart'
+    show ExchangeAccessSettingsCubit;
 export '../ui/settings_router.dart' show SettingsRoute;
 export 'payjoin_disclaimer_dialog.dart';
 export '../reporting_setup.dart' show refreshReportingConsent;
@@ -28,6 +32,22 @@ class SettingsFacade {
     final settings = cubit.state.storedSettings;
     if (settings == null) return;
     await cubit.toggleHideAmounts(!(settings.hideAmounts ?? true));
+  }
+
+  /// Switches the exchange on, reporting a failure to the user. True when it
+  /// is now enabled.
+  static Future<bool> enableExchange(
+    BuildContext context, {
+    required ExchangeAccessSettingsCubit Function() createCubit,
+  }) async {
+    final cubit = createCubit();
+    final enabled = await cubit.setEnabled(true);
+    final failure = cubit.state.failure;
+    await cubit.close();
+    if (!enabled && failure != null && context.mounted) {
+      BullSnackBar.show(context, message: failure.toTranslated(context));
+    }
+    return enabled;
   }
 
   static Widget amountScope({

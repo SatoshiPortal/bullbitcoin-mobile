@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -91,8 +93,6 @@ class AppRouter {
         context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
         context.pushNamed(SwapRoute.swap.name);
-      case QuickAction.history:
-        context.pushNamed(TransactionsRoute.transactions.name);
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
@@ -104,7 +104,27 @@ class AppRouter {
       case QuickAction.pay:
         context.pushNamed(PayRoute.pay.name);
       case QuickAction.exchange:
-        context.pushNamed(ExchangeRoute.exchangeHome.name);
+        if (locator<ExchangeFacade>().currentAccess is ExchangeAccessDisabled) {
+          unawaited(_activateExchange(context));
+        } else {
+          context.pushNamed(ExchangeRoute.exchangeHome.name);
+        }
+    }
+  }
+
+  static Future<void> _activateExchange(BuildContext context) async {
+    final enabled = await SettingsFacade.enableExchange(
+      context,
+      createCubit: () => locator<ExchangeAccessSettingsCubit>(),
+    );
+    if (!enabled || !context.mounted) return;
+    final signedIn = ExchangeAvailability.canManageAccount(
+      locator<ExchangeFacade>().currentAccess,
+    );
+    if (signedIn) {
+      context.pushNamed(ExchangeRoute.exchangeHome.name);
+    } else {
+      context.goNamed(ExchangeRoute.exchangeAuth.name);
     }
   }
 
@@ -170,6 +190,9 @@ class AppRouter {
                       ? WalletHomeAppBar(
                           onSettings: () =>
                               context.pushNamed(SettingsRoute.settings.name),
+                          onHistory: () => context.pushNamed(
+                            TransactionsRoute.transactions.name,
+                          ),
                         )
                       : null,
                   extendBodyBehindAppBar: true,
@@ -188,6 +211,8 @@ class AppRouter {
             onQuickAction: _openQuickAction,
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
+            exchangePrompt: locator<ExchangePromptCubit>(),
+            onActivateExchange: _activateExchange,
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),

@@ -8,7 +8,7 @@ void main() {
   const available = {
     QuickAction.map,
     QuickAction.transfer,
-    QuickAction.history,
+    QuickAction.support,
     QuickAction.toggleAmounts,
   };
 
@@ -17,7 +17,7 @@ void main() {
       QuickAction.buy,
       QuickAction.map,
       QuickAction.transfer,
-      QuickAction.history,
+      QuickAction.support,
       QuickAction.toggleAmounts,
     ]);
     final layout = QuickActionsLayout.resolve(
@@ -28,14 +28,14 @@ void main() {
     expect(layout.primary, [
       QuickAction.map,
       QuickAction.transfer,
-      QuickAction.history,
+      QuickAction.support,
     ]);
     expect(layout.more, [QuickAction.toggleAmounts]);
     expect(selection.actions, [
       QuickAction.buy,
       QuickAction.map,
       QuickAction.transfer,
-      QuickAction.history,
+      QuickAction.support,
       QuickAction.toggleAmounts,
     ]);
   });
@@ -46,7 +46,7 @@ void main() {
       QuickAction.map,
       QuickAction.sell,
       QuickAction.transfer,
-      QuickAction.history,
+      QuickAction.support,
       QuickAction.toggleAmounts,
     ]);
     final demoted = QuickActionsEditorLayout(
@@ -59,7 +59,7 @@ void main() {
     ).move(1, 0);
     expect(edited.actions, [
       QuickAction.buy,
-      QuickAction.history,
+      QuickAction.support,
       QuickAction.sell,
       QuickAction.map,
     ]);
@@ -69,7 +69,7 @@ void main() {
 
         selection: edited,
       ).primary,
-      [QuickAction.history, QuickAction.map],
+      [QuickAction.support, QuickAction.map],
     );
     expect(selection.actions, hasLength(6));
   });

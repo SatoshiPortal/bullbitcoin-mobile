@@ -46,6 +46,12 @@ void main() {
       );
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
+      final exchangePrompt = createExchangePromptCubit(
+        storage: Memory(),
+        warning: (_) {},
+        offered: const Stream.empty(),
+      );
+      locator.registerSingleton<ExchangePromptCubit>(exchangePrompt);
       locator.registerSingleton<RecoverBullFeature>(recovery);
       final router = AppRouter.router;
       addTearDown(() async {
@@ -54,6 +60,8 @@ void main() {
         await recovery.dispose();
         await locator.unregister<ExchangeFacade>();
         await locator.unregister<QuickActionsCubit>();
+        await exchangePrompt.close();
+        await locator.unregister<ExchangePromptCubit>();
         await locator.unregister<RecoverBullFeature>();
         directory.deleteSync(recursive: true);
       });
