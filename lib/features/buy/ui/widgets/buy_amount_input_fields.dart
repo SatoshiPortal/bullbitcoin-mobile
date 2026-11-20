@@ -160,15 +160,6 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           color: context.appColors.outline,
                         ),
                       ),
-                      // CurrencyText(
-                      //   amountSat ?? 0,
-                      //   showFiat: !isFiatCurrencyInput,
-                      //   style: context.font.bodyMedium?.copyWith(
-                      //     color: context.colour.outline,
-                      //   ),
-                      //   fiatCurrency: currency.code,
-                      //   fiatAmount: !isFiatCurrencyInput ? fiatAmount : null,
-                      // ),
                       // Text(
                       //   ' approx.',
                       //   style: context.font.bodyMedium?.copyWith(

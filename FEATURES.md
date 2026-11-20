@@ -262,7 +262,7 @@ graph TB
     PAY -->|public spend admission and routine sync| WALLETS
     PAY -->|public protected broadcast| SEND
     PAY --> EXCHANGE
-    TX_HISTORY --> EXCHANGE
+    TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS --> DEFAULT_WALLETS
     LIMIT_ORDERS --> FUNDING

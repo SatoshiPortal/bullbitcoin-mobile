@@ -1,6 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_order_fiat_amount.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,22 +33,19 @@ class TransactionDetailsAmount extends StatelessWidget {
       mainAxisAlignment: .center,
       children: [
         if (showOrderInFiat && orderAmountAndCurrency != null)
-          CurrencyText(
-            0,
-            showFiat: false,
+          ExchangeOrderFiatAmount(
+            amount: orderAmountAndCurrency.$1.toDouble(),
+            currency: orderAmountAndCurrency.$2,
             style: context.bullType.headline.copyWith(
               color: context.appColors.secondary,
               fontWeight: .w500,
             ),
-            fiatAmount: orderAmountAndCurrency.$1.toDouble(),
-            fiatCurrency: orderAmountAndCurrency.$2,
           )
         else
-          CurrencyText(
+          BullAmount.signedSats(
             isOrder && orderAmountAndCurrency != null
                 ? orderAmountAndCurrency.$1.toInt()
                 : amountSat ?? 0,
-            showFiat: false,
             interactive: true,
             style: context.bullType.headline.copyWith(
               color: context.appColors.secondary,

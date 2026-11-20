@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart' show BullAmount, Gap, BullTypographyX;
 
 class AddressCard extends StatelessWidget {
   const AddressCard({
@@ -63,12 +62,12 @@ class AddressCard extends StatelessWidget {
                     color: context.appColors.textMuted,
                   ),
                 ),
-                CurrencyText(
+                BullAmount.signedSats(
                   balanceSat,
                   style: context.bullType.body.copyWith(
                     color: context.appColors.textMuted,
                   ),
-                  showFiat: false,
+                  interactive: false,
                 ),
               ],
             ),

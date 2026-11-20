@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullTransactionListItemData,
         BullTransactionStatusRow,
         bullTimeAgo,
@@ -24,9 +24,8 @@ BullTransactionListItemData spPaymentListItemData(
     icon: isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
     iconBackgroundColor: context.appColors.surface,
     iconBorderColor: context.appColors.border,
-    amount: CurrencyText(
+    amount: BullAmount.signedSats(
       payment.amountSat.value.toInt(),
-      showFiat: false,
       interactive: true,
       style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
     ),

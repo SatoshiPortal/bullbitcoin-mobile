@@ -2,12 +2,11 @@ import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSwitch, BullText, Gap, BullTypographyX;
+    show BullAmount, BullButton, BullSwitch, BullText, Gap, BullTypographyX;
 
 enum SendType { send, swap }
 
@@ -413,11 +412,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 .copyWith(color: context.appColors.secondary),
           ),
           const Spacer(),
-          CurrencyText(
+          BullAmount.signedSats(
             amt,
-            showFiat: false,
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.secondary,
+            interactive: false,
           ),
         ],
       ),
@@ -452,13 +451,13 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                         .copyWith(color: context.appColors.onSurfaceVariant),
                   ),
                   const Spacer(),
-                  CurrencyText(
+                  BullAmount.signedSats(
                     total,
-                    showFiat: false,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                     color: context.appColors.secondary,
+                    interactive: false,
                   ),
                   const Gap(4),
                   Icon(
@@ -634,20 +633,20 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               crossAxisAlignment: .end,
               children: [
                 if (swap.isChainSwap)
-                  CurrencyText(
+                  BullAmount.signedSats(
                     (swap as ChainSwap).paymentAmount,
-                    showFiat: false,
                     style: context.bullType.body
                         .copyWith(fontWeight: FontWeight.w500)
                         .copyWith(color: context.appColors.secondary),
+                    interactive: false,
                   )
                 else if (swap.isLnSendSwap)
-                  CurrencyText(
+                  BullAmount.signedSats(
                     (swap as LnSendSwap).paymentAmount,
-                    showFiat: false,
                     style: context.bullType.body
                         .copyWith(fontWeight: FontWeight.w500)
                         .copyWith(color: context.appColors.secondary),
+                    interactive: false,
                   )
                 else
                   BullText(
@@ -666,13 +665,13 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  CurrencyText(
+                  BullAmount.signedSats(
                     swap.receieveAmount!,
-                    showFiat: false,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                     color: context.appColors.secondary,
+                    interactive: false,
                   ),
                 ],
               ),
@@ -684,13 +683,13 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  CurrencyText(
+                  BullAmount.signedSats(
                     swap.fees!.lockupFee!,
-                    showFiat: false,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                     color: context.appColors.secondary,
+                    interactive: false,
                   ),
                 ],
               ),
