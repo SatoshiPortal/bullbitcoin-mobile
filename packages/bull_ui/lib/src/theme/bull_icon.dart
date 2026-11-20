@@ -15,6 +15,8 @@ abstract final class BullIcons {
   static const IconData payments = Icons.payments;
   static const IconData swapHoriz = Icons.swap_horiz;
   static const IconData map = Icons.map;
+  static const IconData visibility = Icons.visibility_outlined;
+  static const IconData visibilityOff = Icons.visibility_off_outlined;
   static const IconData settings = Icons.settings;
   static const IconData accountBalance = Icons.account_balance;
   static const IconData moreHoriz = Icons.more_horiz;

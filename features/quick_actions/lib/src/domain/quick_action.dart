@@ -3,13 +3,13 @@ enum QuickAction {
   map('map'),
   transfer('transfer'),
   history('history'),
-  settings('settings'),
   buy('buy'),
   sell('sell'),
   pay('pay'),
   exchange('exchange'),
   support('support'),
-  priceHistory('priceHistory');
+  priceHistory('priceHistory'),
+  toggleAmounts('toggleAmounts');
 
   const QuickAction(this.id);
   final String id;
@@ -44,7 +44,7 @@ final class QuickActionsLayout {
 
   /// The Home row on iOS, where the exchange stays hidden.
   static const iosDefaults = [
-    QuickAction.settings,
+    QuickAction.toggleAmounts,
     QuickAction.history,
     QuickAction.transfer,
   ];
@@ -57,7 +57,7 @@ final class QuickActionsLayout {
     QuickAction.sell,
     QuickAction.pay,
     QuickAction.exchange,
-    QuickAction.settings,
+    QuickAction.toggleAmounts,
     QuickAction.support,
     QuickAction.priceHistory,
     QuickAction.map,
@@ -79,11 +79,6 @@ final class QuickActionsLayout {
       if (available.contains(action) && selected.contains(action) == false) {
         selected.add(action);
       }
-    }
-    // Preserve the saved selection, including an empty or unavailable one.
-    // Settings is only a display fallback, never an implicit preference write.
-    if (selected.isEmpty && available.contains(QuickAction.settings)) {
-      selected.add(QuickAction.settings);
     }
     final primary = selected.take(maximumHomeActions).toList();
     return QuickActionsLayout._(
