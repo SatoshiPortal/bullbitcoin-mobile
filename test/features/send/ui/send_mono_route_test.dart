@@ -460,6 +460,45 @@ void main() {
     });
   }
 
+  testWidgets(
+    'mono review warns only when the legacy fee threshold is exceeded',
+    (tester) async {
+      final incoming = StreamController<SendState>.broadcast(sync: true);
+      addTearDown(incoming.close);
+      final ordinary = state(step: SendStep.confirm);
+      expect(ordinary.showFeeWarning, isFalse);
+      await pump(tester, ordinary, updates: incoming.stream);
+
+      final warning = find.text('High fee warning');
+      expect(warning, findsNothing);
+
+      final boundary = ordinary.copyWith(bitcoinAbsoluteFeesSat: 500);
+      expect(boundary.showFeeWarning, isFalse);
+      incoming.add(boundary);
+      await tester.pumpAndSettle();
+      expect(warning, findsNothing);
+
+      final high = ordinary.copyWith(bitcoinAbsoluteFeesSat: 600);
+      expect(high.showFeeWarning, isTrue);
+      incoming.add(high);
+      await tester.pumpAndSettle();
+      expect(warning.hitTestable(), findsOneWidget);
+      expect(
+        find.text('Total fee is 6.00% of the amount you are sending'),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget<BullButton>(find.byType(BullButton)).disabled,
+        isFalse,
+      );
+
+      incoming.add(ordinary);
+      await tester.pumpAndSettle();
+      expect(warning, findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('mono fiat review retains entered amount and rate time', (
     tester,
   ) async {
