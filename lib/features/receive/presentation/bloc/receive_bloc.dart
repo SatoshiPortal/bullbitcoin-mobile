@@ -900,9 +900,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         state.admissionFailure != null) {
       return;
     }
+    // The address failure keeps Retry visible while this draft is edited.
+    final addressFailure = state.failure is ReceiveAddressUnavailableFailure
+        ? state.failure
+        : null;
     final amountFailure = ReceiveAmountConversion.validateQuantity(event.sats);
     if (amountFailure != null) {
-      emit(state.copyWith(amountEntryValid: false, failure: amountFailure));
+      emit(
+        state.copyWith(
+          amountEntryValid: false,
+          failure: addressFailure ?? amountFailure,
+        ),
+      );
       return;
     }
     final conversion = event.isEdit
@@ -924,7 +933,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         inputAmount: event.isEdit
             ? event.sats?.toString() ?? ''
             : state.inputAmount,
-        failure: event.isEdit ? null : state.failure,
+        failure: event.isEdit ? addressFailure : state.failure,
       ),
     );
   }
