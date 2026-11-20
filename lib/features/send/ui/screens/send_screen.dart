@@ -27,7 +27,7 @@ import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer, FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
-import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
+import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -1761,7 +1761,7 @@ class ConfirmSendButton extends StatelessWidget {
 ///
 /// Reads directly from [SendState] — all data (amount, address, fees) is
 /// already available after [createTransaction] + [signTransaction].
-/// Uses [CommonOnchainSendInfoSection] for the layout, same as Liquid.
+/// Uses [OnchainSendInfoSection] for the layout, same as Liquid.
 class _OnchainTransactionReview extends StatelessWidget {
   const _OnchainTransactionReview();
 
@@ -1851,9 +1851,10 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CommonOnchainSendInfoSection(
+        OnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
-          receiveWalletLabel: paymentRequestAddress,
+          addressBuilder: (style, color) =>
+              AddressViewer(paymentRequestAddress, style: style, color: color),
           formattedBitcoinAmount: formattedBitcoinAmount,
           formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
               ? ''
@@ -1950,7 +1951,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
 /// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
 /// using [TransactionReviewView] (which requires a [ReviewableTransaction]), this
 /// widget reads directly from [SendState] and delegates to
-/// [CommonOnchainSendInfoSection].
+/// [OnchainSendInfoSection].
 class _LiquidOnchainSendInfoSection extends StatelessWidget {
   const _LiquidOnchainSendInfoSection();
 
@@ -1982,9 +1983,10 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CommonOnchainSendInfoSection(
+        OnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
-          receiveWalletLabel: paymentRequestAddress,
+          addressBuilder: (style, color) =>
+              AddressViewer(paymentRequestAddress, style: style, color: color),
           formattedBitcoinAmount: formattedBitcoinAmount,
           formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
               ? ''
