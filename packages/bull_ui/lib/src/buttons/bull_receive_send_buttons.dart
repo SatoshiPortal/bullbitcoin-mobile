@@ -1,24 +1,24 @@
-import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
+import 'package:bull_ui/src/buttons/bull_button.dart';
+import 'package:bull_ui/src/layout/gap.dart';
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The paired receive/send row pinned to the bottom of a wallet screen.
 /// Labels and actions come from the caller so each feature keeps its own
 /// routing out of here.
-class ReceiveSendButtons extends StatelessWidget {
-  const ReceiveSendButtons({
+class BullReceiveSendButtons extends StatelessWidget {
+  const BullReceiveSendButtons({
     super.key,
     required this.receiveLabel,
     required this.sendLabel,
     required this.onReceive,
     required this.onSend,
-    this.sendDisabled = false,
   });
 
   final String receiveLabel;
   final String sendLabel;
   final VoidCallback onReceive;
-  final VoidCallback onSend;
-  final bool sendDisabled;
+  final VoidCallback? onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +32,13 @@ class ReceiveSendButtons extends StatelessWidget {
             onPressed: onReceive,
           ),
         ),
-        const Gap(4),
+        const Gap(BullSpacing.xxs),
         Expanded(
           child: BullButton.secondary(
             iconData: Icons.crop_free,
             label: sendLabel,
             iconFirst: true,
-            onPressed: (sendDisabled) ? null : onSend,
+            onPressed: onSend,
           ),
         ),
       ],

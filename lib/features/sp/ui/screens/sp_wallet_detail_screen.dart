@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
@@ -23,6 +22,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullButtonSize,
         BullButton,
         BullPullableBody,
+        BullReceiveSendButtons,
         BullShapesX,
         Gap,
         bullTimeAgo,
@@ -142,7 +142,7 @@ class SpWalletDetailScreen extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
-          child: ReceiveSendButtons(
+          child: BullReceiveSendButtons(
             receiveLabel: context.loc.spReceive,
             sendLabel: context.loc.spSend,
             onReceive: () => context.pushNamed(SpRoute.spReceive.name),
