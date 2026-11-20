@@ -71,6 +71,11 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: colors.primary,
+        selectionColor: colors.primary.withValues(alpha: 0.3),
+        selectionHandleColor: colors.primary,
+      ),
       brightness: brightness,
       extensions: bullUiExtensions(
         colors: bullTheme,
