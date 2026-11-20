@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/home_fiat_balance.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -119,10 +119,12 @@ class _Amounts extends StatelessWidget {
       children: [
         Gap(WalletHomeTopSection._balanceTopSpacing),
         Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [_BtcTotalAmt(), Gap(12), _FiatAmt()],
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [_BtcTotalAmt(), Gap(12), _FiatAmt()],
+            ),
           ),
         ),
         Gap(8),
@@ -154,15 +156,7 @@ class _BtcTotalAmt extends StatelessWidget {
     final btcTotal = walletState.totalBalance();
     if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
-    return Container(
-      // Alongside the amount toggle's 4 dp padding, match the fiat chip's
-      // 10 dp padding and 1 dp border to keep denomination edges aligned.
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(context.bullShapes.button),
-        border: Border.all(color: context.appColors.bitcoinOrange),
-        color: context.appColors.bitcoinOrange,
-      ),
+    return _HomeBalanceFrame(
       child: CurrencyText(
         btcTotal,
         showFiat: false,
@@ -189,8 +183,41 @@ class _FiatAmt extends StatelessWidget {
     return HomeFiatBalance(
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
+      foregroundColor: context.appColors.onSurfaceFixed,
+      frameBuilder: (context, child) => _HomeBalanceFrame(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: child,
+        ),
+      ),
     );
   }
+}
+
+/// Matches the unit toggle's minimum height for both balance controls.
+class _HomeBalanceFrame extends StatelessWidget {
+  const _HomeBalanceFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(context.bullShapes.button),
+      border: Border.all(color: context.appColors.bitcoinOrange),
+      color: context.appColors.bitcoinOrange,
+    ),
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Align(
+        alignment: Alignment.centerRight,
+        widthFactor: 1,
+        heightFactor: 1,
+        child: child,
+      ),
+    ),
+  );
 }
 
 class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
