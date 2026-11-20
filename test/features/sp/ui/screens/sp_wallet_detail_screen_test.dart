@@ -139,12 +139,20 @@ void main() {
     expect(find.text('Scan'), findsNothing);
   });
 
-  testWidgets('uses wallet detail balance card', (tester) async {
+  testWidgets('uses the local Bitcoin balance card palette', (tester) async {
     await cubit.load();
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.byType(WalletDetailBalanceCard), findsOneWidget);
+    final card = find.byType(WalletDetailBalanceCard);
+    expect(card, findsOneWidget);
+    final container = tester.widget<Container>(
+      find.descendant(of: card, matching: find.byType(Container)).first,
+    );
+    final decoration = container.decoration! as BoxDecoration;
+    expect(decoration.image?.colorFilter, isNull);
+    final colors = tester.element(card).appColors;
+    expect((decoration.border! as Border).bottom.color, colors.onTertiary);
   });
 
   testWidgets('the nudge Scan button scans in place, without routing away', (
