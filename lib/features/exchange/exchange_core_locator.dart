@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.da
 import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
@@ -23,6 +22,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
@@ -132,22 +132,16 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerLazySingleton<ExchangeUserRepository>(
-      () => ExchangeUserRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+    for (final environment in ['mainnet', 'testnet']) {
+      locator.registerLazySingleton<ExchangeUserRepository>(
+        () => BbxApiUserRepository(
+          api: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClient',
+          ),
         ),
-      ),
-      instanceName: 'mainnetExchangeUserRepository',
-    );
-    locator.registerLazySingleton<ExchangeUserRepository>(
-      () => ExchangeUserRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'testnetExchangeUserRepository',
-    );
+        instanceName: '${environment}ExchangeUserRepository',
+      );
+    }
 
     locator.registerLazySingleton<ExchangeOrderRepository>(
       () => ExchangeOrderRepositoryImpl(
