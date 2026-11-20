@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart'
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -83,7 +83,10 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData(AppThemeType.dark),
       locale: _language.locale,
-      localizationsDelegates: appLocalizationsDelegates,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
