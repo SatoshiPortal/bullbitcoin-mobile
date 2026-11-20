@@ -193,6 +193,7 @@ abstract class ReceiveState with _$ReceiveState {
   // the type of receive and some set parameters. It waits for all data to
   // be available before returning anything.
   String get paymentRequest {
+    final amountSat = confirmedAmountSat ?? 0;
     switch (type) {
       case ReceiveType.bitcoin:
         if (bitcoinAddress == null || isPayjoinLoading) {
@@ -208,7 +209,8 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: 'bitcoin',
           path: bitcoinAddress!.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (amountSat > 0)
+              'amount': Sats.fromInt(amountSat).toBitcoinText(BitcoinUnit.btc),
             if (note.isNotEmpty) 'message': note,
           },
         );
@@ -253,7 +255,8 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: profile.scheme,
           path: address.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (amountSat > 0)
+              'amount': Sats.fromInt(amountSat).toBitcoinText(BitcoinUnit.btc),
             if (note.isNotEmpty) 'message': note,
             'assetid': profile.asset,
           },

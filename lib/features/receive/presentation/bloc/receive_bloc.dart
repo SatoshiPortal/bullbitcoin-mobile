@@ -7,7 +7,14 @@ import '../../domain/usecases/get_receive_amount_quotes_usecase.dart';
 
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, NetworkCapabilities, NetworkCapability, Ok, Result;
+    show
+        BitcoinUnit,
+        Err,
+        NetworkCapabilities,
+        NetworkCapability,
+        Ok,
+        Result,
+        Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
