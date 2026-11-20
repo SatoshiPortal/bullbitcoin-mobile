@@ -16,7 +16,7 @@ import 'package:bull_ui/bull_ui.dart'
 /// - **Tap** opens a dialog showing the full invoice with a copy action.
 /// - **Long press** copies the invoice to the clipboard.
 ///
-/// Unlike [AddressViewer] and [TransactionViewer], there is no explorer link.
+/// Unlike [AddressViewer] and transaction viewers, there is no explorer link.
 class InvoiceViewer extends StatelessWidget {
   const InvoiceViewer(
     this.data, {

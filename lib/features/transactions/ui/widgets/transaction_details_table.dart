@@ -6,7 +6,8 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
@@ -19,6 +20,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullDetailsTable,
         BullDetailsTableItem,
+        BullTransactionViewer,
         BullText,
         Gap,
         BullSnackBar,
@@ -29,6 +31,52 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 
 class TransactionDetailsTable extends StatelessWidget {
   const TransactionDetailsTable({super.key});
+
+  Widget _transactionViewer(
+    BuildContext context,
+    String txId, {
+    required bool isLiquid,
+    required bool isTestnet,
+    required String? unblindedUrl,
+    required String? payjoinFragment,
+  }) {
+    return BullTransactionViewer(
+      txId,
+      style: TextStyle(color: context.appColors.primary),
+      title: context.loc.transactionViewerTitle,
+      copiedMessage: context.loc.copiedToClipboard,
+      copyLabel: context.loc.viewerTapToCopy,
+      explorerActions: [
+        (
+          copyLabel: context.loc.viewerCopyLink,
+          openLabel: context.loc.viewerViewInExplorer,
+          resolveUrl: () {
+            final builder = context.read<MempoolUrlBuilder>();
+            return isLiquid
+                ? builder.liquidTxid(
+                    txId,
+                    isTestnet: isTestnet,
+                    unblindedUrl: unblindedUrl,
+                  )
+                : builder.bitcoinTxid(txId, isTestnet: isTestnet);
+          },
+        ),
+        if (!isLiquid && payjoinFragment != null)
+          (
+            copyLabel: context.loc.viewerCopyLinkDisclosePayjoin,
+            openLabel: context.loc.viewerViewInExplorerDisclosePayjoin,
+            resolveUrl: () => context.read<MempoolUrlBuilder>().bitcoinTxid(
+              txId,
+              isTestnet: isTestnet,
+              fragment: payjoinFragment,
+            ),
+          ),
+      ],
+      openUrl: (url) async {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,21 +153,16 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue: StringFormatting.truncateMiddle(txId),
             copyValue: txId,
             onCopied: showCopied,
-            displayWidget: !canExplore
-                ? null
-                : isLiquid
-                ? TransactionViewer.liquid(
+            displayWidget: canExplore
+                ? _transactionViewer(
+                    context,
                     txId,
-                    style: TextStyle(color: context.appColors.primary),
+                    isLiquid: isLiquid,
                     isTestnet: isTestnet,
-                    unblindedUrl: transaction?.walletTransaction?.unblindedUrl,
+                    unblindedUrl: walletTransaction?.unblindedUrl,
+                    payjoinFragment: transaction?.payjoinOwnershipFragment,
                   )
-                : TransactionViewer.bitcoin(
-                    txId,
-                    style: TextStyle(color: context.appColors.primary),
-                    isTestnet: isTestnet,
-                    explorerUrlFragment: transaction?.payjoinOwnershipFragment,
-                  ),
+                : null,
           ),
 
         if (labels.isNotEmpty && txId != null)

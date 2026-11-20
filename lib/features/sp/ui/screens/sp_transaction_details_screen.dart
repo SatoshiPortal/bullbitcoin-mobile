@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
@@ -10,6 +12,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullDetailsTable,
         BullDetailsTableItem,
         BullTransactionDetailsPage,
+        BullTransactionViewer,
         BullTypographyX,
         Gap;
 import 'package:material_ui/material_ui.dart';
@@ -101,13 +104,26 @@ class SpTransactionDetailsScreen extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: switch (network) {
-              BitcoinNetwork.mainnet => TransactionViewer.bitcoin(
+              BitcoinNetwork.mainnet ||
+              BitcoinNetwork.testnet => BullTransactionViewer(
                 payment.txid,
-                isTestnet: false,
-              ),
-              BitcoinNetwork.testnet => TransactionViewer.bitcoin(
-                payment.txid,
-                isTestnet: true,
+                title: context.loc.transactionViewerTitle,
+                copiedMessage: context.loc.copiedToClipboard,
+                copyLabel: context.loc.viewerTapToCopy,
+                explorerActions: [
+                  (
+                    copyLabel: context.loc.viewerCopyLink,
+                    openLabel: context.loc.viewerViewInExplorer,
+                    resolveUrl: () =>
+                        context.read<MempoolUrlBuilder>().bitcoinTxid(
+                          payment.txid,
+                          isTestnet: network == BitcoinNetwork.testnet,
+                        ),
+                  ),
+                ],
+                openUrl: (url) async {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                },
               ),
               _ => SelectableText(payment.txid),
             },
