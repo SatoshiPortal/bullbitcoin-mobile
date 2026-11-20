@@ -870,6 +870,60 @@ void main() {
     return cubit;
   }
 
+  group('first Send fee load', () {
+    for (final selection in [
+      FeeSelection.fastest,
+      FeeSelection.slow,
+      FeeSelection.custom,
+    ]) {
+      test(
+        'preserves ${selection.name} chosen before wallet selection',
+        () async {
+          final wallet = _bitcoinLocalWallet();
+          final fees = _feeOptions();
+          const custom = RelativeFee(750);
+          when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+              .thenAnswer((_) async => const []);
+          when(
+            () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+          ).thenAnswer((_) => const Stream<Wallet>.empty());
+          when(
+            () => getNetworkFeesUsecase.execute(
+              isLiquid: any(named: 'isLiquid'),
+              network: any(named: 'network'),
+            ),
+          ).thenAnswer((_) async => fees);
+
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+          expect(cubit.state.selectedWallet, isNull);
+          expect(cubit.state.bitcoinFeesList, isNull);
+
+          if (selection == FeeSelection.slow) {
+            await cubit.feeOptionSelected(selection);
+          } else if (selection == FeeSelection.custom) {
+            await cubit.customFeesChanged(custom);
+          }
+          expect(cubit.state.selectedFeeOption, selection);
+
+          await cubit.updateSelectedWallet(wallet);
+          expect(cubit.state.bitcoinFeesList, isNull);
+          await cubit.loadFees();
+
+          expect(cubit.state.failure, isNull);
+          expect(cubit.state.bitcoinFeesList, fees);
+          expect(cubit.state.selectedFeeOption, selection);
+          expect(cubit.state.selectedFee, switch (selection) {
+            FeeSelection.fastest => fees.fastest,
+            FeeSelection.slow => fees.slow,
+            FeeSelection.custom => custom,
+            FeeSelection.economic => fees.economic,
+          });
+        },
+      );
+    }
+  });
+
   group('mono MAX preview', () {
     _TestableSendCubit startMono() {
       final cubit = buildCubit();
