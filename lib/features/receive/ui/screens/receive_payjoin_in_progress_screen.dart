@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
@@ -14,6 +13,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullButton,
         BullCountdown,
         BullFadingLinearProgress,
@@ -284,9 +284,8 @@ class PayjoinInProgressPage extends StatelessWidget {
                 ],
                 if (amountSat != null) ...[
                   const Gap(16),
-                  CurrencyText(
+                  BullAmount.signedSats(
                     amountSat,
-                    showFiat: false,
                     interactive: true,
                     style: context.bullType.headline,
                     textAlign: .center,

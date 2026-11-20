@@ -1,5 +1,5 @@
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_order_fiat_amount.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullTransactionListItem,
         BullTransactionListItemData,
         BullTransactionStatusRow,
@@ -81,20 +82,17 @@ class TransactionListItem extends StatelessWidget {
           ? context.appColors.border.withValues(alpha: 0.5)
           : context.appColors.border,
       amount: showOrderInFiat && orderAmountAndCurrency != null
-          ? CurrencyText(
-              transaction.swapListAmountSat,
-              showFiat: false,
-              fiatAmount: orderAmountAndCurrency.$1.toDouble(),
-              fiatCurrency: orderAmountAndCurrency.$2,
+          ? ExchangeOrderFiatAmount(
+              amount: orderAmountAndCurrency.$1.toDouble(),
+              currency: orderAmountAndCurrency.$2,
               style: context.bullType.body.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             )
-          : CurrencyText(
+          : BullAmount.signedSats(
               isOrderType && orderAmountAndCurrency != null
                   ? orderAmountAndCurrency.$1.toInt()
                   : transaction.swapListAmountSat,
-              showFiat: false,
               interactive: true,
               style: context.bullType.body.copyWith(
                 fontWeight: FontWeight.w500,

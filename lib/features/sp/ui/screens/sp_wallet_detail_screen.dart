@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletDetailBalanceCard;
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_tx_list_item.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/sp/domain/sp_scan_policy.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
@@ -17,6 +16,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullButtonSize,
         BullButton,
         BullPullableBody,
@@ -79,12 +79,12 @@ class SpWalletDetailScreen extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: WalletDetailBalanceCard.localBitcoin(
-                balanceText: CurrencyText(
+                balanceText: BullAmount.signedSats(
                   state.totalBalance.value.toInt(),
                   style: context.bullType.headline.copyWith(
                     color: context.appColors.onPrimary,
                   ),
-                  showFiat: false,
+                  interactive: false,
                 ),
                 eyeToggle: const EyeToggle(),
                 fiatBalance: fiatBalanceBuilder(

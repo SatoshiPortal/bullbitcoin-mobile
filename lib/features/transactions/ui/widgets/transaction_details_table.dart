@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
@@ -18,6 +17,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullDetailsTable,
         BullDetailsTableItem,
         BullTransactionViewer,
@@ -215,11 +215,10 @@ class TransactionDetailsTable extends StatelessWidget {
             label: transaction?.isIncoming == true
                 ? context.loc.transactionDetailLabelAmountReceived
                 : context.loc.transactionDetailLabelAmountSent,
-            displayWidget: CurrencyText(
+            displayWidget: BullAmount.signedSats(
               transaction?.isIncoming == true
                   ? amountReceived
                   : (displayAmountSent ?? amountSent),
-              showFiat: false,
               interactive: true,
               overrideHideAmounts: true,
               style: context.bullType.body.copyWith(
@@ -233,9 +232,8 @@ class TransactionDetailsTable extends StatelessWidget {
           if (walletTransaction.isToSelf == true)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelAmountReceived,
-              displayWidget: CurrencyText(
+              displayWidget: BullAmount.signedSats(
                 amountReceived,
-                showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
                 style: context.bullType.body.copyWith(
@@ -248,9 +246,8 @@ class TransactionDetailsTable extends StatelessWidget {
           if (transaction?.isOutgoing == true && transaction?.isSwap != true)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayWidget: CurrencyText(
+              displayWidget: BullAmount.signedSats(
                 txFee ?? 0,
-                showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
                 style: context.bullType.body.copyWith(
@@ -282,10 +279,9 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelPayinAmount,
-            displayWidget: CurrencyText(
+            displayWidget: BullAmount.signedSats(
               orderSwap.order?.payinAmountSat.toInt() ??
                   orderSwap.requestedAmountSat.toInt(),
-              showFiat: false,
               interactive: true,
               overrideHideAmounts: true,
               style: context.bullType.body.copyWith(
@@ -298,9 +294,8 @@ class TransactionDetailsTable extends StatelessWidget {
           if (orderSwap.order case final swapOrder?)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelPayoutAmount,
-              displayWidget: CurrencyText(
+              displayWidget: BullAmount.signedSats(
                 swapOrder.payoutAmountSat.toInt(),
-                showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
                 style: context.bullType.body.copyWith(
@@ -313,9 +308,8 @@ class TransactionDetailsTable extends StatelessWidget {
           if (txFee != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayWidget: CurrencyText(
+              displayWidget: BullAmount.signedSats(
                 txFee,
-                showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
                 style: context.bullType.body.copyWith(
@@ -368,9 +362,8 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? CurrencyText(
+                      ? BullAmount.signedSats(
                           ConvertAmount.btcToSats(order.payinAmount),
-                          showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
                           style: context.bullType.body.copyWith(
@@ -391,9 +384,8 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? CurrencyText(
+                      ? BullAmount.signedSats(
                           ConvertAmount.btcToSats(order.payoutAmount),
-                          showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
                           style: context.bullType.body.copyWith(
@@ -457,9 +449,8 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     payinAmountSat,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -722,9 +713,8 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? CurrencyText(
+                      ? BullAmount.signedSats(
                           ConvertAmount.btcToSats(order.payinAmount),
-                          showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
                           style: context.bullType.body.copyWith(
@@ -745,9 +735,8 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? CurrencyText(
+                      ? BullAmount.signedSats(
                           ConvertAmount.btcToSats(order.payoutAmount),
-                          showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
                           style: context.bullType.body.copyWith(
@@ -817,9 +806,8 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? CurrencyText(
+                      ? BullAmount.signedSats(
                           ConvertAmount.btcToSats(order.payinAmount),
-                          showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
                           style: context.bullType.body.copyWith(
@@ -840,9 +828,8 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? CurrencyText(
+                      ? BullAmount.signedSats(
                           ConvertAmount.btcToSats(order.payoutAmount),
-                          showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
                           style: context.bullType.body.copyWith(
@@ -1016,9 +1003,8 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountSent > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayWidget: CurrencyText(
+                displayWidget: BullAmount.signedSats(
                   amountSent,
-                  showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
                   style: context.bullType.body.copyWith(
@@ -1031,9 +1017,8 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountReceived > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelReceiveAmount,
-                displayWidget: CurrencyText(
+                displayWidget: BullAmount.signedSats(
                   amountReceived,
-                  showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
                   style: context.bullType.body.copyWith(
@@ -1046,9 +1031,8 @@ class TransactionDetailsTable extends StatelessWidget {
             if (recoveredBoltzFee > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionDetailLabelTransferFee,
-                displayWidget: CurrencyText(
+                displayWidget: BullAmount.signedSats(
                   recoveredBoltzFee,
-                  showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
                   style: context.bullType.body.copyWith(
@@ -1061,9 +1045,8 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountReceived > 0 && recoveredNetworkFee > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelNetworkFees,
-                displayWidget: CurrencyText(
+                displayWidget: BullAmount.signedSats(
                   recoveredNetworkFee,
-                  showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
                   style: context.bullType.body.copyWith(
@@ -1078,9 +1061,8 @@ class TransactionDetailsTable extends StatelessWidget {
             if (swap.isChainSwap) ...[
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayWidget: CurrencyText(
+                displayWidget: BullAmount.signedSats(
                   (swap as ChainSwap).paymentAmount,
-                  showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
                   style: context.bullType.body.copyWith(
@@ -1093,9 +1075,8 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     receiveAmount,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -1108,9 +1089,8 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swapSendNetworkFee != null)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     swapSendNetworkFee,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -1123,9 +1103,8 @@ class TransactionDetailsTable extends StatelessWidget {
             ] else if (swap.isLnSendSwap) ...[
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayWidget: CurrencyText(
+                displayWidget: BullAmount.signedSats(
                   (swap as LnSendSwap).paymentAmount,
-                  showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
                   style: context.bullType.body.copyWith(
@@ -1138,9 +1117,8 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     receiveAmount,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -1153,9 +1131,8 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swapSendNetworkFee != null)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     swapSendNetworkFee,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -1169,9 +1146,8 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.sendAmount case final sendAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendAmount,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     sendAmount,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -1184,9 +1160,8 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayWidget: CurrencyText(
+                  displayWidget: BullAmount.signedSats(
                     receiveAmount,
-                    showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
                     style: context.bullType.body.copyWith(
@@ -1203,11 +1178,10 @@ class TransactionDetailsTable extends StatelessWidget {
               label: swap.type.isChain
                   ? context.loc.transactionDetailLabelTransferFees
                   : context.loc.transactionDetailLabelSwapFees,
-              displayWidget: CurrencyText(
+              displayWidget: BullAmount.signedSats(
                 swap.isLnReceiveSwap
                     ? fees.totalFees(swap.amountSat)
                     : fees.totalFeesMinusLockup(swap.amountSat),
-                showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
                 style: context.bullType.body.copyWith(
@@ -1295,9 +1269,8 @@ class TransactionDetailsTable extends StatelessWidget {
           if (transaction.payjoinFeeContributionSat case final feeContribution?)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelPayjoinFeeContribution,
-              displayWidget: CurrencyText(
+              displayWidget: BullAmount.signedSats(
                 feeContribution,
-                showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
                 style: context.bullType.body.copyWith(
@@ -1331,9 +1304,8 @@ Widget _feeRow(BuildContext context, String label, int amt) {
           color: context.appColors.secondary,
         ),
         const Spacer(),
-        CurrencyText(
+        BullAmount.signedSats(
           amt,
-          showFiat: false,
           interactive: true,
           style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.appColors.secondary,

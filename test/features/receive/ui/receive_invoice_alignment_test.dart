@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -141,7 +140,7 @@ void main() {
     tester,
   ) async {
     await _mount(tester);
-    final values = find.byType(CurrencyText);
+    final values = find.byType(BullAmount);
     expect(values, findsNWidgets(3));
     final right = tester.getTopRight(values.first).dx;
     expect(tester.getTopRight(values.at(1)).dx, right);
@@ -195,7 +194,7 @@ void main() {
     expect(identifier.overflow, TextOverflow.ellipsis);
     final sheetValues = find.descendant(
       of: find.byType(ReceiveLnFeesDetails),
-      matching: find.byType(CurrencyText),
+      matching: find.byType(BullAmount),
     );
     for (final element in sheetValues.evaluate()) {
       expect(tester.getTopRight(find.byWidget(element.widget)).dx, 310);
