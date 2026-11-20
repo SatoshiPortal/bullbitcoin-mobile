@@ -223,6 +223,7 @@ export 'src/data_display/bull_settings_entry_item.dart';
 export 'src/data_display/bull_settings_entry_tile.dart';
 export 'src/data_display/bull_server_tile.dart';
 export 'src/data_display/bull_stat_tile.dart';
+export 'src/data_display/bull_transaction_viewer.dart';
 export 'src/data_display/bull_text.dart';
 export 'src/data_display/bull_time_ago.dart';
 export 'src/data_display/bull_transaction_direction_badge.dart';
