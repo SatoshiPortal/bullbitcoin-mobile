@@ -56,6 +56,7 @@ export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 class SettingsRouter {
   static GoRoute route({
     required Widget Function(BuildContext) buildPriceHistory,
+    required void Function(BuildContext) onBackupTestSucceeded,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
@@ -216,7 +217,7 @@ class SettingsRouter {
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
           BackupSettingsSettingsRouter.route,
-          TestWalletBackupRouter.route,
+          TestWalletBackupRouter.route(onTestSucceeded: onBackupTestSucceeded),
         ],
       ),
       // A wallet is always reached from its own screen (wallet home → gear),
