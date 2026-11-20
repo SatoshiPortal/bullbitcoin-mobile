@@ -1254,6 +1254,86 @@ void main() {
     ).thenAnswer((_) async => _sweepFeeOptions);
   }
 
+  for (final builtSats in [25000, 25001]) {
+    test(
+      'matches a single Bitcoin fiat quote to the confirmed $builtSats-sat output',
+      () async {
+        final wallet = _bitcoinLocalWallet();
+        stubSweepLoad(wallet: wallet, utxos: const []);
+        const address = 'bc1qfixture';
+        when(
+          () => detectBitcoinStringUsecase.execute(data: address),
+        ).thenAnswer(
+          (_) async =>
+              const PaymentRequest.bitcoin(address: address, isTestnet: false),
+        );
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: wallet.id,
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok((
+            unsignedPsbt: 'unsigned',
+            txSize: 140,
+            isToSelf: false,
+            recipientAmountsSat: [Sats.fromInt(builtSats)],
+          )),
+        );
+        when(
+          () => signBitcoinTxUsecase.execute(
+            psbt: 'unsigned',
+            walletId: wallet.id,
+          ),
+        ).thenAnswer((_) async => (signedPsbt: 'signed', txSize: 140));
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async => 140);
+
+        final cubit = buildCubit(wallet: wallet);
+        addTearDown(cubit.close);
+        await cubit.loadWalletWithRatesAndFees();
+        await cubit.onChangedText(address);
+        await cubit.continueOnAddressConfirmed();
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.usesRecipientList, isTrue);
+        expect(cubit.state.recipientDrafts, hasLength(1));
+
+        final quotedAt = DateTime.utc(2026, 11, 20, 12, 34);
+        cubit.amountEntryChanged(
+          sats: BigInt.from(25000),
+          currencyCode: 'USD',
+          text: '12.50',
+          rate: 50000,
+          quotedAt: quotedAt,
+          isValid: true,
+          isEdit: true,
+        );
+        await pumpEventQueue();
+        final conversion = cubit.state.amountConversion;
+        expect(conversion?.enteredText, '12.50');
+        expect(conversion?.quotedAt, quotedAt);
+
+        await cubit.onAmountConfirmed();
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.confirmedAmountSat, builtSats);
+        expect(cubit.state.recipientAmountsSat, [builtSats]);
+        expect(
+          cubit.state.confirmedConversion,
+          builtSats == 25000 ? conversion : null,
+        );
+      },
+    );
+  }
+
   test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {
     final wallet = _liquidWallet(balanceSat: 1000000);
     final quote = _MockOrderSwapQuote();
