@@ -74,11 +74,8 @@ class ReceiveQRDetails extends StatelessWidget {
           Text(failure.toTranslated(context), style: context.bullType.body),
           BullButton.secondary(
             label: context.loc.retry,
-            onPressed: () => context.read<ReceiveBloc>().add(
-              state.type == ReceiveType.bitcoin
-                  ? ReceiveBitcoinStarted(state.wallet)
-                  : const ReceiveLiquidStarted(),
-            ),
+            onPressed: () =>
+                context.read<ReceiveBloc>().add(const ReceiveAddressRetried()),
           ),
         ],
       );
