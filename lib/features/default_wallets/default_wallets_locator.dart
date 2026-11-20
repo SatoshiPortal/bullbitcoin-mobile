@@ -1,32 +1,25 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/default_wallets/data/bbx_api_exchange_recipient_repository.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:get_it/get_it.dart';
 
 class DefaultWalletsLocator {
   static void setup(GetIt locator) {
-    locator.registerLazySingleton<ExchangeRecipientRepository>(
-      () => ExchangeRecipientRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+    for (final environment in ['mainnet', 'testnet']) {
+      locator.registerLazySingleton<ExchangeRecipientRepository>(
+        () => BbxApiExchangeRecipientRepository(
+          api: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClient',
+          ),
         ),
-      ),
-      instanceName: 'mainnet',
-    );
-
-    locator.registerLazySingleton<ExchangeRecipientRepository>(
-      () => ExchangeRecipientRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'testnet',
-    );
+        instanceName: environment,
+      );
+    }
 
     locator.registerLazySingleton<GetDefaultWalletsUsecase>(
       () => GetDefaultWalletsUsecase(
