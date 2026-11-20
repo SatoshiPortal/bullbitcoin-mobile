@@ -9,8 +9,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-/// A read-only value with a copy button — the kit's take on
-/// `core/widgets/inputs/copy_input.dart`, without its value modal.
+/// A read-only value with an optional clipboard value override.
 ///
 /// [copiedMessage] (shown in a [BullSnackBar] after a copy) comes translated
 /// from the caller. The copy button is named by [copyLabel], or Material's

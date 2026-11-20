@@ -102,7 +102,6 @@ until the dependency is abstracted out of the widget:
 
 | Widget | Blocker |
 | --- | --- |
-| `CopyInput`, `BBKeyboardActions` | depend on `package:bb_mobile/*` localization / app utils. |
 | `BBButton` (`buttons/button.dart`) | removed; its callers now use `BullButton`. |
 | Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |
 | `BBKeyboardActions` | needs `package:keyboard_actions/keyboard_actions.dart`, not declared in `bull_ui/pubspec.yaml` (no new deps rule). |
