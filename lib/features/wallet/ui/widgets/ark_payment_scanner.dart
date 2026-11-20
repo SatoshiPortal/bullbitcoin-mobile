@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Reuses the camera decoder without parsing or choosing a payment protocol.
