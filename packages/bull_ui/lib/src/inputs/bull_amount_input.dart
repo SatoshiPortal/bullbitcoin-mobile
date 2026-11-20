@@ -25,6 +25,8 @@ class BullAmountInput extends StatefulWidget {
     required this.amountController,
     this.amountEquivalent = '',
     this.emptyEquivalent,
+    this.bitcoinDisplayUnit,
+    this.onBitcoinUnitChanged,
     this.currencies = const [],
     this.defaultCurrencyCode,
     this.initialCurrencyCode,
@@ -50,6 +52,10 @@ class BullAmountInput extends StatefulWidget {
   /// An explicit zero and MAX still show their calculated equivalent.
   final String? emptyEquivalent;
 
+  /// Optional shared display denomination, independent of the canonical unit.
+  /// Incomplete edits retain their representation until they can be converted.
+  final BitcoinUnit? bitcoinDisplayUnit;
+  final ValueChanged<BitcoinUnit>? onBitcoinUnitChanged;
   final List<BullAmountCurrency> currencies;
   final String? defaultCurrencyCode;
   final String? initialCurrencyCode;
@@ -126,7 +132,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
       _initialized = true;
       _globalUnit = global;
       _globalRevision = revision;
-      _unit = widget.isMax ? BitcoinUnit.sats : global ?? widget.canonicalUnit;
+      _unit =
+          widget.bitcoinDisplayUnit ??
+          (widget.isMax ? BitcoinUnit.sats : global ?? widget.canonicalUnit);
       final initial = widget.isMax ? null : widget.initialCurrencyCode;
       _preferenceApplied =
           widget.isMax || (initial != null && initial.isNotEmpty);
@@ -141,6 +149,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
     }
     _tryInitialPreference(scope);
     _refreshPrice();
+    _applyDisplayUnit();
   }
 
   void _restoreInitialCurrency(String? code) {
@@ -170,7 +179,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
         return;
       }
       _fiatCurrency = fiat ? _defaultCurrency : null;
-      _unit = _globalUnit ?? widget.canonicalUnit;
+      _unit = widget.bitcoinDisplayUnit ?? _globalUnit ?? widget.canonicalUnit;
     }
     _preferenceApplied = true;
     _lastFiatCurrency = _fiatCurrency ?? _defaultCurrency;
@@ -220,6 +229,19 @@ class _BullAmountInputState extends State<BullAmountInput> {
     _tryInitialPreference(BullAmountScope.maybeOf(context));
     _refreshPrice();
     _applyPendingGlobalReset();
+    _applyDisplayUnit();
+  }
+
+  void _applyDisplayUnit() {
+    final unit = widget.bitcoinDisplayUnit;
+    if (unit == null || unit == _unit) return;
+    if (_fiatCurrency == null && !_canChangeRepresentation && !_showMax) return;
+    _unit = unit;
+    if (_fiatCurrency == null) {
+      final sats = _sats;
+      _setRaw(sats == null ? '' : _bitcoinText(sats, unit));
+    }
+    _notify(defer: true);
   }
 
   @override
@@ -278,7 +300,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
     }
     if (!startingEdit && _raw.isNotEmpty && _sats == null) return;
     _pendingGlobalReset = false;
-    _unit = _showMax ? BitcoinUnit.sats : _globalUnit ?? widget.canonicalUnit;
+    _unit =
+        widget.bitcoinDisplayUnit ??
+        (_showMax ? BitcoinUnit.sats : _globalUnit ?? widget.canonicalUnit);
     if (_fiatCurrency == null) _syncCanonical();
     if (mounted) setState(() {});
   }
@@ -429,6 +453,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
     _writeCanonical();
     _notify(isEdit: true);
     _applyPendingGlobalReset();
+    _applyDisplayUnit();
     if (mounted) setState(() {});
   }
 
@@ -474,6 +499,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
     final sats = _sats;
     _setRaw(sats == null ? '' : _bitcoinText(sats, _unit));
     _notify();
+    widget.onBitcoinUnitChanged?.call(_unit);
     setState(() {});
   }
 

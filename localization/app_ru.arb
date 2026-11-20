@@ -1874,7 +1874,7 @@
   "exportVaultButton": "Экспортное хранилище",
   "coreSwapsChainPaid": "Ожидание подтверждения платежа провайдера свопа. Это может занять некоторое время.",
   "importQrDevicePassportStep6": "Выберите \"Single-sig\"",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "enterPinAgainMessage": "Введите свой {pinOrPassword} снова, чтобы продолжить.",
   "@enterPinAgainMessage": {
     "placeholders": {

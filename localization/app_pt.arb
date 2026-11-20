@@ -1872,7 +1872,7 @@
   "exportVaultButton": "Padrão de exportação",
   "coreSwapsChainPaid": "Aguardando a confirmação do pagamento do provedor de swap. Isso pode levar algum tempo.",
   "importQrDevicePassportStep6": "Selecione \"Single-sig\"",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "enterPinAgainMessage": "Insira seu {pinOrPassword} novamente para continuar.",
   "@enterPinAgainMessage": {
     "placeholders": {

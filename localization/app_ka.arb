@@ -998,7 +998,7 @@
   "sendAbsoluteFees": "აბსოლუტური საკომისიო",
   "sendRelativeFees": "ფარდობითი საკომისიო",
   "sendSats": "sats",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "sendConfirmCustomFee": "მორგებული საკომისიოს დადასტურება",
   "sendEstimatedDelivery10Minutes": "10 წუთი",
   "sendEstimatedDelivery10to30Minutes": "10-30 წუთი",

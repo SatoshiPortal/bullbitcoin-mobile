@@ -5917,7 +5917,7 @@
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
   },
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },

@@ -839,7 +839,7 @@
   "sendAbsoluteFees": "Phí tuyệt đối",
   "sendRelativeFees": "Phí tương đối",
   "sendSats": "sats",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "sendConfirmCustomFee": "Xác nhận phí tùy chỉnh",
   "sendEstimatedDelivery10Minutes": "10 phút",
   "sendEstimatedDelivery10to30Minutes": "10-30 phút",

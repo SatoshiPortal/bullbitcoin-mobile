@@ -1830,7 +1830,7 @@
   "exportVaultButton": "Tresor exportieren",
   "coreSwapsChainPaid": "Wir warten auf die Zahlungsbestätigung des Swap-Anbieters. Dies kann einige Zeit dauern.",
   "importQrDevicePassportStep6": "Wählen Sie „Single-Sig“.",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "enterPinAgainMessage": "Geben Sie Ihre {pinOrPassword} erneut ein, um fortzufahren.",
   "@enterPinAgainMessage": {
     "placeholders": {

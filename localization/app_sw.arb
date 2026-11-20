@@ -852,7 +852,7 @@
   "sendAbsoluteFees": "Ada kamili",
   "sendRelativeFees": "Ada linganifu",
   "sendSats": "sats",
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "sendConfirmCustomFee": "Thibitisha ada maalum",
   "sendEstimatedDelivery10Minutes": "dakika 10",
   "sendEstimatedDelivery10to30Minutes": "dakika 10-30",
