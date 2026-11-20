@@ -1,0 +1,105 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
+import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullSelectableList;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _Actions extends Mock implements FeeModalActionsPort {}
+
+class _State extends Mock implements FeeModalStatePort {}
+
+void main() {
+  testWidgets('requests previews and returns the selected preset value', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final actions = _Actions();
+    final state = _State();
+    final snapshots = StreamController<FeeModalSnapshot>();
+    addTearDown(snapshots.close);
+    const initial = FeeModalSnapshot(
+      feePresets: FeeOptions(
+        fastest: NetworkFee.relativeSatPerKwu(1000),
+        economic: NetworkFee.relativeSatPerKwu(500),
+        slow: NetworkFee.relativeSatPerKwu(250),
+        minRelay: RelativeFee(25),
+      ),
+      customFee: null,
+      selectedFeeOption: FeeSelection.economic,
+      feePreviewCache: BitcoinFeePreviewCache(),
+      exchangeRate: null,
+      fiatCurrencyCode: 'CAD',
+      txSize: 200,
+    );
+    when(() => state.snapshot).thenReturn(initial);
+    when(() => state.snapshots).thenAnswer((_) => snapshots.stream);
+
+    String? selection;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                selection = await BullBottomSheet.show<String>(
+                  context: context,
+                  child: FeeOptionsModal(
+                    viewState: state,
+                    actions: actions,
+                    defaultAbsoluteCustomFee: false,
+                    customFeeColors: FeeModalCustomFeeColors(
+                      tile: context.appColors.surface,
+                      shadow: context.appColors.border,
+                      unselectedIcon: context.appColors.textMuted,
+                    ),
+                  ),
+                );
+              },
+              child: Text(context.loc.sendSelectNetworkFee),
+            ),
+          ),
+        ),
+      ),
+    );
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    await tester.tap(find.text(l10n.sendSelectNetworkFee));
+    await tester.pumpAndSettle();
+    verify(() => actions.requestPresetPreviews()).called(1);
+    final list = find.byType(BullSelectableList);
+    expect(
+      tester.widget<BullSelectableList>(list).selectedValue,
+      FeeSelection.economic.title(),
+    );
+
+    snapshots.add(
+      initial.copyWith(
+        feePreviewCache: const BitcoinFeePreviewCache(
+          fastest: BitcoinFeePreviewSlot(feeSat: 863),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<BullSelectableList>(list).items.first.subtitle2,
+      contains('863'),
+    );
+    await tester.tap(find.text(l10n.sendFastFee));
+    await tester.pumpAndSettle();
+
+    expect(selection, FeeSelection.fastest.title());
+  });
+}
