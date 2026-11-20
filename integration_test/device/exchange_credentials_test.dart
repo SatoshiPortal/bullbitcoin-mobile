@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
@@ -252,7 +252,7 @@ void main() {
           client,
           () => repository.readActiveApiKey(isTestnet: true),
         );
-        final socket = ExchangeNotificationDatasource(
+        final socket = BbxApiNotificationDatasource(
           baseUrl: baseUrl,
           readApiKey: () => repository.readActiveApiKey(isTestnet: true),
         );

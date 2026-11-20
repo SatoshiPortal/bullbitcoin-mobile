@@ -279,6 +279,29 @@ void main() {
       expect(failure.logMessage, isNot(contains('sat@example.com')));
     });
 
+    for (final (name, http) in [
+      ('a status other than 200', FakeBbxHttp(status: 500, body: {})),
+      ('a body that is not an object', FakeBbxHttp(body: 'unexpected')),
+    ]) {
+      test('$name is a save failure', () async {
+        expect(
+          _failureOf(
+            await _repository(http).saveUserPreference(autoBuyEnabled: 'true'),
+          ),
+          isA<ExchangeUserPreferencesSaveFailure>(),
+        );
+      });
+    }
+
+    test('no stored key is not-authenticated', () async {
+      expect(
+        _failureOf(
+          await _signedOut(FakeBbxHttp()).saveUserPreference(language: 'en'),
+        ),
+        isA<ExchangeUserNotAuthenticatedFailure>(),
+      );
+    });
+
     test('an unreadable key is a credential failure', () async {
       expect(
         _failureOf(

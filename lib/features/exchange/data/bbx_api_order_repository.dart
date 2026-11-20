@@ -470,8 +470,8 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   );
 
   /// Runs an order creation [call] and turns the server's refusal into the
-  /// app exception the old client threw. With [redactError], any other
-  /// refusal keeps only its codes.
+  /// app's order exception. With [redactError], any other refusal keeps only
+  /// its codes.
   static Future<bbx.OrderSummary> _placeOrder(
     String contextMessage,
     Future<bbx.OrderSummary> Function() call, {
@@ -523,7 +523,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
       _toOrder(await _api.orders.refreshOrderSummary(orderId));
 
   /// One page of orders. Elements the package could not read are logged and
-  /// left out, as the old client did.
+  /// left out.
   Future<List<bbx.OrderSummary>> _listOrderSummaries() async {
     final list = await _api.orders.listOrderSummaries();
     for (final rejected in list.rejected) {

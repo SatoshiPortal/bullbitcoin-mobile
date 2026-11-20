@@ -1,6 +1,10 @@
-import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:flutter_test/flutter_test.dart';
+
+Order _parse(Map<String, dynamic> json) =>
+    orderFromBbxApi(bbx.OrderSummary.fromJson(json), isTestnet: true);
 
 /// The exchange reports a payjoin on an order through two fields: `bip21URI`,
 /// the customer endpoint, and `payjoinDetails`, whose `txid` names the
@@ -65,13 +69,13 @@ void main() {
   for (final type in [OrderType.buy, OrderType.sell, OrderType.fiatPayment]) {
     group('${type.value} order', () {
       test('carries the endpoint and the payjoin txid', () {
-        final order = OrderModel.fromJson(
+        final order = _parse(
           orderJson(
             type: type,
             bip21URI: uri,
             payjoinDetails: {'txid': payjoinTxId},
           ),
-        ).toEntity(isTestnet: true);
+        );
 
         final payjoin = payjoinOf(order);
         expect(payjoin.uri, equals(uri));
@@ -79,8 +83,7 @@ void main() {
       });
 
       test('maps to null when the exchange reports no payjoin', () {
-        final order = OrderModel.fromJson(orderJson(type: type))
-            .toEntity(isTestnet: true);
+        final order = _parse(orderJson(type: type));
 
         final payjoin = payjoinOf(order);
         expect(payjoin.uri, isNull);
@@ -95,13 +98,13 @@ void main() {
         // The exchange knows about the payjoin and has not observed the
         // transaction yet. That is distinct from "no payjoin at all": the object
         // exists, its txid does not.
-        final order = OrderModel.fromJson(
+        final order = _parse(
           orderJson(
             type: type,
             bip21URI: uri,
             payjoinDetails: <String, dynamic>{'txid': null},
           ),
-        ).toEntity(isTestnet: true);
+        );
 
         final payjoin = payjoinOf(order);
         expect(payjoin.details, isNotNull);
@@ -112,9 +115,7 @@ void main() {
 
   group('the endpoint survives mapping byte for byte', () {
     test('no re-encoding of the pj parameter', () {
-      final order = OrderModel.fromJson(
-        orderJson(type: OrderType.sell, bip21URI: uri),
-      ).toEntity(isTestnet: true);
+      final order = _parse(orderJson(type: OrderType.sell, bip21URI: uri));
 
       // The URI goes to the payjoin PDK verbatim; percent-encoding the `://` of
       // the endpoint is exactly how it gets corrupted.
@@ -124,44 +125,47 @@ void main() {
     });
   });
 
-  group('OrderModel.matchesTxId', () {
-    OrderModel model({
+  group('orderSummaryMatchesTxId', () {
+    bool Function(String) matches({
       String? bitcoinTransactionId,
       String? liquidTransactionId,
       Map<String, dynamic>? payjoinDetails,
-    }) => OrderModel.fromJson({
-      ...orderJson(type: OrderType.sell, payjoinDetails: payjoinDetails),
-      'bitcoinTransactionId': ?bitcoinTransactionId,
-      'liquidTransactionId': ?liquidTransactionId,
-    });
+    }) {
+      final summary = bbx.OrderSummary.fromJson({
+        ...orderJson(type: OrderType.sell, payjoinDetails: payjoinDetails),
+        'bitcoinTransactionId': ?bitcoinTransactionId,
+        'liquidTransactionId': ?liquidTransactionId,
+      });
+      return (txId) => orderSummaryMatchesTxId(summary, txId);
+    }
 
     test('matches the payjoin txid', () {
       // The order's own txid is the original transaction, which a payjoin
       // replaces — without this the payjoin send loses its order.
       expect(
-        model(payjoinDetails: {'txid': payjoinTxId}).matchesTxId(payjoinTxId),
+        matches(payjoinDetails: {'txid': payjoinTxId})(payjoinTxId),
         isTrue,
       );
     });
 
     test('still matches the bitcoin and liquid txids', () {
-      expect(model(bitcoinTransactionId: 'a' * 64).matchesTxId('a' * 64), true);
-      expect(model(liquidTransactionId: 'c' * 64).matchesTxId('c' * 64), true);
+      expect(matches(bitcoinTransactionId: 'a' * 64)('a' * 64), true);
+      expect(matches(liquidTransactionId: 'c' * 64)('c' * 64), true);
     });
 
     test('does not match an unrelated txid', () {
       expect(
-        model(
+        matches(
           bitcoinTransactionId: 'a' * 64,
           payjoinDetails: {'txid': payjoinTxId},
-        ).matchesTxId('d' * 64),
+        )('d' * 64),
         isFalse,
       );
     });
 
     test('a null payjoin txid never matches', () {
       expect(
-        model(payjoinDetails: <String, dynamic>{'txid': null}).matchesTxId(''),
+        matches(payjoinDetails: <String, dynamic>{'txid': null})(''),
         isFalse,
       );
     });

@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
+import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
+import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
@@ -128,7 +128,7 @@ void main() {
   });
 
   test(
-    'a legacy action refuses unavailable credentials without reporting',
+    'an order action refuses unavailable credentials without reporting',
     () async {
       storage.readFailure = Exception(_sensitive);
       final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
@@ -137,10 +137,8 @@ void main() {
         dio,
         () => repository.readActiveApiKey(isTestnet: true),
       );
-      final orders = ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: BullbitcoinApiDatasource(
-          bullbitcoinApiHttpClient: dio,
-        ),
+      final orders = BbxApiOrderRepository(
+        api: BbxApiClient(dio),
         isTestnet: true,
       );
       final operation = RefreshBuyOrderUsecase(
@@ -169,11 +167,7 @@ void main() {
       dio,
       () => repository.readActiveApiKey(isTestnet: true),
     );
-    final stats = ExchangeOrderStatsRepositoryImpl(
-      bullbitcoinApiDatasource: BullbitcoinApiDatasource(
-        bullbitcoinApiHttpClient: dio,
-      ),
-    );
+    final stats = BbxApiOrderStatsRepository(api: BbxApiClient(dio));
     final operation = GetExchangeStatisticsUsecase(
       getOrderStatsUsecase: GetOrderStatsUsecase(
         mainnetRepository: stats,
@@ -196,11 +190,7 @@ void main() {
       dio,
       () => repository.readActiveApiKey(isTestnet: true),
     );
-    final kyc = ExchangeKycRepositoryImpl(
-      bullbitcoinApiDatasource: BullbitcoinApiDatasource(
-        bullbitcoinApiHttpClient: dio,
-      ),
-    );
+    final kyc = BbxApiKycRepository(api: BbxApiClient(dio));
     final operation = UploadExchangeDocumentUsecase(
       documentPicker: _Picker(),
       uploadKycDocumentUsecase: UploadKycDocumentUsecase(

@@ -1,52 +1,50 @@
-import 'package:bb_mobile/core/exchange/data/models/order_stats_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/recipient_model.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_recipients_repository.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 
 import '../../core/exchange/order_json_fixture.dart';
+import '../../features/exchange/data/bbx_api_test_http.dart';
 
-class _Http extends Mock implements Dio {}
+class _Throwing implements HttpClientAdapter {
+  final Object error;
+
+  _Throwing(this.error);
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw error;
+
+  @override
+  void close({bool force = false}) {}
+}
 
 void main() {
-  late _Http http;
-  late BullbitcoinApiDatasource datasource;
-  setUp(() {
-    http = _Http();
-    datasource = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: http);
-  });
-
-  void respond(Object? body) {
-    when(() => http.post(any(), data: any(named: 'data'))).thenAnswer(
-      (_) async => Response<Object?>(
-        requestOptions: RequestOptions(path: '/synthetic'),
-        statusCode: 200,
-        data: body,
-      ),
-    );
-  }
+  BbxApiOrderRepository orders(BbxApiClient api) =>
+      BbxApiOrderRepository(api: api, isTestnet: true);
 
   test(
     'Dio-wrapped programming errors still propagate from order reads',
     () async {
-      when(() => http.post(any(), data: any(named: 'data'))).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(path: '/synthetic'),
-          error: StateError('synthetic programming defect'),
-        ),
-      );
-      final repository = ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: datasource,
-        isTestnet: true,
-      );
+      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
+        ..httpClientAdapter = _Throwing(
+          DioException(
+            requestOptions: RequestOptions(path: '/synthetic'),
+            error: StateError('synthetic programming defect'),
+          ),
+        );
+      final repository = orders(BbxApiClient(dio));
       await expectLater(repository.getOrders(), throwsStateError);
       await expectLater(
         repository.getOrderByTxId('synthetic'),
@@ -54,19 +52,6 @@ void main() {
       );
     },
   );
-
-  test('invalid recipient JSON is a decoding exception', () {
-    expect(
-      () => RecipientModel.fromJson({'recipientId': 42}),
-      throwsA(isA<FormatException>()),
-    );
-  });
-  test('invalid statistics JSON is a decoding exception', () {
-    expect(
-      () => OrderStatsResponseModel.fromJson({'orderStats': 42}),
-      throwsA(isA<FormatException>()),
-    );
-  });
 
   for (final body in <Object?>[
     {
@@ -79,11 +64,7 @@ void main() {
     'invalid-envelope',
   ]) {
     test('order read maps invalid wire envelope ${body.runtimeType}', () async {
-      respond(body);
-      final repository = ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: datasource,
-        isTestnet: true,
-      );
+      final repository = orders(FakeBbxHttp(body: body).client());
       expect(
         await repository.getOrders(),
         isA<Err<dynamic, ExchangeOrderFailure>>().having(
@@ -113,9 +94,8 @@ void main() {
     },
   ]) {
     test('account wire mismatch ${value.runtimeType} is recoverable', () async {
-      respond({'result': value});
-      final repository = ExchangeUserRepositoryImpl(
-        bullbitcoinApiDatasource: datasource,
+      final repository = BbxApiUserRepository(
+        api: FakeBbxHttp(body: {'result': value}).client(),
       );
       expect(
         await repository.getUserSummary(),
@@ -137,24 +117,20 @@ void main() {
     },
   ]) {
     test('action wire mismatch remains an infrastructure exception', () async {
-      respond(body);
-      final repository = ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: datasource,
-        isTestnet: true,
-      );
       await expectLater(
-        repository.getOrder('synthetic'),
+        orders(FakeBbxHttp(body: body).client()).getOrder('synthetic'),
         throwsA(isA<Exception>()),
       );
     });
   }
 
   test('malformed SINPE response remains a typed lookup failure', () async {
-    respond({
-      'result': {'ownerName': 42},
-    });
-    final repository = BullbitcoinApiRecipientsRepository(
-      authenticatedApiClient: http,
+    final repository = BbxApiRecipientsRepository(
+      api: FakeBbxHttp(
+        body: {
+          'result': {'ownerName': 42},
+        },
+      ).client(),
     );
     expect(
       await repository.checkSinpe(phoneNumber: 'synthetic', isTestnet: true),

@@ -240,6 +240,25 @@ void main() {
       expect([for (final o in orders) o.orderId], ['buy', 'sell', 'gold']);
     });
 
+    test('keeps orders with an Expired status or the Sell USDT type', () async {
+      final orders = _valueOf(
+        await _repository(
+          FakeBbxHttp(
+            body: _list([
+              orderJsonFixture(orderId: 'expired-1', orderStatus: 'Expired'),
+              orderJsonFixture(orderId: 'good-1'),
+              orderJsonFixture(orderId: 'usdt-1', orderType: 'Sell USDT'),
+            ]),
+          ),
+        ).getOrders(),
+      );
+
+      expect(
+        [for (final o in orders) o.orderId],
+        ['expired-1', 'good-1', 'usdt-1'],
+      );
+    });
+
     test('filters by type and pages locally', () async {
       FakeBbxHttp history() => FakeBbxHttp(
         body: _list([
@@ -532,6 +551,117 @@ void main() {
         ),
       );
     });
+
+    test('a single reason.limit is the minimum exception', () async {
+      await expectLater(
+        buy(
+          FakeBbxHttp(
+            body: {
+              'error': {
+                'message': 'Amount too low',
+                'data': {
+                  'reason': {'limit': _limit(0.0001, _min, currency: 'BTC')},
+                },
+              },
+            },
+          ),
+        ),
+        throwsA(
+          isA<BullBitcoinApiMinAmountException>()
+              .having((e) => e.minAmount, 'minAmount', 0.0001)
+              .having((e) => e.currency, 'currency', 'BTC'),
+        ),
+      );
+    });
+
+    test('a decimal aggregate maximum is kept', () async {
+      await expectLater(
+        buy(FakeBbxHttp(body: _limits([(1000, _max), (2500.5, _max)]))),
+        throwsA(
+          isA<BullBitcoinApiMaxAmountException>().having(
+            (e) => e.maxAmount,
+            'maxAmount',
+            2500.5,
+          ),
+        ),
+      );
+    });
+
+    final unusableLimits = <String, Map<String, Object?>>{
+      'mixed currencies': {
+        'error': {
+          'message': 'No valid payment options available after applying limits',
+          'data': {
+            'reasons': [
+              {'limit': _limit(20, _min)},
+              {'limit': _limit(0.0002, _min, currency: 'BTC')},
+            ],
+          },
+        },
+      },
+      'an empty reasons array': {
+        'error': {
+          'message': 'No valid payment options available after applying limits',
+          'data': {
+            'reasons': <Object?>[],
+            'details': <Object?>[null, null],
+          },
+        },
+        'result': null,
+      },
+      'reasons without limits': {
+        'error': {
+          'message': 'No valid payment options available after applying limits',
+          'data': {
+            'reasons': [
+              {'accessDescription': 'e-Transfer'},
+              {'amount': '5'},
+            ],
+            'details': <Object?>[null],
+          },
+        },
+      },
+      'data without a reason': {
+        'error': {
+          'message': 'Order could not be created',
+          'data': {
+            'details': <Object?>[null, null],
+          },
+        },
+        'result': null,
+      },
+      'an unrecognized error': {
+        'error': {'message': 'Something else went wrong', 'data': null},
+        'result': null,
+      },
+      'an error without a message': {'error': <String, Object?>{}},
+    };
+    for (final MapEntry(key: name, value: body) in unusableLimits.entries) {
+      test('$name is the generic failure, never a result', () async {
+        await expectLater(
+          buy(FakeBbxHttp(body: body)),
+          throwsA(
+            isA<Exception>()
+                .having(
+                  (e) => e,
+                  'type',
+                  isNot(
+                    anyOf(
+                      isA<BullBitcoinApiMinAmountException>(),
+                      isA<BullBitcoinApiMaxAmountException>(),
+                    ),
+                  ),
+                )
+                .having(
+                  (e) => e.toString(),
+                  'message',
+                  'Exception: Failed to place buy order: '
+                      'Exception: Failed to create buy order',
+                ),
+          ),
+        );
+      });
+    }
 
     test('an inactive virtual payee is wrapped as before', () async {
       await expectLater(
@@ -843,6 +973,36 @@ void main() {
           ),
         ),
       );
+    });
+  });
+
+  group('the withdraw paths keep the original stack trace', () {
+    // The use-case logs the trace it catches: it must reach the failing call
+    // in bbx_api, not stop at the repository's catch block.
+    Future<StackTrace> traceOf(Future<Object?> Function() call) async {
+      try {
+        await call();
+      } catch (_, trace) {
+        return trace;
+      }
+      fail('expected the wrapped exception');
+    }
+
+    test('placeWithdrawalOrder', () async {
+      final trace = await traceOf(
+        () => _repository(FakeBbxHttp(error: DioExceptionType.connectionError))
+            .placeWithdrawalOrder(fiatAmount: 100, recipientId: 'recipient-1'),
+      );
+      expect(trace.toString(), contains('package:bbx_api/'));
+    });
+
+    test('confirmWithdrawOrder', () async {
+      final trace = await traceOf(
+        () =>
+            _repository(FakeBbxHttp(error: DioExceptionType.connectionError))
+                .confirmWithdrawOrder('order-1'),
+      );
+      expect(trace.toString(), contains('package:bbx_api/'));
     });
   });
 

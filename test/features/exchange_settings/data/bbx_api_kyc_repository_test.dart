@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
@@ -69,13 +67,6 @@ Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
   return dio;
 }
 
-ExchangeKycRepository _old(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
-    ExchangeKycRepositoryImpl(
-      bullbitcoinApiDatasource: BullbitcoinApiDatasource(
-        bullbitcoinApiHttpClient: _dio(http, readApiKey: key),
-      ),
-    );
-
 ExchangeKycRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
     BbxApiKycRepository(api: BbxApiClient(_dio(http, readApiKey: key)));
 
@@ -93,13 +84,11 @@ void main() {
   for (final fileName in ['doc-u-1-ID', 'passport.png', 'scan.pdf']) {
     test('sends the same multipart request as the old repository '
         'for $fileName', () async {
-      final oldHttp = _UploadHttp(body: {'result': <String, Object?>{}});
       final newHttp = _UploadHttp(body: {'result': <String, Object?>{}});
 
-      await _upload(_old(oldHttp), fileName: fileName);
       await _upload(_new(newHttp), fileName: fileName);
 
-      expect(newHttp.sent, oldHttp.sent);
+      expect(newHttp.sent, _oldSent[fileName]);
       final (path, contentType, body) = newHttp.sent.single;
       expect(path, '/ak/api-kyc/upload');
       expect(contentType, 'multipart/form-data; boundary=BOUNDARY');
@@ -161,12 +150,11 @@ void main() {
   };
   for (final MapEntry(key: name, value: (status, body)) in answers.entries) {
     test('$name gives the same outcome as the old repository', () async {
-      final old = await _upload(_old(_UploadHttp(status: status, body: body)));
       final result = await _upload(
         _new(_UploadHttp(status: status, body: body)),
       );
 
-      expect(result.isSuccess, old.isSuccess);
+      expect(result.isSuccess, _oldSuccess[name]);
       if (!result.isSuccess) {
         expect(result.errorMessage, startsWith('Failed to upload document: '));
         expect(result.errorMessage, isNot(contains('server detail')));
@@ -175,16 +163,15 @@ void main() {
   }
 
   test('a transport error is a failed result like before', () async {
-    final old = await _upload(
-      _old(_UploadHttp(error: DioExceptionType.connectionTimeout)),
-    );
     final result = await _upload(
       _new(_UploadHttp(error: DioExceptionType.connectionTimeout)),
     );
 
-    expect(old.isSuccess, isFalse);
     expect(result.isSuccess, isFalse);
-    expect(result.errorMessage, old.errorMessage);
+    expect(
+      result.errorMessage,
+      'Failed to upload document: DioException [connection timeout]: null',
+    );
   });
 
   test('signed out throws ApiKeyNotFoundException like before', () async {
@@ -196,10 +183,6 @@ void main() {
       build,
     ) async => build(_UploadHttp(), key: () async => const Ok(null));
 
-    await expectLater(
-      _upload(await signedOut(_old)),
-      throwsA(isA<ApiKeyNotFoundException>()),
-    );
     await expectLater(
       _upload(await signedOut(_new)),
       throwsA(isA<ApiKeyNotFoundException>()),
@@ -230,7 +213,49 @@ void main() {
       }
 
       expect(await unreadable(_new), ExchangeCredentialUnavailableException);
-      expect(await unreadable(_new), await unreadable(_old));
     },
   );
 }
+
+/// The multipart requests the removed ExchangeKycRepositoryImpl sent.
+const _oldSent = <String, List<(String, String, String)>>{
+  'doc-u-1-ID': [
+    (
+      '/ak/api-kyc/upload',
+      'multipart/form-data; boundary=BOUNDARY',
+      '--BOUNDARY\r\ncontent-disposition: form-data; name="kycIDDocument"\r\n\r\n{"jsonrpc":"2.0","id":1,"method":"createMyKYCIDDocument","params":{"element":{"idTypeCode":"ID","sourceDetail":"SECURE_UPLOAD"}}}\r\n--BOUNDARY\r\ncontent-disposition: form-data; name="file"; filename="doc-u-1-ID"\r\ncontent-type: application/octet-stream\r\n\r\n\x00\x01\x02\xff\r\n--BOUNDARY--\r\n',
+    ),
+  ],
+  'passport.png': [
+    (
+      '/ak/api-kyc/upload',
+      'multipart/form-data; boundary=BOUNDARY',
+      '--BOUNDARY\r\ncontent-disposition: form-data; name="kycIDDocument"\r\n\r\n{"jsonrpc":"2.0","id":1,"method":"createMyKYCIDDocument","params":{"element":{"idTypeCode":"ID","sourceDetail":"SECURE_UPLOAD"}}}\r\n--BOUNDARY\r\ncontent-disposition: form-data; name="file"; filename="passport.png"\r\ncontent-type: image/png\r\n\r\n\x00\x01\x02\xff\r\n--BOUNDARY--\r\n',
+    ),
+  ],
+  'scan.pdf': [
+    (
+      '/ak/api-kyc/upload',
+      'multipart/form-data; boundary=BOUNDARY',
+      '--BOUNDARY\r\ncontent-disposition: form-data; name="kycIDDocument"\r\n\r\n{"jsonrpc":"2.0","id":1,"method":"createMyKYCIDDocument","params":{"element":{"idTypeCode":"ID","sourceDetail":"SECURE_UPLOAD"}}}\r\n--BOUNDARY\r\ncontent-disposition: form-data; name="file"; filename="scan.pdf"\r\ncontent-type: application/pdf\r\n\r\n\x00\x01\x02\xff\r\n--BOUNDARY--\r\n',
+    ),
+  ],
+};
+
+/// Whether the removed ExchangeKycRepositoryImpl reported a success.
+const _oldSuccess = <String, bool>{
+  'an empty result': true,
+  'no body': true,
+  'an empty object': true,
+  'a result that is not an object': true,
+  'null result errors': true,
+  'an error': false,
+  'a null error': false,
+  'errors': false,
+  'a result error': false,
+  'result errors': false,
+  'a body that is not an object': false,
+  'a list body': false,
+  'status 204': false,
+  'status 500': false,
+};

@@ -3,11 +3,8 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
-import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -73,15 +70,6 @@ BbxApiSepaVirtualPayeeRepository _repository(
   testnet: (testnet ?? FakeBbxHttp()).client(),
 );
 
-SepaVirtualPayeeRepository _old(FakeBbxHttp mainnet) =>
-    SepaVirtualPayeeRepositoryImpl(
-      mainnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
-        http: Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-          ..httpClientAdapter = mainnet,
-      ),
-      testnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(http: Dio()),
-    );
-
 List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
   for (final r in http.requests)
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
@@ -100,22 +88,17 @@ RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
 
 void main() {
   group('activate', () {
-    test('asks the selected environment, like the old datasource', () async {
+    test('asks the selected environment', () async {
       final mainnet = FakeBbxHttp();
       final testnet = FakeBbxHttp(body: _activated('r-1', 'ACTIVE'));
-      final old = _Answers([_activated('r-1', 'ACTIVE')]);
 
       final result = await _repository(
         mainnet,
         testnet,
       ).activate(recipientId: 'r-1', isTestnet: true);
-      final oldResult = await _old(old)
-          .activate(recipientId: 'r-1', isTestnet: false);
 
       expect(_valueOf(result), SepaVirtualPayeeStatus.active);
-      expect(_valueOf(oldResult), SepaVirtualPayeeStatus.active);
       expect(mainnet.requests, isEmpty);
-      expect(_sent(testnet), _sent(old));
       expect(_sent(testnet).single, (
         '/ak/api-recipients',
         '{"jsonrpc":"2.0","id":"0","method":"activateSepaVirtualPayee",'
@@ -183,26 +166,29 @@ void main() {
 
   group('findStatus', () {
     Future<(SepaVirtualPayeeStatus?, List<(String, String, Object?)>)> findWith(
+      String name,
       List<Object?> answers, {
       String id = 'b',
     }) async {
       final http = _Answers(answers);
-      final old = _Answers(answers);
 
       final result = await _repository(http)
           .findStatus(recipientId: id, isTestnet: false);
-      final oldResult = await _old(old)
-          .findStatus(recipientId: id, isTestnet: false);
 
-      expect(_sent(http), _sent(old));
-      expect(_valueOf(result), _valueOf(oldResult));
+      final (oldSent, oldStatus) =
+          _oldRepository[name]! as (List<Object?>, SepaVirtualPayeeStatus?);
+      expect(_sent(http), oldSent);
+      expect(_valueOf(result), oldStatus);
       return (_valueOf(result), _sent(http));
     }
 
     test('reads the status of the recipient on the first page', () async {
-      final (status, sent) = await findWith([
-        _page([_payee('a'), _payee('b', status: 'ACTIVE')], 2),
-      ]);
+      final (status, sent) = await findWith(
+        'reads the status of the recipient on the first page',
+        [
+          _page([_payee('a'), _payee('b', status: 'ACTIVE')], 2),
+        ],
+      );
 
       expect(status, SepaVirtualPayeeStatus.active);
       expect(sent.single, (
@@ -215,18 +201,24 @@ void main() {
     });
 
     test('a recipient without a virtual payee is absent', () async {
-      final (status, _) = await findWith([
-        _page([_payee('b')], 1),
-      ]);
+      final (status, _) = await findWith(
+        'a recipient without a virtual payee is absent',
+        [
+          _page([_payee('b')], 1),
+        ],
+      );
 
       expect(status, SepaVirtualPayeeStatus.absent);
     });
 
     test('refreshes a saved pending status from Fiat Republic', () async {
-      final (status, sent) = await findWith([
-        _page([_payee('b', status: 'CREATED')], 1),
-        _activated('b', 'ACTIVE'),
-      ]);
+      final (status, sent) = await findWith(
+        'refreshes a saved pending status from Fiat Republic',
+        [
+          _page([_payee('b', status: 'CREATED')], 1),
+          _activated('b', 'ACTIVE'),
+        ],
+      );
 
       expect(status, SepaVirtualPayeeStatus.active);
       expect(sent.map((r) => jsonDecode(r.$2)['method']), [
@@ -236,38 +228,50 @@ void main() {
     });
 
     test('keeps waiting when the refreshed payee is still pending', () async {
-      final (status, _) = await findWith([
-        _page([_payee('b', status: 'CREATED')], 1),
-        _activated('b', 'CREATED'),
-      ]);
+      final (status, _) = await findWith(
+        'keeps waiting when the refreshed payee is still pending',
+        [
+          _page([_payee('b', status: 'CREATED')], 1),
+          _activated('b', 'CREATED'),
+        ],
+      );
 
       expect(status, SepaVirtualPayeeStatus.pending);
     });
 
     test('finds an active recipient beyond the first page', () async {
-      final (status, sent) = await findWith([
-        _page([for (var i = 0; i < 50; i++) _payee('p$i')], 51),
-        _page([_payee('b', status: 'ACTIVE')], 51),
-      ]);
+      final (status, sent) = await findWith(
+        'finds an active recipient beyond the first page',
+        [
+          _page([for (var i = 0; i < 50; i++) _payee('p$i')], 51),
+          _page([_payee('b', status: 'ACTIVE')], 51),
+        ],
+      );
 
       expect(status, SepaVirtualPayeeStatus.active);
       expect(sent, hasLength(2));
     });
 
     test('a recipient that is not listed is not found', () async {
-      final (status, sent) = await findWith([
-        _page([_payee('a')], 1),
-      ]);
+      final (status, sent) = await findWith(
+        'a recipient that is not listed is not found',
+        [
+          _page([_payee('a')], 1),
+        ],
+      );
 
       expect(status, isNull);
       expect(sent, hasLength(1));
     });
 
     test('stops after the last page it may read', () async {
-      final (status, sent) = await findWith([
-        for (var i = 0; i < 20; i++)
-          _page([for (var j = 0; j < 50; j++) _payee('p$i-$j')], 5000),
-      ]);
+      final (status, sent) = await findWith(
+        'stops after the last page it may read',
+        [
+          for (var i = 0; i < 20; i++)
+            _page([for (var j = 0; j < 50; j++) _payee('p$i-$j')], 5000),
+        ],
+      );
 
       expect(status, isNull);
       expect(sent, hasLength(20));
@@ -314,3 +318,188 @@ void main() {
     });
   });
 }
+
+/// What the removed SepaVirtualPayeeRepositoryImpl sent and found for each
+/// `findStatus` case above.
+final _oldRepository = <String, Object?>{
+  'reads the status of the recipient on the first page': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+    ],
+    SepaVirtualPayeeStatus.active,
+  ),
+  'a recipient without a virtual payee is absent': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+    ],
+    SepaVirtualPayeeStatus.absent,
+  ),
+  'refreshes a saved pending status from Fiat Republic': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"activateSepaVirtualPayee","params":{"recipientId":"b"}}',
+        '2.0.0',
+      ),
+    ],
+    SepaVirtualPayeeStatus.active,
+  ),
+  'keeps waiting when the refreshed payee is still pending': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"activateSepaVirtualPayee","params":{"recipientId":"b"}}',
+        '2.0.0',
+      ),
+    ],
+    SepaVirtualPayeeStatus.pending,
+  ),
+  'finds an active recipient beyond the first page': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":2,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+    ],
+    SepaVirtualPayeeStatus.active,
+  ),
+  'a recipient that is not listed is not found': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+    ],
+    null,
+  ),
+  'stops after the last page it may read': (
+    [
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":1,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":2,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":3,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":4,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":5,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":6,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":7,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":8,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":9,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":10,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":11,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":12,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":13,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":14,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":15,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":16,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":17,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":18,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":19,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+      (
+        '/ak/api-recipients',
+        '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":{"paginator":{"page":20,"pageSize":50},"filters":{"recipientTypeFiat":["SEPA_EUR"]}}}',
+        '2.0.0',
+      ),
+    ],
+    null,
+  ),
+};

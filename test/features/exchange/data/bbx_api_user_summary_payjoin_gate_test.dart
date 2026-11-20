@@ -1,6 +1,10 @@
-import 'package:bb_mobile/core/exchange/data/mappers/user_summary_mapper.dart';
-import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_user_summary_mapper.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:flutter_test/flutter_test.dart';
+
+UserSummary _map(Map<String, dynamic> json) =>
+    userSummaryFromBbxApi(bbx.UserSummary.fromJson(json));
 
 /// The payjoin-with-the-exchange gate is server-side: the backend publishes
 /// `payjoinReceiveEnabled` on the user summary and every payjoin surface (buy
@@ -22,36 +26,26 @@ void main() {
 
   group('payjoinReceiveEnabled gate', () {
     test('is false when the backend omits the field entirely', () {
-      final model = UserSummaryModel.fromJson(summaryJson());
+      final json = summaryJson();
 
-      expect(model.payjoinReceiveEnabled, isFalse);
+      expect(bbx.UserSummary.fromJson(json).payjoinReceiveEnabled, isFalse);
       expect(
-        UserSummaryMapper.fromModelToEntity(model).payjoinReceiveEnabled,
+        _map(json).payjoinReceiveEnabled,
         isFalse,
         reason: 'a response without the field must not enable payjoin',
       );
     });
 
     test('is false when the backend sends it explicitly disabled', () {
-      final model = UserSummaryModel.fromJson(
-        summaryJson(payjoinReceiveEnabled: false),
-      );
+      final json = summaryJson(payjoinReceiveEnabled: false);
 
-      expect(
-        UserSummaryMapper.fromModelToEntity(model).payjoinReceiveEnabled,
-        isFalse,
-      );
+      expect(_map(json).payjoinReceiveEnabled, isFalse);
     });
 
     test('is true only when the backend enables it', () {
-      final model = UserSummaryModel.fromJson(
-        summaryJson(payjoinReceiveEnabled: true),
-      );
+      final json = summaryJson(payjoinReceiveEnabled: true);
 
-      expect(
-        UserSummaryMapper.fromModelToEntity(model).payjoinReceiveEnabled,
-        isTrue,
-      );
+      expect(_map(json).payjoinReceiveEnabled, isTrue);
     });
 
     test('is independent of the pilot group appearing in groups', () {
@@ -59,15 +53,12 @@ void main() {
       // a backend-internal detail: the app must not re-derive the gate from
       // `groups`, or it would diverge the day the backend changes how it
       // decides. A summary carrying the group but not the flag stays closed.
-      final model = UserSummaryModel.fromJson({
+      final json = {
         ...summaryJson(),
         'groups': <String>['FF_PAYJOIN_RECEIVE_PILOT'],
-      });
+      };
 
-      expect(
-        UserSummaryMapper.fromModelToEntity(model).payjoinReceiveEnabled,
-        isFalse,
-      );
+      expect(_map(json).payjoinReceiveEnabled, isFalse);
     });
   });
 }

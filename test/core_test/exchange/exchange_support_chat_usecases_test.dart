@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
+import 'dart:typed_data';
+
+import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
@@ -10,9 +9,13 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_mes
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../features/exchange/data/bbx_api_test_http.dart';
 
 class _MockRepo extends Mock implements ExchangeSupportChatRepository {}
 
@@ -20,47 +23,47 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockSettingsEntity extends Mock implements SettingsEntity {}
 
-class _MockChatDatasource extends Mock
-    implements ExchangeSupportChatDatasource {}
+class _Throwing implements HttpClientAdapter {
+  final Object error;
 
-class _MockApiDatasource extends Mock implements BullbitcoinApiDatasource {}
+  _Throwing(this.error);
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw error;
+
+  @override
+  void close({bool force = false}) {}
+}
 
 void main() {
-  group('ExchangeSupportChatRepositoryImpl (the sanitization boundary)', () {
-    late _MockChatDatasource datasource;
-
-    late _MockApiDatasource apiDatasource;
-    late ExchangeSupportChatRepositoryImpl repository;
-
-    setUp(() {
-      datasource = _MockChatDatasource();
-
-      apiDatasource = _MockApiDatasource();
-      repository = ExchangeSupportChatRepositoryImpl(
-        datasource: datasource,
-
-        bullbitcoinApiDatasource: apiDatasource,
-      );
-    });
+  group('BbxApiSupportChatRepository (the sanitization boundary)', () {
+    BbxApiSupportChatRepository repository(BbxApiClient api) =>
+        BbxApiSupportChatRepository(
+          users: api.users,
+          commcenter: api.commcenter,
+        );
 
     test('maps a missing API key to NotAuthenticatedFailure', () async {
-      when(() => apiDatasource.getUserSummary())
-          .thenThrow(const ExchangeAuthenticationException());
-
-      final result = await repository.getMessages();
+      final result = await repository(
+        FakeBbxHttp().client(readApiKey: () async => const Ok(null)),
+      ).getMessages();
 
       expect((result as Err).failure, isA<NotAuthenticatedFailure>());
     });
 
-    test('maps a datasource throw to a sanitized LoadAttachmentFailure '
+    test('maps a transport throw to a sanitized LoadAttachmentFailure '
         'keeping the raw reason for logs only', () async {
-      when(
-        () => datasource.getMessageAttachment(
-          attachmentId: any(named: 'attachmentId'),
-        ),
-      ).thenThrow(Exception('network down at host=secret.internal'));
+      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
+        ..httpClientAdapter = _Throwing(
+          Exception('network down at host=secret.internal'),
+        );
 
-      final result = await repository.getMessageAttachment('a1');
+      final result = await repository(BbxApiClient(dio))
+          .getMessageAttachment('a1');
 
       final failure = (result as Err).failure;
       expect(failure, isA<LoadAttachmentFailure>());
@@ -70,14 +73,9 @@ void main() {
     test(
       'sendMessage with a missing API key returns NotAuthenticatedFailure',
       () async {
-        when(
-          () => datasource.sendMessage(
-            text: any(named: 'text'),
-            attachments: any(named: 'attachments'),
-          ),
-        ).thenThrow(const ExchangeAuthenticationException());
-
-        final result = await repository.sendMessage(text: 'hi');
+        final result = await repository(
+          FakeBbxHttp().client(readApiKey: () async => const Ok(null)),
+        ).sendMessage(text: 'hi');
 
         expect((result as Err).failure, isA<NotAuthenticatedFailure>());
       },
@@ -85,18 +83,12 @@ void main() {
 
     test('a key without a usable identity is an auth failure, not a load '
         'failure, and the thread is never requested', () async {
-      when(() => apiDatasource.getUserSummary()).thenAnswer((_) async => null);
+      final http = FakeBbxHttp(body: {'result': null});
 
-      final result = await repository.getMessages();
+      final result = await repository(http.client()).getMessages();
 
       expect((result as Err).failure, isA<NotAuthenticatedFailure>());
-      verifyNever(
-        () => datasource.listMessages(
-          userId: any(named: 'userId'),
-          page: any(named: 'page'),
-          pageSize: any(named: 'pageSize'),
-        ),
-      );
+      expect(http.requests.map((r) => r.path), ['/ak/api-users']);
     });
   });
 

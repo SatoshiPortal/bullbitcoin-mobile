@@ -1,8 +1,4 @@
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/http/authenticated_bullbitcoin_dio_factory.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
@@ -60,16 +56,6 @@ class ExchangeLocator {
   static void registerDatasources(GetIt locator) {
     for (final isTestnet in [false, true]) {
       final environment = isTestnet ? 'testnet' : 'mainnet';
-      locator.registerLazySingleton<BullbitcoinApiDatasource>(
-        () => BullbitcoinApiDatasource(
-          bullbitcoinApiHttpClient: _authenticatedClient(
-            locator,
-            isTestnet: isTestnet,
-            timeout: const Duration(seconds: 30),
-          ),
-        ),
-        instanceName: '${environment}ExchangeApiDatasource',
-      );
       locator.registerLazySingleton<BbxApiClient>(
         () => BbxApiClient(
           _authenticatedClient(
@@ -84,16 +70,7 @@ class ExchangeLocator {
         () => BbxApiClient(_authenticatedClient(locator, isTestnet: isTestnet)),
         instanceName: '${environment}BbxApiClientWithoutTimeout',
       );
-      locator.registerLazySingleton<ExchangeSupportChatDatasource>(
-        () => ExchangeSupportChatDatasource(
-          bullbitcoinApiHttpClient: _authenticatedClient(
-            locator,
-            isTestnet: isTestnet,
-          ),
-        ),
-        instanceName: '${environment}ExchangeSupportChatDatasource',
-      );
-      locator.registerLazySingleton<ExchangeNotificationDatasource>(
+      locator.registerLazySingleton<BbxApiNotificationDatasource>(
         () => BbxApiNotificationDatasource(
           baseUrl: isTestnet
               ? ApiServiceConstants.bbApiTestUrl
@@ -104,24 +81,6 @@ class ExchangeLocator {
         instanceName: '${environment}ExchangeNotificationDatasource',
       );
     }
-    locator.registerLazySingleton<Dio>(
-      () => AuthenticatedBullBitcoinDioFactory.create(
-        isTestnet: false,
-        readApiKey: () => locator<ExchangeApiKeyRepository>().readActiveApiKey(
-          isTestnet: false,
-        ),
-      ),
-      instanceName: 'authenticatedBullBitcoinApiClient',
-    );
-    locator.registerLazySingleton<Dio>(
-      () => AuthenticatedBullBitcoinDioFactory.create(
-        isTestnet: true,
-        readApiKey: () => locator<ExchangeApiKeyRepository>().readActiveApiKey(
-          isTestnet: true,
-        ),
-      ),
-      instanceName: 'authenticatedBullBitcoinApiTestClient',
-    );
   }
 
   static void registerRepositories(GetIt locator) {
@@ -260,10 +219,10 @@ class ExchangeLocator {
     // WebSocket Notification Service (primary/driving adapter)
     locator.registerLazySingleton<ExchangeNotificationService>(
       () => ExchangeNotificationService(
-        mainnetDatasource: locator<ExchangeNotificationDatasource>(
+        mainnetDatasource: locator<BbxApiNotificationDatasource>(
           instanceName: 'mainnetExchangeNotificationDatasource',
         ),
-        testnetDatasource: locator<ExchangeNotificationDatasource>(
+        testnetDatasource: locator<BbxApiNotificationDatasource>(
           instanceName: 'testnetExchangeNotificationDatasource',
         ),
         settingsRepository: locator<SettingsRepository>(),

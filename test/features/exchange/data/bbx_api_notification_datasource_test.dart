@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -12,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-/// Records every log call as text, so two runs can be compared.
+/// Records every log call as text, so a run can be compared.
 class _RecordingLogger implements Logger {
   final List<String> calls = [];
 
@@ -170,61 +169,53 @@ void main() {
   test(
     'unreadable keys retry like the old datasource, then logout stops them',
     () {
-      final runs = <List<Object>>[];
-      for (final useNew in [false, true]) {
-        final logger = _recordLogs();
-        fakeAsync((time) {
-          var reads = 0;
-          var available = false;
-          Future<Result<String?, ExchangeApiKeyFailure>> readApiKey() async {
-            reads++;
-            return available
-                ? const Ok(null)
-                : const Err(ExchangeApiKeyReadFailure());
-          }
+      final logger = _recordLogs();
+      late List<Object> run;
+      fakeAsync((time) {
+        var reads = 0;
+        var available = false;
+        Future<Result<String?, ExchangeApiKeyFailure>> readApiKey() async {
+          reads++;
+          return available
+              ? const Ok(null)
+              : const Err(ExchangeApiKeyReadFailure());
+        }
 
-          final ExchangeNotificationDatasource datasource = useNew
-              ? BbxApiNotificationDatasource(
-                  baseUrl: 'https://example.invalid',
-                  readApiKey: readApiKey,
-                  connector: connector,
-                )
-              : ExchangeNotificationDatasource(
-                  baseUrl: 'https://example.invalid',
-                  readApiKey: readApiKey,
-                );
-          final readsOverTime = <int>[];
-          unawaited(datasource.connect());
-          time.flushMicrotasks();
-          readsOverTime.add(reads);
-          time.elapse(const Duration(seconds: 4));
-          readsOverTime.add(reads);
-          time.elapse(const Duration(seconds: 1));
-          readsOverTime.add(reads);
-          available = true;
-          time.elapse(const Duration(seconds: 5));
-          readsOverTime.add(reads);
-          time.elapse(const Duration(seconds: 30));
-          readsOverTime.add(reads);
-          datasource.dispose();
-          time.flushMicrotasks();
-          expect(time.nonPeriodicTimerCount, 0);
-          runs.add([readsOverTime, logger.calls]);
-        });
-      }
-      expect(runs[0][0], [1, 1, 2, 3, 3]);
-      expect(runs[1], runs[0]);
+        final datasource = BbxApiNotificationDatasource(
+          baseUrl: 'https://example.invalid',
+          readApiKey: readApiKey,
+          connector: connector,
+        );
+        final readsOverTime = <int>[];
+        unawaited(datasource.connect());
+        time.flushMicrotasks();
+        readsOverTime.add(reads);
+        time.elapse(const Duration(seconds: 4));
+        readsOverTime.add(reads);
+        time.elapse(const Duration(seconds: 1));
+        readsOverTime.add(reads);
+        available = true;
+        time.elapse(const Duration(seconds: 5));
+        readsOverTime.add(reads);
+        time.elapse(const Duration(seconds: 30));
+        readsOverTime.add(reads);
+        datasource.dispose();
+        time.flushMicrotasks();
+        expect(time.nonPeriodicTimerCount, 0);
+        run = [readsOverTime, logger.calls];
+      });
+      expect(run[0], [1, 1, 2, 3, 3]);
+      expect(run, _oldRuns['retry']);
       expect(
-        (runs[1][1] as List).first,
+        (run[1] as List).first,
         contains('$ExchangeAuthenticationException'),
       );
       expect(handshakes, isEmpty);
     },
   );
 
-  group('matches the old datasource on a local server', () {
+  group('matches the old datasource on a local server, as recorded', () {
     Future<List<Object?>> run(
-      bool useNew,
       FutureOr<void> Function(HttpRequest request) handle,
     ) async {
       final logger = _recordLogs();
@@ -241,15 +232,10 @@ void main() {
       final baseUrl = 'http://127.0.0.1:${server.port}/';
       Future<Result<String?, ExchangeApiKeyFailure>> readApiKey() async =>
           const Ok('synthetic-header');
-      final ExchangeNotificationDatasource datasource = useNew
-          ? BbxApiNotificationDatasource(
-              baseUrl: baseUrl,
-              readApiKey: readApiKey,
-            )
-          : ExchangeNotificationDatasource(
-              baseUrl: baseUrl,
-              readApiKey: readApiKey,
-            );
+      final datasource = BbxApiNotificationDatasource(
+        baseUrl: baseUrl,
+        readApiKey: readApiKey,
+      );
       final messages = <Map<String, dynamic>>[];
       final listening = datasource.messageStream.listen(messages.add);
       await datasource.connect();
@@ -278,12 +264,11 @@ void main() {
         await socket.close();
       }
 
-      final old = await run(false, handle);
-      final bbx = await run(true, handle);
-      expect(old[0], ['GET /ak/api-commcenter synthetic-header']);
-      expect(old[1], isTrue);
-      expect(old[2], hasLength(2));
-      expect(bbx, old);
+      final bbx = await run(handle);
+      expect(bbx[0], ['GET /ak/api-commcenter synthetic-header']);
+      expect(bbx[1], isTrue);
+      expect(bbx[2], hasLength(2));
+      expect(bbx, _oldRuns['frames']);
       expect((bbx[3] as List).join(), isNot(contains('SYNTHETIC_PRIVATE')));
     });
 
@@ -293,11 +278,52 @@ void main() {
         await request.response.close();
       }
 
-      final old = await run(false, handle);
-      final bbx = await run(true, handle);
-      expect(old[0], ['GET /ak/api-commcenter synthetic-header']);
-      expect(old[1], isFalse);
-      expect(bbx, old);
+      final bbx = await run(handle);
+      expect(bbx[0], ['GET /ak/api-commcenter synthetic-header']);
+      expect(bbx[1], isFalse);
+      expect(bbx, _oldRuns['refused']);
     });
   });
 }
+
+/// What the removed ExchangeNotificationDatasource did in the same runs:
+/// requests, connection state, messages and log calls (or reads over time
+/// and log calls).
+const _oldRuns = <String, List<Object?>>{
+  'retry': [
+    [1, 1, 2, 3, 3],
+    [
+      'Symbol("warning") [WebSocket unavailable] [ExchangeAuthenticationException, null]',
+      'Symbol("info") [WebSocket retry failed] [ExchangeAuthenticationException, null]',
+      'Symbol("fine") [WebSocket skipped: user not authenticated] [null, null]',
+      'Symbol("info") [WebSocket manually disconnected] [null, null]',
+    ],
+  ],
+  'frames': [
+    ['GET /ak/api-commcenter synthetic-header'],
+    true,
+    [
+      {
+        'type': {'label': 'SYNTHETIC_PRIVATE_FRAME'},
+      },
+      {'type': 'kyc', 'event': 'approved'},
+    ],
+    [
+      'Symbol("fine") [WebSocket connected successfully] [null, null]',
+      'Symbol("warning") [WebSocket message rejected: invalid JSON] [null, null]',
+      'Symbol("warning") [WebSocket message rejected: invalid shape] [null, null]',
+      'Symbol("info") [WebSocket message received] [null, null]',
+      'Symbol("info") [WebSocket message received] [null, null]',
+      'Symbol("info") [WebSocket manually disconnected] [null, null]',
+    ],
+  ],
+  'refused': [
+    ['GET /ak/api-commcenter synthetic-header'],
+    false,
+    [],
+    [
+      'Symbol("warning") [WebSocket unavailable] [WebSocketChannelException, null]',
+      'Symbol("info") [WebSocket manually disconnected] [null, null]',
+    ],
+  ],
+};
