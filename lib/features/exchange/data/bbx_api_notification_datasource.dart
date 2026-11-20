@@ -1,14 +1,13 @@
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:primitives/primitives.dart';
 
-/// [ExchangeNotificationDatasource] on the `bbx_api` notification socket.
+/// The exchange notification socket of one environment, on `bbx_api`.
 ///
 /// The socket owns the connection, retries and frame parsing; this adapter
 /// reads the API key and logs through the app logger.
-class BbxApiNotificationDatasource implements ExchangeNotificationDatasource {
+class BbxApiNotificationDatasource {
   final BbxNotificationSocket _socket;
 
   BbxApiNotificationDatasource({
@@ -46,21 +45,15 @@ class BbxApiNotificationDatasource implements ExchangeNotificationDatasource {
     }
   }
 
-  @override
   Stream<Map<String, dynamic>> get messageStream => _socket.messages;
 
-  @override
   bool get isConnected => _socket.isConnected;
 
-  @override
   Future<void> connect() => _socket.connect();
 
-  @override
   void disconnect() => _socket.disconnect();
 
-  @override
   Future<void> reconnect() => _socket.reconnect();
 
-  @override
   void dispose() => _socket.dispose();
 }

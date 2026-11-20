@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/notification_message_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -11,8 +11,8 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 /// This service listens to WebSocket events from the exchange API and routes
 /// them based on the current environment (mainnet/testnet).
 class ExchangeNotificationService {
-  final ExchangeNotificationDatasource _mainnetDatasource;
-  final ExchangeNotificationDatasource _testnetDatasource;
+  final BbxApiNotificationDatasource _mainnetDatasource;
+  final BbxApiNotificationDatasource _testnetDatasource;
   final SettingsRepository _settingsRepository;
 
   final StreamController<NotificationMessage> _messageController =
@@ -48,7 +48,7 @@ class ExchangeNotificationService {
     });
   }
 
-  Future<ExchangeNotificationDatasource> _getDatasource() async {
+  Future<BbxApiNotificationDatasource> _getDatasource() async {
     final settings = await _settingsRepository.fetch();
     _isTestnet = settings.environment.requireHistoricalTestnet();
     return _isTestnet ? _testnetDatasource : _mainnetDatasource;

@@ -141,7 +141,7 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
   }
 
   /// The user's id; `null` also when the server answers with a JSON-RPC
-  /// error, which the old datasource read as an empty result.
+  /// error, which counts as an empty result.
   Future<String?> _userId() async {
     try {
       return (await _users.getUserSummary())?.userId;
