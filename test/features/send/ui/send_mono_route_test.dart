@@ -134,6 +134,40 @@ void main() {
     return cubit;
   }
 
+  testWidgets('Advanced settings opens and reopens without a wallet', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      state(step: SendStep.address).copyWith(
+        selectedWallet: null,
+        paymentRequest: null,
+        amount: '',
+        confirmedAmountSat: null,
+        bitcoinFeesList: null,
+        bitcoinAbsoluteFeesSat: null,
+        feePreviewCache: BitcoinFeePreviewCache.empty,
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+      ),
+    );
+    expect(tester.takeException(), isNull);
+
+    for (var opening = 0; opening < 2; opening++) {
+      await tester.tap(find.byType(BullSettingsEntryTile));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Send UTXOs instead'), findsOneWidget);
+      expect(find.textContaining(RegExp(r'\b(?:sats|sat/vB)\b')), findsNothing);
+
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Send UTXOs instead'), findsNothing);
+    }
+  });
+
   testWidgets(
     'Advanced fee summary has single-spaced separators and no layout gaps',
     (tester) async {
