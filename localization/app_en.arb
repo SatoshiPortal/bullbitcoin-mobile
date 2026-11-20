@@ -15891,5 +15891,19 @@
   "sendBack": "Back",
   "@sendBack": {},
   "sendBalance": "Balance",
-  "@sendBalance": {}
+  "@sendBalance": {},
+  "sendEnteredQuote": "You entered {amount} {currency} · rate of {time}",
+  "@sendEnteredQuote": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

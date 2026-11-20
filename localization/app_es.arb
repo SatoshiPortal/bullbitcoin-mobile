@@ -5099,5 +5099,6 @@
   "sendEdit": "Editar",
   "sendClose": "Cerrar",
   "sendBack": "Atrás",
-  "sendBalance": "Saldo"
+  "sendBalance": "Saldo",
+  "sendEnteredQuote": "Introdujiste {amount} {currency} · tasa de las {time}"
 }

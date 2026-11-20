@@ -479,11 +479,13 @@ class AddressField extends StatelessWidget {
     this.multipleRecipients = false,
     this.onInput,
     this.onScanned,
+    this.showLabel = true,
   });
 
   final bool multipleRecipients;
   final Future<void> Function(String)? onInput;
   final Future<void> Function(String)? onScanned;
+  final bool showLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -507,7 +509,7 @@ class AddressField extends StatelessWidget {
         : context.loc.exchangeDcaAddressLabelLiquid;
     final amount = request?.amountSat;
     return BullPaymentDestinationInput(
-      label: context.loc.sendRecipientAddress,
+      label: showLabel ? context.loc.sendRecipientAddress : null,
       value: state.copiedRawPaymentRequest,
       enabled: !state.selectedInputsUnavailable,
       hint: context.loc.sendPasteAddressOrInvoice,

@@ -4869,5 +4869,6 @@
   "sendEdit": "Modifier",
   "sendClose": "Fermer",
   "sendBack": "Retour",
-  "sendBalance": "Solde"
+  "sendBalance": "Solde",
+  "sendEnteredQuote": "Vous avez saisi {amount} {currency} · taux de {time}"
 }

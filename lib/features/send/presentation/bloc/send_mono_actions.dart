@@ -16,6 +16,8 @@ final class SendMonoMaxPreview {
 }
 
 extension SendMonoActions on SendCubit {
+  void refreshMonoPreview() => _scheduleRecipientPreview();
+
   Future<SendMonoMaxPreview?> previewMonoMax() async {
     final wallet = state.selectedWallet;
     final fee = state.selectedFee;

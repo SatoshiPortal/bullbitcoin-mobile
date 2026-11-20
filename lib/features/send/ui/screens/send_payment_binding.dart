@@ -121,7 +121,7 @@ final class _SendPaymentSession {
             ? BitcoinUnit.sats
             : BitcoinUnit.btc,
         child: Text(
-          '${negative ? '− ' : ''}${value == BitcoinUnit.sats ? FormatAmount.sats(sats) : Sats.fromInt(sats).toBitcoinText(value)} ${value.code}',
+          '${negative ? '− ' : ''}${value == BitcoinUnit.sats ? FormatAmount.sats(sats) : '${Sats.fromInt(sats).toBitcoinText(value)} ${value.code}'}',
           style: style ?? context.bullType.body,
         ),
       ),
@@ -177,7 +177,7 @@ final class _SendPaymentSession {
                 ],
               ),
             )
-          : AddressField(onInput: input, onScanned: scan),
+          : AddressField(onInput: input, onScanned: scan, showLabel: false),
       amountLabel: context.loc.sendAmount,
       lockedAmountLabel: context.loc.sendAmountLocked,
       amount: ValueListenableBuilder<BitcoinUnit>(
@@ -285,7 +285,7 @@ final class _SendPaymentSession {
         isSelected: (wallet) => wallet.id == cubit.state.selectedWallet?.id,
         label: (wallet) => wallet.displayLabel(context),
         subtitle: (wallet) =>
-            '${wallet.scriptType.name} · ${FormatAmount.sats(wallet.balanceSat?.toInt() ?? 0)} ${context.loc.sendSats}',
+            '${wallet.scriptType.name} · ${FormatAmount.sats(wallet.balanceSat?.toInt() ?? 0)}',
       ),
     );
     if (!_disposed && selected != null) {
@@ -352,10 +352,15 @@ final class _SendPaymentSession {
     var mode = SendFeeInputMode.rate;
     var raw = '';
     Timer? timer;
+    var armed = false;
+    int? previewSize;
     void cancelDraft() {
       timer?.cancel();
+      if (!armed) return;
       cubit.disarmCustomFee();
       cubit.clearBitcoinFeePreviews();
+      cubit.refreshMonoPreview();
+      armed = false;
     }
 
     await BullBottomSheet.show<void>(
@@ -367,6 +372,11 @@ final class _SendPaymentSession {
           bloc: cubit,
           builder: (_, state) {
             void openCustom() {
+              previewSize =
+                  state.feePreviewCache
+                      .slotFor(state.selectedFeeOption)
+                      .txSize ??
+                  state.bitcoinTxSize;
               final fee = state.selectedFee;
               raw = fee is AbsoluteFee
                   ? fee.sats.toString()
@@ -430,13 +440,14 @@ final class _SendPaymentSession {
                     : null,
               );
             }
+            previewSize = state.feePreviewCache.custom.txSize ?? previewSize;
             SendFeeEvaluation evaluate(String text) =>
                 const SendCustomFeePolicy().evaluate(
                   text: text,
                   mode: mode,
                   minRelaySatPerKwu:
                       state.bitcoinFeesList?.minRelay.satPerKwu ?? 25,
-                  vsize: state.bitcoinTxSize,
+                  vsize: previewSize,
                 );
             NetworkFee? native(SendFeeEvaluation result) =>
                 switch ((result.relativeSatPerKwu, result.absoluteSats)) {
@@ -507,13 +518,13 @@ final class _SendPaymentSession {
                 final fee = native(result);
                 if (result.isValid && fee != null) {
                   cubit.armCustomFee(fee);
+                  armed = true;
                   timer = Timer(
                     const Duration(milliseconds: 250),
                     () => cubit.requestCustomFeePreview(fee),
                   );
                 } else {
-                  cubit.disarmCustomFee();
-                  cubit.clearBitcoinFeePreviews();
+                  cancelDraft();
                 }
               },
               onBack: () {
@@ -532,11 +543,16 @@ final class _SendPaymentSession {
                         minRelaySatPerKwu:
                             cubit.state.bitcoinFeesList?.minRelay.satPerKwu ??
                             25,
-                        vsize: cubit.state.bitcoinTxSize,
+                        vsize:
+                            cubit.state.feePreviewCache.custom.txSize ??
+                            previewSize,
                       );
                       final fee = native(current);
                       if (!current.isValid || fee == null) return;
                       timer?.cancel();
+                      // An unchanged editor can still have an older Custom PSBT.
+                      cubit.armCustomFee(fee);
+                      armed = false;
                       cubit.customFeesChanged(fee);
                       setLocal(() => custom = false);
                     }
@@ -551,8 +567,12 @@ final class _SendPaymentSession {
   }
 
   Widget review(BuildContext context, SendState state) {
-    final sats = state.confirmedAmountSat ?? state.effectiveAmountSat;
+    final sats = state.isMaxSend && state.recipientAmountsSat.length == 1
+        ? state.recipientAmountsSat.single
+        : state.confirmedAmountSat ?? state.effectiveAmountSat;
     final fee = state.absoluteFees;
+    final entered = state.confirmedConversion;
+    final quoteTime = entered?.quotedAt.toLocal();
     return SendPaymentReview(
       title: context.loc.sendTitle,
       stepLabels: steps(context),
@@ -560,6 +580,13 @@ final class _SendPaymentSession {
       youSendLabel: context.loc.sendYouSend,
       amount: money(context, sats, style: context.bullType.headline),
       equivalent: fiat(state, sats),
+      enteredDetail: entered == null || quoteTime == null
+          ? null
+          : context.loc.sendEnteredQuote(
+              entered.enteredText,
+              entered.currencyCode,
+              '${quoteTime.hour.toString().padLeft(2, '0')}:${quoteTime.minute.toString().padLeft(2, '0')}',
+            ),
       recipients: [
         Text(
           '${context.loc.sendTo} · ${context.loc.exchangeDcaAddressLabelBitcoin}',
@@ -606,7 +633,7 @@ final class _SendPaymentSession {
         );
         if (!_disposed && note != null) cubit.noteChanged(note);
       },
-      onConfirm: fee == null || state.buildingTransaction
+      onConfirm: fee == null || state.disableConfirmSend
           ? null
           : cubit.onConfirmTransactionClicked,
     );
