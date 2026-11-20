@@ -1,19 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons;
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const WalletHomeAppBar({
-    super.key,
-    required this.onSettings,
-    required this.onHistory,
-  });
-
-  final VoidCallback onSettings;
-  final VoidCallback onHistory;
+  const WalletHomeAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -26,32 +17,8 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        tooltip: context.loc.walletHomeHistoryTooltip,
-        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-        visualDensity: VisualDensity.standard,
-        onPressed: onHistory,
-        icon: BullIcon(
-          BullIcons.history,
-          size: 32,
-          color: context.appColors.onPrimary,
-        ),
-      ),
       centerTitle: true,
       title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),
-      actions: [
-        IconButton(
-          tooltip: context.loc.settingsScreenTitle,
-          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-          visualDensity: VisualDensity.standard,
-          onPressed: onSettings,
-          icon: BullIcon(
-            BullIcons.settings,
-            size: 32,
-            color: context.appColors.onPrimary,
-          ),
-        ),
-      ],
     );
   }
 }

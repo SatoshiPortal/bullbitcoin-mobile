@@ -2,8 +2,8 @@
 enum QuickAction {
   map('map'),
   transfer('transfer'),
-  buy('buy'),
-  sell('sell'),
+  history('history'),
+  settings('settings'),
   pay('pay'),
   exchange('exchange'),
   support('support'),
@@ -36,8 +36,8 @@ final class QuickActionsLayout {
   QuickActionsLayout._(this.primary, this.more);
 
   static const defaults = [
-    QuickAction.support,
-    QuickAction.priceHistory,
+    QuickAction.settings,
+    QuickAction.history,
     QuickAction.transfer,
   ];
 
@@ -48,8 +48,6 @@ final class QuickActionsLayout {
   static const int maximumHomeActions = 3;
 
   static const moreOrder = [
-    QuickAction.buy,
-    QuickAction.sell,
     QuickAction.pay,
     QuickAction.exchange,
     QuickAction.toggleAmounts,
@@ -57,6 +55,8 @@ final class QuickActionsLayout {
     QuickAction.priceHistory,
     QuickAction.map,
     QuickAction.transfer,
+    QuickAction.history,
+    QuickAction.settings,
   ];
 
   final List<QuickAction> primary;

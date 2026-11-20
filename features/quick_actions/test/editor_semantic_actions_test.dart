@@ -71,7 +71,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(homeValue(storage.value), '["support","transfer","priceHistory"]');
+      expect(homeValue(storage.value), '["settings","transfer","history"]');
     } finally {
       semantics.dispose();
     }

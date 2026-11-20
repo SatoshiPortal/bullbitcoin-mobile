@@ -54,13 +54,13 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Swap'));
       expect(selected, QuickAction.transfer);
-      expect(find.text('Buy'), findsNothing);
+      expect(find.text('Pay'), findsNothing);
       changes.add(true);
       await tester.pumpAndSettle();
       await tester.tap(find.text('More'));
       await tester.pumpAndSettle();
-      expect(find.text('Buy'), findsOneWidget);
-      Navigator.of(tester.element(find.text('Buy'))).pop();
+      expect(find.text('Pay'), findsOneWidget);
+      Navigator.of(tester.element(find.text('Pay'))).pop();
       await tester.pumpAndSettle();
       expect(find.text('Swap'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -82,7 +82,7 @@ void main() {
     });
     changes.add(false);
     await actions.save(
-      QuickActionSelection([QuickAction.buy, QuickAction.transfer]),
+      QuickActionSelection([QuickAction.pay, QuickAction.transfer]),
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -104,20 +104,20 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Buy'), findsNothing);
+    expect(find.text('Pay'), findsNothing);
     expect(find.text('Swap'), findsOneWidget);
     changes.add(true);
     await tester.pumpAndSettle();
-    expect(find.text('Buy'), findsOneWidget);
+    expect(find.text('Pay'), findsOneWidget);
     expect(actions.state.selection?.actions, [
-      QuickAction.buy,
+      QuickAction.pay,
       QuickAction.transfer,
     ]);
     changes.add(false);
     await tester.pumpAndSettle();
-    expect(find.text('Buy'), findsNothing);
+    expect(find.text('Pay'), findsNothing);
     expect(actions.state.selection?.actions, [
-      QuickAction.buy,
+      QuickAction.pay,
       QuickAction.transfer,
     ]);
     await tester.pumpWidget(const SizedBox.shrink());

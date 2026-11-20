@@ -119,18 +119,6 @@ abstract class QuickActionsLocalizations {
   /// **'Dismiss'**
   String get dismiss;
 
-  /// No description provided for @buy.
-  ///
-  /// In en, this message translates to:
-  /// **'Buy'**
-  String get buy;
-
-  /// No description provided for @sell.
-  ///
-  /// In en, this message translates to:
-  /// **'Sell'**
-  String get sell;
-
   /// No description provided for @pay.
   ///
   /// In en, this message translates to:
@@ -148,6 +136,18 @@ abstract class QuickActionsLocalizations {
   /// In en, this message translates to:
   /// **'Map'**
   String get map;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
 
   /// No description provided for @more.
   ///

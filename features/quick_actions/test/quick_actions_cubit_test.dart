@@ -21,7 +21,7 @@ void main() {
     expect(loaded, isFalse);
     visibility.add(true);
     await load;
-    expect(cubit.state.available, contains(QuickAction.buy));
+    expect(cubit.state.available, contains(QuickAction.pay));
   });
 
   test('a null stored selection drafts the injected defaults', () async {
@@ -56,7 +56,7 @@ void main() {
       final initial = cubit.state.draft?.actions;
       expect(initial, isNotNull);
       storage.failWrite = true;
-      await cubit.save(QuickActionSelection([QuickAction.buy]));
+      await cubit.save(QuickActionSelection([QuickAction.pay]));
       expect(cubit.state.selection, isNull);
       expect(cubit.state.draft?.actions, initial);
       expect(cubit.state.saving, isFalse);
@@ -72,7 +72,7 @@ void main() {
       exchangeVisible: const Stream.empty(),
     );
     final load = cubit.load();
-    await cubit.save(QuickActionSelection([QuickAction.buy]));
+    await cubit.save(QuickActionSelection([QuickAction.pay]));
     storage.firstRead.complete(null);
     await load;
     expect(cubit.state.initialized, isTrue);
@@ -99,7 +99,7 @@ void main() {
     await visibility.close();
   });
 
-  const exchangeOnly = {QuickAction.buy, QuickAction.sell, QuickAction.pay};
+  const exchangeOnly = {QuickAction.pay};
   const exchangeActions = {...exchangeOnly, QuickAction.exchange};
 
   Future<Set<QuickAction>> availableFor({

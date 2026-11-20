@@ -42,7 +42,7 @@ Future<void> dropAcrossDivider(
   TestGesture gesture, {
   required bool home,
 }) async {
-  final target = find.byKey(ValueKey(home ? 'transfer' : 'buy'));
+  final target = find.byKey(ValueKey(home ? 'transfer' : 'pay'));
   // These tiles lie immediately above/below the fixed separator.
   await gesture.moveTo(tester.getRect(target).center);
   await tester.pump(const Duration(milliseconds: 350));
@@ -88,7 +88,7 @@ void main() {
       );
       expect(storage.writes, 0);
       await dropAcrossDivider(tester, gesture, home: false);
-      expect(homeValue(storage.value), '["support","priceHistory"]');
+      expect(homeValue(storage.value), '["settings","history"]');
       expect(
         ((jsonDecode(storage.value ?? '{}') as Map)['more'] as List).first,
         'transfer',
@@ -110,9 +110,9 @@ void main() {
         exchangeVisible: Stream.value(true),
       ),
     );
-    final gesture = await holdLabel(tester, QuickAction.buy);
+    final gesture = await holdLabel(tester, QuickAction.pay);
     await dropAcrossDivider(tester, gesture, home: true);
-    expect(homeValue(storage.value), '["support","priceHistory","buy"]');
+    expect(homeValue(storage.value), '["settings","history","pay"]');
     expect(
       ((jsonDecode(storage.value ?? '{}') as Map)['more'] as List).first,
       'transfer',
@@ -142,8 +142,8 @@ void main() {
           find.byType(BullQuickAction),
         );
         expect(preview.take(4).map((w) => w.label), [
-          l10n.support,
-          l10n.priceHistory,
+          l10n.settings,
+          l10n.history,
           l10n.transfer,
           l10n.more,
         ]);
@@ -172,13 +172,13 @@ void main() {
       find.byType(BullQuickAction),
     );
     expect(preview.take(3).map((w) => w.label), [
-      l10n.support,
-      l10n.priceHistory,
+      l10n.settings,
+      l10n.history,
       l10n.more,
     ]);
     gate.complete();
     await tester.pumpAndSettle();
-    expect(homeValue(storage.value), '["support","priceHistory"]');
+    expect(homeValue(storage.value), '["settings","history"]');
   });
 
   testWidgets('reset Undo restores explicit Home and More ordering', (
@@ -187,7 +187,7 @@ void main() {
     largeView(tester);
     final original = jsonEncode({
       'home': ['transfer'],
-      'more': ['support', 'buy', 'map', 'toggleAmounts'],
+      'more': ['support', 'pay', 'map', 'toggleAmounts'],
     });
     final storage = _Storage()..value = original;
     await openEditor(
@@ -308,13 +308,13 @@ void main() {
       );
       final l10n = localizations(tester);
       await semanticMove(tester, QuickAction.transfer, l10n.moveDown);
-      expect(homeValue(storage.value), '["support","priceHistory"]');
+      expect(homeValue(storage.value), '["settings","history"]');
       expect(
         ((jsonDecode(storage.value ?? '{}') as Map)['more'] as List).first,
         'transfer',
       );
       await semanticMove(tester, QuickAction.transfer, l10n.moveUp);
-      expect(homeValue(storage.value), '["support","priceHistory","transfer"]');
+      expect(homeValue(storage.value), '["settings","history","transfer"]');
       expect(storage.writes, 2);
     });
   }

@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -36,7 +35,6 @@ Future<void> _pumpTopSection(
   WidgetTester tester, {
   required double textScale,
   bool hideAmounts = true,
-  VoidCallback? onSettings,
   double? actionsHeight,
   required int unconfirmedIncomingBalance,
 }) async {
@@ -87,18 +85,6 @@ Future<void> _pumpTopSection(
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        appBar: onSettings == null
-            ? null
-            : PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: BlocProvider<SettingsCubit>.value(
-                  value: settings,
-                  child: WalletHomeAppBar(
-                    onSettings: onSettings,
-                    onHistory: () {},
-                  ),
-                ),
-              ),
         body: MediaQuery(
           data: MediaQueryData(
             size: const Size(360, 800),
@@ -143,24 +129,6 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
-  testWidgets('top bar settings gear is named and opens settings', (
-    tester,
-  ) async {
-    var opened = false;
-    await _pumpTopSection(
-      tester,
-      textScale: 1,
-      unconfirmedIncomingBalance: 0,
-      onSettings: () => opened = true,
-    );
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    final gear = find.byTooltip(l10n.settingsScreenTitle);
-    expect(tester.getSize(gear).width, greaterThanOrEqualTo(48));
-    expect(tester.getSize(gear).height, greaterThanOrEqualTo(48));
-    await tester.tap(gear);
-    expect(opened, isTrue);
-  });
-
   testWidgets('home balance has no eye toggle', (tester) async {
     await _pumpTopSection(
       tester,

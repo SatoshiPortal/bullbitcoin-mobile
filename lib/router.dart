@@ -77,11 +77,11 @@ class AppRouter {
     onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
-    onAction: (context, action) => _openQuickAction(context, switch (action) {
-      ExchangeHomeAction.buy => QuickAction.buy,
-      ExchangeHomeAction.sell => QuickAction.sell,
-      ExchangeHomeAction.pay => QuickAction.pay,
-      ExchangeHomeAction.transfer => QuickAction.transfer,
+    onAction: (context, action) => context.pushNamed(switch (action) {
+      ExchangeHomeAction.buy => BuyRoute.buy.name,
+      ExchangeHomeAction.sell => SellRoute.sell.name,
+      ExchangeHomeAction.pay => PayRoute.pay.name,
+      ExchangeHomeAction.transfer => SwapRoute.swap.name,
     }),
   );
 
@@ -93,14 +93,14 @@ class AppRouter {
         context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
         context.pushNamed(SwapRoute.swap.name);
+      case QuickAction.history:
+        context.pushNamed(TransactionsRoute.transactions.name);
+      case QuickAction.settings:
+        context.pushNamed(SettingsRoute.settings.name);
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
         context.pushNamed(SettingsRoute.priceHistory.name);
-      case QuickAction.buy:
-        context.pushNamed(BuyRoute.buy.name);
-      case QuickAction.sell:
-        context.pushNamed(SellRoute.sell.name);
       case QuickAction.pay:
         context.pushNamed(PayRoute.pay.name);
       case QuickAction.exchange:
@@ -195,15 +195,7 @@ class AppRouter {
                 child: Scaffold(
                   // The app bar of the exchange tab is rendered by the
                   // ExchangeHomeScreen itself, as an overlay.
-                  appBar: tabIndex == 0
-                      ? WalletHomeAppBar(
-                          onSettings: () =>
-                              context.pushNamed(SettingsRoute.settings.name),
-                          onHistory: () => context.pushNamed(
-                            TransactionsRoute.transactions.name,
-                          ),
-                        )
-                      : null,
+                  appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
                 ),

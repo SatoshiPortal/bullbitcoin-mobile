@@ -101,7 +101,7 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   Future<void> _pendingWrite = Future.value();
   int _generation = 0;
 
-  /// Trading actions need a usable exchange; its entry also shows while the
+  /// Pay needs a usable exchange; the exchange entry also shows while the
   /// exchange is off but could be activated.
   static Set<QuickAction> _available({
     required bool visible,
@@ -109,7 +109,7 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   }) => Set.unmodifiable(
     QuickAction.values.where(
       (action) => switch (action) {
-        QuickAction.buy || QuickAction.sell || QuickAction.pay => visible,
+        QuickAction.pay => visible,
         QuickAction.exchange => visible || entry,
         _ => true,
       },

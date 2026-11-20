@@ -121,8 +121,8 @@ void main() {
     expect(find.text('Map'), findsOneWidget);
     expect(find.text('Exchange'), findsOneWidget);
     final amounts = tester.getCenter(find.text('Show'));
-    final map = tester.getCenter(find.text('Map'));
-    expect(amounts.dy, closeTo(map.dy, .01));
+    final exchange = tester.getCenter(find.text('Exchange'));
+    expect(amounts.dy, closeTo(exchange.dy, .01));
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
     expect(edits, 1);

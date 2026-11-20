@@ -2,8 +2,8 @@ import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const defaults = [
-  QuickAction.support,
-  QuickAction.priceHistory,
+  QuickAction.settings,
+  QuickAction.history,
   QuickAction.transfer,
   QuickAction.toggleAmounts,
 ];
@@ -17,29 +17,29 @@ void main() {
   });
 
   test('ON prioritizes exchange then app controls then hidden favorites', () {
-    final selection = QuickActionSelection([QuickAction.buy, QuickAction.map]);
+    final selection = QuickActionSelection([QuickAction.pay, QuickAction.map]);
     final layout = QuickActionsLayout.resolve(
       available: QuickAction.values.toSet(),
 
       selection: selection,
     );
-    expect(layout.primary, [QuickAction.buy, QuickAction.map]);
+    expect(layout.primary, [QuickAction.pay, QuickAction.map]);
     expect(layout.more, [
-      QuickAction.sell,
-      QuickAction.pay,
       QuickAction.exchange,
       QuickAction.toggleAmounts,
       QuickAction.support,
       QuickAction.priceHistory,
       QuickAction.transfer,
+      QuickAction.history,
+      QuickAction.settings,
     ]);
-    expect(selection.actions, [QuickAction.buy, QuickAction.map]);
+    expect(selection.actions, [QuickAction.pay, QuickAction.map]);
   });
 
   test('empty and filtered selections keep all actions in More', () {
     for (final chosen in [
       <QuickAction>[],
-      [QuickAction.buy],
+      [QuickAction.pay],
     ]) {
       final selection = QuickActionSelection(chosen);
       final layout = QuickActionsLayout.resolve(
@@ -50,10 +50,10 @@ void main() {
       expect(layout.primary, isEmpty);
       expect(layout.more, [
         QuickAction.toggleAmounts,
-        QuickAction.support,
-        QuickAction.priceHistory,
         QuickAction.map,
         QuickAction.transfer,
+        QuickAction.history,
+        QuickAction.settings,
       ]);
       expect(selection.actions, chosen);
     }

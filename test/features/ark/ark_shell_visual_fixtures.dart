@@ -138,7 +138,7 @@ class ArkShellVisualFixtures {
           // These are the actual visible shell components in AppRouter.
           builder: (_, _, child) => BackupWarningOverlay(
             child: Scaffold(
-              appBar: WalletHomeAppBar(onSettings: () {}, onHistory: () {}),
+              appBar: const WalletHomeAppBar(),
               extendBodyBehindAppBar: true,
               body: child,
             ),

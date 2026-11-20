@@ -19,12 +19,6 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
-  String get buy => 'Buy';
-
-  @override
-  String get sell => 'Sell';
-
-  @override
   String get pay => 'Pay';
 
   @override
@@ -32,6 +26,12 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
 
   @override
   String get map => 'Map';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get settings => 'Settings';
 
   @override
   String get more => 'More';
