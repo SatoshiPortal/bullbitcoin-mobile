@@ -91,15 +91,14 @@ class ReceiveQRDetails extends StatelessWidget {
             button: true,
             label: context.loc.receiveEnlargeQr,
             child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: state.qrData.isEmpty
                   ? null
                   : () => ReceiveEnlargedQr.show(context, state),
               child: state.qrData.isEmpty
                   ? BullShimmerBox(width: qrSize, height: qrSize)
-                  : Container(
-                      width: qrSize,
-                      height: qrSize,
-                      color: context.appColors.surfaceFixed,
+                  : SizedBox.square(
+                      dimension: qrSize,
                       child: BullQrCode(data: state.qrData, size: qrSize),
                     ),
             ),

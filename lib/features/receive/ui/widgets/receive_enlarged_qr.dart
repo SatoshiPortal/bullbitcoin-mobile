@@ -70,14 +70,14 @@ class ReceiveEnlargedQr extends StatelessWidget {
                           final size = constraints.maxWidth
                               .clamp(0, 358)
                               .toDouble();
-                          return Container(
-                            width: size,
-                            height: size,
-                            color: context.appColors.surfaceFixed,
-                            child: BullQrCode(
-                              data: data,
-                              size: size,
-                              semanticsLabel: caption,
+                          return AbsorbPointer(
+                            child: SizedBox.square(
+                              dimension: size,
+                              child: BullQrCode(
+                                data: data,
+                                size: size,
+                                semanticsLabel: caption,
+                              ),
                             ),
                           );
                         },
