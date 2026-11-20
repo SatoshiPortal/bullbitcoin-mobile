@@ -13,11 +13,9 @@ class HomeFiatBalance extends StatelessWidget {
     super.key,
     required this.balanceSat,
     this.showBalanceLoading = false,
-    this.showFrame = true,
   });
 
   final int balanceSat;
-  final bool showFrame;
 
   /// When true (e.g. wallet list still loading), avoids showing fiat from 0 sats.
   final bool showBalanceLoading;
@@ -56,9 +54,7 @@ class HomeFiatBalance extends StatelessWidget {
       child: child,
     );
 
-    if (showSkeleton) {
-      return picker(_HomeFiatBalanceSkeleton(showFrame: showFrame));
-    }
+    if (showSkeleton) return picker(const _HomeFiatBalanceSkeleton());
 
     return picker(
       Container(
@@ -66,13 +62,9 @@ class HomeFiatBalance extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(context.bullShapes.button),
           border: Border.all(
-            color: showFrame
-                ? context.appColors.border.withValues(alpha: 0.3)
-                : context.appColors.transparent,
+            color: context.appColors.border.withValues(alpha: 0.3),
           ),
-          color: showFrame
-              ? context.appColors.border.withValues(alpha: 0.3)
-              : context.appColors.transparent,
+          color: context.appColors.border.withValues(alpha: 0.3),
         ),
         child: CurrencyText(
           balanceSat,
@@ -86,9 +78,7 @@ class HomeFiatBalance extends StatelessWidget {
 }
 
 class _HomeFiatBalanceSkeleton extends StatelessWidget {
-  const _HomeFiatBalanceSkeleton({required this.showFrame});
-
-  final bool showFrame;
+  const _HomeFiatBalanceSkeleton();
 
   @override
   Widget build(BuildContext context) {
@@ -97,13 +87,9 @@ class _HomeFiatBalanceSkeleton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(context.bullShapes.button),
         border: Border.all(
-          color: showFrame
-              ? context.appColors.border.withValues(alpha: 0.3)
-              : context.appColors.transparent,
+          color: context.appColors.border.withValues(alpha: 0.3),
         ),
-        color: showFrame
-            ? context.appColors.border.withValues(alpha: 0.3)
-            : context.appColors.transparent,
+        color: context.appColors.border.withValues(alpha: 0.3),
       ),
       child: Shimmer.fromColors(
         baseColor: context.appColors.shimmerBase,

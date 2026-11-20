@@ -122,16 +122,7 @@ class _Amounts extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // Match the fiat chip's 10 dp padding and 1 dp border to the
-              // amount toggle's 4 dp padding, aligning the denomination edges.
-              Padding(
-                padding: EdgeInsets.only(right: 7),
-                child: _BtcTotalAmt(),
-              ),
-              Gap(12),
-              _FiatAmt(),
-            ],
+            children: [_BtcTotalAmt(), Gap(12), _FiatAmt()],
           ),
         ),
         Gap(8),
@@ -163,12 +154,22 @@ class _BtcTotalAmt extends StatelessWidget {
     final btcTotal = walletState.totalBalance();
     if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
-    return CurrencyText(
-      btcTotal,
-      showFiat: false,
-      interactive: true,
-      style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-      color: context.appColors.onPrimary,
+    return Container(
+      // Alongside the amount toggle's 4 dp padding, match the fiat chip's
+      // 10 dp padding and 1 dp border to keep denomination edges aligned.
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(context.bullShapes.button),
+        border: Border.all(color: context.appColors.bitcoinOrange),
+        color: context.appColors.bitcoinOrange,
+      ),
+      child: CurrencyText(
+        btcTotal,
+        showFiat: false,
+        interactive: true,
+        style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        color: context.appColors.onSurfaceFixed,
+      ),
     );
   }
 }
@@ -188,7 +189,6 @@ class _FiatAmt extends StatelessWidget {
     return HomeFiatBalance(
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
-      showFrame: false,
     );
   }
 }
