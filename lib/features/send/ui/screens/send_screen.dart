@@ -36,7 +36,6 @@ import 'package:bb_mobile/core/utils/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -65,6 +64,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAlertCard,
         BullAmount,
         BullKeyboardActions,
         BullAdvancedOptionsLink,
@@ -1325,7 +1325,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   ),
                                   if (state.consolidationRequired) ...[
                                     const Gap(16),
-                                    ConsolidationRequiredCard(
+                                    BullAlertCard(
                                       title: context
                                           .loc
                                           .consolidationRequiredTitle,

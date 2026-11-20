@@ -205,6 +205,7 @@ export 'src/layout/bull_scrollable_column.dart';
 export 'src/layout/bull_stacked_page.dart';
 
 // Data display.
+export 'src/data_display/bull_alert_card.dart';
 export 'src/data_display/bull_amount.dart';
 export 'src/data_display/bull_amount_scope.dart';
 export 'generated/l10n/bull_ui_localizations.dart';

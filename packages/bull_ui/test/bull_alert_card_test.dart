@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'test_app.dart';
 
 void main() {
   Future<void> pumpCard(
@@ -12,18 +12,7 @@ void main() {
     VoidCallback? onTap,
   }) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: ConsolidationRequiredCard(
-            title: title,
-            body: body,
-            onTap: onTap,
-          ),
-        ),
-      ),
+      wrapWithTheme(BullAlertCard(title: title, body: body, onTap: onTap)),
     );
   }
 
@@ -63,12 +52,9 @@ void main() {
     expect(tapped, isTrue);
   });
 
-  testWidgets('does nothing when tapped with no onTap given', (tester) async {
+  testWidgets('a card without a callback is static', (tester) async {
     await pumpCard(tester, title: 'Consolidate the wallet');
 
-    await tester.tap(find.byType(InkWell));
-    await tester.pump();
-    // No exception thrown, no state to assert — this just proves a null
-    // onTap doesn't crash the widget.
+    expect(find.byType(InkWell), findsNothing);
   });
 }
