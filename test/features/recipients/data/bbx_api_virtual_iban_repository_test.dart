@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_virtual_iban_repository.dart';
-import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_virtual_iban_datasource.dart';
-import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:dio/dio.dart';
@@ -42,15 +40,6 @@ BbxApiVirtualIbanRepository _repository(
   testnet: (testnet ?? FakeBbxHttp()).client(),
 );
 
-VirtualIbanRepositoryImpl _old(FakeBbxHttp mainnet) =>
-    VirtualIbanRepositoryImpl(
-      mainnetDatasource: BullbitcoinApiVirtualIbanDatasource(
-        http: Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-          ..httpClientAdapter = mainnet,
-      ),
-      testnetDatasource: BullbitcoinApiVirtualIbanDatasource(http: Dio()),
-    );
-
 List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
   for (final r in http.requests)
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
@@ -69,17 +58,14 @@ RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
 
 void main() {
   group('find', () {
-    test('asks the selected environment, like the old datasource', () async {
+    test('asks the selected environment', () async {
       final mainnet = FakeBbxHttp();
       final testnet = FakeBbxHttp(body: _list([]));
-      final old = FakeBbxHttp(body: _list([]));
 
       final result = await _repository(mainnet, testnet).find(isTestnet: true);
-      await _old(old).find(isTestnet: false);
 
       expect(_valueOf(result), isNull);
       expect(mainnet.requests, isEmpty);
-      expect(_sent(testnet), _sent(old));
       expect(_sent(testnet).single, (
         '/ak/api-recipients',
         '{"jsonrpc":"2.0","id":"0","method":"listRecipientsFiat","params":'
@@ -201,18 +187,15 @@ void main() {
   });
 
   group('create', () {
-    test('creates the virtual IBAN, like the old datasource', () async {
+    test('creates the virtual IBAN', () async {
       final body = {
         'result': {'element': _activeElement},
       };
       final http = FakeBbxHttp(body: body);
-      final old = FakeBbxHttp(body: body);
 
       final result = await _repository(http).create(isTestnet: false);
-      await _old(old).create(isTestnet: false);
 
       expect(_valueOf(result), isA<ActiveVirtualIban>());
-      expect(_sent(http), _sent(old));
       expect(_sent(http).single, (
         '/ak/api-recipients',
         '{"jsonrpc":"2.0","id":"0","method":"createMyRecipient","params":'

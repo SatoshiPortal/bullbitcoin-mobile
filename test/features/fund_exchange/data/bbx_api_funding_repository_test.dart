@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interc
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/data/bullbitcoin_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
@@ -20,6 +19,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../exchange/data/bbx_api_test_http.dart';
 import '../result_helpers.dart';
+import 'bbx_api_funding_repository_legacy.dart';
 
 const _iban = 'DE89370400440532013000';
 
@@ -169,11 +169,6 @@ Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
   return dio;
 }
 
-FundingRepository _old(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
-    BullBitcoinApiFundingRepository(
-      authenticatedApiClient: _dio(http, readApiKey: key),
-    );
-
 FundingRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
     BbxApiFundingRepository(api: BbxApiClient(_dio(http, readApiKey: key)));
 
@@ -197,43 +192,45 @@ final _operations = <String, _Operation>{
   'registerResponsibilityConsent': (r) => r.registerResponsibilityConsent(),
 };
 
-/// Runs [call] on the old and the new repository against the same answer.
+/// Runs [call] on the repository; returns what the old repository sent and
+/// gave for the same answer, recorded before it was removed (see
+/// [_legacyOutcome]), and what the repository sends and gives.
 Future<
   (
-    (List<(String, String)>, Result<Object?, FundExchangeFailure>),
+    (List<Object?>, Object?),
     (List<(String, String)>, Result<Object?, FundExchangeFailure>),
   )
 >
 _both(
+  String id,
   _Operation call, {
   Object? body,
   int status = 200,
   DioExceptionType? error,
   ReadExchangeApiKey? key,
 }) async {
-  final oldHttp = FakeBbxHttp(body: body, status: status, error: error);
-  final newHttp = FakeBbxHttp(body: body, status: status, error: error);
-  final oldResult = await call(_old(oldHttp, key: key));
-  final newResult = await call(_new(newHttp, key: key));
-  return ((_sent(oldHttp), oldResult), (_sent(newHttp), newResult));
+  final http = FakeBbxHttp(body: body, status: status, error: error);
+  final result = await call(_new(http, key: key));
+  return (
+    oldRepository[id]! as (List<Object?>, Object?),
+    (_sent(http), result),
+  );
 }
 
 void main() {
-  group('getFundingDetails matches the old repository', () {
+  group('getFundingDetails matches the old repository, as recorded', () {
     for (final method in _methods) {
       test(method.runtimeType.toString(), () async {
         final isCop = method is CopBankTransfer;
         final ((oldSent, oldResult), (sent, result)) = await _both(
+          'details ${method.runtimeType}',
           (r) => r.getFundingDetails(fundingMethod: method),
           body: isCop ? {'result': 'https://pay.example/cop'} : _details,
         );
 
         expect(sent, oldSent);
         expect(sent.single.$1, isCop ? '/ak/api-orders' : '/ak/api-recipients');
-        expect(
-          _canonical(valueOf(result)! as FundingDetails),
-          _canonical(valueOf(oldResult)! as FundingDetails),
-        );
+        expect(_legacyOutcome(result), oldResult);
       });
     }
 
@@ -285,10 +282,11 @@ void main() {
     });
   });
 
-  group('listInstitutions matches the old repository', () {
+  group('listInstitutions matches the old repository, as recorded', () {
     for (final jurisdiction in FundingJurisdiction.values) {
       test('sends the lowercase country code of $jurisdiction', () async {
         final ((oldSent, _), (sent, _)) = await _both(
+          'institutions $jurisdiction',
           (r) => r.listInstitutions(jurisdiction: jurisdiction),
           body: {
             'result': {'elements': <Object?>[]},
@@ -312,6 +310,7 @@ void main() {
         'maxAddressLength': 16,
       };
       final ((_, oldResult), (_, result)) = await _both(
+        'institutions kept and skipped',
         (r) => r.listInstitutions(jurisdiction: FundingJurisdiction.colombia),
         body: {
           'result': {
@@ -349,7 +348,7 @@ void main() {
         for (final i in valueOf(r)! as List<FundingInstitution>)
           (i.code, i.name),
       ];
-      expect(institutions(result), institutions(oldResult));
+      expect(_legacyOutcome(result), oldResult);
       expect(institutions(result), [
         ('BC01', 'Bancolombia'),
         ('DV01', 'Davivienda'),
@@ -371,41 +370,46 @@ void main() {
     ]) {
       test('$body is NoInstitutionsFailure', () async {
         final ((_, oldResult), (_, result)) = await _both(
+          'no institutions $body',
           (r) => r.listInstitutions(jurisdiction: FundingJurisdiction.canada),
           body: body,
         );
 
         expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
-        expect(failureOf(oldResult), isA<FundExchangeNoInstitutionsFailure>());
+        expect((oldResult! as List)[0], FundExchangeNoInstitutionsFailure);
       });
     }
   });
 
-  group('registerResponsibilityConsent matches the old repository', () {
-    for (final result in <Object?>[
-      true,
-      null,
-      {'success': true},
-      {'success': false},
-      'ok',
-    ]) {
-      test('a result of $result is a consent', () async {
-        final ((oldSent, oldResult), (sent, newResult)) = await _both(
-          (r) => r.registerResponsibilityConsent(),
-          body: {'result': result},
-        );
+  group(
+    'registerResponsibilityConsent matches the old repository, as recorded',
+    () {
+      for (final result in <Object?>[
+        true,
+        null,
+        {'success': true},
+        {'success': false},
+        'ok',
+      ]) {
+        test('a result of $result is a consent', () async {
+          final ((oldSent, oldResult), (sent, newResult)) = await _both(
+            'consent $result',
+            (r) => r.registerResponsibilityConsent(),
+            body: {'result': result},
+          );
 
-        expect(sent, oldSent);
-        expect(sent.single, (
-          '/ak/api-users',
-          '{"jsonrpc":"2.0","id":"0","method":'
-              '"registerResponsibilityConsent","params":{}}',
-        ));
-        expect(newResult, isA<Ok<void, FundExchangeFailure>>());
-        expect(oldResult, isA<Ok<void, FundExchangeFailure>>());
-      });
-    }
-  });
+          expect(sent, oldSent);
+          expect(sent.single, (
+            '/ak/api-users',
+            '{"jsonrpc":"2.0","id":"0","method":'
+                '"registerResponsibilityConsent","params":{}}',
+          ));
+          expect(newResult, isA<Ok<void, FundExchangeFailure>>());
+          expect(oldResult, ['ok', null]);
+        });
+      }
+    },
+  );
 
   group('failures match the old repository', () {
     final answers =
@@ -466,25 +470,26 @@ void main() {
       for (final MapEntry(key: answer, value: a) in answers.entries) {
         test('$name: $answer', () async {
           final ((_, oldResult), (_, result)) = await _both(
+            '$name: $answer',
             call,
             body: a.body,
             status: a.status,
             error: a.error,
           );
 
-          switch ((oldResult, result)) {
-            case (Ok(), Ok()):
-              break;
-            case (Err(failure: final old), Err(:final failure)):
-              expect(failure.runtimeType, old.runtimeType);
-            default:
-              fail('old: $oldResult, new: $result');
+          final old = oldResult! as List<Object?>;
+          switch (result) {
+            case Ok():
+              expect(old[0], 'ok');
+            case Err(:final failure):
+              expect(failure.runtimeType, old[0]);
           }
         });
       }
 
       test('$name: a missing API key is NotAuthenticated', () async {
         final ((oldSent, oldResult), (sent, result)) = await _both(
+          '$name: no key',
           call,
           key: () async => const Ok(null),
         );
@@ -492,21 +497,19 @@ void main() {
         expect(sent, isEmpty);
         expect(oldSent, isEmpty);
         expect(failureOf(result), isA<FundExchangeNotAuthenticatedFailure>());
-        expect(
-          failureOf(oldResult),
-          isA<FundExchangeNotAuthenticatedFailure>(),
-        );
+        expect((oldResult! as List)[0], FundExchangeNotAuthenticatedFailure);
       });
 
       test('$name: an unreadable API key is unexpected', () async {
         final ((_, oldResult), (_, result)) = await _both(
+          '$name: unreadable key',
           call,
           key: () async => const Err(ExchangeApiKeyReadFailure()),
         );
 
         expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
         expect(failureOf(result).logMessage, 'Exchange credential unavailable');
-        expect(failureOf(oldResult).logMessage, failureOf(result).logMessage);
+        expect((oldResult! as List)[1], failureOf(result).logMessage);
       });
 
       test('$name: a programmer error is rethrown', () async {
@@ -581,3 +584,16 @@ class _ThrowingAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async => throw _error;
 }
+
+/// A result in the form the old repository's answers were recorded in.
+Object? _legacyOutcome(Result<Object?, FundExchangeFailure> r) => switch (r) {
+  Ok(:final value) => [
+    'ok',
+    switch (value) {
+      final FundingDetails d => _canonical(d),
+      final List<FundingInstitution> l => [for (final i in l) (i.code, i.name)],
+      _ => value,
+    },
+  ],
+  Err(:final failure) => [failure.runtimeType, failure.logMessage],
+};

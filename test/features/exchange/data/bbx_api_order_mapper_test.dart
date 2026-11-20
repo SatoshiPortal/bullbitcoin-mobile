@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../core/exchange/order_json_fixture.dart';
+import 'bbx_api_order_mapper_legacy.dart';
 
 /// Every field the old parser reads, set.
 const _allFields = <String, Object?>{
@@ -70,9 +70,6 @@ const _orderTypes = [
   'Buy Gold Bars',
 ];
 
-Order _old(Map<String, dynamic> json, {bool isTestnet = false}) =>
-    OrderModel.fromJson(json).toEntity(isTestnet: isTestnet);
-
 Order _new(Map<String, dynamic> json, {bool isTestnet = false}) =>
     orderFromBbxApi(bbx.OrderSummary.fromJson(json), isTestnet: isTestnet);
 
@@ -103,72 +100,76 @@ String _snapshot(Order order) {
 }
 
 void main() {
-  group('orderFromBbxApi gives the entity the old parser gave', () {
-    for (final orderType in _orderTypes) {
-      for (final (name, overrides) in [
-        ('all fields', _allFields),
-        ('sparse', _sparse),
-        (
-          'unparseable optional dates',
-          const <String, Object?>{
-            'confirmationDeadline': 'soon',
-            'completedAt': 'x',
-            'sentAt': '',
-            'scheduledPayoutTime': 'later',
-            'lightningVoucherExpiresAt': 'never',
-          },
-        ),
-        (
-          'partial nested objects',
-          const <String, Object?>{
-            'message': {'code': null},
-            'payinAmountChanged': <String, Object?>{},
-            'payjoinDetails': <String, Object?>{},
-          },
-        ),
-      ]) {
-        for (final isTestnet in [false, true]) {
-          test('$orderType, $name, testnet: $isTestnet', () {
-            final json = orderJsonFixture(
-              orderType: orderType,
-              overrides: overrides,
-            );
-            expect(
-              _snapshot(_new(json, isTestnet: isTestnet)),
-              _snapshot(_old(json, isTestnet: isTestnet)),
-            );
-          });
+  group(
+    'orderFromBbxApi gives the entity the old parser gave, as recorded',
+    () {
+      for (final orderType in _orderTypes) {
+        for (final (name, overrides) in [
+          ('all fields', _allFields),
+          ('sparse', _sparse),
+          (
+            'unparseable optional dates',
+            const <String, Object?>{
+              'confirmationDeadline': 'soon',
+              'completedAt': 'x',
+              'sentAt': '',
+              'scheduledPayoutTime': 'later',
+              'lightningVoucherExpiresAt': 'never',
+            },
+          ),
+          (
+            'partial nested objects',
+            const <String, Object?>{
+              'message': {'code': null},
+              'payinAmountChanged': <String, Object?>{},
+              'payjoinDetails': <String, Object?>{},
+            },
+          ),
+        ]) {
+          for (final isTestnet in [false, true]) {
+            test('$orderType, $name, testnet: $isTestnet', () {
+              final json = orderJsonFixture(
+                orderType: orderType,
+                overrides: overrides,
+              );
+              expect(
+                _snapshot(_new(json, isTestnet: isTestnet)),
+                oldParserSnapshots['$orderType, $name, testnet: $isTestnet'],
+              );
+            });
+          }
         }
       }
-    }
 
-    test('unknown statuses and methods fall back the same way', () {
-      final json = orderJsonFixture(
-        orderStatus: 'Some Future Status',
-        payinStatus: '',
-        payoutStatus: 'Another Future Status',
-        overrides: const {'payinMethod': 'Gold', 'payoutMethod': ''},
-      );
-      expect(_snapshot(_new(json)), _snapshot(_old(json)));
-      expect(_new(json).orderStatus, OrderStatus.unknown);
-    });
+      test('unknown statuses and methods fall back the same way', () {
+        final json = orderJsonFixture(
+          orderStatus: 'Some Future Status',
+          payinStatus: '',
+          payoutStatus: 'Another Future Status',
+          overrides: const {'payinMethod': 'Gold', 'payoutMethod': ''},
+        );
+        expect(_snapshot(_new(json)), oldParserSnapshots['unknown statuses']);
+        expect(_new(json).orderStatus, OrderStatus.unknown);
+      });
 
-    test('an invalid createdAt throws a FormatException in both', () {
-      final json = orderJsonFixture(overrides: const {'createdAt': 'not'});
-      expect(() => _old(json), throwsFormatException);
-      expect(() => _new(json), throwsFormatException);
-    });
-  });
+      test('an invalid createdAt throws a FormatException, as before', () {
+        final json = orderJsonFixture(overrides: const {'createdAt': 'not'});
+        expect(() => _new(json), throwsFormatException);
+      });
+    },
+  );
 
   group('orderSummaryMatchesTxId', () {
     final summary = bbx.OrderSummary.fromJson(
       orderJsonFixture(overrides: _allFields),
     );
-    final model = OrderModel.fromJson(orderJsonFixture(overrides: _allFields));
 
     for (final txId in ['btc-tx', 'lq-tx', 'pj-tx', 'other']) {
       test(txId, () {
-        expect(orderSummaryMatchesTxId(summary, txId), model.matchesTxId(txId));
+        expect(
+          orderSummaryMatchesTxId(summary, txId),
+          oldParserSnapshots['matches $txId'],
+        );
       });
     }
 

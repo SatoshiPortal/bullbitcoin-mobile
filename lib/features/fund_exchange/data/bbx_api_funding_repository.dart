@@ -133,7 +133,7 @@ class BbxApiFundingRepository implements FundingRepository {
     const method = 'registerResponsibilityConsent';
 
     try {
-      // Like the old repository, any answer without an error is a consent.
+      // Any answer without an error is a consent.
       await _call(method, _api.users.registerResponsibilityConsent);
       return const Ok(null);
     } on FundingDatasourceException catch (e, st) {
@@ -152,9 +152,9 @@ class BbxApiFundingRepository implements FundingRepository {
   }
 
   /// Runs [request], converting the `bbx_api` errors and the transport
-  /// conditions into a [FundingDatasourceException] like the old repository
-  /// did. An unknown [DioException], which also carries authentication
-  /// refusals, is rethrown.
+  /// conditions into a [FundingDatasourceException]. An unknown
+  /// [DioException], which also carries authentication refusals, is
+  /// rethrown.
   Future<T> _call<T>(String method, Future<T> Function() request) async {
     try {
       return await request();

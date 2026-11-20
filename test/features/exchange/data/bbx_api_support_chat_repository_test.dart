@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -16,6 +13,8 @@ import 'package:bbx_api/bbx_api.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+
+import 'bbx_api_support_chat_repository_legacy.dart';
 
 /// Answers each JSON-RPC method with its body in [bodies], or throws [error].
 class _ChatHttp implements HttpClientAdapter {
@@ -100,19 +99,6 @@ Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
   return dio;
 }
 
-ExchangeSupportChatRepository _old(
-  HttpClientAdapter http, {
-  ReadExchangeApiKey? key,
-}) {
-  final dio = _dio(http, readApiKey: key);
-  return ExchangeSupportChatRepositoryImpl(
-    datasource: ExchangeSupportChatDatasource(bullbitcoinApiHttpClient: dio),
-    bullbitcoinApiDatasource: BullbitcoinApiDatasource(
-      bullbitcoinApiHttpClient: dio,
-    ),
-  );
-}
-
 ExchangeSupportChatRepository _new(
   HttpClientAdapter http, {
   ReadExchangeApiKey? key,
@@ -163,19 +149,19 @@ typedef _Call = Future<Result<Object?, ExchangeSupportChatFailure>> Function(
   ExchangeSupportChatRepository,
 );
 
-/// Runs [call] on the old and the new repository against the same answers.
-Future<((List<(String, String)>, Object?), (List<(String, String)>, Object?))>
-_both(
+/// Runs [call] on the repository; returns what the old repository sent and
+/// gave for the same answers, recorded before it was removed, and what the
+/// repository sends and gives.
+Future<((List<Object?>, Object?), (List<(String, String)>, Object?))> _both(
+  String id,
   _Call call,
   Map<String, Object?> bodies, {
   DioExceptionType? error,
   ReadExchangeApiKey? key,
 }) async {
-  final oldHttp = _ChatHttp(bodies, error: error);
-  final newHttp = _ChatHttp(bodies, error: error);
-  final oldOutcome = _outcome(await call(_old(oldHttp, key: key)));
-  final newOutcome = _outcome(await call(_new(newHttp, key: key)));
-  return ((oldHttp.sent, oldOutcome), (newHttp.sent, newOutcome));
+  final http = _ChatHttp(bodies, error: error);
+  final outcome = _outcome(await call(_new(http, key: key)));
+  return (oldRepository[id]! as (List<Object?>, Object?), (http.sent, outcome));
 }
 
 final _calls = <String, _Call>{
@@ -185,7 +171,7 @@ final _calls = <String, _Call>{
 };
 
 void main() {
-  group('getMessages matches the old repository', () {
+  group('getMessages matches the old repository, as recorded', () {
     final cases = <String, Map<String, Object?>>{
       'a page': {
         'getUserSummary': {'result': _summary},
@@ -255,13 +241,14 @@ void main() {
       for (final (page, pageSize) in [(null, null), (3, 25)]) {
         test('$name, page $page of $pageSize', () async {
           final ((oldSent, oldOutcome), (sent, outcome)) = await _both(
+            '$name, page $page of $pageSize',
             (r) => r.getMessages(page: page, pageSize: pageSize),
             bodies,
           );
 
           expect(outcome, oldOutcome);
           expect(sent.length, oldSent.length);
-          expect(sent.first.$1, oldSent.first.$1);
+          expect(sent.first.$1, (oldSent.first! as (String, String)).$1);
           expect(sent.skip(1), oldSent.skip(1));
         });
       }
@@ -269,6 +256,7 @@ void main() {
 
     test('reads the messages and sends the page', () async {
       final ((_, oldOutcome), (sent, outcome)) = await _both(
+        'a page, page 3 of 25',
         (r) => r.getMessages(page: 3, pageSize: 25),
         cases['a page']!,
       );
@@ -308,12 +296,13 @@ void main() {
 
     test('asks for the summary with request id "0" instead of 1', () async {
       final ((oldSent, _), (sent, _)) = await _both(
+        'a page, page null of null',
         (r) => r.getMessages(),
         cases['a page']!,
       );
 
       expect(
-        oldSent.first.$2,
+        (oldSent.first! as (String, String)).$2,
         '{"id":1,"jsonrpc":"2.0","method":"getUserSummary","params":{}}',
       );
       expect(
@@ -324,7 +313,7 @@ void main() {
     });
   });
 
-  group('sendMessage matches the old repository', () {
+  group('sendMessage matches the old repository, as recorded', () {
     final attachments = <String, List<SupportChatMessageAttachment>?>{
       'no attachments': null,
       'an empty list': [],
@@ -350,6 +339,7 @@ void main() {
       ]) {
         test('$name, $label', () async {
           final ((oldSent, oldOutcome), (sent, outcome)) = await _both(
+            '$name, $label',
             (r) => r.sendMessage(text: 'Hi', attachments: list),
             {'sendMessageToSupport': body},
           );
@@ -362,6 +352,7 @@ void main() {
 
     test('sends the attachments with file data, base64', () async {
       final ((_, _), (sent, _)) = await _both(
+        'attachments, accepted',
         (r) =>
             r.sendMessage(text: 'Hi', attachments: attachments['attachments']),
         {
@@ -381,7 +372,7 @@ void main() {
     });
   });
 
-  group('getMessageAttachment matches the old repository', () {
+  group('getMessageAttachment matches the old repository, as recorded', () {
     final results = <String, Object?>{
       'a base64 file': {
         'result': {
@@ -426,6 +417,7 @@ void main() {
     for (final MapEntry(key: name, value: body) in results.entries) {
       test(name, () async {
         final ((oldSent, oldOutcome), (sent, outcome)) = await _both(
+          'attachment: $name',
           (r) => r.getMessageAttachment('a-1'),
           {'getMessageAttachment': body},
         );
@@ -446,6 +438,7 @@ void main() {
     for (final MapEntry(key: name, value: call) in _calls.entries) {
       test('$name signed out is not authenticated', () async {
         final ((oldSent, oldOutcome), (sent, outcome)) = await _both(
+          '$name signed out',
           call,
           bodies,
           key: () async => const Ok(null),
@@ -459,6 +452,7 @@ void main() {
 
       test('$name with an unreadable key keeps its failure', () async {
         final ((_, oldOutcome), (_, outcome)) = await _both(
+          '$name with an unreadable key',
           call,
           bodies,
           key: () async => const Err(ExchangeApiKeyReadFailure()),
@@ -470,6 +464,7 @@ void main() {
 
       test('$name on a timeout keeps its failure', () async {
         final ((_, oldOutcome), (_, outcome)) = await _both(
+          '$name on a timeout',
           call,
           bodies,
           error: DioExceptionType.connectionTimeout,

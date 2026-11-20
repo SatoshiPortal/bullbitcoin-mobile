@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/features/recipients/data/models/sepa_virtual_payee_model.dart'
-    show sepaVirtualPayeeStatusFromApi;
+import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_status_mapper.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';

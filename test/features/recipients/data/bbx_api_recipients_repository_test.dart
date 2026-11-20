@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_recipients_repository.dart';
-import 'package:bb_mobile/features/recipients/data/models/recipient_details_model.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details_input.dart';
@@ -17,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../exchange/data/bbx_api_test_http.dart';
+import 'bbx_api_recipients_repository_legacy.dart';
 
 const _iban = 'DE89370400440532013000';
 
@@ -166,10 +165,6 @@ final _newRecipients = <RecipientDetails>[
     ).toDomain(),
 ];
 
-Dio _dio(FakeBbxHttp http) =>
-    Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-      ..httpClientAdapter = http;
-
 BbxApiRecipientsRepository _repository(FakeBbxHttp http) =>
     BbxApiRecipientsRepository(api: http.client());
 
@@ -179,20 +174,91 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
 ];
 
-/// Runs [call] on the old and the new repository against the same answer,
-/// and returns what each sent.
-Future<(List<(String, String, Object?)>, List<(String, String, Object?)>)>
-_bothSend(
+/// Runs [call] on the repository; returns what the old repository sent for
+/// the same answer, recorded before it was removed, and what it sends.
+Future<(List<Object?>, List<(String, String, Object?)>)> _bothSend(
+  String id,
   Object? body,
   Future<void> Function(RecipientsRepository repository) call,
 ) async {
-  final oldHttp = FakeBbxHttp(body: body);
-  final newHttp = FakeBbxHttp(body: body);
-  await call(
-    BullbitcoinApiRecipientsRepository(authenticatedApiClient: _dio(oldHttp)),
-  );
-  await call(_repository(newHttp));
-  return (_sent(oldHttp), _sent(newHttp));
+  final http = FakeBbxHttp(body: body);
+  await call(_repository(http));
+  return (oldRepository[id]! as List<Object?>, _sent(http));
+}
+
+/// The flat wire details the old repository's model gave for [d].
+Map<String, Object?> _detailsJson(RecipientDetails d) {
+  final fields = switch (d) {
+    InteracEmailCadDetails() => {
+      'email': d.email,
+      'name': d.name,
+      'securityQuestion': d.securityQuestion,
+      'securityAnswer': d.securityAnswer,
+    },
+    BillPaymentCadDetails() => {
+      'payeeName': d.payeeName,
+      'payeeCode': d.payeeCode,
+      'payeeAccountNumber': d.payeeAccountNumber,
+    },
+    BankTransferCadDetails() => {
+      'institutionNumber': d.institutionNumber,
+      'transitNumber': d.transitNumber,
+      'accountNumber': d.accountNumber,
+      'name': d.name,
+      'defaultComment': d.defaultComment,
+    },
+    SepaEurDetails() => {
+      'iban': d.iban,
+      'isCorporate': d.isCorporate,
+      'firstname': d.firstname,
+      'lastname': d.lastname,
+      'corporateName': d.corporateName,
+    },
+    SpeiClabeMxnDetails() => {'clabe': d.clabe, 'name': d.name},
+    SpeiSmsMxnDetails() => {
+      'institutionCode': d.institutionCode,
+      'phone': d.phone,
+      'name': d.name,
+    },
+    SpeiCardMxnDetails() => {
+      'institutionCode': d.institutionCode,
+      'debitcard': d.debitcard,
+      'name': d.name,
+    },
+    SinpeIbanUsdDetails() => {'iban': d.iban, 'ownerName': d.ownerName},
+    SinpeIbanCrcDetails() => {'iban': d.iban, 'ownerName': d.ownerName},
+    SinpeMovilCrcDetails() => {
+      'phoneNumber': d.phoneNumber,
+      'ownerName': d.ownerName,
+    },
+    BankAccountArgentinaDetails() => {
+      'claveUniform': d.claveUniform,
+      'name': d.name,
+    },
+    PseColombiaDetails() => {
+      'accountType': d.accountType,
+      'bankAccount': d.bankAccount,
+      'bankCode': d.bankCode,
+      'bankName': d.bankName,
+      'documentId': d.documentId,
+      'documentType': d.documentType,
+      'name': d.name,
+    },
+    NequiColombiaDetails() => {
+      'bankAccount': d.phoneNumber,
+      'documentId': d.documentId,
+      'documentType': d.documentType,
+      'name': d.name,
+    },
+  };
+  return {
+    'recipientTypeFiat': d.type.value,
+    'label': ?d.label,
+    'isOwner': ?d.isOwner,
+    'isDefault': d.isDefault,
+    'isArchived': false,
+    for (final MapEntry(:key, :value) in fields.entries) key: ?value,
+  };
 }
 
 /// Everything the app reads from a recipient.
@@ -204,7 +270,7 @@ Map<String, Object?> _canonical(Recipient r) => {
   'createdAt': r.createdAt.toIso8601String(),
   'updatedAt': r.updatedAt.toIso8601String(),
   'type': r.type.name,
-  'details': RecipientDetailsModel.fromDomain(r.details).toJson(),
+  'details': _detailsJson(r.details),
   if (r.details case final SepaEurDetails sepa)
     'virtualPayeeStatus': sepa.virtualPayeeStatus.name,
 };
@@ -221,10 +287,10 @@ RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
     };
 
 void main() {
-  group('the requests are the ones the old repository sent', () {
+  group('the requests are the ones the old repository sent, as recorded', () {
     for (final details in _newRecipients) {
       test('saveRecipient of ${details.type.name}', () async {
-        final (old, sent) = await _bothSend({
+        final (old, sent) = await _bothSend('save ${details.type.name}', {
           'result': {'element': _everyType.first},
         }, (r) => r.saveRecipient(details, isTestnet: true));
 
@@ -289,7 +355,7 @@ void main() {
     };
     for (final MapEntry(key: name, value: call) in listCalls.entries) {
       test('listRecipients with $name', () async {
-        final (old, sent) = await _bothSend({
+        final (old, sent) = await _bothSend('list $name', {
           'result': {'elements': <Object?>[], 'totalElements': 0},
         }, call);
 
@@ -300,6 +366,7 @@ void main() {
     test('updateInteracSecurityDetails', () async {
       for (final (question, answer) in [('Q?', 'A'), (null, null)]) {
         final (old, sent) = await _bothSend(
+          'interac $question',
           {'result': <String, Object?>{}},
           (r) => r.updateInteracSecurityDetails(
             recipientId: 'r-1',
@@ -316,7 +383,7 @@ void main() {
     });
 
     test('checkSinpe', () async {
-      final (old, sent) = await _bothSend({
+      final (old, sent) = await _bothSend('checkSinpe', {
         'result': {'ownerName': 'Ada'},
       }, (r) => r.checkSinpe(phoneNumber: '88888888', isTestnet: true));
 
@@ -325,7 +392,7 @@ void main() {
     });
 
     test('listCadBillers', () async {
-      final (old, sent) = await _bothSend({
+      final (old, sent) = await _bothSend('listCadBillers', {
         'result': {'elements': <Object?>[]},
       }, (r) => r.listCadBillers(searchTerm: 'hy', isTestnet: true));
 
@@ -334,7 +401,7 @@ void main() {
     });
   });
 
-  group('responses are mapped like the old repository did', () {
+  group('responses are mapped like the old repository did, as recorded', () {
     Future<List<Map<String, Object?>>> listWith(
       RecipientsRepository repository,
       List<RecipientType>? types,
@@ -377,19 +444,12 @@ void main() {
             'totalElements': 99,
           },
         };
-        final old = await listWith(
-          BullbitcoinApiRecipientsRepository(
-            authenticatedApiClient: _dio(FakeBbxHttp(body: body)),
-          ),
-          types,
-        );
-
         final mapped = await listWith(
           _repository(FakeBbxHttp(body: body)),
           types,
         );
 
-        expect(mapped, old);
+        expect(mapped, oldRepository['mapped $types']);
         expect(mapped, isNotEmpty);
       });
     }
@@ -442,14 +502,13 @@ void main() {
           'result': {'element': element},
         };
         final details = _newRecipients.first;
-        final old = await BullbitcoinApiRecipientsRepository(
-          authenticatedApiClient: _dio(FakeBbxHttp(body: body)),
-        ).saveRecipient(details, isTestnet: true);
-
         final saved = await _repository(FakeBbxHttp(body: body))
             .saveRecipient(details, isTestnet: true);
 
-        expect(_canonical(_valueOf(saved)), _canonical(_valueOf(old)));
+        expect(
+          _canonical(_valueOf(saved)),
+          oldRepository['saved ${element['recipientId']}'],
+        );
       }
     });
 
@@ -505,6 +564,123 @@ void main() {
       ).listCadBillers(searchTerm: 'hy', isTestnet: true);
 
       expect(_valueOf(result), isEmpty);
+    });
+  });
+
+  group('SEPA rows in a recipient list', () {
+    Map<String, dynamic> sepa(
+      String id, {
+      bool isOwner = true,
+      bool isCorporate = false,
+      String? virtualPayeeStatus,
+    }) => {
+      'recipientId': id,
+      'userId': 'user-1',
+      'userNbr': 1,
+      'isArchived': false,
+      'createdAt': '2026-10-01T00:00:00.000Z',
+      'updatedAt': '2026-10-01T00:00:00.000Z',
+      'recipientTypeFiat': 'SEPA_EUR',
+      'isOwner': isOwner,
+      'iban': 'FR7630006000011234567890189',
+      'isCorporate': isCorporate,
+      if (isCorporate) 'corporateName': 'Bull Bitcoin',
+      if (!isCorporate) 'firstname': 'Satoshi',
+      if (!isCorporate) 'lastname': 'Nakamoto',
+      'virtualPayeeStatus': ?virtualPayeeStatus,
+    };
+
+    FakeBbxHttp listOf(List<Map<String, dynamic>> elements) => FakeBbxHttp(
+      body: {
+        'result': {'elements': elements, 'totalElements': elements.length},
+      },
+    );
+
+    Future<List<(String, RecipientType)>> rows(
+      FakeBbxHttp http,
+      List<RecipientType>? recipientTypes,
+    ) async {
+      final value = _valueOf(
+        await _repository(http)
+            .listRecipients(isTestnet: true, recipientTypes: recipientTypes),
+      );
+      return [for (final r in value.recipients) (r.recipientId, r.type)];
+    }
+
+    test('both SEPA types are requested from the api as one type', () async {
+      final http = listOf([]);
+
+      await rows(http, [
+        RecipientType.sepaEur,
+        RecipientType.confidentialSepaEur,
+      ]);
+
+      final request = http.requests.single.data as Map<String, dynamic>;
+      final params = request['params'] as Map<String, dynamic>;
+      expect(params['filters'], {
+        'recipientTypeFiat': ['SEPA_EUR'],
+      });
+    });
+
+    test('a list of all types shows each SEPA recipient once', () async {
+      final elements = [sepa('a', virtualPayeeStatus: 'ACTIVE'), sepa('b')];
+
+      expect(await rows(listOf(elements), null), [
+        ('a', RecipientType.sepaEur),
+        ('b', RecipientType.sepaEur),
+      ]);
+      expect(
+        await rows(listOf(elements), [
+          RecipientType.sepaEur,
+          RecipientType.confidentialSepaEur,
+        ]),
+        [('a', RecipientType.sepaEur), ('b', RecipientType.sepaEur)],
+      );
+    });
+
+    test('a regular SEPA list shows the regular rows', () async {
+      expect(
+        await rows(listOf([sepa('a', virtualPayeeStatus: 'ACTIVE')]), [
+          RecipientType.sepaEur,
+        ]),
+        [('a', RecipientType.sepaEur)],
+      );
+    });
+
+    test('a Confidential SEPA list shows the confidential rows', () async {
+      final http = listOf([
+        sepa('active', virtualPayeeStatus: 'ACTIVE'),
+        sepa('pending', virtualPayeeStatus: 'CREATED'),
+        sepa('eligible'),
+      ]);
+
+      expect(await rows(http, [RecipientType.confidentialSepaEur]), [
+        ('active', RecipientType.confidentialSepaEur),
+        ('pending', RecipientType.confidentialSepaEur),
+        ('eligible', RecipientType.confidentialSepaEur),
+      ]);
+    });
+
+    test(
+      'a Confidential SEPA list leaves out recipients that cannot be activated',
+      () async {
+        final http = listOf([
+          sepa('corporate', isCorporate: true),
+          sepa('other', isOwner: false),
+        ]);
+
+        expect(await rows(http, [RecipientType.confidentialSepaEur]), isEmpty);
+      },
+    );
+
+    test('a Confidential SEPA list keeps an existing virtual payee', () async {
+      final http = listOf([
+        sepa('corporate', isCorporate: true, virtualPayeeStatus: 'ACTIVE'),
+      ]);
+
+      expect(await rows(http, [RecipientType.confidentialSepaEur]), [
+        ('corporate', RecipientType.confidentialSepaEur),
+      ]);
     });
   });
 

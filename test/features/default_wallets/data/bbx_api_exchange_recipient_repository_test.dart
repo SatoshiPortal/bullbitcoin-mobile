@@ -1,13 +1,10 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/features/default_wallets/data/bbx_api_exchange_recipient_repository.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -42,15 +39,6 @@ const _rpcError = {
 BbxApiExchangeRecipientRepository _repository(FakeBbxHttp http) =>
     BbxApiExchangeRecipientRepository(api: http.client());
 
-ExchangeRecipientRepository _old(FakeBbxHttp http) =>
-    ExchangeRecipientRepositoryImpl(
-      bullbitcoinApiDatasource: BullbitcoinApiDatasource(
-        bullbitcoinApiHttpClient: Dio(
-          BaseOptions(baseUrl: 'https://example.invalid'),
-        )..httpClientAdapter = http,
-      ),
-    );
-
 List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
   for (final r in http.requests)
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
@@ -60,7 +48,7 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
     (w?.recipientId, w!.walletType, w.address, w.isDefault);
 
 void main() {
-  group('the requests are the ones the old repository sent', () {
+  group('the requests are the ones the old repository sent, as recorded', () {
     final calls = <String, Future<void> Function(ExchangeRecipientRepository)>{
       'getDefaultWallets': (r) => r.getDefaultWallets(),
       'saveDefaultWallet, new': (r) => r.saveDefaultWallet(
@@ -92,12 +80,10 @@ void main() {
           },
         };
         final http = FakeBbxHttp(body: body);
-        final old = FakeBbxHttp(body: body);
 
         await call(_repository(http));
-        await call(_old(old));
 
-        expect(_sent(http), _sent(old));
+        expect(_sent(http), _oldSent[name]);
         expect(_sent(http).single.$3, isNull);
       });
     }
@@ -147,7 +133,6 @@ void main() {
 
       final wallets = await _repository(FakeBbxHttp(body: body))
           .getDefaultWallets();
-      final old = await _old(FakeBbxHttp(body: body)).getDefaultWallets();
 
       expect(_fields(wallets.bitcoin), (
         'btc',
@@ -167,9 +152,6 @@ void main() {
         'lq1address',
         false,
       ));
-      expect(_fields(wallets.bitcoin), _fields(old.bitcoin));
-      expect(_fields(wallets.lightning), _fields(old.lightning));
-      expect(_fields(wallets.liquid), _fields(old.liquid));
     });
 
     test('no element list is no default wallet', () async {
@@ -303,3 +285,43 @@ void main() {
     });
   });
 }
+
+/// What the removed ExchangeRecipientRepositoryImpl sent: path, JSON text
+/// and `x-api-version`.
+const _oldSent = <String, List<(String, String, Object?)>>{
+  'getDefaultWallets': [
+    (
+      '/ak/api-recipients',
+      '{"jsonrpc":"2.0","id":"0","method":"listMyRecipients","params":{"filters":{"recipientTypes":["OUT_BITCOIN_ADDRESS","OUT_LIGHTNING_ADDRESS","OUT_LIQUID_ADDRESS"],"isDefault":true}}}',
+      null,
+    ),
+  ],
+  'saveDefaultWallet, new': [
+    (
+      '/ak/api-recipients',
+      '{"jsonrpc":"2.0","id":"0","method":"createMyRecipient","params":{"element":{"recipientType":"OUT_LIGHTNING_ADDRESS","isOwner":true,"isDefault":true,"address":"sat@example.com"}}}',
+      null,
+    ),
+  ],
+  'saveDefaultWallet, empty id': [
+    (
+      '/ak/api-recipients',
+      '{"jsonrpc":"2.0","id":"0","method":"createMyRecipient","params":{"element":{"recipientType":"OUT_LIQUID_ADDRESS","isOwner":true,"isDefault":true,"address":"lq1address"}}}',
+      null,
+    ),
+  ],
+  'saveDefaultWallet, existing': [
+    (
+      '/ak/api-recipients',
+      '{"jsonrpc":"2.0","id":"0","method":"updateMyRecipient","params":{"element":{"recipientId":"btc","recipientType":"OUT_BITCOIN_ADDRESS","isOwner":true,"address":"bc1qaddress","isDefault":true}}}',
+      null,
+    ),
+  ],
+  'deleteDefaultWallet': [
+    (
+      '/ak/api-recipients',
+      '{"jsonrpc":"2.0","id":"0","method":"updateMyRecipient","params":{"element":{"recipientId":"btc","recipientType":"OUT_BITCOIN_ADDRESS","isOwner":true,"address":"bc1qaddress","isDefault":false}}}',
+      null,
+    ),
+  ],
+};
