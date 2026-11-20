@@ -3,10 +3,7 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/not_logged_in_bottom_sheet.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
@@ -163,7 +160,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     title: context.loc.exchangeSettingsDeleteAccountTitle,
                     onTap: () {
                       final cubit = context.read<ExchangeCubit>();
-                      DeleteAccountConfirmationBottomSheet.show(
+                      ExchangeAccountSheets.confirmDeletion(
                         context,
                         onConfirm: () async {
                           final result = await cubit.deleteAccount();
@@ -172,7 +169,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                             case Ok(
                               value: ExchangeAccountDeletionOutcome.completed,
                             ):
-                              await DeleteAccountSuccessBottomSheet.show(
+                              await ExchangeAccountSheets.showDeletionRequested(
                                 context,
                               );
                             case Ok(
@@ -197,7 +194,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       if (state.notLoggedIn) {
                         NotLoggedInBottomSheet.show(context);
                       } else {
-                        LogoutConfirmationBottomSheet.show(
+                        ExchangeAccountSheets.confirmLogout(
                           context,
                           onConfirm: () async {
                             final result = await context

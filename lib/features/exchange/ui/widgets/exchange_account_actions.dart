@@ -1,8 +1,5 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, BullSnackBar;
@@ -27,14 +24,16 @@ class ExchangeAccountActions extends StatelessWidget {
             title: context.loc.exchangeSettingsDeleteAccountTitle,
             onTap: () {
               final cubit = context.read<ExchangeCubit>();
-              DeleteAccountConfirmationBottomSheet.show(
+              ExchangeAccountSheets.confirmDeletion(
                 context,
                 onConfirm: () async {
                   final result = await cubit.deleteAccount();
                   if (!context.mounted) return;
                   switch (result) {
                     case Ok(value: ExchangeAccountDeletionOutcome.completed):
-                      await DeleteAccountSuccessBottomSheet.show(context);
+                      await ExchangeAccountSheets.showDeletionRequested(
+                        context,
+                      );
                     case Ok(value: ExchangeAccountDeletionOutcome.stale):
                       break;
                     case Err(:final failure):
@@ -51,7 +50,7 @@ class ExchangeAccountActions extends StatelessWidget {
           icon: Icons.logout,
           title: context.loc.exchangeSettingsLogOutTitle,
           onTap: () {
-            LogoutConfirmationBottomSheet.show(
+            ExchangeAccountSheets.confirmLogout(
               context,
               onConfirm: () async {
                 final result = await context.read<ExchangeCubit>().logout();
