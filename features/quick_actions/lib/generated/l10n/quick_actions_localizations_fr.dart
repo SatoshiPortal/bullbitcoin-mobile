@@ -25,9 +25,6 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get map => 'Carte';
 
   @override
-  String get settings => 'Réglages';
-
-  @override
   String get more => 'Plus';
 
   @override
@@ -83,7 +80,7 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
 
   @override
   String get emptyHint =>
-      'Aucune action sélectionnée. Réglages reste sur l’accueil.';
+      'Aucune action sélectionnée. Toutes les actions sont dans Plus.';
 
   @override
   String get supportFull => 'Assistance';
@@ -103,4 +100,16 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   @override
   String get dragHint =>
       'Appuyez longuement sur une action pour la déplacer. L’accueil contient jusqu’à 3 actions.';
+
+  @override
+  String get hideAmounts => 'Masquer les montants';
+
+  @override
+  String get showAmounts => 'Afficher les montants';
+
+  @override
+  String get hide => 'Masquer';
+
+  @override
+  String get show => 'Afficher';
 }

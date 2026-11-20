@@ -25,9 +25,6 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get map => 'Map';
 
   @override
-  String get settings => 'Settings';
-
-  @override
   String get more => 'More';
 
   @override
@@ -82,7 +79,7 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get saving => 'Saving…';
 
   @override
-  String get emptyHint => 'No actions selected. Settings stays on Home.';
+  String get emptyHint => 'No actions selected. All actions are in More.';
 
   @override
   String get supportFull => 'Support';
@@ -102,4 +99,16 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   @override
   String get dragHint =>
       'Touch and hold an action to move it. Home holds up to 3 actions.';
+
+  @override
+  String get hideAmounts => 'Hide amounts';
+
+  @override
+  String get showAmounts => 'Show amounts';
+
+  @override
+  String get hide => 'Hide';
+
+  @override
+  String get show => 'Show';
 }
