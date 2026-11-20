@@ -52,6 +52,19 @@ void main() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('the alert action has a name and a 48 dp target', (tester) async {
+    await pumpCard(tester, title: 'Consolidate the wallet', onTap: () {});
+
+    expect(
+      tester.getSize(find.byType(InkWell)).shortestSide,
+      greaterThanOrEqualTo(48),
+    );
+    expect(
+      find.bySemanticsLabel(RegExp('Consolidate the wallet')),
+      findsWidgets,
+    );
+  });
+
   testWidgets('a card without a callback is static', (tester) async {
     await pumpCard(tester, title: 'Consolidate the wallet');
 
