@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' show EdgeInsetsDirectional;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -195,6 +196,17 @@ class _ReceiveInfoDetailsState extends State<ReceiveInfoDetails> {
 class ReceiveLnInfoDetails extends StatelessWidget {
   const ReceiveLnInfoDetails({super.key});
 
+  static void _showFees(BuildContext context) {
+    BullBottomSheet.show<void>(
+      context: context,
+      style: BullSheetStyle.redesign(context),
+      child: BlocProvider.value(
+        value: context.read<ReceiveBloc>(),
+        child: const _ReceiveLnFeesSheet(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ReceiveBloc>().state;
@@ -204,128 +216,73 @@ class ReceiveLnInfoDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _ReceiveSummaryRow(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            context.loc.amountLabel,
-            style: context.bullType.label.copyWith(
-              color: context.appColors.textMuted,
-            ),
+        _ReceiveInvoiceRow(
+          label: context.loc.amountLabel,
+          value: CurrencyText(
+            amount ?? 0,
+            showFiat: false,
+            textAlign: TextAlign.end,
           ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: CurrencyText(
-                  amount ?? 0,
+          action: BullFieldAction(
+            label: context.loc.receiveEditAmount,
+            onPressed: () => context.pop(),
+            icon: BullIcons.edit,
+          ),
+        ),
+        _ReceiveInvoiceRow(
+          label: context.loc.receiveFees,
+          value: fees == null
+              ? const BullShimmerLine(width: 90, height: 16)
+              : CurrencyText(fees, showFiat: false, textAlign: TextAlign.end),
+          action: BullInlineIconButton(
+            tooltip: context.loc.receiveFees,
+            onPressed: () => _showFees(context),
+            icon: const BullIcon(BullIcons.chevronRight),
+          ),
+          onTap: () => _showFees(context),
+        ),
+        _ReceiveInvoiceRow(
+          label: context.loc.receiveYouReceive,
+          value: net == null
+              ? const BullShimmerLine(width: 90, height: 16)
+              : CurrencyText(
+                  net,
                   showFiat: false,
                   textAlign: TextAlign.end,
-                ),
-              ),
-              const Gap(8),
-              BullFieldAction(
-                label: context.loc.receiveEditAmount,
-                onPressed: () => context.pop(),
-                icon: BullIcons.edit,
-              ),
-            ],
-          ),
-        ),
-        _ReceiveSummaryRow(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            context.loc.receiveFees,
-            style: context.bullType.label.copyWith(
-              color: context.appColors.textMuted,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (fees != null)
-                Flexible(
-                  child: CurrencyText(
-                    fees,
-                    showFiat: false,
-                    textAlign: TextAlign.end,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
-                ),
-              const Gap(8),
-              const SizedBox(
-                width: 48,
-                height: 48,
-                child: Center(child: BullIcon(BullIcons.chevronRight)),
-              ),
-            ],
-          ),
-          onTap: () => BullBottomSheet.show<void>(
-            context: context,
-            style: BullSheetStyle.redesign(context),
-            child: BlocProvider.value(
-              value: context.read<ReceiveBloc>(),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      context.loc.receiveFees,
-                      style: context.bullType.title,
-                    ),
-                    const ReceiveLnFeesDetails(),
-                    const ReceiveLnSwapID(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        _ReceiveSummaryRow(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            context.loc.receiveYouReceive,
-            style: context.bullType.label.copyWith(
-              color: context.appColors.textMuted,
-            ),
-          ),
-          trailing: net == null
-              ? const BullShimmerLine(width: 90, height: 16)
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CurrencyText(
-                      net,
-                      showFiat: false,
-                      style: context.bullType.body.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(width: 56),
-                  ],
                 ),
         ),
         if (state.confirmedNote.isNotEmpty)
-          _ReceiveSummaryRow(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              context.loc.receiveMessage,
-              style: context.bullType.label.copyWith(
-                color: context.appColors.textMuted,
-              ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(state.confirmedNote, textAlign: TextAlign.end),
-                ),
-                const SizedBox(width: 56),
-              ],
-            ),
+          _ReceiveInvoiceRow(
+            label: context.loc.receiveMessage,
+            value: Text(state.confirmedNote, textAlign: TextAlign.end),
           ),
       ],
     );
   }
+}
+
+class _ReceiveLnFeesSheet extends StatelessWidget {
+  const _ReceiveLnFeesSheet();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BullTopBar(
+          title: context.loc.receiveFees,
+          onAction: () => Navigator.of(context).pop(),
+        ),
+        const ReceiveLnFeesDetails(),
+        const ReceiveLnSwapID(),
+      ],
+    ),
+  );
 }
 
 class ReceiveLnSwapID extends StatelessWidget {
@@ -335,10 +292,16 @@ class ReceiveLnSwapID extends StatelessWidget {
     final state = context.watch<ReceiveBloc>().state;
     final number = state.orderSwap?.order?.orderNumber;
     final id = number?.toString() ?? state.getSwap?.id;
-    return _ReceiveSummaryRow(
-      title: Text(context.loc.swapTransferTitle),
-      subtitle: Text(id ?? ''),
-      trailing: BullInlineIconButton(
+    return _ReceiveInvoiceRow(
+      label: context.loc.swapTransferTitle,
+      value: Text(
+        id ?? '',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.end,
+        style: context.bullType.body,
+      ),
+      action: BullInlineIconButton(
         tooltip: context.loc.copyDialogButton,
         onPressed: id == null
             ? null
@@ -359,10 +322,9 @@ class ReceiveLnFeesDetails extends StatelessWidget {
   const ReceiveLnFeesDetails({super.key});
 
   Widget _row(BuildContext context, String label, int amount) =>
-      _ReceiveSummaryRow(
-        contentPadding: EdgeInsets.zero,
-        title: Text(label, style: context.bullType.body),
-        trailing: CurrencyText(amount, showFiat: false),
+      _ReceiveInvoiceRow(
+        label: label,
+        value: CurrencyText(amount, showFiat: false, textAlign: TextAlign.end),
       );
 
   @override
@@ -373,6 +335,7 @@ class ReceiveLnFeesDetails extends StatelessWidget {
     final fees = swap?.fees;
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (total == null)
           const BullShimmerLine(width: 90, height: 16)
@@ -393,15 +356,79 @@ class ReceiveLnFeesDetails extends StatelessWidget {
                 : fees.boltzFee ?? 0,
           ),
         ],
+        const Gap(12),
         Text(
           context.loc.receiveFeeExplanation,
-          style: context.bullType.label.copyWith(
+          textAlign: TextAlign.start,
+          style: context.bullType.caption.copyWith(
             color: context.appColors.textMuted,
           ),
         ),
       ],
     );
   }
+}
+
+/// Invoice values share an edge and reserve the same action slot on every row.
+class _ReceiveInvoiceRow extends StatelessWidget {
+  const _ReceiveInvoiceRow({
+    required this.label,
+    required this.value,
+    this.action,
+    this.onTap,
+  });
+
+  final String label;
+  final Widget value;
+  final Widget? action;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: onTap != null,
+    child: GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        padding: const EdgeInsetsDirectional.only(end: 8),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: context.appColors.outline)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) => Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.bullType.label.copyWith(
+                          color: context.appColors.textMuted,
+                        ),
+                      ),
+                    ),
+                    const Gap(8),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * 2 / 3,
+                      ),
+                      child: value,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const Gap(8),
+            SizedBox(width: 48, height: 48, child: action),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class VerifyAddressOnLedgerButton extends StatelessWidget {
@@ -472,20 +499,10 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
 
 /// Receive summary layout; actions retain their own 48 dp kit targets.
 class _ReceiveSummaryRow extends StatelessWidget {
-  const _ReceiveSummaryRow({
-    required this.title,
-    this.subtitle,
-    this.trailing,
-    this.leading,
-    this.onTap,
-    this.contentPadding,
-  });
+  const _ReceiveSummaryRow({required this.title, this.leading, this.onTap});
   final Widget title;
-  final Widget? subtitle;
-  final Widget? trailing;
   final Widget? leading;
   final VoidCallback? onTap;
-  final EdgeInsetsGeometry? contentPadding;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -498,23 +515,16 @@ class _ReceiveSummaryRow extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(bottom: BorderSide(color: context.appColors.outline)),
         ),
-        padding: contentPadding ?? const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
             if (leading case final icon?) ...[icon, const Gap(16)],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [title, ?subtitle],
+                children: [title],
               ),
             ),
-            if (trailing case final value?) ...[
-              const Gap(8),
-              Flexible(
-                flex: 2,
-                child: Align(alignment: Alignment.centerRight, child: value),
-              ),
-            ],
           ],
         ),
       ),
