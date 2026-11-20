@@ -1,5 +1,7 @@
 import 'package:bbx_api/src/bbx_api_exception.dart';
+import 'package:bbx_api/src/commcenter/commcenter_api.dart';
 import 'package:bbx_api/src/orders/orders_api.dart';
+import 'package:bbx_api/src/users/users_api.dart';
 import 'package:dio/dio.dart';
 
 /// JSON-RPC 2.0 over the Bull Bitcoin API.
@@ -12,7 +14,9 @@ class BbxApiClient {
 
   BbxApiClient(this._http);
 
+  late final CommcenterApi commcenter = CommcenterApi(this);
   late final OrdersApi orders = OrdersApi(this);
+  late final UsersApi users = UsersApi(this);
 
   /// Calls [method] on [endpoint] and returns the JSON-RPC `result`.
   ///
