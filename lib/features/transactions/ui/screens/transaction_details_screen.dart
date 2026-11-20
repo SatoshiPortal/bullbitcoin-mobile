@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -30,6 +29,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullShimmerLine,
         BullSnackBar,
+        BullTransactionDetailsPage,
         Gap;
 import 'package:go_router/go_router.dart';
 
@@ -91,7 +91,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     final orderSwap = tx?.orderSwap;
     final isChainSwap = tx?.isChainSwap ?? false;
 
-    return TransactionDetailsPage(
+    return BullTransactionDetailsPage(
       title: isOngoingSwap == true
           ? (isChainSwap
                 ? context.loc.transactionDetailTransferProgress
