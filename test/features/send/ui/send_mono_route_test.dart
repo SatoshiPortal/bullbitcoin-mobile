@@ -1,3 +1,5 @@
+import 'package:go_router/go_router.dart';
+
 import 'dart:async';
 
 // The legacy screen already has a public shell import target.
@@ -82,6 +84,7 @@ void main() {
     WidgetTester tester,
     SendState value, {
     Stream<SendState>? updates,
+    GoRouter? router,
   }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -99,25 +102,106 @@ void main() {
         .thenReturn(value.isMaxSend ? 80000 : null);
     when(() => cubit.customFeesChanged(any())).thenAnswer((_) async {});
     await tester.pumpWidget(
-      MaterialApp(
-        theme: ThemeData(
-          extensions: testBullExtensions,
-          textTheme: testBullTypography.toTextTheme(),
-        ),
-        localizationsDelegates: const [
-          ...bullUiLocalizationsDelegates,
-          ...appLocalizationsDelegates,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: BlocProvider<SendCubit>.value(
-          value: cubit,
-          child: const SendScreen(),
+      BlocProvider<SendCubit>.value(
+        value: cubit,
+        child: MaterialApp.router(
+          routerConfig:
+              router ??
+              GoRouter(
+                routes: [
+                  GoRoute(
+                    path: '/',
+                    builder: (_, _) => BlocProvider<SendCubit>.value(
+                      value: cubit,
+                      child: const SendScreen(),
+                    ),
+                  ),
+                ],
+              ),
+          theme: ThemeData(
+            extensions: testBullExtensions,
+            textTheme: testBullTypography.toTextTheme(),
+          ),
+          localizationsDelegates: const [
+            ...bullUiLocalizationsDelegates,
+            ...appLocalizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
     );
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  testWidgets(
+    'Coins leave Cancel preserves payment; Open replaces Send and Back returns origin',
+    (tester) async {
+      Object? source;
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(body: Text('Origin')),
+          ),
+          GoRoute(path: '/send', builder: (_, _) => const SendScreen()),
+          GoRoute(
+            path: '/coins',
+            name: 'coins',
+            builder: (_, state) {
+              source = state.extra;
+              return const Scaffold(body: Text('Coins destination'));
+            },
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      final cubit = await pump(tester, state(), router: router);
+      router.push('/send');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Advanced settings'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send UTXOs instead'));
+      await tester.pumpAndSettle();
+      expect(find.text('Leave this payment?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(cubit.state.amount, '10000');
+      expect(source, isNull);
+      expect(find.text('Advanced settings'), findsWidgets);
+      await tester.tap(find.text('Send UTXOs instead'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open Coins'));
+      await tester.pumpAndSettle();
+      expect(source, same(wallet));
+      expect(find.byType(SendScreen), findsNothing);
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(find.text('Origin'), findsOneWidget);
+      expect(find.byType(SendScreen), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'confirmation absolute effective rate uses final fee and size, not cached quote',
+    (tester) async {
+      await pump(
+        tester,
+        state(step: SendStep.confirm).copyWith(
+          selectedFeeOption: FeeSelection.custom,
+          customFee: const AbsoluteFee(300),
+          bitcoinAbsoluteFeesSat: 300,
+          bitcoinTxSize: 150,
+          feePreviewCache: const BitcoinFeePreviewCache(
+            custom: BitcoinFeePreviewSlot(feeSat: 100, txSize: 100),
+          ),
+        ),
+      );
+      expect(find.text('300 sats'), findsOneWidget);
+      expect(find.text('Custom · 2 sat/vB'), findsOneWidget);
+      expect(find.textContaining('1 sat/vB'), findsNothing);
+    },
+  );
 
   testWidgets('mono Confirm retains signing and broadcast admission guards', (
     tester,
@@ -147,7 +231,7 @@ void main() {
     await pump(tester, state());
     await tester.tap(find.byType(BullSettingsEntryTile));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Custom Fee'));
+    await tester.tap(find.text('Custom'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Total (sats)'));
     await tester.pumpAndSettle();
@@ -170,7 +254,7 @@ void main() {
     final cubit = await pump(tester, state());
     await tester.tap(find.byType(BullSettingsEntryTile));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Custom Fee'));
+    await tester.tap(find.text('Custom'));
     await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(
@@ -191,7 +275,7 @@ void main() {
     final cubit = await pump(tester, state(max: true));
     await tester.tap(find.byType(BullSettingsEntryTile));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Custom Fee'));
+    await tester.tap(find.text('Custom'));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Back').last);
     await tester.pumpAndSettle();
@@ -243,7 +327,7 @@ void main() {
     await pump(tester, initial, updates: updates.stream);
     await tester.tap(find.byType(BullSettingsEntryTile));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Custom Fee'));
+    await tester.tap(find.text('Custom'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Total (sats)'));
     await tester.pumpAndSettle();

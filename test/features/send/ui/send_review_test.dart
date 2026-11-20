@@ -29,6 +29,7 @@ void main() {
             recipients: const [Text('External destination'), Text('My wallet')],
             fromLabel: 'From',
             source: const Text('bitcoin'),
+            editLabel: 'Edit note',
             noteLabel: 'Note',
             note: 'Add note',
             feeLabel: 'Network fee',
@@ -42,6 +43,18 @@ void main() {
             onConfirm: () => confirms++,
           ),
         ),
+      );
+      expect(
+        tester.widget<Text>(find.text('You send')).textAlign,
+        TextAlign.center,
+      );
+      expect(
+        tester.getTopLeft(find.text('From')).dx,
+        tester.getTopLeft(find.text('Note')).dx,
+      );
+      expect(
+        tester.getBottomRight(find.text('bitcoin')).dx,
+        closeTo(tester.getBottomRight(find.text('200 sats')).dx, 1),
       );
       expect(find.byType(TextField), findsNothing);
       expect(find.byType(BullSegmented), findsNothing);

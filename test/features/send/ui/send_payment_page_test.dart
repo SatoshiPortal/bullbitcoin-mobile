@@ -58,6 +58,14 @@ void main() {
     );
     expect(find.text('Recipient editor'), findsOneWidget);
     expect(find.text('Amount editor'), findsOneWidget);
+    final maxAction = find.ancestor(
+      of: find.text('MAX'),
+      matching: find.byType(BullFieldAction),
+    );
+    expect(
+      tester.getBottomRight(maxAction).dx,
+      tester.view.physicalSize.width / tester.view.devicePixelRatio - 24,
+    );
     expect(
       tester.getTopLeft(find.text('From')).dy,
       greaterThan(tester.getBottomLeft(find.text('Amount editor')).dy),
@@ -78,6 +86,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Advanced settings'), findsNothing);
     expect(tester.getBottomLeft(find.text('Continue')).dy, lessThan(544));
+    expect(
+      tester.getBottomLeft(find.text('bitcoin')).dy,
+      lessThan(tester.getTopLeft(find.text('Continue')).dy),
+    );
     expect(tester.takeException(), isNull);
   });
 }
