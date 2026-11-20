@@ -9,6 +9,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullInlineIconButton,
         BullShapesX,
+        BullSpacing,
         Gap,
         BullTypographyX;
 
@@ -144,7 +145,11 @@ class _AnnouncementBottomSheet extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              padding: const EdgeInsets.only(
+                left: BullSpacing.lg,
+                top: BullSpacing.lg,
+                right: BullSpacing.sm,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -165,7 +170,6 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Gap(12),
                   BullInlineIconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: MaterialLocalizations.of(context)
