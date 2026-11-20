@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -17,6 +16,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAlertCard,
         BullKeyboardActions,
         BullAdvancedOptionsLink,
         BullBottomSheet,
@@ -245,7 +245,7 @@ class SwapPageState extends State<SwapPage> {
             }
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: ConsolidationRequiredCard(
+              child: BullAlertCard(
                 title: context.loc.consolidationRequiredTitle,
                 onTap: () {
                   final walletId = context

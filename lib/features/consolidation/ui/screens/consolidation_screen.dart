@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -9,6 +8,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAlertCard,
         BullButton,
         BullFadingLinearProgress,
         BullText,
@@ -106,7 +106,7 @@ class _ReviewView extends StatelessWidget {
           if (state.status == ConsolidationStatus.failed) ...[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ConsolidationRequiredCard(
+              child: BullAlertCard(
                 title: context.loc.consolidationFailedTitle,
                 body: context.loc.consolidationFailedBody,
               ),
