@@ -9,6 +9,9 @@ void main() {
     bool isLoading = false,
     bool isIncoming = true,
     VoidCallback? onClose,
+    Future<void> Function()? onRefresh,
+    Widget? errorContent,
+    bool canPopBack = true,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -18,6 +21,9 @@ void main() {
           isLoading: isLoading,
           isIncoming: isIncoming,
           onClose: onClose ?? () {},
+          onRefresh: onRefresh,
+          errorContent: errorContent,
+          canPopBack: canPopBack,
           status: const Text('Confirmed'),
           amount: const Text('12 345 sats'),
           details: const Text('Transaction details'),
@@ -57,5 +63,32 @@ void main() {
     expect(find.text('Confirmed'), findsNothing);
     expect(find.text('12 345 sats'), findsNothing);
     expect(find.text('Transaction details'), findsNothing);
+  });
+
+  testWidgets('keeps refresh available on an error screen', (tester) async {
+    var refreshes = 0;
+    await pumpPage(
+      tester,
+      errorContent: const Text('Could not load transaction'),
+      onRefresh: () async {
+        refreshes++;
+      },
+    );
+    expect(find.text('Could not load transaction'), findsOneWidget);
+    expect(find.text('Transaction details'), findsNothing);
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, 420));
+    await tester.pumpAndSettle();
+    expect(refreshes, 1);
+  });
+
+  testWidgets('runs close on a refused root back action', (tester) async {
+    var closes = 0;
+    await pumpPage(tester, canPopBack: false, onClose: () => closes++);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(closes, 1);
+    expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
   });
 }
