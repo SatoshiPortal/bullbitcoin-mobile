@@ -13,8 +13,6 @@
   "amountField": "Montant",
   "amountBitcoin": "Bitcoin",
   "amountCurrency": "Devise : {currency}",
-  "amountEnterFiat": "Saisir le montant en {currency}",
-  "amountEnterBitcoin": "Saisir le montant en bitcoin",
   "amountNoPrice": "Aucun cours disponible",
   "amountLoadingPrice": "Chargement du cours…",
   "amountPriceUnavailable": "Cours indisponible. Saisissez le montant en bitcoin ou réessayez.",
@@ -22,5 +20,9 @@
   "amountStartChanged": "Les montants commencent désormais en {currency}",
   "amountMaxAfterFees": "MAX · solde moins les frais",
   "amountPreferenceChangeFailed": "Impossible de modifier la préférence de saisie. Réessayez.",
-  "amountIncomplete": "Terminez la saisie du montant"
+  "amountIncomplete": "Terminez la saisie du montant",
+  "amountEnterIn": "Saisir le montant en",
+  "pickerClose": "Fermer",
+  "amountBitcoinUnits": "{btc} ou {sats}",
+  "amountLeaveMax": "Quittez MAX pour saisir un montant en monnaie fiat"
 }

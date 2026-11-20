@@ -81,7 +81,8 @@ void main() {
           await tester.tap(find.byTooltip('Currency: Bitcoin'));
           await tester.pumpAndSettle();
           expect(find.text('No price available'), findsOneWidget);
-          expect(find.text('Always start in Bitcoin'), findsOneWidget);
+          expect(find.text('Always start in Bitcoin'), findsNothing);
+          expect(find.text('Enter amount in'), findsOneWidget);
         }
         expect(tester.takeException(), isNull);
         final semantics = tester.ensureSemantics();

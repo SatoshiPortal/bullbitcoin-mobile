@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/inputs/bull_dropdown_menu.dart';
 import 'package:bull_ui/src/inputs/bull_picker_item.dart';
@@ -65,7 +67,7 @@ class BullDropdown<T> extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(shapes.input),
                 side: BorderSide(
-                  color: field.hasError ? colors.error : colors.transparent,
+                  color: field.hasError ? colors.error : colors.border,
                 ),
               ),
               child: InkWell(
@@ -73,8 +75,9 @@ class BullDropdown<T> extends StatelessWidget {
                 child: SizedBox(
                   height: 56,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: BullSpacing.md,
+                    padding: const EdgeInsets.only(
+                      left: BullSpacing.md,
+                      right: BullSpacing.xs,
                     ),
                     child: Row(
                       children: [
@@ -92,9 +95,20 @@ class BullDropdown<T> extends StatelessWidget {
                                 .copyWith(color: labelColor),
                           ),
                         ),
-                        Icon(
-                          Icons.keyboard_arrow_down,
-                          color: enabled ? colors.primary : colors.textMuted,
+                        ExcludeSemantics(
+                          child: ExcludeFocus(
+                            child: BullFieldAction(
+                              label:
+                                  selected?.label ??
+                                  hint ??
+                                  MaterialLocalizations.of(context)
+                                      .moreButtonTooltip,
+                              icon: Icons.expand_more,
+                              onPressed: enabled
+                                  ? () => _open(anchor, field)
+                                  : null,
+                            ),
+                          ),
                         ),
                       ],
                     ),

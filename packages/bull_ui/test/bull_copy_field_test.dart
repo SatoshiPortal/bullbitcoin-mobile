@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart' show IconButton, Icons, Scaffold;
+import 'package:material_ui/material_ui.dart' show Icons, Scaffold;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -96,8 +96,15 @@ void main() {
         ),
       );
       expect(
-        tester.getSemantics(find.byType(IconButton)),
-        isSemantics(tooltip: 'Copy', isButton: true),
+        tester.getSemantics(find.byType(BullFieldAction)),
+        matchesSemantics(
+          label: 'Copy',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+        ),
       );
       semantics.dispose();
     });
@@ -116,8 +123,15 @@ void main() {
         ),
       );
       expect(
-        tester.getSemantics(find.byType(IconButton)),
-        isSemantics(tooltip: 'Copy key', isButton: true),
+        tester.getSemantics(find.byType(BullFieldAction)),
+        matchesSemantics(
+          label: 'Copy key',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+          isFocusable: true,
+        ),
       );
       semantics.dispose();
     });

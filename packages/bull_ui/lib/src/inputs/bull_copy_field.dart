@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
@@ -74,12 +76,10 @@ class BullCopyField extends StatelessWidget {
           ),
         ),
         if (toCopy.isNotEmpty)
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            iconSize: 20,
-            tooltip:
+          BullFieldAction(
+            label:
                 copyLabel ?? MaterialLocalizations.of(context).copyButtonLabel,
-            icon: Icon(Icons.copy_sharp, color: colors.secondary),
+            icon: Icons.copy_sharp,
             onPressed:
                 onCopy ??
                 () {
@@ -92,9 +92,9 @@ class BullCopyField extends StatelessWidget {
     );
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? colors.onSecondary,
+        color: backgroundColor ?? colors.surface,
         borderRadius: BorderRadius.circular(context.bullShapes.input),
-        border: Border.all(color: colors.secondaryFixedDim),
+        border: Border.all(color: colors.border),
       ),
       child: heading == null
           ? value

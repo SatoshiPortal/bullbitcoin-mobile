@@ -13,8 +13,6 @@
   "amountField": "Importe",
   "amountBitcoin": "Bitcoin",
   "amountCurrency": "Moneda: {currency}",
-  "amountEnterFiat": "Introducir el importe en {currency}",
-  "amountEnterBitcoin": "Introducir el importe en bitcoin",
   "amountNoPrice": "No hay precio disponible",
   "amountLoadingPrice": "Cargando precio…",
   "amountPriceUnavailable": "Precio no disponible. Introduce el importe en bitcoin o inténtalo de nuevo.",
@@ -22,5 +20,9 @@
   "amountStartChanged": "Los importes ahora comienzan en {currency}",
   "amountMaxAfterFees": "MÁX. · saldo menos comisiones",
   "amountPreferenceChangeFailed": "No se pudo cambiar la preferencia de importe. Inténtalo de nuevo.",
-  "amountIncomplete": "Termina de introducir el importe"
+  "amountIncomplete": "Termina de introducir el importe",
+  "amountEnterIn": "Introducir importe en",
+  "pickerClose": "Cerrar",
+  "amountBitcoinUnits": "{btc} o {sats}",
+  "amountLeaveMax": "Sal de MÁX. para introducir un importe en moneda fíat"
 }

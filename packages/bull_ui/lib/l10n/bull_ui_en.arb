@@ -52,16 +52,6 @@
       }
     }
   },
-  "amountEnterFiat": "Enter the amount in {currency}",
-  "@amountEnterFiat": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "amountEnterBitcoin": "Enter the amount in bitcoin",
-  "@amountEnterBitcoin": {},
   "amountNoPrice": "No price available",
   "@amountNoPrice": {},
   "amountLoadingPrice": "Loading price…",
@@ -89,5 +79,29 @@
   "amountPreferenceChangeFailed": "Could not change the amount preference. Please try again.",
   "@amountPreferenceChangeFailed": {},
   "amountIncomplete": "Finish entering the amount",
-  "@amountIncomplete": {}
+  "@amountIncomplete": {},
+  "amountEnterIn": "Enter amount in",
+  "@amountEnterIn": {
+    "description": "Title of the amount entry currency sheet"
+  },
+  "pickerClose": "Close",
+  "@pickerClose": {
+    "description": "Close a selection sheet"
+  },
+  "amountBitcoinUnits": "{btc} or {sats}",
+  "@amountBitcoinUnits": {
+    "description": "Bitcoin representations available from the amount unit label",
+    "placeholders": {
+      "btc": {
+        "type": "String"
+      },
+      "sats": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLeaveMax": "Leave MAX to enter a fiat amount",
+  "@amountLeaveMax": {
+    "description": "Why fiat currency choices are disabled while sending the whole balance"
+  }
 }
