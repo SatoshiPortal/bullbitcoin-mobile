@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTransactionDetailsPage;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +13,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        home: TransactionDetailsPage(
+        home: BullTransactionDetailsPage(
           title: 'Transaction',
           isLoading: isLoading,
           isIncoming: isIncoming,

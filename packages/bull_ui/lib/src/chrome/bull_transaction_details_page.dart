@@ -1,15 +1,12 @@
-import 'package:bull_ui/bull_ui.dart'
-    show
-        BullRefreshIndicator,
-        BullShimmerBox,
-        BullShimmerLine,
-        BullTopBar,
-        BullTransactionDirectionBadge,
-        Gap;
+import 'package:bull_ui/src/chrome/bull_top_bar.dart';
+import 'package:bull_ui/src/data_display/bull_transaction_direction_badge.dart';
+import 'package:bull_ui/src/feedback/bull_refresh_indicator.dart';
+import 'package:bull_ui/src/feedback/bull_shimmer.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 import 'package:material_ui/material_ui.dart';
 
-class TransactionDetailsPage extends StatelessWidget {
-  const TransactionDetailsPage({
+class BullTransactionDetailsPage extends StatelessWidget {
+  const BullTransactionDetailsPage({
     super.key,
     required this.title,
     required this.isLoading,

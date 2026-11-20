@@ -139,6 +139,7 @@ export 'src/chrome/bull_scaffold.dart';
 export 'src/chrome/bull_selection_action_bar.dart';
 export 'src/chrome/bull_success_screen.dart';
 export 'src/chrome/bull_top_bar.dart';
+export 'src/chrome/bull_transaction_details_page.dart';
 
 // Buttons.
 export 'src/buttons/bull_advanced_options_link.dart'
