@@ -735,25 +735,12 @@ abstract class SendState with _$SendState {
         (selectedWallet!.network.isLiquid && sendType == SendType.bitcoin);
   }
 
-  NetworkFee? get selectedFee {
-    switch (selectedFeeOption) {
-      case FeeSelection.fastest:
-        return selectedWallet!.isLiquid
-            ? liquidFeesList?.fastest
-            : bitcoinFeesList?.fastest;
-      case FeeSelection.economic:
-        return selectedWallet!.isLiquid
-            ? liquidFeesList?.economic
-            : bitcoinFeesList?.economic;
-
-      case FeeSelection.slow:
-        return selectedWallet!.isLiquid
-            ? liquidFeesList?.slow
-            : bitcoinFeesList?.slow;
-      case FeeSelection.custom:
-        return customFee;
-    }
-  }
+  NetworkFee? get selectedFee => switch (selectedFeeOption) {
+    FeeSelection.fastest => feeOptions?.fastest,
+    FeeSelection.economic => feeOptions?.economic,
+    FeeSelection.slow => feeOptions?.slow,
+    FeeSelection.custom => customFee,
+  };
 
   bool get isChainSwap =>
       (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
