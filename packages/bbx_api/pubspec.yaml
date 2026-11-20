@@ -1,0 +1,19 @@
+name: bbx_api
+description: >-
+  Pure-Dart client for the Bull Bitcoin exchange API: JSON-RPC transport and
+  wire models, with no app or business rules. Built up one API call at a time.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+
+resolution: workspace
+
+dependencies:
+  dio: ^5.9.0
+  meta: ^1.17.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.3

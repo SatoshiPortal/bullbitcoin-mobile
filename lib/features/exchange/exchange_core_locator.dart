@@ -24,6 +24,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_me
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -67,6 +68,16 @@ class ExchangeLocator {
           ),
         ),
         instanceName: '${environment}ExchangeApiDatasource',
+      );
+      locator.registerLazySingleton<BbxApiClient>(
+        () => BbxApiClient(
+          _authenticatedClient(
+            locator,
+            isTestnet: isTestnet,
+            timeout: const Duration(seconds: 30),
+          ),
+        ),
+        instanceName: '${environment}BbxApiClient',
       );
       locator.registerLazySingleton<ExchangeSupportChatDatasource>(
         () => ExchangeSupportChatDatasource(
