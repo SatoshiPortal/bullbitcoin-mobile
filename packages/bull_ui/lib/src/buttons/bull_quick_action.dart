@@ -165,7 +165,7 @@ class BullQuickActionBar extends StatelessWidget {
   final List<Widget> children;
 
   /// Minimum height of the card.
-  static const double minHeight = 72;
+  static const double minHeight = BullSizes.homeCard;
 
   /// Padding above the icon and below the label.
   static const double _verticalPadding = BullSpacing.xs;
