@@ -2392,6 +2392,18 @@ class SendCubit extends Cubit<SendState>
       return;
     }
 
+    // A plain Bitcoin send still uses the recipient list for its one output.
+    final paymentRequest = state.paymentRequest;
+    final singleBitcoinConversion =
+        paymentRequest is BitcoinPaymentRequest &&
+            state.usesRecipientList &&
+            state.recipientDrafts.length == 1 &&
+            !state.isMaxSend
+        ? _conversionMatching(
+            state.amountConversion,
+            state.totalFixedRecipientAmountSat,
+          )
+        : null;
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
@@ -2556,8 +2568,17 @@ class SendCubit extends Cubit<SendState>
     }
     // Any other failure keeps the user here.
     if (state.failure == null) {
+      final recipientConversion =
+          state.paymentRequest == paymentRequest &&
+              state.recipientAmountsSat.length == 1
+          ? _conversionMatching(
+              singleBitcoinConversion,
+              state.recipientAmountsSat.single,
+            )
+          : null;
       emit(
         state.copyWith(
+          confirmedConversion: recipientConversion ?? state.confirmedConversion,
           step: SendStep.confirm,
           confirmedAmountSat: state.usesRecipientList && !state.isChainSwap
               ? state.recipientAmountsSat.fold<int>(
