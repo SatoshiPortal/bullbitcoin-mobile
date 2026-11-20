@@ -65,7 +65,7 @@ class BullDropdown<T> extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(shapes.input),
                 side: BorderSide(
-                  color: field.hasError ? colors.error : colors.transparent,
+                  color: field.hasError ? colors.error : colors.border,
                 ),
               ),
               child: InkWell(

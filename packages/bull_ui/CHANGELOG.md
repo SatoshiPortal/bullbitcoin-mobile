@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Outline the `BullDropdown` field in `border`, so it stays readable on a `surface` card; the error outline is unchanged.
 - Restyle `BullPinPad` as medium-weight digits in rounded keys outlined in `text` across the full width, with no fill or keypad panel; scramble and backspace are bare icons in the bottom corners. A held digit key fills like a phone's passcode keys, scrambled or not; a reshuffle rebuilds the keys so the fill vanishes at once instead of fading over another digit. Every tap gives a light selection-click vibration. `BullKeyCap` gains `borderColor`, `pressedColor` and `BullKeyGlyph` a `weight`; the mnemonic keyboard is unchanged.
 - Add `BullPinDots`, the typed PIN as one small dot per digit in a box outlined in `text`, with a show/hide eye and an optional hint under it; it never suggests a PIN length, and the digits never reach the semantics tree.
 - Size `BullQuickActionBar` from `BullQuickActionBar.minHeight` (72). `BullQuickActionBar.heightOf(context)` keeps the icon and label centred in it and grows the bar when a large text scale needs more room, so the label is never clipped. Replaces the `BullQuickActionBar.height` constant.
