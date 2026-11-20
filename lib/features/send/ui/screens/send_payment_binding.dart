@@ -718,6 +718,7 @@ final class _SendPaymentSession {
               ),
             ),
       totalEquivalent: fee == null ? null : fiat(state, sats + fee),
+      error: state.failure == null ? null : const _SendError(),
       confirmLabel: context.loc.sendConfirm,
       onBack: cubit.backClicked,
       onNote: () async {

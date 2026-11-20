@@ -27,6 +27,7 @@ class SendPaymentReview extends StatelessWidget {
     required this.onConfirm,
     this.totalEquivalent,
     this.enteredDetail,
+    this.error,
     this.changeLabel,
     this.change,
   }) : assert((change == null) == (changeLabel == null));
@@ -38,6 +39,7 @@ class SendPaymentReview extends StatelessWidget {
   final Widget amount;
   final String equivalent;
   final String? enteredDetail;
+  final Widget? error;
   final List<Widget> recipients;
   final String fromLabel;
   final Widget source;
@@ -80,6 +82,8 @@ class SendPaymentReview extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (error case final message?)
+                    Semantics(liveRegion: true, child: message),
                   Padding(
                     padding: const EdgeInsets.only(bottom: BullSpacing.lg),
                     child: Column(
