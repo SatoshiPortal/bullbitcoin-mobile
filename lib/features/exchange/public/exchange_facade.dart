@@ -27,6 +27,7 @@ export '../ui/exchange_scope.dart'
         ExchangeSessionBuilder,
         ExchangeSessionListener;
 export '../ui/widgets/exchange_home_actions.dart' show ExchangeHomeAction;
+export '../ui/widgets/exchange_account_sheets.dart' show ExchangeAccountSheets;
 export '../ui/widgets/exchange_account_actions.dart'
     show ExchangeAccountActions;
 export '../ui/widgets/exchange_amount_currency_dropdown.dart'
