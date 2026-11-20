@@ -157,12 +157,13 @@ class _BtcTotalAmt extends StatelessWidget {
     if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
     return _HomeBalanceFrame(
+      tint: context.appColors.bitcoinOrange,
       child: CurrencyText(
         btcTotal,
         showFiat: false,
         interactive: true,
         style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-        color: context.appColors.onSurfaceFixed,
+        color: context.appColors.onPrimary,
       ),
     );
   }
@@ -183,8 +184,8 @@ class _FiatAmt extends StatelessWidget {
     return HomeFiatBalance(
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
-      foregroundColor: context.appColors.onSurfaceFixed,
       frameBuilder: (context, child) => _HomeBalanceFrame(
+        tint: context.appColors.border,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: child,
@@ -196,8 +197,9 @@ class _FiatAmt extends StatelessWidget {
 
 /// Matches the unit toggle's minimum height for both balance controls.
 class _HomeBalanceFrame extends StatelessWidget {
-  const _HomeBalanceFrame({required this.child});
+  const _HomeBalanceFrame({required this.tint, required this.child});
 
+  final Color tint;
   final Widget child;
 
   @override
@@ -205,8 +207,8 @@ class _HomeBalanceFrame extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 6),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(context.bullShapes.button),
-      border: Border.all(color: context.appColors.bitcoinOrange),
-      color: context.appColors.bitcoinOrange,
+      border: Border.all(color: tint.withValues(alpha: 0.3)),
+      color: tint.withValues(alpha: 0.3),
     ),
     child: ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 48),

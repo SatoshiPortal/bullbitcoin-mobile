@@ -15,14 +15,12 @@ class HomeFiatBalance extends StatelessWidget {
     required this.balanceSat,
     this.showBalanceLoading = false,
     this.frameBuilder,
-    this.foregroundColor,
   });
 
   final int balanceSat;
 
   /// Custom presentation around the amount, retaining the currency picker.
   final Widget Function(BuildContext context, Widget child)? frameBuilder;
-  final Color? foregroundColor;
 
   /// When true (e.g. wallet list still loading), avoids showing fiat from 0 sats.
   final bool showBalanceLoading;
@@ -68,7 +66,7 @@ class HomeFiatBalance extends StatelessWidget {
             balanceSat,
             showFiat: true,
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-            color: foregroundColor ?? context.appColors.onPrimary,
+            color: context.appColors.onPrimary,
           );
     return picker(
       frameBuilder?.call(context, amount) ??
