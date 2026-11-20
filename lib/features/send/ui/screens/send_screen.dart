@@ -417,24 +417,27 @@ Future<void> _showWalletSheet(BuildContext context, SendCubit cubit) async {
                             bottom: BorderSide(color: context.appColors.border),
                           ),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            wallet.displayLabel(context),
-                            style: context.bullType.body.copyWith(
-                              fontWeight: FontWeight.w500,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: ListTile(
+                            title: Text(
+                              wallet.displayLabel(context),
+                              style: context.bullType.body.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          subtitle: Text(
-                            wallet.isLiquid
-                                ? context.loc.sendLiquidUnavailable
-                                : wallet.typeLabel(context),
-                            style: context.bullType.label.copyWith(
-                              fontWeight: FontWeight.w400,
+                            subtitle: Text(
+                              wallet.isLiquid
+                                  ? context.loc.sendLiquidUnavailable
+                                  : wallet.typeLabel(context),
+                              style: context.bullType.label.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
+                            onTap: wallet.isLiquid
+                                ? null
+                                : () => Navigator.of(sheetContext).pop(wallet),
                           ),
-                          onTap: wallet.isLiquid
-                              ? null
-                              : () => Navigator.of(sheetContext).pop(wallet),
                         ),
                       ),
                       const Gap(8),
