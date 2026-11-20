@@ -1,9 +1,9 @@
+import 'package:bb_mobile/features/recipients/presentation/recipient_type_l10n.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipient_type_text.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/public/recipient_type_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -73,10 +73,7 @@ class RecipientTypeSelector extends StatelessWidget {
       return BullDropdown<RecipientType>(
         items: [
           for (final type in options)
-            BullPickerItem(
-              value: type,
-              label: recipientTypeLabel(context, type),
-            ),
+            BullPickerItem(value: type, label: type.label(context)),
         ],
         value: selectedType,
         onChanged: onTypeSelected,

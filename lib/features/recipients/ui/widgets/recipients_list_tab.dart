@@ -1,31 +1,31 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
+import 'package:material_ui/material_ui.dart' show MaterialLocalizations;
 import 'package:bb_mobile/features/recipients/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/recipients_list_tile.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullRefreshIndicator,
-        BullSegmented,
-        BullShapesX,
-        BullSpacing,
-        BullShimmerBox,
-        Gap,
-        BullTypographyX;
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/confidential_sepa_availability_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecipientsListTab extends StatefulWidget {
-  const RecipientsListTab({this.hookError, super.key});
+  const RecipientsListTab({
+    this.hookError,
+    this.showFilters = true,
+    this.enforceRecipientFilter = false,
+    this.isHookRunning = false,
+    super.key,
+  });
 
   final String? hookError;
+  final bool showFilters;
+  final bool enforceRecipientFilter;
+  final bool isHookRunning;
 
   @override
   RecipientsListTabState createState() => RecipientsListTabState();
@@ -33,7 +33,8 @@ class RecipientsListTab extends StatefulWidget {
 
 class RecipientsListTabState extends State<RecipientsListTab> {
   RecipientViewModel? _selectedRecipient;
-  Key _sepaTypeSelectorKey = UniqueKey();
+  Key _sepaTypeSelectorKey = const ValueKey(0);
+  int _sepaTypeSelectorGeneration = 0;
   late ScrollController _scrollController;
   late TextEditingController _searchController;
 
@@ -46,13 +47,14 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.9) {
+    if (_scrollController.hasClients &&
+        _scrollController.position.extentAfter < 200) {
       context.read<RecipientsBloc>().add(const RecipientsEvent.moreLoaded());
     }
   }
 
   Future<void> _onRefresh() async {
+    setState(() => _selectedRecipient = null);
     final bloc = context.read<RecipientsBloc>();
     bloc.add(const RecipientsEvent.refreshed());
     // orElse guards against the bloc closing (route popped) before completion,
@@ -74,7 +76,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
       final result = await VirtualIbanOnboardingScreen.showForWithdraw(context);
       if (!mounted) return;
       if (result == null) {
-        setState(() => _sepaTypeSelectorKey = UniqueKey());
+        setState(
+          () => _sepaTypeSelectorKey = ValueKey(++_sepaTypeSelectorGeneration),
+        );
         return;
       }
       next = result;
@@ -85,7 +89,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     bloc.add(RecipientsEvent.sepaTypeChanged(next));
     setState(() {
       _selectedRecipient = null;
-      _sepaTypeSelectorKey = UniqueKey();
+      _sepaTypeSelectorKey = ValueKey(++_sepaTypeSelectorGeneration);
     });
   }
 
@@ -98,125 +102,150 @@ class RecipientsListTabState extends State<RecipientsListTab> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<RecipientsBloc>().state;
+    final loaded = state.selectableRecipients ?? const <RecipientViewModel>[];
+    final types = state.selectableRecipientTypes;
+    final owner = state.allowedRecipientFilters.isOwner;
+    final recipients = widget.enforceRecipientFilter
+        ? loaded
+              .where(
+                (recipient) =>
+                    types.contains(recipient.type) &&
+                    (owner == null || recipient.isOwner == owner),
+              )
+              .toList()
+        : loaded;
+    final selectedId = _selectedRecipient?.id;
+    final selected = recipients
+        .where((recipient) => recipient.id == selectedId)
+        .firstOrNull;
+    bool canSelect(RecipientViewModel recipient) =>
+        !state.isLoading &&
+        !widget.isHookRunning &&
+        (recipient.type != RecipientType.confidentialSepaEur ||
+            (types.contains(RecipientType.confidentialSepaEur) &&
+                state.failedToLoadConfidentialSepaAvailability == null));
+    if (!state.isLoading &&
+        state.failedToLoadRecipients == null &&
+        state.hasMoreRecipientsToLoad) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onScroll();
+      });
+    }
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .start,
       children: [
-        TextField(
+        BullInputText(
           controller: _searchController,
-          decoration: InputDecoration(
-            hintText: context.loc.recipientsSearchHint,
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: _searchController,
-              builder: (context, value, _) => value.text.isEmpty
-                  ? const SizedBox.shrink()
-                  : IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        context.read<RecipientsBloc>().add(
-                          const RecipientsEvent.searchChanged(''),
-                        );
-                      },
-                    ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(context.bullShapes.input),
-            ),
-          ),
+          value: _searchController.text,
+          maxLines: 1,
+          hint: context.loc.recipientsSearchHint,
+          rightIcon: _searchController.text.isEmpty
+              ? null
+              : const BullIcon(BullIcons.close),
+          rightActionLabel: MaterialLocalizations.of(context)
+              .clearButtonTooltip,
+          onRightTap: () {
+            _searchController.clear();
+            setState(() => _selectedRecipient = null);
+            context.read<RecipientsBloc>().add(
+              const RecipientsEvent.searchChanged(''),
+            );
+          },
           onChanged: (value) {
+            setState(() => _selectedRecipient = null);
             context.read<RecipientsBloc>().add(
               RecipientsEvent.searchChanged(value),
             );
           },
         ),
-        const Gap(16.0),
-        Text(
-          context.loc.recipientsFilterByJurisdiction,
-          style: context.bullType.body,
-        ),
-        const Gap(8.0),
-        BlocSelector<RecipientsBloc, RecipientsState, String?>(
-          selector: (state) => state.jurisdictionFilter,
-          builder: (context, selected) {
-            return JurisdictionsDropdown(
-              selectedJurisdiction: selected,
-              includeAllOption: true,
-              onChanged: (newJurisdiction) {
-                context.read<RecipientsBloc>().add(
-                  RecipientsEvent.jurisdictionChanged(newJurisdiction),
-                );
-                if (newJurisdiction != null &&
-                    _selectedRecipient?.jurisdictionCode != newJurisdiction) {
-                  setState(() => _selectedRecipient = null);
-                }
-              },
-            );
-          },
-        ),
-        BlocBuilder<RecipientsBloc, RecipientsState>(
-          buildWhen: (previous, current) =>
-              previous.canChooseSepaType != current.canChooseSepaType ||
-              previous.sepaType != current.sepaType,
-          builder: (context, state) {
-            if (!state.canChooseSepaType) return const SizedBox.shrink();
-            return Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  BullSegmented(
-                    key: _sepaTypeSelectorKey,
-                    items: {
-                      RecipientType.sepaEur.name,
-                      RecipientType.confidentialSepaEur.name,
-                    },
-                    labelBuilder: (value) =>
-                        ({
-                          RecipientType.sepaEur.name:
-                              context.loc.recipientsTypeSepa,
-                          RecipientType.confidentialSepaEur.name:
-                              context.loc.recipientsTypeConfidentialSepa,
-                        })[value] ??
-                        value,
-                    height: BullSpacing.xxl,
-                    initialValue: state.sepaType.name,
-                    onSelected: (value) =>
-                        _onSepaTypeChanged(RecipientType.values.byName(value)),
-                  ),
-                  if (state.sepaType == RecipientType.confidentialSepaEur) ...[
-                    const Gap(8),
-                    Text(
-                      context.loc.recipientsTypeConfidentialSepaDescription,
-                      style: context.bullType.body,
-                    ),
-                  ],
-                ],
-              ),
-            );
-          },
-        ),
-        const Gap(16.0),
-        Expanded(
-          child: BlocBuilder<RecipientsBloc, RecipientsState>(
-            builder: (context, state) {
-              final recipients = state.selectableRecipients ?? const [];
-              return BullRefreshIndicator(
-                onRefresh: _onRefresh,
-                child: _buildListContent(state, recipients),
+        if (widget.showFilters) ...[
+          const Gap(16.0),
+          Text(
+            context.loc.recipientsFilterByJurisdiction,
+            style: context.bullType.body,
+          ),
+          const Gap(8.0),
+          BlocSelector<RecipientsBloc, RecipientsState, String?>(
+            selector: (state) => state.jurisdictionFilter,
+            builder: (context, selected) {
+              return JurisdictionsDropdown(
+                selectedJurisdiction: selected,
+                includeAllOption: true,
+                onChanged: (newJurisdiction) {
+                  context.read<RecipientsBloc>().add(
+                    RecipientsEvent.jurisdictionChanged(newJurisdiction),
+                  );
+                  if (newJurisdiction != null &&
+                      _selectedRecipient?.jurisdictionCode != newJurisdiction) {
+                    setState(() => _selectedRecipient = null);
+                  }
+                },
               );
             },
           ),
+          BlocBuilder<RecipientsBloc, RecipientsState>(
+            buildWhen: (previous, current) =>
+                previous.canChooseSepaType != current.canChooseSepaType ||
+                previous.sepaType != current.sepaType,
+            builder: (context, state) {
+              if (!state.canChooseSepaType) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    BullSegmented(
+                      key: _sepaTypeSelectorKey,
+                      items: {
+                        RecipientType.sepaEur.name,
+                        RecipientType.confidentialSepaEur.name,
+                      },
+                      labelBuilder: (value) =>
+                          value == RecipientType.sepaEur.name
+                          ? context.loc.recipientsTypeSepa
+                          : context.loc.recipientsTypeConfidentialSepa,
+                      height: BullSpacing.xxl,
+                      initialValue: state.sepaType.name,
+                      onSelected: (value) => _onSepaTypeChanged(
+                        RecipientType.values.byName(value),
+                      ),
+                    ),
+                    if (state.sepaType ==
+                        RecipientType.confidentialSepaEur) ...[
+                      const Gap(8),
+                      Text(
+                        context.loc.recipientsTypeConfidentialSepaDescription,
+                        style: context.bullType.body,
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+        const Gap(16.0),
+        if (recipients.isNotEmpty)
+          ConfidentialSepaAvailabilityStatus(
+            failure: state.failedToLoadRecipients,
+            onRetry: () {
+              _onRefresh();
+            },
+          ),
+        Expanded(
+          child: BullRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildListContent(state, recipients, canSelect),
+          ),
         ),
-        if (widget.hookError != null)
+        if (widget.hookError case final hookError?)
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              widget.hookError!,
-              style: context.bullType.body.copyWith(
-                color: context.appColors.error,
-              ),
+              hookError,
+              style: context.bullType.body.copyWith(color: context.bull.error),
             ),
           ),
         BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
@@ -229,7 +258,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               child: Text(
                 failure.toTranslated(context),
                 style: context.bullType.body.copyWith(
-                  color: context.appColors.error,
+                  color: context.bull.error,
                 ),
               ),
             );
@@ -237,16 +266,13 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         ),
         BullButton.primary(
           label: context.loc.recipientsContinue,
-          onPressed: (_selectedRecipient == null)
+          onPressed: (selected == null || !canSelect(selected))
               ? null
-              : () {
-                  final selected = _selectedRecipient;
-                  if (selected == null) return;
-                  context.read<RecipientsBloc>().add(
-                    RecipientsEvent.selected(selected),
-                  );
-                },
+              : () => context.read<RecipientsBloc>().add(
+                  RecipientsEvent.selected(selected),
+                ),
         ),
+        const Gap(16),
       ],
     );
   }
@@ -254,10 +280,12 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   Widget _buildListContent(
     RecipientsState state,
     List<RecipientViewModel> recipients,
+    bool Function(RecipientViewModel) canSelect,
   ) {
     if (recipients.isEmpty) {
       if (state.isLoadingRecipients) {
         return ListView(
+          controller: _scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           children: const [
             BullShimmerBox(height: 112, padding: EdgeInsets.zero),
@@ -278,6 +306,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           failure?.toTranslated(context) ?? context.loc.recipientsListEmpty;
       // Wrap in a scrollable so pull-to-refresh works while empty.
       return ListView(
+        controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const Gap(96.0),
@@ -312,12 +341,14 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         final recipient = recipients[index];
         return RecipientsListTile(
           recipient: recipient,
-          selected: _selectedRecipient == recipient,
-          onTap: () {
-            setState(() {
-              _selectedRecipient = recipient;
-            });
-          },
+          selected: _selectedRecipient?.id == recipient.id,
+          onTap: !canSelect(recipient)
+              ? null
+              : () {
+                  setState(() {
+                    _selectedRecipient = recipient;
+                  });
+                },
         );
       },
       itemCount: recipients.length,

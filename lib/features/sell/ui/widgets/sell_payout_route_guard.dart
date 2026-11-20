@@ -1,32 +1,30 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class SellPayoutRouteGuardV2 extends StatefulWidget {
+class SellPayoutRouteGuard extends StatefulWidget {
   final bool hasValidArguments;
   final Widget child;
 
-  const SellPayoutRouteGuardV2({
+  const SellPayoutRouteGuard({
     required this.child,
     this.hasValidArguments = true,
     super.key,
   });
 
   @override
-  State<SellPayoutRouteGuardV2> createState() => _SellPayoutRouteGuardV2State();
+  State<SellPayoutRouteGuard> createState() => _SellPayoutRouteGuardState();
 }
 
-class _SellPayoutRouteGuardV2State extends State<SellPayoutRouteGuardV2> {
+class _SellPayoutRouteGuardState extends State<SellPayoutRouteGuard> {
   bool _redirectScheduled = false;
 
   bool _canOpen(SellState state) =>
       widget.hasValidArguments &&
       state is! SellInitialState &&
-      state is! SellAmountInputState &&
-      state.fiatCurrency == FiatCurrency.eur;
+      state is! SellAmountInputState;
 
   @override
   Widget build(BuildContext context) {

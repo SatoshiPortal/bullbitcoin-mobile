@@ -39,13 +39,8 @@ class CreateSellOrderUsecase {
     bool usePayjoin = false,
     RecipientSelection? recipient,
   }) async {
-    if (recipient != null &&
-        (currency != FiatCurrency.eur ||
-            !const {
-              RecipientType.sepaEur,
-              RecipientType.confidentialSepaEur,
-            }.contains(recipient.type))) {
-      return const Err(SellUnexpectedFailure('Invalid EUR sell recipient'));
+    if (recipient != null && recipient.type.currencyCode != currency.code) {
+      return const Err(SellUnexpectedFailure('Invalid sell recipient'));
     }
     if (recipient?.requiresVirtualPayeeActivation ?? false) {
       return const Err(SellConfidentialSepaNotActivatedFailure());
@@ -92,13 +87,16 @@ class CreateSellOrderUsecase {
           usePayjoin: resolvedUsePayjoin,
         );
       } else {
-        order = await repo.placeSellToRecipientOrderV2(
+        order = await repo.placePayOrder(
           orderAmount: orderAmount,
           recipientId: recipient.id,
           network: network,
-          paymentProcessor: recipient.type == RecipientType.confidentialSepaEur
-              ? SepaPaymentProcessor.confidential
-              : SepaPaymentProcessor.regular,
+          paymentProcessor: switch (recipient.type) {
+            RecipientType.confidentialSepaEur =>
+              SepaPaymentProcessor.confidential,
+            RecipientType.sepaEur => SepaPaymentProcessor.regular,
+            _ => null,
+          },
           usePayjoin: resolvedUsePayjoin,
         );
       }

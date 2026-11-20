@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecas
 import 'package:bb_mobile/features/sell/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase_v2.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_wallet_utxos_usecase.dart';
@@ -126,8 +126,8 @@ class SellLocator {
       ),
     );
 
-    locator.registerFactory<GetSellConfidentialSepaAvailabilityUsecaseV2>(
-      () => GetSellConfidentialSepaAvailabilityUsecaseV2(
+    locator.registerFactory<GetSellConfidentialSepaAvailabilityUsecase>(
+      () => GetSellConfidentialSepaAvailabilityUsecase(
         locator<RecipientsFacade>(),
       ),
     );
