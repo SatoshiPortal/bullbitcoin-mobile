@@ -2358,9 +2358,9 @@ void main() {
         await pumpEventQueue();
         expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
         expect(address(), isNull);
-        bloc.add(start);
+        bloc.add(const ReceiveAddressRetried());
         await pumpEventQueue();
-        bloc.add(start);
+        bloc.add(const ReceiveAddressRetried());
         bloc.add(const ReceiveNewAddressGenerated());
         await pumpEventQueue();
         retry.complete(Ok(next));
@@ -2389,7 +2389,7 @@ void main() {
       bloc.add(start);
       await pumpEventQueue();
       expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
-      bloc.add(start);
+      bloc.add(const ReceiveAddressRetried());
       await pumpEventQueue();
       expect(
         wallet.isBitcoin ? bloc.state.bitcoinAddress : bloc.state.liquidAddress,
@@ -2399,6 +2399,284 @@ void main() {
       verifyNever(
         () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
       );
+    });
+  }
+
+  test('Retry without an admitted wallet starts discovery again', () async {
+    final wallet = _testWallet();
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => const Ok([]));
+    final bloc = buildBloc(withPresetWallet: false);
+    addTearDown(bloc.close);
+    bloc.add(const ReceiveBitcoinStarted(null));
+    await pumpEventQueue();
+    expect(bloc.state.wallet, isNull);
+    expect(bloc.state.walletAdmitted, isFalse);
+    expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([wallet]));
+    bloc.add(const ReceiveAddressRetried());
+    await pumpEventQueue();
+    expect(bloc.state.wallet?.id, wallet.id);
+    expect(bloc.state.walletAdmitted, isTrue);
+    expect(bloc.state.inputAmount, isEmpty);
+  });
+
+  void enterSats(ReceiveBloc bloc, int sats) {
+    bloc.add(
+      ReceiveAmountEntryChanged(
+        sats: BigInt.from(sats),
+        currencyCode: 'sats',
+        text: '$sats',
+        rate: null,
+        quotedAt: null,
+        isValid: true,
+        isEdit: true,
+      ),
+    );
+  }
+
+  test('Bitcoin address Retry retains the live 321-sat request', () async {
+    when(() => getPayjoinPolicy.execute()).thenAnswer(
+      (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+    );
+    final wallet = _testWallet();
+    final address = _testAddress(walletId: wallet.id);
+    final firstLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+    final retryLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+    var attempts = 0;
+    when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+      (_) => ++attempts == 1 ? firstLookup.future : retryLookup.future,
+    );
+    final bloc = buildBloc(wallet: wallet);
+    addTearDown(bloc.close);
+
+    bloc.add(ReceiveBitcoinStarted(wallet));
+    await pumpEventQueue();
+    expect(bloc.state.walletAdmitted, isTrue);
+    expect(attempts, 1);
+    enterSats(bloc, 321);
+    await pumpEventQueue();
+    bloc.add(const ReceiveAmountConfirmed());
+    await pumpEventQueue();
+    firstLookup.complete(const Err(ReceiveAddressUnavailableFailure()));
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+    expect(bloc.state.qrData, isEmpty);
+    expect(bloc.state.inputAmount, '321');
+    expect(bloc.state.confirmedAmountSat, 321);
+
+    bloc.add(const ReceiveAddressRetried());
+    await pumpEventQueue();
+    expect(attempts, 2);
+    final amountWhileRetrying = bloc.state.inputAmount;
+    retryLookup.complete(Ok(address));
+    await pumpEventQueue();
+    expect(bloc.state.failure, isNull);
+    expect(bloc.state.bitcoinAddress, address);
+    expect(bloc.state.wallet?.id, wallet.id);
+    verifyNever(
+      () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+    );
+    expect(
+      (
+        duringRetry: amountWhileRetrying,
+        afterRetry: bloc.state.inputAmount,
+        confirmedSats: bloc.state.confirmedAmountSat,
+        qrData: bloc.state.qrData,
+      ),
+      (
+        duringRetry: '321',
+        afterRetry: '321',
+        confirmedSats: 321,
+        qrData: 'bitcoin:${address.address}?amount=0.00000321',
+      ),
+    );
+
+    bloc.add(ReceiveBitcoinStarted(wallet));
+    await pumpEventQueue();
+    expect(bloc.state.inputAmount, isEmpty);
+    expect(bloc.state.confirmedAmountSat, isNull);
+    expect(bloc.state.qrData, address.address);
+  });
+
+  test('Retry keeps admission for live edits and their confirmation', () async {
+    when(() => getPayjoinPolicy.execute()).thenAnswer(
+      (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+    );
+    final wallet = _testWallet();
+    final firstLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+    final retryCatalog = Completer<Result<List<Wallet>, ReceiveFailure>>();
+    final retryLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+    var catalogCalls = 0;
+    var addressCalls = 0;
+    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
+      (_) async => ++catalogCalls == 1 ? Ok([wallet]) : retryCatalog.future,
+    );
+    when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+      (_) => ++addressCalls == 1 ? firstLookup.future : retryLookup.future,
+    );
+    final bloc = buildBloc(wallet: wallet);
+    addTearDown(() async {
+      if (!firstLookup.isCompleted) {
+        firstLookup.complete(const Err(ReceiveAddressUnavailableFailure()));
+      }
+      if (!retryCatalog.isCompleted) retryCatalog.complete(Ok([wallet]));
+      if (!retryLookup.isCompleted) {
+        retryLookup.complete(const Err(ReceiveAddressUnavailableFailure()));
+      }
+      await bloc.close();
+    });
+
+    bloc.add(ReceiveBitcoinStarted(wallet));
+    await pumpEventQueue();
+    enterSats(bloc, 321);
+    await pumpEventQueue();
+    firstLookup.complete(const Err(ReceiveAddressUnavailableFailure()));
+    await pumpEventQueue();
+    bloc.add(const ReceiveAddressRetried());
+    await pumpEventQueue();
+    expect(catalogCalls, 2);
+    expect(addressCalls, 1);
+    expect(bloc.state.walletAdmitted, isTrue);
+    expect(bloc.state.inputAmount, '321');
+
+    enterSats(bloc, 654);
+    await pumpEventQueue();
+    expect(bloc.state.inputAmount, '654');
+    expect(bloc.state.confirmedAmountSat, isNull);
+    // The live amount widget dispatches this event after its debounce.
+    bloc.add(const ReceiveAmountConfirmed());
+    await pumpEventQueue();
+    expect(bloc.state.confirmedAmountSat, 654);
+    retryCatalog.complete(Ok([wallet]));
+    await pumpEventQueue();
+    retryLookup.complete(Ok(_testAddress(walletId: wallet.id)));
+    await pumpEventQueue();
+    expect(bloc.state.inputAmount, '654');
+    expect(bloc.state.qrData, 'bitcoin:bc1qtest?amount=0.00000654');
+  });
+
+  test(
+    'late Bitcoin Retry cannot restore a draft after a wallet change',
+    () async {
+      final wallet = _testWallet();
+      final next = _testWallet(origin: 'next');
+      final address = _testAddress(walletId: wallet.id);
+      final nextAddress = _testAddress(walletId: next.id)
+          .copyWith(address: 'bc1qnext');
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+      );
+      final pendingError = Completer<Result<WalletAddress, ReceiveFailure>>();
+      final retryLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+      var attempts = 0;
+      when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+        (_) => ++attempts == 1 ? pendingError.future : retryLookup.future,
+      );
+      when(() => getReceiveAddress.execute(walletId: next.id))
+          .thenAnswer((_) async => Ok(nextAddress));
+      final bloc = buildBloc(wallet: wallet);
+      addTearDown(bloc.close);
+      bloc.add(ReceiveBitcoinStarted(wallet));
+      await pumpEventQueue();
+      enterSats(bloc, 321);
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      pendingError.complete(const Err(ReceiveAddressUnavailableFailure()));
+      await pumpEventQueue();
+      bloc.add(const ReceiveAddressRetried());
+      await pumpEventQueue();
+      expect(bloc.state.inputAmount, '321');
+      bloc.add(ReceiveBitcoinStarted(next));
+      await pumpEventQueue();
+      retryLookup.complete(Ok(address));
+      await pumpEventQueue();
+      expect(bloc.state.wallet?.id, next.id);
+      expect(bloc.state.bitcoinAddress, nextAddress);
+      expect(bloc.state.inputAmount, isEmpty);
+      expect(bloc.state.confirmedAmountSat, isNull);
+      expect(bloc.state.qrData, nextAddress.address);
+    },
+  );
+
+  for (final sameWallet in [true, false]) {
+    test('Liquid address Retry with same wallet=$sameWallet', () async {
+      final wallet = _testWallet(network: Network.liquidMainnet);
+      final next = sameWallet
+          ? wallet
+          : _testWallet(origin: 'next', network: Network.liquidMainnet);
+      final firstLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+      final address = _testAddress(walletId: next.id)
+          .copyWith(address: 'liquid-fixture');
+      var catalogCalls = 0;
+      var addressCalls = 0;
+      when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+          .thenAnswer((_) async => Ok([++catalogCalls == 1 ? wallet : next]));
+      when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+        (_) async => ++addressCalls == 1 ? firstLookup.future : Ok(address),
+      );
+      if (!sameWallet) {
+        when(() => getReceiveAddress.execute(walletId: next.id))
+            .thenAnswer((_) async => Ok(address));
+      }
+      final bloc = buildBloc(withPresetWallet: false);
+      addTearDown(bloc.close);
+      final receivedStates = <ReceiveState>[];
+      final subscription = bloc.stream.listen(receivedStates.add);
+      addTearDown(subscription.cancel);
+      bloc.add(const ReceiveLiquidStarted());
+      await pumpEventQueue();
+      enterSats(bloc, 321);
+      await pumpEventQueue();
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      bloc.add(
+        ReceiveAmountEntryChanged(
+          sats: BigInt.from(321),
+          currencyCode: 'sats',
+          text: '321',
+          rate: null,
+          quotedAt: null,
+          isValid: false,
+          isEdit: true,
+        ),
+      );
+      await pumpEventQueue();
+      firstLookup.complete(const Err(ReceiveAddressUnavailableFailure()));
+      await pumpEventQueue();
+      final draft = bloc.state;
+      expect(draft.confirmedAmountSat, 321);
+      expect(draft.amountEntryValid, isFalse);
+      receivedStates.clear();
+
+      bloc.add(const ReceiveAddressRetried());
+      await pumpEventQueue();
+      final admitted = receivedStates.where(
+        (state) => state.walletAdmitted && state.wallet?.id == next.id,
+      );
+      expect(admitted, isNotEmpty);
+      for (final state in admitted) {
+        expect(state.inputAmount, sameWallet ? '321' : '');
+        expect(
+          state.amountConversion,
+          sameWallet ? draft.amountConversion : null,
+        );
+        expect(state.confirmedAmountSat, sameWallet ? 321 : null);
+        expect(
+          state.confirmedConversion,
+          sameWallet ? draft.confirmedConversion : null,
+        );
+        expect(state.amountEntryValid, !sameWallet);
+      }
+      final qrData = bloc.state.qrData;
+      expect(bloc.state.liquidAddress, address);
+      if (sameWallet) {
+        expect(Uri.parse(qrData).queryParameters['amount'], '0.00000321');
+      } else {
+        expect(qrData, address.address);
+      }
     });
   }
 
