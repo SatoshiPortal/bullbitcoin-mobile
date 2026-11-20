@@ -127,14 +127,16 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
-  testWidgets('BTC and fiat units share a size and right edge', (tester) async {
+  testWidgets('Bitcoin and fiat amounts share typography and unit alignment', (
+    tester,
+  ) async {
     for (final scale in [1.0, 2.0]) {
       await _pumpTopSection(
         tester,
         textScale: scale,
         unconfirmedIncomingBalance: 0,
       );
-      Rect unitRect(String unit) {
+      Rect textRect(String unit, {bool entireLine = false}) {
         final finder = find.byWidgetPredicate(
           (widget) =>
               widget is RichText &&
@@ -145,7 +147,7 @@ void main() {
         final box = paragraph
             .getBoxesForSelection(
               TextSelection(
-                baseOffset: text.length - unit.length,
+                baseOffset: entireLine ? 0 : text.length - unit.length,
                 extentOffset: text.length,
               ),
             )
@@ -154,10 +156,14 @@ void main() {
         return box.shift(paragraph.localToGlobal(Offset.zero));
       }
 
-      final bitcoin = unitRect('BTC');
-      final fiat = unitRect('CAD');
+      final bitcoin = textRect('BTC');
+      final fiat = textRect('CAD');
       expect(bitcoin.height, closeTo(fiat.height, 0.01));
       expect(bitcoin.right, closeTo(fiat.right, 0.01));
+      expect(
+        textRect('BTC', entireLine: true).height,
+        closeTo(textRect('CAD', entireLine: true).height, 0.01),
+      );
     }
   });
 
