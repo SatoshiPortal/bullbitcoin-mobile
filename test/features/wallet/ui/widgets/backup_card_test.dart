@@ -13,16 +13,18 @@ void main() {
     testWidgets('paints the banner roles with 16 around the content ($type)', (
       tester,
     ) async {
+      var taps = 0;
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(type),
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: BackupCard(onTap: () {})),
+          home: Scaffold(body: BackupCard(onTap: () => taps++)),
         ),
       );
+      final banner = find.byType(BackupCard);
       final card = find.descendant(
-        of: find.byType(BackupCard),
+        of: banner,
         matching: find.byType(Container),
       );
       final decoration =
@@ -36,6 +38,20 @@ void main() {
         tester.getTopLeft(icon) - tester.getTopLeft(card.first),
         const Offset(16, 16),
       );
+      expect(tester.getSize(banner).shortestSide, greaterThanOrEqualTo(48));
+
+      final loc = AppLocalizations.of(tester.element(banner));
+      final semantics = tester.ensureSemantics();
+      try {
+        expect(
+          find.bySemanticsLabel(RegExp(RegExp.escape(loc.backupCardTitle))),
+          findsOneWidget,
+        );
+      } finally {
+        semantics.dispose();
+      }
+      await tester.tap(banner);
+      expect(taps, 1);
     });
   }
 }
