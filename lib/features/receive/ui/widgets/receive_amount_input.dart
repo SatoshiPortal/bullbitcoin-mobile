@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+
+import 'dart:async';
+
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -6,9 +10,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 class ReceiveAmountInput extends StatefulWidget {
-  const ReceiveAmountInput({super.key, required this.focusNode});
+  const ReceiveAmountInput({
+    super.key,
+    required this.focusNode,
+    this.live = false,
+    this.inCard = false,
+  });
 
   final FocusNode focusNode;
+  final bool live;
+  final bool inCard;
 
   @override
   State<ReceiveAmountInput> createState() => _ReceiveAmountInputState();
@@ -16,6 +27,7 @@ class ReceiveAmountInput extends StatefulWidget {
 
 class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
   late final TextEditingController _amountController;
+  Timer? _confirmation;
 
   @override
   void initState() {
@@ -26,6 +38,7 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
 
   @override
   void dispose() {
+    _confirmation?.cancel();
     _amountController.dispose();
     super.dispose();
   }
@@ -38,8 +51,21 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
           previous.type != current.type ||
           previous.wallet?.id != current.wallet?.id ||
           previous.inputAmount != current.inputAmount ||
+          previous.amountEntryValid != current.amountEntryValid ||
+          previous.amountConversion != current.amountConversion ||
           previous.inputAmountCurrencyCode != current.inputAmountCurrencyCode,
       listener: (_, state) {
+        _confirmation?.cancel();
+        final candidate = state.liveAmount;
+        if (widget.live && candidate.canUpdate) {
+          final bloc = context.read<ReceiveBloc>();
+          _confirmation = Timer(const Duration(milliseconds: 300), () {
+            if (!mounted || bloc.isClosed) return;
+            if (candidate.stillMatches(bloc.state.liveAmount)) {
+              bloc.add(const ReceiveAmountConfirmed());
+            }
+          });
+        }
         final canonical = state.inputAmount.isEmpty
             ? ''
             : state.inputAmountSat.toString();
@@ -50,6 +76,8 @@ class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
       child: BullAmountInput(
         key: ValueKey((state.walletAdmitted, state.wallet?.id, state.type)),
         canonicalUnit: BitcoinUnit.sats,
+        framed: widget.inCard,
+        emptyEquivalent: widget.live ? context.loc.receiveOptional : null,
         amountController: _amountController,
         focusNode: widget.focusNode,
         readOnly: state.creatingSwap,

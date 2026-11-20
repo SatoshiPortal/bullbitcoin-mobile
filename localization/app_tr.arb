@@ -9882,10 +9882,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "Kabul Miktarı",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "Burada programa katılmak için uygulayın",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10658,7 +10654,6 @@
   "exchangeStatisticsSellAvgPriceDesc": "Satarken bitcoin başına alınan ortalama fiyat",
   "exchangeStatisticsTotalVolumeDesc": "Fiat para birimlerinde birleştirilmiş alım ve satım hacimleri",
   "receivePayjoinNoUtxos": "Etkinleştirmek için önce para alın.\nPayjoin kullanmak için UTXO'lar gereklidir.",
-  "receiveLiquidRiskDisclosureLabel": "Ödemeler Liquid L-BTC'ye dönüştürülecektir (BTC değil). Daha fazla bilgi edinin.",
   "payViewReceipt": "Makbuzu görüntüle",
   "paySinpeReceipt": "SINPE Makbuzu",
   "transactionFilterWithdraw": "Çekim",
@@ -10668,6 +10663,7 @@
   "transactionFilterRefund": "İade",
   "transactionListLoadingFailed": "İşlemler yüklenemedi.",
   "transactionLabelNetworkFees": "Ağ ücretleri",
+  "receiveLiquidRiskDisclosureLabel": "Ödemeler Liquid L-BTC'ye dönüştürülecektir (BTC değil). Daha fazla bilgi edinin.",
   "walletLiquidRiskDisclosureLabel": "Bu fonlar Liquid L-BTC'dir (BTC değil). Daha fazla bilgi edinin.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk bildirimini aç",
   "liquidRiskDisclosureTitle": "Anında Ödeme Cüzdanı Liquid Bitcoin Risk Bildirimi",
@@ -10947,11 +10943,7 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin bilgilendirmesi",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
   "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
-  "receiveAdditionalInformation": "Ek bilgiler",
-  "receiveAdditionalInformationPlaceholder": "Bir tutar veya gönderen için mesaj ekleyin",
-  "receiveMessageForSender": "Gönderen için mesaj",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin etkin, ancak bu cüzdanda henüz katkıda bulunacak bakiye yok. Para aldığınızda etkinleşecektir.",
   "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
   "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",

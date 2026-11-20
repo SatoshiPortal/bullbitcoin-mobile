@@ -7,6 +7,7 @@ class ReceiveEvent with _$ReceiveEvent {
   const factory ReceiveEvent.receiveLightningStarted() =
       ReceiveLightningStarted;
   const factory ReceiveEvent.receiveLiquidStarted() = ReceiveLiquidStarted;
+  const factory ReceiveEvent.receiveAddressRetried() = ReceiveAddressRetried;
   const factory ReceiveEvent.receiveAmountCurrencyChanged(String currencyCode) =
       ReceiveAmountCurrencyChanged;
   const factory ReceiveEvent.receiveAmountInputChanged(String amount) =

@@ -9991,10 +9991,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "จํานวนเงิน",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "ใช้เข้าร่วมโปรแกรมที่นี่",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10662,7 +10658,6 @@
   "exchangeStatisticsSellAvgPriceDesc": "ราคาเฉลี่ยที่ได้รับต่อ Bitcoin เมื่อขาย",
   "exchangeStatisticsTotalVolumeDesc": "ปริมาณรวมของการซื้อและขายในสกุลเงิน fiat",
   "receivePayjoinNoUtxos": "รับเงินก่อนเพื่อเปิดใช้งาน\nต้องมี UTXO จึงจะใช้ payjoin ได้",
-  "receiveLiquidRiskDisclosureLabel": "การชำระเงินจะถูกแปลงเป็น Liquid L-BTC (ไม่ใช่ BTC) เรียนรู้เพิ่มเติม",
   "payViewReceipt": "ดูใบเสร็จ",
   "paySinpeReceipt": "ใบเสร็จ SINPE",
   "transactionFilterWithdraw": "ถอนเงิน",
@@ -10672,6 +10667,7 @@
   "transactionFilterRefund": "คืนเงิน",
   "transactionListLoadingFailed": "ไม่สามารถโหลดธุรกรรมได้",
   "transactionLabelNetworkFees": "ค่าธรรมเนียมเครือข่าย",
+  "receiveLiquidRiskDisclosureLabel": "การชำระเงินจะถูกแปลงเป็น Liquid L-BTC (ไม่ใช่ BTC) เรียนรู้เพิ่มเติม",
   "walletLiquidRiskDisclosureLabel": "เงินจำนวนนี้เป็น Liquid L-BTC (ไม่ใช่ BTC) เรียนรู้เพิ่มเติม",
   "liquidRiskDisclosureSemanticLabel": "เปิดคำชี้แจงความเสี่ยงของ Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "คำชี้แจงความเสี่ยงของ Liquid Bitcoin สำหรับกระเป๋า Instant Payments",
@@ -10951,11 +10947,7 @@
   "settingsPayjoinDisclaimerTitle": "ข้อควรทราบเกี่ยวกับ Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "ข้อควรทราบเกี่ยวกับ Payjoin",
   "settingsPayjoinAdvancedTitle": "การตั้งค่า Payjoin ขั้นสูง",
-  "receiveAdditionalInformation": "ข้อมูลเพิ่มเติม",
-  "receiveAdditionalInformationPlaceholder": "เพิ่มจำนวนเงินหรือข้อความสำหรับผู้ส่ง",
-  "receiveMessageForSender": "ข้อความสำหรับผู้ส่ง",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "เปิดใช้งาน Payjoin แล้ว แต่กระเป๋านี้ยังไม่มียอดคงเหลือสำหรับร่วมรายการ ระบบจะเริ่มทำงานเมื่อคุณได้รับเงิน",
   "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
   "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",

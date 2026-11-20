@@ -1395,10 +1395,6 @@
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
   },
-  "receiveReceiveAmount": "Prapt Raashi",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "receiveSendNetworkFee": "Bhejne ki Network Fee",
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
@@ -10994,8 +10990,8 @@
   "swapRescueButton": "Restore Karo",
   "swapRescueSuccess": "Swap restore ho gaya — ab ye resume hoga",
   "receivePayjoinNoUtxos": "Pehle funds receive karo ise enable karne ke liye.\nPayjoin use karne ke liye UTXOs zaroori hain.",
-  "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
   "transactionLabelNetworkFees": "Network fees",
+  "receiveLiquidRiskDisclosureLabel": "Payments Liquid L-BTC mein convert honge (BTC nahi). Aur jaano.",
   "walletLiquidRiskDisclosureLabel": "Ye funds Liquid L-BTC hain (BTC nahi). Aur jaano.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin risk disclosure kholo",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin Risk Jaankari",
@@ -11254,11 +11250,7 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin Disclaimer",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin Disclaimer",
   "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
-  "receiveAdditionalInformation": "Additional Information",
-  "receiveAdditionalInformationPlaceholder": "Amount ya sender ke liye message add karein",
-  "receiveMessageForSender": "Sender ke liye message",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin chalu hai, lekin is wallet mein yogdan dene ke liye abhi koi balance nahin hai. Funds milte hi yeh active ho jayega.",
   "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
   "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",

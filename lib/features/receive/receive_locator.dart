@@ -1,3 +1,4 @@
+import 'domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'domain/usecases/get_receive_amount_quotes_usecase.dart';
 
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
@@ -31,7 +32,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:swaps/swaps.dart'
-    show BoltzSwaps, SwapWatcher, WatchSwapUsecase;
+    show BoltzSwaps, SwapWatcher, WatchSwapUsecase, GetSwapLimitsAndFeesUsecase;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -121,9 +122,14 @@ class ReceiveLocator {
       () => FetchReceiveNoteSuggestionsUsecase(locator<LabelsFacade>()),
     );
 
+    locator.registerFactory<GetReceiveSwapLimitsUsecase>(
+      () => GetReceiveSwapLimitsUsecase(locator<GetSwapLimitsAndFeesUsecase>()),
+    );
+
     // Bloc
     locator.registerFactoryParam<ReceiveBloc, Wallet?, void>(
       (wallet, _) => ReceiveBloc(
+        getReceiveSwapLimitsUsecase: locator<GetReceiveSwapLimitsUsecase>(),
         getReceiveWalletsUsecase: locator<GetReceiveWalletsUsecase>(),
         getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
         convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),

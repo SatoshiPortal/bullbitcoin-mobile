@@ -1,85 +1,64 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/receive/domain/receive_advanced_options.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullSwitch, BullSnackBar, BullTypographyX;
 
-/// Payjoin on/off toggle row for the bitcoin receive screen, shown under the
-/// receive address (product decision 2026-07-25 — previously a TopBar chip).
-/// The switch flips the GLOBAL payjoin setting; long-pressing the row opens
-/// the payjoin settings screen.
-///
-/// Renders nothing unless this is a Bitcoin receive with a payjoin-capable
-/// wallet ([ReceiveState.isPayjoinToggleable] — funded + locally-signing), so
-/// it never shows on Liquid/Lightning receives or for wallets that could
-/// never payjoin. Carries its own top gap so the surrounding layout doesn't
-/// reserve space when hidden.
+/// The global Payjoin setting, preserving eligibility and the enable disclaimer.
 class ReceivePayjoinToggleTile extends StatelessWidget {
   const ReceivePayjoinToggleTile({super.key, required this.topGap});
-
   final double topGap;
 
   @override
   Widget build(BuildContext context) {
-    final isToggleable = context.select(
-      (ReceiveBloc bloc) => bloc.state.isPayjoinToggleable,
-    );
-    if (!isToggleable) return const SizedBox.shrink();
-
-    final enabled = context.select(
-      (ReceiveBloc bloc) => bloc.state.payjoinGloballyEnabled ?? false,
-    );
-
-    // A slim single-line box (product decision 2026-07-26): bordered like
-    // the other tiles but with minimal vertical padding, so the whole
-    // receive screen — QR, address, additional info, this box and the
-    // bottom button — fits without scrolling. Long-press opens the payjoin
-    // settings screen.
+    final state = context.watch<ReceiveBloc>().state;
+    if (state.type != ReceiveType.bitcoin ||
+        state.wallet?.signsLocally != true) {
+      return const SizedBox.shrink();
+    }
+    final subtitle = switch (state.advancedOptions.payjoinExplanation) {
+      ReceivePayjoinExplanation.awaitingFunds =>
+        context.loc.receivePayjoinStartsWithFunds,
+      ReceivePayjoinExplanation.belowMinimum =>
+        context.loc.receivePayjoinNotUsedForAmount,
+      ReceivePayjoinExplanation.global =>
+        context.loc.receivePayjoinAppliesGlobally,
+    };
     return BlocListener<ReceiveBloc, ReceiveState>(
       listenWhen: (previous, current) =>
           current.failure is ReceivePayjoinSettingFailure &&
           previous.failure != current.failure,
-      listener: (context, state) {
-        BullSnackBar.show(
-          context,
-          message: state.failure!.toTranslated(context),
-        );
+      listener: (context, next) {
+        if (next.failure case final failure?) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
+        }
       },
       child: Padding(
-        padding: EdgeInsets.only(top: topGap / 2),
-        child: BullBorderedTile(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-          backgroundColor: context.appColors.surfaceContainerHighest,
-          onLongPress: () =>
-              context.pushNamed(SettingsRoute.payjoinSettings.name),
-          child: Row(
-            children: [
-              Expanded(
-                child: BBText(
-                  context.loc.receivePayjoinQrBadge,
-                  style: context.bullType.body,
-                  color: context.appColors.secondary,
-                ),
-              ),
-              BullSwitch(
-                value: enabled,
-                onChanged: (value) {
-                  context.read<ReceiveBloc>().add(
-                    ReceiveEvent.receivePayjoinToggled(value, () async {
-                      if (!context.mounted) return false;
-                      return PayjoinDisclaimerDialog.show(context);
-                    }),
-                  );
-                },
-              ),
-            ],
+        padding: EdgeInsets.only(top: topGap),
+        child: BullSettingsEntryItem(
+          icon: BullIcons.privacy,
+          contentPadding: EdgeInsets.zero,
+          title: context.loc.receivePayjoinQrBadge,
+          subtitle: subtitle,
+          trailing: SizedBox(
+            width: 52,
+            height: 48,
+            child: BullSwitch(
+              value: state.payjoinGloballyEnabled ?? false,
+              onChanged: !state.isPayjoinToggleable
+                  ? null
+                  : (value) {
+                      context.read<ReceiveBloc>().add(
+                        ReceivePayjoinToggled(value, () async {
+                          if (!context.mounted) return false;
+                          return PayjoinDisclaimerDialog.show(context);
+                        }),
+                      );
+                    },
+            ),
           ),
         ),
       ),

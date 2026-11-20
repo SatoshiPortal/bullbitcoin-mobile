@@ -28,8 +28,10 @@ abstract class ReceiveState with _$ReceiveState {
     LnReceiveSwap? lightningSwap,
     OrderSwapRecord? orderSwap,
     SwapLimits? swapLimits,
+    SwapRoute? swapRoute,
     WalletAddress? liquidAddress,
     @Default('') String note,
+    @Default('') String confirmedNote,
     PayjoinReceiverSession? payjoin,
     // The global payjoin setting as last read by the bloc. Tri-state on
     // purpose: null = settings not fetched yet (treat as "may become
@@ -70,6 +72,46 @@ abstract class ReceiveState with _$ReceiveState {
   /// True while the entered amount itself is invalid, so continuing cannot
   /// possibly succeed. Distinct from any other [failure] — a failed swap
   /// creation must leave the user able to retry.
+  ReceiveNetworkType? get networkType => switch (type) {
+    ReceiveType.bitcoin => ReceiveNetworkType.bitcoin,
+    ReceiveType.liquid => ReceiveNetworkType.liquid,
+    ReceiveType.lightning => ReceiveNetworkType.lightning,
+    null => null,
+  };
+
+  ReceiveLiveAmount get liveAmount => ReceiveLiveAmount(
+    network: networkType,
+    walletId: wallet?.id,
+    canonicalAmount: inputAmount,
+    admitted: canConfirmAmount,
+    conversion: amountConversion,
+  );
+
+  ReceiveAdvancedOptions get advancedOptions => ReceiveAdvancedOptions(
+    network: networkType,
+    walletCount: wallets.length,
+    payjoinEnabled: payjoinGloballyEnabled ?? false,
+    hasMessage: note.isNotEmpty,
+    hasLocalSigner: wallet?.signsLocally ?? false,
+    hasFunds: hasUtxos,
+    payjoinSuppressedForAmount: isPayjoinSuppressedByAmount,
+    supportsDeviceVerification:
+        (wallet?.signerDevice?.isLedger ?? false) ||
+        (wallet?.signerDevice?.isBitBox ?? false),
+  );
+
+  ReceiveLightningLimits get lightningLimits =>
+      GetReceiveSwapRouteUsecase.limitsFor(
+        route: swapRoute,
+        minimumSat: swapLimits?.min,
+        maximumSat: swapLimits?.max,
+      );
+
+  bool get canCreateInvoice =>
+      canConfirmAmount &&
+      !creatingSwap &&
+      lightningLimits.permits(inputAmountSat);
+
   bool get hasAmountInputFailure =>
       failure is ReceiveAmountAboveProtocolLimitFailure;
 
@@ -117,9 +159,37 @@ abstract class ReceiveState with _$ReceiveState {
     return rate == null ? null : ConvertAmount.btcToFiat(inputAmountBtc, rate);
   }
 
-  // The QR code data should always show the full payment request when all parameters are available,
-  //  this way the QR code doesn't change from an address only QR to a BIP21 uri with payjoin parameters while loading.
+  WalletAddress? get _ownedLiquidAddress {
+    final address = liquidAddress;
+    final selectedWallet = wallet;
+    return selectedWallet != null &&
+            selectedWallet.isLiquid &&
+            address?.walletId == selectedWallet.id
+        ? address
+        : null;
+  }
+
+  /// The complete request, including Payjoin once its preparation settles.
   String get qrData => paymentRequest;
+
+  bool get canOpenEnlargedQr {
+    if (isLightning) return qrData.isNotEmpty;
+    if (!canConfirmAmount) return false;
+    return switch (type) {
+      ReceiveType.bitcoin =>
+        bitcoinAddress != null && bitcoinAddress?.walletId == wallet?.id,
+      ReceiveType.liquid => _ownedLiquidAddress != null,
+      _ => false,
+    };
+  }
+
+  /// Visible QR bytes must describe the current live draft. The tap target
+  /// may already be active while its amount is still being confirmed.
+  String get displayQrData {
+    if (!canOpenEnlargedQr) return '';
+    if (!isLightning && inputAmountSat != (confirmedAmountSat ?? 0)) return '';
+    return qrData;
+  }
 
   // The clipboard data should permit the user to copy just the address or invoice
   // from the moment it is available and not wait for the full payment request like payjoin
@@ -141,6 +211,7 @@ abstract class ReceiveState with _$ReceiveState {
   // the type of receive and some set parameters. It waits for all data to
   // be available before returning anything.
   String get paymentRequest {
+    final amountSat = confirmedAmountSat ?? 0;
     switch (type) {
       case ReceiveType.bitcoin:
         if (bitcoinAddress == null || isPayjoinLoading) {
@@ -156,7 +227,8 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: 'bitcoin',
           path: bitcoinAddress!.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (amountSat > 0)
+              'amount': Sats.fromInt(amountSat).toBitcoinText(BitcoinUnit.btc),
             if (note.isNotEmpty) 'message': note,
           },
         );
@@ -177,7 +249,7 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return lightningInvoiceNormalized;
       case ReceiveType.liquid:
-        final address = liquidAddress;
+        final address = _ownedLiquidAddress;
         final network = wallet?.network;
         if (address == null || network == null || !network.isLiquid) return '';
         final profile = switch (network) {
@@ -201,7 +273,8 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: profile.scheme,
           path: address.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (amountSat > 0)
+              'amount': Sats.fromInt(amountSat).toBitcoinText(BitcoinUnit.btc),
             if (note.isNotEmpty) 'message': note,
             'assetid': profile.asset,
           },
@@ -218,7 +291,7 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return lightningInvoiceNormalized;
       case ReceiveType.liquid:
-        return liquidAddress?.address ?? '';
+        return _ownedLiquidAddress?.address ?? '';
       case _:
         return '';
     }
@@ -466,18 +539,23 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isLightning => type == ReceiveType.lightning;
 
-  bool get isInputAmountBelowLimit {
-    if (isLightning && swapLimits != null) {
-      return inputAmountSat < swapLimits!.min;
-    }
-    return false;
-  }
+  bool get isInputAmountBelowLimit =>
+      isLightning && lightningLimits.below(inputAmountSat);
 
-  bool get isInputAmountAboveLimit {
-    if (isLightning && swapLimits != null) {
-      return inputAmountSat > swapLimits!.max;
-    }
-    return false;
+  bool get isInputAmountAboveLimit =>
+      isLightning && lightningLimits.above(inputAmountSat);
+
+  int? get lightningAmountSat =>
+      orderSwap?.order?.payinAmountSat.toInt() ?? lightningSwap?.amountSat;
+
+  int? get lightningReceivedSat =>
+      orderSwap?.order?.payoutAmountSat.toInt() ??
+      lightningSwap?.receieveAmount;
+
+  int? get lightningFeeSat {
+    final amount = lightningAmountSat;
+    final received = lightningReceivedSat;
+    return amount == null || received == null ? null : amount - received;
   }
 
   LnReceiveSwap? get getSwap {
@@ -521,7 +599,7 @@ abstract class ReceiveState with _$ReceiveState {
     ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
     ReceiveType.lightning =>
       orderSwap?.destination ?? lightningSwap?.receiveAddress ?? '',
-    ReceiveType.liquid => liquidAddress?.address ?? '',
+    ReceiveType.liquid => _ownedLiquidAddress?.address ?? '',
     _ => '',
   };
 

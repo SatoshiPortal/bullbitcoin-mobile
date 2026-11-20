@@ -9991,10 +9991,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "결제하기",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "여기에 프로그램에 가입",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10660,7 +10656,6 @@
   "exchangeStatisticsSellAvgPriceDesc": "매도 시 Bitcoin 1개당 평균 수령 가격",
   "exchangeStatisticsTotalVolumeDesc": "법정화폐 기준 매수 및 매도 거래량 합계",
   "receivePayjoinNoUtxos": "먼저 자금을 받아야 사용할 수 있습니다.\nPayjoin을 사용하려면 UTXO가 필요합니다.",
-  "receiveLiquidRiskDisclosureLabel": "결제는 Liquid L-BTC로 전환됩니다(BTC 아님). 자세히 알아보기.",
   "payViewReceipt": "영수증 보기",
   "paySinpeReceipt": "SINPE 영수증",
   "transactionFilterWithdraw": "출금",
@@ -10670,6 +10665,7 @@
   "transactionFilterRefund": "환불",
   "transactionListLoadingFailed": "거래 내역을 불러올 수 없습니다.",
   "transactionLabelNetworkFees": "네트워크 수수료",
+  "receiveLiquidRiskDisclosureLabel": "결제는 Liquid L-BTC로 전환됩니다(BTC 아님). 자세히 알아보기.",
   "walletLiquidRiskDisclosureLabel": "이 자금은 Liquid L-BTC입니다(BTC 아님). 자세히 알아보기.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
   "liquidRiskDisclosureTitle": "Instant Payment Wallet Liquid Bitcoin 위험 고지",
@@ -10947,11 +10943,7 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin 고지사항",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin 고지사항",
   "settingsPayjoinAdvancedTitle": "Payjoin 고급 설정",
-  "receiveAdditionalInformation": "추가 정보",
-  "receiveAdditionalInformationPlaceholder": "금액 또는 보내는 사람에게 전할 메시지를 추가하세요",
-  "receiveMessageForSender": "보내는 사람에게 전할 메시지",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin이 활성화되어 있지만 이 지갑에는 아직 기여할 잔액이 없습니다. 자금을 받으면 활성화됩니다.",
   "announcementAutoswapDescription": "보유한 Liquid는 자동으로 Bitcoin으로 교환됩니다.",
   "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
   "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",

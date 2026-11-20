@@ -242,7 +242,7 @@ void main() {
           );
         }
         // BullButton uses IgnorePointer when disabled; still attempt the real tap.
-        await tester.tap(find.text('Continue'), warnIfMissed: false);
+        await tester.tap(find.text('Create invoice'), warnIfMissed: false);
         await tester.pump();
         expect(errors, isEmpty);
         final button = find.descendant(
@@ -259,7 +259,7 @@ void main() {
           expect(bloc.state.failure, refusal);
           expect(tester.widget<BullButton>(button).disabled, isTrue);
           // BullButton uses IgnorePointer when disabled; still attempt the real tap.
-          await tester.tap(find.text('Continue'), warnIfMissed: false);
+          await tester.tap(find.text('Create invoice'), warnIfMissed: false);
           await tester.pump();
         }
         // Also guard callers that dispatch confirmation without the button.

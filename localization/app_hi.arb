@@ -9991,10 +9991,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "प्राप्त राशि",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "यहाँ कार्यक्रम में शामिल होने के लिए आवेदन करें",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10892,8 +10888,8 @@
   "swapRescueButton": "रिस्टोर करें",
   "swapRescueSuccess": "Swap रिस्टोर हो गया — यह अब फिर से शुरू होगा",
   "receivePayjoinNoUtxos": "इसे सक्षम करने के लिए पहले फंड प्राप्त करें।\npayjoin का उपयोग करने के लिए UTXO आवश्यक हैं।",
-  "receiveLiquidRiskDisclosureLabel": "भुगतान Liquid L-BTC (BTC नहीं) में बदल दिए जाएंगे। और जानें।",
   "transactionLabelNetworkFees": "नेटवर्क शुल्क",
+  "receiveLiquidRiskDisclosureLabel": "भुगतान Liquid L-BTC (BTC नहीं) में बदल दिए जाएंगे। और जानें।",
   "walletLiquidRiskDisclosureLabel": "यह फंड Liquid L-BTC (BTC नहीं) है। और जानें।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin जोखिम प्रकटीकरण खोलें",
   "liquidRiskDisclosureTitle": "तत्काल भुगतान वॉलेट Liquid Bitcoin जोखिम प्रकटीकरण",
@@ -11134,11 +11130,7 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin अस्वीकरण",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin अस्वीकरण",
   "settingsPayjoinAdvancedTitle": "उन्नत Payjoin सेटिंग्स",
-  "receiveAdditionalInformation": "अतिरिक्त जानकारी",
-  "receiveAdditionalInformationPlaceholder": "राशि या भेजने वाले के लिए संदेश जोड़ें",
-  "receiveMessageForSender": "भेजने वाले के लिए संदेश",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin चालू है, लेकिन इस वॉलेट में योगदान देने के लिए अभी कोई बैलेंस नहीं है। धन प्राप्त होते ही यह सक्रिय हो जाएगा।",
   "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
   "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",

@@ -45,13 +45,7 @@ void main() {
       await tester.pump();
       expect(find.byType(QrDisplayWidget), findsNothing);
       await tester.tap(find.text('Retry'));
-      verify(
-        () => bloc.add(
-          type == ReceiveType.bitcoin
-              ? const ReceiveBitcoinStarted(null)
-              : const ReceiveLiquidStarted(),
-        ),
-      ).called(1);
+      verify(() => bloc.add(const ReceiveAddressRetried())).called(1);
     });
   }
 }

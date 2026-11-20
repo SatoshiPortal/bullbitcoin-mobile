@@ -9699,10 +9699,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "receiveReceiveAmount": "গ্রহণের পরিমাণ",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "এখানে প্রোগ্রামে যোগ দিতে আবেদন করুন",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -10912,8 +10908,8 @@
   "swapRescueButton": "পুনরুদ্ধার করুন",
   "swapRescueSuccess": "সোয়াপ পুনরুদ্ধার হয়েছে — এটি এখন আবার শুরু হবে",
   "receivePayjoinNoUtxos": "এটি সক্রিয় করতে প্রথমে তহবিল গ্রহণ করুন।\nPayjoin ব্যবহার করতে UTXO প্রয়োজন।",
-  "receiveLiquidRiskDisclosureLabel": "পেমেন্ট Liquid L-BTC-এ রূপান্তরিত হবে (BTC নয়)। আরও জানুন।",
   "transactionLabelNetworkFees": "নেটওয়ার্ক ফি",
+  "receiveLiquidRiskDisclosureLabel": "পেমেন্ট Liquid L-BTC-এ রূপান্তরিত হবে (BTC নয়)। আরও জানুন।",
   "walletLiquidRiskDisclosureLabel": "এই তহবিল Liquid L-BTC (BTC নয়)। আরও জানুন।",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin ঝুঁকি প্রকাশ খুলুন",
   "liquidRiskDisclosureTitle": "Instant Payments Wallet Liquid Bitcoin ঝুঁকি প্রকাশ",
@@ -11154,11 +11150,7 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin দাবিত্যাগ",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবিত্যাগ",
   "settingsPayjoinAdvancedTitle": "উন্নত Payjoin সেটিংস",
-  "receiveAdditionalInformation": "অতিরিক্ত তথ্য",
-  "receiveAdditionalInformationPlaceholder": "একটি পরিমাণ বা প্রেরকের জন্য বার্তা যোগ করুন",
-  "receiveMessageForSender": "প্রেরকের জন্য বার্তা",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin চালু আছে, কিন্তু এই ওয়ালেটে অবদান রাখার মতো কোনো ব্যালেন্স নেই। অর্থ পাওয়ার পর এটি সক্রিয় হবে।",
   "announcementAutoswapDescription": "আপনার Liquid স্বয়ংক্রিয়ভাবে Bitcoin-এ রূপান্তরিত হয়।",
   "addressViewErrorWalletNotFound": "এই ওয়ালেটটি খুঁজে পাওয়া যায়নি।",
   "addressViewErrorLoadFailed": "আপনার ঠিকানাগুলো লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
