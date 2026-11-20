@@ -1,0 +1,340 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/utils/generic_extensions.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:bull_logger/bull_logger.dart';
+import 'package:dio/dio.dart';
+import 'package:primitives/primitives.dart';
+
+/// [ExchangeOrderRepository] whose order reads go through the `bbx_api`
+/// package. Order creation, confirmation, acceleration and DCA are delegated
+/// to [_writes] until they move too.
+class BbxApiOrderRepository implements ExchangeOrderRepository {
+  final bbx.BbxApiClient _api;
+  final ExchangeOrderRepository _writes;
+  final bool _isTestnet;
+
+  BbxApiOrderRepository({
+    required this._api,
+    required this._writes,
+    required this._isTestnet,
+  });
+
+  @override
+  Future<Order> getOrder(String orderId) async {
+    try {
+      return _toOrder(await _api.orders.getOrderSummary(orderId));
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to get order: ${_describe(e)}');
+    }
+  }
+
+  @override
+  Future<Result<Order?, ExchangeOrderFailure>> getOrderByTxId(
+    String txId,
+  ) async {
+    try {
+      // A wallet transaction with no matching order is the normal case, not an
+      // error, so it must not be logged as one.
+      final summary = (await _listOrderSummaries()).firstWhereOrNull(
+        (summary) => orderSummaryMatchesTxId(summary, txId),
+      );
+      if (summary == null) return const Ok(null);
+
+      return Ok(_toOrder(summary));
+    } on Exception catch (e) {
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Ok(null)
+            : const Err(ExchangeOrderCredentialFailure());
+      }
+      log.warning('Exchange order lookup failed: ${e.runtimeType}');
+      return const Err(ExchangeOrderLoadFailure());
+    }
+  }
+
+  @override
+  Future<Result<List<Order>, ExchangeOrderFailure>> getOrders({
+    int? limit,
+    int? offset,
+    OrderType? type,
+  }) async {
+    try {
+      final summaries = await _listOrderSummaries();
+
+      // Preserve the remaining history when one order cannot be mapped.
+      List<Order> orders = summaries
+          .map((summary) {
+            try {
+              return _toOrder(summary);
+            } catch (e, stackTrace) {
+              log.severe(
+                message: 'Error mapping order ${summary.orderId}',
+                error: e,
+                trace: stackTrace,
+              );
+              return null;
+            }
+          })
+          .whereType<Order>()
+          .toList();
+
+      if (type != null) {
+        switch (type) {
+          case OrderType.buy:
+            orders = orders.whereType<BuyOrder>().toList();
+          case OrderType.sell:
+            orders = orders.whereType<SellOrder>().toList();
+          case OrderType.fiatPayment:
+            orders = orders.whereType<FiatPaymentOrder>().toList();
+          case OrderType.funding:
+            orders = orders.whereType<FundingOrder>().toList();
+          case OrderType.withdraw:
+            orders = orders.whereType<WithdrawOrder>().toList();
+          case OrderType.reward:
+            orders = orders.whereType<RewardOrder>().toList();
+          case OrderType.refund:
+            orders = orders.whereType<RefundOrder>().toList();
+          case OrderType.balanceAdjustment:
+            orders = orders.whereType<BalanceAdjustmentOrder>().toList();
+          case OrderType.sellUsdt:
+          case OrderType.unknown:
+            // Both map onto GenericOrder, so match on the type itself.
+            orders = orders.where((o) => o.orderType == type).toList();
+        }
+      }
+
+      if (offset != null || limit != null) {
+        final startIndex = offset ?? 0;
+        final endIndex = limit != null ? startIndex + limit : orders.length;
+
+        if (startIndex < orders.length) {
+          orders = orders.sublist(startIndex, endIndex.clamp(0, orders.length));
+        } else {
+          orders = [];
+        }
+      }
+
+      return Ok(orders);
+    } on Exception catch (e) {
+      if (e case DioException(
+        error: final Error bug,
+        stackTrace: final trace,
+      )) {
+        Error.throwWithStackTrace(bug, trace);
+      }
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return refusal.isUnauthenticated
+            ? const Ok([])
+            : const Err(ExchangeOrderCredentialFailure());
+      }
+      log.warning('Exchange order history failed: ${e.runtimeType}');
+      return const Err(ExchangeOrderLoadFailure());
+    }
+  }
+
+  @override
+  Future<BuyOrder> refreshBuyOrder(String orderId) async {
+    try {
+      final order = await _refresh(orderId);
+      if (order is! BuyOrder) {
+        throw UnexpectedOrderTypeException('BuyOrder');
+      }
+      return order;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to refresh order: ${_describe(e)}');
+    }
+  }
+
+  @override
+  Future<SellOrder> refreshSellOrder(String orderId) async {
+    try {
+      final order = await _refresh(orderId);
+      if (order is! SellOrder) {
+        throw Exception(
+          'Expected SellOrder but received a different order type',
+        );
+      }
+      return order;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to refresh sell order: ${_describe(e)}');
+    }
+  }
+
+  @override
+  Future<FiatPaymentOrder> refreshPayOrder(String orderId) async {
+    try {
+      final order = await _refresh(orderId);
+      if (order is! FiatPaymentOrder) {
+        throw UnexpectedOrderTypeException('FiatPaymentOrder');
+      }
+      return order;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      // Keep the original trace: the use-case logs the trace it catches.
+      Error.throwWithStackTrace(
+        Exception('Failed to refresh pay order: ${_describe(e)}'),
+        st,
+      );
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getBuyLimits() async {
+    try {
+      return await _api.orders.getBuyLimits();
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to get buy limits: ${_describe(e)}');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getSellLimits() async {
+    try {
+      return await _api.orders.getSellLimits();
+    } catch (e, st) {
+      rethrowExchangeAuthentication(e, st);
+      throw Exception('Failed to get sell limits: ${_describe(e)}');
+    }
+  }
+
+  @override
+  Future<BuyOrder> placeBuyOrder({
+    required String toAddress,
+    required OrderAmount orderAmount,
+    required FiatCurrency currency,
+    required OrderBitcoinNetwork network,
+    required bool isOwner,
+    String? payjoinBip21,
+  }) => _writes.placeBuyOrder(
+    toAddress: toAddress,
+    orderAmount: orderAmount,
+    currency: currency,
+    network: network,
+    isOwner: isOwner,
+    payjoinBip21: payjoinBip21,
+  );
+
+  @override
+  Future<SellOrder> placeSellOrder({
+    required OrderAmount orderAmount,
+    required FiatCurrency currency,
+    required OrderBitcoinNetwork network,
+    bool usePayjoin = false,
+  }) => _writes.placeSellOrder(
+    orderAmount: orderAmount,
+    currency: currency,
+    network: network,
+    usePayjoin: usePayjoin,
+  );
+
+  @override
+  Future<FiatPaymentOrder> placePayOrder({
+    required OrderAmount orderAmount,
+    required String recipientId,
+    required OrderBitcoinNetwork network,
+    String? paymentDescription,
+    SepaPaymentProcessor? paymentProcessor,
+    bool usePayjoin = false,
+  }) => _writes.placePayOrder(
+    orderAmount: orderAmount,
+    recipientId: recipientId,
+    network: network,
+    paymentDescription: paymentDescription,
+    paymentProcessor: paymentProcessor,
+    usePayjoin: usePayjoin,
+  );
+
+  @override
+  Future<WithdrawOrder> placeWithdrawalOrder({
+    required double fiatAmount,
+    required String recipientId,
+    SepaPaymentProcessor? paymentProcessor,
+    String? securityQuestion,
+    String? securityAnswer,
+  }) => _writes.placeWithdrawalOrder(
+    fiatAmount: fiatAmount,
+    recipientId: recipientId,
+    paymentProcessor: paymentProcessor,
+    securityQuestion: securityQuestion,
+    securityAnswer: securityAnswer,
+  );
+
+  @override
+  Future<BuyOrder> confirmBuyOrder(String orderId) =>
+      _writes.confirmBuyOrder(orderId);
+
+  @override
+  Future<WithdrawOrder> confirmWithdrawOrder(String orderId) =>
+      _writes.confirmWithdrawOrder(orderId);
+
+  @override
+  Future<BuyOrder> accelerateBuyOrder(String orderId) =>
+      _writes.accelerateBuyOrder(orderId);
+
+  @override
+  Future<Dca> createDca({
+    required double amount,
+    required FiatCurrency currency,
+    required DcaBuyFrequency frequency,
+    required DcaNetwork network,
+    required String address,
+  }) => _writes.createDca(
+    amount: amount,
+    currency: currency,
+    frequency: frequency,
+    network: network,
+    address: address,
+  );
+
+  Future<Order> _refresh(String orderId) async =>
+      _toOrder(await _api.orders.refreshOrderSummary(orderId));
+
+  /// One page of orders. Elements the package could not read are logged and
+  /// left out, as the old client did.
+  Future<List<bbx.OrderSummary>> _listOrderSummaries() async {
+    final list = await _api.orders.listOrderSummaries();
+    for (final rejected in list.rejected) {
+      log.severe(
+        message: 'Error parsing order element',
+        error: rejected,
+        trace: StackTrace.current,
+      );
+    }
+    return list.orders;
+  }
+
+  Order _toOrder(bbx.OrderSummary summary) =>
+      orderFromBbxApi(summary, isTestnet: _isTestnet);
+
+  /// A JSON-RPC error message can quote the request, so only its code is
+  /// kept in exception messages.
+  static Object _describe(Object e) => switch (e) {
+    bbx.BbxApiRpcException(:final code) => 'BbxApiRpcException(code: $code)',
+    _ => e,
+  };
+}
