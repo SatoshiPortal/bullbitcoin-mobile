@@ -5,7 +5,13 @@ import 'package:material_ui/material_ui.dart';
 
 class TestPhysicalBackupFlowNavigator extends StatelessWidget {
   final TestPhysicalBackupFlow flow;
-  const TestPhysicalBackupFlowNavigator({super.key, required this.flow});
+  final void Function(BuildContext) onTestSucceeded;
+
+  const TestPhysicalBackupFlowNavigator({
+    super.key,
+    required this.flow,
+    required this.onTestSucceeded,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +29,12 @@ class TestPhysicalBackupFlowNavigator extends StatelessWidget {
         onGenerateRoute: (settings) {
           return MaterialPageRoute(
             builder: (context) => switch (flow) {
-              TestPhysicalBackupFlow.backup => const ShowMnemonicScreen(),
-              TestPhysicalBackupFlow.verify => const VerifyMnemonicScreen(),
+              TestPhysicalBackupFlow.backup => ShowMnemonicScreen(
+                onTestSucceeded: onTestSucceeded,
+              ),
+              TestPhysicalBackupFlow.verify => VerifyMnemonicScreen(
+                onTestSucceeded: onTestSucceeded,
+              ),
             },
           );
         },

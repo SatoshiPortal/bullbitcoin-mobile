@@ -26,7 +26,9 @@ import 'package:secrets/secrets.dart'
     show MnemonicTile, Secret, SecretExtension;
 
 class VerifyMnemonicScreen extends StatefulWidget {
-  const VerifyMnemonicScreen({super.key});
+  const VerifyMnemonicScreen({super.key, required this.onTestSucceeded});
+
+  final void Function(BuildContext) onTestSucceeded;
 
   @override
   State<VerifyMnemonicScreen> createState() => _VerifyMnemonicScreenState();
@@ -191,7 +193,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 context.read<TestWalletBackupBloc>().add(const ClearFailure());
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const BackupTestSuccessScreen(),
+                    builder: (context) => BackupTestSuccessScreen(
+                      onContinue: () => widget.onTestSucceeded(context),
+                    ),
                   ),
                 );
               case BackupVerificationStatus.failure:

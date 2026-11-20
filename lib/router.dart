@@ -109,6 +109,11 @@ class AppRouter {
     }
   }
 
+  static void _onBackupTestSucceeded(BuildContext context) {
+    WalletRecoverBullBindings.tested(context);
+    router.goNamed(WalletRoute.walletHome.name);
+  }
+
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
@@ -204,6 +209,7 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        onBackupTestSucceeded: _onBackupTestSucceeded,
         buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
             .buildHistory(onBack: () => context.pop()),
       ),
@@ -262,10 +268,7 @@ class AppRouter {
           WalletRecoverBullBindings.recovered(context);
           router.goNamed(WalletRoute.walletHome.name);
         },
-        onTested: (context) {
-          WalletRecoverBullBindings.tested(context);
-          router.goNamed(WalletRoute.walletHome.name);
-        },
+        onTested: _onBackupTestSucceeded,
         onOpenTorSettings: (context) =>
             context.pushNamed(const TorSettingsFacade().settingsRouteName),
       ),

@@ -27,8 +27,10 @@ import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
+  final void Function(BuildContext) onTestSucceeded;
   const ShowMnemonicScreen({
     super.key,
+    required this.onTestSucceeded,
     this.appUnlockFacade = const AppUnlockFacade(),
   });
 
@@ -89,8 +91,9 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const VerifyMnemonicScreen(),
+                                builder: (context) => VerifyMnemonicScreen(
+                                  onTestSucceeded: widget.onTestSucceeded,
+                                ),
                               ),
                             );
                           },

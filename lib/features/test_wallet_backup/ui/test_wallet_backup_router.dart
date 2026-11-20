@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_walle
 import 'package:bb_mobile/features/test_wallet_backup/flow.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,7 +20,9 @@ enum TestWalletBackupRoute {
 }
 
 class TestWalletBackupRouter {
-  static final route = GoRoute(
+  static GoRoute route({
+    required void Function(BuildContext) onTestSucceeded,
+  }) => GoRoute(
     name: TestWalletBackupRoute.testPhysicalBackupFlow.name,
     path: TestWalletBackupRoute.testPhysicalBackupFlow.path,
     builder: (context, state) {
@@ -37,7 +40,10 @@ class TestWalletBackupRouter {
           completeBackupVerificationUsecase:
               locator<CompleteBackupVerificationUsecase>(),
         )..add(const LoadWallets()),
-        child: TestPhysicalBackupFlowNavigator(flow: flow),
+        child: TestPhysicalBackupFlowNavigator(
+          flow: flow,
+          onTestSucceeded: onTestSucceeded,
+        ),
       );
     },
   );

@@ -186,7 +186,7 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<TestWalletBackupBloc>.value(
         value: bloc,
-        child: const VerifyMnemonicScreen(),
+        child: VerifyMnemonicScreen(onTestSucceeded: (_) {}),
       ),
     ),
   );
@@ -319,7 +319,10 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TestWalletBackupBloc>.value(
           value: bloc,
-          child: const ShowMnemonicScreen(appUnlockFacade: _RevealUnlock()),
+          child: ShowMnemonicScreen(
+            onTestSucceeded: (_) {},
+            appUnlockFacade: const _RevealUnlock(),
+          ),
         ),
       ),
     );

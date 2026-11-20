@@ -161,6 +161,7 @@ void main() {
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoute = SettingsRouter.route(
+      onBackupTestSucceeded: (_) {},
       buildPriceHistory: (_) => const SizedBox.shrink(),
     );
     final manage = settingsRoute.routes.whereType<GoRoute>().singleWhere(
@@ -249,12 +250,12 @@ void main() {
       return cubit;
     });
     final route =
-        SettingsRouter.route(buildPriceHistory: (_) => const SizedBox.shrink())
-            .routes
-            .whereType<GoRoute>()
-            .singleWhere(
-              (route) => route.name == SettingsRoute.exchangeAccess.name,
-            );
+        SettingsRouter.route(
+          onBackupTestSucceeded: (_) {},
+          buildPriceHistory: (_) => const SizedBox.shrink(),
+        ).routes.whereType<GoRoute>().singleWhere(
+          (route) => route.name == SettingsRoute.exchangeAccess.name,
+        );
     final routeBuilder = route.builder;
     expect(routeBuilder, isNotNull);
     if (routeBuilder == null) throw StateError('Manage access needs a builder');
