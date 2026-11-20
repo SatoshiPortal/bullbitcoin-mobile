@@ -66,7 +66,7 @@ class BullSettingsEntryTile extends StatelessWidget {
                     ),
                     child: Text(
                       text,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
                       style: context.bullType.label.copyWith(
