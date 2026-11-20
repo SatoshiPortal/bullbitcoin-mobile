@@ -21,7 +21,6 @@ class BullAmount extends StatefulWidget {
     this.interactive = true,
     this.overrideHideAmounts = false,
     this.style,
-    this.unitStyle,
     this.color,
     this.textAlign,
   });
@@ -31,9 +30,6 @@ class BullAmount extends StatefulWidget {
   final bool interactive;
   final bool overrideHideAmounts;
   final TextStyle? style;
-
-  /// Optional style for the trailing denomination, independent of the amount.
-  final TextStyle? unitStyle;
   final Color? color;
   final TextAlign? textAlign;
 
@@ -95,11 +91,9 @@ class _BullAmountState extends State<BullAmount> {
         ? '${l10n.amountHidden} ${unit.code}'
         : _format(unit, l10n);
     if (!widget.interactive) {
-      return _amountText(
-        text: text,
-        unit: unit,
+      return Text(
+        text,
         style: widget.style?.copyWith(color: widget.color),
-        unitStyle: widget.unitStyle,
         textAlign: widget.textAlign,
       );
     }
@@ -107,7 +101,6 @@ class _BullAmountState extends State<BullAmount> {
       text: text,
       unit: unit,
       style: widget.style,
-      unitStyle: widget.unitStyle,
       color: widget.color,
       textAlign: widget.textAlign,
       onPressed: snapshot?.isReady == true
@@ -130,7 +123,6 @@ class BullAmountUnitToggle extends StatefulWidget {
     required this.onPressed,
     this.semanticValue,
     this.style,
-    this.unitStyle,
     this.color,
     this.textAlign,
   });
@@ -140,9 +132,6 @@ class BullAmountUnitToggle extends StatefulWidget {
   final VoidCallback? onPressed;
   final String? semanticValue;
   final TextStyle? style;
-
-  /// Optional style for the trailing denomination, independent of the amount.
-  final TextStyle? unitStyle;
   final Color? color;
   final TextAlign? textAlign;
 
@@ -212,37 +201,9 @@ class _BullAmountUnitToggleState extends State<BullAmountUnitToggle> {
             tapTargetSize: MaterialTapTargetSize.padded,
             visualDensity: VisualDensity.standard,
           ),
-          child: _amountText(
-            text: widget.text,
-            unit: widget.unit,
-            style: style,
-            unitStyle: widget.unitStyle,
-            textAlign: widget.textAlign,
-          ),
+          child: Text(widget.text, style: style, textAlign: widget.textAlign),
         ),
       ),
     );
   }
-}
-
-Widget _amountText({
-  required String text,
-  required BitcoinUnit unit,
-  TextStyle? style,
-  TextStyle? unitStyle,
-  TextAlign? textAlign,
-}) {
-  if (unitStyle == null || !text.endsWith(' ${unit.code}')) {
-    return Text(text, style: style, textAlign: textAlign);
-  }
-  return Text.rich(
-    TextSpan(
-      children: [
-        TextSpan(text: text.substring(0, text.length - unit.code.length)),
-        TextSpan(text: unit.code, style: unitStyle),
-      ],
-    ),
-    style: style,
-    textAlign: textAlign,
-  );
 }
