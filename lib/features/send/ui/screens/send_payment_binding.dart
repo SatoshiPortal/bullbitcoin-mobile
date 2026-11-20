@@ -648,15 +648,7 @@ final class _SendPaymentSession {
       stepLabels: steps(context),
       stepSemanticLabel: (i, label) => '${i + 1}: $label',
       youSendLabel: context.loc.sendYouSend,
-      amount: money(
-        context,
-        sats,
-        style: context.bullType.headline.copyWith(
-          fontSize: 28,
-          height: 36 / 28,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      amount: money(context, sats, style: context.bullType.headline),
       equivalent: fiat(state, sats),
       enteredDetail: entered == null || quoteTime == null
           ? null
