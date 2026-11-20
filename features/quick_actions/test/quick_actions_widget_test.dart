@@ -77,7 +77,7 @@ void main() {
         );
         expect(
           tester.widget<BullQuickAction>(control).icon,
-          hidden ? BullIcons.visibility : BullIcons.visibilityOff,
+          BullIcons.currencyBitcoin,
         );
         await tester.tap(control);
         await tester.pumpAndSettle();
