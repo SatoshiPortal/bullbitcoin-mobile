@@ -3008,6 +3008,8 @@ class SendCubit extends Cubit<SendState>
       ),
     );
 
+    // The settings sheet can commit a fee before Send has selected a wallet.
+    if (state.selectedWallet == null) return;
     await createTransaction();
     // updateSwapLockupFees();
   }
