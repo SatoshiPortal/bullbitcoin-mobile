@@ -2651,6 +2651,74 @@ void main() {
     },
   );
 
+  test(
+    'switching Liquid wallet hides the previous address before lookup',
+    () async {
+      final first = _testWallet(
+        origin: 'first',
+        network: Network.liquidMainnet,
+      );
+      final next = _testWallet(origin: 'next', network: Network.liquidMainnet);
+      final oldAddress = _testAddress(walletId: first.id)
+          .copyWith(address: 'lq1old');
+      final nextAddress = _testAddress(walletId: next.id)
+          .copyWith(address: 'lq1next');
+      final nextLookup = Completer<Result<WalletAddress, ReceiveFailure>>();
+      const unavailable = ReceiveAddressUnavailableFailure('busy');
+      when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+          .thenAnswer((_) async => Ok([first]));
+      when(() => getReceiveAddress.execute(walletId: first.id))
+          .thenAnswer((_) async => Ok(oldAddress));
+      when(() => getReceiveAddress.execute(walletId: next.id))
+          .thenAnswer((_) => nextLookup.future);
+      final bloc = buildBloc(withPresetWallet: false);
+      addTearDown(() async {
+        if (!nextLookup.isCompleted) {
+          nextLookup.complete(const Err(unavailable));
+        }
+        await bloc.close();
+      });
+      bloc.add(const ReceiveLiquidStarted());
+      await pumpEventQueue();
+      expect(bloc.state.qrData, oldAddress.address);
+      expect(bloc.state.clipboardData, oldAddress.address);
+
+      when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+          .thenAnswer((_) async => Ok([next]));
+      final emissions = <ReceiveState>[];
+      final subscription = bloc.stream.listen(emissions.add);
+      addTearDown(subscription.cancel);
+      bloc.add(const ReceiveLiquidStarted());
+      await pumpEventQueue();
+      expect(bloc.state.wallet?.id, next.id);
+      expect(bloc.state.walletAdmitted, isTrue);
+      final waiting = bloc.state;
+      nextLookup.complete(const Err(unavailable));
+      await pumpEventQueue();
+      final failed = bloc.state;
+      expect(failed.failure, same(unavailable));
+      for (final state in [waiting, failed]) {
+        expect(state.liquidAddress, isNull);
+        expect(state.qrData, isEmpty);
+        expect(state.clipboardData, isEmpty);
+        expect(state.addressOrInvoiceOnly, isEmpty);
+      }
+      for (final state in emissions.where(
+        (state) => state.wallet?.id == next.id,
+      )) {
+        expect(state.liquidAddress, isNull);
+        expect(state.clipboardData, isEmpty);
+      }
+
+      when(() => getReceiveAddress.execute(walletId: next.id))
+          .thenAnswer((_) async => Ok(nextAddress));
+      bloc.add(const ReceiveAddressRetried());
+      await pumpEventQueue();
+      expect(bloc.state.qrData, nextAddress.address);
+      expect(bloc.state.clipboardData, nextAddress.address);
+    },
+  );
+
   for (final sameWallet in [true, false]) {
     test('Liquid address Retry with same wallet=$sameWallet', () async {
       final wallet = _testWallet(network: Network.liquidMainnet);

@@ -209,11 +209,12 @@ void main() {
 
     test('liquid: amount is in BTC (L-BTC) units and the note becomes '
         'message=', () {
+      final wallet = localWallet(network: Network.liquidMainnet);
       final state = ReceiveState(
         type: ReceiveType.liquid,
-        wallet: localWallet(network: Network.liquidMainnet),
+        wallet: wallet,
         liquidAddress: WalletAddress(
-          walletId: 'w1',
+          walletId: wallet.id,
           index: 0,
           address: 'lq1qqtestaddress',
           createdAt: DateTime(2026),
