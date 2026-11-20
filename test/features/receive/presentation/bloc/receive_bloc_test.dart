@@ -2486,6 +2486,102 @@ void main() {
     },
   );
 
+  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    test(
+      'Retry keeps an edited message and rejects late labels on $network',
+      () async {
+        final wallet = _testWallet(origin: 'original', network: network);
+        final address = _testAddress(walletId: wallet.id);
+        final labelLoad = Completer<Result<String, ReceiveFailure>>();
+        when(() => getPayjoinPolicy.execute()).thenAnswer(
+          (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+        );
+        var lookups = 0;
+        when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+          (_) async => ++lookups == 1
+              ? const Err(ReceiveAddressUnavailableFailure('busy'))
+              : Ok(address),
+        );
+        when(() => loadAddressLabel.execute(address.address))
+            .thenAnswer((_) => labelLoad.future);
+        final bloc = buildBloc(wallet: wallet);
+        addTearDown(() async {
+          if (!labelLoad.isCompleted) labelLoad.complete(const Ok('stored'));
+          await bloc.close();
+        });
+        final start = network.isBitcoin
+            ? ReceiveBitcoinStarted(wallet)
+            : const ReceiveLiquidStarted();
+        bloc.add(start);
+        await pumpEventQueue();
+        expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+        bloc.emit(bloc.state.copyWith(confirmedNote: 'confirmed snapshot'));
+        bloc.add(const ReceiveNoteChanged('draft after failure'));
+        await pumpEventQueue();
+
+        bloc.add(const ReceiveAddressRetried());
+        await pumpEventQueue();
+        final duringRetry = (bloc.state.note, bloc.state.confirmedNote);
+        final latest = network.isBitcoin ? 'newer user draft' : '';
+        bloc.add(ReceiveNoteChanged(latest));
+        await pumpEventQueue();
+        labelLoad.complete(const Ok('stored'));
+        await pumpEventQueue();
+        expect(duringRetry, ('draft after failure', 'confirmed snapshot'));
+        expect(bloc.state.note, latest);
+        expect(bloc.state.confirmedNote, 'confirmed snapshot');
+        expect(
+          Uri.parse(bloc.state.paymentRequest).queryParameters['message'],
+          latest.isEmpty ? null : latest,
+        );
+
+        // Switching rails starts a fresh request without this wallet's draft.
+        if (network.isBitcoin) {
+          final liquid = _testWallet(
+            origin: 'other',
+            network: Network.liquidMainnet,
+          );
+          when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+              .thenAnswer((_) async => Ok([liquid]));
+          when(() => getReceiveAddress.execute(walletId: liquid.id)).thenAnswer(
+            (_) async => Ok(
+              _testAddress(walletId: liquid.id).copyWith(address: 'lq1other'),
+            ),
+          );
+          bloc.add(const ReceiveLiquidStarted());
+        } else {
+          final bitcoin = _testWallet(origin: 'other');
+          when(() => getReceiveAddress.execute(walletId: bitcoin.id))
+              .thenAnswer(
+                (_) async => Ok(
+                  _testAddress(walletId: bitcoin.id)
+                      .copyWith(address: 'bc1qother'),
+                ),
+              );
+          bloc.add(ReceiveBitcoinStarted(bitcoin));
+        }
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, 'other');
+        expect(bloc.state.note, isEmpty);
+        expect(bloc.state.confirmedNote, isEmpty);
+      },
+    );
+  }
+
+  test('fresh Bitcoin draft still hydrates an address label', () async {
+    final wallet = _testWallet();
+    final address = _testAddress(walletId: wallet.id);
+    when(() => getReceiveAddress.execute(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(address));
+    when(() => loadAddressLabel.execute(address.address))
+        .thenAnswer((_) async => const Ok('stored'));
+    final bloc = buildBloc(wallet: wallet);
+    addTearDown(bloc.close);
+    bloc.add(ReceiveBitcoinStarted(wallet));
+    await pumpEventQueue();
+    expect(bloc.state.note, 'stored');
+  });
+
   test('Bitcoin address Retry retains the live 321-sat request', () async {
     when(() => getPayjoinPolicy.execute()).thenAnswer(
       (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
@@ -2764,6 +2860,9 @@ void main() {
       await pumpEventQueue();
       firstLookup.complete(const Err(ReceiveAddressUnavailableFailure()));
       await pumpEventQueue();
+      bloc.emit(bloc.state.copyWith(confirmedNote: 'old confirmed'));
+      bloc.add(const ReceiveNoteChanged('old draft'));
+      await pumpEventQueue();
       final draft = bloc.state;
       expect(draft.confirmedAmountSat, 321);
       expect(draft.amountEntryValid, isFalse);
@@ -2787,6 +2886,8 @@ void main() {
           sameWallet ? draft.confirmedConversion : null,
         );
         expect(state.amountEntryValid, !sameWallet);
+        expect(state.note, sameWallet ? 'old draft' : '');
+        expect(state.confirmedNote, sameWallet ? 'old confirmed' : '');
       }
       final qrData = bloc.state.qrData;
       expect(bloc.state.liquidAddress, address);
