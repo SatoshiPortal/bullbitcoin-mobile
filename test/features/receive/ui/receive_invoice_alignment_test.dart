@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
@@ -114,13 +113,13 @@ void main() {
       await _mount(tester, destination: destination);
       final context = tester.element(find.byType(ReceiveLnInfoDetails));
       final loc = context.loc;
-      final link = find.byType(DisclosureLink);
+      final link = find.byType(BullDisclosureLink);
       if (destination.isBitcoin) {
         expect(link, findsNothing);
         return;
       }
       expect(link, findsOneWidget);
-      final disclosure = tester.widget<DisclosureLink>(link);
+      final disclosure = tester.widget<BullDisclosureLink>(link);
       expect(
         disclosure.label,
         'Payments will be converted to Liquid L-BTC (not BTC). Learn more.',
@@ -128,8 +127,8 @@ void main() {
       expect(disclosure.semanticLabel, loc.liquidRiskDisclosureSemanticLabel);
       await tester.tap(link);
       await tester.pumpAndSettle();
-      final sheet = tester.widget<DisclosureBottomSheet>(
-        find.byType(DisclosureBottomSheet),
+      final sheet = tester.widget<BullDisclosureSheet>(
+        find.byType(BullDisclosureSheet),
       );
       expect(sheet.title, loc.liquidRiskDisclosureTitle);
       expect(sheet.body, loc.liquidRiskDisclosureBody);

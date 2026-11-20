@@ -242,6 +242,7 @@ export 'src/support/bull_support_scope.dart';
 export 'src/overlays/bull_bottom_sheet.dart';
 export 'src/overlays/bull_confirm_dialog.dart';
 export 'src/overlays/bull_dialog.dart';
+export 'src/overlays/bull_disclosure_sheet.dart';
 export 'src/overlays/bull_instructions_sheet.dart';
 export 'src/overlays/bull_picker_sheet.dart';
 
