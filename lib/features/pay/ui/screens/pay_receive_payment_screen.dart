@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_qr_bottom_sheet.dart';
@@ -17,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullInvoiceViewer,
         BullButton,
         BullCountdown,
         BullCopyField,
@@ -350,7 +350,12 @@ class PayReceivePaymentScreen extends StatelessWidget {
     };
 
     return order.payinMethod == OrderPaymentMethod.lnInvoice
-        ? InvoiceViewer(fullText)
+        ? BullInvoiceViewer(
+            fullText,
+            title: context.loc.invoiceViewerTitle,
+            copyLabel: context.loc.viewerTapToCopy,
+            copiedMessage: context.loc.copiedToClipboard,
+          )
         : AddressViewer(fullText);
   }
 
