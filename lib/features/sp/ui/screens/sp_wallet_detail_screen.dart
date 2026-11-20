@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletDetailBalanceCard;
-import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_tx_list_item.dart';
@@ -23,6 +22,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullPullableBody,
         BullReceiveSendButtons,
+        BullTransactionsByDayList,
         BullShapesX,
         Gap,
         bullTimeAgo,
@@ -436,7 +436,7 @@ class _SpActivitySection extends StatelessWidget {
       );
     }
 
-    return TransactionsByDayList<SpPayment>(
+    return BullTransactionsByDayList<SpPayment>(
       sliver: true,
       itemsByDay: state.history.isEmpty ? null : state.historyByDay,
       dayLabel: (context, dayKey) =>
@@ -446,6 +446,9 @@ class _SpActivitySection extends StatelessWidget {
         key: ValueKey(payment.txid),
       ),
       loadingMessage: context.loc.transactionListLoadingTransactions,
+      pendingLabel: context.loc.transactionListPending,
+      todayLabel: context.loc.transactionListToday,
+      yesterdayLabel: context.loc.transactionListYesterday,
       emptyMessage: context.loc.spActivityEmpty,
     );
   }
