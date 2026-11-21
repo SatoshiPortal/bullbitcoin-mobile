@@ -5,6 +5,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -29,6 +30,7 @@ class SpCubit extends Cubit<SpState> {
   final RestampSpPaymentTimesUsecase _restampSpPaymentTimesUsecase;
   final SpNotificationsWatcher _spNotificationsWatcher;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
+  final IsSpScanningUsecase _isSpScanningUsecase;
   final StopSpScanUsecase _stopSpScanUsecase;
   final ClearSpScanStateUsecase _clearSpScanStateUsecase;
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
@@ -44,6 +46,9 @@ class SpCubit extends Cubit<SpState> {
   // spawned its background thread, so a double-tap in that window would slip
   // past the state check. This flag closes it at tap time.
   bool _scanInFlight = false;
+  bool _stopRequested = false;
+  int? _scanStartToRetry;
+  int _scanRevision = 0;
 
   // The retry policy (attempts + backoff) lives in the watcher; the cubit only
   // reflects the outcome as a status.
@@ -54,6 +59,7 @@ class SpCubit extends Cubit<SpState> {
     required this._restampSpPaymentTimesUsecase,
     required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
+    required this._isSpScanningUsecase,
     required this._stopSpScanUsecase,
     required this._clearSpScanStateUsecase,
     required this._revokeSpWalletUsecase,
@@ -63,13 +69,23 @@ class SpCubit extends Cubit<SpState> {
     required this._getSpAutoScanUsecase,
   }) : super(const SpState());
 
+  Future<Result<int, SpFailure>> scanServerTip() =>
+      _loadSpWalletDataUsecase.scanServerTip();
+
   Future<void> load() async {
     if (isClosed) return;
     emit(state.copyWith(isLoading: true, error: null));
+    final revision = _scanRevision;
     final result = await _loadSpWalletDataUsecase.execute();
+    final autoScanEnabled = await _getSpAutoScanUsecase.read();
     if (isClosed) return;
+    final scanChanged = revision != _scanRevision;
     switch (result) {
       case Ok(:final value):
+        _subscribeToNotifications();
+        final isScanning = scanChanged
+            ? state.isScanning
+            : _isSpScanningUsecase.execute();
         emit(
           state.copyWith(
             isLoading: false,
@@ -77,17 +93,22 @@ class SpCubit extends Cubit<SpState> {
             spAddress: value.wallet.spAddress,
             history: value.history,
             coins: value.coins,
-            lastScannedHeight: value.wallet.lastScannedHeight,
-            isScanning: value.wallet.isScanning,
+            lastScannedHeight: scanChanged
+                ? state.lastScannedHeight
+                : value.wallet.lastScannedHeight,
+            isScanning: isScanning,
+            hasPendingScan: scanChanged
+                ? state.hasPendingScan
+                : value.wallet.hasPendingScan,
             network: value.network,
             chainTip: value.chainTip,
             minBirthdayHeight: value.minBirthdayHeight,
-            isAutoScanEnabled: _getSpAutoScanUsecase.execute(),
+            isAutoScanEnabled: autoScanEnabled,
           ),
         );
-        // A genuinely revoked wallet returns Err (below) and does not
-        // re-subscribe, so the self-heal onDone cannot loop.
-        _subscribeToNotifications();
+        if (!scanChanged && value.wallet.isScanning && !isScanning) {
+          await _refreshWalletData();
+        }
       case Err(:final failure):
         log.warning('SpCubit.load: ${failure.logMessage}');
         emit(state.copyWith(isLoading: false, error: failure));
@@ -160,6 +181,7 @@ class SpCubit extends Cubit<SpState> {
 
   void _onNotification(SpNotification n) {
     if (isClosed) return;
+    if (n.scanRunningAfter != null) _scanRevision++;
     switch (n) {
       case SpScanStarted(:final from, :final to):
         _onScanStarted(from, to);
@@ -210,11 +232,14 @@ class SpCubit extends Cubit<SpState> {
 
   /// [to] is the Blindbit tip the scan runs up to.
   void _onScanStarted(int from, int to) {
+    _scanStartToRetry = null;
     _etaEstimator.reset();
     final chainTip = state.chainTip;
     emit(
       state.copyWith(
         isScanning: true,
+        hasPendingScan: true,
+        error: null,
         scanPhase: SpScanPhase.receive,
         scanStartTime: DateTime.now(),
         scanEtaSecs: null,
@@ -268,6 +293,7 @@ class SpCubit extends Cubit<SpState> {
     emit(
       state.copyWith(
         isScanning: false,
+        hasPendingScan: false,
         scanLastDurationSecs: start == null
             ? null
             : DateTime.now().difference(start).inSeconds,
@@ -382,15 +408,18 @@ class SpCubit extends Cubit<SpState> {
 
   /// Turn automatic scanning on or off. With it off nothing resumes a scan on
   /// its own and the nudge stays away, since the user asked to drive it.
-  Future<void> setAutoScanEnabled({required bool isEnabled}) async {
-    await _setSpAutoScanUsecase.execute(isEnabled: isEnabled);
-    if (isClosed) return;
-    emit(state.copyWith(isAutoScanEnabled: isEnabled));
+  Future<SpFailure?> setAutoScanEnabled({required bool isEnabled}) async {
+    final result = await _setSpAutoScanUsecase.execute(isEnabled: isEnabled);
+    if (result case Err(:final failure)) return failure;
+    if (!isClosed) emit(state.copyWith(isAutoScanEnabled: isEnabled));
+    return null;
   }
 
   Future<void> _refreshWalletData() async {
+    final revision = _scanRevision;
     final result = await _loadSpWalletDataUsecase.execute();
     if (isClosed) return;
+    final scanChanged = revision != _scanRevision;
     switch (result) {
       case Ok(:final value):
         emit(
@@ -398,7 +427,15 @@ class SpCubit extends Cubit<SpState> {
             balance: value.wallet.balance,
             history: value.history,
             coins: value.coins,
-            lastScannedHeight: value.wallet.lastScannedHeight,
+            lastScannedHeight: scanChanged
+                ? state.lastScannedHeight
+                : value.wallet.lastScannedHeight,
+            isScanning: scanChanged
+                ? state.isScanning
+                : value.wallet.isScanning,
+            hasPendingScan: scanChanged
+                ? state.hasPendingScan
+                : value.wallet.hasPendingScan,
             chainTip: value.chainTip,
           ),
         );
@@ -420,6 +457,8 @@ class SpCubit extends Cubit<SpState> {
     // one-shot scan concurrently. Mirrors the send flow's isBroadcasting guard.
     if (_scanInFlight || state.isScanning) return;
     _scanInFlight = true;
+    _scanStartToRetry = null;
+    _scanRevision++;
     try {
       if (isClosed) return;
       emit(
@@ -439,26 +478,39 @@ class SpCubit extends Cubit<SpState> {
       );
       if (isClosed) return;
       if (result case Err(:final failure)) {
+        _scanStartToRetry = startHeight;
         log.warning('SpCubit.scan: ${failure.logMessage}');
-        if (failure is SpScanBusy) {
-          emit(state.copyWith(error: failure));
-        } else {
-          emit(state.copyWith(isScanning: false, error: failure));
-        }
+        emit(
+          state.copyWith(
+            isScanning: failure is SpScanBusy && _isSpScanningUsecase.execute(),
+            error: failure,
+          ),
+        );
       }
     } finally {
       // Only this call (which passed the guard) started the scan, so only this
       // call clears the flag.
       _scanInFlight = false;
+      if (_stopRequested) {
+        _stopRequested = false;
+        await stopScan();
+      }
     }
   }
 
+  Future<void> retryScan() => scan(startHeight: _scanStartToRetry);
+
   Future<void> stopScan() async {
+    if (_scanInFlight) {
+      _stopRequested = true;
+      return;
+    }
     // Returns after flipping the cancel flag; the scan tears down
     // asynchronously and emits ScanStopped/ScanCompleted, at which point
     // `_onNotification` clears `state.isScanning`.
     if (await _stopSpScanUsecase.execute() case Err(:final failure)) {
       log.warning('SpCubit.stopScan: ${failure.logMessage}');
+      if (!isClosed) emit(state.copyWith(error: failure));
     }
   }
 
@@ -468,10 +520,13 @@ class SpCubit extends Cubit<SpState> {
     if (isClosed) return false;
     switch (result) {
       case Ok():
+        _scanStartToRetry = null;
+        _scanRevision++;
         emit(
           state.copyWith(
             error: null,
             lastScannedHeight: null,
+            hasPendingScan: false,
             scanPhase: null,
             scanStartTime: null,
             scanEtaSecs: null,
@@ -506,21 +561,6 @@ class SpCubit extends Cubit<SpState> {
   void clearError() {
     if (isClosed) return;
     emit(state.copyWith(error: null));
-  }
-
-  void dismissScanCaughtUp() {
-    if (isClosed) return;
-    emit(
-      state.copyWith(
-        scanPhase: null,
-        scanStartTime: null,
-        scanEtaSecs: null,
-        scanLastDurationSecs: null,
-        scanFrom: null,
-        scanTo: null,
-        scanCurrent: null,
-      ),
-    );
   }
 
   @override

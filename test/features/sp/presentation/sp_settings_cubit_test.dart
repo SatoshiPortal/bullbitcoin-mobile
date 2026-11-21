@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/sp/domain/ports/sp_backend_probe_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_backend_defaults_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_backend_config_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_notification_log_usecase.dart';
@@ -21,8 +21,8 @@ import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockRecreateSpWalletUsecase extends Mock
-    implements RecreateSpWalletUsecase {}
+class _MockUpdateSpBackendConfigUsecase extends Mock
+    implements UpdateSpBackendConfigUsecase {}
 
 class _MockWatchSpNotificationLogUsecase extends Mock
     implements WatchSpNotificationLogUsecase {}
@@ -62,7 +62,7 @@ void main() {
               url: url,
             );
         }
-        return const Ok<void, SpFailure>(null);
+        return const Ok<bool, SpFailure>(true);
       } catch (e) {
         return Err<void, SpFailure>(
           SpBackendUnreachable('SP backend test failed ($url): $e'),
@@ -73,7 +73,7 @@ void main() {
 
   late _MockWatchSpNotificationLogUsecase logUsecase;
   late StreamController<SpNotifLogLine> logController;
-  late _MockRecreateSpWalletUsecase recreateUsecase;
+  late _MockUpdateSpBackendConfigUsecase updateUsecase;
 
   SpSettingsCubit build({
     List<SpNotifLogLine> seed = const [],
@@ -99,9 +99,9 @@ void main() {
       testBlindbit: testBlindbit,
       testElectrum: testElectrum,
     );
-    recreateUsecase = _MockRecreateSpWalletUsecase();
+    updateUsecase = _MockUpdateSpBackendConfigUsecase();
     return SpSettingsCubit(
-      recreateSpWalletUsecase: recreateUsecase,
+      updateSpBackendConfigUsecase: updateUsecase,
       watchNotificationLogUsecase: logUsecase,
       testSpBackendUsecase: TestSpBackendUsecase(probe: probe),
       loadSpBackendConfigUsecase: LoadSpBackendConfigUsecase(
@@ -111,24 +111,24 @@ void main() {
     );
   }
 
-  void stubRecreate({SpFailure? failure}) {
+  void stubUpdate({SpFailure? failure, bool changed = true}) {
     final stub = when(
-      () => recreateUsecase.execute(
+      () => updateUsecase.execute(
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
       ),
     );
     if (failure != null) {
-      stub.thenAnswer((_) async => Err<void, SpFailure>(failure));
+      stub.thenAnswer((_) async => Err<bool, SpFailure>(failure));
     } else {
-      stub.thenAnswer((_) async => const Ok<void, SpFailure>(null));
+      stub.thenAnswer((_) async => Ok<bool, SpFailure>(changed));
     }
   }
 
-  void verifyNeverRecreate() {
+  void verifyNeverUpdate() {
     verifyNever(
-      () => recreateUsecase.execute(
+      () => updateUsecase.execute(
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
@@ -205,7 +205,7 @@ void main() {
         );
         stubTestBackend(probe);
         final cubit = SpSettingsCubit(
-          recreateSpWalletUsecase: _MockRecreateSpWalletUsecase(),
+          updateSpBackendConfigUsecase: _MockUpdateSpBackendConfigUsecase(),
           watchNotificationLogUsecase: logUsecase,
           testSpBackendUsecase: TestSpBackendUsecase(probe: probe),
           loadSpBackendConfigUsecase: LoadSpBackendConfigUsecase(
@@ -266,9 +266,24 @@ void main() {
   });
 
   group('SpSettingsCubit saveBackendConfig', () {
+    test('unchanged settings do not signal a wallet reload', () async {
+      final cubit = build();
+      stubUpdate(changed: false);
+      await cubit.setNetwork(BitcoinNetwork.regtest);
+      await cubit.testBlindbit();
+      await cubit.testElectrum();
+
+      await cubit.saveBackendConfig();
+
+      expect(cubit.state.saved, isFalse);
+      expect(cubit.state.isSaving, isFalse);
+      expect(cubit.state.error, isNull);
+      await cubit.close();
+    });
+
     test('success sets saved and clears isSaving', () async {
       final cubit = build();
-      stubRecreate();
+      stubUpdate();
       // Fill the URLs from the regtest defaults, then pass both connection
       // tests so canSave is satisfied.
       await cubit.setNetwork(BitcoinNetwork.regtest);
@@ -281,7 +296,7 @@ void main() {
       expect(cubit.state.saved, isTrue);
       expect(cubit.state.isSaving, isFalse);
       verify(
-        () => recreateUsecase.execute(
+        () => updateUsecase.execute(
           network: BitcoinNetwork.regtest,
           blindbitUrl: 'http://127.0.0.1:8000',
           electrumUrl: 'tcp://127.0.0.1:50001',
@@ -290,35 +305,32 @@ void main() {
       await cubit.close();
     });
 
-    test(
-      'a throwing recreate usecase sets error and clears isSaving',
-      () async {
-        final cubit = build();
-        stubRecreate(failure: const SpUnexpected('recreate failed'));
-        await cubit.setNetwork(BitcoinNetwork.regtest);
-        await cubit.testBlindbit();
-        await cubit.testElectrum();
+    test('an update failure sets error and clears isSaving', () async {
+      final cubit = build();
+      stubUpdate(failure: const SpUnexpected('recreate failed'));
+      await cubit.setNetwork(BitcoinNetwork.regtest);
+      await cubit.testBlindbit();
+      await cubit.testElectrum();
 
-        await cubit.saveBackendConfig();
+      await cubit.saveBackendConfig();
 
-        expect(cubit.state.error, isA<SpUnexpected>());
-        expect(cubit.state.isSaving, isFalse);
-        expect(cubit.state.saved, isFalse);
-        await cubit.close();
-      },
-    );
+      expect(cubit.state.error, isA<SpUnexpected>());
+      expect(cubit.state.isSaving, isFalse);
+      expect(cubit.state.saved, isFalse);
+      await cubit.close();
+    });
 
     test('the canSave gate no-ops and never calls recreate when tests have not '
         'passed', () async {
       final cubit = build();
-      stubRecreate();
+      stubUpdate();
       await cubit.setNetwork(BitcoinNetwork.regtest);
       // No testBlindbit()/testElectrum(): the conn tests stay untested.
       expect(cubit.state.canSave, isFalse);
 
       await cubit.saveBackendConfig();
 
-      verifyNeverRecreate();
+      verifyNeverUpdate();
       expect(cubit.state.saved, isFalse);
       expect(cubit.state.isSaving, isFalse);
       await cubit.close();
@@ -333,7 +345,7 @@ void main() {
           testBlindbit: ({required String url}) async =>
               throw Exception('blindbit down'),
         );
-        stubRecreate();
+        stubUpdate();
         await cubit.setNetwork(BitcoinNetwork.regtest);
 
         await cubit.testBlindbit();
@@ -346,7 +358,7 @@ void main() {
 
         await cubit.saveBackendConfig();
 
-        verifyNeverRecreate();
+        verifyNeverUpdate();
         await cubit.close();
       },
     );
@@ -358,7 +370,7 @@ void main() {
           testElectrum: ({required String url}) async =>
               throw Exception('electrum down'),
         );
-        stubRecreate();
+        stubUpdate();
         await cubit.setNetwork(BitcoinNetwork.regtest);
 
         await cubit.testBlindbit();
@@ -371,7 +383,7 @@ void main() {
 
         await cubit.saveBackendConfig();
 
-        verifyNeverRecreate();
+        verifyNeverUpdate();
         await cubit.close();
       },
     );

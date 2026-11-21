@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart';
 /// Pure constants only. No business logic, no external dependencies beyond
 /// the domain network enum.
 abstract class SpConfig {
-  static const int dustLimitSat = 600;
+  static const int defaultMinScanAmountSat = 1000;
 
   /// A change below it goes to the fee. About twice the P2TR dust limit.
   static const int changeDustThresholdSat = 600;
@@ -41,8 +41,8 @@ abstract class SpConfig {
   static SpBackendDefaults? staticDefaults(BitcoinNetwork network) =>
       switch (network) {
         BitcoinNetwork.mainnet => const SpBackendDefaults(
-          blindbitUrl: 'https://blindbit.pythcoiner.dev',
-          electrumUrl: 'ssl://electrum.pythcoiner.dev:50002',
+          blindbitUrl: 'https://blindbit.bullbitcoin.com',
+          electrumUrl: 'ssl://electrum.bullbitcoin.com:50002',
         ),
         BitcoinNetwork.signet => const SpBackendDefaults(
           blindbitUrl: 'https://blindbit-signet.bullbitcoin.com',

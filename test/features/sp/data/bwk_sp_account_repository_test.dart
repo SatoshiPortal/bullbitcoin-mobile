@@ -7,11 +7,14 @@ import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasour
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
+import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:rust_bindings/bwk.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show Secret;
 
 import '../sp_fakes.dart';
 
@@ -40,6 +43,9 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   bool session;
   int restampCalls = 0;
   int balanceReads = 0;
+  int stopCalls = 0;
+  final scanStarts = <int?>[];
+  Future<void> Function()? onClearScanState;
   BigInt? changeDustThreshold;
   // Holds restartElectrum open until completed, when set.
   Completer<void>? restart;
@@ -56,6 +62,7 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
 
   @override
   Future<void> stopScan() async {
+    stopCalls++;
     final error = stopScanError;
     if (error != null) throw error;
   }
@@ -64,7 +71,14 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   Future<void> scanOnce({int? startHeight}) async {
     final error = scanOnceError;
     if (error != null) throw error;
+    scanStarts.add(startHeight);
   }
+
+  @override
+  int? lastScannedHeight() => null;
+
+  @override
+  Future<void> clearScanState() async => onClearScanState?.call();
 
   @override
   Stream<SpNotification> init() => notifications;
@@ -81,11 +95,15 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   Future<void> restartElectrum() => restart?.future ?? Future.value();
 
   @override
+  String spAddress() => 'sp1test';
+
+  @override
   SpBalanceView unifiedBalance() {
     balanceReads++;
     return SpBalanceView(
       confirmedSat: BigInt.from(1000),
       totalUnifiedSat: BigInt.from(1000),
+      lastScannedHeight: 709656,
     );
   }
 
@@ -105,6 +123,49 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
         changeSat: BigInt.zero,
       ),
     );
+  }
+}
+
+class _OpeningFfiDatasource extends _FakeFfiDatasource {
+  _OpeningFfiDatasource() : super(session: false);
+
+  final opening = Completer<void>();
+  final finishOpen = Completer<void>();
+
+  @override
+  Future<void> createFromSecret({
+    required SpNetwork network,
+    required Secret secret,
+    required String blindbitUrl,
+    required String electrumUrl,
+    required String dataDir,
+    required int fetchConcurrencyFactor,
+    required int matchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
+    required SpHeaderCheckpoint? headerCheckpoint,
+  }) async {
+    opening.complete();
+    await finishOpen.future;
+    session = true;
+  }
+
+  @override
+  void setElectrumUrl(String url) {}
+
+  @override
+  Future<void> startElectrum() async {}
+}
+
+class _PendingScanFiles extends SpAccountFilesDatasource {
+  Future<void> Function(({int? startHeight, bool isPaused})?)? beforeWrite;
+
+  @override
+  Future<void> writePendingScan(
+    String dataDir,
+    ({int? startHeight, bool isPaused})? pending,
+  ) async {
+    await beforeWrite?.call(pending);
+    await super.writePendingScan(dataDir, pending);
   }
 }
 
@@ -139,11 +200,13 @@ void main() {
     }
   });
 
-  BwkSpAccountRepository makeRepo({BwkSpAccountDatasource? ffi}) =>
-      BwkSpAccountRepository(
-        ffi: ffi ?? BwkSpAccountDatasource(),
-        files: SpAccountFilesDatasource(),
-      );
+  BwkSpAccountRepository makeRepo({
+    BwkSpAccountDatasource? ffi,
+    SpAccountFilesDatasource? files,
+  }) => BwkSpAccountRepository(
+    ffi: ffi ?? BwkSpAccountDatasource(),
+    files: files ?? SpAccountFilesDatasource(),
+  );
 
   Directory accountDirOf() =>
       Directory('${tempDir.path}/${SpStorageNames.accountName}');
@@ -155,6 +218,21 @@ void main() {
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
       );
+
+  test('snapshot uses the scan height returned with the balance', () {
+    final ffi = _FakeFfiDatasource();
+    final result = makeRepo(ffi: ffi).snapshot();
+
+    expect(
+      result,
+      isA<Ok<SpWallet, SpFailure>>().having(
+        (snapshot) => snapshot.value.lastScannedHeight,
+        'lastScannedHeight',
+        709656,
+      ),
+    );
+    expect(ffi.balanceReads, 1);
+  });
 
   group('createFromSecret lock clearing', () {
     test(
@@ -209,6 +287,32 @@ void main() {
   });
 
   group('dispose stream teardown', () {
+    test('disposal waits for a cold open and rejects parallel opens', () async {
+      final ffi = _OpeningFfiDatasource();
+      final repo = makeRepo(ffi: ffi);
+      final opening = createOn(repo);
+      await ffi.opening.future;
+
+      var didDispose = false;
+      final disposing = repo.dispose().then((result) {
+        didDispose = true;
+        return result;
+      });
+      try {
+        final parallel = await createOn(repo);
+        expect(
+          (parallel as Err<void, SpFailure>).failure,
+          isA<SpSessionBusy>(),
+        );
+        expect(didDispose, isFalse);
+      } finally {
+        ffi.finishOpen.complete();
+      }
+      expect(await opening, isA<Ok<void, SpFailure>>());
+      expect(await disposing, isA<Ok<void, SpFailure>>());
+      expect(repo.hasSession, isFalse);
+    });
+
     test(
       'a clean session dispose tears down the notification streams',
       () async {
@@ -360,22 +464,180 @@ void main() {
   });
 
   group('scanOnce and the scanning flag', () {
-    test('a refused scan leaves the running scan owning the flag', () async {
-      final repo = makeRepo(
-        ffi: _FakeFfiDatasource(
-          scanOnceError: const SpError.scannerAlreadyRunning(),
-        ),
+    Future<(BwkSpAccountRepository, _OpeningFfiDatasource)> open(
+      _PendingScanFiles files,
+    ) async {
+      accountDirOf().createSync();
+      final ffi = _OpeningFfiDatasource()..finishOpen.complete();
+      final repo = makeRepo(ffi: ffi, files: files);
+      expect(await createOn(repo), isA<Ok<void, SpFailure>>());
+      addTearDown(repo.dispose);
+      return (repo, ffi);
+    }
+
+    test('clear excludes new launches and invalidates an older tick', () async {
+      final files = _PendingScanFiles();
+      final (repo, ffi) = await open(files);
+      final arrived = Completer<void>();
+      final finish = Completer<void>();
+      ffi.onClearScanState = () {
+        arrived.complete();
+        return finish.future;
+      };
+      final admission = (
+        revision:
+            (repo.snapshot() as Ok<SpWallet, SpFailure>).value.scanRevision,
+        isAllowed: () => true,
       );
 
-      final result = await repo.scanOnce();
-
-      expect((result as Err<void, SpFailure>).failure, isA<SpScanBusy>());
+      final clearing = repo.clearScanState();
+      await arrived.future;
+      try {
+        expect(
+          await repo.scanOnce(),
+          isA<Err<void, SpFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<SpScanBusy>(),
+          ),
+        );
+        expect(
+          await repo.scanOnce(automatic: admission),
+          isA<Ok<void, SpFailure>>(),
+        );
+      } finally {
+        finish.complete();
+      }
+      expect(await clearing, isA<Ok<void, SpFailure>>());
       expect(
-        repo.isScanningCached,
-        isTrue,
-        reason: 'the winner of the race still has a scan running',
+        await repo.scanOnce(automatic: admission),
+        isA<Ok<void, SpFailure>>(),
       );
+      expect(ffi.scanStarts, isEmpty);
+      expect(await files.readPendingScan(tempDir.path), isNull);
     });
+
+    test(
+      'clear leaves an admitted scan and its resume marker intact',
+      () async {
+        final files = _PendingScanFiles();
+        final (repo, ffi) = await open(files);
+        final writing = Completer<void>();
+        final finish = Completer<void>();
+        files.beforeWrite = (_) {
+          writing.complete();
+          return finish.future;
+        };
+        final launching = repo.scanOnce(startHeight: 975000);
+        await writing.future;
+        try {
+          expect(
+            await repo.clearScanState(),
+            isA<Err<void, SpFailure>>().having(
+              (error) => error.failure,
+              'failure',
+              isA<SpScanBusy>(),
+            ),
+          );
+        } finally {
+          finish.complete();
+        }
+        expect(await launching, isA<Ok<void, SpFailure>>());
+        expect(ffi.scanStarts, [975000]);
+        expect(await files.readPendingScan(tempDir.path), (
+          startHeight: 975000,
+          isPaused: false,
+        ));
+      },
+    );
+
+    test('stop cancels only after the pause survives on disk', () async {
+      final files = _PendingScanFiles();
+      final (repo, ffi) = await open(files);
+      expect(
+        await repo.scanOnce(startHeight: 975000),
+        isA<Ok<void, SpFailure>>(),
+      );
+      files.beforeWrite = (pending) async {
+        if (pending?.isPaused == true) {
+          throw const FileSystemException('write failed');
+        }
+      };
+
+      expect(await repo.stopScan(), isA<Err<void, SpFailure>>());
+      expect(ffi.stopCalls, 0);
+      expect(repo.isScanningCached, isTrue);
+      expect(await files.readPendingScan(tempDir.path), (
+        startHeight: 975000,
+        isPaused: false,
+      ));
+
+      files.beforeWrite = null;
+      expect(await repo.stopScan(), isA<Ok<void, SpFailure>>());
+      expect(ffi.stopCalls, 1);
+      expect(await files.readPendingScan(tempDir.path), (
+        startHeight: 975000,
+        isPaused: true,
+      ));
+    });
+
+    test(
+      'automatic launch rechecks admission after writing its marker',
+      () async {
+        final files = _PendingScanFiles();
+        final (repo, ffi) = await open(files);
+        final writing = Completer<void>();
+        final finish = Completer<void>();
+        files.beforeWrite = (pending) async {
+          if (pending == null) return;
+          writing.complete();
+          await finish.future;
+        };
+        var allowed = true;
+        final launching = repo.scanOnce(
+          automatic: (
+            revision:
+                (repo.snapshot() as Ok<SpWallet, SpFailure>).value.scanRevision,
+            isAllowed: () => allowed,
+          ),
+        );
+        await writing.future;
+        allowed = false;
+        finish.complete();
+
+        expect(await launching, isA<Ok<void, SpFailure>>());
+        expect(ffi.scanStarts, isEmpty);
+        expect(await files.readPendingScan(tempDir.path), isNull);
+      },
+    );
+
+    test('a scan cannot launch while server settings are changing', () async {
+      final repo = makeRepo(ffi: _FakeFfiDatasource());
+      repo.beginTeardown();
+
+      final result = await repo.scanOnce(
+        automatic: (revision: 0, isAllowed: () => true),
+      );
+
+      expect((result as Err<void, SpFailure>).failure, isA<SpSessionBusy>());
+      expect(repo.isScanningCached, isFalse);
+    });
+
+    test(
+      'native Busy after a terminal event does not stick the flag',
+      () async {
+        final repo = makeRepo(
+          ffi: _FakeFfiDatasource(
+            scanOnceError: const SpError.scannerAlreadyRunning(),
+          ),
+        );
+
+        final result = await repo.scanOnce();
+
+        expect((result as Err<void, SpFailure>).failure, isA<SpScanBusy>());
+        expect(repo.isScanningCached, isFalse);
+      },
+    );
 
     test('any other failure clears the flag this call set', () async {
       final repo = makeRepo(

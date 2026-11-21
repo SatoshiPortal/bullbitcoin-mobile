@@ -14134,7 +14134,7 @@
   "@spHeaderValidationTitle": {
     "description": "Silent Payments: header validation screen title"
   },
-  "spHeaderValidationDescription": "Bitcoin headers and transaction inclusion proofs are being verified. Payments remain in Verifying until this process completes.",
+  "spHeaderValidationDescription": "The wallet is checking Bitcoin block headers. Silent Payments scan results come from the configured BlindBit server.",
   "@spHeaderValidationDescription": {
     "description": "Silent Payments: header validation process explanation"
   },
@@ -14190,7 +14190,7 @@
       }
     }
   },
-  "spActivityEmpty": "Tap Scan to look for incoming silent payments",
+  "spActivityEmpty": "No payments yet",
   "@spActivityEmpty": {
     "description": "Silent Payments: empty activity hint"
   },
@@ -14202,7 +14202,7 @@
   "@spReceiveManualScanRequired": {
     "description": "Silent Payments: reusable address manual scan notice title"
   },
-  "spReceiveReusableInfo": "This address is reusable. Funds arrive after you tap Scan.",
+  "spReceiveReusableInfo": "This address is reusable. Incoming payments appear after they confirm and are scanned.",
   "@spReceiveReusableInfo": {
     "description": "Silent Payments: reusable address info"
   },
@@ -14252,15 +14252,6 @@
       }
     }
   },
-  "spScanApproxDuration": "~{duration}",
-  "@spScanApproxDuration": {
-    "description": "Silent Payments: approximate scan duration",
-    "placeholders": {
-      "duration": {
-        "type": "String"
-      }
-    }
-  },
   "spScanEtaRemaining": "~{duration} remaining",
   "@spScanEtaRemaining": {
     "description": "Silent Payments: estimated time remaining",
@@ -14270,11 +14261,7 @@
       }
     }
   },
-  "spScanReadyMessage": "Ready to scan for incoming silent payments.",
-  "@spScanReadyMessage": {
-    "description": "Silent Payments: first scan ready message"
-  },
-  "spScanChooseStartMessage": "Choose where to start scanning. Earlier means a longer scan; pick after the wallet first received funds.",
+  "spScanChooseStartMessage": "Start at or before the first block that could contain a payment. Choose the earliest block if you are unsure.",
   "@spScanChooseStartMessage": {
     "description": "Silent Payments: start-height chooser message"
   },
@@ -14542,7 +14529,7 @@
   "@spSaveBackendConfigTitle": {
     "description": "Silent Payments: save backend config dialog title"
   },
-  "spSaveBackendConfigContent": "The Silent Payments wallet will be recreated with the selected server settings.",
+  "spSaveBackendConfigContent": "The wallet will reconnect using the selected servers. Scan progress and receive addresses are kept.",
   "@spSaveBackendConfigContent": {
     "description": "Silent Payments: save backend config dialog content"
   },
@@ -14678,7 +14665,7 @@
   "@spScanSyncedManual": {
     "description": "Scan screen message when the wallet is up to date but the user starts each scan"
   },
-  "spLastScannedAgo": "Last scanned {ago}",
+  "spLastScannedAgo": "Scanned through a block mined {ago}",
   "@spLastScannedAgo": {
     "description": "Nudge label showing how long ago the SP wallet was scanned, next to a Scan button",
     "placeholders": {
@@ -16134,5 +16121,60 @@
   "receiveFeeDetails": "Fee details",
   "@receiveFeeDetails": {
     "description": "Accessible label for the filled action opening the Lightning fee breakdown."
+  },
+  "spMinScanAmount": "Minimum scan amount",
+  "@spMinScanAmount": {
+    "description": "Setting and dialog title for the Silent Payments receive scan amount threshold"
+  },
+  "spMinScanAmountValue": "{amount} sats",
+  "@spMinScanAmountValue": {
+    "description": "Current minimum scan amount in satoshis",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "spMinScanAmountTradeoff": "A lower minimum includes smaller payments, including dust, and can slow scanning. A higher minimum can speed up scanning, but the wallet may miss payments below it.",
+  "@spMinScanAmountTradeoff": {
+    "description": "Explains the speed and payment detection tradeoff when editing the Silent Payments scan minimum"
+  },
+  "spMinScanAmountRescan": "To look for earlier payments at a lower minimum, clear scan state and rescan from before those payments.",
+  "@spMinScanAmountRescan": {
+    "description": "Explains how to scan blocks already processed with a higher minimum"
+  },
+  "spScanWaitingForTip": "Getting the latest block from the scan server…",
+  "@spScanWaitingForTip": {},
+  "spScanTipUnavailable": "Couldn’t get the latest block from the scan server.",
+  "@spScanTipUnavailable": {},
+  "spScanScannedThrough": "Scanned through block {height}",
+  "@spScanScannedThrough": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "spScanCheckForPayments": "Check for new payments",
+  "@spScanCheckForPayments": {},
+  "spScanResumeInterrupted": "Scan unfinished",
+  "@spScanResumeInterrupted": {},
+  "spScanResumeButton": "Resume scan",
+  "@spScanResumeButton": {},
+  "spWalletScanUpToDate": "Scan up to date",
+  "@spWalletScanUpToDate": {
+    "description": "Silent Payments wallet status when both scan passes have reached the known Bitcoin tip."
+  },
+  "spWalletScanBehind": "Scan behind",
+  "@spWalletScanBehind": {
+    "description": "Silent Payments wallet status when there are Bitcoin blocks still to scan."
+  },
+  "spWalletScanRequired": "Scan needed",
+  "@spWalletScanRequired": {
+    "description": "Silent Payments wallet status before the wallet has its first scan checkpoint."
+  },
+  "spWalletScanUnknown": "Scan status unknown",
+  "@spWalletScanUnknown": {
+    "description": "Silent Payments wallet status when the latest Bitcoin block could not be confirmed."
   }
 }

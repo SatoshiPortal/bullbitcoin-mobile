@@ -90,6 +90,10 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       ),
     )
     ServiceStatusInfo recoverbull,
+    @Default(
+      ServiceStatusInfo(status: ServiceStatus.unknown, name: 'Silent Payments'),
+    )
+    ServiceStatusInfo silentPayments,
     @Default(null) DateTime? lastChecked,
   }) = _AllServicesStatus;
 
@@ -104,7 +108,8 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       pricer.isOnline &&
       mempool.isOnline &&
       (tor.isOnline || tor.isUnknown) &&
-      (recoverbull.isOnline || recoverbull.isUnknown);
+      (recoverbull.isOnline || recoverbull.isUnknown) &&
+      !silentPayments.isOffline;
 
   bool get hasAnyServiceOffline => !allServicesOnline;
 }

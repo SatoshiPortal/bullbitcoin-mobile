@@ -44,6 +44,7 @@ SpWalletData _walletData({
   List<SpPayment> history = const <SpPayment>[],
   List<SpCoin> coins = const <SpCoin>[],
   bool isScanning = false,
+  bool hasPendingScan = false,
   int? lastScannedHeight,
   int? chainTip,
 }) => spWalletData(
@@ -51,6 +52,7 @@ SpWalletData _walletData({
   history: history,
   coins: coins,
   isScanning: isScanning,
+  hasPendingScan: hasPendingScan,
   lastScannedHeight: lastScannedHeight,
   chainTip: chainTip,
 );
@@ -129,13 +131,71 @@ void main() {
     expect(find.text('Silent Payment Wallet'), findsOneWidget);
   });
 
-  testWidgets('renders bottom action buttons', (tester) async {
+  testWidgets('wallet without a checkpoint shows Scan, Receive and Send', (
+    tester,
+  ) async {
+    await cubit.load();
     await pumpPage(tester);
 
     expect(find.text('Receive'), findsOneWidget);
     expect(find.text('Send'), findsOneWidget);
-    // Scanning moved to SP settings; the wallet keeps only receive and send.
-    expect(find.text('Scan'), findsNothing);
+    expect(find.text('Scan'), findsOneWidget);
+    expect(find.text('Scan needed'), findsOneWidget);
+  });
+
+  testWidgets('scan status follows new Bitcoin blocks', (tester) async {
+    final notifications = StreamController<SpNotification>.broadcast();
+    addTearDown(notifications.close);
+    when(harness.watchUsecase.execute).thenAnswer((_) => notifications.stream);
+    when(loadUsecase.execute).thenAnswer(
+      (_) async => Ok(_walletData(lastScannedHeight: 900000, chainTip: 900000)),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+    expect(find.text('Scan up to date'), findsOneWidget);
+
+    notifications.add(
+      const SpHeaderProgress(
+        phase: SpHeaderValidationPhase.initialSync,
+        current: 900000,
+        end: 900001,
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Scan behind'), findsOneWidget);
+    expect(find.text('Scan up to date'), findsNothing);
+  });
+
+  testWidgets('an unfinished spend pass shows as unfinished at the tip', (
+    tester,
+  ) async {
+    when(loadUsecase.execute).thenAnswer(
+      (_) async => Ok(
+        _walletData(
+          lastScannedHeight: 900000,
+          chainTip: 900000,
+          hasPendingScan: true,
+        ),
+      ),
+    );
+    await cubit.load();
+    await pumpPage(tester);
+
+    expect(find.text('Scan unfinished'), findsOneWidget);
+    expect(find.text('Scan up to date'), findsNothing);
+  });
+
+  testWidgets('a scanned wallet without a chain tip shows an unknown status', (
+    tester,
+  ) async {
+    when(loadUsecase.execute)
+        .thenAnswer((_) async => Ok(_walletData(lastScannedHeight: 900000)));
+    await cubit.load();
+    await pumpPage(tester);
+
+    expect(find.text('Scan status unknown'), findsOneWidget);
   });
 
   testWidgets('uses wallet detail balance card', (tester) async {
@@ -165,7 +225,7 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.textContaining('Last scanned'), findsOneWidget);
+    expect(find.textContaining('Scanned through'), findsOneWidget);
 
     await tester.tap(find.text('Scan'));
     await tester.pump();
@@ -188,10 +248,7 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(
-      find.text('Tap Scan to look for incoming silent payments'),
-      findsOneWidget,
-    );
+    expect(find.text('No payments yet'), findsOneWidget);
   });
 
   testWidgets('shows payment tiles when history is non-empty', (tester) async {

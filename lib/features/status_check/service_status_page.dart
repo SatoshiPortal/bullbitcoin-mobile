@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/features/status_check/domain/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
@@ -64,6 +64,10 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.liquidElectrum),
                     const SizedBox(height: 12),
+                    _ServiceStatusItem(
+                      service: serviceStatus.silentPayments,
+                      label: context.loc.walletSpTitle,
+                    ),
                     const SizedBox(height: 12),
                     _ServiceStatusItem(service: serviceStatus.payjoin),
                     const SizedBox(height: 12),
@@ -125,7 +129,9 @@ String _formatDateTime(DateTime dateTime) {
 class _ServiceStatusItem extends StatelessWidget {
   final ServiceStatusInfo service;
 
-  const _ServiceStatusItem({required this.service});
+  final String? label;
+
+  const _ServiceStatusItem({required this.service, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +147,7 @@ class _ServiceStatusItem extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         BullText(
-          service.name,
+          label ?? service.name,
           style: context.bullType.body,
           color: context.appColors.onSurface,
         ),

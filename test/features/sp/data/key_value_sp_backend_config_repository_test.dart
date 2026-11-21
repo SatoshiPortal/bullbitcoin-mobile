@@ -18,6 +18,7 @@ void main() {
       network: BitcoinNetwork.regtest,
       blindbitUrl: 'http://blindbit.example',
       electrumUrl: 'tcp://electrum.example:50001',
+      minScanAmountSat: 0,
     );
 
     test('fetch returns Err when the storage read throws', () async {
@@ -71,6 +72,26 @@ void main() {
         isA<Err<SpBackendConfig?, SpFailure>>(),
       );
     });
+
+    test(
+      'updates only legacy default endpoints, preserving a custom server',
+      () async {
+        final storage = InMemoryKeyValueStorage();
+        await storage.saveValue(
+          key: 'sp_backend_config',
+          value:
+              '{"network":"bitcoin","blindbitUrl":"https://node.example",'
+              '"electrumUrl":"ssl://electrum.pythcoiner.dev:50002"}',
+        );
+        final repository = build(storage);
+        final result = await repository.fetch();
+        final resolved = (result as Ok<SpBackendConfig?, SpFailure>).value;
+
+        expect(resolved?.blindbitUrl, 'https://node.example');
+        expect(resolved?.electrumUrl, 'ssl://electrum.bullbitcoin.com:50002');
+        expect(resolved?.minScanAmountSat, 1000);
+      },
+    );
 
     test('save then fetch round-trips the config', () async {
       final repo = build(InMemoryKeyValueStorage());

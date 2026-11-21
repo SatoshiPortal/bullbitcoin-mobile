@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -25,6 +26,7 @@ class StatusLocator {
     // Usecase
     locator.registerFactory<CheckAllServiceStatusUsecase>(
       () => CheckAllServiceStatusUsecase(
+        checkSpServer: locator<SpFacade>().checkServer,
         getIndexPrice: Pricer.getIndexPrice,
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
         payjoinDiagnostics: locator<PayjoinDiagnostics>(),

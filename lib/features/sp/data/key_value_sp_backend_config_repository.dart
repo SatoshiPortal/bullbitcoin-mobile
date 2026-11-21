@@ -8,10 +8,12 @@ import 'package:bb_mobile/features/sp/data/mappers/sp_backend_config_mapper.dart
 import 'package:bb_mobile/features/sp/data/sp_backend_config_model.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
+import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 
 class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
   static const String _storageKey = 'sp_backend_config';
+  static const String _defaultsVersionKey = 'defaultEndpointsVersion';
 
   final KeyValueStorageDatasource<String> _storage;
 
@@ -31,7 +33,10 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
     try {
       await _storage.saveValue(
         key: _storageKey,
-        value: jsonEncode(SpBackendConfigMapper.toModel(config).toJson()),
+        value: jsonEncode({
+          ...SpBackendConfigMapper.toModel(config).toJson(),
+          _defaultsVersionKey: 1,
+        }),
       );
       return const Ok(null);
     } catch (e) {
@@ -56,8 +61,32 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
     // read failure so a locked keystore is not reported as a bad config.
     try {
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
+      final config = SpBackendConfigMapper.toEntity(
+        SpBackendConfigModel.fromJson(json),
+      );
+      if (json.containsKey(_defaultsVersionKey) ||
+          config.network != BitcoinNetwork.mainnet) {
+        return Ok(config);
+      }
+      // Older installs stored defaults and custom endpoints in the same form.
+      // Recognize only exact matches to the old shipped URLs. Opening the
+      // session with the resolved config keeps its existing account files.
+      final defaults = SpConfig.staticDefaults(config.network);
+      if (defaults == null) return Ok(config);
       return Ok(
-        SpBackendConfigMapper.toEntity(SpBackendConfigModel.fromJson(json)),
+        SpBackendConfig(
+          network: config.network,
+          blindbitUrl: config.blindbitUrl == 'https://blindbit.pythcoiner.dev'
+              ? defaults.blindbitUrl
+              : config.blindbitUrl,
+          electrumUrl:
+              config.electrumUrl == 'ssl://electrum.pythcoiner.dev:50002'
+              ? defaults.electrumUrl
+              : config.electrumUrl,
+          fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+          matchConcurrencyFactor: config.matchConcurrencyFactor,
+          minScanAmountSat: config.minScanAmountSat,
+        ),
       );
     } catch (e) {
       // Logged here because the callers that fold this to "no config" cannot.

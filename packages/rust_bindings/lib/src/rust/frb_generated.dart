@@ -1134,7 +1134,10 @@ abstract class BullSdkApi extends BaseApi {
     required SwapStreamStatus that,
   });
 
-  Future<void> dartBwkApiSpAccountTestBlindbitUrl({required String url});
+  Future<int> dartBwkApiSpAccountTestBlindbitUrl({
+    required String url,
+    required bool requireScanData,
+  });
 
   Future<void> dartBwkApiSpAccountTestElectrumUrl({required String url});
 
@@ -8769,29 +8772,37 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
       );
 
   @override
-  Future<void> dartBwkApiSpAccountTestBlindbitUrl({required String url}) {
+  Future<int> dartBwkApiSpAccountTestBlindbitUrl({
+    required String url,
+    required bool requireScanData,
+  }) {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
           var arg0 = cst_encode_String(url);
+          var arg1 = cst_encode_bool(requireScanData);
           return wire.wire__dart_bwk__api__sp_account__test_blindbit_url(
             port_,
             arg0,
+            arg1,
           );
         },
         codec: DcoCodec(
-          decodeSuccessData: dco_decode_unit,
+          decodeSuccessData: dco_decode_u_32,
           decodeErrorData: dco_decode_String,
         ),
         constMeta: kDartBwkApiSpAccountTestBlindbitUrlConstMeta,
-        argValues: [url],
+        argValues: [url, requireScanData],
         apiImpl: this,
       ),
     );
   }
 
   TaskConstMeta get kDartBwkApiSpAccountTestBlindbitUrlConstMeta =>
-      const TaskConstMeta(debugName: "test_blindbit_url", argNames: ["url"]);
+      const TaskConstMeta(
+        debugName: "test_blindbit_url",
+        argNames: ["url", "requireScanData"],
+      );
 
   @override
   Future<void> dartBwkApiSpAccountTestElectrumUrl({required String url}) {
@@ -15924,18 +15935,11 @@ class SpAccountImpl extends RustOpaque implements SpAccount {
   Future<void> restartElectrum() => BullSdk.instance.api
       .dartBwkApiSpAccountSpAccountRestartElectrum(that: this);
 
-  /// USER-TRIGGERED ONLY. The bb-mobile app contract is that this method
-  /// is invoked exclusively from `ScanSpWalletUsecase`, which itself is
-  /// invoked exclusively from `SpCubit.scan()` (the Scan button handler).
-  /// Do not call from app lifecycle hooks, route observers, timers, or
-  /// background services. Doing so violates the documented invariant.
+  /// Starts a one-shot scan. The Dart ScanSpWalletUsecase accepts manual starts
+  /// and foreground starts admitted by its wallet sync policy.
   ///
-  /// Not `#[frb(sync)]`: the underlying bwk_sp scan walker is fully
-  /// synchronous and would freeze the Dart UI isolate for the entire
-  /// scan duration if dispatched there. FRB runs `async` methods on a
-  /// worker isolate. The inner mutex is held for the full scan — that
-  /// serializes against other methods, which is acceptable because SP
-  /// scans are user-triggered and rare.
+  /// The Rust bridge dispatches this off the Dart UI isolate. BWK owns the
+  /// scanner worker and publishes progress and terminal notifications.
   ///
   /// Cancellation: `stop_scan` flips `self.scan_cancel` (a clone of the
   /// bwk_sp::Account's internal `scanner_stop`), which causes the scan

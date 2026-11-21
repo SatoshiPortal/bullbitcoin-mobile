@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
@@ -35,6 +36,7 @@ SpWalletData spWalletData({
   Sats? confirmedSat,
   Sats? totalUnifiedSat,
   bool isScanning = false,
+  bool hasPendingScan = false,
   int? lastScannedHeight,
   List<SpPayment> history = const <SpPayment>[],
   List<SpCoin> coins = const <SpCoin>[],
@@ -51,6 +53,7 @@ SpWalletData spWalletData({
           totalUnifiedSat: totalUnifiedSat ?? confirmedSat ?? Sats.zero,
         ),
     isScanning: isScanning,
+    hasPendingScan: hasPendingScan,
     lastScannedHeight: lastScannedHeight,
   ),
   history: history,
@@ -99,6 +102,8 @@ class SpCubitHarness {
   final watchUsecase = MockWatchSpNotificationsUsecase();
   final ensureUsecase = MockEnsureSpSessionUsecase();
   final scanUsecase = MockScanSpWalletUsecase();
+  final scanControl = MockSpAccountRepository();
+  late final isScanningUsecase = IsSpScanningUsecase(repository: scanControl);
   final stopUsecase = MockStopSpScanUsecase();
   final clearScanStateUsecase = MockClearSpScanStateUsecase();
   final revokeUsecase = MockRevokeSpWalletUsecase();
@@ -118,6 +123,7 @@ class SpCubitHarness {
         .thenAnswer((_) async => const Ok<void, SpFailure>(null));
     when(() => restampUsecase.execute())
         .thenReturn(const Ok<void, SpFailure>(null));
+    when(() => scanControl.isScanningCached).thenReturn(false);
     return SpCubit(
       loadSpWalletDataUsecase: loadUsecase,
       restampSpPaymentTimesUsecase: restampUsecase,
@@ -126,6 +132,7 @@ class SpCubitHarness {
         ensureSpSessionUsecase: ensureUsecase,
       ),
       scanSpWalletUsecase: scanUsecase,
+      isSpScanningUsecase: isScanningUsecase,
       stopSpScanUsecase: stopUsecase,
       clearSpScanStateUsecase: clearScanStateUsecase,
       revokeSpWalletUsecase: revokeUsecase,

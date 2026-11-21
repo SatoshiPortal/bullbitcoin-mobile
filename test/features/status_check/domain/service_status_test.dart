@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/features/status_check/domain/service_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
@@ -15,14 +16,47 @@ class SpAccountFilesDatasource {
   /// makes it unique and orders backups.
   static const String _backupSuffix = '.backup-';
 
-  /// Backup dir a recreate moved the account aside to, so a failed create can
-  /// be rolled back. Set by [backupAccountDir], cleared by restore/discard.
-  Directory? _recreateBackupDir;
-
   Future<String> dataDir() async {
     final appDocsDir = await getApplicationDocumentsDirectory();
     return appDocsDir.path;
   }
+
+  Future<({int? startHeight, bool isPaused})?> readPendingScan(
+    String dataDir,
+  ) async {
+    final file = _pendingScanFile(dataDir);
+    if (!await file.exists()) return null;
+    final data = jsonDecode(await file.readAsString());
+    if (data
+        case {'startHeight': final int? height, 'isPaused': final bool paused}
+        when height == null || height >= 0) {
+      return (startHeight: height, isPaused: paused);
+    }
+    throw const FormatException('Invalid pending Silent Payments scan');
+  }
+
+  Future<void> writePendingScan(
+    String dataDir,
+    ({int? startHeight, bool isPaused})? pending,
+  ) async {
+    final file = _pendingScanFile(dataDir);
+    if (pending == null) {
+      if (await file.exists()) await file.delete();
+      return;
+    }
+    final temporary = File('${file.path}.tmp');
+    await temporary.writeAsString(
+      jsonEncode({
+        'startHeight': pending.startHeight,
+        'isPaused': pending.isPaused,
+      }),
+      flush: true,
+    );
+    await temporary.rename(file.path);
+  }
+
+  File _pendingScanFile(String dataDir) =>
+      File('$dataDir/${SpStorageNames.accountName}/.pending-scan');
 
   Future<bool> accountDirExists() async => (await _accountDir()).exists();
 
@@ -46,51 +80,6 @@ class SpAccountFilesDatasource {
     }
   }
 
-  /// Move the account dir aside to a fresh backup. Returns whether one was
-  /// taken; false when there is no account dir.
-  Future<bool> backupAccountDir() async {
-    final accountDir = await _accountDir();
-    if (!await accountDir.exists()) {
-      _recreateBackupDir = null;
-      return false;
-    }
-    final backupDir = Directory(
-      '${accountDir.path}$_backupSuffix${DateTime.now().microsecondsSinceEpoch}',
-    );
-    await accountDir.rename(backupDir.path);
-    _recreateBackupDir = backupDir;
-    return true;
-  }
-
-  /// Delete the (partial) account dir, then put the backup back in its place.
-  /// Returns whether a backup was restored.
-  Future<bool> restoreAccountDir() async {
-    final accountDir = await _accountDir();
-    if (await accountDir.exists()) {
-      await accountDir.delete(recursive: true);
-    }
-    final backupDir = _recreateBackupDir;
-    if (backupDir == null || !await backupDir.exists()) return false;
-    await backupDir.rename(accountDir.path);
-    _recreateBackupDir = null;
-    return true;
-  }
-
-  /// Drop the backup after a recreate succeeded. Returns whether the backup is
-  /// gone; false when the delete failed, so the caller can report it.
-  Future<bool> discardBackup() async {
-    final backupDir = _recreateBackupDir;
-    _recreateBackupDir = null;
-    if (backupDir == null || !await backupDir.exists()) return true;
-    try {
-      await backupDir.delete(recursive: true);
-      return true;
-    } on FileSystemException catch (e) {
-      log.warning('SpAccountFiles: backup discard failed: $e');
-      return false;
-    }
-  }
-
   /// Backup dirs sitting next to the account dir, newest first.
   Future<List<Directory>> findOrphanBackups() async {
     final root = Directory(await dataDir());
@@ -109,7 +98,7 @@ class SpAccountFilesDatasource {
     return [for (final (_, dir) in found) dir];
   }
 
-  /// Self-heal a recreate that died between the backup and the create: with no
+  /// Recover a backup made by an older app version: with no
   /// account dir but a backup on disk, move the newest one back into place and
   /// delete the rest. Returns whether one was adopted.
   Future<bool> adoptNewestBackup() async {
@@ -118,7 +107,6 @@ class SpAccountFilesDatasource {
     final backups = await findOrphanBackups();
     if (backups.isEmpty) return false;
     await backups.first.rename(accountDir.path);
-    _recreateBackupDir = null;
     for (final stale in backups.skip(1)) {
       await stale.delete(recursive: true);
     }
@@ -127,7 +115,6 @@ class SpAccountFilesDatasource {
 
   /// Delete every leftover backup dir.
   Future<void> deleteOrphanBackups() async {
-    _recreateBackupDir = null;
     for (final backup in await findOrphanBackups()) {
       await backup.delete(recursive: true);
     }

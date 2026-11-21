@@ -5,6 +5,16 @@ import '../sp_fakes.dart';
 
 const _storageKey = 'sp_auto_scan_enabled';
 
+class _LockableKeyValueStorage extends InMemoryKeyValueStorage {
+  bool isLocked = true;
+
+  @override
+  Future<String?> getValue(String key) async {
+    if (isLocked) throw Exception('keystore locked');
+    return super.getValue(key);
+  }
+}
+
 void main() {
   group('KeyValueSpAutoScanRepository', () {
     test('reads enabled before warmUp so no caller has to guess', () {
@@ -106,7 +116,22 @@ void main() {
     });
 
     test(
-      'save propagates a locked keystore after applying the choice',
+      'warmUp retries the saved choice after the keystore unlocks',
+      () async {
+        final storage = _LockableKeyValueStorage();
+        await storage.saveValue(key: _storageKey, value: 'false');
+        final repo = KeyValueSpAutoScanRepository(storage: storage);
+
+        await expectLater(repo.warmUp(), throwsA(isA<Exception>()));
+        storage.isLocked = false;
+        await repo.warmUp();
+
+        expect(repo.isEnabledNow, isFalse);
+      },
+    );
+
+    test(
+      'save keeps the previous choice when a locked keystore rejects it',
       () async {
         final repo = KeyValueSpAutoScanRepository(
           storage: ThrowingKeyValueStorage(),
@@ -116,7 +141,7 @@ void main() {
           repo.save(isEnabled: false),
           throwsA(isA<Exception>()),
         );
-        expect(repo.isEnabledNow, isFalse);
+        expect(repo.isEnabledNow, isTrue);
       },
     );
   });

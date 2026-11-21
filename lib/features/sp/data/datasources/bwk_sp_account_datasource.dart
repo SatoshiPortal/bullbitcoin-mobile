@@ -11,6 +11,7 @@ import 'package:rust_bindings/bwk.dart';
 /// repository maps both to domain types and typed failures.
 class BwkSpAccountDatasource {
   SpAccount? _account;
+  String? _blindbitUrl;
 
   // Confirmed FFI simulations pinned for the live session, keyed by draft id.
   // The simulation must round-trip UNCHANGED from preparePsbt into finalize, so
@@ -36,6 +37,7 @@ class BwkSpAccountDatasource {
     required String dataDir,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
     switch (await secret.silentPayments.account(
@@ -44,13 +46,14 @@ class BwkSpAccountDatasource {
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       dataDir: dataDir,
-      dustLimit: BigInt.from(SpConfig.dustLimitSat),
+      dustLimit: BigInt.from(minScanAmountSat),
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
       headerCheckpoint: headerCheckpoint,
     )) {
       case Ok(:final value):
         _account = value;
+        _blindbitUrl = blindbitUrl;
       case Err(:final failure):
         throw SpAccountOpenException(failure.runtimeType.toString());
     }
@@ -63,6 +66,7 @@ class BwkSpAccountDatasource {
     await account.dispose();
     await account.release();
     _account = null;
+    _blindbitUrl = null;
     _simulations.clear();
   }
 
@@ -79,8 +83,6 @@ class BwkSpAccountDatasource {
 
   SpBalanceView unifiedBalance() => _live.unifiedBalance();
 
-  bool isScanning() => _live.isScanning();
-
   int? lastScannedHeight() => _live.lastScannedHeight();
 
   Future<String> newTaprootAddress() => _live.newTaprootAddress();
@@ -96,13 +98,17 @@ class BwkSpAccountDatasource {
 
   Future<void> stopScan() => _live.stopScan();
 
-  void clearScanState() => _live.clearScanState();
+  Future<void> clearScanState() => _live.clearScanState();
 
   int minBirthdayHeight() => _live.minBirthdayHeight();
 
   SpNetwork network() => _live.network();
 
-  int blockHeight() => _live.blockHeight();
+  Future<int> blockHeight() {
+    final url = _blindbitUrl;
+    if (url == null) throw StateError('No live Silent Payments account');
+    return testBlindbitUrl(url: url, requireScanData: false);
+  }
 
   /// Simulate the spend and pin the simulation for the live session. The id is
   /// the handle the draft carries back into [finalizeAndSignToHex].

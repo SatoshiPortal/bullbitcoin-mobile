@@ -19,6 +19,7 @@ class SpBackendConfig {
   final String electrumUrl;
   final int fetchConcurrencyFactor;
   final int matchConcurrencyFactor;
+  final int minScanAmountSat;
 
   /// Throws on invalid input: for a config the code itself built, an invariant
   /// break is a programmer bug. Use [parse] for values that came from the user.
@@ -28,12 +29,14 @@ class SpBackendConfig {
     required this.electrumUrl,
     this.fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     this.matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    this.minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) {
     final reason = _invalidReason(
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      minScanAmountSat: minScanAmountSat,
     );
     if (reason != null) throw ArgumentError(reason);
   }
@@ -49,12 +52,14 @@ class SpBackendConfig {
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) {
     final reason = _invalidReason(
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      minScanAmountSat: minScanAmountSat,
     );
     if (reason != null) return Err(SpConfigInvalid(reason));
     return Ok(
@@ -64,6 +69,7 @@ class SpBackendConfig {
         electrumUrl: electrumUrl,
         fetchConcurrencyFactor: fetchConcurrencyFactor,
         matchConcurrencyFactor: matchConcurrencyFactor,
+        minScanAmountSat: minScanAmountSat,
       ),
     );
   }
@@ -75,6 +81,7 @@ class SpBackendConfig {
     required String electrumUrl,
     required int fetchConcurrencyFactor,
     required int matchConcurrencyFactor,
+    required int minScanAmountSat,
   }) {
     if (blindbitUrl.trim().isEmpty || electrumUrl.trim().isEmpty) {
       return 'SP backend URLs must not be empty';
@@ -87,6 +94,7 @@ class SpBackendConfig {
         matchConcurrencyFactor > SpConfig.maxMatchConcurrencyFactor) {
       return 'SP match concurrency factor is out of range';
     }
+    if (minScanAmountSat < 0) return 'SP minimum scan amount is negative';
     return null;
   }
 
@@ -97,7 +105,8 @@ class SpBackendConfig {
       other.blindbitUrl == blindbitUrl &&
       other.electrumUrl == electrumUrl &&
       other.fetchConcurrencyFactor == fetchConcurrencyFactor &&
-      other.matchConcurrencyFactor == matchConcurrencyFactor;
+      other.matchConcurrencyFactor == matchConcurrencyFactor &&
+      other.minScanAmountSat == minScanAmountSat;
 
   @override
   int get hashCode => Object.hash(
@@ -106,5 +115,6 @@ class SpBackendConfig {
     electrumUrl,
     fetchConcurrencyFactor,
     matchConcurrencyFactor,
+    minScanAmountSat,
   );
 }

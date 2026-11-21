@@ -79,17 +79,23 @@ void main() {
     expect(find.text('Segwit'), findsNothing);
   });
 
-  testWidgets('shows manual scan callout on SP tab', (tester) async {
-    await cubit.load();
-    await tester.pumpWidget(_buildPage(cubit));
-    await tester.pump();
+  testWidgets(
+    'explains confirmation and scanning on the reusable address tab',
+    (tester) async {
+      await cubit.load();
+      await tester.pumpWidget(_buildPage(cubit));
+      await tester.pump();
 
-    expect(find.text('Manual scan required'), findsOneWidget);
-    expect(
-      find.text('This address is reusable. Funds arrive after you tap Scan.'),
-      findsOneWidget,
-    );
-  });
+      expect(find.text('Automatic scanning is on'), findsOneWidget);
+      expect(find.text('Manual scan required'), findsNothing);
+      expect(
+        find.text(
+          'This address is reusable. Incoming payments appear after they confirm and are scanned.',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('SP tab shows the reusable address', (tester) async {
     await cubit.load();

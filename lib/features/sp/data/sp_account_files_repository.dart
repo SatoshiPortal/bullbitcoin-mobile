@@ -8,13 +8,11 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 /// that turns a thrown `dart:io` error into a typed [SpFailure].
 ///
 /// Kept apart from the session adapter on purpose: none of this touches the
-/// FFI, and the sequencing a revoke or a recreate needs is orchestration that
+/// FFI, and the sequencing revoke and recovery need is orchestration that
 /// belongs in a use case.
 ///
 /// Shares its datasource instance with the session adapter, which still needs
-/// the data dir and the stale-lock sweep when it opens an account. The
-/// datasource carries the recreate backup across calls, so there must be
-/// exactly one of it.
+/// the data dir and the stale-lock sweep when it opens an account.
 class SpAccountFilesRepository implements SpAccountFilesPort {
   final SpAccountFilesDatasource _files;
 
@@ -35,26 +33,6 @@ class SpAccountFilesRepository implements SpAccountFilesPort {
   @override
   Future<Result<void, SpFailure>> deleteAccountDir() =>
       _guard(_files.deleteAccountDir, 'account dir delete');
-
-  @override
-  Future<Result<bool, SpFailure>> backupAccountDir() =>
-      _guard(_files.backupAccountDir, 'account dir backup');
-
-  @override
-  Future<Result<bool, SpFailure>> restoreAccountDir() =>
-      _guard(_files.restoreAccountDir, 'account dir restore');
-
-  @override
-  Future<Result<void, SpFailure>> discardBackup() async {
-    // The datasource reports a failed delete as false rather than throwing, so
-    // that case needs its own failure.
-    final discarded = await _guard(_files.discardBackup, 'backup discard');
-    return switch (discarded) {
-      Ok(value: true) => const Ok(null),
-      Ok() => const Err(SpUnexpected('SP backup discard failed')),
-      Err(:final failure) => Err(failure),
-    };
-  }
 
   @override
   Future<Result<bool, SpFailure>> adoptNewestBackup() =>

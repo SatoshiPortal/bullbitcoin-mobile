@@ -54,6 +54,34 @@ void main() {
   Directory backupDirOf(int stamp) =>
       Directory('${tempDir.path}/${SpStorageNames.accountName}.backup-$stamp');
 
+  test(
+    'persists and pauses a scan request across datasource instances',
+    () async {
+      accountDirOf().createSync();
+      final files = SpAccountFilesDatasource();
+      const active = (startHeight: 975680, isPaused: false);
+      const paused = (startHeight: 975680, isPaused: true);
+
+      await files.writePendingScan(tempDir.path, active);
+      expect(
+        await SpAccountFilesDatasource().readPendingScan(tempDir.path),
+        active,
+      );
+
+      await files.writePendingScan(tempDir.path, paused);
+      expect(
+        await SpAccountFilesDatasource().readPendingScan(tempDir.path),
+        paused,
+      );
+
+      await files.writePendingScan(tempDir.path, null);
+      expect(
+        await SpAccountFilesDatasource().readPendingScan(tempDir.path),
+        isNull,
+      );
+    },
+  );
+
   group('accountDirExists', () {
     test('false before the dir is created, true after', () async {
       final repo = makeRepo();
@@ -128,85 +156,6 @@ void main() {
     test('is a no-op when the dir is absent', () async {
       expect(await makeRepo().deleteAccountDir(), isA<Ok<void, SpFailure>>());
       expect(accountDirOf().existsSync(), isFalse);
-    });
-  });
-
-  group('backup / restore / discard', () {
-    test('backupAccountDir moves the dir aside; restoreAccountDir brings it '
-        'back', () async {
-      final accountDir = accountDirOf()..createSync();
-      File('${accountDir.path}/account.sqlite').writeAsStringSync('old');
-
-      final repo = makeRepo();
-      expect(
-        (await repo.backupAccountDir() as Ok<bool, SpFailure>).value,
-        isTrue,
-      );
-      expect(accountDir.existsSync(), isFalse);
-
-      expect(
-        (await repo.restoreAccountDir() as Ok<bool, SpFailure>).value,
-        isTrue,
-      );
-      expect(accountDir.existsSync(), isTrue);
-      expect(
-        File('${accountDir.path}/account.sqlite').readAsStringSync(),
-        'old',
-      );
-    });
-
-    test(
-      'backupAccountDir returns false with no dir; restore then no-ops',
-      () async {
-        final repo = makeRepo();
-        expect(
-          (await repo.backupAccountDir() as Ok<bool, SpFailure>).value,
-          isFalse,
-        );
-        expect(
-          (await repo.restoreAccountDir() as Ok<bool, SpFailure>).value,
-          isFalse,
-        );
-      },
-    );
-
-    test(
-      'restoreAccountDir deletes a partial new dir before restoring backup',
-      () async {
-        final accountDir = accountDirOf()..createSync();
-        File('${accountDir.path}/account.sqlite').writeAsStringSync('old');
-
-        final repo = makeRepo();
-        await repo.backupAccountDir();
-        // A partial recreate left a fresh dir behind.
-        accountDirOf().createSync();
-        File('${accountDirOf().path}/partial').writeAsStringSync('junk');
-
-        expect(
-          (await repo.restoreAccountDir() as Ok<bool, SpFailure>).value,
-          isTrue,
-        );
-        expect(
-          File('${accountDir.path}/account.sqlite').readAsStringSync(),
-          'old',
-        );
-        expect(File('${accountDir.path}/partial').existsSync(), isFalse);
-      },
-    );
-
-    test('discardBackup removes the backup dir', () async {
-      accountDirOf().createSync();
-      final repo = makeRepo();
-      await repo.backupAccountDir();
-
-      expect(await repo.discardBackup(), isA<Ok<void, SpFailure>>());
-
-      final backups = tempDir
-          .listSync()
-          .whereType<Directory>()
-          .where((d) => d.path.contains('.backup-'))
-          .toList();
-      expect(backups, isEmpty);
     });
   });
 

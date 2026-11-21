@@ -15,6 +15,12 @@ class LoadSpWalletDataUsecase {
     required this._ensureSpSessionUsecase,
   });
 
+  Future<Result<int, SpFailure>> scanServerTip() =>
+      _repository.currentBlockHeight().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => const Err(SpBackendUnreachable()),
+      );
+
   @useResult
   Future<Result<SpWalletData, SpFailure>> execute() async {
     try {
@@ -52,18 +58,20 @@ class LoadSpWalletDataUsecase {
           if (network == null || network != wallet.network) {
             return const Err(SpUnsupportedNetwork());
           }
+          final SpWallet latest;
           switch (await _ensureSpSessionUsecase.execute()) {
             case Err(:final failure):
               return Err(failure);
             case Ok(value: final current?)
                 when current.network == wallet.network:
+              latest = current;
               break;
             case Ok():
               return const Err(SpUnsupportedNetwork());
           }
           return Ok(
             SpWalletData(
-              wallet: wallet,
+              wallet: latest,
               history: [
                 for (final payment in history)
                   payment.copyWith(network: network),

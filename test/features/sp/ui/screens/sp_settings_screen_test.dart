@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
@@ -110,6 +112,8 @@ void main() {
     when(() => settingsCubit.setElectrumUrl(any())).thenReturn(null);
     when(() => settingsCubit.fetchRegtestDefaults()).thenAnswer((_) async {});
     when(() => settingsCubit.saveBackendConfig()).thenAnswer((_) async {});
+    when(() => settingsCubit.saveMinScanAmount(any()))
+        .thenAnswer((_) async => null);
   });
 
   testWidgets('renders backend config and wallet management sections', (
@@ -133,7 +137,97 @@ void main() {
     expect(find.text('Automatic scanning'), findsOneWidget);
     expect(find.text('Delete Silent Payments wallet'), findsOneWidget);
     // Wallet management rows use the shared settings row widget.
-    expect(find.byType(BullSettingsEntryItem), findsNWidgets(7));
+    expect(find.byType(BullSettingsEntryItem), findsNWidgets(8));
+  });
+
+  testWidgets('back button returns to the wallet when opened directly', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildRouterPage(spCubit: spCubit, settingsCubit: settingsCubit),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Exit target'), findsOneWidget);
+  });
+
+  testWidgets('changing the scan minimum explains the tradeoff before saving', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildPage(spCubit: spCubit, settingsCubit: settingsCubit),
+    );
+    final entry = find.text('1,000 sats');
+    await tester.ensureVisible(entry);
+    await tester.pumpAndSettle();
+    await tester.tap(entry);
+    await tester.pumpAndSettle();
+
+    final dialog = find.byType(AlertDialog);
+    expect(dialog, findsOneWidget);
+    expect(find.textContaining('can slow scanning'), findsOneWidget);
+    expect(find.textContaining('may miss payments'), findsOneWidget);
+    expect(find.textContaining('clear scan state and rescan'), findsOneWidget);
+    verifyNever(() => settingsCubit.saveMinScanAmount(any()));
+
+    await tester.enterText(
+      find.descendant(of: dialog, matching: find.byType(TextField)),
+      '600',
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    verify(() => settingsCubit.saveMinScanAmount(600)).called(1);
+  });
+
+  testWidgets('wallet reloads after a failed server save', (tester) async {
+    final updates = StreamController<SpSettingsState>.broadcast();
+    addTearDown(updates.close);
+    final initial = settingsCubit.state;
+    when(() => settingsCubit.stream).thenAnswer((_) => updates.stream);
+    await tester.pumpWidget(
+      _buildPage(spCubit: spCubit, settingsCubit: settingsCubit),
+    );
+
+    updates.add(initial.copyWith(isSaving: true));
+    await tester.pump();
+    updates.add(
+      initial.copyWith(
+        form: initial.form.copyWith(error: const SpUnexpected()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    verify(() => spCubit.load()).called(1);
+    verifyNever(() => spCubit.reloadAfterBackendChange());
+  });
+
+  testWidgets('automatic scanning can be enabled during a running scan', (
+    tester,
+  ) async {
+    when(() => spCubit.state).thenReturn(
+      const SpState(
+        network: BitcoinNetwork.mainnet,
+        isScanning: true,
+        isAutoScanEnabled: false,
+      ),
+    );
+    when(() => spCubit.setAutoScanEnabled(isEnabled: true))
+        .thenAnswer((_) async => null);
+    await tester.pumpWidget(
+      _buildPage(spCubit: spCubit, settingsCubit: settingsCubit),
+    );
+    final title = find.text('Automatic scanning');
+    await tester.ensureVisible(title);
+    await tester.pumpAndSettle();
+    await tester.tap(title);
+    await tester.pump();
+
+    verify(() => spCubit.setAutoScanEnabled(isEnabled: true)).called(1);
   });
 
   testWidgets('network is read-only after wallet creation', (tester) async {

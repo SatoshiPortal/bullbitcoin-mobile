@@ -94,7 +94,12 @@ class _SpReusableAddressTab extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: InfoCard(
-                title: context.loc.spReceiveManualScanRequired,
+                title:
+                    context.select(
+                      (SpCubit cubit) => cubit.state.isAutoScanEnabled,
+                    )
+                    ? context.loc.spScanAutoScanOn
+                    : context.loc.spReceiveManualScanRequired,
                 description: context.loc.spReceiveReusableInfo,
                 tagColor: context.appColors.tertiary,
                 bgColor: context.appColors.tertiaryContainer,

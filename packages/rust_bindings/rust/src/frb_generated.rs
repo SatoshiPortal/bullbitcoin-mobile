@@ -6869,6 +6869,7 @@ fn wire__boltz__api__swap_status__swap_stream_status_to_json_impl(
 fn wire__dart_bwk__api__sp_account__test_blindbit_url_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     url: impl CstDecode<String>,
+    require_scan_data: impl CstDecode<bool>,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::DcoCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
@@ -6878,9 +6879,13 @@ fn wire__dart_bwk__api__sp_account__test_blindbit_url_impl(
         },
         move || {
             let api_url = url.cst_decode();
+            let api_require_scan_data = require_scan_data.cst_decode();
             move |context| {
                 transform_result_dco::<_, _, String>((move || {
-                    let output_ok = dart_bwk::api::sp_account::test_blindbit_url(api_url)?;
+                    let output_ok = dart_bwk::api::sp_account::test_blindbit_url(
+                        api_url,
+                        api_require_scan_data,
+                    )?;
                     std::result::Result::Ok(output_ok)
                 })())
             }
@@ -19007,8 +19012,9 @@ mod io {
     pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__test_blindbit_url(
         port_: i64,
         url: *mut wire_cst_list_prim_u_8_strict,
+        require_scan_data: bool,
     ) {
-        wire__dart_bwk__api__sp_account__test_blindbit_url_impl(port_, url)
+        wire__dart_bwk__api__sp_account__test_blindbit_url_impl(port_, url, require_scan_data)
     }
 
     #[unsafe(no_mangle)]

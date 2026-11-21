@@ -34,7 +34,7 @@ void main() {
       expect(result, isA<Err<void, SpFailure>>());
       final failure = (result as Err<void, SpFailure>).failure;
       expect(failure, isA<SpBackendUnreachable>());
-      expect(failure.logMessage, contains('boom'));
+      expect(failure.logMessage, isNot(contains('boom')));
     });
 
     test('electrum returns Ok on success', () async {
@@ -58,7 +58,7 @@ void main() {
       expect(result, isA<Err<void, SpFailure>>());
       final failure = (result as Err<void, SpFailure>).failure;
       expect(failure, isA<SpBackendUnreachable>());
-      expect(failure.logMessage, contains('no route'));
+      expect(failure.logMessage, isNot(contains('no route')));
     });
   });
 }

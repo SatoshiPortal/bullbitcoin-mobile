@@ -2,6 +2,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/check_sp_server_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_network_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
@@ -76,6 +77,7 @@ export 'package:bb_mobile/features/sp/ui/sp_router.dart'
 /// Consumers must wrap this in their own feature's use case (per AGENTS.md
 /// rule #4) and never call it directly from a BLoC.
 class SpFacade {
+  final CheckSpServerUsecase _checkSpServerUsecase;
   final GetSpWalletUsecase _getSpWalletUsecase;
   final IsSpScanningUsecase _isSpScanningUsecase;
   final CheckSpWalletSetupUsecase _checkSpWalletSetupUsecase;
@@ -91,6 +93,7 @@ class SpFacade {
   final SendSpPaymentUsecase _sendSpPaymentUsecase;
 
   SpFacade({
+    required this._checkSpServerUsecase,
     required this._getSpWalletUsecase,
     required this._isSpScanningUsecase,
     required this._checkSpWalletSetupUsecase,
@@ -105,6 +108,10 @@ class SpFacade {
     required this._prepareSpPaymentUsecase,
     required this._sendSpPaymentUsecase,
   });
+
+  /// Checks the BlindBit server without opening a wallet or starting a scan.
+  Future<Result<void, SpFailure>> checkServer(BitcoinNetwork network) =>
+      _checkSpServerUsecase.execute(network);
 
   /// Whether the SP feature is enabled (superuser + dev mode gate). Cross-feature
   /// consumers (the wallet) read the gate through here instead of the settings.
