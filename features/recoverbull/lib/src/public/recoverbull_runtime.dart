@@ -1,12 +1,12 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:google_drive/google_drive.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 
 import '../data/attempt_monitoring_repository_impl.dart';
 import '../data/backup_metadata_repository_impl.dart';
 import '../data/database/recoverbull_storage.dart';
-import '../data/datasources/google_drive_datasource.dart';
 import '../data/google_drive_repository.dart';
 import '../data/key_server_session_repository_impl.dart';
 import '../data/secrets_vault_repository.dart';
@@ -89,9 +89,7 @@ final class RecoverBullRuntime {
   }) async {
     final storage = RecoverBullStorage(databasePath);
     final vaults = SecretsVaultRepository(secrets);
-    final drive = GoogleDriveRepositoryImpl(
-      datasource: GoogleDriveAppDatasource(),
-    );
+    final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive());
     final files = VaultFileRepositoryImpl();
     final sessions = KeyServerSessionRepositoryImpl(routes, clients);
     BackupMetadataRepositoryImpl? metadata;

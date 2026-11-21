@@ -1,21 +1,20 @@
-import 'package:http/http.dart' as http;
-
 import 'dart:async';
 
 import 'package:bull_logger/bull_logger.dart';
-
-import '../models/drive_file_metadata_model.dart';
-
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
-import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:googleapis_auth/googleapis_auth.dart' as auth;
+import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
-class GoogleDriveAppDatasource {
-  static const metadataFields =
+import 'google_drive_file_metadata.dart';
+
+class GoogleDrive {
+  static const _metadataFields =
       'nextPageToken,files(id, name, createdTime, modifiedTime)';
-  static const metadataPageSize = 1000;
-  final Future<GoogleDriveMetadataPage> Function(String? pageToken)? pageLister;
+  static const _metadataPageSize = 1000;
   static const _scopes = ['https://www.googleapis.com/auth/drive.appdata'];
   static final _sharedGoogle = GoogleSignIn(scopes: _scopes);
   final GoogleSignIn _google;
@@ -29,11 +28,8 @@ class GoogleDriveAppDatasource {
   late final StreamSubscription<GoogleSignInAccount?> _authentication;
   bool _disposed = false;
 
-  GoogleDriveAppDatasource({
-    this.pageLister,
-    GoogleSignIn? googleSignIn,
-    this._authenticatedClient,
-  }) : _google = googleSignIn ?? _sharedGoogle {
+  GoogleDrive({GoogleSignIn? googleSignIn, this._authenticatedClient})
+    : _google = googleSignIn ?? _sharedGoogle {
     _currentAccount = _google.currentUser;
     _authentication = _google.onCurrentUserChanged.listen(
       (account) {
@@ -48,10 +44,80 @@ class GoogleDriveAppDatasource {
         }
       },
       onError: (Object error, StackTrace stack) {
-        log.warning('recoverbull.drive.authentication.unavailable');
+        log.warning('google_drive.authentication.unavailable');
       },
     );
   }
+
+  /// Prompts for sign-in if necessary and opens the account's app folder.
+  @useResult
+  Future<Result<void, GoogleDriveFailure>> connect() => _run(_connect);
+
+  /// Returns the authenticated account, or null when silent sign-in is
+  /// unavailable. Silent sign-in avoids sign-in and token recovery prompts.
+  @useResult
+  Future<Result<String?, GoogleDriveFailure>> connectSilently() =>
+      _run(_connectSilently);
+
+  /// Revokes the user's grant. Use [dispose] to only release local resources.
+  @useResult
+  Future<Result<void, GoogleDriveFailure>> disconnect() => _run(_disconnect);
+
+  @useResult
+  Future<Result<List<GoogleDriveFileMetadata>, GoogleDriveFailure>> listFiles({
+    String? mimeType,
+  }) => _run(() => _fetchAllMetadata(mimeType));
+
+  @useResult
+  Future<Result<GoogleDriveMetadataPage, GoogleDriveFailure>> listPage({
+    String? pageToken,
+    String? mimeType,
+  }) => _run(() => _listPageFromApi(pageToken, mimeType));
+
+  @useResult
+  Future<Result<List<int>, GoogleDriveFailure>> readFile({
+    required String fileId,
+    required int maxBytes,
+  }) => _run(() => _read(fileId, maxBytes));
+
+  @useResult
+  Future<Result<void, GoogleDriveFailure>> writeFile({
+    required String filename,
+    required List<int> bytes,
+    required String mimeType,
+  }) => _run(() => _write(filename, bytes, mimeType));
+
+  @useResult
+  Future<Result<void, GoogleDriveFailure>> deleteFile(String fileId) =>
+      _run(() => _delete(fileId));
+
+  Future<Result<T, GoogleDriveFailure>> _run<T>(
+    Future<T> Function() action,
+  ) async {
+    if (_disposed) {
+      return Err(const GoogleDriveFailure(GoogleDriveFailureKind.disposed));
+    }
+    try {
+      return Ok(await action());
+    } on _DriveFileTooLargeException {
+      return Err(const GoogleDriveFailure(GoogleDriveFailureKind.tooLarge));
+    } on FormatException {
+      return Err(
+        const GoogleDriveFailure(GoogleDriveFailureKind.invalidResponse),
+      );
+    } on Exception {
+      return Err(
+        GoogleDriveFailure(
+          _disposed
+              ? GoogleDriveFailureKind.disposed
+              : GoogleDriveFailureKind.unavailable,
+        ),
+      );
+    }
+  }
+
+  static String _escapeQueryValue(String value) =>
+      value.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
 
   Future<http.Client?> _clientFor(
     GoogleSignInAccount account, {
@@ -105,22 +171,17 @@ class GoogleDriveAppDatasource {
     }
   }
 
-  drive.DriveApi get _connectedApi {
-    _checkConnection();
+  ({drive.DriveApi api, String account, int epoch}) _connection() {
     final api = _driveApi;
-    if (api == null) {
-      throw const FormatException('Drive connection unavailable');
+    final account = _authenticatedAccount;
+    if (_disposed || api == null || account == null) {
+      throw const _DriveAuthenticationCancelledException();
     }
-    return api;
+    return (api: api, account: account, epoch: _authenticationEpoch);
   }
 
-  void _checkConnection() {
-    if (_disposed) throw StateError('Drive datasource is disposed');
-    if (_driveApi == null) throw Exception('Drive authentication unavailable');
-  }
-
-  Future<void> connect() async {
-    if (_disposed) throw StateError('Drive datasource is disposed');
+  Future<void> _connect() async {
+    if (_disposed) throw const _DriveAuthenticationCancelledException();
     try {
       final beforeAuthentication = _authenticationEpoch;
       final account = await _google.signIn();
@@ -135,7 +196,7 @@ class GoogleDriveAppDatasource {
 
       _replaceClient(client, account.email, epoch);
     } on Exception {
-      log.warning('recoverbull.drive.operation.failed');
+      log.warning('google_drive.operation.failed');
       // Only forget the cached client: disconnecting would revoke the user's
       // Drive grant over what may be a transient network or Play Services
       // failure.
@@ -144,8 +205,8 @@ class GoogleDriveAppDatasource {
     }
   }
 
-  Future<String?> connectSilently() async {
-    if (_disposed) throw StateError('Drive datasource is disposed');
+  Future<String?> _connectSilently() async {
+    if (_disposed) throw const _DriveAuthenticationCancelledException();
     try {
       final beforeAuthentication = _authenticationEpoch;
       final account = await _google.signInSilently(suppressErrors: false);
@@ -170,7 +231,7 @@ class GoogleDriveAppDatasource {
       _replaceClient(client, account.email, epoch);
       return account.email;
     } on Exception {
-      log.warning('recoverbull.drive.discovery.unavailable');
+      log.warning('google_drive.discovery.unavailable');
       final currentAccount = _currentAccount;
       if (currentAccount == null ||
           currentAccount.email != _authenticatedAccount) {
@@ -178,11 +239,11 @@ class GoogleDriveAppDatasource {
       }
       // Discovery failed to authenticate. Preserve any foreground client for
       // the same account; the discovery session still receives no capability.
-      return null;
+      rethrow;
     }
   }
 
-  Future<void> disconnect() async {
+  Future<void> _disconnect() async {
     try {
       await _google.disconnect();
       _currentAccount = null;
@@ -220,7 +281,7 @@ class GoogleDriveAppDatasource {
     try {
       client.close();
     } on Exception {
-      log.warning('recoverbull.drive.client.close_failed');
+      log.warning('google_drive.client.close_failed');
     }
   }
 
@@ -232,13 +293,16 @@ class GoogleDriveAppDatasource {
     _clearClient();
   }
 
-  Future<List<DriveFileMetadataModel>> fetchAllMetadata() async {
-    if (pageLister == null) _checkConnection();
-    final result = <DriveFileMetadataModel>[];
+  Future<List<GoogleDriveFileMetadata>> _fetchAllMetadata(
+    String? mimeType,
+  ) async {
+    final connection = _connection();
+    final result = <GoogleDriveFileMetadata>[];
     final seenTokens = <String>{};
     String? token;
     while (true) {
-      final page = await fetchMetadataPage(token);
+      final page = await _listPageFromApi(token, mimeType);
+      _checkAccount(connection.account, connection.epoch);
       result.addAll(page.files);
       final next = page.nextPageToken;
       if (next == null || next.isEmpty) return result;
@@ -249,33 +313,32 @@ class GoogleDriveAppDatasource {
     }
   }
 
-  Future<GoogleDriveMetadataPage> fetchMetadataPage(String? pageToken) {
-    final lister = pageLister;
-    if (lister != null) return lister(pageToken);
-    _checkConnection();
-    return _listPageFromApi(pageToken);
-  }
-
-  Future<GoogleDriveMetadataPage> _listPageFromApi(String? pageToken) async {
-    final response = await _connectedApi.files.list(
+  Future<GoogleDriveMetadataPage> _listPageFromApi(
+    String? pageToken,
+    String? mimeType,
+  ) async {
+    final filter = mimeType == null
+        ? 'trashed=false'
+        : "mimeType='${_escapeQueryValue(mimeType)}' and trashed=false";
+    final connection = _connection();
+    final response = await connection.api.files.list(
       spaces: 'appDataFolder',
-      q: "mimeType='application/json' and trashed=false",
-      $fields: metadataFields,
+      q: filter,
+      $fields: _metadataFields,
       orderBy: 'createdTime desc',
       pageToken: pageToken,
-      pageSize: metadataPageSize,
+      pageSize: _metadataPageSize,
     );
+    _checkAccount(connection.account, connection.epoch);
     return GoogleDriveMetadataPage(
-      files:
-          response.files?.map(DriveFileMetadataModel.fromDriveFile).toList() ??
-          const [],
+      files: response.files?.map(decodeDriveFile).toList() ?? const [],
       nextPageToken: response.nextPageToken,
     );
   }
 
-  Future<List<int>> fetchFileContent(String fileId) async {
-    _checkConnection();
-    final response = await _connectedApi.files.get(
+  Future<List<int>> _read(String fileId, int maxBytes) async {
+    final connection = _connection();
+    final response = await connection.api.files.get(
       fileId,
       downloadOptions: drive.DownloadOptions.fullMedia,
     );
@@ -288,27 +351,26 @@ class GoogleDriveAppDatasource {
       previous,
       element,
     ) {
-      if (previous.length + element.length > 2 * 1024 * 1024) {
-        throw const FormatException('Drive vault exceeds size limit');
+      if (previous.length + element.length > maxBytes) {
+        throw const _DriveFileTooLargeException();
       }
       return previous..addAll(element);
     });
+    _checkAccount(connection.account, connection.epoch);
     return bytes;
   }
 
-  Future<void> trash(String fileId) async {
-    _checkConnection();
-    await _connectedApi.files.delete(fileId);
+  Future<void> _delete(String fileId) async {
+    await _connection().api.files.delete(fileId);
   }
 
-  Future<void> store(String filename, List<int> bytes) async {
-    _checkConnection();
+  Future<void> _write(String filename, List<int> bytes, String mimeType) async {
     final file = drive.File()
       ..name = filename
-      ..mimeType = 'application/json'
+      ..mimeType = mimeType
       ..parents = ['appDataFolder'];
 
-    await _connectedApi.files.create(
+    await _connection().api.files.create(
       file,
       uploadMedia: drive.Media(Stream.value(bytes), bytes.length),
     );
@@ -316,7 +378,7 @@ class GoogleDriveAppDatasource {
 }
 
 final class GoogleDriveMetadataPage {
-  final List<DriveFileMetadataModel> files;
+  final List<GoogleDriveFileMetadata> files;
   final String? nextPageToken;
 
   const GoogleDriveMetadataPage({required this.files, this.nextPageToken});
@@ -324,4 +386,16 @@ final class GoogleDriveMetadataPage {
 
 final class _DriveAuthenticationCancelledException implements Exception {
   const _DriveAuthenticationCancelledException();
+}
+
+final class _DriveFileTooLargeException implements Exception {
+  const _DriveFileTooLargeException();
+}
+
+enum GoogleDriveFailureKind { disposed, unavailable, invalidResponse, tooLarge }
+
+final class GoogleDriveFailure extends Failure {
+  final GoogleDriveFailureKind kind;
+
+  const GoogleDriveFailure(this.kind);
 }

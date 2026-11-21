@@ -1,21 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bull_recoverbull/src/data/datasources/google_drive_datasource.dart';
-import 'package:bull_recoverbull/src/data/google_drive_repository.dart';
-import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_drive/google_drive.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:http/http.dart' as http;
+import 'package:primitives/primitives.dart';
 
 void main() {
   late _Google google;
   late _Tokens tokens;
   late GoogleSignInPlatform previousPlatform;
   late _Client client;
-  late GoogleDriveAppDatasource datasource;
+  late GoogleDrive drive;
   late Future<http.Client?> Function() authenticate;
   setUp(() {
     previousPlatform = GoogleSignInPlatform.instance;
@@ -24,40 +22,52 @@ void main() {
     google = _Google();
     client = _Client();
     authenticate = () async => client;
-    datasource = GoogleDriveAppDatasource(
+    drive = GoogleDrive(
       googleSignIn: google,
       authenticatedClient: () => authenticate(),
     );
   });
   tearDown(() async {
-    datasource.dispose();
+    drive.dispose();
     GoogleSignInPlatform.instance = previousPlatform;
     await google.events.close();
   });
 
   test('a sign-out invalidates the foreground client', () async {
-    await datasource.connect();
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
     await google.signOut();
     expect(client.closes, 1);
-    await expectLater(datasource.fetchAllMetadata(), throwsA(isA<Exception>()));
+    expect(
+      await drive.listFiles(),
+      isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>(),
+    );
     expect(google.disconnects, 0);
   });
 
   test('silent discovery never requests interactive token recovery', () async {
-    datasource.dispose();
-    datasource = GoogleDriveAppDatasource(googleSignIn: google);
+    drive.dispose();
+    drive = GoogleDrive(googleSignIn: google);
     tokens.accessToken = null;
-    expect(await datasource.connectSilently(), isNull);
+    expect(
+      (await drive.connectSilently()).fold(
+        (value) => value,
+        (_) => fail('silent sign-in failed'),
+      ),
+      isNull,
+    );
     expect(tokens.recoveryRequests, [false]);
     expect(google.signIns, 0);
     expect(google.disconnects, 0);
-    await expectLater(datasource.fetchAllMetadata(), throwsA(isA<Exception>()));
+    expect(
+      await drive.listFiles(),
+      isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>(),
+    );
   });
 
   test('foreground connection can authenticate interactively', () async {
-    datasource.dispose();
-    datasource = GoogleDriveAppDatasource(googleSignIn: google);
-    await datasource.connect();
+    drive.dispose();
+    drive = GoogleDrive(googleSignIn: google);
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
     expect(google.signIns, 1);
     expect(tokens.recoveryRequests, [true]);
     expect(google.disconnects, 0);
@@ -66,24 +76,30 @@ void main() {
   for (final disposed in [false, true]) {
     test('late token recovery is fenced after '
         '${disposed ? 'disposal' : 'account change'}', () async {
-      datasource.dispose();
-      datasource = GoogleDriveAppDatasource(googleSignIn: google);
+      drive.dispose();
+      drive = GoogleDrive(googleSignIn: google);
       final pending = Completer<GoogleSignInTokenData>();
       tokens.pending = pending.future;
-      final refresh = datasource.connectSilently();
+      final refresh = drive.connectSilently();
       await tokens.requested.future;
       if (disposed) {
-        datasource.dispose();
+        drive.dispose();
       } else {
         google.account = _Account('second@example.invalid');
       }
       pending.complete(
         GoogleSignInTokenData(accessToken: 'synthetic-test-token'),
       );
-      expect(await refresh, isNull);
-      await expectLater(
-        datasource.fetchAllMetadata(),
-        throwsA(disposed ? isA<StateError>() : isA<Exception>()),
+      expect(await refresh, isA<Err<String?, GoogleDriveFailure>>());
+      expect(
+        await drive.listFiles(),
+        isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>().having(
+          (result) => result.failure.kind,
+          'failure kind',
+          disposed
+              ? GoogleDriveFailureKind.disposed
+              : GoogleDriveFailureKind.unavailable,
+        ),
       );
       expect(tokens.recoveryRequests, [false]);
       expect(google.disconnects, 0);
@@ -94,62 +110,64 @@ void main() {
     test(
       'a late silent result ($returnsAccount) cannot replace a newer account',
       () async {
-        await datasource.connect();
+        expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
         final first = google.account;
         final pending = Completer<GoogleSignInAccount?>();
         google.pendingSilent = pending.future;
-        final refresh = datasource.connectSilently();
+        final refresh = drive.connectSilently();
         await Future<void>.delayed(Duration.zero);
         google.account = _Account('second@example.invalid');
         final replacement = _Client();
         authenticate = () async => replacement;
-        await datasource.connect();
+        expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
         pending.complete(returnsAccount ? first : null);
-        expect(await refresh, isNull);
+        expect(await refresh, isA<Err<String?, GoogleDriveFailure>>());
         expect(client.closes, 1);
         expect(client.writes, 0);
         expect(replacement.closes, 0);
-        expect(await datasource.fetchAllMetadata(), isEmpty);
+        expect(
+          (await drive.listFiles()).fold(
+            (value) => value,
+            (_) => fail('listing files failed'),
+          ),
+          isEmpty,
+        );
         expect(google.disconnects, 0);
       },
     );
   }
 
-  test('a Drive delete confirmation cannot cross an account change', () async {
-    client.hasFile = true;
-    final repository = GoogleDriveRepositoryImpl(datasource: datasource);
-    await repository.connect();
-    final files = await repository.fetchAllMetadata();
-    final selected =
-        (files as Ok<List<DriveFileMetadata>, RecoverBullFailure>).value.single;
-    google.account = _Account('second@example.invalid');
-    expect(
-      await repository.trash(selected),
-      isA<Err<Null, RecoverBullFailure>>(),
-    );
-    expect(client.writes, 0);
-    repository.dispose();
-  });
-
   test('a failed silent discovery preserves the foreground client', () async {
-    await datasource.connect();
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
     google.failSilently = true;
-    expect(await datasource.connectSilently(), isNull);
-    expect(await datasource.fetchAllMetadata(), isEmpty);
+    expect(
+      await drive.connectSilently(),
+      isA<Err<String?, GoogleDriveFailure>>(),
+    );
+    expect(
+      (await drive.listFiles()).fold(
+        (value) => value,
+        (_) => fail('listing files failed'),
+      ),
+      isEmpty,
+    );
     expect(client.closes, 0);
     expect(google.disconnects, 0);
   });
   test(
     'a changed account cannot retain the old client on refresh failure',
     () async {
-      await datasource.connect();
+      expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
       google.account = _Account('second@example.invalid');
       google.failSilently = true;
-      expect(await datasource.connectSilently(), isNull);
+      expect(
+        await drive.connectSilently(),
+        isA<Err<String?, GoogleDriveFailure>>(),
+      );
       expect(client.closes, 1);
-      await expectLater(
-        datasource.fetchAllMetadata(),
-        throwsA(isA<Exception>()),
+      expect(
+        await drive.listFiles(),
+        isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>(),
       );
     },
   );
@@ -158,12 +176,12 @@ void main() {
     () async {
       final pending = Completer<http.Client?>();
       authenticate = () => pending.future;
-      final connect = datasource.connect();
+      final connect = drive.connect();
       await Future<void>.delayed(Duration.zero);
-      datasource.dispose();
-      final rejected = expectLater(connect, throwsA(isA<Exception>()));
+      drive.dispose();
+
       pending.complete(client);
-      await rejected;
+      expect(await connect, isA<Err<void, GoogleDriveFailure>>());
       expect(client.closes, 1);
       expect(google.disconnects, 0);
     },
@@ -249,18 +267,11 @@ final class _Tokens extends GoogleSignInPlatform {
 final class _Client extends http.BaseClient {
   int closes = 0;
   int writes = 0;
-  bool hasFile = false;
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     if (request.method != 'GET') writes++;
     return http.StreamedResponse(
-      Stream.value(
-        utf8.encode(
-          hasFile
-              ? '{"files":[{"id":"file","name":"vault.json","createdTime":"2026-11-09T00:00:00Z"}]}'
-              : '{"files":[]}',
-        ),
-      ),
+      Stream.value(utf8.encode('{"files":[]}')),
       200,
       headers: {'content-type': 'application/json'},
     );

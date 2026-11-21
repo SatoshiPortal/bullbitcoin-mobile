@@ -93,6 +93,8 @@ graph TB
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
     RECOVERBULL[RecoverBull<br/>Workspace Feature]
+    GOOGLE_DRIVE[Google Drive Package]
+    RECOVERBULL --> GOOGLE_DRIVE
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
