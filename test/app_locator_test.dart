@@ -320,6 +320,9 @@ void main() {
       PathProviderPlatform.instance = _Paths(directory.path);
       FakeSecureStoragePlatform().install();
       SharedPreferences.setMockInitialValues({});
+      final previousPreferences = SharedPreferencesAsyncPlatform.instance;
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       final nativeTor = _NativeTor();
@@ -334,6 +337,7 @@ void main() {
         await locator.reset();
         await database.close();
         PathProviderPlatform.instance = previousPaths;
+        SharedPreferencesAsyncPlatform.instance = previousPreferences;
         await directory.delete(recursive: true);
       });
 
