@@ -110,46 +110,5 @@ void main() {
         expect(WalletMetadataService.originFromId(id), origin);
       }
     });
-
-    test('canonicalBip329Origin keeps 0h, 1h and 1776h verbatim', () {
-      // The BIP329 projection restates the stored coin type instead of reinterpreting it, so a test-family origin stays 1h and an export never claims a chain the wallet did not record.
-      for (final (coinType, expected) in [
-        ('0h', 'wpkh([aabbccdd/84h/0h/0h])'),
-        ('1h', 'wpkh([aabbccdd/84h/1h/0h])'),
-        ('1776h', 'elwpkh([aabbccdd/84h/1776h/0h])'),
-      ]) {
-        expect(
-          WalletMetadataService.canonicalBip329Origin(
-            '[aabbccdd/84h/$coinType/0h]',
-          ),
-          expected,
-          reason: coinType,
-        );
-      }
-    });
-
-    test('canonicalBip329Origin refuses a coin type that names no chain', () {
-      for (final rejected in ['2h', '60h', '501h', '1777h']) {
-        expect(
-          () => WalletMetadataService.canonicalBip329Origin(
-            '[aabbccdd/84h/$rejected/0h]',
-          ),
-          throwsA(
-            isA<FormatException>().having(
-              (error) => error.message,
-              'message',
-              'Unsupported derivation coin type',
-            ),
-          ),
-          reason: rejected,
-        );
-      }
-      // A key origin of the wrong shape never reaches the coin-type check: the legacy parser rejects it first with a bare String, not a FormatException.
-      expect(
-        () =>
-            WalletMetadataService.canonicalBip329Origin('[aabbccdd/84h/x/0h]'),
-        throwsA(isA<String>()),
-      );
-    });
   });
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/labels/domain/bip329_wallet_origin.dart';
 import 'package:bb_mobile/features/labels/domain/decoded_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/labels_import_exception.dart';
@@ -16,8 +16,8 @@ class Bip329LabelsCodec {
   /// records: an output whose `txid:vout` is in [frozen] is emitted with
   /// `spendable: false` and `origin` = the freezing wallet (BIP380 key origin),
   /// so freeze round-trips. Frozen outpoints without a label get a bare
-  /// freeze-only record (empty label). `walletId` in [frozen] IS the wallet
-  /// origin (e.g. `wpkh([0f36572d/84h/1h/0h])`).
+  /// freeze-only record (empty label). `walletId` in [frozen] is the wallet
+  /// identifier, such as `wpkh([0f36572d/84h/1h/0h])` or its regtest variant.
   String encode(
     List<LabelEntity> labels, {
     List<({String walletId, String txId, int vout})> frozen = const [],
@@ -52,7 +52,7 @@ class Bip329LabelsCodec {
             // frozen, else any origin the label already had.
             spendable: isFrozen ? false : null,
             origin: isFrozen
-                ? _bip329OriginFromWalletId(frozenWalletId)
+                ? bip329OriginFromWalletId(frozenWalletId)
                 : label.origin,
           );
         case LabelType.extendedPublicKey:
@@ -70,7 +70,7 @@ class Bip329LabelsCodec {
           ref: entry.key,
           label: '',
           spendable: false,
-          origin: _bip329OriginFromWalletId(entry.value),
+          origin: bip329OriginFromWalletId(entry.value),
         ),
       );
     }
@@ -114,7 +114,7 @@ class Bip329LabelsCodec {
           // Drop malformed/impossible outpoints (non-numeric or negative vout).
           if (vout != null && vout >= 0) {
             frozen.add((
-              walletId: _walletIdFromBip329Origin(bip329Label.origin),
+              walletId: walletIdFromBip329Origin(bip329Label.origin),
               txId: parts[0],
               vout: vout,
             ));
@@ -134,46 +134,6 @@ class Bip329LabelsCodec {
     }
 
     return DecodedLabels(labels: labels, frozen: frozen);
-  }
-}
-
-/// Extracts the BIP380 key origin (`[fingerprint/path]`) from an internal
-/// wallet origin like `wpkh([0f36572d/84h/1h/0h])`, but ONLY when it
-/// reconstructs the exact same wallet id on import.
-///
-/// The bare key origin can't disambiguate Liquid-testnet from Bitcoin-testnet
-/// (both are network path `1h`; only the `el*` descriptor prefix tells them
-/// apart, and BIP329 `origin` carries no prefix). Rather than emit an origin
-/// that silently re-imports as the wrong wallet, we emit none for any id that
-/// doesn't round-trip — multisig, Liquid-testnet, unusual paths — and the
-/// freeze imports unattributed (still applied by outpoint). Honest over wrong.
-String? _bip329OriginFromWalletId(String walletId) {
-  final start = walletId.indexOf('[');
-  final end = walletId.indexOf(']');
-  if (start == -1 || end == -1 || start >= end) return null;
-  final keyOrigin = walletId.substring(start, end + 1);
-  try {
-    final roundTrip = WalletMetadataService.canonicalBip329Origin(keyOrigin);
-    return roundTrip == WalletMetadataService.originFromId(walletId)
-        ? keyOrigin
-        : null;
-  } catch (_) {
-    return null;
-  }
-}
-
-/// Reconstructs the internal wallet origin (`wpkh([...])`) from a BIP329
-/// `origin` key origin. Normalizes `'`→`h` hardened notation. Returns null when
-/// the origin is absent or unparseable, so the importer stores the freeze
-/// unattributed.
-String? _walletIdFromBip329Origin(String? origin) {
-  if (origin == null || origin.isEmpty) return null;
-  try {
-    return WalletMetadataService.canonicalBip329Origin(
-      origin.replaceAll("'", 'h'),
-    );
-  } catch (_) {
-    return null;
   }
 }
 

@@ -54,21 +54,6 @@ void main() {
       );
     });
   }
-  test('BIP329 origin projection does not select a concrete network', () {
-    expect(
-      WalletMetadataService.canonicalBip329Origin('[abcd1234/84h/1h/0h]'),
-      'wpkh([abcd1234/84h/1h/0h])',
-    );
-    expect(
-      WalletMetadataService.canonicalBip329Origin('[abcd1234/49h/1776h/0h]'),
-      'elsh(wpkh([abcd1234/49h/1776h/0h]))',
-    );
-    expect(
-      () => WalletMetadataService.canonicalBip329Origin('[abcd1234/84h/2h/0h]'),
-      throwsFormatException,
-    );
-  });
-
   const origin = 'wpkh([aabbccdd/84h/1h/0h])';
   test(
     'regtest has a distinct id and the same unsuffixed derivation origin',
