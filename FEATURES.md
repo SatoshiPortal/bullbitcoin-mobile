@@ -95,6 +95,11 @@ graph TB
     RECOVERBULL[RecoverBull<br/>Workspace Feature]
     GOOGLE_DRIVE[Google Drive Package]
     RECOVERBULL --> GOOGLE_DRIVE
+    FILE_SYSTEM[File System Package]
+    RECOVERBULL --> FILE_SYSTEM
+    EXCHANGE_SETTINGS --> FILE_SYSTEM
+    TX_HISTORY --> FILE_SYSTEM
+    LABELS --> FILE_SYSTEM
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]

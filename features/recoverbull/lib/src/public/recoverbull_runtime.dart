@@ -1,6 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:google_drive/google_drive.dart';
+import 'package:file_system/file_system.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 
@@ -10,7 +11,6 @@ import '../data/database/recoverbull_storage.dart';
 import '../data/google_drive_repository.dart';
 import '../data/key_server_session_repository_impl.dart';
 import '../data/secrets_vault_repository.dart';
-import '../data/vault_file_repository_impl.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
@@ -55,7 +55,7 @@ final class RecoverBullRuntime {
   final RecoverBullWalletPort _wallets;
   final StartVaultFlowUsecase _startFlow;
   final GoogleDriveRepositoryImpl _drive;
-  final VaultFileRepositoryImpl _files;
+  final FileSystem _files;
   final KeyServerSessionRepositoryImpl _sessions;
   final RecoverBullRoutePort _routes;
   final BackupMetadataRepositoryImpl? _metadata;
@@ -90,7 +90,7 @@ final class RecoverBullRuntime {
     final storage = RecoverBullStorage(databasePath);
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive());
-    final files = VaultFileRepositoryImpl();
+    const files = FileSystem();
     final sessions = KeyServerSessionRepositoryImpl(routes, clients);
     BackupMetadataRepositoryImpl? metadata;
     AttemptMonitoringRepositoryImpl? monitoring;

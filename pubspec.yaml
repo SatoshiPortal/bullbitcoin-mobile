@@ -18,6 +18,7 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/file_system
   - packages/google_drive
   - packages/background_tasks
   - packages/notifications
@@ -54,6 +55,7 @@ dependencies:
   btc_map:
   bull_ui:
   primitives:
+  file_system:
   background_tasks:
   notifications:
   flutter_local_notifications: ^23.0.2
@@ -82,7 +84,6 @@ dependencies:
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
-  file_picker: ^13.3.3
   rust_bindings:
   boltz_stream:
   bitbox_transport:
@@ -151,6 +152,7 @@ dependencies:
   sentry_flutter: ^9.26.0
 
 dev_dependencies:
+  file_picker: ^13.3.3
   # Parse import, conditional export and part directives in the shell boundary test.
   analyzer: ^13.0.0
   build_runner: ^2.10.4

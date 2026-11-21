@@ -8,8 +8,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/data/file_picker_document_adapter.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_account_info_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
@@ -17,6 +15,7 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
+import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 
 class ExchangeSettingsLocator {
@@ -95,10 +94,6 @@ class ExchangeSettingsLocator {
   /// use-case that still throws, and is therefore the `try/catch` boundary
   /// that turns a raw exception into a sanitized `ExchangeSettingsFailure`.
   static void _registerFeatureUsecases(GetIt locator) {
-    locator.registerLazySingleton<DocumentPickerPort>(
-      () => const FilePickerDocumentAdapter(),
-    );
-
     locator.registerFactory<GetAccountInfoUsecase>(
       () => GetAccountInfoUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
@@ -131,7 +126,7 @@ class ExchangeSettingsLocator {
 
     locator.registerFactory<UploadExchangeDocumentUsecase>(
       () => UploadExchangeDocumentUsecase(
-        documentPicker: locator<DocumentPickerPort>(),
+        fileSystem: const FileSystem(),
         uploadKycDocumentUsecase: locator<UploadKycDocumentUsecase>(),
       ),
     );

@@ -28,7 +28,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/data/secrets_vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
-import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/delete_drive_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/export_drive_vault_usecase.dart';
@@ -63,7 +63,7 @@ T custodyValue<T>(Result<T, SecretFailure> result) => switch (result) {
 
 // These ports are never used for custody: the vault repository below uses
 // the real Secrets instance and the platform keystore on the device.
-final class _DeviceFiles extends Fake implements VaultFileRepository {}
+final class _DeviceFiles extends Fake implements FileSystem {}
 
 final class _DeviceDrive extends Fake implements GoogleDriveRepository {}
 

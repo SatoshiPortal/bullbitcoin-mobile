@@ -1,0 +1,21 @@
+name: file_system
+description: Native user document selection, bounded reads and saving.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  file_picker: ^13.3.3
+  meta: ^1.17.0
+  primitives:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  mocktail: ^1.0.5

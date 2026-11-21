@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart';
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:file_system/file_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -43,6 +44,7 @@ void main() {
         LabelFormat.bip329: _StubConverter(),
       }),
       walletFreeze: walletFreeze,
+      fileSystem: const FileSystem(),
     );
     when(() => walletFreeze.getAllFrozen()).thenAnswer((_) async => []);
   });
