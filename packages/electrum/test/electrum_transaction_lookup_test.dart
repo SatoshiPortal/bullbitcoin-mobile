@@ -78,7 +78,10 @@ void main() {
         );
 
     expect(
-      await electrum.fetchBitcoinTransaction(txid: txid),
+      await electrum.fetchBitcoinTransaction(
+        txid: txid,
+        network: BitcoinNetwork.mainnet,
+      ),
       isA<Ok<BitcoinTx, ElectrumFailure>>()
           .having((result) => result.value.txid, 'id', txid)
           .having((result) => result.value.vsize, 'vsize', BigInt.from(90)),
@@ -87,7 +90,10 @@ void main() {
 
   test('lookup reports the network when no servers are configured', () async {
     expect(
-      await electrum.fetchBitcoinTransaction(txid: txid),
+      await electrum.fetchBitcoinTransaction(
+        txid: txid,
+        network: BitcoinNetwork.mainnet,
+      ),
       isA<Err<BitcoinTx, ElectrumFailure>>().having(
         (result) => result.failure,
         'failure',

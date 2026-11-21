@@ -438,6 +438,6 @@ When extracting a table owner, add its package path to `DRIFT_OWNER_PACKAGES` in
 
 ## Electrum storage ownership
 
-`packages/electrum` owns server configuration, fallback and scoped Tor connections, and implements the wallet connection contract published by `sync`. Its transaction lookup returns `BitcoinTx` from `sync` with typed Electrum failures. Signed-transaction review maps the result to its own review model.
+`packages/electrum` owns server configuration, fallback and scoped Tor connections, and implements the wallet connection contract published by `sync`. Its transaction lookup returns `BitcoinTx` from `sync` with typed Electrum failures. Signed-transaction review supplies its captured Bitcoin network for every parent lookup and maps the result to its own review model.
 
 Electrum also owns the declarations, generated rows and queries for `ElectrumServers`, `ElectrumSettings` and `Transactions`. The app's Drift composer attaches these tables to its existing SQLite file. The Electrum accessor uses the composed connection. The physical schema remains at version 16. Generate Electrum's Drift libraries before the app composer with `make build-runner`.
