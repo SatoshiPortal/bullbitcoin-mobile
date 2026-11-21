@@ -28,7 +28,7 @@ class FileSystem {
             );
       if (file == null) return const Ok(null);
       return Ok(PickedDocument._(file));
-    } on Object catch (error) {
+    } on Exception catch (error) {
       return Err(
         FileSystemFailure(FileSystemFailureKind.pick, '${error.runtimeType}'),
       );
@@ -52,7 +52,7 @@ class FileSystem {
       return Ok(data.takeBytes());
     } on PathNotFoundException {
       return const Err(FileSystemFailure(FileSystemFailureKind.missing));
-    } on Object catch (error) {
+    } on Exception catch (error) {
       return Err(
         FileSystemFailure(FileSystemFailureKind.read, '${error.runtimeType}'),
       );
@@ -73,7 +73,7 @@ class FileSystem {
         mimeType: mimeType,
       );
       return Ok(uri != null);
-    } on Object catch (error) {
+    } on Exception catch (error) {
       return Err(
         FileSystemFailure(FileSystemFailureKind.save, '${error.runtimeType}'),
       );
@@ -88,7 +88,7 @@ class FileSystem {
       return const Ok(null);
     } on UnimplementedError {
       return const Ok(null);
-    } on Object catch (error) {
+    } on Exception catch (error) {
       return Err(
         FileSystemFailure(
           FileSystemFailureKind.cleanup,
