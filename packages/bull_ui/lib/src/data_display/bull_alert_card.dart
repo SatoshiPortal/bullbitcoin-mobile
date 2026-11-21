@@ -53,11 +53,14 @@ class BullAlertCard extends StatelessWidget {
         ],
       ),
     );
+    final message = body;
     return onTap == null
         ? card
         : Semantics(
-            label: title,
+            label: message == null ? title : '$title\n$message',
             button: true,
+            onTap: onTap,
+            excludeSemantics: true,
             child: InkWell(onTap: onTap, child: card),
           );
   }
