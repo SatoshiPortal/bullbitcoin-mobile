@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_status.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/mempool_server_encryption.dart';

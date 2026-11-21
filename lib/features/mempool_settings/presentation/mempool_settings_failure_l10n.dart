@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
 

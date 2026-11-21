@@ -26,6 +26,7 @@ workspace:
   - packages/sync
   - packages/electrum
   - packages/bull_tor
+  - packages/mempool
   - packages/screen_privacy
   - packages/bull_reporting
   - packages/screen_awake
@@ -67,6 +68,7 @@ dependencies:
   sync:
   electrum:
   bull_tor:
+  mempool:
   screen_privacy:
   bull_reporting:
   screen_awake:

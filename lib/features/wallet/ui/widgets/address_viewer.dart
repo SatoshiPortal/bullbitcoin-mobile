@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, LiquidNetwork, NetworkCapabilities, NetworkCapability;
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

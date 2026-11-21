@@ -3,7 +3,7 @@ import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:mempool/mempool.dart';
 
 import 'dart:async';
 
@@ -186,7 +186,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   }
 
                   return RepositoryProvider<MempoolUrlBuilder>.value(
-                    value: locator<MempoolUrlBuilder>(),
+                    value: locator<Mempool>().urls,
                     child: MaterialApp.router(
                       title: 'BullBitcoin Wallet',
                       debugShowCheckedModeBanner: kDebugMode,

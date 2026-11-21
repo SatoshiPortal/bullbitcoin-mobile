@@ -9,13 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2660 delete result propagation', () {
     test('repository propagates a failed deletion', () {
-      final datasource = File(
-        'lib/core/mempool/frameworks/drift/datasources/'
-        'mempool_server_storage_datasource.dart',
-      ).readAsStringSync();
+      final datasource = File('packages/mempool/lib/src/data/mempool_dao.dart')
+          .readAsStringSync();
       final repository = File(
-        'lib/core/mempool/interface_adapters/repositories/'
-        'drift_mempool_server_repository.dart',
+        'packages/mempool/lib/src/data/drift_mempool_server_repository.dart',
       ).readAsStringSync();
 
       expect(datasource, contains('Future<bool> deleteCustomServer'));
