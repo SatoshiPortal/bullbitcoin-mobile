@@ -1,6 +1,6 @@
 import 'package:signers/routes.dart';
 
-import 'dart:ui' show SemanticsAction;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
@@ -123,9 +123,32 @@ void main() {
           final next = ledger
               ? loc.ledgerWalletTypeNestedSegwit
               : loc.bitboxScreenNestedSegwitBip49;
-          await tester.tap(find.text(next));
+          final current = ledger
+              ? loc.ledgerWalletTypeSegwit
+              : loc.bitboxScreenSegwitBip84;
+          void expectOption(String title, {required bool selected}) {
+            final data = tester
+                .getSemantics(find.byKey(ValueKey(title)))
+                .getSemanticsData();
+            expect(data.label, contains(title));
+            expect(data.hasAction(SemanticsAction.tap), isTrue);
+            expect(
+              data.flagsCollection.isSelected,
+              selected ? Tristate.isTrue : Tristate.isFalse,
+            );
+          }
+
+          expectOption(current, selected: true);
+          expectOption(next, selected: false);
+          await tester.tap(find.byKey(ValueKey(next)));
           await tester.pumpAndSettle();
           expect(tester.getSemantics(control).getSemanticsData().value, next);
+          await tester.tap(control);
+          await tester.pumpAndSettle();
+          expectOption(next, selected: true);
+          expectOption(current, selected: false);
+          await tester.tap(find.byKey(ValueKey(next)));
+          await tester.pumpAndSettle();
           await tester.pumpWidget(const SizedBox());
         } finally {
           semantics.dispose();
