@@ -14,6 +14,14 @@ class WatchPayjoinUsecase {
   Stream<core.Result<PayjoinSession, SendFailure>> execute({
     List<String>? ids,
   }) async* {
+    // The stream only carries changes: a session that settled before this
+    // subscription (e.g. its original was broadcast while starting) would
+    // otherwise never be delivered.
+    for (final id in ids ?? const <String>[]) {
+      if (await _sessions.byId(id) case Ok(value: final session?)) {
+        yield core.Ok(session);
+      }
+    }
     await for (final result in _sessions.watch(sessionIds: ids?.toSet())) {
       switch (result) {
         case Ok(:final value):

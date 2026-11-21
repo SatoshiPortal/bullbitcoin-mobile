@@ -66,7 +66,10 @@ class SendLocator {
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<SendWithPayjoinUsecase>(
-      () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
+      () => SendWithPayjoinUsecase(
+        locator<PayjoinSender>(),
+        locator<PayjoinSessions>(),
+      ),
     );
     locator.registerFactory<WatchPayjoinUsecase>(
       () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
