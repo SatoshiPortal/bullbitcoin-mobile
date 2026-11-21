@@ -135,6 +135,8 @@ onion-codegen:
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
 DRIFT_OWNER_PACKAGES :=
+BUILD_RUNNER_MEMBERS := packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map
+BUILD_RUNNER_WATCH_MEMBERS := packages/bull_payjoin packages/bull_pricer packages/swaps
 
 .PHONY: drift-owners-build
 drift-owners-build:
@@ -143,14 +145,7 @@ drift-owners-build:
 build-runner: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
-	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
-	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
-	@(cd packages/swaps && fvm dart run build_runner build --force-jit)
-	@(cd packages/rust_bindings && fvm dart run build_runner build --force-jit)
-	@(cd packages/satoshifier && fvm dart run build_runner build --force-jit)
-	@(cd features/signers && fvm dart run build_runner build --force-jit)
-	@$(MAKE) recoverbull-build-runner
-	@$(MAKE) btc-map-build-runner
+	@set -e; for member in $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_MEMBERS)); do (cd "$$member" && fvm dart run build_runner build --force-jit); done
 
 .PHONY: btc-map-build-runner
 btc-map-build-runner:
@@ -162,7 +157,7 @@ recoverbull-build-runner:
 
 build-runner-watch: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; for owner in $(DRIFT_OWNER_PACKAGES); do (cd "$$owner" && fvm dart run build_runner watch --force-jit) & done; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & (cd packages/bull_pricer && fvm dart run build_runner watch --force-jit) & (cd packages/swaps && fvm dart run build_runner watch --force-jit) & wait'
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; for member in $(DRIFT_OWNER_PACKAGES) . $(filter-out $(DRIFT_OWNER_PACKAGES),$(BUILD_RUNNER_WATCH_MEMBERS)); do (cd "$$member" && fvm dart run build_runner watch --force-jit) & done; wait'
 
 translations:
 	@echo "🌐 Generating translations files"
