@@ -302,6 +302,10 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'SecretSigning', 'SecretBackup', 'SecretVerification',
       'SecretSilentPayments', 'DatabaseKeys',
       'Recoverbull', 'SecretPreview',
+      'AccessKeychain',
+      'ExchangeKeychain',
+      'SilentPaymentKeychain',
+      'SwapKeychain',
       // sealed display: the only way words reach a screen, built via `secret.widgets`
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int
