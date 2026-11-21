@@ -19,6 +19,8 @@ import 'package:ledger_bitcoin/src/utils/buffer_reader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sync/sync.dart' show decodeBitcoinPsbt;
 
+import 'ledger_ble_scanner.dart';
+
 typedef _ConnectionLease = ({String key, Object token});
 
 class LedgerDeviceDatasource {
@@ -97,7 +99,7 @@ class LedgerDeviceDatasource {
 
     final ledgerBle = _ledgerBle;
     if (needsBluetooth && ledgerBle != null) {
-      bleScanSubscription = ledgerBle.scan().listen(
+      bleScanSubscription = LedgerBleScanner.scan().listen(
         (device) {
           if (ledgerDeviceType != null &&
               device.deviceInfo != ledgerDeviceType) {
@@ -152,8 +154,11 @@ class LedgerDeviceDatasource {
       // Timeout is expected if no device found
     } finally {
       try {
-        await bleScanSubscription?.cancel();
-        await usbScanSubscription?.cancel();
+        try {
+          await bleScanSubscription?.cancel();
+        } finally {
+          await usbScanSubscription?.cancel();
+        }
       } finally {
         if (identical(_cancelScan, cancelScan)) _cancelScan = null;
         scanClosed.complete();
