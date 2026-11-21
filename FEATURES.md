@@ -192,7 +192,7 @@ graph TB
     PAY[Pay]
     BUY[Buy]
     COINS[Coins / UTXOs]
-    ANNOUNCEMENTS[Announcements]
+    ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View]
     APP_UNLOCK[App Unlock]
@@ -264,7 +264,9 @@ graph TB
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
     ALL_SEED_VIEW -->|public custody references| WALLETS
-    WALLETS --> ANNOUNCEMENTS
+    CORE -->|wallet home composition| ANNOUNCEMENTS
+    ANNOUNCEMENTS --> BULL_UI
+    ANNOUNCEMENTS --> PRIMITIVES
     APP_STARTUP --> WALLETS
     APP_STARTUP --> SECRETS
     APP_STARTUP --> LOGS

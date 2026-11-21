@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_announcements_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -197,6 +198,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       locale: language?.locale,
                       localizationsDelegates: [
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
+                        NovlangAnnouncementsLocalizationsDelegate(
+                          novlangPolicy,
+                        ),
                         ...novlangLocalizationsDelegates(novlangPolicy),
                         LogsLocalizations.delegate,
                         NetworkLocalizations.delegate,

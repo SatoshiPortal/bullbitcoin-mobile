@@ -3710,7 +3710,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin 说明",
   "settingsPayjoinAdvancedTitle": "Payjoin 高级设置",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "您的 Liquid 会自动兑换为 Bitcoin。",
   "addressViewErrorWalletNotFound": "找不到此钱包。",
   "addressViewErrorLoadFailed": "无法加载您的地址，请重试。",
   "coreSwapsStatusNotStarted": "未开始",

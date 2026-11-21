@@ -10788,38 +10788,6 @@
   "@receivePayjoinFallbackCountdown": {
     "description": "Label preceding a countdown until the payjoin falls back to a normal payment."
   },
-  "announcementPayjoinTitle": "Increase your privacy",
-  "@announcementPayjoinTitle": {
-    "description": "Title of the home announcement inviting the user to enable payjoin for better on-chain privacy."
-  },
-  "announcementPayjoinDescription": "Turn on Payjoin to make your Bitcoin payments more private.",
-  "@announcementPayjoinDescription": {
-    "description": "Description of the home announcement inviting the user to enable payjoin."
-  },
-  "announcementAutoswapTitle": "Autoswap is active",
-  "@announcementAutoswapTitle": {
-    "description": "Title of the home announcement informing the user that autoswap is currently enabled."
-  },
-  "announcementAutoswapDescription": "Your Liquid is automatically swapped to Bitcoin.",
-  "@announcementAutoswapDescription": {
-    "description": "Description of the home announcement informing the user that autoswap is enabled."
-  },
-  "announcementDismissConfirmTitle": "Dismiss this announcement?",
-  "@announcementDismissConfirmTitle": {
-    "description": "Title of the confirmation dialog shown before dismissing a home announcement."
-  },
-  "announcementDismissConfirmBody": "Read to learn more, or dismiss to hide it. Dismissed announcements won't show again.",
-  "@announcementDismissConfirmBody": {
-    "description": "Body of the confirmation dialog shown before dismissing a home announcement."
-  },
-  "announcementDismissConfirmAction": "Dismiss",
-  "@announcementDismissConfirmAction": {
-    "description": "Confirm button label to dismiss a home announcement."
-  },
-  "announcementDismissConfirmRead": "Read",
-  "@announcementDismissConfirmRead": {
-    "description": "Button in the announcement dismiss dialog that opens the announcement linked page instead of dismissing."
-  },
   "receivePayjoinQrBadge": "Payjoin",
   "@receivePayjoinQrBadge": {
     "description": "Short badge shown on the receive QR code corner when the address advertises a payjoin endpoint, signalling the sender may propose a payjoin."
@@ -11005,14 +10973,6 @@
   "sendSwapExpiredMessage": "This order expired before any funds were sent. Nothing was sent from your wallet.",
   "@sendSwapExpiredMessage": {
     "description": "Message on the send result screen when a swap order expired before any funds were sent, so there is nothing to refund."
-  },
-  "announcementAppUpdateRequiredTitle": "Update BULL",
-  "@announcementAppUpdateRequiredTitle": {
-    "description": "Title for the wallet home announcement shown when swap services require an app update"
-  },
-  "announcementAppUpdateRequiredDescription": "To use the Lightning payment and swap service, please update the BULL mobile app with the new version.",
-  "@announcementAppUpdateRequiredDescription": {
-    "description": "Description shown after the swap API reports that this app version is no longer supported"
   },
   "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
   "@transactionPayjoinFallbackProcessing": {

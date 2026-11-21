@@ -44,6 +44,9 @@ catalogues:
   label_editor:
     path: features/label_editor
     description: the label editor catalogue (features/label_editor/lib/l10n/label_editor_<lang>.arb)
+  announcements:
+    path: features/announcements
+    description: the wallet home announcements catalogue
 entries:
   - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
@@ -258,12 +261,10 @@ entries:
   - {catalogue: app, key: transactionSwapOpenWithin24h, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: homeActionTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
-  - {catalogue: app, key: announcementAutoswapTitle, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: announcementAutoswapDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewSupportMessage, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: announcements, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: settingsExchangeTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: bitcoinSettingsAutoTransferTitle, store: apple, word: swap, euphemism: transfer}

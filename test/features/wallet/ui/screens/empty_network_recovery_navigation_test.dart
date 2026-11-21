@@ -105,7 +105,7 @@ void main() {
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
-                onOpenPayjoinSettings: (_) {},
+                announcements: () => const SizedBox.shrink(),
                 createSetupCubit: createSetupCubit,
               ),
             ],

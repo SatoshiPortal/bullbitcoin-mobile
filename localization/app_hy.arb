@@ -2799,7 +2799,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin-ի նախազգուշացում",
   "settingsPayjoinAdvancedTitle": "Payjoin-ի ընդլայնված կարգավորումներ",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Ձեր Liquid-ը ավտոմատ փոխանակվում է Bitcoin-ի։",
   "addressViewErrorWalletNotFound": "Այս դրամապանակը չի գտնվել։",
   "addressViewErrorLoadFailed": "Ձեր հասցեները չհաջողվեց բեռնել։ Խնդրում ենք կրկին փորձել։",
   "coreSwapsStatusNotStarted": "Չի սկսվել",

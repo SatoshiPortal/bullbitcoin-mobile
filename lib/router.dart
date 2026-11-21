@@ -9,7 +9,10 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
     show RouteErrorScreen;
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
+import 'package:announcements/setup.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart'
+    show SwapFacade;
+import 'package:preferences/preferences.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:label_editor/setup.dart';
@@ -111,6 +114,15 @@ class AppRouter {
     router.goNamed(WalletRoute.walletHome.name);
   }
 
+  static final _announcements = AnnouncementsFeature.mount(
+    dismissals: locator<AnnouncementDismissals>(),
+    isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
+    watchAppUpdateRequired: () =>
+        locator<SwapFacade>().watchAppUpdateRequired(),
+    openPayjoinSettings: (context) =>
+        context.pushNamed(SettingsRoute.payjoinSettings.name),
+  );
+
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
@@ -153,13 +165,8 @@ class AppRouter {
               ? 1
               : 0;
 
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => locator<PriceChartCubit>()),
-              BlocProvider(
-                create: (_) => locator<AnnouncementsCubit>()..refresh(),
-              ),
-            ],
+          return BlocProvider(
+            create: (_) => locator<PriceChartCubit>(),
             child: PopScope(
               canPop: false,
               onPopInvokedWithResult: (didPop, _) {
@@ -192,8 +199,7 @@ class AppRouter {
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
-            onOpenPayjoinSettings: (context) =>
-                context.pushNamed(SettingsRoute.payjoinSettings.name),
+            announcements: () => _announcements.carousel(),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],

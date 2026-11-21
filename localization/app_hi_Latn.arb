@@ -9661,7 +9661,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin Disclaimer",
   "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
   "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
   "coreSwapsStatusNotStarted": "Shuru nahi hua",

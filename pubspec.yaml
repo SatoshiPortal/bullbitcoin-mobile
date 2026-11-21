@@ -8,6 +8,7 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/announcements
   - packages/labels
   - features/label_editor
   - features/network
@@ -52,6 +53,7 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  announcements:
   labels:
   label_editor:
   network:

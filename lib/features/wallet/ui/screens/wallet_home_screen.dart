@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -23,7 +22,7 @@ class WalletHomeScreen extends StatefulWidget {
   final ArkForegroundHost? arkHost;
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
-  final VoidCallback onOpenPayjoinSettings;
+  final Widget announcements;
   final VoidCallback onImportNetworkWallet;
   final VoidCallback onRecoverEncryptedVault;
   final QuickActionsCubit quickActions;
@@ -35,7 +34,7 @@ class WalletHomeScreen extends StatefulWidget {
     required this.arkHost,
     required this.createSetupCubit,
     required this.onEmptyMainnet,
-    required this.onOpenPayjoinSettings,
+    required this.announcements,
     required this.onImportNetworkWallet,
     required this.onRecoverEncryptedVault,
     required this.quickActions,
@@ -179,11 +178,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: AnnouncementCarousel(
-                  onOpenPayjoinSettings: widget.onOpenPayjoinSettings,
-                ),
-              ),
+              SliverToBoxAdapter(child: widget.announcements),
               const SliverToBoxAdapter(child: HomeWarnings()),
               const SliverToBoxAdapter(child: HomeConsolidationBanner()),
               SliverToBoxAdapter(

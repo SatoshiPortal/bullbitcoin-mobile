@@ -9414,7 +9414,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
   "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
   "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
   "coreSwapsStatusNotStarted": "Başlatılmadı",

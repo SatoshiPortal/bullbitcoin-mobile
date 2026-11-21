@@ -6842,7 +6842,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবীত্যাগ",
   "settingsPayjoinAdvancedTitle": "Payjoin ৰ উন্নত ছেটিংছ",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
   "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "coreSwapsStatusNotStarted": "আৰম্ভ হোৱা নাই",

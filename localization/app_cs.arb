@@ -9414,7 +9414,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Upozornění k Payjoin",
   "settingsPayjoinAdvancedTitle": "Rozšířená nastavení Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
   "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
   "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
   "coreSwapsStatusNotStarted": "Nezahájeno",

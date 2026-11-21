@@ -9418,7 +9418,6 @@
   "settingsPayjoinDisclaimerRowLabel": "ข้อควรทราบเกี่ยวกับ Payjoin",
   "settingsPayjoinAdvancedTitle": "การตั้งค่า Payjoin ขั้นสูง",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid ของคุณจะถูกแลกเป็น Bitcoin โดยอัตโนมัติ",
   "addressViewErrorWalletNotFound": "ไม่พบกระเป๋าเงินนี้",
   "addressViewErrorLoadFailed": "ไม่สามารถโหลดที่อยู่ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "coreSwapsStatusNotStarted": "ยังไม่เริ่ม",

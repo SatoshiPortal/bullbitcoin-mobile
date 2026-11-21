@@ -1,6 +1,5 @@
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -40,9 +39,6 @@ class _Price extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
 
 class _Chart extends MockCubit<PriceChartState> implements PriceChartCubit {}
 
-class _Announcements extends MockCubit<AnnouncementsState>
-    implements AnnouncementsCubit {}
-
 class _ExchangeAccess extends Mock implements ExchangeFacade {}
 
 class _MemoryQuickActionsStorage implements QuickActionsStorage {
@@ -75,7 +71,6 @@ class ArkShellVisualFixtures {
   final _settings = _Settings();
   final _price = _Price();
   final _chart = _Chart();
-  final _announcements = _Announcements();
   final _exchange = _ExchangeAccess();
   final _hostDependencies = GetIt.asNewInstance();
   final _settingsNavigator = GlobalKey<NavigatorState>();
@@ -147,7 +142,7 @@ class ArkShellVisualFixtures {
               name: WalletRoute.walletHome.name,
               path: WalletRoute.walletHome.path,
               builder: (_, _) => WalletHomeScreen(
-                onOpenPayjoinSettings: () {},
+                announcements: const SizedBox.shrink(),
                 arkHost: fixture._host,
                 // A loaded, nonempty WalletState cannot enter setup. Fail if
                 // a future lifecycle change tries to do so in this fixture.
@@ -233,11 +228,6 @@ class ArkShellVisualFixtures {
       const Stream<PriceChartState>.empty(),
       initialState: const PriceChartState(),
     );
-    whenListen(
-      _announcements,
-      const Stream<AnnouncementsState>.empty(),
-      initialState: const AnnouncementsState(),
-    );
     when(() => _exchange.currentAccess)
         .thenReturn(const ExchangeAccessDisabled());
     when(_exchange.watchAccess)
@@ -246,7 +236,6 @@ class ArkShellVisualFixtures {
     when(_settings.close).thenAnswer((_) async {});
     when(_price.close).thenAnswer((_) async {});
     when(_chart.close).thenAnswer((_) async {});
-    when(_announcements.close).thenAnswer((_) async {});
   }
 
   Widget settings() => _wrap(
@@ -270,7 +259,6 @@ class ArkShellVisualFixtures {
         BlocProvider<SettingsCubit>.value(value: _settings),
         BlocProvider<BitcoinPriceBloc>.value(value: _price),
         BlocProvider<PriceChartCubit>.value(value: _chart),
-        BlocProvider<AnnouncementsCubit>.value(value: _announcements),
       ],
       child: Builder(
         builder: (context) => Localizations.override(
@@ -307,7 +295,6 @@ class ArkShellVisualFixtures {
       _settings.close(),
       _price.close(),
       _chart.close(),
-      _announcements.close(),
     ]);
   }
 }

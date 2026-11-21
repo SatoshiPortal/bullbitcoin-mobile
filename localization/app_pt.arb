@@ -3734,7 +3734,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
   "settingsPayjoinAdvancedTitle": "Configurações avançadas de Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "O seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
   "addressViewErrorLoadFailed": "Não foi possível carregar os seus endereços. Tente novamente.",
   "coreSwapsStatusNotStarted": "Não iniciado",

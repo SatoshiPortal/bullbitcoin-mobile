@@ -9414,7 +9414,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
   "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
   "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
   "coreSwapsStatusNotStarted": "Δεν ξεκίνησε",

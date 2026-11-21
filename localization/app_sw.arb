@@ -2808,7 +2808,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Ilani ya Payjoin",
   "settingsPayjoinAdvancedTitle": "Mipangilio ya kina ya Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid yako hubadilishwa kiotomatiki kuwa Bitcoin.",
   "addressViewErrorWalletNotFound": "Pochi hii haikupatikana.",
   "addressViewErrorLoadFailed": "Anwani zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
   "coreSwapsStatusNotStarted": "Haijaanza",

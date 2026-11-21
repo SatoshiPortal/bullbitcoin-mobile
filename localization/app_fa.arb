@@ -9414,7 +9414,6 @@
   "settingsPayjoinDisclaimerRowLabel": "اطلاعیه Payjoin",
   "settingsPayjoinAdvancedTitle": "تنظیمات پیشرفته Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid شما به‌طور خودکار به Bitcoin تبدیل می‌شود.",
   "addressViewErrorWalletNotFound": "این کیف پول پیدا نشد.",
   "addressViewErrorLoadFailed": "آدرس‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
   "coreSwapsStatusNotStarted": "شروع نشده",

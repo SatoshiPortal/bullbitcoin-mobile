@@ -84,7 +84,7 @@ void main() {
             GoRoute(
               path: '/wallet',
               builder: (_, _) => WalletHomeScreen(
-                onOpenPayjoinSettings: () {},
+                announcements: const SizedBox.shrink(),
                 arkHost: null,
                 createSetupCubit: createSetupCubit,
                 onEmptyMainnet: () {},

@@ -3698,7 +3698,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin-huomautus",
   "settingsPayjoinAdvancedTitle": "Payjoinin lisäasetukset",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin.",
   "addressViewErrorWalletNotFound": "Tätä lompakkoa ei löytynyt.",
   "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen.",
   "coreSwapsStatusNotStarted": "Ei aloitettu",

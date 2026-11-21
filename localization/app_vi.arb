@@ -2799,7 +2799,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Lưu ý về Payjoin",
   "settingsPayjoinAdvancedTitle": "Cài đặt Payjoin nâng cao",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid của bạn được tự động đổi sang Bitcoin.",
   "addressViewErrorWalletNotFound": "Không tìm thấy ví này.",
   "addressViewErrorLoadFailed": "Không thể tải địa chỉ của bạn. Vui lòng thử lại.",
   "coreSwapsStatusNotStarted": "Chưa bắt đầu",

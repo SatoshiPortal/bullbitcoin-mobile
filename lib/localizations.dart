@@ -1,3 +1,5 @@
+import 'package:announcements/announcements.dart'
+    show AnnouncementsLocalizations;
 import 'package:label_editor/label_editor.dart' show LabelEditorLocalizations;
 import 'package:signers/routes.dart' show SignersLocalizations;
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -10,6 +12,7 @@ export 'package:bb_mobile/generated/l10n/localization.dart'
 // Keep the app on the standalone delegates across automatic regeneration.
 const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   AppLocalizations.delegate,
+  AnnouncementsLocalizations.delegate,
   SignersLocalizations.delegate,
   LabelEditorLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,

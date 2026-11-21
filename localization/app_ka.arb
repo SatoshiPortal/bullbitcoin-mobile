@@ -2913,7 +2913,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin-ის გაფრთხილება",
   "settingsPayjoinAdvancedTitle": "Payjoin-ის დამატებითი პარამეტრები",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "თქვენი Liquid ავტომატურად იცვლება Bitcoin-ში.",
   "addressViewErrorWalletNotFound": "ეს საფულე ვერ მოიძებნა.",
   "addressViewErrorLoadFailed": "თქვენი მისამართების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "coreSwapsStatusNotStarted": "არ დაწყებულა",

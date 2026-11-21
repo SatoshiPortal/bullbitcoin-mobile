@@ -8015,7 +8015,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
   "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
   "coreSwapsStatusNotStarted": "Не е започнало",

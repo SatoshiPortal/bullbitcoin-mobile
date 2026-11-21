@@ -9592,7 +9592,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin अस्वीकरण",
   "settingsPayjoinAdvancedTitle": "उन्नत Payjoin सेटिंग्स",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "आपका Liquid स्वचालित रूप से Bitcoin में बदल दिया जाता है।",
   "addressViewErrorWalletNotFound": "यह वॉलेट नहीं मिल सका।",
   "addressViewErrorLoadFailed": "आपके पते लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
   "coreSwapsStatusNotStarted": "शुरू नहीं हुआ",

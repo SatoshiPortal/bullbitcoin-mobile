@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -36,8 +35,6 @@ class _Settings extends Mock implements SettingsCubit {}
 class _Price extends Mock implements BitcoinPriceBloc {}
 
 class _Chart extends Mock implements PriceChartCubit {}
-
-class _Announcements extends Mock implements AnnouncementsCubit {}
 
 class _Transactions extends Mock implements TransactionsCubit {}
 
@@ -127,10 +124,6 @@ void main() {
         final chart = _Chart();
         when(() => chart.state).thenReturn(const PriceChartState());
         when(() => chart.stream).thenAnswer((_) => const Stream.empty());
-        final announcements = _Announcements();
-        when(() => announcements.state).thenReturn(const AnnouncementsState());
-        when(() => announcements.stream)
-            .thenAnswer((_) => const Stream.empty());
         final transactions = _Transactions();
         when(() => transactions.state)
             .thenReturn(const TransactionsState(transactions: []));
@@ -165,7 +158,7 @@ void main() {
                     extendBodyBehindAppBar: true,
                     appBar: WalletHomeAppBar(onSettings: () {}),
                     body: WalletHomeScreen(
-                      onOpenPayjoinSettings: () {},
+                      announcements: const SizedBox.shrink(),
                       arkHost: null,
                       createSetupCubit: () => throw StateError(
                         'Populated preview does not create wallets',
@@ -217,7 +210,6 @@ void main() {
                 BlocProvider<SettingsCubit>.value(value: settings),
                 BlocProvider<BitcoinPriceBloc>.value(value: price),
                 BlocProvider<PriceChartCubit>.value(value: chart),
-                BlocProvider<AnnouncementsCubit>.value(value: announcements),
               ],
               child: MaterialApp.router(
                 debugShowCheckedModeBanner: false,

@@ -3707,7 +3707,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Попередження про Payjoin",
   "settingsPayjoinAdvancedTitle": "Розширені налаштування Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
   "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
   "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз.",
   "coreSwapsStatusNotStarted": "Не розпочато",

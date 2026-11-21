@@ -9417,7 +9417,6 @@
   "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
   "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
   "coreSwapsStatusNotStarted": "لم يبدأ",

@@ -882,14 +882,6 @@
   "@app__bitcoinPriceExchangeRateUnavailable_apple": {
     "description": "Apple (App Store) wording for the root catalogue key bitcoinPriceExchangeRateUnavailable."
   },
-  "app__announcementAutoswapTitle_apple": "Auto Transfer is active",
-  "@app__announcementAutoswapTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key announcementAutoswapTitle."
-  },
-  "app__announcementAutoswapDescription_apple": "Your Liquid is automatically transferred to Bitcoin.",
-  "@app__announcementAutoswapDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key announcementAutoswapDescription."
-  },
   "app__swapUnderReviewTitle_apple": "Transfer under review",
   "@app__swapUnderReviewTitle_apple": {
     "description": "Apple (App Store) wording for the root catalogue key swapUnderReviewTitle."
@@ -913,9 +905,9 @@
       }
     }
   },
-  "app__announcementAppUpdateRequiredDescription_apple": "To use the Lightning payment and transfer service, please update the BULL mobile app with the new version.",
-  "@app__announcementAppUpdateRequiredDescription_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key announcementAppUpdateRequiredDescription."
+  "announcements__announcementAppUpdateRequiredDescription_apple": "To use the Lightning payment and transfer service, please update the BULL mobile app with the new version.",
+  "@announcements__announcementAppUpdateRequiredDescription_apple": {
+    "description": "Apple (App Store) wording for the announcements catalogue key announcementAppUpdateRequiredDescription."
   },
   "app__swapErrorRouteUnavailableGeneric_apple": "This transfer is not available.",
   "@app__swapErrorRouteUnavailableGeneric_apple": {
