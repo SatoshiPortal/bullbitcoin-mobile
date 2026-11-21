@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/result.dart' as core;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
@@ -99,5 +101,69 @@ void main() {
       (updates.single as core.Ok<PayjoinSession, SendFailure>).value,
       payjoin,
     );
+  });
+
+  test('keeps an update emitted while the current state is read', () async {
+    final sessions = _MockPayjoinSessions();
+    final requested = _session();
+    final aborted = _session(status: PayjoinStatus.aborted);
+    final changes =
+        StreamController<Result<PayjoinSession, PayjoinFailure>>.broadcast();
+    final read = Completer<Result<PayjoinSession?, PayjoinFailure>>();
+    when(() => sessions.byId(any())).thenAnswer((_) => read.future);
+    when(
+      () => sessions.watch(sessionIds: {requested.id}),
+    ).thenAnswer((_) => changes.stream);
+
+    final updates = <PayjoinSession>[];
+    final subscription = WatchPayjoinUsecase(sessions)
+        .execute(ids: [requested.id])
+        .listen((result) {
+          if (result case core.Ok(:final value)) updates.add(value);
+        });
+    await pumpEventQueue();
+    changes.add(Ok(aborted));
+    read.complete(Ok(requested));
+    await pumpEventQueue();
+    await changes.close();
+    await subscription.cancel();
+
+    expect(updates, [requested, aborted]);
+  });
+
+  test('ends after a session that was already settled', () async {
+    final payjoin = _session(status: PayjoinStatus.completed);
+    final sessions = _sessions(current: payjoin);
+    when(() => sessions.watch(sessionIds: {payjoin.id})).thenAnswer(
+      (_) =>
+          StreamController<Result<PayjoinSession, PayjoinFailure>>.broadcast()
+              .stream,
+    );
+
+    final updates = await WatchPayjoinUsecase(
+      sessions,
+    ).execute(ids: [payjoin.id]).toList();
+
+    expect(updates, hasLength(1));
+  });
+
+  test('reports a failed read of the current state', () async {
+    final sessions = _MockPayjoinSessions();
+    final payjoin = _session();
+    when(() => sessions.byId(any())).thenAnswer(
+      (_) async =>
+          const Err<PayjoinSession?, PayjoinFailure>(PayjoinStorageFailure()),
+    );
+    when(() => sessions.watch(sessionIds: {payjoin.id})).thenAnswer(
+      (_) => Stream.value(Ok<PayjoinSession, PayjoinFailure>(payjoin)),
+    );
+
+    final updates = await WatchPayjoinUsecase(
+      sessions,
+    ).execute(ids: [payjoin.id]).toList();
+
+    expect(updates, hasLength(2));
+    expect(updates.first, isA<core.Err<PayjoinSession, SendFailure>>());
+    expect(updates.last, isA<core.Ok<PayjoinSession, SendFailure>>());
   });
 }
