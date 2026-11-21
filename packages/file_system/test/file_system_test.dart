@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_system/file_system.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -10,16 +11,16 @@ import 'package:primitives/primitives.dart';
 class _Picker extends Mock implements FilePickerPlatform {}
 
 final class _Document extends PlatformFile {
-  final bool readable;
+  final Object? readError;
 
-  _Document({this.readable = true});
+  _Document({this.readError});
 
   @override
   String get name => 'document.PDF';
 
   @override
   Stream<Uint8List> readAsByteStream() async* {
-    if (!readable) throw const FileSystemException('unreadable test document');
+    if (readError case final Object error) throw error;
     yield Uint8List.fromList([1, 2, 3]);
   }
 
@@ -46,6 +47,69 @@ void main() {
     ).thenAnswer((_) async => document);
   }
 
+  void testErrorBoundary<T>(
+    FileSystemFailureKind kind,
+    Future<Result<T, FileSystemFailure>> Function(Object error) invoke,
+  ) {
+    test('${kind.name} maps a platform exception to a typed failure', () async {
+      expect(
+        await invoke(PlatformException(code: 'picker-failed')),
+        isA<Err<T, FileSystemFailure>>().having(
+          (result) => result.failure.kind,
+          'failure kind',
+          kind,
+        ),
+      );
+    });
+
+    test('${kind.name} propagates a programmer error', () async {
+      final error = StateError('invalid picker state');
+      await expectLater(invoke(error), throwsA(same(error)));
+    });
+  }
+
+  testErrorBoundary(FileSystemFailureKind.pick, (error) {
+    when(() => picker.pickFile(type: FileType.any)).thenThrow(error);
+    return fileSystem.pick();
+  });
+
+  testErrorBoundary(FileSystemFailureKind.read, (error) async {
+    selects(_Document(readError: error));
+    final document = (await fileSystem.pick(allowedExtensions: ['pdf'])).fold(
+      (document) => document ?? fail('a document was expected'),
+      (_) => fail('could not select the document'),
+    );
+    return fileSystem.read(document, maxBytes: 3);
+  });
+
+  testErrorBoundary(FileSystemFailureKind.save, (error) {
+    final bytes = Uint8List(0);
+    when(
+      () => picker.saveFile(
+        fileName: 'example.txt',
+        bytes: bytes,
+        mimeType: 'application/octet-stream',
+      ),
+    ).thenThrow(error);
+    return fileSystem.save(filename: 'example.txt', bytes: bytes);
+  });
+
+  testErrorBoundary(FileSystemFailureKind.cleanup, (error) {
+    when(() => picker.clearTemporaryFiles()).thenThrow(error);
+    return fileSystem.clearTemporaryFiles();
+  });
+
+  test(
+    'cleanup succeeds on a platform without temporary-file support',
+    () async {
+      when(() => picker.clearTemporaryFiles()).thenThrow(UnimplementedError());
+      expect(
+        await fileSystem.clearTemporaryFiles(),
+        isA<Ok<void, FileSystemFailure>>(),
+      );
+    },
+  );
+
   test('returns the selected document bytes and their actual size', () async {
     selects(_Document());
     final result = await fileSystem.pick(allowedExtensions: ['pdf']);
@@ -70,7 +134,11 @@ void main() {
   });
 
   test('a selected unreadable file retains the document failure', () async {
-    selects(_Document(readable: false));
+    selects(
+      _Document(
+        readError: const FileSystemException('unreadable test document'),
+      ),
+    );
     final picked = await fileSystem.pick(allowedExtensions: ['pdf']);
     final document = (picked as Ok<PickedDocument?, FileSystemFailure>).value;
     if (document == null) fail('a document was selected');
