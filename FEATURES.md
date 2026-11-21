@@ -474,6 +474,7 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
    - Extracted examples: `Failure`, `Result`, `Fingerprint`, network types, `Outpoint`, `Sats`, `FeeRate`, and `XpubType`. Security-domain types such as `Secret` now live in `packages/secrets`, which owns them rather than exposing them as primitives.
    - The app uses `ConvertAmount` and `FormatAmount` from `primitives` for BTC, satoshi and fiat conversions and display.
    - Shared types used across multiple features, avoiding redundant definitions
+   - The app and `satoshifier` share millisatoshi-to-satoshi conversion through `primitives`.
    - Immutable, validated value objects that ensure domain integrity
 
 > Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).

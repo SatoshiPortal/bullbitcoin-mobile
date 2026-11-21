@@ -12,6 +12,7 @@ export 'src/failure.dart';
 export 'src/money.dart';
 export 'src/bitcoin_transaction_recipient.dart';
 export 'src/fingerprint.dart';
+export 'src/msats.dart';
 export 'src/network.dart';
 export 'src/network_capabilities.dart';
 export 'src/outpoint.dart';
