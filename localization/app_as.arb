@@ -8667,7 +8667,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {
@@ -9191,8 +9191,8 @@
   "limitOrdersInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
   "limitOrdersInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
   "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 টা লেনদেন} other{{count} টা লেনদেন}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 টা লেনদেন ({currency})} other{{count} টা লেনদেন ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} টা লেনদেন} other{{count} টা লেনদেন}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} টা লেনদেন ({currency})} other{{count} টা লেনদেন ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "আপোনাৰ আপলোডৰ স্থিতি ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",
   "recipientsErrorVirtualIbanNotAvailable": "এই ফান্ডিং বিকল্পত প্ৰৱেশ কৰিবলৈ আপোনাৰ প্ৰয়োজনীয় অনুমতি নাই। আপোনাৰ KYC অপৰ্যাপ্ত নাইবা এই বিকল্প আপোনাৰ একাউণ্টৰ বাবে উপলব্ধ নহয়",

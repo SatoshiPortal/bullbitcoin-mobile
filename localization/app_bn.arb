@@ -11501,7 +11501,7 @@
   "@coinsErrorUnexpected": {
     "description": "Generic Coins error message for unexpected failures"
   },
-  "walletCoinsEntryUtxoCount": "{count, plural, =1{1 UTXO} other{{count} UTXO}}",
+  "walletCoinsEntryUtxoCount": "{count, plural, =1{{count} UTXO} other{{count} UTXO}}",
   "@walletCoinsEntryUtxoCount": {
     "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
     "placeholders": {

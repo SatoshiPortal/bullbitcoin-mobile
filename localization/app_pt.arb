@@ -4206,7 +4206,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, =1{1 moeda} other{{count} moedas}}",
+  "coinsSummaryCoinsCount": "{count, plural, =1{{count} moeda} other{{count} moedas}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -4243,7 +4243,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, =1{1 saída não gasta} other{{count} saídas não gastas}}",
+  "coinsUnspentOutputsCount": "{count, plural, =1{{count} saída não gasta} other{{count} saídas não gastas}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -4320,7 +4320,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, =1{1 selecionada} other{{count} selecionadas}}",
+  "coinsSelectedCount": "{count, plural, =1{{count} selecionada} other{{count} selecionadas}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -4345,7 +4345,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, =1{Congelar 1 moeda?} other{Congelar {count} moedas?}}",
+  "coinsFreezeConfirmTitle": "{count, plural, =1{Congelar {count} moeda?} other{Congelar {count} moedas?}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -4362,7 +4362,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, =1{1 moeda congelada · excluída dos gastos} other{{count} moedas congeladas · excluídas dos gastos}}",
+  "coinsFrozenToast": "{count, plural, =1{{count} moeda congelada · excluída dos gastos} other{{count} moedas congeladas · excluídas dos gastos}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -4371,7 +4371,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, =1{1 moeda descongelada} other{{count} moedas descongeladas}}",
+  "coinsUnfrozenToast": "{count, plural, =1{{count} moeda descongelada} other{{count} moedas descongeladas}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -4380,7 +4380,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, =1{1 conf.} other{{count} confs.}}",
+  "coinsConfsCount": "{count, plural, =1{{count} conf.} other{{count} confs.}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -4456,7 +4456,7 @@
   "logsExportFailedMessage": "Falha ao exportar os registos",
   "coreSwapsStatusRefunded": "Reembolsada",
   "swapRestoreTitle": "Restauro de swaps",
-  "swapRestoreActionable": "{count, plural, =0{Não há swaps para recuperar} =1{Podes tentar recuperar 1 swap. Pode já estar num estado terminal.} other{Podes tentar recuperar {count} swaps. Nota que alguns já podem estar num estado terminal.}}",
+  "swapRestoreActionable": "{count, plural, =0{Não há swaps para recuperar} =1{Podes tentar recuperar {count} swap. Pode já estar num estado terminal.} other{Podes tentar recuperar {count} swaps. Nota que alguns já podem estar num estado terminal.}}",
   "swapRestoreNoSwaps": "Não foram encontrados swaps para restaurar",
   "swapRestoreRecoverableSection": "Recuperáveis",
   "swapRestoreAllSection": "Todos os swaps",
@@ -4868,8 +4868,8 @@
   "limitOrdersInsufficientBalance": "Balança insuficiente",
   "limitOrdersInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "limitOrdersFundAccount": "Fina sua conta",
-  "exchangeStatisticsTradeCountValue": "{count, plural, =1{1 transação} other{{count} transações}}",
-  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{1 transação ({currency})} other{{count} transações ({currency})}}",
+  "exchangeStatisticsTradeCountValue": "{count, plural, =1{{count} transação} other{{count} transações}}",
+  "exchangeStatisticsTradeCountByCurrency": "{count, plural, =1{{count} transação ({currency})} other{{count} transações ({currency})}}",
   "exchangeSettingsErrorLoadingUploadStatus": "Não foi possível carregar o estado do seu envio. Por favor, tente novamente.",
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",
   "recipientsErrorVirtualIbanNotAvailable": "Você não tem as permissões necessárias para aceder a esta opção de financiamento. Ou o seu KYC é insuficiente ou esta opção não está disponível para a sua conta",
