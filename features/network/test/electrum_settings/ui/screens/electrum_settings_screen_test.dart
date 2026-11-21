@@ -13,7 +13,7 @@ class _MockElectrumSettingsBloc extends Mock implements ElectrumSettingsBloc {}
 
 class _MockTorSettingsCubit extends Mock implements TorSettingsCubit {}
 
-Future<void> _pumpScreen(WidgetTester tester) async {
+Future<ElectrumSettingsBloc> _pumpScreen(WidgetTester tester) async {
   final electrumBloc = _MockElectrumSettingsBloc();
   when(() => electrumBloc.state).thenReturn(const ElectrumSettingsState());
   when(() => electrumBloc.stream)
@@ -37,9 +37,14 @@ Future<void> _pumpScreen(WidgetTester tester) async {
       ),
     ),
   );
+  return electrumBloc;
 }
 
 void main() {
+  setUpAll(
+    () => registerFallbackValue(const ElectrumSettingsLoaded(isLiquid: false)),
+  );
+
   testWidgets('keeps network selection limited to Bitcoin and Liquid', (
     tester,
   ) async {
@@ -48,5 +53,28 @@ void main() {
     expect(find.text('Bitcoin'), findsOneWidget);
     expect(find.text('Liquid'), findsOneWidget);
     expect(find.text('Tor'), findsNothing);
+  });
+
+  testWidgets('reloads the selected chain from a named action', (tester) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      final bloc = await _pumpScreen(tester);
+      final action = find.byTooltip('Refresh servers');
+      expect(tester.getSize(action).shortestSide, greaterThanOrEqualTo(48));
+
+      await tester.tap(action);
+
+      final event = verify(() => bloc.add(captureAny())).captured.single;
+      expect(
+        event,
+        isA<ElectrumSettingsLoaded>().having(
+          (event) => event.isLiquid,
+          'isLiquid',
+          false,
+        ),
+      );
+    } finally {
+      semantics.dispose();
+    }
   });
 }
