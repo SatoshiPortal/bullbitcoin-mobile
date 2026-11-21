@@ -153,6 +153,50 @@ void main() {
     expect(google.disconnects, 0);
   });
 
+  test(
+    'explicit revocation clears the account and closes its transport',
+    () async {
+      expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
+      expect(google.disconnects, 0);
+
+      expect(await drive.revokeAccess(), isA<Ok<void, GoogleDriveFailure>>());
+      expect(google.disconnects, 1);
+      expect(google.currentUser, isNull);
+      expect(client.closes, 1);
+      client.respond = (_) =>
+          fail('the revoked account must not send requests');
+      expect(
+        await drive.listFiles(),
+        isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<GoogleDriveUnavailableFailure>(),
+        ),
+      );
+
+      drive.dispose();
+      expect(google.disconnects, 1);
+      expect(client.closes, 1);
+    },
+  );
+
+  test('silent sign-in returns the account without prompting', () async {
+    drive.dispose();
+    drive = openGoogleDriveForTesting(googleSignIn: google);
+
+    expect(
+      await drive.connectSilently(),
+      isA<Ok<String?, GoogleDriveFailure>>().having(
+        (result) => result.value,
+        'account',
+        'first@example.invalid',
+      ),
+    );
+    expect(tokens.recoveryRequests, [false]);
+    expect(google.signIns, 0);
+    expect(google.disconnects, 0);
+  });
+
   test('silent discovery never requests interactive token recovery', () async {
     drive.dispose();
     drive = openGoogleDriveForTesting(googleSignIn: google);
