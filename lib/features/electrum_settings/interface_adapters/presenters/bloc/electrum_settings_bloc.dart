@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dar
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_url_parser.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';

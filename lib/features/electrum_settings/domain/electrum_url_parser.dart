@@ -1,6 +1,11 @@
 enum ElectrumUrlValidationError { empty, hasProtocol, invalidFormat }
 
 class ElectrumUrlParser {
+  static final _protocolPattern = RegExp('^([a-zA-Z]+)://');
+  static final _addressPattern = RegExp(
+    r'^(([a-zA-Z0-9.-]+):\d+)(?::([st]))?$',
+  );
+
   /// Parses Electrum server URL and determines SSL setting based on suffix or defaults
   ///
   /// Supports the following formats:
@@ -21,36 +26,21 @@ class ElectrumUrlParser {
     final trimmedInput = input.trim();
     if (trimmedInput.isEmpty) throw ElectrumUrlValidationError.empty;
 
-    // Check for protocol prefix
-    final protocolPattern = RegExp('^([a-zA-Z]+)://');
-    if (protocolPattern.hasMatch(trimmedInput)) {
+    if (_protocolPattern.hasMatch(trimmedInput)) {
       throw ElectrumUrlValidationError.hasProtocol;
     }
 
-    // Check for :s or :t suffix
-    final suffixMatch = RegExp(r'^([a-zA-Z0-9.-]+):(\d+):(s|t)$')
-        .firstMatch(trimmedInput);
-
-    if (suffixMatch != null) {
-      final host = suffixMatch.group(1)!;
-      final port = suffixMatch.group(2)!;
-      final suffix = suffixMatch.group(3)!;
-      final cleanUrl = '$host:$port';
-      return (cleanUrl: cleanUrl, enableSsl: suffix == 's', sslExplicit: true);
-    }
-
-    // Check if it's a valid host:port format (no suffix)
-    final hostPortMatch = RegExp(r'^([a-zA-Z0-9.-]+):(\d+)$')
-        .firstMatch(trimmedInput);
-
-    if (hostPortMatch != null) {
-      final host = hostPortMatch.group(1)!;
+    final match = _addressPattern.firstMatch(trimmedInput);
+    if ((match?.group(1), match?.group(2), match?.group(3)) case (
+      final String cleanUrl,
+      final String host,
+      final suffix,
+    )) {
       final isOnion = host.endsWith('.onion');
-      // .onion → TCP is an explicit signal; clearnet → SSL is just the default
       return (
-        cleanUrl: trimmedInput,
-        enableSsl: !isOnion,
-        sslExplicit: isOnion,
+        cleanUrl: cleanUrl,
+        enableSsl: suffix == null ? !isOnion : suffix == 's',
+        sslExplicit: suffix != null || isOnion,
       );
     }
 
