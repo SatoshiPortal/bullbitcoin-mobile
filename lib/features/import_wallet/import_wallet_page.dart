@@ -164,8 +164,7 @@ class ImportWalletPage extends StatelessWidget {
                                   await SignersNavigation.importBitBox(
                                     context,
                                     network: network,
-                                    requestedDeviceType:
-                                        SignerDeviceEntity.bitbox02,
+                                    requestedDeviceType: SignerDevice.bitbox02,
                                   );
                               if (account == null || !context.mounted) return;
                               final result = GetBitBoxWatchOnlyWalletUsecase()

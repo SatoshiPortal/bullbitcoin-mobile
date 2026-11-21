@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:signers/src/ledger/domain/ledger_failure.dart';
 import 'package:signers/src/ledger/domain/usecases/connect_ledger_device_usecase.dart';
@@ -17,7 +17,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
   final DisconnectLedgerDeviceUsecase _disconnectLedgerDeviceUsecase;
   final DisposeLedgerConnectionsUsecase _disposeLedgerConnectionsUsecase;
-  final SignerDeviceEntity? _requestedDeviceType;
+  final SignerDevice? _requestedDeviceType;
 
   LedgerOperationCubit({
     required this._network,

@@ -28,7 +28,7 @@ class ImportWatchOnlyRouter {
         name: ImportWatchOnlyWalletRoutes.scan.name,
         path: ImportWatchOnlyWalletRoutes.scan.path,
         builder: (context, state) {
-          final signerDevice = state.extra as SignerDeviceEntity?;
+          final signerDevice = state.extra as SignerDevice?;
           return ScanWatchOnlyScreen(signerDevice: signerDevice);
         },
       ),

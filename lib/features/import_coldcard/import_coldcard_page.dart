@@ -20,16 +20,13 @@ import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
   static const _supportedDevices = {
-    SignerDeviceEntity.coldcardQ,
-    SignerDeviceEntity.coldcardMk4,
+    SignerDevice.coldcardQ,
+    SignerDevice.coldcardMk4,
   };
 
-  final SignerDeviceEntity signerDevice;
+  final SignerDevice signerDevice;
 
-  factory ImportColdcardPage({
-    Key? key,
-    required SignerDeviceEntity signerDevice,
-  }) {
+  factory ImportColdcardPage({Key? key, required SignerDevice signerDevice}) {
     if (!_supportedDevices.contains(signerDevice)) {
       throw ArgumentError.value(
         signerDevice,
@@ -100,7 +97,7 @@ class ImportColdcardPage extends StatelessWidget {
             Gap(Device.screen.height * 0.05),
             Column(
               children: [
-                if (signerDevice == SignerDeviceEntity.coldcardQ) ...[
+                if (signerDevice == SignerDevice.coldcardQ) ...[
                   BullButton.secondary(
                     size: BullButtonSize.small,
                     label: context.loc.importColdcardButtonOpenCamera,
@@ -128,7 +125,7 @@ class ImportColdcardPage extends StatelessWidget {
                   size: BullButtonSize.small,
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed: () {
-                    if (signerDevice == SignerDeviceEntity.coldcardQ) {
+                    if (signerDevice == SignerDevice.coldcardQ) {
                       ColdcardQInstructionsBottomSheet.show(context);
                     } else {
                       ColdcardMk4InstructionsBottomSheet.show(context);

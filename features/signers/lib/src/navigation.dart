@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
 
-import 'signer_device_entity.dart';
+import 'signer_device.dart';
 import 'ledger_flow/domain/signer_account.dart';
 import 'ledger_flow/ui/screens/ledger_action_screen.dart';
 import 'bitbox_flow/ui/screens/bitbox_action_screen.dart';
@@ -16,7 +16,7 @@ abstract final class SignersNavigation {
   static Future<SignerAccount?> importLedger(
     BuildContext context, {
     required NetworkEnv network,
-    SignerDeviceEntity? requestedDeviceType,
+    SignerDevice? requestedDeviceType,
   }) => context.pushNamed<SignerAccount>(
     LedgerRoute.importLedger.name,
     extra: LedgerRouteParams(
@@ -30,7 +30,7 @@ abstract final class SignersNavigation {
     required String psbt,
     required String derivationPath,
     required ScriptType scriptType,
-    SignerDeviceEntity? requestedDeviceType,
+    SignerDevice? requestedDeviceType,
   }) => context.pushNamed<String>(
     LedgerRoute.ledgerSignTransaction.name,
     extra: LedgerRouteParams(
@@ -47,7 +47,7 @@ abstract final class SignersNavigation {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
-    SignerDeviceEntity? requestedDeviceType,
+    SignerDevice? requestedDeviceType,
   }) => context.pushNamed<void>(
     LedgerRoute.ledgerVerifyAddress.name,
     extra: LedgerRouteParams(
@@ -61,7 +61,7 @@ abstract final class SignersNavigation {
   static Future<SignerAccount?> importBitBox(
     BuildContext context, {
     required NetworkEnv network,
-    SignerDeviceEntity? requestedDeviceType,
+    SignerDevice? requestedDeviceType,
   }) => context.pushNamed<SignerAccount>(
     BitBoxRoute.importBitBox.name,
     extra: BitBoxRouteParams(
@@ -75,7 +75,7 @@ abstract final class SignersNavigation {
     required String psbt,
     required String derivationPath,
     required ScriptType scriptType,
-    SignerDeviceEntity? requestedDeviceType,
+    SignerDevice? requestedDeviceType,
   }) => context.pushNamed<String>(
     BitBoxRoute.bitboxSignTransaction.name,
     extra: BitBoxRouteParams(
@@ -92,7 +92,7 @@ abstract final class SignersNavigation {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
-    SignerDeviceEntity? requestedDeviceType,
+    SignerDevice? requestedDeviceType,
   }) => context.pushNamed<void>(
     BitBoxRoute.bitboxVerifyAddress.name,
     extra: BitBoxRouteParams(
@@ -106,7 +106,7 @@ abstract final class SignersNavigation {
   static Future<PsbtHandoffResult?> showPsbt(
     BuildContext context, {
     required String psbt,
-    SignerDeviceEntity? signerDevice,
+    SignerDevice? signerDevice,
   }) => context.pushNamed<PsbtHandoffResult>(
     PsbtFlowRoutes.show.name,
     extra: (psbt: psbt, signerDevice: signerDevice),

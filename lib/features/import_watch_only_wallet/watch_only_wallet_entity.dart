@@ -16,7 +16,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     Network? selectedNetwork,
     @Default(SignerEntity.remote) SignerEntity signer,
     @Default('') String label,
-    @Default(null) SignerDeviceEntity? signerDevice,
+    @Default(null) SignerDevice? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({
@@ -60,7 +60,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
 
   static Future<WatchOnlyWalletEntity> parse(
     String value, {
-    SignerDeviceEntity? signerDevice,
+    SignerDevice? signerDevice,
     Network? selectedNetwork,
     NetworkEnv? environment,
   }) async {

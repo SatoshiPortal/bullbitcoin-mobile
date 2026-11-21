@@ -1,4 +1,4 @@
-import 'package:signers/signers.dart';
+import 'package:signers/signers.dart' as signers;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:drift/drift.dart';
 
@@ -39,36 +39,37 @@ enum SignerDevice {
   seedsigner,
   specter;
 
-  static SignerDevice fromEntity(SignerDeviceEntity entity) => switch (entity) {
-    SignerDeviceEntity.bitbox02 => SignerDevice.bitbox02,
-    SignerDeviceEntity.coldcardQ => SignerDevice.coldcardQ,
-    SignerDeviceEntity.coldcardMk4 => SignerDevice.coldcardMk4,
-    SignerDeviceEntity.jade => SignerDevice.jade,
-    SignerDeviceEntity.keystone => SignerDevice.keystone,
-    SignerDeviceEntity.krux => SignerDevice.krux,
-    SignerDeviceEntity.ledgerNanoSPlus => SignerDevice.ledgerNanoSPlus,
-    SignerDeviceEntity.ledgerNanoX => SignerDevice.ledgerNanoX,
-    SignerDeviceEntity.ledgerFlex => SignerDevice.ledgerFlex,
-    SignerDeviceEntity.ledgerStax => SignerDevice.ledgerStax,
-    SignerDeviceEntity.passport => SignerDevice.passport,
-    SignerDeviceEntity.seedsigner => SignerDevice.seedsigner,
-    SignerDeviceEntity.specter => SignerDevice.specter,
-  };
+  static SignerDevice fromEntity(signers.SignerDevice entity) =>
+      switch (entity) {
+        signers.SignerDevice.bitbox02 => SignerDevice.bitbox02,
+        signers.SignerDevice.coldcardQ => SignerDevice.coldcardQ,
+        signers.SignerDevice.coldcardMk4 => SignerDevice.coldcardMk4,
+        signers.SignerDevice.jade => SignerDevice.jade,
+        signers.SignerDevice.keystone => SignerDevice.keystone,
+        signers.SignerDevice.krux => SignerDevice.krux,
+        signers.SignerDevice.ledgerNanoSPlus => SignerDevice.ledgerNanoSPlus,
+        signers.SignerDevice.ledgerNanoX => SignerDevice.ledgerNanoX,
+        signers.SignerDevice.ledgerFlex => SignerDevice.ledgerFlex,
+        signers.SignerDevice.ledgerStax => SignerDevice.ledgerStax,
+        signers.SignerDevice.passport => SignerDevice.passport,
+        signers.SignerDevice.seedsigner => SignerDevice.seedsigner,
+        signers.SignerDevice.specter => SignerDevice.specter,
+      };
 
-  SignerDeviceEntity toEntity() => switch (this) {
-    SignerDevice.bitbox02 => SignerDeviceEntity.bitbox02,
-    SignerDevice.coldcardQ => SignerDeviceEntity.coldcardQ,
-    SignerDevice.coldcardMk4 => SignerDeviceEntity.coldcardMk4,
-    SignerDevice.jade => SignerDeviceEntity.jade,
-    SignerDevice.keystone => SignerDeviceEntity.keystone,
-    SignerDevice.krux => SignerDeviceEntity.krux,
-    SignerDevice.ledgerNanoSPlus => SignerDeviceEntity.ledgerNanoSPlus,
-    SignerDevice.ledgerNanoX => SignerDeviceEntity.ledgerNanoX,
-    SignerDevice.ledgerFlex => SignerDeviceEntity.ledgerFlex,
-    SignerDevice.ledgerStax => SignerDeviceEntity.ledgerStax,
-    SignerDevice.passport => SignerDeviceEntity.passport,
-    SignerDevice.seedsigner => SignerDeviceEntity.seedsigner,
-    SignerDevice.specter => SignerDeviceEntity.specter,
+  signers.SignerDevice toEntity() => switch (this) {
+    SignerDevice.bitbox02 => signers.SignerDevice.bitbox02,
+    SignerDevice.coldcardQ => signers.SignerDevice.coldcardQ,
+    SignerDevice.coldcardMk4 => signers.SignerDevice.coldcardMk4,
+    SignerDevice.jade => signers.SignerDevice.jade,
+    SignerDevice.keystone => signers.SignerDevice.keystone,
+    SignerDevice.krux => signers.SignerDevice.krux,
+    SignerDevice.ledgerNanoSPlus => signers.SignerDevice.ledgerNanoSPlus,
+    SignerDevice.ledgerNanoX => signers.SignerDevice.ledgerNanoX,
+    SignerDevice.ledgerFlex => signers.SignerDevice.ledgerFlex,
+    SignerDevice.ledgerStax => signers.SignerDevice.ledgerStax,
+    SignerDevice.passport => signers.SignerDevice.passport,
+    SignerDevice.seedsigner => signers.SignerDevice.seedsigner,
+    SignerDevice.specter => signers.SignerDevice.specter,
   };
 }
 

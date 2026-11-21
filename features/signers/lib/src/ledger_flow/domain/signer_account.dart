@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:primitives/primitives.dart';
 
 /// Public account data read from a hardware signer; contains no private keys.
@@ -7,7 +7,7 @@ final class SignerAccount {
   final String derivationPath;
   final String xpub;
   final ScriptType scriptType;
-  final SignerDeviceEntity device;
+  final SignerDevice device;
   final NetworkEnv network;
 
   const SignerAccount({

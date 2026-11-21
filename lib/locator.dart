@@ -27,7 +27,8 @@ import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
-import 'package:signers/signers.dart';
+import 'package:signers/routes.dart';
+import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
@@ -111,7 +112,18 @@ class AppLocator {
     RegtestElectrumProfile? regtestProfile,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
-    setupSigners(locator);
+    locator.registerSingleton(
+      SignersFeature.mount(
+        services: locator,
+        writeNfc: (context, title, data, onSuccess) =>
+            NfcBottomSheet.showWriteNfc(
+              context: context,
+              title: title,
+              data: data,
+              onSuccess: onSuccess,
+            ),
+      ),
+    );
 
     // One instance per isolate; background tasks must not use its keystore.
     // Liquid signing removes its temporary children after use. Stale caches

@@ -2,7 +2,7 @@
 
 Hardware account reading, signing and address verification for Ledger and BitBox, plus URQR and unsigned PSBT presentation. This feature owns no wallet, settings or navigation destination outside its signer flow.
 
-Call `setupSigners(getIt)` once during foreground composition. The shell installs `SignersLocalizations.delegate` alongside its own localization delegates and the Bull UI theme extensions. `package:signers/routes.dart` is the shell composition surface: route identities, action screens and screen inputs. It is separate from the caller API in `package:signers/signers.dart`.
+Call `SignersFeature.mount(services: getIt, writeNfc: writeNfc)` from `package:signers/routes.dart` once during foreground composition and add the returned feature's `routes` to the root router. Install `SignersLocalizations.delegate` alongside the app localization delegates and Bull UI theme extensions. The feature owns route parameters, screen builders and localized route errors. Callers use `SignersNavigation` and `SignerDevice` from `package:signers/signers.dart`.
 
 Callers use `SignersNavigation.importLedger` / `importBitBox` to receive a `SignerAccount?`, `signLedger` / `signBitBox` to receive a signed PSBT, `verifyLedger` / `verifyBitBox` to request verification, and `showPsbt` to receive a `PsbtHandoffResult?`. The required network comes from the captured wallet or import request. Mainnet and testnet are supported; signet and regtest are refused before discovery and at the device use-case boundary. Back navigation returns no import/signing/handoff result.
 

@@ -646,7 +646,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 
 ## Signer ownership (2026-11-20)
 
-`features/signers` replaces the Ledger, BitBox and PSBT-flow owners. Import consumes public accounts; Send and Receive pass the wallet network. Scanning and wallet import consume the published URQR/device types. NFC presentation and route assembly stay in the shell through callbacks, so signers has no scanning, wallet, settings or import dependency. Existing consumer edges to signer internals become edges to its public library; the retired reverse edges are removed. BBQR transaction decoding remains blocked on the shell-owned `BitcoinTx`; BBQR encoding is extracted.
+`features/signers` replaces the Ledger, BitBox and PSBT-flow owners. Import consumes public accounts; Send and Receive pass the wallet network. Scanning and wallet import consume the published URQR/device types. Signers owns its routes and route error rendering. The shell composes the mounted routes and supplies the NFC writer callback, so signers has no scanning, wallet, settings or import dependency. Existing consumer edges to signer internals become edges to its public library; the retired reverse edges are removed. BBQR transaction decoding remains blocked on the shell-owned `BitcoinTx`; BBQR encoding is extracted.
 
 ## Network settings and service status
 

@@ -1,24 +1,26 @@
 import 'dart:async';
 
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:bull_ui/bull_ui.dart' show BullThemeX;
 import 'package:signers/src/signers_l10n.dart';
 import 'package:signers/src/psbt_flow/presentation/psbt_flow_failure_l10n.dart';
 import 'package:signers/src/psbt_flow/show_animated_qr/show_animated_qr_cubit.dart';
 import 'package:signers/src/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
-import 'package:signers/src/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullQrCode, BullShapesX, BullText, Gap, BullTypographyX;
 
 class ShowAnimatedQrWidget extends StatelessWidget {
+  final GetIt services;
   final String psbt;
   final QrType qrType;
   final bool showSlider;
 
   const ShowAnimatedQrWidget({
     super.key,
+    required this.services,
     required this.psbt,
     required this.qrType,
     this.showSlider = false,
@@ -27,7 +29,8 @@ class ShowAnimatedQrWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => locator<ShowAnimatedQrCubit>(param1: psbt, param2: qrType),
+      create: (_) =>
+          services<ShowAnimatedQrCubit>(param1: psbt, param2: qrType),
       child: _ShowAnimatedQrView(showSlider: showSlider),
     );
   }

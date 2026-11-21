@@ -1,19 +1,19 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
 
 part 'ledger_device_model.freezed.dart';
 
-LedgerDeviceType convertToLedgerDeviceType(SignerDeviceEntity deviceType) {
+LedgerDeviceType convertToLedgerDeviceType(SignerDevice deviceType) {
   switch (deviceType) {
-    case SignerDeviceEntity.ledgerNanoSPlus:
+    case SignerDevice.ledgerNanoSPlus:
       return LedgerDeviceType.nanoSP;
-    case SignerDeviceEntity.ledgerNanoX:
+    case SignerDevice.ledgerNanoX:
       return LedgerDeviceType.nanoX;
-    case SignerDeviceEntity.ledgerFlex:
+    case SignerDevice.ledgerFlex:
       return LedgerDeviceType.flex;
-    case SignerDeviceEntity.ledgerStax:
+    case SignerDevice.ledgerStax:
       return LedgerDeviceType.stax;
     default:
       throw Exception('Unsupported Ledger device');
@@ -51,18 +51,16 @@ abstract class LedgerDeviceModel with _$LedgerDeviceModel {
     );
   }
 
-  static SignerDeviceEntity _convertToSignerDeviceType(
-    LedgerDeviceType deviceType,
-  ) {
+  static SignerDevice _convertToSignerDeviceType(LedgerDeviceType deviceType) {
     switch (deviceType) {
       case LedgerDeviceType.nanoSP:
-        return SignerDeviceEntity.ledgerNanoSPlus;
+        return SignerDevice.ledgerNanoSPlus;
       case LedgerDeviceType.nanoX:
-        return SignerDeviceEntity.ledgerNanoX;
+        return SignerDevice.ledgerNanoX;
       case LedgerDeviceType.flex:
-        return SignerDeviceEntity.ledgerFlex;
+        return SignerDevice.ledgerFlex;
       case LedgerDeviceType.stax:
-        return SignerDeviceEntity.ledgerStax;
+        return SignerDevice.ledgerStax;
       default:
         throw Exception('Unsupported Ledger device');
     }

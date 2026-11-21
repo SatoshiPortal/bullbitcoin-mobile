@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/data/datasources/ledger_device_datasource.dart';
 import 'package:signers/src/ledger/data/models/ledger_device_model.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
@@ -15,7 +15,7 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
 
   @override
   Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
-    SignerDeviceEntity? deviceType,
+    SignerDevice? deviceType,
   }) async {
     final scanned = await _guard(
       () => _datasource.scanDevices(deviceType: deviceType),

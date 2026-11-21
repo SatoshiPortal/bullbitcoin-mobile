@@ -17,7 +17,7 @@ import 'package:bull_ui/bull_ui.dart'
     show BullBottomSheet, BullButton, BullSnackBar, BullTypographyX;
 
 class ScanWatchOnlyScreen extends StatefulWidget {
-  final SignerDeviceEntity? signerDevice;
+  final SignerDevice? signerDevice;
 
   const ScanWatchOnlyScreen({super.key, this.signerDevice});
 
@@ -47,10 +47,10 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               setState(() => _scanned = data);
               try {
                 String signerData = data;
-                if (widget.signerDevice == SignerDeviceEntity.krux) {
+                if (widget.signerDevice == SignerDevice.krux) {
                   signerData = Descriptor.parse(data).external;
-                } else if (widget.signerDevice == SignerDeviceEntity.passport ||
-                    widget.signerDevice == SignerDeviceEntity.keystone) {
+                } else if (widget.signerDevice == SignerDevice.passport ||
+                    widget.signerDevice == SignerDevice.keystone) {
                   final selectedDescriptor = await _chooseDerivation(
                     context,
                     data,

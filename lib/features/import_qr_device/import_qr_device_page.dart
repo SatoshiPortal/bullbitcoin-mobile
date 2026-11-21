@@ -17,7 +17,7 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:go_router/go_router.dart';
 
 class ImportQrDevicePage extends StatelessWidget {
-  final SignerDeviceEntity device;
+  final SignerDevice device;
   final String deviceName;
   final String instructionsTitle;
   final List<String> instructions;
@@ -48,7 +48,7 @@ class ImportQrDevicePage extends StatelessWidget {
               maxLines: 2,
             ),
 
-            if (device == SignerDeviceEntity.jade) ...[
+            if (device == SignerDevice.jade) ...[
               Gap(Device.screen.height * 0.03),
               BullInfoCard(
                 description: context.loc.importQrDeviceJadeFirmwareWarning,

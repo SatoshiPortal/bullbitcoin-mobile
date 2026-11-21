@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:signers/src/ledger/domain/ledger_failure.dart';
 import 'package:signers/src/ledger/domain/usecases/connect_ledger_device_usecase.dart';
@@ -20,7 +20,7 @@ import 'package:signers/src/ledger_flow/ledger_action.dart';
 import 'package:signers/src/ledger_flow/presentation/cubit/ledger_operation_cubit.dart';
 import 'package:signers/src/ledger_flow/presentation/cubit/ledger_operation_state.dart';
 import 'package:signers/src/ledger_flow/presentation/ledger_failure_l10n.dart';
-import 'package:signers/src/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:screen_awake/screen_awake.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +46,7 @@ class LedgerRouteParams {
   final String? psbt;
   final String? derivationPath;
   final String? address;
-  final SignerDeviceEntity? requestedDeviceType;
+  final SignerDevice? requestedDeviceType;
   final ScriptType? scriptType;
 
   const LedgerRouteParams({
@@ -60,11 +60,13 @@ class LedgerRouteParams {
 }
 
 class LedgerActionScreen extends StatelessWidget {
+  final GetIt services;
   final LedgerAction action;
   final LedgerRouteParams parameters;
 
   const LedgerActionScreen({
     super.key,
+    required this.services,
     required this.action,
     required this.parameters,
   });
@@ -74,23 +76,33 @@ class LedgerActionScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => LedgerOperationCubit(
         network: parameters.network,
-        scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
-        connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
-        disconnectLedgerDeviceUsecase: locator<DisconnectLedgerDeviceUsecase>(),
+        scanLedgerDevicesUsecase: services<ScanLedgerDevicesUsecase>(),
+        connectLedgerDeviceUsecase: services<ConnectLedgerDeviceUsecase>(),
+        disconnectLedgerDeviceUsecase:
+            services<DisconnectLedgerDeviceUsecase>(),
         disposeLedgerConnectionsUsecase:
-            locator<DisposeLedgerConnectionsUsecase>(),
+            services<DisposeLedgerConnectionsUsecase>(),
         requestedDeviceType: parameters.requestedDeviceType,
       ),
-      child: _LedgerActionView(action: action, parameters: parameters),
+      child: _LedgerActionView(
+        services: services,
+        action: action,
+        parameters: parameters,
+      ),
     );
   }
 }
 
 class _LedgerActionView extends StatefulWidget {
+  final GetIt services;
   final LedgerAction action;
   final LedgerRouteParams parameters;
 
-  const _LedgerActionView({required this.action, required this.parameters});
+  const _LedgerActionView({
+    required this.services,
+    required this.action,
+    required this.parameters,
+  });
 
   @override
   State<_LedgerActionView> createState() => _LedgerActionViewState();
@@ -517,7 +529,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   Future<Result<SignerAccount, LedgerFailure>> _executeImportWallet(
     LedgerDeviceEntity device,
   ) {
-    return locator<ReadLedgerAccountUsecase>().execute(
+    return widget.services<ReadLedgerAccountUsecase>().execute(
       network: widget.parameters.network,
       device: device,
       scriptType: _selectedScriptType,
@@ -543,7 +555,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       return const Err(LedgerMissingScriptTypeFailure());
     }
 
-    return locator<SignPsbtLedgerUsecase>().execute(
+    return widget.services<SignPsbtLedgerUsecase>().execute(
       device,
       network: widget.parameters.network,
       psbt: psbt,
@@ -571,7 +583,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       return const Err(LedgerMissingScriptTypeFailure());
     }
 
-    return locator<VerifyAddressLedgerUsecase>().execute(
+    return widget.services<VerifyAddressLedgerUsecase>().execute(
       network: widget.parameters.network,
       device: device,
       address: address,

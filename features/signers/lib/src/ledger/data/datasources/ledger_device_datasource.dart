@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/data/models/ledger_device_model.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:signers/src/ledger/data/ledger_exception.dart';
@@ -38,7 +38,7 @@ class LedgerDeviceDatasource {
 
   Future<List<LedgerDeviceModel>> scanDevices({
     Duration scanDuration = const Duration(seconds: 60),
-    SignerDeviceEntity? deviceType,
+    SignerDevice? deviceType,
   }) async {
     final cleanup = dispose();
     final generation = _generation;

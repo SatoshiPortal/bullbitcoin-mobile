@@ -79,7 +79,7 @@ abstract class Wallet with _$Wallet {
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required SignerEntity signer,
-    required SignerDeviceEntity? signerDevice,
+    required SignerDevice? signerDevice,
     required BigInt? balanceSat,
     // Confirmed-only component of balanceSat (excludes trusted/untrusted
     // pending and immature funds). Nullable/optional so every existing

@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart'
 import 'package:signers/src/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:signers/src/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:signers/src/bitbox/domain/repositories/bitbox_device_repository.dart';
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:meta/meta.dart';
 
 class ReadBitBoxAccountUsecase {
@@ -53,7 +53,7 @@ class ReadBitBoxAccountUsecase {
         derivationPath: derivationPath,
         xpub: xpub,
         scriptType: scriptType,
-        device: SignerDeviceEntity.bitbox02,
+        device: SignerDevice.bitbox02,
         network: network,
       ),
     );

@@ -12,7 +12,7 @@ import 'package:signers/src/bitbox/domain/usecases/scan_bitbox_devices_usecase.d
 import 'package:signers/src/bitbox_flow/domain/sign_psbt_bitbox_usecase.dart';
 import 'package:signers/src/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:signers/src/bitbox_flow/domain/verify_address_bitbox_usecase.dart';
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:bull_ui/bull_ui.dart' show BullThemeX;
 import 'package:signers/src/signers_l10n.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -23,7 +23,7 @@ import 'package:signers/src/bitbox_flow/presentation/bitbox_failure_l10n.dart';
 import 'package:signers/src/bitbox_flow/presentation/cubit/bitbox_operation_cubit.dart';
 import 'package:signers/src/bitbox_flow/presentation/cubit/bitbox_operation_state.dart';
 import 'package:signers/src/ledger_flow/domain/signer_account.dart';
-import 'package:signers/src/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:screen_awake/screen_awake.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +51,7 @@ class BitBoxRouteParams {
   final String? psbt;
   final String? derivationPath;
   final String? address;
-  final SignerDeviceEntity? requestedDeviceType;
+  final SignerDevice? requestedDeviceType;
   final ScriptType? scriptType;
 
   const BitBoxRouteParams({
@@ -65,11 +65,13 @@ class BitBoxRouteParams {
 }
 
 class BitBoxActionScreen extends StatelessWidget {
+  final GetIt services;
   final BitBoxAction action;
   final BitBoxRouteParams parameters;
 
   const BitBoxActionScreen({
     super.key,
+    required this.services,
     required this.action,
     required this.parameters,
   });
@@ -78,22 +80,31 @@ class BitBoxActionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => BitBoxOperationCubit(
-        disconnect: locator<DisconnectBitBoxDeviceUsecase>(),
-        dispose: locator<DisposeBitBoxConnectionsUsecase>(),
+        disconnect: services<DisconnectBitBoxDeviceUsecase>(),
+        dispose: services<DisposeBitBoxConnectionsUsecase>(),
         network: parameters.network,
-        scanBitBoxDevicesUsecase: locator<ScanBitBoxDevicesUsecase>(),
-        connectBitBoxDeviceUsecase: locator<ConnectBitBoxDeviceUsecase>(),
+        scanBitBoxDevicesUsecase: services<ScanBitBoxDevicesUsecase>(),
+        connectBitBoxDeviceUsecase: services<ConnectBitBoxDeviceUsecase>(),
       ),
-      child: _BitBoxActionView(action: action, parameters: parameters),
+      child: _BitBoxActionView(
+        services: services,
+        action: action,
+        parameters: parameters,
+      ),
     );
   }
 }
 
 class _BitBoxActionView extends StatefulWidget {
+  final GetIt services;
   final BitBoxAction action;
   final BitBoxRouteParams parameters;
 
-  const _BitBoxActionView({required this.action, required this.parameters});
+  const _BitBoxActionView({
+    required this.services,
+    required this.action,
+    required this.parameters,
+  });
 
   @override
   State<_BitBoxActionView> createState() => _BitBoxActionViewState();
@@ -355,9 +366,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     BitBoxOperationCubit cubit,
   ) async {
     await cubit.executeOperation(() async {
-      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
-        return Err(failure);
-      }
+      final readiness = await _ensureDeviceReady(cubit);
+      if (!mounted) return const Ok(null);
+      if (readiness case Err(:final failure)) return Err(failure);
 
       final device = cubit.state.connectedDevice;
       if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
@@ -375,7 +386,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
       cubit.showAddressVerification(address);
 
-      return locator<VerifyAddressBitBoxUsecase>().execute(
+      return widget.services<VerifyAddressBitBoxUsecase>().execute(
         network: widget.parameters.network,
         device: device,
         address: address,
@@ -390,9 +401,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     BitBoxOperationCubit cubit,
   ) async {
     await cubit.executeOperation(() async {
-      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
-        return Err(failure);
-      }
+      final readiness = await _ensureDeviceReady(cubit);
+      if (!mounted) return const Ok(null);
+      if (readiness case Err(:final failure)) return Err(failure);
 
       final device = cubit.state.connectedDevice;
       if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
@@ -408,7 +419,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         );
       }
 
-      return locator<SignPsbtBitBoxUsecase>().execute(
+      return widget.services<SignPsbtBitBoxUsecase>().execute(
         device,
         network: widget.parameters.network,
         psbt: psbt,
@@ -423,25 +434,29 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   ) async {
     final device = cubit.state.connectedDevice;
     if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
-    final repository = locator<BitBoxDeviceRepository>();
+    final repository = widget.services<BitBoxDeviceRepository>();
 
-    if (await repository.getMasterFingerprint(device) case Err()) {
+    final fingerprint = await repository.getMasterFingerprint(device);
+    if (!mounted) return const Ok(null);
+    if (fingerprint case Err()) {
       cubit.showWaitingForPassword();
 
       final String pairingCode;
-      switch (await locator<UnlockBitBoxDeviceUsecase>().execute(device)) {
+      switch (await widget.services<UnlockBitBoxDeviceUsecase>().execute(
+        device,
+      )) {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
           pairingCode = value;
       }
 
+      if (!mounted) return const Ok(null);
       if (pairingCode.isNotEmpty) {
         cubit.showPairingCode(pairingCode);
 
-        if (await locator<PairBitBoxDeviceUsecase>().execute(device) case Err(
-          :final failure,
-        )) {
+        if (await widget.services<PairBitBoxDeviceUsecase>().execute(device)
+            case Err(:final failure)) {
           return Err(failure);
         }
       }
@@ -455,14 +470,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     BitBoxOperationCubit cubit,
   ) async {
     await cubit.executeOperation(() async {
-      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
-        return Err(failure);
-      }
+      final readiness = await _ensureDeviceReady(cubit);
+      if (!mounted) return const Ok(null);
+      if (readiness case Err(:final failure)) return Err(failure);
 
       final device = cubit.state.connectedDevice;
       if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
 
-      return locator<ReadBitBoxAccountUsecase>().execute(
+      return widget.services<ReadBitBoxAccountUsecase>().execute(
         network: widget.parameters.network,
         device: device,
         scriptType: _selectedScriptType,

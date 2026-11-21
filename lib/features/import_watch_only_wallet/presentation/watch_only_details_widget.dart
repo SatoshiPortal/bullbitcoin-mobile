@@ -91,11 +91,11 @@ class _DescriptorDetailsWidget extends StatelessWidget {
               ),
               SizedBox(
                 width: 220,
-                child: BullDropdown<SignerDeviceEntity?>(
+                child: BullDropdown<SignerDevice?>(
                   value: entity.signerDevice,
                   items: [
-                    for (final value in [null, ...SignerDeviceEntity.values])
-                      BullPickerItem<SignerDeviceEntity?>(
+                    for (final value in [null, ...SignerDevice.values])
+                      BullPickerItem<SignerDevice?>(
                         value: value,
                         label:
                             value?.displayName ??

@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:signers/src/ledger/domain/ledger_failure.dart';
 import 'package:primitives/primitives.dart' show Result, ScriptType;
@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 abstract interface class LedgerDeviceRepository {
   @useResult
   Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
-    SignerDeviceEntity? deviceType,
+    SignerDevice? deviceType,
   });
 
   @useResult

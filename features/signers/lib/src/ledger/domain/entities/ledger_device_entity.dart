@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ledger_device_entity.freezed.dart';
@@ -11,7 +11,7 @@ abstract class LedgerDeviceEntity with _$LedgerDeviceEntity {
     required String id,
     required String name,
     required LedgerConnectionType connectionType,
-    required SignerDeviceEntity deviceType,
+    required SignerDevice deviceType,
   }) = _LedgerDeviceEntity;
 
   const LedgerDeviceEntity._();

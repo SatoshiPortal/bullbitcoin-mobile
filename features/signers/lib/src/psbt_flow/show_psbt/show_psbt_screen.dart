@@ -1,9 +1,10 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/signers_l10n.dart';
 import 'package:signers/src/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
 import 'package:signers/src/psbt_flow/show_psbt/device_instructions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButtonSize, BullButton, Gap;
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 typedef WriteSignerNfc = Future<void> Function(
@@ -16,12 +17,14 @@ typedef WriteSignerNfc = Future<void> Function(
 enum PsbtHandoffResult { readyToReadSignedTransaction }
 
 class ShowPsbtScreen extends StatelessWidget {
+  final GetIt services;
   final String psbt;
   final WriteSignerNfc writeNfc;
-  final SignerDeviceEntity? signerDevice;
+  final SignerDevice? signerDevice;
 
   const ShowPsbtScreen({
     super.key,
+    required this.services,
     required this.psbt,
     required this.writeNfc,
     this.signerDevice,
@@ -31,8 +34,8 @@ class ShowPsbtScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final device = signerDevice;
     final canSignViaNfc =
-        signerDevice == SignerDeviceEntity.coldcardQ ||
-        signerDevice == SignerDeviceEntity.coldcardMk4;
+        signerDevice == SignerDevice.coldcardQ ||
+        signerDevice == SignerDevice.coldcardMk4;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.psbtFlowSignTransaction)),
@@ -47,6 +50,7 @@ class ShowPsbtScreen extends StatelessWidget {
                     device.supportedQrType != QrType.none) ...[
                   ShowAnimatedQrWidget(
                     key: ValueKey('${psbt.hashCode}_${device.supportedQrType}'),
+                    services: services,
                     psbt: psbt,
                     qrType: device.supportedQrType,
                     showSlider: device.supportedQrType == QrType.urqr,
@@ -76,45 +80,45 @@ class ShowPsbtScreen extends StatelessWidget {
                 ],
 
                 if ([
-                  SignerDeviceEntity.coldcardQ,
-                  SignerDeviceEntity.coldcardMk4,
-                  SignerDeviceEntity.jade,
-                  SignerDeviceEntity.krux,
-                  SignerDeviceEntity.keystone,
-                  SignerDeviceEntity.passport,
-                  SignerDeviceEntity.seedsigner,
-                  SignerDeviceEntity.specter,
+                  SignerDevice.coldcardQ,
+                  SignerDevice.coldcardMk4,
+                  SignerDevice.jade,
+                  SignerDevice.krux,
+                  SignerDevice.keystone,
+                  SignerDevice.passport,
+                  SignerDevice.seedsigner,
+                  SignerDevice.specter,
                 ].contains(signerDevice))
                   BullButton.secondary(
                     size: BullButtonSize.small,
                     label: context.loc.psbtFlowInstructions,
                     onPressed: () {
                       switch (signerDevice) {
-                        case SignerDeviceEntity.coldcardQ:
+                        case SignerDevice.coldcardQ:
                           QrDeviceInstructions.showColdcardQInstructions(
                             context,
                           );
-                        case SignerDeviceEntity.coldcardMk4:
+                        case SignerDevice.coldcardMk4:
                           QrDeviceInstructions.showColdcardMk4Instructions(
                             context,
                           );
-                        case SignerDeviceEntity.jade:
+                        case SignerDevice.jade:
                           QrDeviceInstructions.showJadeInstructions(context);
-                        case SignerDeviceEntity.krux:
+                        case SignerDevice.krux:
                           QrDeviceInstructions.showKruxInstructions(context);
-                        case SignerDeviceEntity.keystone:
+                        case SignerDevice.keystone:
                           QrDeviceInstructions.showKeystoneInstructions(
                             context,
                           );
-                        case SignerDeviceEntity.passport:
+                        case SignerDevice.passport:
                           QrDeviceInstructions.showPassportInstructions(
                             context,
                           );
-                        case SignerDeviceEntity.seedsigner:
+                        case SignerDevice.seedsigner:
                           QrDeviceInstructions.showSeedSignerInstructions(
                             context,
                           );
-                        case SignerDeviceEntity.specter:
+                        case SignerDevice.specter:
                           QrDeviceInstructions.showSpecterInstructions(context);
                         default:
                           break;

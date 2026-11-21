@@ -17,13 +17,13 @@ class ImportColdcardRouter {
       name: ImportColdcardRoute.importColdcardQ.name,
       path: ImportColdcardRoute.importColdcardQ.path,
       builder: (context, state) =>
-          ImportColdcardPage(signerDevice: SignerDeviceEntity.coldcardQ),
+          ImportColdcardPage(signerDevice: SignerDevice.coldcardQ),
     ),
     GoRoute(
       name: ImportColdcardRoute.importColdcardMk4.name,
       path: ImportColdcardRoute.importColdcardMk4.path,
       builder: (context, state) =>
-          ImportColdcardPage(signerDevice: SignerDeviceEntity.coldcardMk4),
+          ImportColdcardPage(signerDevice: SignerDevice.coldcardMk4),
     ),
   ];
 }

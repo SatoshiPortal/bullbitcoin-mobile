@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/psbt_flow/data/psbt_qr_encoder_adapter.dart';
 import 'package:signers/src/psbt_flow/domain/generate_psbt_qr_parts_usecase.dart';
 import 'package:signers/src/psbt_flow/domain/psbt_qr_encoder_port.dart';
