@@ -102,43 +102,49 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
             final snapshot = async.data ?? widget.viewState.snapshot;
             return BullKeyboardActions(
               doneText: context.loc.doneButton,
-              child: Column(
-                crossAxisAlignment: .stretch,
-                children: [
-                  const Gap(16),
-                  BullText(
-                    context.loc.sendSelectNetworkFee,
-                    style: context.bullType.subtitle.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+              child: SizedBox.expand(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: .stretch,
+                    children: [
+                      const Gap(16),
+                      BullText(
+                        context.loc.sendSelectNetworkFee,
+                        style: context.bullType.subtitle.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const Gap(16),
+                      _PresetList(snapshot: snapshot),
+                      CustomFeeListItem(
+                        initialFee: snapshot.customFee,
+                        isCommittedAsCustom:
+                            snapshot.selectedFeeOption == FeeSelection.custom,
+                        feePresets: snapshot.feePresets,
+                        txSize: snapshot.txSize,
+                        exchangeRate: snapshot.exchangeRate,
+                        fiatCurrencyCode: snapshot.fiatCurrencyCode,
+                        defaultAbsolute: widget.defaultAbsoluteCustomFee,
+                        tileColor: widget.customFeeColors.tile,
+                        tileShadowColor: widget.customFeeColors.shadow,
+                        unselectedIconColor:
+                            widget.customFeeColors.unselectedIcon,
+                        previewFeeSat: snapshot.feePreviewCache.custom.feeSat,
+                        previewLoading: snapshot.feePreviewCache.customLoading,
+                        focusNode: _customFeeNode,
+                        onArm: widget.actions.armCustomFee,
+                        onDisarm: widget.actions.disarmCustomFee,
+                        onPreview: widget.actions.requestCustomFeePreview,
+                        // Modal mode: the parent screen runs
+                        // [FeeModalActionsPort.finalizeArmedCustomFee] on
+                        // dismissal — no per-keystroke commit.
+                        onCommit: (_) async {},
+                      ),
+                      const Gap(24),
+                    ],
                   ),
-                  const Gap(16),
-                  _PresetList(snapshot: snapshot),
-                  CustomFeeListItem(
-                    initialFee: snapshot.customFee,
-                    isCommittedAsCustom:
-                        snapshot.selectedFeeOption == FeeSelection.custom,
-                    feePresets: snapshot.feePresets,
-                    txSize: snapshot.txSize,
-                    exchangeRate: snapshot.exchangeRate,
-                    fiatCurrencyCode: snapshot.fiatCurrencyCode,
-                    defaultAbsolute: widget.defaultAbsoluteCustomFee,
-                    tileColor: widget.customFeeColors.tile,
-                    tileShadowColor: widget.customFeeColors.shadow,
-                    unselectedIconColor: widget.customFeeColors.unselectedIcon,
-                    previewFeeSat: snapshot.feePreviewCache.custom.feeSat,
-                    previewLoading: snapshot.feePreviewCache.customLoading,
-                    focusNode: _customFeeNode,
-                    onArm: widget.actions.armCustomFee,
-                    onDisarm: widget.actions.disarmCustomFee,
-                    onPreview: widget.actions.requestCustomFeePreview,
-                    // Modal mode: the parent screen runs
-                    // [FeeModalActionsPort.finalizeArmedCustomFee] on
-                    // dismissal — no per-keystroke commit.
-                    onCommit: (_) async {},
-                  ),
-                  const Gap(24),
-                ],
+                ),
               ),
             );
           },
