@@ -170,7 +170,15 @@ class _SellPayoutMethodScreenState extends State<SellPayoutMethodScreen> {
                 title: context.loc.sellPayoutTitle,
                 onBack: () => context.pop(),
               ),
-              BullFadingLinearProgress(trigger: preparing || payout.isLoading),
+              Semantics(
+                label: preparing || payout.isLoading
+                    ? context.loc.sellLoadingGeneric
+                    : null,
+                liveRegion: preparing || payout.isLoading,
+                child: BullFadingLinearProgress(
+                  trigger: preparing || payout.isLoading,
+                ),
+              ),
               Expanded(
                 child: BullScrollableColumn(
                   crossAxisAlignment: .stretch,
@@ -266,11 +274,14 @@ class _ErrorRetry extends StatelessWidget {
   const _ErrorRetry({required this.failure, required this.onRetry});
 
   @override
-  Widget build(BuildContext context) => BullErrorState(
-    message: failure is SellNetworkFailure
-        ? '${context.loc.oopsSomethingWentWrong}\n${failure.toTranslated(context)}'
-        : failure.toTranslated(context),
-    retryLabel: context.loc.retry,
-    onRetry: onRetry,
+  Widget build(BuildContext context) => Semantics(
+    liveRegion: true,
+    child: BullErrorState(
+      message: failure is SellNetworkFailure
+          ? '${context.loc.oopsSomethingWentWrong}\n${failure.toTranslated(context)}'
+          : failure.toTranslated(context),
+      retryLabel: context.loc.retry,
+      onRetry: onRetry,
+    ),
   );
 }
