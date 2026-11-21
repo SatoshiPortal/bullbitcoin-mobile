@@ -1,5 +1,5 @@
 import 'package:signers/routes.dart';
-import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -16,12 +16,14 @@ import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../features/signers/test/verify_address_route_expectations.dart';
+
 class _Receive extends Mock implements ReceiveBloc {}
 
 void main() {
   for (final ledger in [true, false]) {
     testWidgets(
-      'named ${ledger ? 'Ledger' : 'BitBox'} verification opens the mounted route',
+      'named ${ledger ? 'Ledger' : 'BitBox'} verification passes the request to the mounted route',
       (tester) async {
         final device = ledger
             ? SignerDevice.ledgerNanoX
@@ -102,6 +104,13 @@ void main() {
         expect(
           GoRouterState.of(tester.element(title)).uri.path,
           ledger ? '/ledger-verify-address' : '/bitbox-verify-address',
+        );
+        expectVerifyAddressRequest(
+          tester,
+          network: NetworkEnv.mainnet,
+          address: 'bc1qpublic',
+          derivationPath: '${wallet.derivationPath}/0/7',
+          requestedDeviceType: device,
         );
         await tester.pumpWidget(const SizedBox.shrink());
         await tester.pumpAndSettle();
