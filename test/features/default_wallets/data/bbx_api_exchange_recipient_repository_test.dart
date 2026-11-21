@@ -44,8 +44,17 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
 ];
 
-(String?, WalletAddressType, String, bool) _fields(DefaultWallet? w) =>
-    (w?.recipientId, w!.walletType, w.address, w.isDefault);
+(String?, WalletAddressType, String, bool) _fields(DefaultWallet? wallet) {
+  if (wallet == null) {
+    fail('Expected a default wallet');
+  }
+  return (
+    wallet.recipientId,
+    wallet.walletType,
+    wallet.address,
+    wallet.isDefault,
+  );
+}
 
 void main() {
   group('the requests are the ones the old repository sent, as recorded', () {

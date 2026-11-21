@@ -175,8 +175,11 @@ void main() {
       final result = await _repository(http)
           .findStatus(recipientId: id, isTestnet: false);
 
-      final (oldSent, oldStatus) =
-          _oldRepository[name]! as (List<Object?>, SepaVirtualPayeeStatus?);
+      final old = _oldRepository[name];
+      if (old is! (List<Object?>, SepaVirtualPayeeStatus?)) {
+        fail('Expected a legacy SEPA virtual payee fixture for $name');
+      }
+      final (oldSent, oldStatus) = old;
       expect(_sent(http), oldSent);
       expect(_valueOf(result), oldStatus);
       return (_valueOf(result), _sent(http));

@@ -211,10 +211,18 @@ _both(
 }) async {
   final http = FakeBbxHttp(body: body, status: status, error: error);
   final result = await call(_new(http, key: key));
-  return (
-    oldRepository[id]! as (List<Object?>, Object?),
-    (_sent(http), result),
-  );
+  final old = oldRepository[id];
+  if (old is! (List<Object?>, Object?)) {
+    fail('Expected a legacy funding fixture for $id');
+  }
+  return (old, (_sent(http), result));
+}
+
+List<Object?> _legacyResult(Object? result) {
+  if (result is! List<Object?>) {
+    fail('Expected a recorded funding result');
+  }
+  return result;
 }
 
 void main() {
@@ -344,10 +352,14 @@ void main() {
 
       List<(String, String)> institutions(
         Result<Object?, FundExchangeFailure> r,
-      ) => [
-        for (final i in valueOf(r)! as List<FundingInstitution>)
-          (i.code, i.name),
-      ];
+      ) {
+        final value = valueOf(r);
+        if (value is! List<FundingInstitution>) {
+          fail('Expected a list of funding institutions');
+        }
+        return [for (final i in value) (i.code, i.name)];
+      }
+
       expect(_legacyOutcome(result), oldResult);
       expect(institutions(result), [
         ('BC01', 'Bancolombia'),
@@ -376,7 +388,7 @@ void main() {
         );
 
         expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
-        expect((oldResult! as List)[0], FundExchangeNoInstitutionsFailure);
+        expect(_legacyResult(oldResult)[0], FundExchangeNoInstitutionsFailure);
       });
     }
   });
@@ -477,7 +489,7 @@ void main() {
             error: a.error,
           );
 
-          final old = oldResult! as List<Object?>;
+          final old = _legacyResult(oldResult);
           switch (result) {
             case Ok():
               expect(old[0], 'ok');
@@ -497,7 +509,10 @@ void main() {
         expect(sent, isEmpty);
         expect(oldSent, isEmpty);
         expect(failureOf(result), isA<FundExchangeNotAuthenticatedFailure>());
-        expect((oldResult! as List)[0], FundExchangeNotAuthenticatedFailure);
+        expect(
+          _legacyResult(oldResult)[0],
+          FundExchangeNotAuthenticatedFailure,
+        );
       });
 
       test('$name: an unreadable API key is unexpected', () async {
@@ -509,7 +524,7 @@ void main() {
 
         expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
         expect(failureOf(result).logMessage, 'Exchange credential unavailable');
-        expect((oldResult! as List)[1], failureOf(result).logMessage);
+        expect(_legacyResult(oldResult)[1], failureOf(result).logMessage);
       });
 
       test('$name: a programmer error is rethrown', () async {
