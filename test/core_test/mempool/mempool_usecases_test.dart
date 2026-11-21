@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -46,7 +45,7 @@ void main() {
         environmentPort: env,
       );
       when(() => env.getEnvironment())
-          .thenAnswer((_) async => const Ok(Environment.mainnet));
+          .thenAnswer((_) async => const Ok(BitcoinNetwork.mainnet));
     });
 
     test('propagates the sanitized delete failure', () async {
@@ -97,7 +96,7 @@ void main() {
         environmentPort: env,
       );
       when(() => env.getEnvironment())
-          .thenAnswer((_) async => const Ok(Environment.mainnet));
+          .thenAnswer((_) async => const Ok(BitcoinNetwork.mainnet));
       // Default fetch fails → use-case folds it to null → comparison skipped.
       when(() => repo.fetchDefaultServer(any()))
           .thenAnswer((_) async => const Err(MempoolLoadFailure()));
@@ -193,7 +192,7 @@ void main() {
         environmentPort: env,
       );
       when(() => env.getEnvironment())
-          .thenAnswer((_) async => const Ok(Environment.mainnet));
+          .thenAnswer((_) async => const Ok(BitcoinNetwork.mainnet));
     });
 
     test('propagates the failure when fetchDefaultServer fails', () async {

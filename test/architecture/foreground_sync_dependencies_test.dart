@@ -49,7 +49,6 @@ const _allowedTargets = <String, String>{
   'import_watch_only_wallet': 'scanning signers wallet',
   'labels': 'wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',
-  'mempool_settings': 'settings',
   'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
   'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
   'pin_code': 'app_unlock settings test_wallet_backup',

@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_por
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
@@ -26,14 +25,14 @@ class SetCustomMempoolServerUsecase {
     SetCustomMempoolServerRequest request, {
     bool skipValidation = false,
   }) async {
-    final Environment environment;
+    final BitcoinNetwork environment;
     switch (await _environmentPort.getEnvironment()) {
       case Ok(:final value):
         environment = value;
       case Err(:final failure):
         return Err(failure);
     }
-    final isTestnet = environment == Environment.testnet;
+    final isTestnet = environment == BitcoinNetwork.testnet;
 
     final network = MempoolServerNetwork.fromEnvironment(
       isTestnet: isTestnet,

@@ -2,7 +2,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
@@ -11,16 +10,17 @@ class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
   SettingsEnvironmentAdapter({required this._settingsRepository});
 
   @override
-  Future<Result<Environment, MempoolFailure>> getEnvironment() async {
+  Future<Result<BitcoinNetwork, MempoolFailure>> getEnvironment() async {
     try {
       final settings = await _settingsRepository.fetch();
+      final network = BitcoinNetwork.fromName(settings.environment.name);
       if (!NetworkCapabilities.supports(
-        BitcoinNetwork.fromName(settings.environment.name),
+        network,
         NetworkCapability.publicExplorer,
       )) {
         return const Err(MempoolLoadFailure('network unsupported'));
       }
-      return Ok(settings.environment);
+      return Ok(network);
     } catch (e, st) {
       log.severe(
         message: 'Failed to fetch environment for mempool',

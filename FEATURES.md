@@ -402,7 +402,7 @@ graph TB
     LABELS --> WALLETS
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
-    MEMPOOL_SETTINGS --> SETTINGS
+    SETTINGS --> MEMPOOL_SETTINGS
     PAY --> FEES
     PAY --> SETTINGS
     SEND --> SIGNERS
@@ -575,7 +575,6 @@ The architecture test records source dependencies, including internal imports an
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
 | `labels → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/labels/frameworks/bip329_codec.dart -> lib/features/wallet/data/wallet_metadata_service.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
-| `mempool_settings → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/mempool_settings/data/settings_environment_adapter.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `pay → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/pay/pay_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `recipients → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/recipients/recipients_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
