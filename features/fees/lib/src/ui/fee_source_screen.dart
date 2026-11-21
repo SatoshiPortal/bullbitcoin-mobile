@@ -1,8 +1,9 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:fees/fees.dart';
+import 'package:fees/fees.dart' show FeeSource;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../generated/l10n/fees_localizations.dart';
+import '../domain/fee_source_settings_failure.dart';
 import '../fees_l10n.dart';
 import '../presentation/fee_source_cubit.dart';
 
@@ -42,9 +43,8 @@ class FeeSourceScreen extends StatelessWidget {
                       if (state case FeeSourceFailed(:final failure))
                         BullErrorState(
                           message: switch (failure) {
-                            FeeSourceReadFailure() => copy.loadError,
-                            FeeSourceWriteFailure() => copy.saveError,
-                            FeeEstimateUnavailableFailure() => copy.loadError,
+                            FeeSourceSettingsLoadFailure() => copy.loadError,
+                            FeeSourceSettingsSaveFailure() => copy.saveError,
                           },
                           retryLabel: copy.retry,
                           onRetry: cubit.retry,

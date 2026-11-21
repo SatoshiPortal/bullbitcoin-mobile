@@ -1,6 +1,10 @@
-import 'package:fees/fees.dart';
+import 'package:fees/fees.dart' show FeeSource;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
+
+import '../domain/fee_source_settings_failure.dart';
+import '../domain/usecases/load_fee_source_usecase.dart';
+import '../domain/usecases/save_fee_source_usecase.dart';
 
 sealed class FeeSourceState {
   final FeeSource? source;
@@ -17,20 +21,22 @@ final class FeeSourceSelected extends FeeSourceState {
 }
 
 final class FeeSourceFailed extends FeeSourceState {
-  final FeesFailure failure;
+  final FeeSourceSettingsFailure failure;
   final FeeSource? attempted;
 
   const FeeSourceFailed(this.failure, [super.source, this.attempted]);
 }
 
 class FeeSourceCubit extends Cubit<FeeSourceState> {
-  final Fees _fees;
+  final LoadFeeSourceUsecase _loadSource;
+  final SaveFeeSourceUsecase _saveSource;
 
-  FeeSourceCubit(this._fees) : super(const FeeSourceLoading());
+  FeeSourceCubit({required this._loadSource, required this._saveSource})
+    : super(const FeeSourceLoading());
 
   Future<void> load() async {
     emit(const FeeSourceLoading());
-    final result = await _fees.readSource();
+    final result = await _loadSource.execute();
     if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => FeeSourceSelected(value),
@@ -44,7 +50,7 @@ class FeeSourceCubit extends Cubit<FeeSourceState> {
       return;
     }
     emit(FeeSourceLoading(previous));
-    final result = await _fees.saveSource(source);
+    final result = await _saveSource.execute(source);
     if (isClosed) return;
     emit(switch (result) {
       Ok() => FeeSourceSelected(source),

@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'domain/usecases/load_fee_source_usecase.dart';
+import 'domain/usecases/save_fee_source_usecase.dart';
 import 'fees_l10n.dart';
 import 'presentation/fee_source_cubit.dart';
 import 'ui/fee_source_screen.dart';
@@ -20,7 +22,13 @@ final class FeesFeature {
         path: '/bitcoin-fee-source',
         name: _feeSourceRoute,
         builder: (_, _) => BlocProvider(
-          create: (_) => FeeSourceCubit(fees())..load(),
+          create: (_) {
+            final capability = fees();
+            return FeeSourceCubit(
+              loadSource: LoadFeeSourceUsecase(capability),
+              saveSource: SaveFeeSourceUsecase(capability),
+            )..load();
+          },
           child: const FeeSourceScreen(),
         ),
       ),
