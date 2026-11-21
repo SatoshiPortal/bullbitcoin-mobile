@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:file_system/file_system.dart';
+import 'package:file_system/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:label_editor/src/domain/export_labels_to_file_usecase.dart';
 import 'package:label_editor/src/domain/import_labels_from_file_usecase.dart';
@@ -52,7 +52,7 @@ void main() {
   Bip329LabelsCubit buildCubit() => Bip329LabelsCubit(
     exportLabelsUsecase: export,
     importLabelsFromFileUsecase: ImportLabelsFromFileUsecase(
-      fileSystem: FileSystem(picker: picker),
+      fileSystem: openFileSystemForTesting(picker: picker),
       labels: labels,
     ),
   );

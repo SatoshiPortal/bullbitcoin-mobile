@@ -75,9 +75,7 @@ void main() {
   });
 
   test('a read failure is forwarded and nothing is imported', () async {
-    final file = _FakeLabelsFile(
-      const Err(FileSystemFailure(FileSystemFailureKind.tooLarge)),
-    );
+    final file = _FakeLabelsFile(const Err(FileSystemTooLargeFailure()));
 
     final result = await build(file)
         .execute(format: LabelFormat.bip329, onPicked: () {});
@@ -100,9 +98,7 @@ void main() {
   });
 
   test('a missing file maps to an unexpected failure', () async {
-    final file = _FakeLabelsFile(
-      const Err(FileSystemFailure(FileSystemFailureKind.missing)),
-    );
+    final file = _FakeLabelsFile(const Err(FileSystemMissingFailure()));
     final result = await build(file)
         .execute(format: LabelFormat.bip329, onPicked: () {});
 

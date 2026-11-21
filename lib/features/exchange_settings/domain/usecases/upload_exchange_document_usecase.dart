@@ -67,7 +67,7 @@ class UploadExchangeDocumentUsecase {
       maxBytes: FileToUpload.maxFileSizeBytes,
     )) {
       case Err(:final failure):
-        if (failure.kind == FileSystemFailureKind.tooLarge) {
+        if (failure is FileSystemTooLargeFailure) {
           return const Err(ExchangeSettingsDocumentTooLargeFailure());
         }
         log.warning(

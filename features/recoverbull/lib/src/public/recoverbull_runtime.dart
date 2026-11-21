@@ -90,7 +90,7 @@ final class RecoverBullRuntime {
     final storage = RecoverBullStorage(databasePath);
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive.open());
-    const files = FileSystem();
+    const files = FileSystem.open();
     final sessions = KeyServerSessionRepositoryImpl(routes, clients);
     BackupMetadataRepositoryImpl? metadata;
     AttemptMonitoringRepositoryImpl? monitoring;

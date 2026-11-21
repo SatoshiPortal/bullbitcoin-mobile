@@ -45,10 +45,10 @@ class ImportLabelsFromFileUsecase {
       final maxBytes = _labels.maxImportBytes(format);
       switch (await _fileSystem.read(document, maxBytes: maxBytes)) {
         case Err(:final failure):
-          if (failure.kind == FileSystemFailureKind.tooLarge) {
+          if (failure is FileSystemTooLargeFailure) {
             return Err(LabelsFileTooLargeFailure(maxBytes: maxBytes));
           }
-          if (failure.kind == FileSystemFailureKind.missing) {
+          if (failure is FileSystemMissingFailure) {
             return const Err(LabelUnexpectedFailure('labels file is missing'));
           }
           log.warning(

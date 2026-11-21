@@ -69,10 +69,10 @@ class _StubPicker extends Fake implements FileSystem {
   }) async {
     final bytes = (document as _Document).bytes;
     if (bytes == null) {
-      return const Err(FileSystemFailure(FileSystemFailureKind.read));
+      return const Err(FileSystemReadFailure());
     }
     if (bytes.length > maxBytes) {
-      return const Err(FileSystemFailure(FileSystemFailureKind.tooLarge));
+      return const Err(FileSystemTooLargeFailure());
     }
     return Ok(Uint8List.fromList(bytes));
   }
@@ -512,9 +512,7 @@ void main() {
     test('a picker failure short-circuits without uploading', () async {
       final upload = _MockUploadKycDocument();
       final picker = _StubPicker(
-        const Err(
-          FileSystemFailure(FileSystemFailureKind.pick, 'PlatformException'),
-        ),
+        const Err(FileSystemPickFailure('PlatformException')),
       );
 
       final result = await build(picker, upload).execute();

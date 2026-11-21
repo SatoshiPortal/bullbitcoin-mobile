@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_system/file_system.dart';
+import 'package:file_system/testing.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -34,7 +35,7 @@ void main() {
 
   setUp(() {
     picker = _Picker();
-    fileSystem = FileSystem(picker: picker);
+    fileSystem = openFileSystemForTesting(picker: picker);
     registerFallbackValue(FileType.any);
   });
 
@@ -48,32 +49,33 @@ void main() {
   }
 
   void testErrorBoundary<T>(
-    FileSystemFailureKind kind,
+    String operation,
+    Matcher failure,
     Future<Result<T, FileSystemFailure>> Function(Object error) invoke,
   ) {
-    test('${kind.name} maps a platform exception to a typed failure', () async {
+    test('$operation maps a platform exception to a typed failure', () async {
       expect(
         await invoke(PlatformException(code: 'picker-failed')),
         isA<Err<T, FileSystemFailure>>().having(
-          (result) => result.failure.kind,
-          'failure kind',
-          kind,
+          (result) => result.failure,
+          'failure',
+          failure,
         ),
       );
     });
 
-    test('${kind.name} propagates a programmer error', () async {
+    test('$operation propagates a programmer error', () async {
       final error = StateError('invalid picker state');
       await expectLater(invoke(error), throwsA(same(error)));
     });
   }
 
-  testErrorBoundary(FileSystemFailureKind.pick, (error) {
+  testErrorBoundary('pick', isA<FileSystemPickFailure>(), (error) {
     when(() => picker.pickFile(type: FileType.any)).thenThrow(error);
     return fileSystem.pick();
   });
 
-  testErrorBoundary(FileSystemFailureKind.read, (error) async {
+  testErrorBoundary('read', isA<FileSystemReadFailure>(), (error) async {
     selects(_Document(readError: error));
     final document = (await fileSystem.pick(allowedExtensions: ['pdf'])).fold(
       (document) => document ?? fail('a document was expected'),
@@ -82,7 +84,7 @@ void main() {
     return fileSystem.read(document, maxBytes: 3);
   });
 
-  testErrorBoundary(FileSystemFailureKind.save, (error) {
+  testErrorBoundary('save', isA<FileSystemSaveFailure>(), (error) {
     final bytes = Uint8List(0);
     when(
       () => picker.saveFile(
@@ -94,7 +96,7 @@ void main() {
     return fileSystem.save(filename: 'example.txt', bytes: bytes);
   });
 
-  testErrorBoundary(FileSystemFailureKind.cleanup, (error) {
+  testErrorBoundary('cleanup', isA<FileSystemCleanupFailure>(), (error) {
     when(() => picker.clearTemporaryFiles()).thenThrow(error);
     return fileSystem.clearTemporaryFiles();
   });
@@ -145,9 +147,9 @@ void main() {
     expect(
       await fileSystem.read(document, maxBytes: 3),
       isA<Err<Uint8List, FileSystemFailure>>().having(
-        (r) => r.failure.kind,
-        'failure kind',
-        FileSystemFailureKind.read,
+        (r) => r.failure,
+        'failure',
+        isA<FileSystemReadFailure>(),
       ),
     );
   });
@@ -160,9 +162,9 @@ void main() {
     expect(
       await fileSystem.read(document, maxBytes: 3),
       isA<Err<Uint8List, FileSystemFailure>>().having(
-        (result) => result.failure.kind,
-        'failure kind',
-        FileSystemFailureKind.tooLarge,
+        (result) => result.failure,
+        'failure',
+        isA<FileSystemTooLargeFailure>(),
       ),
     );
   });

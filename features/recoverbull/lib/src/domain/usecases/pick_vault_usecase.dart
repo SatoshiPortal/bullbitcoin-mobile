@@ -26,7 +26,7 @@ final class PickVaultUsecase {
       maxBytes: 2 * EncryptedVault.maxCiphertextBytes,
     )) {
       case Err(:final failure):
-        return failure.kind == FileSystemFailureKind.tooLarge
+        return failure is FileSystemTooLargeFailure
             ? const Err(VaultInvalidFailure())
             : const Err(RecoverBullUnexpectedFailure());
       case Ok(:final value):

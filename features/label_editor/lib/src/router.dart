@@ -20,7 +20,7 @@ class LabelsRouter {
     path: LabelsRoute.labels.path,
     builder: (context, state) {
       final labels = getLabels();
-      const files = FileSystem();
+      const files = FileSystem.open();
       return Bip329LabelsPage(
         exportLabels: ExportLabelsToFileUsecase(
           labels: labels,

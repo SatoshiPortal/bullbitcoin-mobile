@@ -112,7 +112,7 @@ class ExchangeSettingsLocator {
 
     locator.registerFactory<UploadExchangeDocumentUsecase>(
       () => UploadExchangeDocumentUsecase(
-        fileSystem: const FileSystem(),
+        fileSystem: const FileSystem.open(),
         uploadKycDocumentUsecase: locator<UploadKycDocumentUsecase>(),
       ),
     );

@@ -174,9 +174,7 @@ void main() {
 
   for (final result in [
     const Ok<bool, FileSystemFailure>(false),
-    const Err<bool, FileSystemFailure>(
-      FileSystemFailure(FileSystemFailureKind.save),
-    ),
+    const Err<bool, FileSystemFailure>(FileSystemSaveFailure()),
   ]) {
     testWidgets('provider ${result.runtimeType} offers save-only retry', (
       tester,

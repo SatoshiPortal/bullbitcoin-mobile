@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_system/file_system.dart';
+import 'package:file_system/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -29,7 +30,7 @@ void main() {
 
   setUp(() {
     picker = _Picker();
-    fileSystem = FileSystem(picker: picker);
+    fileSystem = openFileSystemForTesting(picker: picker);
   });
 
   Future<PickedDocument> selectFile(List<int>? bytes) async {
@@ -60,8 +61,8 @@ void main() {
     final document = await selectFile(List.filled(11, 0x61));
     final result = await fileSystem.read(document, maxBytes: 10);
     expect(
-      (result as Err<Uint8List, FileSystemFailure>).failure.kind,
-      FileSystemFailureKind.tooLarge,
+      (result as Err<Uint8List, FileSystemFailure>).failure,
+      isA<FileSystemTooLargeFailure>(),
     );
   });
 
@@ -78,8 +79,8 @@ void main() {
     final document = await selectFile(null);
     final result = await fileSystem.read(document, maxBytes: 1024);
     expect(
-      (result as Err<Uint8List, FileSystemFailure>).failure.kind,
-      FileSystemFailureKind.missing,
+      (result as Err<Uint8List, FileSystemFailure>).failure,
+      isA<FileSystemMissingFailure>(),
     );
   });
 }

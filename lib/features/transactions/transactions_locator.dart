@@ -160,7 +160,7 @@ class TransactionsLocator {
     );
 
     locator.registerLazySingleton<SaveTransactionsCsvUsecase>(
-      () => const SaveTransactionsCsvUsecase(FileSystem()),
+      () => const SaveTransactionsCsvUsecase(FileSystem.open()),
     );
   }
 
