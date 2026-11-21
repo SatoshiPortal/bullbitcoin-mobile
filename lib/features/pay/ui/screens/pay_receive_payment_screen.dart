@@ -144,6 +144,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               ),
               const Gap(32),
               BullCopyField(
+                copyLabel: context.loc.copyDialogButton,
                 copiedMessage: context.loc.copiedToClipboard,
                 text: bitcoinUnit == BitcoinUnit.btc
                     ? FormatAmount.btc(order.payinAmount)
