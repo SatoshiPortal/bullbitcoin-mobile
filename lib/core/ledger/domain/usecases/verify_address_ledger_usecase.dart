@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:primitives/primitives.dart'
-    show Err, NetworkEnv, Result, ScriptType;
+    show Err, NetworkEnv, Ok, Result, ScriptType;
 import 'package:meta/meta.dart';
 
 class VerifyAddressLedgerUsecase {
@@ -21,11 +21,19 @@ class VerifyAddressLedgerUsecase {
     if (network != NetworkEnv.mainnet && network != NetworkEnv.testnet) {
       return const Err(LedgerUnexpectedFailure('unsupported network'));
     }
-    return _repository.verifyAddress(
+    final result = await _repository.verifyAddress(
       device,
       address: address,
       derivationPath: derivationPath,
       scriptType: scriptType,
     );
+    return switch (result) {
+      Ok(value: false) => const Err(
+        LedgerUnexpectedFailure(
+          'device address does not match requested address',
+        ),
+      ),
+      _ => result,
+    };
   }
 }
