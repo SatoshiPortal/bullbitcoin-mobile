@@ -1,6 +1,6 @@
+import 'package:primitives/primitives.dart' show XpubType;
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:rust_bindings/lwk.dart' as lwk;
-import 'package:satoshifier/satoshifier.dart';
 
 enum Network {
   bitcoinMainnet,

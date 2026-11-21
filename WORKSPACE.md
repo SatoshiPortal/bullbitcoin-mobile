@@ -109,6 +109,7 @@ graph TD
   notifications --> bull_logger
   notifications --> primitives
   rust_bindings --> onion
+  satoshifier --> primitives
   satoshifier --> rust_bindings
   screen_awake --> bull_logger
   secrets --> primitives
