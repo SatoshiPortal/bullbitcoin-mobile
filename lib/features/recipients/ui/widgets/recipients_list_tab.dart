@@ -36,12 +36,11 @@ class RecipientsListTabState extends State<RecipientsListTab> {
   Key _sepaTypeSelectorKey = const ValueKey(0);
   int _sepaTypeSelectorGeneration = 0;
   late ScrollController _scrollController;
-  late TextEditingController _searchController;
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
   }
@@ -51,6 +50,14 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         _scrollController.position.extentAfter < 200) {
       context.read<RecipientsBloc>().add(const RecipientsEvent.moreLoaded());
     }
+  }
+
+  void _updateSearch(String query) {
+    setState(() {
+      _searchQuery = query;
+      _selectedRecipient = null;
+    });
+    context.read<RecipientsBloc>().add(RecipientsEvent.searchChanged(query));
   }
 
   Future<void> _onRefresh() async {
@@ -95,7 +102,6 @@ class RecipientsListTabState extends State<RecipientsListTab> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -136,29 +142,12 @@ class RecipientsListTabState extends State<RecipientsListTab> {
       mainAxisSize: .min,
       crossAxisAlignment: .start,
       children: [
-        BullInputText(
-          controller: _searchController,
-          value: _searchController.text,
-          maxLines: 1,
+        BullSearchBar(
           hint: context.loc.recipientsSearchHint,
-          rightIcon: _searchController.text.isEmpty
-              ? null
-              : const BullIcon(BullIcons.close),
-          rightActionLabel: MaterialLocalizations.of(context)
-              .clearButtonTooltip,
-          onRightTap: () {
-            _searchController.clear();
-            setState(() => _selectedRecipient = null);
-            context.read<RecipientsBloc>().add(
-              const RecipientsEvent.searchChanged(''),
-            );
-          },
-          onChanged: (value) {
-            setState(() => _selectedRecipient = null);
-            context.read<RecipientsBloc>().add(
-              RecipientsEvent.searchChanged(value),
-            );
-          },
+          value: _searchQuery,
+          clearTooltip: MaterialLocalizations.of(context).clearButtonTooltip,
+          onChanged: _updateSearch,
+          onCleared: () => _updateSearch(''),
         ),
         if (widget.showFilters) ...[
           const Gap(16.0),
@@ -207,6 +196,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
                           ? context.loc.recipientsTypeSepa
                           : context.loc.recipientsTypeConfidentialSepa,
                       height: BullSpacing.xxl,
+                      fitLabels: true,
                       initialValue: state.sepaType.name,
                       onSelected: (value) => _onSepaTypeChanged(
                         RecipientType.values.byName(value),

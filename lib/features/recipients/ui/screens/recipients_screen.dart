@@ -106,17 +106,18 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
                 const Gap(16),
               ],
               BullSegmented(
-                items: {
-                  context.loc.recipientsTabNew,
-                  context.loc.recipientsTabList,
+                items: {for (final tab in RecipientsTab.values) tab.name},
+                labelBuilder: (value) => switch (RecipientsTab.values.byName(
+                  value,
+                )) {
+                  RecipientsTab.newRecipient => context.loc.recipientsTabNew,
+                  RecipientsTab.recipientsList => context.loc.recipientsTabList,
                 },
-                initialValue: _currentTab == RecipientsTab.newRecipient
-                    ? context.loc.recipientsTabNew
-                    : context.loc.recipientsTabList,
+                initialValue: _currentTab.name,
+                height: BullSpacing.xxl,
+                fitLabels: true,
                 onSelected: (value) => setState(() {
-                  _currentTab = value == context.loc.recipientsTabNew
-                      ? RecipientsTab.newRecipient
-                      : RecipientsTab.recipientsList;
+                  _currentTab = RecipientsTab.values.byName(value);
                 }),
               ),
               const Gap(16.0),
