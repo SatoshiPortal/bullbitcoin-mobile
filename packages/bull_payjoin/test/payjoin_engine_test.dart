@@ -37,6 +37,23 @@ class _FailingAbortLocal extends LocalPayjoinDatasource {
       Future.error(StateError('disk full'));
 }
 
+/// Fails every sender read once a sender has been stored.
+class _FailingReadAfterStoreLocal extends LocalPayjoinDatasource {
+  _FailingReadAfterStoreLocal({required super.db});
+
+  var _stored = false;
+
+  @override
+  Future<void> storeSender(PayjoinSenderModel sender) async {
+    await super.storeSender(sender);
+    _stored = true;
+  }
+
+  @override
+  Future<PayjoinSenderModel?> fetchSender(String id) =>
+      _stored ? Future.error(StateError('disk error')) : super.fetchSender(id);
+}
+
 final class _CaptureLogPort implements PayjoinLogPort {
   final events = <PayjoinLogEvent>[];
 
@@ -135,6 +152,21 @@ void main() {
             txId: transactionId,
           )
           as PayjoinSenderModel;
+
+  PayjoinRepositoryImpl engineWith(LocalPayjoinDatasource local) {
+    final built = PayjoinRepositoryImpl(
+      localPayjoinDatasource: local,
+      pdkPayjoinDatasource: pdk,
+      log: PayjoinLogger(logs),
+      wallet: wallet,
+      blockchain: blockchain,
+      transactions: transactions,
+      policy: policy,
+      labels: labels,
+    )..fallbackRetryDelay = Duration.zero;
+    addTearDown(built.dispose);
+    return built;
+  }
 
   setUp(() async {
     database = PayjoinDatabase.forTesting(NativeDatabase.memory());
@@ -1126,6 +1158,38 @@ void main() {
       ).called(3);
     });
 
+    test('a broadcast that could not be recorded keeps the session', () async {
+      final failing = _FailingAbortLocal(db: database);
+      final failingEngine = engineWith(failing);
+      final model = expiredSender();
+      await failing.storeSender(model);
+      when(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async {});
+      final emitted = <internal.Payjoin>[];
+      final subscription = failingEngine.payjoinStream.listen(emitted.add);
+      addTearDown(subscription.cancel);
+
+      await failingEngine.resumePayjoinsOnStartup();
+
+      // The original is on the network: expiring the row would release its
+      // inputs and report it unsent, inviting the user to pay again.
+      final row = await failing.fetchSender(model.id);
+      expect(row?.isExpired, isFalse);
+      expect(row?.isAborted, isFalse);
+      expect(await failingEngine.getUtxosFrozenByOngoingPayjoins(), isNotEmpty);
+      expect(emitted, isEmpty);
+      verify(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).called(1);
+    });
+
     test('a later resume never broadcasts an abandoned proposal', () async {
       final model = expiredSender(proposalPsbt: 'cHNidP9wcm9wb3NhbA==');
       await local.storeSender(model);
@@ -1792,7 +1856,10 @@ void main() {
   });
 
   group('a sender whose original could not be posted', () {
-    setUp(() => registerFallbackValue(sender()));
+    setUp(() {
+      registerFallbackValue(sender());
+      engine.fallbackRetryDelay = Duration.zero;
+    });
 
     void failPostAfterPersist(PayjoinSenderModel model) =>
         when(
@@ -1814,15 +1881,17 @@ void main() {
           throw SendCreationException('Payjoin session expired');
         });
 
-    Future<internal.PayjoinSender> start(PayjoinSenderModel model) =>
-        engine.createPayjoinSender(
-          walletId: model.walletId,
-          isTestnet: true,
-          bip21: model.id,
-          originalPsbt: model.originalPsbt,
-          amountSat: model.amountSat,
-          networkFeesSatPerVb: 1,
-        );
+    Future<internal.PayjoinSender> start(
+      PayjoinSenderModel model, {
+      PayjoinRepositoryImpl? using,
+    }) => (using ?? engine).createPayjoinSender(
+      walletId: model.walletId,
+      isTestnet: true,
+      bip21: model.id,
+      originalPsbt: model.originalPsbt,
+      amountSat: model.amountSat,
+      networkFeesSatPerVb: 1,
+    );
 
     void broadcastResults(List<bool> succeeds) {
       var call = 0;
@@ -1858,9 +1927,63 @@ void main() {
       ).called(1);
     });
 
+    test('retries a broadcast that fails once', () async {
+      final model = sender();
+      failPostAfterPersist(model);
+      broadcastResults([false, true]);
+
+      final started = await start(model);
+
+      expect(started.isAborted, isTrue);
+      expect((await local.fetchSender(model.id))?.isAborted, isTrue);
+    });
+
+    test('fails the start with the row live when the broadcast cannot be '
+        'recorded', () async {
+      final failing = _FailingAbortLocal(db: database);
+      final failingEngine = engineWith(failing);
+      final model = sender();
+      failPostAfterPersist(model);
+      broadcastResults([true]);
+
+      await expectLater(
+        start(model, using: failingEngine),
+        throwsA(isA<SendCreationException>()),
+      );
+
+      final row = await failing.fetchSender(model.id);
+      expect(row?.isAborted, isFalse);
+      expect(row?.isExpired, isFalse);
+      verify(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).called(1);
+    });
+
+    test('a storage error while settling keeps the post failure', () async {
+      final failing = _FailingReadAfterStoreLocal(db: database);
+      final failingEngine = engineWith(failing);
+      final model = sender();
+      failPostAfterPersist(model);
+
+      await expectLater(
+        start(model, using: failingEngine),
+        throwsA(isA<SendCreationException>()),
+      );
+
+      expect(logs.withCode(PayjoinLogCode.storageFailure), isNotEmpty);
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+    });
+
     test('keeps the row for the expiry fallback when the broadcast fails, '
         'which then retries', () async {
-      engine.fallbackRetryDelay = Duration.zero;
       final model = expiredSender();
       failPostAfterPersist(model);
       broadcastResults([false]);
@@ -1882,7 +2005,7 @@ void main() {
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
-      ).called(3);
+      ).called(5);
     });
 
     test('a build failure persists and broadcasts nothing', () async {

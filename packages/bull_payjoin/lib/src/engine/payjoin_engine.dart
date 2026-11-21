@@ -365,7 +365,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
     } on SendCreationException catch (error, trace) {
       if (!persisted) rethrow;
-      final sender = await _settleUnpostedSender(bip21);
+      final PayjoinSender? sender;
+      try {
+        sender = await _settleUnpostedSender(bip21);
+      } catch (settleError, settleTrace) {
+        _log.severe(
+          code: api.PayjoinLogCode.storageFailure,
+          role: api.PayjoinLogRole.sender,
+          sessionRef: bip21,
+          error: settleError,
+          trace: settleTrace,
+        );
+        Error.throwWithStackTrace(error, trace);
+      }
       if (sender == null) rethrow;
       _log.warning(
         code: api.PayjoinLogCode.sessionStartFailed,
@@ -403,12 +415,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// Settles a sender whose original was persisted but could not be posted to
   /// the directory. Broadcasting the original now is safe: any payjoin would
   /// spend the same inputs, so at most one of them can confirm. If the
-  /// broadcast fails the row stays unfinished, watched and polled, so the
-  /// expiry fallback still pays.
+  /// broadcast fails the row stays unfinished and its fallback watcher stays
+  /// armed. The session never reached the directory, so its poll cannot
+  /// negotiate: it only fires the expiry, whose fallback then pays.
   Future<PayjoinSender?> _settleUnpostedSender(String payjoinId) async {
     final model = await _localPayjoinDatasource.fetchSender(payjoinId);
     if (model == null) return null;
-    final result = await _broadcastOriginalTransaction(model.toEntity());
+    final result = await _broadcastOriginalWithRetry(model.toEntity());
     if (result is PayjoinSender) {
       _payjoinStreamController.add(result);
       return result;
@@ -966,13 +979,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     Payjoin payjoin, {
     int maxAttempts = 3,
     Duration? delayBetweenAttempts,
+    void Function()? onBroadcast,
   }) async {
     final delay = delayBetweenAttempts ?? fallbackRetryDelay;
     var broadcasted = false;
     for (var attempt = 1; attempt <= maxAttempts; attempt++) {
       final result = await _broadcastOriginalTransaction(
         payjoin,
-        onBroadcast: () => broadcasted = true,
+        onBroadcast: () {
+          broadcasted = true;
+          onBroadcast?.call();
+        },
       );
       // Only a failed broadcast is retried: a failure to record one that
       // reached the network is not a broadcast failure.
@@ -1347,11 +1364,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  expired flag up front, and for NOT calling _stopWatching before
       //  attempting: the fallback watch armed at session creation must
       //  survive a failed attempt here.
-      final result = await _broadcastOriginalWithRetry(payjoin);
+      var broadcasted = false;
+      final result = await _broadcastOriginalWithRetry(
+        payjoin,
+        onBroadcast: () => broadcasted = true,
+      );
       if (result != null) {
         _payjoinStreamController.add(result);
         return;
       }
+      // The original reached the network but could not be recorded. Expiring
+      //  the row would release its inputs and report it as unsent, inviting a
+      //  second payment; the fallback watcher converges it to aborted instead.
+      if (broadcasted) return;
       // The automatic fallback failed, and unlike the receiver branch this
       //  original is OUR payment: persist the expiry so the session becomes
       //  terminal on our side. Two things follow, and they are inseparable.
