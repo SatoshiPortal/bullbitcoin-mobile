@@ -85,7 +85,7 @@ class _FeeServer {
     final server = _FeeServer._(socket, estimate);
     socket.listen(server._handle);
     addTearDown(() async {
-      for (final peer in server.peers) {
+      for (final peer in server.peers.toList()) {
         peer.destroy();
       }
       await socket.close();
