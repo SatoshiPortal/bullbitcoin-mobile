@@ -12,7 +12,7 @@ class FeeSourceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final copy = feesCopy(Localizations.localeOf(context).languageCode);
+    final copy = feesCopy(Localizations.localeOf(context).toLanguageTag());
     return BlocBuilder<FeeSourceCubit, FeeSourceState>(
       builder: (context, state) {
         final cubit = context.read<FeeSourceCubit>();
