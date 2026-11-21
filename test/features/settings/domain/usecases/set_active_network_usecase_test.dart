@@ -114,6 +114,35 @@ void main() {
     },
   );
 
+  test('read failure after regtest preparation never writes', () async {
+    var reads = 0;
+    when(repository.fetch).thenAnswer(
+      (_) async => ++reads == 1
+          ? const Ok(
+              SettingsEntity(
+                environment: Environment.mainnet,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'CAD',
+                isSuperuser: true,
+                isDevModeEnabled: true,
+              ),
+            )
+          : const Err(PreferencesReadFailure()),
+    );
+    final result = await usecase.execute(NetworkEnv.regtest);
+    expect(
+      result,
+      isA<Err<void, SettingsFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SettingsStorageFailure>(),
+      ),
+    );
+    verify(() => electrum.prepareForegroundStorage(NetworkEnv.regtest))
+        .called(1);
+    verifyNever(() => repository.setEnvironment(Environment.regtest));
+  });
+
   test('write refusal is not reported as a successful selection', () async {
     when(() => repository.setEnvironment(Environment.mainnet)).thenAnswer(
       (_) async => const Err(PreferencesWriteFailure('storage details')),

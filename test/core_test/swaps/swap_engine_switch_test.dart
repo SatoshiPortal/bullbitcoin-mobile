@@ -129,6 +129,21 @@ void main() {
       verifyInOrder([() => watcher.stop(), () => watcher.start()]);
     });
 
+    test(
+      'failed notification keeps the current engine and later success resumes',
+      () async {
+        environments.add(const Err(PreferencesReadFailure()));
+        await pumpEventQueue();
+        expect(builds, isEmpty);
+        expect(repository.isTestnet, isFalse);
+        verifyNever(() => watcher.stop());
+        environments.add(const Ok(settings.Environment.testnet));
+        await pumpEventQueue();
+        expect(builds, [NetworkEnv.testnet]);
+        expect(repository.isTestnet, isTrue);
+      },
+    );
+
     test('a switch to the network already in use does nothing', () async {
       environments.add(const Ok(settings.Environment.mainnet));
       await pumpEventQueue();
