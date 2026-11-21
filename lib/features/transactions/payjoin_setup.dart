@@ -8,7 +8,7 @@ import 'dart:async';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
@@ -96,7 +96,7 @@ abstract final class PayjoinSetup {
           locator<WalletConnectionPort>(),
           locator<WalletFacade>(),
         ),
-        fees: AppPayjoinFeesAdapter(locator<FeesRepository>()),
+        fees: AppPayjoinFeesAdapter(locator<Fees>()),
         transactions: AppPayjoinTransactionAdapter(
           locator<WalletRepository>(),
           locator<WalletTransactionRepository>(),

@@ -1,12 +1,12 @@
+import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
-import 'package:bb_mobile/features/fees/public/fee_selection_label.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_advanced_options_bottom_sheet.dart';
@@ -368,6 +368,7 @@ class _FeePriorityRow extends StatelessWidget {
       label: context.loc.payFeePriority,
       displayValue: feeSelectionRowLabel(
         context,
+        ui: appFeeUi,
         selection: selectedFeeOption,
         customFee: customFee,
         fastestLabel: context.loc.payFastest,
@@ -378,6 +379,7 @@ class _FeePriorityRow extends StatelessWidget {
               final selected = await BullBottomSheet.show<String>(
                 context: context,
                 child: FeeOptionsModal(
+                  ui: appFeeUi,
                   viewState: bloc,
                   actions: bloc,
                   defaultAbsoluteCustomFee: false,

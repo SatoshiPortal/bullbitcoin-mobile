@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/swap/domain/regtest_boltz_profile.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
 import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/data/swap_server_setting_repository_impl.dart';
 import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show Err, NetworkEnv, Ok;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
@@ -23,7 +23,8 @@ import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show Network, NetworkX;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -159,7 +160,7 @@ class SwapsLocator {
         : locator<SwapStorage>();
     log.info('[Swaps] boltz datasource url="$url" network=${environment.name}');
     final glue = locator<SwapsAppGlue>();
-    final fees = locator<FeesRepository>();
+    final fees = locator<Fees>();
     final addresses = locator<WalletAddressRepository>();
     final walletTxs = locator<WalletTransactionRepository>();
     final boltz = BoltzSwapRepository.connect(
@@ -209,13 +210,15 @@ class SwapsLocator {
             required bool isLiquid,
             required NetworkEnv environment,
           }) async {
-            final options = await fees.getNetworkFees(
-              network: wallet.Network.fromEnvironment(
-                environment: environment,
-                isLiquid: isLiquid,
-              ),
-            );
-            return options.toAbsolute(txSize).fastest.value.toInt();
+            final network = Network.fromEnvironment(
+              environment: environment,
+              isLiquid: isLiquid,
+            ).shared;
+            return switch (await fees.estimate(network)) {
+              Ok(:final value) =>
+                value.toAbsolute(txSize).fastest.value.toInt(),
+              Err() => throw Exception('Fee estimation unavailable'),
+            };
           },
       wallets: glue.wallets,
       swapMasterKeySource: glue.swapMasterKey,

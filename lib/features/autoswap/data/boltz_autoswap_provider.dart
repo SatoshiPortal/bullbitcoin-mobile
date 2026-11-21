@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -144,7 +144,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         walletId: liquidWallet.id,
         address: swap.paymentAddress,
         amountSat: swap.paymentAmount,
-        feeRate: const RelativeFee(25),
+        feeRate: NetworkFeeRelayPolicy.minRelay,
       );
       final String pset;
       switch (preparation) {
@@ -243,7 +243,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       walletId: walletId,
       address: address,
       amountSat: amountSat,
-      feeRate: const RelativeFee(25),
+      feeRate: NetworkFeeRelayPolicy.minRelay,
     );
     final String pset;
     switch (preparation) {

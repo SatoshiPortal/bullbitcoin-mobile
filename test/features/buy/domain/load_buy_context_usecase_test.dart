@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -25,7 +25,7 @@ class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
 class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
 
 class _MockFeeOptions extends Mock implements FeeOptions {}
 
@@ -60,7 +60,7 @@ void main() {
       getSettingsUsecase: getSettings,
       getWalletsUsecase: getWallets,
       getReceiveAddressUsecase: getReceiveAddress,
-      getNetworkFeesUsecase: getNetworkFees,
+      feeEstimates: getNetworkFees,
       getIndexPrice: getIndexPrice.call,
     );
   });

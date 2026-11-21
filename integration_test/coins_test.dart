@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart' as primitives show Network;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';

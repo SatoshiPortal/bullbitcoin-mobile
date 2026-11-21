@@ -1,0 +1,23 @@
+name: fees
+description: Network fee estimation for Bull Bitcoin.
+publish_to: none
+version: 0.1.0
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+resolution: workspace
+dependencies:
+  dio: ^5.9.0
+  flutter:
+    sdk: flutter
+  freezed_annotation: ^3.1.0
+  mempool:
+  meta: ^1.17.0
+  primitives:
+  sync:
+dev_dependencies:
+  build_runner: ^2.10.4
+  freezed: ^4.0.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4

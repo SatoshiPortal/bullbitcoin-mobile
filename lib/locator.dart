@@ -1,7 +1,9 @@
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:mempool/mempool.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:electrum/electrum.dart' show ElectrumFailure;
@@ -68,7 +70,8 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
-import 'package:sync/sync.dart' show SyncFailure, SyncStorageFailure;
+import 'package:sync/sync.dart'
+    show SyncFailure, SyncStorageFailure, WalletConnectionPort;
 
 final GetIt locator = GetIt.instance;
 
@@ -182,6 +185,15 @@ class AppLocator {
     );
     if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
+    locator.registerLazySingleton(
+      () => Fees.open(
+        connections: locator<WalletConnectionPort>(),
+        mempool: locator<Mempool>(),
+      ),
+    );
+    locator.registerFactory(
+      () => AppFeeEstimates(fees: locator(), settingsRepository: locator()),
+    );
     CoreLocator.registerUsecases(locator);
     PayjoinSetup.setup(
       locator,
@@ -267,7 +279,7 @@ class AppLocator {
             settingsRepository: locator<Preferences>(),
           ).getEnvironment,
           checkBitcoinFees: (network) =>
-              FeesLocator.checkBitcoinFees(locator, network),
+              probeMempoolFees(locator<Fees>(), network),
           isTorRequired: () => locator<WalletRepository>().isTorRequired(),
           readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
             locator<Preferences>(),

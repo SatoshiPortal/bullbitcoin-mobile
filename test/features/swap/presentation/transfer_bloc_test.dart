@@ -20,14 +20,13 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -82,7 +81,7 @@ class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
 
 class _MockPrepareBitcoin extends Mock implements PrepareBitcoinSendUsecase {}
 
@@ -183,7 +182,7 @@ Matcher _paysTo(String address, {int? amountSat}) =>
 
 class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
 
-class _SettingsRepository extends Mock implements Preferences {}
+class _Preferences extends Mock implements Preferences {}
 
 Matcher _toWallet(String walletId) =>
     isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
@@ -249,7 +248,7 @@ void main() {
     getSettingsUsecase: getSettings,
     getSwapAmountQuotesUsecase: amountQuotes,
     getWalletsUsecase: getWallets,
-    getNetworkFeesUsecase: getNetworkFees,
+    feeEstimates: getNetworkFees,
     prepareBitcoinSendUsecase: prepareBitcoin,
     validateBitcoinSelectionUsecase: validateBitcoinSelection,
     prepareLiquidSendUsecase: prepareLiquid,
@@ -601,7 +600,7 @@ void main() {
       'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet facade',
       () async {
         final blockchain = _Blockchain();
-        final settings = _SettingsRepository();
+        final settings = _Preferences();
         when(settings.fetch).thenAnswer(
           (_) async => Ok(
             const SettingsEntity(

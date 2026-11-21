@@ -14,7 +14,7 @@ import 'package:sync/sync.dart'
         UnsignedSpend,
         WalletKey,
         WalletRevision;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;

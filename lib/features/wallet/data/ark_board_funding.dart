@@ -11,8 +11,7 @@ import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/write.dart';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 
@@ -32,7 +31,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   final WalletMetadataDatasource _metadata;
   final ForegroundWalletSync _sourceSync;
   final Secrets _secrets;
-  final FeesRepository _fees;
+  final Fees _fees;
   final ParentCustodyAdmissionPort _custody;
   final Future<String> Function(ArkAccountId) _sourceWalletId;
   final Set<Future<void>> _requests = {};
@@ -110,8 +109,10 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         ),
       );
       _sync(await handle.load());
-      final fastest = (await _fees.getNetworkFees(network: metadata.network))
-          .fastest;
+      final fastest = switch (await _fees.estimate(metadata.network.shared)) {
+        Ok(:final value) => value.fastest,
+        Err() => throw const _HostFailure(ArkNetworkUnavailableFailure()),
+      };
       if (fastest is! RelativeFee || fastest.satPerKwu <= 0) {
         throw const _HostFailure(ArkNetworkUnavailableFailure());
       }

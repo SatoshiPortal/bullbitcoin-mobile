@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -19,7 +19,7 @@ class LoadBuyContextUsecase {
   final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final AppFeeEstimates _feeEstimates;
   final IndexPriceReader _getIndexPrice;
 
   const LoadBuyContextUsecase({
@@ -27,7 +27,7 @@ class LoadBuyContextUsecase {
     required this._getSettingsUsecase,
     required this._getWalletsUsecase,
     required this._getReceiveAddressUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._feeEstimates,
     required this._getIndexPrice,
   });
 
@@ -88,7 +88,7 @@ class LoadBuyContextUsecase {
     required bool isLiquid,
   }) async {
     try {
-      return Ok(await _getNetworkFeesUsecase.execute(isLiquid: isLiquid));
+      return Ok(await _feeEstimates.execute(isLiquid: isLiquid));
     } catch (e, st) {
       log.severe(
         message: 'Failed to load the network fees',

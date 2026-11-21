@@ -49,15 +49,15 @@ graph TB
     NETWORK --> MEMPOOL
     BROADCAST_SIGNED_TX --> ELECTRUM
     CORE --> ELECTRUM
-    FEES --> ELECTRUM
     WALLETS --> ELECTRUM
     LABELS --> SYNC
     WALLETS --> SYNC
-    CORE -->|public custom fee input| FEES
-    FEES --> BULL_UI
+    FEES_UI --> BULL_UI
+    FEES_UI --> FEES_PACKAGE
+    FEES_PACKAGE --> PRIMITIVES
     CORE --> SYNC
     SEND --> SYNC
-    FEES --> SYNC
+    FEES_PACKAGE -->|wallet connection policy| SYNC
     SELL --> SYNC
     BROADCAST_SIGNED_TX --> SYNC
     WALLETS --> LABELS
@@ -147,7 +147,9 @@ graph TB
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]
     BIP85[BIP85]
-    FEES[Fees]
+    FEES[App fee environment adapter]
+    FEES_PACKAGE[Fees Package]
+    FEES_UI[Fees Feature]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
     EXCHANGE_SETTINGS[Exchange Settings]
@@ -324,7 +326,6 @@ graph TB
     WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS --> DEFAULT_WALLETS
     LIMIT_ORDERS --> FUNDING
-    FEES --> NETWORK
     FUNDING --> EXCHANGE
     FUNDING --> RECIPIENTS
     HW_WALLETS --> CORE
@@ -349,6 +350,7 @@ graph TB
     BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
     SEND --> FEES
+    SEND --> FEES_UI
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
     SEND --> SP
@@ -418,7 +420,7 @@ graph TB
     CORE -->|composes schema 16 tables| MEMPOOL
     MEMPOOL_SETTINGS --> MEMPOOL
     SETTINGS -->|typed settings failures| MEMPOOL
-    FEES --> MEMPOOL
+    FEES_PACKAGE -->|active fee service base| MEMPOOL
     SP --> MEMPOOL
     TX_HISTORY --> MEMPOOL
     WALLETS --> MEMPOOL
@@ -435,16 +437,23 @@ graph TB
     DEFAULT_WALLETS -->|public destination validation and input| WALLETS
     EXCHANGE_SUPPORT_CHAT --> EXCHANGE
     FEES --> WALLETS
+    FEES --> FEES_PACKAGE
+    WALLETS --> FEES_PACKAGE
+    TX_HISTORY --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
     SETTINGS -->|active environment reader| MEMPOOL_SETTINGS
     PAY --> FEES
+    PAY --> FEES_UI
     SEND --> SIGNERS
     REPLACE_BY_FEE --> FEES
+    REPLACE_BY_FEE --> FEES_UI
     REPLACE_BY_FEE --> SEND
     SELL --> FEES
+    SELL --> FEES_UI
     SWAPS --> AUTOSWAP
     SWAPS --> FEES
+    SWAPS --> FEES_UI
     TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
 
@@ -456,8 +465,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,FEES_UI,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -652,7 +661,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 
 ## Network settings and service status
 
-The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The app supplies a default wallet environment, existing Bitcoin fee probe and Tor preference access. Background Electrum composition remains independent of the network UI.
+The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The app supplies a default wallet environment, Mempool-only Bitcoin fee probe and Tor preference access. Background Electrum composition remains independent of the network UI.
 
 ## Wallet-independent transaction values
 

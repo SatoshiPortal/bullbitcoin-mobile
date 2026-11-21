@@ -6,14 +6,13 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
@@ -1634,7 +1633,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   /// Rebuilds the payin estimate at the committed fee.
   ///
   /// Every emit past an await reads the live state and gives up when it is gone:
-  /// this runs across `_getNetworkFeesUsecase` and a PSBT build, so a slow fetch
+  /// this runs across `_feeEstimates` and a PSBT build, so a slow fetch
   /// routinely outlives the screen. Merging into a pre-await snapshot instead
   /// would republish the payment state over whatever replaced it — dropping the
   /// broadcast latch and re-arming Confirm on a payin already on the wire

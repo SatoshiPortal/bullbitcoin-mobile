@@ -13,6 +13,8 @@ workspace:
   - features/network
   - features/signers
   - features/ark
+  - features/fees
+  - packages/fees
   - packages/ark
   - packages/secrets
   - packages/bull_payjoin
@@ -56,6 +58,8 @@ dependencies:
   signers:
   ark:
   bull_ark:
+  fees:
+  fees_feature:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:

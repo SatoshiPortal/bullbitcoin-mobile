@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart'
@@ -20,7 +20,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements Preferences {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
@@ -96,7 +96,7 @@ OrderSwapRecord _record({
 
 void main() {
   late _MockWalletRepository walletRepository;
-  late _MockSettingsRepository settingsRepository;
+  late _MockPreferences settingsRepository;
   late _MockLiquidWalletRepository liquidWalletRepository;
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockBroadcastLiquid broadcastLiquid;
@@ -126,7 +126,7 @@ void main() {
 
   setUp(() {
     walletRepository = _MockWalletRepository();
-    settingsRepository = _MockSettingsRepository();
+    settingsRepository = _MockPreferences();
     liquidWalletRepository = _MockLiquidWalletRepository();
     getReceiveAddress = _MockGetReceiveAddress();
     broadcastLiquid = _MockBroadcastLiquid();

@@ -3,7 +3,6 @@ import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
-import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:mempool/mempool.dart';
 import 'package:preferences/preferences.dart' as settings;
@@ -33,7 +32,6 @@ class CoreLocator {
     );
     setupElectrum(locator);
     ExchangeLocator.registerDatasources(locator);
-    FeesLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
   }
@@ -84,7 +82,6 @@ class CoreLocator {
     );
     BlockchainLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
-    FeesLocator.registerRepositories(locator);
     await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     return const Ok(null);
@@ -105,7 +102,6 @@ class CoreLocator {
     bull_tor.TorLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
-    FeesLocator.registerUseCases(locator);
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
   }

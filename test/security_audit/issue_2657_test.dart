@@ -8,8 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2657 fee redirects', () {
     test('fee client disables redirects', () {
-      final source = File('lib/core/fees/data/fees_datasource.dart')
-          .readAsStringSync();
+      final source = File(
+        'packages/fees/lib/src/data/mempool_fees_datasource.dart',
+      ).readAsStringSync();
       expect(source, contains('followRedirects: false'));
       expect(source, contains('validateStatus'));
     });

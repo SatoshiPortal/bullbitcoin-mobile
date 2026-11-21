@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -20,7 +20,7 @@ class _MockGetUserSummary extends Mock
 
 class _MockGetSettings extends Mock implements Preferences {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
 
 class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
 
@@ -59,7 +59,7 @@ void main() {
     usecase = LoadSellContextUsecase(
       getExchangeUserSummaryUsecase: getUserSummary,
       getSettingsUsecase: getSettings,
-      getNetworkFeesUsecase: getNetworkFees,
+      feeEstimates: getNetworkFees,
       getAddressAtIndexUsecase: getAddressAtIndex,
       getIndexPrice: getIndexPrice.call,
       getOrderUsecase: getOrder,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
@@ -24,7 +25,7 @@ import 'dart:math' as math;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer, FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
@@ -43,8 +44,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
-import 'package:bb_mobile/features/fees/public/fee_selection_label.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
@@ -1856,6 +1856,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: feeSelectionRowLabel(
             context,
+            ui: appFeeUi,
             selection: selectedFeeOption,
             customFee: customFee,
             fastestLabel: context.loc.sendFastFee,
@@ -1922,6 +1923,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
   final selected = await BullBottomSheet.show<String>(
     context: context,
     child: FeeOptionsModal(
+      ui: appFeeUi,
       viewState: sendCubit,
       actions: sendCubit,
       defaultAbsoluteCustomFee: false,

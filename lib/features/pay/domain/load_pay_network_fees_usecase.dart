@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -7,16 +7,16 @@ import 'package:primitives/primitives.dart';
 
 /// Pay's boundary onto the shared fee-preset read, which still throws.
 class LoadPayNetworkFeesUsecase {
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final AppFeeEstimates _feeEstimates;
 
-  const LoadPayNetworkFeesUsecase({required this._getNetworkFeesUsecase});
+  const LoadPayNetworkFeesUsecase({required this._feeEstimates});
 
   @useResult
   Future<Result<FeeOptions, PayFailure>> execute({
     required bool isLiquid,
   }) async {
     try {
-      return Ok(await _getNetworkFeesUsecase.execute(isLiquid: isLiquid));
+      return Ok(await _feeEstimates.execute(isLiquid: isLiquid));
     } catch (e, st) {
       log.severe(
         message: 'Failed to load the network fees',

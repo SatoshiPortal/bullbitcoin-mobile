@@ -35,7 +35,7 @@ import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 
 import 'support/bdk_test_store.dart';
 import 'support/sync_spend_fixture.dart';

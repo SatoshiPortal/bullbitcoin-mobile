@@ -2,8 +2,8 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletSpendBlockedException, BitcoinSpendStatus;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
@@ -23,18 +23,18 @@ import 'package:meta/meta.dart';
 class BumpFeeUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final AppFeeEstimates _feeEstimates;
 
   BumpFeeUsecase({
     required this._bitcoinWalletRepository,
     required this._broadcastBitcoinTransactionUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._feeEstimates,
   });
 
   @useResult
   Future<Result<FeeOptions, ReplaceByFeeFailure>> getNetworkFees() async {
     try {
-      final fees = await _getNetworkFeesUsecase.execute(isLiquid: false);
+      final fees = await _feeEstimates.execute(isLiquid: false);
       return Ok(fees);
     } catch (e, st) {
       log.warning('Failed to fetch network fees for RBF', error: e, trace: st);

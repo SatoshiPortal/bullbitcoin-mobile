@@ -1,11 +1,11 @@
+import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
-import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullSelectableList;
 import 'package:flutter_test/flutter_test.dart';
@@ -59,6 +59,7 @@ void main() {
                   selection = await BullBottomSheet.show<String>(
                     context: context,
                     child: FeeOptionsModal(
+                      ui: appFeeUi,
                       viewState: state,
                       actions: actions,
                       defaultAbsoluteCustomFee: false,

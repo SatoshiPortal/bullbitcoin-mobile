@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/fees/public/custom_fee_list_item.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,6 +41,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: CustomFeeListItem(
+            ui: appFeeUi,
             initialFee: initialFee,
             isCommittedAsCustom: isCommittedAsCustom,
             feePresets: null,
@@ -383,6 +385,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: CustomFeeListItem(
+                ui: appFeeUi,
                 initialFee: null,
                 isCommittedAsCustom: false,
                 feePresets: null,
@@ -487,6 +490,7 @@ void main() {
                   onPressed: () => showModalBottomSheet<void>(
                     context: ctx,
                     builder: (_) => CustomFeeListItem(
+                      ui: appFeeUi,
                       initialFee: null,
                       isCommittedAsCustom: false,
                       feePresets: null,

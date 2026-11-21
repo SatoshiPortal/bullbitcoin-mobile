@@ -9,7 +9,7 @@ import 'package:sync/sync.dart'
         SyncInvalidAddressFailure,
         SyncNoSpendableInputsFailure,
         SyncProtectedInputsFailure;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';

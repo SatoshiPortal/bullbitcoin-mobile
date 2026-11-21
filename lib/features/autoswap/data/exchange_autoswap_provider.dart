@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart';
@@ -240,7 +240,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       walletId: wallet.id,
       address: order.payinAddress,
       amountSat: order.payinAmountSat.toInt(),
-      feeRate: const RelativeFee(25),
+      feeRate: NetworkFeeRelayPolicy.minRelay,
     );
     final String pset;
     switch (preparation) {
@@ -344,7 +344,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       walletId: wallet.id,
       address: address,
       amountSat: provisionalAmount,
-      feeRate: const RelativeFee(25),
+      feeRate: NetworkFeeRelayPolicy.minRelay,
     );
     final String pset;
     switch (preparation) {

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
@@ -35,7 +35,7 @@ class _MockDropPendingLockup extends Mock
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements Preferences {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
@@ -71,7 +71,7 @@ void main() {
   late _MockRecordPendingLockup recordPendingLockup;
   late _MockDropPendingLockup dropPendingLockup;
   late _MockWalletRepository walletRepository;
-  late _MockSettingsRepository settingsRepository;
+  late _MockPreferences settingsRepository;
   late _MockLiquidWalletRepository liquidWalletRepository;
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockBroadcastLiquid broadcastLiquid;
@@ -125,7 +125,7 @@ void main() {
     when(() => dropPendingLockup.execute(any()))
         .thenAnswer((_) async => const Ok(null));
     walletRepository = _MockWalletRepository();
-    settingsRepository = _MockSettingsRepository();
+    settingsRepository = _MockPreferences();
     liquidWalletRepository = _MockLiquidWalletRepository();
     getReceiveAddress = _MockGetReceiveAddress();
     broadcastLiquid = _MockBroadcastLiquid();

@@ -5,8 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 // Security audit regression for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2658
 void main() {
   test('keeps fees independent from the configured Tor proxy', () {
-    final source = File('lib/core/fees/data/fees_datasource.dart')
-        .readAsStringSync();
+    final source = File(
+      'packages/fees/lib/src/data/mempool_fees_datasource.dart',
+    ).readAsStringSync();
 
     expect(source, isNot(contains("package:bull_tor")));
     expect(source, isNot(contains('SocksTCPClient')));

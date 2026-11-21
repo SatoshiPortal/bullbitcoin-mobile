@@ -42,6 +42,10 @@ graph TD
   style bull_ui_catalogue stroke:#7d8de8
   electrum["electrum"]
   style electrum stroke:#87e1d5
+  fees["fees"]
+  style fees stroke:#726a61
+  fees_feature["fees_feature"]
+  style fees_feature stroke:#a5679d
   file_system["file_system"]
   style file_system stroke:#2571b0
   google_drive["google_drive"]
@@ -121,6 +125,12 @@ graph TD
   electrum --> bull_tor
   electrum --> primitives
   electrum --> sync
+  fees --> mempool
+  fees --> primitives
+  fees --> sync
+  fees_feature --> bull_ui
+  fees_feature --> fees
+  fees_feature --> primitives
   file_system --> primitives
   google_drive --> bull_logger
   google_drive --> primitives
@@ -187,6 +197,7 @@ graph TD
     bull_ui
     bull_ui_catalogue
     electrum
+    fees
     file_system
     google_drive
     labels
@@ -210,6 +221,7 @@ graph TD
     bull_logs
     bull_quick_actions
     bull_recoverbull
+    fees_feature
     label_editor
     network
     signers

@@ -28,9 +28,8 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transa
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -47,7 +46,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -136,7 +135,7 @@ class SendCubit extends Cubit<SendState>
     required this._detectBitcoinStringUsecase,
     required this._getSettingsUsecase,
     required this._getSendExchangeRateUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._feeEstimates,
     required this._getWalletUtxosUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
@@ -249,7 +248,7 @@ class SendCubit extends Cubit<SendState>
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
   final GetSendAmountQuotesUsecase? _getSendAmountQuotesUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final AppFeeEstimates _feeEstimates;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
@@ -2962,7 +2961,7 @@ class SendCubit extends Cubit<SendState>
             inputGeneration != _paymentRequestInputGeneration) ||
         state.selectedWallet?.network != wallet.network;
     try {
-      final bitcoinFees = await _getNetworkFeesUsecase.execute(
+      final bitcoinFees = await _feeEstimates.execute(
         isLiquid: false,
         network: Network.fromEnvironment(
           environment: environment,
@@ -2972,7 +2971,7 @@ class SendCubit extends Cubit<SendState>
       if (isStale()) return;
       final liquidFees = wallet.network == Network.bitcoinRegtest
           ? null
-          : await _getNetworkFeesUsecase.execute(
+          : await _feeEstimates.execute(
               isLiquid: true,
               network: Network.fromEnvironment(
                 environment: environment,

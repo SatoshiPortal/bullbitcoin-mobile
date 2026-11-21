@@ -7,7 +7,7 @@ import 'package:bull_ark/ark_setup.dart'
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
-import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:fees/fees.dart';
 
 import '../data/ark_board_funding.dart';
 import '../data/foreground_wallet_sync.dart';
@@ -28,7 +28,7 @@ final class WalletArkFundingFactory {
   final WalletMetadataDatasource _metadata;
   final ForegroundWalletSync _sourceSync;
   final Secrets _secrets;
-  final FeesRepository _fees;
+  final Fees _fees;
   final ParentCustodyAdmissionPort _custody;
   WalletArkBoardFunding? _actor;
   bool _closed = false;

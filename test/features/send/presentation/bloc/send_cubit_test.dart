@@ -24,9 +24,8 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -108,13 +107,12 @@ class _MockSelectBestWalletUsecase extends Mock
 class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements Preferences {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockAppFeeEstimates extends Mock implements AppFeeEstimates {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -301,7 +299,7 @@ class _TestableSendCubit extends SendCubit {
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
     required super.getSendExchangeRateUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.feeEstimates,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -496,9 +494,9 @@ void main() {
   late _MockLabels labelsFacade;
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
-  late _MockGetSettingsUsecase getSettingsUsecase;
+  late _MockPreferences getSettingsUsecase;
   late _MockGetSendExchangeRateUsecase getSendExchangeRateUsecase;
-  late _MockGetNetworkFeesUsecase getNetworkFeesUsecase;
+  late _MockAppFeeEstimates feeEstimates;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
@@ -583,7 +581,7 @@ void main() {
     detectBitcoinStringUsecase: detector ?? detectBitcoinStringUsecase,
     getSettingsUsecase: getSettingsUsecase,
     getSendExchangeRateUsecase: getSendExchangeRateUsecase,
-    getNetworkFeesUsecase: getNetworkFeesUsecase,
+    feeEstimates: feeEstimates,
     getWalletUtxosUsecase: getWalletUtxosUsecase,
     prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
     validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
@@ -719,9 +717,9 @@ void main() {
     labelsFacade = _MockLabels();
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
-    getSettingsUsecase = _MockGetSettingsUsecase();
+    getSettingsUsecase = _MockPreferences();
     getSendExchangeRateUsecase = _MockGetSendExchangeRateUsecase();
-    getNetworkFeesUsecase = _MockGetNetworkFeesUsecase();
+    feeEstimates = _MockAppFeeEstimates();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
     validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
@@ -843,7 +841,7 @@ void main() {
     },
     verifyNoProgression: () {
       verifyZeroInteractions(bestWalletUsecase);
-      verifyZeroInteractions(getNetworkFeesUsecase);
+      verifyZeroInteractions(feeEstimates);
       verifyZeroInteractions(prepareBitcoinSendUsecase);
       verifyZeroInteractions(prepareLiquidSendUsecase);
     },
@@ -893,7 +891,7 @@ void main() {
             () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
           ).thenAnswer((_) => const Stream<Wallet>.empty());
           when(
-            () => getNetworkFeesUsecase.execute(
+            () => feeEstimates.execute(
               isLiquid: any(named: 'isLiquid'),
               network: any(named: 'network'),
             ),
@@ -1254,7 +1252,7 @@ void main() {
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) => const Stream.empty());
     when(
-      () => getNetworkFeesUsecase.execute(
+      () => feeEstimates.execute(
         isLiquid: any(named: 'isLiquid'),
         network: any(named: 'network'),
       ),
@@ -3934,7 +3932,7 @@ void main() {
         expect(cubit.state.loadingBestWallet, isFalse);
         expect(cubit.state.failure, isNull);
         verifyNever(
-          () => getNetworkFeesUsecase.execute(
+          () => feeEstimates.execute(
             isLiquid: any(named: 'isLiquid'),
             network: any(named: 'network'),
           ),
@@ -4035,7 +4033,7 @@ void main() {
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -4072,7 +4070,7 @@ void main() {
         ),
       ).thenAnswer((_) => const Stream.empty());
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -5320,7 +5318,7 @@ void main() {
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -5370,7 +5368,7 @@ void main() {
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -6428,7 +6426,7 @@ void main() {
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) => const Stream.empty());
     when(
-      () => getNetworkFeesUsecase.execute(
+      () => feeEstimates.execute(
         isLiquid: any(named: 'isLiquid'),
         network: any(named: 'network'),
       ),
@@ -6673,7 +6671,7 @@ void main() {
         when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
             .thenAnswer((_) => const Stream.empty());
         when(
-          () => getNetworkFeesUsecase.execute(
+          () => feeEstimates.execute(
             isLiquid: any(named: 'isLiquid'),
             network: any(named: 'network'),
           ),
@@ -6876,7 +6874,7 @@ void main() {
       when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => false);
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -6909,7 +6907,7 @@ void main() {
             'an obsolete continuation must not overwrite the current send type',
       );
       verify(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -6939,13 +6937,13 @@ void main() {
       when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => false);
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: false,
           network: any(named: 'network'),
         ),
       ).thenAnswer((_) => oldBitcoinFeesLoaded.future);
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: true,
           network: any(named: 'network'),
         ),
@@ -6959,7 +6957,7 @@ void main() {
           .thenAnswer((_) async => oldRequest);
       final oldContinuation = cubit.onScannedPaymentRequest('old-address');
       await untilCalled(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: false,
           network: any(named: 'network'),
         ),
@@ -7088,11 +7086,11 @@ void main() {
     final wallet = _bitcoinWallet(balanceSat: 20000)
         .copyWith(network: Network.bitcoinRegtest);
     when(
-      () => getNetworkFeesUsecase.execute(
+      () => feeEstimates.execute(
         isLiquid: false,
         network: Network.bitcoinRegtest,
       ),
-    ).thenThrow(GetNetworkFeesException('unavailable'));
+    ).thenThrow(const AppFeeEstimateException());
     cubit.setStateForTest(
       SendState(
         step: SendStep.amount,
@@ -7198,7 +7196,7 @@ void main() {
                 as List<BitcoinTransactionRecipient>;
         expect(recipients.single.address, 'bcrt1qrecipient');
         expect(recipients.single.amountSat, Sats.fromInt(5000));
-        verifyZeroInteractions(getNetworkFeesUsecase);
+        verifyZeroInteractions(feeEstimates);
       },
     );
   }
@@ -7760,7 +7758,7 @@ void main() {
           () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
         );
         verifyNever(
-          () => getNetworkFeesUsecase.execute(
+          () => feeEstimates.execute(
             isLiquid: any(named: 'isLiquid'),
             network: any(named: 'network'),
           ),
@@ -7809,7 +7807,7 @@ void main() {
       when(() => detectBitcoinStringUsecase.execute(data: 'bc1-address'))
           .thenThrow(const FormatException('unsupported'));
       when(
-        () => getNetworkFeesUsecase.execute(
+        () => feeEstimates.execute(
           isLiquid: any(named: 'isLiquid'),
           network: any(named: 'network'),
         ),
@@ -7832,7 +7830,7 @@ void main() {
         when(() => detectBitcoinStringUsecase.execute(data: 'bc1-address'))
             .thenThrow(const FormatException('unsupported'));
         when(
-          () => getNetworkFeesUsecase.execute(
+          () => feeEstimates.execute(
             isLiquid: any(named: 'isLiquid'),
             network: any(named: 'network'),
           ),

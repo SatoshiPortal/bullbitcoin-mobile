@@ -28,9 +28,9 @@ import 'package:swaps/swaps.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -95,13 +95,12 @@ class _MockSelectBestWalletUsecase extends Mock
 class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements Preferences {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockAppFeeEstimates extends Mock implements AppFeeEstimates {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -252,7 +251,7 @@ class _TestSendCubit extends SendCubit {
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
     required super.getSendExchangeRateUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.feeEstimates,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -367,9 +366,9 @@ void main() {
       storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
       bestWalletUsecase: _MockSelectBestWalletUsecase(),
       detectBitcoinStringUsecase: _MockDetectBitcoinStringUsecase(),
-      getSettingsUsecase: _MockGetSettingsUsecase(),
+      getSettingsUsecase: _MockPreferences(),
       getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
-      getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+      feeEstimates: _MockAppFeeEstimates(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,

@@ -6,8 +6,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 import 'package:primitives/primitives.dart' show Sats, ScriptType;

@@ -11,8 +11,7 @@ import 'package:primitives/primitives.dart'
         Outpoint,
         Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/liquid_address.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:ark/ark.dart';
-import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/data/ark_board_funding.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
@@ -24,7 +24,7 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Client extends Mock implements ArkClient {}
 
-class _Fees extends Mock implements FeesRepository {}
+class _Fees extends Mock implements Fees {}
 
 class _Custody extends Mock implements ParentCustodyAdmissionPort {}
 
