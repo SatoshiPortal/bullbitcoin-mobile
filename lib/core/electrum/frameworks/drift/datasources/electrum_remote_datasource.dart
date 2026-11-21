@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.drift.dart'
     show TransactionModel;
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:convert/convert.dart';
 import 'package:bull_tor/tor.dart';
 

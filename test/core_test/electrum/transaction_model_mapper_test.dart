@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/electrum/adapters/transaction_model_mapper.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.drift.dart'
     show TransactionModel;
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show TxVin, TxVout, TxScriptSig;
 import 'package:flutter_test/flutter_test.dart';
 
 /// The existing Electrum repository mapper is exercised directly because the

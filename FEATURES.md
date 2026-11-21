@@ -27,7 +27,7 @@ graph TB
     ARK_PROTOCOL --> PRIMITIVES
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER
-    SYNC[Sync Package<br/>Electrum sync, codecs, chain access,<br/>contracts and owner ports]
+    SYNC[Sync Package<br/>Electrum sync, BitcoinTx, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
     BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS

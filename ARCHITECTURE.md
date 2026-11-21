@@ -420,7 +420,7 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 ### Signer boundary
 
-`signers` receives the captured `NetworkEnv` from Send/Receive wallets or the import request. Unsupported networks are refused before discovery and again in device use cases. Hardware import returns a `SignerAccount`; import owns descriptor construction and confirmation. PSBT handoff returns a confirmation, and Send retains the original wallet and unsigned PSBT while the shell opens signed-transaction acquisition. The member never imports root app code. `setupSigners` registers its own dependencies in the foreground locator. URQR and BBQR encoding live in the member; the legacy BBQR transaction decoder remains in the shell pending relocation of `BitcoinTx` to `sync`.
+`signers` receives the captured `NetworkEnv` from Send/Receive wallets or the import request. Unsupported networks are refused before discovery and again in device use cases. Hardware import returns a `SignerAccount`; import owns descriptor construction and confirmation. PSBT handoff returns a confirmation, and Send retains the original wallet and unsigned PSBT while the shell opens signed-transaction acquisition. The member never imports root app code. `setupSigners` registers its own dependencies in the foreground locator. URQR and BBQR encoding live in the member; the legacy BBQR transaction decoder in the app consumes `BitcoinTx` from `sync`.
 
 ## Owner-scoped keychain capabilities
 
