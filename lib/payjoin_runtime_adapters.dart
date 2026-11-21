@@ -176,22 +176,10 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   Future<String?> findTransactionSpending({
     required String walletId,
     required List<Outpoint> outpoints,
-    bool refresh = false,
-  }) async {
-    if (outpoints.isEmpty) return null;
-    final transactions = await _transactions.getWalletTransactions(
-      walletId: walletId,
-      sync: refresh,
-    );
-    for (final transaction in transactions) {
-      final spent = {
-        for (final input in transaction.inputs)
-          (txId: input.previousTxId, vout: input.previousTxVout),
-      };
-      if (spent.containsAll(outpoints)) return transaction.txId;
-    }
-    return null;
-  }
+  }) => _transactions.findTransactionSpending(
+    walletId: walletId,
+    outpoints: outpoints,
+  );
 
   @override
   Future<void> refreshWallet(String walletId) async {

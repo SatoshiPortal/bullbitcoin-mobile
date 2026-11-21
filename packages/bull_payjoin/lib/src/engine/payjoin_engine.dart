@@ -2175,25 +2175,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   /// [txId] when it is visible, else the wallet transaction spending all of
-  /// [spentOutpoints], if any.
+  /// [spentOutpoints], if any. That payjoin spends them under either txid,
+  /// so without [refresh] the local outpoint lookup answers alone.
   Future<String?> _findWatchedTransaction({
     required String walletId,
     required String txId,
     List<primitives.Outpoint> spentOutpoints = const [],
     bool refresh = false,
   }) async {
-    if (await _transactions.isTransactionVisible(
-      walletId: walletId,
-      transactionId: txId,
-      refresh: refresh,
-    )) {
+    if ((refresh || spentOutpoints.isEmpty) &&
+        await _transactions.isTransactionVisible(
+          walletId: walletId,
+          transactionId: txId,
+          refresh: refresh,
+        )) {
       return txId;
     }
     if (spentOutpoints.isEmpty) return null;
     return _transactions.findTransactionSpending(
       walletId: walletId,
       outpoints: spentOutpoints,
-      refresh: refresh,
     );
   }
 

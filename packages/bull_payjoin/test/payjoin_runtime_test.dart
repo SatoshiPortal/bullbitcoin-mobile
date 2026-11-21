@@ -67,7 +67,6 @@ final class _TransactionPort implements PayjoinTransactionPort {
   Future<String?> findTransactionSpending({
     required String walletId,
     required List<Outpoint> outpoints,
-    bool refresh = false,
   }) async => null;
 
   @override

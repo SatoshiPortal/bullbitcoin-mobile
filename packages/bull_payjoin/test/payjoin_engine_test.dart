@@ -179,7 +179,6 @@ void main() {
       () => transactions.findTransactionSpending(
         walletId: any(named: 'walletId'),
         outpoints: any(named: 'outpoints'),
-        refresh: any(named: 'refresh'),
       ),
     ).thenAnswer((_) async => null);
     when(() => transactions.refreshWallet(any())).thenAnswer((_) async {});
@@ -1422,7 +1421,6 @@ void main() {
         () => transactions.findTransactionSpending(
           walletId: any(named: 'walletId'),
           outpoints: any(named: 'outpoints'),
-          refresh: any(named: 'refresh'),
         ),
       ).thenAnswer((inv) async {
         final wanted = inv.namedArguments[#outpoints] as List<Outpoint>;

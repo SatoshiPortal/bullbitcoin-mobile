@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -658,77 +657,32 @@ void main() {
     );
   });
 
-  group('finding the transaction that spends outpoints', () {
-    const ours = (txId: 'aa', vout: 1);
-    const theirs = (txId: 'bb', vout: 0);
-
-    WalletTransaction spending(String txId, List<Outpoint> outpoints) =>
-        _transaction().copyWith(
-          txId: txId,
-          inputs: [
-            for (final (vin, outpoint) in outpoints.indexed)
-              TransactionInput.bitcoin(
-                txId: txId,
-                vin: vin,
-                isOwn: outpoint == ours,
-                previousTxId: outpoint.txId,
-                previousTxVout: outpoint.vout,
-              ),
-          ],
-        );
-
-    test('returns the transaction spending all of them', () async {
+  test(
+    'finds the spend of outpoints with the light repository lookup',
+    () async {
+      const outpoints = [(txId: 'aa', vout: 1), (txId: 'bb', vout: 0)];
       when(
-        () => transactions.getWalletTransactions(
+        () => transactions.findTransactionSpending(
           walletId: _walletId,
-          sync: any(named: 'sync'),
+          outpoints: outpoints,
         ),
-      ).thenAnswer(
-        (_) async => [
-          spending('self-spend', [ours]),
-          spending('payjoin', [theirs, ours]),
-        ],
-      );
+      ).thenAnswer((_) async => 'payjoin');
 
       final found = await adapter.findTransactionSpending(
         walletId: _walletId,
-        outpoints: [theirs, ours],
-        refresh: true,
+        outpoints: outpoints,
       );
 
       expect(found, 'payjoin');
-      verify(
-        () =>
-            transactions.getWalletTransactions(walletId: _walletId, sync: true),
-      ).called(1);
-    });
-
-    test('ignores a transaction spending only some of them', () async {
-      when(
+      verifyNever(
         () => transactions.getWalletTransactions(
-          walletId: _walletId,
+          walletId: any(named: 'walletId'),
           sync: any(named: 'sync'),
         ),
-      ).thenAnswer(
-        (_) async => [
-          spending('self-spend', [ours]),
-        ],
       );
-
-      final found = await adapter.findTransactionSpending(
-        walletId: _walletId,
-        outpoints: [theirs, ours],
-      );
-
-      expect(found, isNull);
-      verify(
-        () => transactions.getWalletTransactions(
-          walletId: _walletId,
-          sync: false,
-        ),
-      ).called(1);
-    });
-  });
+      verifyNever(() => wallets.getWallet(any(), sync: any(named: 'sync')));
+    },
+  );
 }
 
 WalletTransaction _transaction() => const WalletTransaction(
