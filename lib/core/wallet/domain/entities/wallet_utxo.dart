@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/labels/label.dart';
+import 'package:labels/labels.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_utxo.freezed.dart';

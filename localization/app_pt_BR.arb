@@ -174,10 +174,6 @@
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeInstantSepaInfo": "Use apenas para transações abaixo de € 20.000. Para transações maiores, use a opção SEPA regular.",
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
@@ -1056,10 +1052,6 @@
       }
     }
   },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "autoswapSelectWalletError": "Por favor, selecione uma carteira Bitcoin destinatário",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
@@ -1253,10 +1245,6 @@
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
   },
-  "systemLabelExchangeBuy": "Comprar",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
-  },
   "payInvalidState": "Estado inválido",
   "@payInvalidState": {
     "description": "Error message for invalid state"
@@ -1324,15 +1312,6 @@
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
-  },
-  "bip329LabelsImportSuccessPlural": "{count} rótulos importados",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "sendTransactionBuilt": "Transação pronta",
   "@sendTransactionBuilt": {
@@ -1655,10 +1634,6 @@
   "walletDeletionErrorDefaultWallet": "Você não pode excluir uma carteira padrão.",
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
-  },
-  "bip329LabelsImportSuccessSingular": "1 etiqueta importada",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",
   "@fundExchangeCrIbanUsdLabelIban": {
@@ -2171,10 +2146,6 @@
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
   },
-  "systemLabelExchangeSell": "Venda",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sellOrderCompleted": "Ordem concluída!",
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
@@ -2276,15 +2247,6 @@
     "description": "Duration format for seconds",
     "placeholders": {
       "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "labelDeleteFailed": "Incapaz de excluir \"{label}\". Por favor, tente novamente.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
         "type": "String"
       }
     }
@@ -3325,10 +3287,6 @@
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
   },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "payAllTypes": "Todos os tipos",
   "@payAllTypes": {
     "description": "Option for all types filter"
@@ -4024,10 +3982,6 @@
   "payEnableRBF": "Habilitar RBF",
   "@payEnableRBF": {
     "description": "Checkbox to enable Replace-By-Fee"
-  },
-  "bip329LabelsExportSuccess": "Etiquetas exportadas com sucesso",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "totalFeesLabel": "Taxas totais",
   "@totalFeesLabel": {
@@ -6425,10 +6379,6 @@
   "@payFirstName": {
     "description": "Label for first name field"
   },
-  "systemLabelSelfSpend": "Auto Spend",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
   "payRemoveRecipient": "Remover Recipiente",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -8700,10 +8650,6 @@
       }
     }
   },
-  "bip329LabelsImportButton": "Etiquetas de importação",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "walletDetailsDerivationPathLabel": "Caminho de Derivação",
   "@walletDetailsDerivationPathLabel": {
     "description": "Label for the derivation path field in wallet details"
@@ -8881,10 +8827,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Labels",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "submitButton": "Submeter-me",
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
@@ -8935,10 +8877,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bip329LabelsHeading": "BIP329 Etiquetas Importação/Exportação",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "walletDetailsSignerLabel": "Sinalização",
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
@@ -8977,10 +8915,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bip329LabelsExportButton": "Etiquetas de exportação",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
   },
   "importWatchOnlyPasteHint": "Pasta xpub, ypub, zpub ou descritor",
   "@importWatchOnlyPasteHint": {
@@ -9057,10 +8991,6 @@
   "walletDetailsDescriptorLabel": "Descritores",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "bip329LabelsDescription": "Importar ou exportar etiquetas de carteira usando o formato padrão BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "importWatchOnlyScriptType": "Tipo de script",
   "@importWatchOnlyScriptType": {
@@ -9873,7 +9803,6 @@
   "priceFailedToLoad": "Falha ao carregar o preço",
   "statusScreenTryAgain": "Tente novamente",
   "statusScreenContinue": "Continue",
-  "noteVisibleToSenderNotice": "Esta nota ficará visível para o destinatário do seu QR ou fatura.",
   "viewerAddressTab": "Endereço",
   "viewerPaymentUriTab": "URI de pagamento",
   "settingsErrorReportingTitle": "Relatório de erros",
@@ -10015,15 +9944,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Esse tipo de arquivo não é aceito. Escolha outro.",
   "exchangeSettingsErrorDocumentUnreadable": "Não foi possível ler esse arquivo. Escolha outro.",
   "exchangeSettingsErrorUploadingDocument": "Não foi possível enviar o documento. Por favor, tente novamente.",
-  "labelsErrorNoteTooLong": "A nota não pode ter mais de {max} caracteres",
-  "labelsErrorNoteForbiddenCharacter": "A nota não pode conter o caractere {character}",
-  "labelsErrorFileTooLarge": "Esse arquivo é muito grande. Arquivos de etiquetas devem ter menos de {max}.",
-  "labelsErrorFileUnreadable": "Isto não parece ser um arquivo de etiquetas BIP-329. Verifique se escolheu o arquivo certo.",
-  "labelsErrorFileEmpty": "Esse arquivo não contém etiquetas para importar.",
-  "labelsErrorExportFailed": "Não foi possível salvar suas etiquetas. Tente novamente.",
-  "labelsErrorFileReservedName": "Esse arquivo usa um nome de etiqueta reservado pelo aplicativo. Renomeie-o no arquivo e tente novamente.",
-  "labelsErrorNoteForbiddenWhitespace": "A nota não pode conter quebras de linha nem tabulações",
-  "labelsErrorFileInvalidEntry": "Não foi possível ler algumas entradas desse arquivo. Verifique o arquivo e tente novamente.",
   "recipientsErrorLoadFailed": "Não foi possível carregar seus destinatários. Tente novamente.",
   "recipientsErrorSaveFailed": "Não foi possível salvar este destinatário. Verifique os dados e tente novamente.",
   "recipientsErrorSinpeLookupFailed": "Não foi possível verificar este número de telefone. Verifique-o e tente novamente.",

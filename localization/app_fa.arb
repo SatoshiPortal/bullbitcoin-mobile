@@ -677,39 +677,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "systemLabelSwaps": "تعویض",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
-  "systemLabelAutoSwap": "تغییر خودکار",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
-  "systemLabelSelfSpend": "خرج کردن خود",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
-  "systemLabelExchangeBuy": "خرید",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
-  },
-  "systemLabelExchangeSell": "فروش",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
-  "labelDeleteFailed": "برای حذف \"{label} لطفا دوباره امتحان کنید.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "logoutConfirmationTitle": "تایید Logout",
   "@logoutConfirmationTitle": {
     "description": "Title for logout confirmation bottom sheet"
@@ -1844,15 +1811,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} برچسب های وارداتی",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "از",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -2152,10 +2110,6 @@
   "transactionDetailLabelPayjoinExpired": "تایید شده",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "1 برچسب وارداتی",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "نام Biller",
   "@payBillerName": {
@@ -3416,10 +3370,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "برچسب های Import",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "تمام فایل های آپلود شده با موفقیت",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -4076,10 +4026,6 @@
   "failedToDeriveBackupKey": "شکست برای به دست آوردن کلید پشتیبان",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "bip329LabelsExportSuccess": "برچسب ها با موفقیت",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "آهسته ترین گزینه، اما می تواند از طریق بانکداری آنلاین (3-4 روز کسب و کار)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5566,10 +5512,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "برچسب های BIP30",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "کیف پول Bitcoin را انتخاب کنید *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6448,10 +6390,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "برچسب های BIP/30 Import/Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "کد QR نشان داده شده در کیف پول بول",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -6753,10 +6691,6 @@
   "settingsAppVersionLabel": "نسخه App: ",
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
-  },
-  "bip329LabelsExportButton": "برچسب های صادرات",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
   },
   "payBillerNameValue": "نام انتخاب شده Biller",
   "@payBillerNameValue": {
@@ -7479,10 +7413,6 @@
   "importMnemonicImporting": "واردات ...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "واردات یا صادرات کیف پول با استفاده از فرمت استاندارد BIP/30.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "شما مطمئن نیستید و نیاز به زمان بیشتری برای یادگیری در مورد شیوه های امنیتی پشتیبان دارید.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -9748,7 +9678,6 @@
   "priceFailedToLoad": "بارگذاری قیمت ممکن نشد",
   "statusScreenTryAgain": "تلاش مجدد",
   "statusScreenContinue": "ادامه",
-  "noteVisibleToSenderNotice": "این یادداشت برای گیرنده‌ی کد QR یا invoice شما قابل مشاهده خواهد بود.",
   "viewerAddressTab": "آدرس",
   "viewerPaymentUriTab": "نشانی پرداخت",
   "settingsErrorReportingTitle": "گزارش خطا",
@@ -10003,15 +9932,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "این نوع فایل پذیرفته نمی‌شود. فایل دیگری انتخاب کنید.",
   "exchangeSettingsErrorDocumentUnreadable": "این فایل خوانده نشد. فایل دیگری انتخاب کنید.",
   "exchangeSettingsErrorUploadingDocument": "سند بارگذاری نشد. لطفاً دوباره تلاش کنید.",
-  "labelsErrorNoteTooLong": "یادداشت باید حداکثر {max} نویسه باشد",
-  "labelsErrorNoteForbiddenCharacter": "یادداشت نمی‌تواند نویسه {character} را داشته باشد",
-  "labelsErrorFileTooLarge": "این فایل خیلی بزرگ است. فایل‌های برچسب باید کمتر از {max} باشند.",
-  "labelsErrorFileUnreadable": "این فایل به نظر یک فایل برچسب BIP-329 نمی‌رسد. بررسی کنید فایل درست را انتخاب کرده باشید.",
-  "labelsErrorFileEmpty": "این فایل هیچ برچسبی برای وارد کردن ندارد.",
-  "labelsErrorExportFailed": "برچسب‌های شما ذخیره نشد. لطفاً دوباره تلاش کنید.",
-  "labelsErrorFileReservedName": "این فایل از نام برچسبی استفاده می‌کند که برنامه آن را رزرو کرده است. نام را در فایل تغییر دهید و دوباره تلاش کنید.",
-  "labelsErrorNoteForbiddenWhitespace": "یادداشت نمی‌تواند شامل خط جدید یا تب باشد",
-  "labelsErrorFileInvalidEntry": "برخی از ورودی‌های این فایل خوانده نشد. فایل را بررسی کنید و دوباره تلاش کنید.",
   "recipientsErrorLoadFailed": "گیرندگان شما بارگذاری نشدند. لطفاً دوباره تلاش کنید.",
   "recipientsErrorSaveFailed": "این گیرنده ذخیره نشد. اطلاعات را بررسی کنید و دوباره تلاش کنید.",
   "recipientsErrorSinpeLookupFailed": "نتوانستیم این شماره تلفن را تأیید کنیم. آن را بررسی کنید و دوباره تلاش کنید.",

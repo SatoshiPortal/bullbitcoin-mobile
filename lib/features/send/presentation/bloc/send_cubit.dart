@@ -108,7 +108,6 @@ import 'package:swaps/swaps.dart'
         SwapType,
         SwapsFailure,
         WatchSwapUsecase;
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -116,6 +115,8 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
 
 part 'send_mono_actions.dart';
 
@@ -129,7 +130,8 @@ class SendCubit extends Cubit<SendState>
     this.mode = const SendModeBitcoin(),
     Set<Outpoint> initialSweepOutpoints = const {},
     Set<Outpoint> initialSelectedOutpoints = const {},
-    required this._labelsFacade,
+    required this._loadSendLabelSuggestions,
+    required this._storeSendTransactionLabel,
     required this._bestWalletUsecase,
     required this._detectBitcoinStringUsecase,
     required this._getSettingsUsecase,
@@ -213,10 +215,10 @@ class SendCubit extends Cubit<SendState>
   void _applyMonoState(SendState next) => emit(next);
 
   /// Distinct user-defined labels for the suggestion chips in the label
-  /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
+  /// bottom sheet. Wraps the label suggestions use case so widgets
   /// don't need to reach into the locator.
   Future<Set<String>> fetchDistinctLabels() =>
-      _labelsFacade.fetchDistinctLabels();
+      _loadSendLabelSuggestions.execute();
 
   // ignore: unused_field
   final Wallet? _wallet;
@@ -239,7 +241,8 @@ class SendCubit extends Cubit<SendState>
     return state.unsignedPsbt == null ? null : state.maxSpendableBalanceSat;
   }
 
-  final LabelsFacade _labelsFacade;
+  final LoadSendLabelSuggestionsUsecase _loadSendLabelSuggestions;
+  final StoreSendTransactionLabelUsecase _storeSendTransactionLabel;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
@@ -4262,8 +4265,10 @@ class SendCubit extends Cubit<SendState>
       }
 
       if (lightningOrder == null && label.isNotEmpty) {
-        await _labelsFacade.store(
-          NewLabel.tx(transactionId: txId, label: label, origin: wallet.id),
+        await _storeSendTransactionLabel.execute(
+          transactionId: txId,
+          label: label,
+          origin: wallet.id,
         );
       }
 
@@ -4949,12 +4954,10 @@ class SendCubit extends Cubit<SendState>
     // known.
     if (userLabel.isNotEmpty && walletId != null) {
       unawaited(
-        _labelsFacade.store(
-          NewLabel.tx(
-            transactionId: finalTxId,
-            label: userLabel,
-            origin: walletId,
-          ),
+        _storeSendTransactionLabel.execute(
+          transactionId: finalTxId,
+          label: userLabel,
+          origin: walletId,
         ),
       );
     }

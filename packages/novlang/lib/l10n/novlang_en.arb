@@ -850,13 +850,13 @@
   "@app__coreScreensTransferFeeLabel_apple": {
     "description": "Apple (App Store) wording for the root catalogue key coreScreensTransferFeeLabel."
   },
-  "app__systemLabelSwaps_apple": "Transfers",
-  "@app__systemLabelSwaps_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key systemLabelSwaps."
+  "label_editor__systemLabelSwaps_apple": "Transfers",
+  "@label_editor__systemLabelSwaps_apple": {
+    "description": "Apple (App Store) wording for the label editor catalogue key systemLabelSwaps."
   },
-  "app__systemLabelAutoSwap_apple": "Auto Transfer",
-  "@app__systemLabelAutoSwap_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key systemLabelAutoSwap."
+  "label_editor__systemLabelAutoSwap_apple": "Auto Transfer",
+  "@label_editor__systemLabelAutoSwap_apple": {
+    "description": "Apple (App Store) wording for the label editor catalogue key systemLabelAutoSwap."
   },
   "app__logoutConfirmationDescription_apple": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access account features.",
   "@app__logoutConfirmationDescription_apple": {

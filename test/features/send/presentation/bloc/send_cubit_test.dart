@@ -43,7 +43,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_u
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -95,6 +95,9 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
 import '../../../coins/wallet_utxo_fixture.dart';
+
+import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
 
 class _BroadcastReporter extends Mock implements LoggerReporter {}
 
@@ -293,7 +296,8 @@ class _TestableSendCubit extends SendCubit {
     super.wallet,
     super.initialSweepOutpoints,
     super.initialSelectedOutpoints,
-    required super.labelsFacade,
+    required super.loadSendLabelSuggestions,
+    required super.storeSendTransactionLabel,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
@@ -574,7 +578,8 @@ void main() {
     wallet: wallet,
     initialSweepOutpoints: initialSweepOutpoints,
     initialSelectedOutpoints: initialSelectedOutpoints,
-    labelsFacade: labelsFacade,
+    loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(labelsFacade),
+    storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detector ?? detectBitcoinStringUsecase,
     getSettingsUsecase: getSettingsUsecase,

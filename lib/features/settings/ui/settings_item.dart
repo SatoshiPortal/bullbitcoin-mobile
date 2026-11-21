@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
-import 'package:bb_mobile/features/labels/router.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -296,7 +296,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsLabelsButton,
       ),
       icon: Icons.sell,
-      open: (context) => context.push(LabelsRouter.route.path),
+      open: (context) => context.push(LabelsRoute.labels.path),
       keywords: _keywords(
         localization.settingsSearchLabelsKeywords,
         english.settingsSearchLabelsKeywords,

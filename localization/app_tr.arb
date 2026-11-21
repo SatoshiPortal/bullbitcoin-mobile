@@ -213,10 +213,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE Transfer Transfer",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1092,10 +1088,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "Kamerayı açın",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1360,15 +1352,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} ithal edilen etiketler",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "From",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1458,10 +1441,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "Satın Al Satın Al",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "Recipient's address",
   "@sendRecipientAddress": {
@@ -1703,10 +1682,6 @@
   "transactionDetailLabelPayjoinExpired": "Açıklama",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "1 etiket ithal edildi",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "Biller Name",
   "@payBillerName": {
@@ -2436,10 +2411,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "Sat Satış Sat",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "Yüksek ücret uyarı uyarısı",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2487,15 +2458,6 @@
   "sellPriceWillRefreshIn": "Fiyat yenilenecek ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "\"{label}'ı silemez. Lütfen tekrar deneyin.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaCancelDialogConfirmButton": "Evet, deactivate",
   "@exchangeDcaCancelDialogConfirmButton": {
@@ -3216,10 +3178,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "İthalat Etiketler",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "Tüm dosyalar başarıyla yüklendi",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3865,10 +3823,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "Hoşgeldiniz Welcome Welcome Hoşgeldiniz",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -3992,10 +3946,6 @@
   "exchangeKycLevelLight": "Işık Işığı",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Etiketler başarıyla ihraç etti",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Slowest seçenek, ancak online bankacılık (3-4 iş günleri) ile yapılabilir",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5756,10 +5706,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Etiketler",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Bir Bitcoin cüzdanı seçin *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6793,10 +6739,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "BIP329 Etiketler Import /Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "Bull cüzdanında gösterilen QR kodu",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -7181,10 +7123,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "İhracat Etiketler",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "Seçilmiş Biller Name",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7483,10 +7421,6 @@
   "payFee": "Ücret Ücreti",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "Kendin Kendi Harcamasını Kendin Kendin Kendin Kendin",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "Takasta bir hata oluştu. İadeniz işleniyor.",
   "@swapProgressRefundMessage": {
@@ -8022,10 +7956,6 @@
   "importMnemonicImporting": "İthalat...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "BIP329 standart biçimini kullanarak ithalat veya ihracat cüzdan etiketleri.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Emin değilsiniz ve yedekleme güvenlik uygulamaları hakkında bilgi edinmek için daha fazla zamana ihtiyacınız var.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -9748,7 +9678,6 @@
   "priceFailedToLoad": "Fiyat yüklenemedi",
   "statusScreenTryAgain": "Tekrar Dene",
   "statusScreenContinue": "Devam Et",
-  "noteVisibleToSenderNotice": "Bu not, QR kodunuzun veya faturanızın alıcısı tarafından görülebilecektir.",
   "viewerAddressTab": "Adres",
   "viewerPaymentUriTab": "Ödeme URI'si",
   "settingsErrorReportingTitle": "Hata bildirimi",
@@ -10003,15 +9932,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Bu dosya türü kabul edilmiyor. Başka bir tane seçin.",
   "exchangeSettingsErrorDocumentUnreadable": "Bu dosya okunamadı. Başka bir tane seçin.",
   "exchangeSettingsErrorUploadingDocument": "Belge yüklenemedi. Lütfen tekrar deneyin.",
-  "labelsErrorNoteTooLong": "Not en fazla {max} karakter olmalıdır",
-  "labelsErrorNoteForbiddenCharacter": "Not {character} karakterini içeremez",
-  "labelsErrorFileTooLarge": "Bu dosya çok büyük. Etiket dosyaları {max} boyutundan küçük olmalıdır.",
-  "labelsErrorFileUnreadable": "Bu bir BIP-329 etiket dosyasına benzemiyor. Doğru dosyayı seçtiğinizden emin olun.",
-  "labelsErrorFileEmpty": "Bu dosyada içe aktarılacak etiket yok.",
-  "labelsErrorExportFailed": "Etiketleriniz kaydedilemedi. Lütfen tekrar deneyin.",
-  "labelsErrorFileReservedName": "Bu dosya uygulamanın ayırdığı bir etiket adını kullanıyor. Dosyada adını değiştirip tekrar deneyin.",
-  "labelsErrorNoteForbiddenWhitespace": "Not satır sonu veya sekme içeremez",
-  "labelsErrorFileInvalidEntry": "Bu dosyadaki bazı girdiler okunamadı. Dosyayı kontrol edip tekrar deneyin.",
   "recipientsErrorLoadFailed": "Alıcılarınız yüklenemedi. Lütfen tekrar deneyin.",
   "recipientsErrorSaveFailed": "Bu alıcı kaydedilemedi. Bilgileri kontrol edip tekrar deneyin.",
   "recipientsErrorSinpeLookupFailed": "Bu telefon numarasını doğrulayamadık. Numarayı kontrol edip tekrar deneyin.",

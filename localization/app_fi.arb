@@ -2200,21 +2200,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329-tunnisteet",
-  "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
-  "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",
-  "bip329LabelsImportButton": "Tuo tunnisteet",
-  "bip329LabelsExportButton": "Vie tunnisteet",
-  "bip329LabelsExportSuccess": "Tunnisteet viety onnistuneesti",
-  "bip329LabelsImportSuccessSingular": "1 tunniste tuotu",
-  "bip329LabelsImportSuccessPlural": "{count} tunnistetta tuotu",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "broadcastSignedTxTitle": "Lähetä transaktio",
   "broadcastSignedTxScanQR": "Skannaa laitteistolompakon QR-koodi",
   "broadcastSignedTxReviewTransaction": "Tarkista transaktio",
@@ -2879,20 +2864,6 @@
   "coreScreensReceiveAmountLabel": "Vastaanotettava määrä",
   "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkokulut",
   "coreScreensConfirmButton": "Vahvista",
-  "systemLabelSwaps": "Swapit",
-  "systemLabelAutoSwap": "Automaattinen swap",
-  "systemLabelPayjoin": "Payjoin",
-  "systemLabelSelfSpend": "Oma siirto",
-  "systemLabelExchangeBuy": "Osta",
-  "systemLabelExchangeSell": "Myy",
-  "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsStatusPending": "Odottaa",
   "coreSwapsStatusInProgress": "Käynnissä",
   "coreSwapsStatusCompleted": "Valmis",
@@ -3904,7 +3875,6 @@
   "fundExchangeCopGeneratePaymentLink": "Luo maksulinkki",
   "fundExchangeCopRedirectMessage": "Sinut ohjataan ulkoiselle sivulle maksun suorittamista varten.",
   "fundExchangeCopOpenPaymentLink": "Avaa maksulinkki",
-  "noteVisibleToSenderNotice": "Tämä kuvaus näkyy QR-koodisi tai laskusi vastaanottajalle.",
   "viewerAddressTab": "Osoite",
   "viewerPaymentUriTab": "Maksu-URI",
   "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
@@ -4036,15 +4006,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Tätä tiedostotyyppiä ei hyväksytä. Valitse toinen.",
   "exchangeSettingsErrorDocumentUnreadable": "Tiedostoa ei voitu lukea. Valitse toinen.",
   "exchangeSettingsErrorUploadingDocument": "Asiakirjaa ei voitu ladata. Yritä uudelleen.",
-  "labelsErrorNoteTooLong": "Muistiinpano voi olla enintään {max} merkkiä",
-  "labelsErrorNoteForbiddenCharacter": "Muistiinpano ei voi sisältää merkkiä {character}",
-  "labelsErrorFileTooLarge": "Tiedosto on liian suuri. Tunnistetiedostojen on oltava alle {max}.",
-  "labelsErrorFileUnreadable": "Tämä ei näytä BIP-329-tunnistetiedostolta. Tarkista, että valitsit oikean tiedoston.",
-  "labelsErrorFileEmpty": "Tiedostossa ei ole tuotavia tunnisteita.",
-  "labelsErrorExportFailed": "Tunnisteitasi ei voitu tallentaa. Yritä uudelleen.",
-  "labelsErrorFileReservedName": "Tiedosto käyttää sovelluksen varaamaa tunnisteen nimeä. Nimeä se uudelleen tiedostossa ja yritä uudelleen.",
-  "labelsErrorNoteForbiddenWhitespace": "Muistiinpano ei voi sisältää rivinvaihtoja tai sarkaimia",
-  "labelsErrorFileInvalidEntry": "Joitakin tiedoston merkintöjä ei voitu lukea. Tarkista tiedosto ja yritä uudelleen.",
   "recipientsErrorLoadFailed": "Vastaanottajiasi ei voitu ladata. Yritä uudelleen.",
   "recipientsErrorSaveFailed": "Tätä vastaanottajaa ei voitu tallentaa. Tarkista tiedot ja yritä uudelleen.",
   "recipientsErrorSinpeLookupFailed": "Emme voineet vahvistaa tätä puhelinnumeroa. Tarkista se ja yritä uudelleen.",

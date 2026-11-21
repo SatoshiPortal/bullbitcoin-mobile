@@ -12,7 +12,8 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:label_editor/label_editor.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/signers_bitbox_routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
@@ -279,7 +280,7 @@ class AppRouter {
         onOpenTorSettings: (context) =>
             context.pushNamed(const TorSettingsFacade().settingsRouteName),
       ),
-      LabelsRouter.route,
+      LabelsRouter.route(() => locator<LabelsFacade>()),
       StatusCheckRouter.route,
       BtcMapFeature.route,
     ],

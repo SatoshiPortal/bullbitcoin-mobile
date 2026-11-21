@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/labels/adapters/wallet_freeze_adapter.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -19,8 +18,6 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
-
-import 'freezes_only_sync.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
@@ -119,66 +116,6 @@ void main() {
         ),
       ),
     );
-  });
-
-  group('BIP329 adapter', () {
-    for (final stale in [false, true]) {
-      final status = stale ? sync.ValueStatus.stale : sync.ValueStatus.ready;
-      test('reads owned outpoints from a ${status.name} snapshot', () async {
-        final wallet = await testWallet(
-          key: key,
-          coins: [coin(kept), coin(frozen)],
-          frozen: {frozen},
-          stale: stale,
-          load: false,
-        );
-        final adapter = WalletFreezeAdapter(
-          sync: () =>
-              throw StateError('Ownership uses the supplied wallet handle'),
-          openWallet: (id) async {
-            expect(id, walletId);
-            return wallet;
-          },
-        );
-
-        expect(wallet.coins.now.status, sync.ValueStatus.notLoaded);
-        expect(await adapter.getOwnedOutpoints(walletId: walletId), [
-          kept,
-          frozen,
-        ]);
-        expect(wallet.coins.now.status, status);
-      });
-    }
-
-    test('does not report an absent wallet as an empty coin list', () async {
-      const failure = WalletSnapshotException(sync.SyncNotFoundFailure());
-      final adapter = WalletFreezeAdapter(
-        sync: () =>
-            throw StateError('Ownership uses the supplied wallet handle'),
-        openWallet: (_) async => throw failure,
-      );
-
-      await expectLater(
-        adapter.getOwnedOutpoints(walletId: walletId),
-        throwsA(same(failure)),
-      );
-    });
-
-    test('keeps every origin, empty ones included', () async {
-      final adapter = WalletFreezeAdapter(
-        sync: () async => owner,
-        openWallet: (_) => throw StateError('Freeze does not load a wallet'),
-      );
-      await adapter.freeze([
-        (walletId: walletId, txId: kept.txId, vout: kept.vout),
-        (walletId: null, txId: frozen.txId, vout: frozen.vout),
-      ]);
-
-      expect((await adapter.getAllFrozen()).toSet(), {
-        (walletId: walletId, txId: kept.txId, vout: kept.vout),
-        (walletId: '', txId: frozen.txId, vout: frozen.vout),
-      });
-    });
   });
 }
 

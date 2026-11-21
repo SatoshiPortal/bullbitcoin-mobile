@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:meta/meta.dart';
 

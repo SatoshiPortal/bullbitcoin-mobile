@@ -23,8 +23,6 @@ const _legacyImports = {
   'lib/features/send/ui/send_router.dart -> locator.dart',
   'lib/features/backup_settings/ui/screens/backup_settings_screen.dart -> locator.dart',
   'lib/features/app_startup/ui/app_startup_widget.dart -> router.dart',
-  'lib/features/labels/ui/page.dart -> locator.dart',
-  'lib/features/labels/ui/labels_widget.dart -> locator.dart',
   'lib/features/recipients/ui/screens/recipients_screen.dart -> locator.dart',
   'lib/features/recipients/ui/screens/sepa_virtual_payee_activation_screen.dart -> locator.dart',
   'lib/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart -> locator.dart',

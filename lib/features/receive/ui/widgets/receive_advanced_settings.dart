@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/receive/domain/receive_advanced_options.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/note_validator.dart';
+import 'package:labels/labels.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
@@ -85,17 +86,12 @@ class _ReceiveAdvancedSettingsState extends State<ReceiveAdvancedSettings> {
     super.dispose();
   }
 
-  String? _validate(String? value) =>
-      switch (NoteValidator.validate(value ?? '')) {
-        null => null,
-        NoteTooLong(:final maxLength) => context.loc.labelsErrorNoteTooLong(
-          maxLength,
-        ),
-        NoteForbiddenCharacter(:final character) =>
-          character.trim().isEmpty
-              ? context.loc.labelsErrorNoteForbiddenWhitespace
-              : context.loc.labelsErrorNoteForbiddenCharacter(character),
-      };
+  String? _validate(String? value) {
+    final violation = NoteValidator.validate(value ?? '');
+    return violation == null
+        ? null
+        : mapNoteViolationToLabelFailure(violation).toTranslated(context);
+  }
 
   void _changeMessage(String value) {
     setState(() => _messageError = _validate(value));

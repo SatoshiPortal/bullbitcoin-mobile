@@ -1,0 +1,94 @@
+{
+  "systemLabelSwaps": "تعویض",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "تغییر خودکار",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "خرج کردن خود",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "خرید",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "فروش",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "برای حذف \"{label} لطفا دوباره امتحان کنید.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "bip329LabelsImportSuccessPlural": "{count} برچسب های وارداتی",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bip329LabelsImportSuccessSingular": "1 برچسب وارداتی",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "receiveEnterHere": "وارد اینجا شوید ...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "برچسب های Import",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportSuccess": "برچسب ها با موفقیت",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "Save",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "برچسب های BIP30",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "برچسب های BIP/30 Import/Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "برچسب های صادرات",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsDescription": "واردات یا صادرات کیف پول با استفاده از فرمت استاندارد BIP/30.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "این یادداشت برای گیرنده‌ی کد QR یا invoice شما قابل مشاهده خواهد بود.",
+  "labelsErrorNoteTooLong": "یادداشت باید حداکثر {max} نویسه باشد",
+  "labelsErrorNoteForbiddenCharacter": "یادداشت نمی‌تواند نویسه {character} را داشته باشد",
+  "labelsErrorFileTooLarge": "این فایل خیلی بزرگ است. فایل‌های برچسب باید کمتر از {max} باشند.",
+  "labelsErrorFileUnreadable": "این فایل به نظر یک فایل برچسب BIP-329 نمی‌رسد. بررسی کنید فایل درست را انتخاب کرده باشید.",
+  "labelsErrorFileEmpty": "این فایل هیچ برچسبی برای وارد کردن ندارد.",
+  "labelsErrorExportFailed": "برچسب‌های شما ذخیره نشد. لطفاً دوباره تلاش کنید.",
+  "labelsErrorFileReservedName": "این فایل از نام برچسبی استفاده می‌کند که برنامه آن را رزرو کرده است. نام را در فایل تغییر دهید و دوباره تلاش کنید.",
+  "labelsErrorNoteForbiddenWhitespace": "یادداشت نمی‌تواند شامل خط جدید یا تب باشد",
+  "labelsErrorFileInvalidEntry": "برخی از ورودی‌های این فایل خوانده نشد. فایل را بررسی کنید و دوباره تلاش کنید."
+}

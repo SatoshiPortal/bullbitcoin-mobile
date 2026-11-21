@@ -454,10 +454,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE přenos",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1309,10 +1305,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "Čeština",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "Otevřete kameru",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1569,15 +1561,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} štítky importované",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "Odhlásit se",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1667,10 +1650,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "Koupit",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "Adresa příjemce",
   "@sendRecipientAddress": {
@@ -1904,10 +1883,6 @@
   "swapProgressRefundInProgress": "Probíhá vrácení swapu",
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
-  },
-  "bip329LabelsImportSuccessSingular": "1 dovážené etikety",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "Biller Jméno",
   "@payBillerName": {
@@ -2605,10 +2580,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "Prodej",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "Upozornění na vysoké poplatky",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2656,15 +2627,6 @@
   "sellPriceWillRefreshIn": "Cena bude obnovena v ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "Nelze odstranit \"{label}\". Prosím, zkuste to znovu.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "Ověřit identitu",
   "@buyVerifyIdentity": {
@@ -3340,10 +3302,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "Importní štítky",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "Všechny soubory nahrané úspěšně",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3941,10 +3899,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Čeština",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4060,10 +4014,6 @@
   "exchangeKycLevelLight": "Čeština",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Štítky úspěšně exportovány",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Pomalu možnost, ale lze provést prostřednictvím internetového bankovnictví (3-4 pracovních dnů)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5777,10 +5727,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Štítky",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Vyberte peněženku Bitcoin *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6791,10 +6737,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "BIP329 Štítky Import / Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "Skenovat QR kód zobrazený v peněžence Bull",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -7155,10 +7097,6 @@
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
   },
-  "bip329LabelsExportButton": "Export štítků",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "Vybrané jméno Biller",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7429,10 +7367,6 @@
   "payFee": "Čeština",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "Vlastní špendlík",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "Při swapu došlo k chybě. Probíhá vrácení vašich prostředků.",
   "@swapProgressRefundMessage": {
@@ -7936,10 +7870,6 @@
   "importMnemonicImporting": "Importovat...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "Import nebo export peněženky pomocí standardu BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Nejste si jisti a potřebujete více času se dozvědět o postupech zabezpečení zálohování.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -9856,7 +9786,6 @@
   "priceFailedToLoad": "Nepodařilo se načíst cenu",
   "statusScreenTryAgain": "Zkusit znovu",
   "statusScreenContinue": "Pokračovat",
-  "noteVisibleToSenderNotice": "Tato poznámka bude viditelná příjemci vašeho QR kódu nebo faktury.",
   "viewerAddressTab": "Adresa",
   "viewerPaymentUriTab": "Platební URI",
   "settingsErrorReportingTitle": "Hlášení chyb",
@@ -10003,15 +9932,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Tento typ souboru není podporován. Vyberte jiný.",
   "exchangeSettingsErrorDocumentUnreadable": "Tento soubor se nepodařilo přečíst. Vyberte jiný.",
   "exchangeSettingsErrorUploadingDocument": "Dokument se nepodařilo nahrát. Zkuste to prosím znovu.",
-  "labelsErrorNoteTooLong": "Poznámka nesmí být delší než {max} znaků",
-  "labelsErrorNoteForbiddenCharacter": "Poznámka nesmí obsahovat znak {character}",
-  "labelsErrorFileTooLarge": "Tento soubor je příliš velký. Soubory se štítky musí být menší než {max}.",
-  "labelsErrorFileUnreadable": "Nevypadá to jako soubor se štítky BIP-329. Zkontrolujte, zda jste vybrali správný soubor.",
-  "labelsErrorFileEmpty": "Tento soubor neobsahuje žádné štítky k importu.",
-  "labelsErrorExportFailed": "Vaše štítky se nepodařilo uložit. Zkuste to prosím znovu.",
-  "labelsErrorFileReservedName": "Tento soubor používá název štítku vyhrazený aplikací. Přejmenujte jej v souboru a zkuste to znovu.",
-  "labelsErrorNoteForbiddenWhitespace": "Poznámka nesmí obsahovat konce řádků ani tabulátory",
-  "labelsErrorFileInvalidEntry": "Některé položky v tomto souboru se nepodařilo přečíst. Zkontrolujte soubor a zkuste to znovu.",
   "recipientsErrorLoadFailed": "Vaše příjemce se nepodařilo načíst. Zkuste to prosím znovu.",
   "recipientsErrorSaveFailed": "Tohoto příjemce se nepodařilo uložit. Zkontrolujte údaje a zkuste to znovu.",
   "recipientsErrorSinpeLookupFailed": "Toto telefonní číslo se nepodařilo ověřit. Zkontrolujte je a zkuste to znovu.",

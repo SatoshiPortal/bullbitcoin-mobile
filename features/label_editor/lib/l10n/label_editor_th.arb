@@ -1,0 +1,94 @@
+{
+  "systemLabelAutoSwap": "ข้อมูลอัตโนมัติ",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "คะแนน",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} เครื่องหมายนําเข้า",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "ซื้อ",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "1 ป้ายนําเข้า",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "ขาย",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "ไม่สามารถลบป้ายชื่อ \"{label}\" ได้ กรุณาลองอีกครั้ง.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "ใส่ที่นี่.",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "ป้าย",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "ชําระเงิน",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "ส่งออก",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "บันทึก",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 ป้าย",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 นําเข้าและส่งออก",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "ป้ายส่งออก",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "ประหยัดเวลา",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "การนําเข้าหรือฉลากส่งออกโดยใช้รูปแบบ BIP329.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "โน้ตนี้จะแสดงให้ผู้รับ QR หรือใบแจ้งหนี้ของคุณเห็น",
+  "labelsErrorNoteTooLong": "หมายเหตุต้องมีความยาวไม่เกิน {max} ตัวอักษร",
+  "labelsErrorNoteForbiddenCharacter": "หมายเหตุไม่สามารถมีอักขระ {character} ได้",
+  "labelsErrorFileTooLarge": "ไฟล์นี้ใหญ่เกินไป ไฟล์ป้ายกำกับต้องมีขนาดน้อยกว่า {max}",
+  "labelsErrorFileUnreadable": "ไฟล์นี้ดูเหมือนจะไม่ใช่ไฟล์ป้ายกำกับ BIP-329 โปรดตรวจสอบว่าคุณเลือกไฟล์ถูกต้อง",
+  "labelsErrorFileEmpty": "ไฟล์นี้ไม่มีป้ายกำกับให้นำเข้า",
+  "labelsErrorExportFailed": "ไม่สามารถบันทึกป้ายกำกับของคุณได้ โปรดลองอีกครั้ง",
+  "labelsErrorFileReservedName": "ไฟล์นี้ใช้ชื่อป้ายกำกับที่แอปสงวนไว้ โปรดเปลี่ยนชื่อในไฟล์แล้วลองอีกครั้ง",
+  "labelsErrorNoteForbiddenWhitespace": "หมายเหตุไม่สามารถมีการขึ้นบรรทัดใหม่หรือแท็บได้",
+  "labelsErrorFileInvalidEntry": "ไม่สามารถอ่านบางรายการในไฟล์นี้ได้ โปรดตรวจสอบไฟล์แล้วลองอีกครั้ง"
+}

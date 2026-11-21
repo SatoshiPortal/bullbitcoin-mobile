@@ -1,0 +1,65 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "bip329LabelsImportSuccessPlural": "{count} етикети импортирани",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bip329LabelsImportSuccessSingular": "1 етикет импортиран",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "receiveEnterHere": "Въведете тук...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "Импортиране на етикети",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportSuccess": "Етикети експортирани успешно",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "Запази",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "Индекс: [X7X]",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "Етикети BIP329",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsExportButton": "Експортиране на етикети",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsDescription": "Импорт/Експорт на етикети BIP329",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "Тази бележка ще бъде видима за получателя на вашия QR код или фактура.",
+  "systemLabelSwaps": "Обмени",
+  "systemLabelAutoSwap": "Автообмен",
+  "systemLabelPayjoin": "Payjoin",
+  "systemLabelSelfSpend": "Собствен разход",
+  "systemLabelExchangeBuy": "Купуване",
+  "systemLabelExchangeSell": "Продаване",
+  "labelDeleteFailed": "Неуспешно изтриване на „{label}“. Моля, опитайте отново.",
+  "labelsErrorNoteTooLong": "Бележката не може да е по-дълга от {max} знака",
+  "labelsErrorNoteForbiddenCharacter": "Бележката не може да съдържа знака {character}",
+  "labelsErrorFileTooLarge": "Този файл е твърде голям. Файловете с етикети трябва да са под {max}.",
+  "labelsErrorFileUnreadable": "Това не изглежда като файл с етикети BIP-329. Проверете дали сте избрали правилния файл.",
+  "labelsErrorFileEmpty": "Този файл не съдържа етикети за импортиране.",
+  "labelsErrorExportFailed": "Етикетите ви не можаха да бъдат запазени. Опитайте отново.",
+  "labelsErrorFileReservedName": "Този файл използва име на етикет, запазено от приложението. Преименувайте го във файла и опитайте отново.",
+  "labelsErrorNoteForbiddenWhitespace": "Бележката не може да съдържа нови редове или табулации",
+  "labelsErrorFileInvalidEntry": "Някои записи в този файл не можаха да бъдат прочетени. Проверете файла и опитайте отново."
+}

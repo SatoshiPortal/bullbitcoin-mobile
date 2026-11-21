@@ -20,7 +20,7 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
@@ -47,6 +47,7 @@ import 'package:primitives/primitives.dart'
         Ok,
         Result,
         Sats;
+import 'package:bb_mobile/features/sell/domain/usecases/store_sell_transaction_label_usecase.dart';
 
 class _MockCreateSellOrder extends Mock implements CreateSellOrderUsecase {}
 
@@ -144,7 +145,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.calculateSellLiquidFeesUsecase,
     required super.loadSellWalletUtxosUsecase,
     required super.readSellPayinTxidUsecase,
-    required super.labelsFacade,
+    required super.storeSellTransactionLabel,
     required super.labelCompletedSellOrderUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -377,7 +378,7 @@ void main() {
       calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
       loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
       readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
-      labelsFacade: labelsFacade,
+      storeSellTransactionLabel: StoreSellTransactionLabelUsecase(labelsFacade),
       labelCompletedSellOrderUsecase: labelCompletedSellOrder,
       previewBitcoinFeeUsecase: previewBitcoinFee,
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
@@ -1521,7 +1522,9 @@ void main() {
           calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
           loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
           readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
-          labelsFacade: labelsFacade,
+          storeSellTransactionLabel: StoreSellTransactionLabelUsecase(
+            labelsFacade,
+          ),
           labelCompletedSellOrderUsecase: labelCompletedSellOrder,
           previewBitcoinFeeUsecase: previewBitcoinFee,
           previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
