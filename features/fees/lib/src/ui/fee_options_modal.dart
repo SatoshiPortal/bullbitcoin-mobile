@@ -1,5 +1,4 @@
 import 'package:fees/fees.dart';
-import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 
 import 'custom_fee_list_item.dart';
 import 'fee_modal_contract.dart';
@@ -252,7 +251,7 @@ BullSelectableListItem _presetItem({
   }
   final fiatPart =
       exchangeRate != null && exchangeRate > 0 && fiatCurrencyCode.isNotEmpty
-      ? ' (~ ${ConvertAmount.satsToFiat(previewFeeSat, exchangeRate)} '
+      ? ' (~ ${ui.satsToFiat(previewFeeSat, exchangeRate)} '
             '$fiatCurrencyCode)'
       : '';
   return BullSelectableListItem(
@@ -260,7 +259,7 @@ BullSelectableListItem _presetItem({
     title: title,
     subtitle1: description,
     subtitle2:
-        '$rateLabel ~ ${FormatAmount.satsApprox(previewFeeSat)} '
+        '$rateLabel ~ ${ui.formatApproximateSats(previewFeeSat)} '
         '${ui.label(context, FeeLabel.sendSats)}$fiatPart',
   );
 }
