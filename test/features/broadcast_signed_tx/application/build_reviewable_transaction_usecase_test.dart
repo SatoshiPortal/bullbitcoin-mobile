@@ -34,14 +34,17 @@ void main() {
   late _MockElectrum electrum;
   late BuildReviewableTransactionUsecase usecase;
 
+  setUpAll(() => registerFallbackValue(BitcoinNetwork.mainnet));
+
   setUp(() {
     electrum = _MockElectrum();
     usecase = BuildReviewableTransactionUsecase(electrum: electrum);
   });
 
   Future<Result<ReviewableTransaction, TransactionReviewFailure>> review(
-    BitcoinTx tx,
-  ) => usecase.execute(tx, network: Future.value(BitcoinNetwork.mainnet));
+    BitcoinTx tx, {
+    BitcoinNetwork? network = BitcoinNetwork.mainnet,
+  }) => usecase.execute(tx, network: Future.value(network));
 
   test('maps Electrum lookup failures to the review failure family', () async {
     when(
@@ -116,5 +119,70 @@ void main() {
         (result as Ok<ReviewableTransaction, TransactionReviewFailure>).value;
     expect(reviewable.resolvedInputs.single.valueSat, 4200);
     expect(reviewable.resolvedInputs.single.address, startsWith('bc1q'));
+  });
+
+  test('an unavailable Bitcoin network prevents any parent lookup', () async {
+    when(
+      () => electrum.fetchBitcoinTransaction(
+        txid: 'parenttxid',
+        network: any(named: 'network'),
+      ),
+    ).thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
+
+    final result = await review(_spendingParent(0), network: null);
+
+    expect(
+      result,
+      isA<Err<ReviewableTransaction, TransactionReviewFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TransactionReviewNoServersFailure>(),
+      ),
+    );
+    verifyZeroInteractions(electrum);
+  });
+
+  test('every parent lookup uses the captured review network', () async {
+    final parent = _transaction(
+      txid: 'parenttxid',
+      outputs: [
+        TxVout(
+          value: BigInt.from(4200),
+          n: 0,
+          scriptPubKey: TxScriptSig(bytes: [0, 20, ...List.filled(20, 0x22)]),
+        ),
+      ],
+    );
+    when(
+      () => electrum.fetchBitcoinTransaction(
+        txid: 'parenttxid',
+        network: BitcoinNetwork.testnet,
+      ),
+    ).thenAnswer((_) async => Ok(parent));
+
+    final result = await review(
+      _transaction(
+        txid: 'spenttxid',
+        inputs: [
+          _spendingParent(0).inputs.single,
+          _spendingParent(0).inputs.single,
+        ],
+      ),
+      network: BitcoinNetwork.testnet,
+    );
+
+    final transaction =
+        (result as Ok<ReviewableTransaction, TransactionReviewFailure>).value;
+    expect(
+      transaction.resolvedInputs.map((input) => input.address),
+      everyElement(startsWith('tb1q')),
+    );
+    verify(
+      () => electrum.fetchBitcoinTransaction(
+        txid: 'parenttxid',
+        network: BitcoinNetwork.testnet,
+      ),
+    ).called(2);
+    verifyNoMoreInteractions(electrum);
   });
 }

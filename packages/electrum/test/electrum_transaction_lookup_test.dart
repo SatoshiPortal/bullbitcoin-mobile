@@ -105,4 +105,21 @@ void main() {
       ),
     );
   });
+
+  test(
+    'an unsupported Bitcoin network is rejected before server selection',
+    () async {
+      expect(
+        await electrum.fetchBitcoinTransaction(
+          txid: txid,
+          network: BitcoinNetwork.signet,
+        ),
+        isA<Err<BitcoinTx, ElectrumFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ElectrumUnsupportedNetworkFailure>(),
+        ),
+      );
+    },
+  );
 }
