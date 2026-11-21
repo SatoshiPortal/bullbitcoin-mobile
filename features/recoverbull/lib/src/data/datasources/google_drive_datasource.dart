@@ -1,9 +1,6 @@
 import 'package:http/http.dart' as http;
 
-import '../mappers/encrypted_vault_mapper.dart';
-
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bull_logger/bull_logger.dart';
 
@@ -304,12 +301,8 @@ class GoogleDriveAppDatasource {
     await _connectedApi.files.delete(fileId);
   }
 
-  Future<void> store(String content) async {
+  Future<void> store(String filename, List<int> bytes) async {
     _checkConnection();
-    final vault = EncryptedVaultMapper.parse(content);
-    final filename = vault.filename;
-    final jsonVault = EncryptedVaultMapper.fromEntity(vault).toFile();
-
     final file = drive.File()
       ..name = filename
       ..mimeType = 'application/json'
@@ -317,10 +310,7 @@ class GoogleDriveAppDatasource {
 
     await _connectedApi.files.create(
       file,
-      uploadMedia: drive.Media(
-        Stream.value(utf8.encode(jsonVault)),
-        utf8.encode(jsonVault).length,
-      ),
+      uploadMedia: drive.Media(Stream.value(bytes), bytes.length),
     );
   }
 }
