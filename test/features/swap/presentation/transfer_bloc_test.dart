@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;

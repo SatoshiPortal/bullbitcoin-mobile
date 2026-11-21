@@ -27,7 +27,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:novlang/novlang.dart' show NovlangPolicy;
 
 class _Wallet extends MockBloc<WalletEvent, WalletState>
@@ -180,7 +180,7 @@ class ArkShellVisualFixtures {
       isDefault: true,
       masterFingerprint: '00000000',
       xpubFingerprint: '00000000',
-      scriptType: wallet_model.ScriptType.bip84,
+      scriptType: ScriptType.bip84,
       xpub: publicKey,
       externalPublicDescriptor: 'wpkh($publicKey)',
       internalPublicDescriptor: 'wpkh($publicKey)',

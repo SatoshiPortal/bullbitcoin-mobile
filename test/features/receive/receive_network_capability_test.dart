@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';

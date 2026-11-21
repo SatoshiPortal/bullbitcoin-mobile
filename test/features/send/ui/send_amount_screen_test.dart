@@ -1,5 +1,5 @@
 import 'package:bull_pricer/bull_pricer.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 import 'dart:async';

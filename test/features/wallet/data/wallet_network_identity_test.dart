@@ -29,13 +29,13 @@ void main() {
       final origin = WalletMetadataService.encodeOrigin(
         fingerprint: 'aabbccdd',
         network: network,
-        scriptType: app.ScriptType.bip84,
+        scriptType: ScriptType.bip84,
       );
       final wallet = app.Wallet(
         origin: origin,
         network: network,
         xpubFingerprint: 'aabbccdd',
-        scriptType: app.ScriptType.bip84,
+        scriptType: ScriptType.bip84,
         xpub: 'public',
         externalPublicDescriptor: 'public-receive',
         internalPublicDescriptor: 'public-change',
@@ -49,7 +49,7 @@ void main() {
         WalletMetadataService.encodeId(
           fingerprint: 'aabbccdd',
           network: network,
-          scriptType: app.ScriptType.bip84,
+          scriptType: ScriptType.bip84,
         ),
       );
     });
@@ -76,7 +76,7 @@ void main() {
       final id = WalletMetadataService.encodeId(
         fingerprint: 'aabbccdd',
         network: app.Network.bitcoinRegtest,
-        scriptType: app.ScriptType.bip84,
+        scriptType: ScriptType.bip84,
       );
       expect(id, '$origin:regtest');
       expect(WalletMetadataService.originFromId(id), origin);
@@ -84,7 +84,7 @@ void main() {
         WalletMetadataService.encodeId(
           fingerprint: 'aabbccdd',
           network: app.Network.bitcoinTestnet,
-          scriptType: app.ScriptType.bip84,
+          scriptType: ScriptType.bip84,
         ),
         origin,
       );

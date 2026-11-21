@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show ScriptType;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';

@@ -2,7 +2,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, ScriptType;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

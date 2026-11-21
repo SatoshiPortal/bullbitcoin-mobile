@@ -3,7 +3,7 @@ import 'package:bip32_keys/bip32_keys.dart'
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 

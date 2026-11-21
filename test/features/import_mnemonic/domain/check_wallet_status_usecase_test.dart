@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Ok;
+    show BitcoinNetwork, BitcoinUnit, Ok, ScriptType;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

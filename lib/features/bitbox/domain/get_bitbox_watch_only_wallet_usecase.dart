@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart' show Err, NetworkEnv, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show Err, NetworkEnv, Ok, Result, ScriptType;
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';

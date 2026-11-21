@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show ScriptType;
+
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';

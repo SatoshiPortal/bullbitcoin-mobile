@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show ScriptType;
+
 import '../../../../fake_index_price_reader.dart';
 
 import 'dart:io';

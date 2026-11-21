@@ -22,7 +22,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:sync/sync.dart'
     show
         InputReservation,

@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:swaps/swaps.dart';
 
 class _Receive extends Mock implements ReceiveBloc {}

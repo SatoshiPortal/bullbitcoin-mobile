@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok;
+    show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';

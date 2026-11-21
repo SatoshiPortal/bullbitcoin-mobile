@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exceptio
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    show ScriptType, UnsupportedNetworkException;
+    show UnsupportedNetworkException;
 
 typedef MnemonicScan = ({BigInt satoshis, int transactions});
 
