@@ -6,5 +6,10 @@ class ReadPriceCurrencyUsecase {
 
   const ReadPriceCurrencyUsecase(this._preferences);
 
-  Future<String> execute() => _preferences.readCurrency();
+  Future<String> execute() => _preferences.readCurrency().then(
+    (result) => result.fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    ),
+  );
 }

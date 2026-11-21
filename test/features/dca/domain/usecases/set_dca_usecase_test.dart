@@ -22,7 +22,7 @@ class MockExchangeOrderRepository extends Mock
 
 class MockWalletRepository extends Mock implements WalletRepository {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockWalletAddressRepository extends Mock
     implements WalletAddressRepository {}
@@ -110,7 +110,7 @@ void main() {
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
     );
-    when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
+    when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
 
   DcaFailure failureOf(Result<Dca, DcaFailure> result) {
@@ -121,7 +121,8 @@ void main() {
   group('SetDcaUsecase', () {
     test('regtest refuses before wallet or account access', () async {
       when(() => settings.fetch()).thenAnswer(
-        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+        (_) async =>
+            Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
       when(() => mainnetUsers.getUserSummary())
           .thenAnswer((_) async => const Err(ExchangeUserUnexpectedFailure()));

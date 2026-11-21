@@ -28,7 +28,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class _MockSetEnvironmentUsecase extends Mock
     implements SetEnvironmentUsecase {}

@@ -28,7 +28,7 @@ class FundExchangeLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<ExchangeEnvironmentPort>(
       () => SettingsExchangeEnvironmentAdapter(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
       ),
     );
 

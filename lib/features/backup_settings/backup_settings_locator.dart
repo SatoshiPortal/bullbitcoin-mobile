@@ -12,7 +12,7 @@ class BackupSettingsLocator {
       () => BackupSettingsCubit(
         ReadBackupStatusUsecase(
           locator<GetWalletsUsecase>(),
-          locator<SettingsRepository>(),
+          locator<Preferences>(),
           locator<RecoverBullFacade>().status,
         ),
       ),

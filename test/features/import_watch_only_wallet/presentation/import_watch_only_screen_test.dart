@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -31,7 +32,7 @@ void main() {
         final settings = _Settings();
         final importer = _Xpub();
         when(settings.readActiveEnvironment)
-            .thenAnswer((_) async => Environment.testnet);
+            .thenAnswer((_) async => Ok(Environment.testnet));
         locator.registerSingleton<ActiveEnvironmentReader>(settings);
         locator.registerSingleton<ImportWatchOnlyXpubUsecase>(importer);
         locator.registerSingleton<ImportWatchOnlyDescriptorUsecase>(
@@ -54,7 +55,7 @@ void main() {
         // submission to keep testing a real mismatch after regtest support.
         if (!labelCorrection) {
           when(settings.readActiveEnvironment)
-              .thenAnswer((_) async => Environment.mainnet);
+              .thenAnswer((_) async => Ok(Environment.mainnet));
         }
         for (var attempt = 0; attempt < 2; attempt++) {
           final button = find.text(AppLocalizationsEn().importWatchOnlyImport);

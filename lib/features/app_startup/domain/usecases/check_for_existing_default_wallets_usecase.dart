@@ -18,7 +18,7 @@ import 'package:primitives/primitives.dart'
 import 'package:secrets/secrets.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletRepository _walletRepository;
   final Secrets _secrets;
 
@@ -43,7 +43,10 @@ class CheckForExistingDefaultWalletsUsecase {
   }
 
   Future<Result<bool, AppStartupFailure>> _check() async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final environment = settings.environment;
 
     List<Wallet> defaultWallets;

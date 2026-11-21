@@ -56,12 +56,14 @@ BbxApiUserRepository _users(Object error) => BbxApiUserRepository(
   ),
 );
 
-class _Settings extends Fake implements SettingsRepository {
+class _Settings extends Fake implements Preferences {
   @override
-  Future<SettingsEntity> fetch() async => const SettingsEntity(
-    environment: Environment.testnet,
-    bitcoinUnit: BitcoinUnit.btc,
-    currencyCode: 'CAD',
+  Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
+    const SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'CAD',
+    ),
   );
 }
 

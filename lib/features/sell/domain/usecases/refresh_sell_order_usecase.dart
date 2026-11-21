@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 class RefreshSellOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   RefreshSellOrderUsecase({
     required this._mainnetExchangeOrderRepository,
@@ -27,7 +27,10 @@ class RefreshSellOrderUsecase {
     bool isRecipientPayout = false,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,

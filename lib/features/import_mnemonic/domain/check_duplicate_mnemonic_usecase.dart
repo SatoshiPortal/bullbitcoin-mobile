@@ -12,7 +12,7 @@ class CheckDuplicateMnemonicUsecase {
   final Secrets _secrets;
 
   final WalletMetadataDatasource _metadata;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   int _invalidCount = 0;
 
   CheckDuplicateMnemonicUsecase({
@@ -58,7 +58,10 @@ class CheckDuplicateMnemonicUsecase {
         case Err(:final failure):
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
         case Ok(value: final secret?):
-          final settings = await _settings.fetch();
+          final settings = (await _settings.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
           final network = Network.fromEnvironment(
             environment: settings.environment.networkEnv,
             isLiquid: false,

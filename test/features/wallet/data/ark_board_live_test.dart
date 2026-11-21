@@ -148,7 +148,7 @@ void main() {
         arkFundingDatabasePath: '${appDirectory.path}/ark-funding.sqlite',
         initializeArkFunding: true,
       );
-      final settings = locator<SettingsRepository>();
+      final settings = locator<Preferences>();
       _ok(await settings.setIsSuperuser(true), 'superuser');
       _ok(await settings.setIsDevMode(true), 'developer mode');
       _ok(await settings.setEnvironment(Environment.regtest), 'environment');

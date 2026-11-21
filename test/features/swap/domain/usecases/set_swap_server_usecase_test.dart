@@ -15,7 +15,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockSwapServerSettingRepository extends Mock
     implements SwapServerSettingRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSwapEngineSwitcher extends Mock implements SwapEngineSwitcher {}
 
@@ -36,10 +36,12 @@ void main() {
 
   void stubEnvironment(Environment environment) =>
       when(() => settingsRepository.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: environment,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          SettingsEntity(
+            environment: environment,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
 

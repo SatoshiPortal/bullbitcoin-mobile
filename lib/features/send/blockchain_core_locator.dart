@@ -47,7 +47,7 @@ class BlockchainLocator {
       () => BroadcastBitcoinTransactionUsecase(
         wallet: locator<WalletFacade>(),
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletUtxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
@@ -56,7 +56,7 @@ class BlockchainLocator {
       () => BroadcastLiquidTransactionUsecase(
         wallet: locator<WalletFacade>(),
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
   }

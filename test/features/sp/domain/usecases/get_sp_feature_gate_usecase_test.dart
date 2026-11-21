@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show Ok;
+
 import '../../sp_fakes.dart';
 
 import 'package:primitives/primitives.dart' show BitcoinUnit, BitcoinNetwork;
@@ -6,7 +8,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecas
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 SettingsEntity _settings({bool? isSuperuser, bool? isDevModeEnabled}) =>
     const SettingsEntity(
@@ -32,9 +34,8 @@ void main() {
 
   Future<bool> gateWith({bool? isSuperuser, bool? isDevModeEnabled}) {
     when(() => settingsRepo.fetch()).thenAnswer(
-      (_) async => _settings(
-        isSuperuser: isSuperuser,
-        isDevModeEnabled: isDevModeEnabled,
+      (_) async => Ok(
+        _settings(isSuperuser: isSuperuser, isDevModeEnabled: isDevModeEnabled),
       ),
     );
     return usecase.execute();

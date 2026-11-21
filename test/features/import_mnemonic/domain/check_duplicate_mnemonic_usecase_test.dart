@@ -14,7 +14,7 @@ import 'package:secrets/testing.dart';
 /// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Row extends Mock implements WalletMetadataModel {}
 
@@ -46,10 +46,12 @@ void main() {
     final settings = _Settings();
     when(() => metadata.fetchAll()).thenAnswer((_) async => []);
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     usecase = CheckDuplicateMnemonicUsecase(

@@ -33,7 +33,7 @@ class AppStartupLocator {
     locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
       () => CheckForExistingDefaultWalletsUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         secrets: locator<Secrets>(),
       ),
     );
@@ -47,7 +47,7 @@ class AppStartupLocator {
       () => InitializeRequiredTorUsecase(
         locator<AppStartupWalletPort>(),
         locator<EnsureTorReadyUsecase>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
         locator<Tor>(),
       ),
     );

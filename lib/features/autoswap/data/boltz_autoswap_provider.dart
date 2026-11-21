@@ -22,7 +22,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final RecordPendingSwapLockupUsecase _recordPendingLockup;
   final DropPendingSwapLockupUsecase _dropPendingLockup;
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final GetReceiveAddressUsecase _getReceiveAddress;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
@@ -45,7 +45,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   @override
   Future<Result<String, AutoswapFailure>> execute(AutoSwap settings) async {
     try {
-      final environment = (await _settingsRepository.fetch()).environment;
+      final environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(environment: environment)) {
         case Ok(:final value):

@@ -13,7 +13,11 @@ class GetExternalTorProxyStatusUsecase {
 
   Future<ExternalTorProxyStatus> execute() async {
     try {
-      final settings = await _settingsRepository.readTorProxyPreferences();
+      final settings = (await _settingsRepository.readTorProxyPreferences())
+          .fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
       if (!settings.useTorProxy) return ExternalTorProxyStatus.disabled;
       final TorProxyEndpoint endpoint;
       try {

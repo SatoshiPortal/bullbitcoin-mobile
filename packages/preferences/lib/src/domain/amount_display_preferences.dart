@@ -1,4 +1,6 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Result;
+
+import 'preferences_failure.dart';
 
 typedef AmountDisplayPreferences = ({
   BitcoinUnit bitcoinUnit,
@@ -7,6 +9,7 @@ typedef AmountDisplayPreferences = ({
 });
 
 abstract interface class AmountDisplayPreferencesReader {
-  /// An unavailable preference masks amounts until a valid value arrives.
-  Stream<AmountDisplayPreferences?> watchDisplayPreferences();
+  /// A failure masks amounts until a valid value arrives; observation continues.
+  Stream<Result<AmountDisplayPreferences, PreferencesFailure>>
+  watchDisplayPreferences();
 }

@@ -1,9 +1,10 @@
+import 'package:preferences/preferences.dart' show Preferences;
+
 export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
 
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
@@ -60,11 +61,12 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   }
   final sqlite = SqliteDatabase();
   resources.onClose(sqlite.close);
-  final settings = SettingsRepositoryImpl(
-    settingsDatasource: PreferencesDao(sqlite),
-  );
+  final settings = Preferences.open(database: sqlite);
   resources.onClose(settings.close);
-  final preferences = await settings.fetch();
+  final preferences = (await settings.fetch()).fold(
+    (value) => value,
+    (failure) => throw Exception('Preferences read failed'),
+  );
   final torLocator = GetIt.asNewInstance();
   resources.onClose(torLocator.reset);
   await TorLocator.registerDatasources(torLocator);

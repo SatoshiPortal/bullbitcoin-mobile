@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 /// one. Skips silently when the user is signed out or the currency is not
 /// offered on the exchange — the app-side setting is already saved either way.
 class SyncExchangeCurrencyUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
 
@@ -31,7 +31,10 @@ class SyncExchangeCurrencyUsecase {
 
     final Environment environment;
     try {
-      environment = (await _settingsRepository.fetch()).environment;
+      environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
     } on Error {
       rethrow;
     } catch (e, st) {

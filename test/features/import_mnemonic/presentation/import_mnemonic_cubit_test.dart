@@ -22,7 +22,7 @@ class MockWallet extends Mock implements Wallet {}
 
 class _MockMetadata extends Mock implements WalletMetadataDatasource {}
 
-class _MockSettings extends Mock implements SettingsRepository {}
+class _MockSettings extends Mock implements Preferences {}
 
 class MockImportWalletUsecase extends Mock implements ImportWalletUsecase {}
 
@@ -35,7 +35,7 @@ class MockCheckDuplicateMnemonicUsecase extends Mock
 
 class MockMetadata extends Mock implements WalletMetadataDatasource {}
 
-class MockSettings extends Mock implements SettingsRepository {}
+class MockSettings extends Mock implements Preferences {}
 
 void main() {
   late MockImportWalletUsecase importWallet;
@@ -74,10 +74,12 @@ void main() {
     when(metadata.fetchAll).thenAnswer((_) async => []);
     final settings = _MockSettings();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     final cubit = ImportMnemonicCubit(

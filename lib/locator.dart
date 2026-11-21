@@ -256,26 +256,25 @@ class AppLocator {
         bindings: (
           readDefaultNetwork: () =>
               locator<GetDefaultWalletNetworkUsecase>().execute(),
-          readEnvironment: () => SettingsNetworkBindings.readEnvironment(
-            locator<SettingsRepository>(),
-          ),
+          readEnvironment: () =>
+              SettingsNetworkBindings.readEnvironment(locator<Preferences>()),
           readMempoolEnvironment: SettingsEnvironmentAdapter(
-            settingsRepository: locator<SettingsRepository>(),
+            settingsRepository: locator<Preferences>(),
           ).getEnvironment,
           checkBitcoinFees: (network) =>
               FeesLocator.checkBitcoinFees(locator, network),
           isTorRequired: () => locator<WalletRepository>().isTorRequired(),
           readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
-            locator<SettingsRepository>(),
+            locator<Preferences>(),
           ),
           saveTorProxy: ({required enabled, required port}) =>
               SettingsNetworkBindings.saveTorProxy(
-                locator<SettingsRepository>(),
+                locator<Preferences>(),
                 enabled: enabled,
                 port: port,
               ),
           saveTorMode: (mode) =>
-              locator<SettingsRepository>().setTorTransportMode(mode),
+              locator<Preferences>().setTorTransportMode(mode),
         ),
       ),
     );

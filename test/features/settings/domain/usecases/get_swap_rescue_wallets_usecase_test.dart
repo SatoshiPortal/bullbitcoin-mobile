@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 void main() {
   late _MockWalletRepository wallets;
@@ -26,10 +26,12 @@ void main() {
       settingsRepository: settings,
     );
     when(() => settings.fetch()).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(

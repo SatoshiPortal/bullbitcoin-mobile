@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 
 import 'dart:io';
@@ -26,7 +27,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockBlockchain extends Mock implements BitcoinBlockchainRepository {}
 
-class _MockSettings extends Mock implements SettingsRepository {}
+class _MockSettings extends Mock implements Preferences {}
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
@@ -86,10 +87,12 @@ void main() {
     blockchain = _MockBlockchain();
     settings = _MockSettings();
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => blockchain.broadcastPsbt(any(), network: Network.bitcoinMainnet))

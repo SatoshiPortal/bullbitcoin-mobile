@@ -17,7 +17,7 @@ import 'package:bull_logger/bull_logger.dart';
 
 class BroadcastBitcoinTransactionUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchain;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletFacade? _wallet;
   final WalletUtxoRepository _walletUtxoRepository;
 
@@ -29,7 +29,10 @@ class BroadcastBitcoinTransactionUsecase {
   }) : _bitcoinBlockchain = bitcoinBlockchainRepository;
 
   Future<Network> captureNetwork() async => Network.fromEnvironment(
-    environment: (await _settingsRepository.fetch()).environment.networkEnv,
+    environment: ((await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    )).environment.networkEnv,
     isLiquid: false,
   );
 
@@ -83,7 +86,10 @@ class BroadcastBitcoinTransactionUsecase {
   /// Test networks broadcast only for a superuser in dev mode.
   Future<void> _authorize(Network network) async {
     if (network.isMainnet) return;
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
       log.warning(
         'Broadcast refused network=${network.name} category=authorization',

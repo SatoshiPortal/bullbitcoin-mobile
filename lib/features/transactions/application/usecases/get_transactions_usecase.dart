@@ -16,7 +16,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
 class GetTransactionsUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
@@ -42,7 +42,10 @@ class GetTransactionsUsecase {
     bool sync = false,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment;
       if (environment.networkEnv == NetworkEnv.regtest) {
         final transactions = await _walletTransactionRepository

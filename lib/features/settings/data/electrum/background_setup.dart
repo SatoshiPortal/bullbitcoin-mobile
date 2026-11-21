@@ -8,7 +8,7 @@ import 'package:sync/sync.dart' show WalletConnectionPort;
 
 WalletConnectionPort createBackgroundWalletConnections(
   SqliteDatabase sqlite,
-  SettingsRepository settings,
+  Preferences settings,
   Tor tor,
 ) {
   final preferences = EnvironmentAdapter(settingsRepository: () => settings);

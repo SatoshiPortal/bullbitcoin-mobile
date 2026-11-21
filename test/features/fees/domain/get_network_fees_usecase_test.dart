@@ -8,7 +8,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _Fees extends Mock implements FeesRepository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 void main() {
   test('captured regtest bypasses the current active environment', () async {

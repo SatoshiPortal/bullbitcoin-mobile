@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../../fake_index_price_reader.dart';
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+class _MockGetSettings extends Mock implements Preferences {}
 
 SettingsEntity _settings({Environment environment = Environment.mainnet}) =>
     SettingsEntity(
@@ -24,7 +24,7 @@ void main() {
 
   setUp(() {
     getSettings = _MockGetSettings();
-    when(getSettings.execute).thenAnswer((_) async => _settings());
+    when(getSettings.fetch).thenAnswer((_) async => Ok(_settings()));
     getIndexPrice = FakeIndexPriceReader(fiatAmount: 114214.20);
     usecase = GetPayExchangeRateUsecase(
       getSettingsUsecase: getSettings,
@@ -43,8 +43,9 @@ void main() {
   });
 
   test('asks the testnet price in the testnet environment', () async {
-    when(getSettings.execute)
-        .thenAnswer((_) async => _settings(environment: Environment.testnet));
+    when(
+      getSettings.fetch,
+    ).thenAnswer((_) async => Ok(_settings(environment: Environment.testnet)));
 
     expect(
       await usecase.execute(currencyCode: 'CAD'),
@@ -76,7 +77,7 @@ void main() {
   });
 
   test('a failed settings read is sanitized', () async {
-    when(getSettings.execute).thenThrow(Exception('storage locked'));
+    when(getSettings.fetch).thenThrow(Exception('storage locked'));
 
     final result = await usecase.execute(currencyCode: 'CAD');
 

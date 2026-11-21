@@ -31,7 +31,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:sync/sync.dart' show SyncReason;
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Swaps extends Mock implements SwapStore {}
 
@@ -148,10 +148,12 @@ void main() {
     );
     settings = _Settings();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     importer = ImportWalletUsecase(

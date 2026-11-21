@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../sp_fakes.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 void main() {
   for (final active in [Environment.mainnet, Environment.testnet]) {
@@ -20,12 +20,14 @@ void main() {
             : BitcoinNetwork.mainnet;
         final settings = _Settings();
         when(() => settings.fetch()).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: active,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-            isSuperuser: true,
-            isDevModeEnabled: true,
+          (_) async => Ok(
+            SettingsEntity(
+              environment: active,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+              isSuperuser: true,
+              isDevModeEnabled: true,
+            ),
           ),
         );
         final secret = MockGetSpSecretUsecase();

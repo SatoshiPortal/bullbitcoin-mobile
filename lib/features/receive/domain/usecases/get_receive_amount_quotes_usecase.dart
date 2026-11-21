@@ -5,7 +5,7 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart';
 
 class GetReceiveAmountQuotesUsecase {
-  final GetSettingsUsecase _settings;
+  final Preferences _settings;
   final IndexPricesReader _read;
 
   const GetReceiveAmountQuotesUsecase({
@@ -18,7 +18,10 @@ class GetReceiveAmountQuotesUsecase {
   execute() async {
     final SettingsEntity settings;
     try {
-      settings = await _settings.execute();
+      settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (error) {
       return Err(ReceiveUnexpectedFailure('$error'));
     }

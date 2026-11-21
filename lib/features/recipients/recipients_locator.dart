@@ -79,7 +79,7 @@ class RecipientsLocator {
     // One boundary for the throwing core settings read, shared by the four
     // recipient use-cases.
     locator.registerFactory<GetRecipientsEnvironmentUsecase>(
-      () => GetRecipientsEnvironmentUsecase(locator<SettingsRepository>()),
+      () => GetRecipientsEnvironmentUsecase(locator<Preferences>()),
     );
     locator.registerFactory<AddRecipientUsecase>(
       () => AddRecipientUsecase(
@@ -151,7 +151,7 @@ class RecipientsLocator {
     locator.registerLazySingleton<InteracSecurityDetailsRepository>(
       () => InteracSecurityDetailsRepositoryImpl(
         locator<RecipientsRepository>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
       ),
     );
     locator.registerLazySingleton<RecipientsFacade>(

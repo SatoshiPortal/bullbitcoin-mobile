@@ -245,7 +245,7 @@ class SendCubit extends Cubit<SendState>
   final StoreSendTransactionLabelUsecase _storeSendTransactionLabel;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
   final GetSendAmountQuotesUsecase? _getSendAmountQuotesUsecase;
@@ -2013,7 +2013,10 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> _loadLocalSendSettings() async {
-    final settings = await _getSettingsUsecase.execute();
+    final settings = (await _getSettingsUsecase.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
     final bitcoinUnit = settings.bitcoinUnit;
     final fiatCurrency = settings.currencyCode;
@@ -2258,7 +2261,12 @@ class SendCubit extends Cubit<SendState>
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
       final (settings, rate, payjoinEnabled) = await (
-        _getSettingsUsecase.execute(),
+        _getSettingsUsecase.fetch().then(
+          (result) => result.fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          ),
+        ),
         _exchangeRate(),
         _getSendPayjoinEnabledUsecase.execute(),
       ).wait;

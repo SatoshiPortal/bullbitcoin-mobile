@@ -107,7 +107,7 @@ class TransactionsLocator {
     );
     locator.registerFactory<GetTransactionsUsecase>(
       () => GetTransactionsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         swapStore: locator<SwapStore>(),
         payjoinSessions: locator<PayjoinSessions>(),
@@ -136,7 +136,7 @@ class TransactionsLocator {
 
     locator.registerFactory<GetTransactionsByTxIdUsecase>(
       () => GetTransactionsByTxIdUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         swapStore: locator<SwapStore>(),
         payjoinSessions: locator<PayjoinSessions>(),

@@ -17,7 +17,10 @@ class DefaultWalletsRouter {
     name: DefaultWalletsRoute.defaultWallets.name,
     path: DefaultWalletsRoute.defaultWallets.path,
     redirect: (context, state) async {
-      final settings = await locator<SettingsRepository>().fetch();
+      final settings = (await locator<Preferences>().fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return NetworkCapabilities.supports(
             BitcoinNetwork.fromName(settings.environment.name),
             NetworkCapability.exchange,

@@ -13,7 +13,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 
-class SettingsMock extends Mock implements SettingsRepository {}
+class SettingsMock extends Mock implements Preferences {}
 
 class WalletsMock extends Mock implements WalletRepository {}
 
@@ -23,12 +23,14 @@ void main() {
   test('SP feature gate must be closed while app is on regtest', () async {
     final settings = SettingsMock();
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-        isSuperuser: true,
-        isDevModeEnabled: true,
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ),
       ),
     );
     expect(

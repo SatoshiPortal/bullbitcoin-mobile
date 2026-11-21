@@ -21,7 +21,7 @@ import 'package:primitives/primitives.dart';
 // For payjoins, two transactions can exist for the same txId, just as with wallet transactions,
 // there can be an incoming and an outgoing transaction for the same payjoin and so the same txId.
 class GetTransactionsByTxIdUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
@@ -44,7 +44,10 @@ class GetTransactionsByTxIdUsecase {
     String txId,
   ) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment;
       if (environment.networkEnv == NetworkEnv.regtest) {
         final transactions = await _walletTransactionRepository

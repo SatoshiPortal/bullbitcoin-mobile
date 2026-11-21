@@ -13,7 +13,10 @@ class GetExchangeWebSettingsUsecase {
   @useResult
   Future<Result<ExchangeWebPreferences, ExchangeFailure>> execute() async {
     try {
-      final settings = await _preferences.readExchangeWebPreferences();
+      final settings = (await _preferences.readExchangeWebPreferences()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!exchangeNetworkAvailable(settings.environment)) {
         return const Err(ExchangeUnsupportedNetworkFailure());
       }

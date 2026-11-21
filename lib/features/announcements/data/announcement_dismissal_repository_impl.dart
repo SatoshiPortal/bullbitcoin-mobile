@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/announcements/data/models/announcement_dismissal_model.dart';
 import 'package:preferences/preferences.dart' show AnnouncementDismissals;
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/announcements/data/mappers/announcement_dismissal_mapper.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_dismissal.dart';
@@ -13,7 +14,10 @@ class AnnouncementDismissalRepositoryImpl
 
   @override
   Future<List<AnnouncementDismissal>> getDismissals() async {
-    final records = await _dismissals.read();
+    final records = (await _dismissals.read()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     // Drop rows whose id is unknown to this build (forward-compat downgrade).
     return records
         .map(
@@ -29,6 +33,9 @@ class AnnouncementDismissalRepositoryImpl
   @override
   Future<void> dismiss(AnnouncementId id) async {
     // Persist in UTC, per the `dismissed_announcements.dismissedAt` contract.
-    await _dismissals.dismiss(id.name, DateTime.now().toUtc());
+    final result = await _dismissals.dismiss(id.name, DateTime.now().toUtc());
+    if (result case Err()) {
+      throw Exception('Could not persist announcement dismissal');
+    }
   }
 }

@@ -18,7 +18,7 @@ import 'package:primitives/primitives.dart';
 
 import 'bbx_api_test_http.dart';
 
-class _SettingsRepository extends Mock implements SettingsRepository {}
+class _SettingsRepository extends Mock implements Preferences {}
 
 void main() {
   for (final environment in [Environment.mainnet, Environment.testnet]) {
@@ -29,16 +29,16 @@ void main() {
         addTearDown(locator.reset);
         final settings = _SettingsRepository();
         when(settings.fetch).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: environment,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
+          (_) async => Ok(
+            SettingsEntity(
+              environment: environment,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+            ),
           ),
         );
-        locator.registerSingleton<SettingsRepository>(settings);
-        locator.registerSingleton(
-          GetSettingsUsecase(settingsRepository: settings),
-        );
+        locator.registerSingleton<Preferences>(settings);
+        locator.registerSingleton(settings);
 
         final adapters = <(Environment, bool), FakeBbxHttp>{};
         for (final network in [Environment.mainnet, Environment.testnet]) {

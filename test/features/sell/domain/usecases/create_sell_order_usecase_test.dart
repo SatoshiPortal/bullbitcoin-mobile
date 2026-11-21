@@ -15,7 +15,7 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
@@ -43,7 +43,7 @@ void main() {
     final settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
 
     payjoinPolicy = _MockPayjoinPolicy();
     when(payjoinPolicy.load).thenAnswer(
@@ -114,10 +114,12 @@ void main() {
     final settings = _MockSettingsRepository();
     final testnet = _MockExchangeOrderRepository();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     final guarded = CreateSellOrderUsecase(

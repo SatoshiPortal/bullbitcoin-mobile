@@ -14,7 +14,7 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
   final WalletRepository _walletRepository;
   final Secrets _secrets;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   DeriveNextBip85MnemonicFromDefaultWalletUsecase({
     required this._bip85Repository,
@@ -32,7 +32,10 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
     try {
       // Derive from the default wallet of the environment the app is actually
       // running in: a hardcoded mainnet lookup finds no wallet on testnet.
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(
         onlyDefaults: true,

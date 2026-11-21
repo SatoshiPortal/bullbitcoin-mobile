@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,7 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_r
 import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 
-class SettingsMock extends Mock implements SettingsRepository {}
+class SettingsMock extends Mock implements Preferences {}
 
 class RecipientsMock extends Mock implements ExchangeRecipientRepository {}
 
@@ -20,10 +21,12 @@ void main() {
       final selected = environment == Environment.mainnet ? mainnet : testnet;
       final other = environment == Environment.mainnet ? testnet : mainnet;
       when(() => settings.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: environment,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+        (_) async => Ok(
+          SettingsEntity(
+            environment: environment,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       when(
@@ -84,12 +87,14 @@ void main() {
       final mainnet = RecipientsMock();
       final testnet = RecipientsMock();
       when(() => settings.fetch()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-          isSuperuser: true,
-          isDevModeEnabled: true,
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            isSuperuser: true,
+            isDevModeEnabled: true,
+          ),
         ),
       );
       when(
@@ -129,12 +134,14 @@ void main() {
       final mainnet = RecipientsMock();
       final testnet = RecipientsMock();
       when(() => settings.fetch()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-          isSuperuser: true,
-          isDevModeEnabled: true,
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            isSuperuser: true,
+            isDevModeEnabled: true,
+          ),
         ),
       );
       when(

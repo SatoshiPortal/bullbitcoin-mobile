@@ -28,7 +28,7 @@ import 'package:primitives/primitives.dart';
 
 class _WalletRepository extends Mock implements WalletRepository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _RefreshPending extends Mock implements RefreshPendingOrderSwapsUsecase {}
 
@@ -55,13 +55,15 @@ void main() {
     locator = GetIt.asNewInstance();
     final settings = _Settings();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
-    locator.registerSingleton<SettingsRepository>(settings);
+    locator.registerSingleton<Preferences>(settings);
     locator.registerSingleton<GetWalletsUsecase>(_GetWallets());
     locator.registerSingleton<SyncWalletUsecase>(_SyncWallet());
     locator.registerSingleton<WalletRepository>(_WalletRepository());

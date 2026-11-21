@@ -27,7 +27,7 @@ class FeesLocator {
     locator.registerFactory<GetNetworkFeesUsecase>(
       () => GetNetworkFeesUsecase(
         feesRepository: locator<FeesRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
   }

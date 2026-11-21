@@ -24,7 +24,7 @@ class CheckWalletStatusUsecase {
     this._bitcoinWalletRepository,
     this._secrets,
   );
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ElectrumServersPort _serversPort;
   final BitcoinWalletRepository _bitcoinWalletRepository;
   final Secrets _secrets;
@@ -41,7 +41,10 @@ class CheckWalletStatusUsecase {
     final Network network;
     final Map<primitives.ScriptType, Descriptors> descriptors;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       network = Network.fromEnvironment(
         environment: settings.environment.networkEnv,
         isLiquid: false,

@@ -87,7 +87,7 @@ class Bull {
       databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
     );
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
-    final settings = locator<SettingsRepository>();
+    final settings = locator<Preferences>();
     configureLogTorContext(
       () async => loadTorDiagnosticContext(
         await SettingsNetworkBindings.readTorPreferences(settings),

@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 
 class CompletePhysicalBackupVerificationUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   CompletePhysicalBackupVerificationUsecase({
     required this._walletRepository,
@@ -15,7 +15,10 @@ class CompletePhysicalBackupVerificationUsecase {
 
   Future<void> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final defaultWallets = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,

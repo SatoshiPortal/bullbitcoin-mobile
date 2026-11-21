@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart';
 
 /// The price of one bitcoin in [currencyCode], on the network of the settings.
 class GetPayExchangeRateUsecase {
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final IndexPriceReader _getIndexPrice;
 
   const GetPayExchangeRateUsecase({
@@ -21,7 +21,10 @@ class GetPayExchangeRateUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the pay price',

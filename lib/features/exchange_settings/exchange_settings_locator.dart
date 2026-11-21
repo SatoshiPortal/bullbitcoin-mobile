@@ -59,7 +59,7 @@ class ExchangeSettingsLocator {
         testnetRepository: locator<ExchangeKycRepository>(
           instanceName: 'testnet',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -71,7 +71,7 @@ class ExchangeSettingsLocator {
         testnetRepository: locator<ExchangeOrderStatsRepository>(
           instanceName: 'testnet',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
   }

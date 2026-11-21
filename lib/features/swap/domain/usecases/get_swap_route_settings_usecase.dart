@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 
 class GetSwapRouteSettingsUsecase {
   final SwapRouteSettingRepository _swapRouteSettingRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetSwapRouteSettingsUsecase({
     required this._swapRouteSettingRepository,
@@ -34,7 +34,11 @@ class GetSwapRouteSettingsUsecase {
     var devModeEnabled = false;
     try {
       devModeEnabled =
-          (await _settingsRepository.fetch()).isDevModeEnabled ?? false;
+          ((await _settingsRepository.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).isDevModeEnabled ??
+          false;
     } catch (e) {
       log.warning('Swap settings: settings unreadable (${e.runtimeType})');
     }

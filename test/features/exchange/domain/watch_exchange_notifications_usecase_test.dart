@@ -29,7 +29,7 @@ class _Access extends Mock implements ExchangeAccessRepository {}
 
 class _Keys extends Mock implements ExchangeApiKeyRepository {}
 
-class _MockSettings extends Mock implements SettingsRepository {}
+class _MockSettings extends Mock implements Preferences {}
 
 NotificationMessage _message(NotificationMessageKind kind) =>
     NotificationMessage(kind: kind, rawData: const {});
@@ -69,10 +69,12 @@ void main() {
     });
     settings = _MockSettings();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     messages = StreamController<NotificationMessage>.broadcast();
@@ -203,7 +205,8 @@ void main() {
     'sign-out started during the environment read opens no socket',
     () async {
       final environment = Completer<SettingsEntity>();
-      when(settings.fetch).thenAnswer((_) => environment.future);
+      when(settings.fetch)
+          .thenAnswer((_) => (environment.future).then((value) => Ok(value)));
       var epoch = 1;
       when(() => access.epoch).thenAnswer((_) => epoch);
       final connection = build().connect();
@@ -310,10 +313,12 @@ void main() {
     'regtest disconnects without opening either historical socket',
     () async {
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(repository.disconnect).thenReturn(null);

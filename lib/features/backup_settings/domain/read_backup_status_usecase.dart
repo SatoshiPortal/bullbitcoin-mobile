@@ -27,7 +27,7 @@ final class BackupStatusSummary {
 
 final class ReadBackupStatusUsecase {
   final GetWalletsUsecase _wallets;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   final Future<Result<rb.BackupStatus, rb.RecoverBullFailure>> Function(
     rb.VaultContext,
   )
@@ -41,7 +41,10 @@ final class ReadBackupStatusUsecase {
 
   Future<Result<BackupStatusSummary, BackupSettingsFailure>> execute() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> wallets;
       switch (await _wallets.execute(onlyDefaults: true)) {
         case Err(failure: NoWalletsFoundFailure()):

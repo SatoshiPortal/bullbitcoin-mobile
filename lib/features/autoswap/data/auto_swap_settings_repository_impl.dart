@@ -14,7 +14,7 @@ import 'package:drift/drift.dart';
 
 class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
   final SqliteDatabase _database;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final StreamController<AutoSwap> _controller =
       StreamController<AutoSwap>.broadcast();
 
@@ -57,8 +57,10 @@ class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
   Stream<AutoSwap> watchAutoSwapParams() => _controller.stream;
 
   Future<int> _environmentRowId() async {
-    final environment =
-        (await _settingsRepository.fetch()).environment.networkEnv;
+    final environment = ((await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    )).environment.networkEnv;
     final network = switch (environment) {
       NetworkEnv.mainnet => BitcoinNetwork.mainnet,
       NetworkEnv.testnet => BitcoinNetwork.testnet,

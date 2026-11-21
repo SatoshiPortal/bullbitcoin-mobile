@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockBitcoinWalletRepository extends Mock
     implements BitcoinWalletRepository {}
@@ -75,10 +75,12 @@ void main() {
 
   void environment(Environment environment) =>
       when(() => settings.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: environment,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          SettingsEntity(
+            environment: environment,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
 

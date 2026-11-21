@@ -1,3 +1,4 @@
+import 'package:preferences/testing.dart';
 import 'package:preferences/storage.dart' show PreferencesDao;
 
 import 'dart:async';
@@ -16,7 +17,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, NetworkEnv, RegtestHostProfile;
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Embedded extends Mock implements EmbeddedTor {}
 
@@ -75,7 +76,7 @@ void main() {
     tor = _Tor();
     database = SqliteDatabase(NativeDatabase.memory());
     selected = _selected(Environment.regtest);
-    when(settings.fetch).thenAnswer((_) async => selected);
+    when(settings.fetch).thenAnswer((_) async => Ok(selected));
     when(() => tor.external).thenReturn(external);
     when(() => tor.embedded).thenReturn(embedded);
     when(() => embedded.ensureReady())
@@ -95,7 +96,7 @@ void main() {
   RecoverBullSettingsAdapter adapter({bool regtest = true}) {
     final value = RecoverBullSettingsAdapter(
       settings,
-      RecoverBullPreferences(PreferencesDao(database)),
+      PreferencesTesting.fromDao(PreferencesDao(database)).recoverBull,
       embedded,
       tor,
       regtestProfile: regtest ? _profile() : null,
@@ -114,9 +115,9 @@ void main() {
           selected = _selected(initial);
           final services = GetIt.asNewInstance();
           final unreadDao = _UnreadPreferencesDao();
-          services.registerSingleton<SettingsRepository>(settings);
+          services.registerSingleton<Preferences>(settings);
           services.registerSingleton<RecoverBullPreferences>(
-            RecoverBullPreferences(unreadDao),
+            PreferencesTesting.fromDao(unreadDao).recoverBull,
           );
           services.registerSingleton<Tor>(tor);
           addTearDown(services.reset);
@@ -378,9 +379,9 @@ void main() {
       () async {
         selected = _selected(environment);
         final services = GetIt.asNewInstance();
-        services.registerSingleton<SettingsRepository>(settings);
+        services.registerSingleton<Preferences>(settings);
         services.registerSingleton<RecoverBullPreferences>(
-          RecoverBullPreferences(database.preferencesDao),
+          PreferencesTesting.fromDao(database.preferencesDao).recoverBull,
         );
         services.registerSingleton<Tor>(tor);
         final path = await SettingsRecoverBullBindings.setup(

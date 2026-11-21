@@ -220,7 +220,10 @@ class WalletLocator {
       locator.registerLazySingleton<PaymentNotificationStore>(
         () => PaymentNotificationStore(
           () async => (await getApplicationDocumentsDirectory()).path,
-          () async => (await locator<SettingsRepository>().fetch()).language,
+          () async => ((await locator<Preferences>().fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).language,
         ),
         dispose: (store) => store.close(),
       );

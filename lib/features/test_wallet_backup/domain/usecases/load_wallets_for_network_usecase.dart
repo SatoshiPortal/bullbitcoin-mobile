@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 
 class LoadWalletsForNetworkUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   LoadWalletsForNetworkUsecase({
     required this._walletRepository,
@@ -24,7 +24,10 @@ class LoadWalletsForNetworkUsecase {
   @useResult
   Future<Result<List<Wallet>, TestWalletBackupFailure>> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(
         onlyDefaults: false,

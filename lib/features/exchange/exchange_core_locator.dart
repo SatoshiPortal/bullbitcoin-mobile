@@ -144,7 +144,7 @@ class ExchangeLocator {
         testnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'testnetExchangeUserRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -156,7 +156,7 @@ class ExchangeLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -168,7 +168,7 @@ class ExchangeLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -180,7 +180,7 @@ class ExchangeLocator {
         testnetRepository: locator<ExchangeSupportChatRepository>(
           instanceName: 'testnetExchangeSupportChatRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -192,7 +192,7 @@ class ExchangeLocator {
         testnetRepository: locator<ExchangeSupportChatRepository>(
           instanceName: 'testnetExchangeSupportChatRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -204,7 +204,7 @@ class ExchangeLocator {
         testnetRepository: locator<ExchangeSupportChatRepository>(
           instanceName: 'testnetExchangeSupportChatRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -223,7 +223,7 @@ class ExchangeLocator {
         testnetDatasource: locator<BbxApiNotificationDatasource>(
           instanceName: 'testnetExchangeNotificationDatasource',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
   }

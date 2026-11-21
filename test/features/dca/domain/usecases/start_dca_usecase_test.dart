@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserRepository {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 /// Stands in for whatever a foreign exception message may embed — a
 /// credential, a response body. It must never reach a [DcaFailure].
@@ -37,7 +37,7 @@ void main() {
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
     );
-    when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
+    when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
 
   DcaFailure failureOf(Result<DcaStartData, DcaFailure> result) {
@@ -48,7 +48,8 @@ void main() {
   group('StartDcaUsecase', () {
     test('regtest refuses DCA before backend IO', () async {
       when(settings.fetch).thenAnswer(
-        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+        (_) async =>
+            Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
       expect(await usecase.execute(), isA<Err>());
       verifyZeroInteractions(mainnetUsers);

@@ -14,7 +14,7 @@ typedef DcaStartData = ({
 });
 
 class StartDcaUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
 
@@ -28,7 +28,10 @@ class StartDcaUsecase {
   Future<Result<DcaStartData, DcaFailure>> execute() async {
     final bool isMainnet;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,

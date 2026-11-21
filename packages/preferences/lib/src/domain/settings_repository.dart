@@ -3,13 +3,14 @@ import 'dart:async';
 import 'amount_display_preferences.dart';
 
 import 'package:preferences/src/domain/settings_entity.dart';
-import 'package:preferences/src/domain/settings_store_failure.dart';
+import 'package:preferences/src/domain/preferences_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:bull_tor/tor.dart';
 
 abstract interface class ActiveEnvironmentReader {
-  Future<Environment> readActiveEnvironment();
+  @useResult
+  Future<Result<Environment, PreferencesFailure>> readActiveEnvironment();
 }
 
 typedef ConnectionPreferences = ({
@@ -21,7 +22,9 @@ typedef ConnectionPreferences = ({
 
 abstract interface class ConnectionPreferencesReader
     implements ActiveEnvironmentReader {
-  Future<ConnectionPreferences> readConnectionPreferences();
+  @useResult
+  Future<Result<ConnectionPreferences, PreferencesFailure>>
+  readConnectionPreferences();
 }
 
 typedef DeveloperEnvironmentPreferences = ({
@@ -31,13 +34,17 @@ typedef DeveloperEnvironmentPreferences = ({
 });
 
 abstract interface class DeveloperEnvironmentReader {
-  Future<DeveloperEnvironmentPreferences> readDeveloperEnvironment();
+  @useResult
+  Future<Result<DeveloperEnvironmentPreferences, PreferencesFailure>>
+  readDeveloperEnvironment();
 }
 
 typedef TorProxyPreferences = ({bool useTorProxy, int torProxyPort});
 
 abstract interface class TorProxyPreferencesReader {
-  Future<TorProxyPreferences> readTorProxyPreferences();
+  @useResult
+  Future<Result<TorProxyPreferences, PreferencesFailure>>
+  readTorProxyPreferences();
 }
 
 typedef ExchangeWebPreferences = ({
@@ -47,24 +54,28 @@ typedef ExchangeWebPreferences = ({
 });
 
 abstract interface class ExchangeTestnetBasicAuthPreferences {
-  Future<ExchangeWebPreferences> readExchangeWebPreferences();
+  @useResult
+  Future<Result<ExchangeWebPreferences, PreferencesFailure>>
+  readExchangeWebPreferences();
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setExchangeTestnetBasicAuth({
+  Future<Result<void, PreferencesFailure>> setExchangeTestnetBasicAuth({
     String? username,
     String? password,
   });
 }
 
 abstract interface class RuntimeDisplayPreferencesReader {
-  Future<Language?> readLanguage();
-  Future<String> readCurrency();
-  Stream<String> get currencyChangeStream;
+  @useResult
+  Future<Result<Language?, PreferencesFailure>> readLanguage();
+  @useResult
+  Future<Result<String, PreferencesFailure>> readCurrency();
+  Stream<Result<String, PreferencesFailure>> get currencyChangeStream;
 }
 
 abstract interface class AmountInputPreferences {
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setStartAmountsInFiat(bool fiat);
+  Future<Result<void, PreferencesFailure>> setStartAmountsInFiat(bool fiat);
 }
 
 /// The legacy settings aggregate. New consumers can use the narrow readers
@@ -79,14 +90,14 @@ abstract interface class SettingsRepository
         RuntimeDisplayPreferencesReader,
         ExchangeTestnetBasicAuthPreferences {
   /// The environment after each successful [setEnvironment].
-  Stream<Environment> get environmentChangeStream;
+  Stream<Result<Environment, PreferencesFailure>> get environmentChangeStream;
 
   /// Closes the change streams. Not a persistence write, so it does not
   /// return a write failure.
   Future<void> close();
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> store({
+  Future<Result<void, PreferencesFailure>> store({
     required int id,
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
@@ -106,59 +117,58 @@ abstract interface class SettingsRepository
     String? exchangeTestnetBasicAuthPassword,
   });
 
-  Future<SettingsEntity> fetch();
+  @useResult
+  Future<Result<SettingsEntity, PreferencesFailure>> fetch();
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setEnvironment(Environment env);
+  Future<Result<void, PreferencesFailure>> setEnvironment(Environment env);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setBitcoinUnit(
+  Future<Result<void, PreferencesFailure>> setBitcoinUnit(
     BitcoinUnit bitcoinUnit,
   );
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setLanguage(Language language);
+  Future<Result<void, PreferencesFailure>> setLanguage(Language language);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setCurrency(String currencyCode);
+  Future<Result<void, PreferencesFailure>> setCurrency(String currencyCode);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setHideAmounts(bool hide);
+  Future<Result<void, PreferencesFailure>> setHideAmounts(bool hide);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setIsSuperuser(bool superuser);
+  Future<Result<void, PreferencesFailure>> setIsSuperuser(bool superuser);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setIsDevMode(bool isEnabled);
+  Future<Result<void, PreferencesFailure>> setIsDevMode(bool isEnabled);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setTorProxy({
+  Future<Result<void, PreferencesFailure>> setTorProxy({
     required bool enabled,
     required int port,
   });
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setTorTransportMode(
+  Future<Result<void, PreferencesFailure>> setTorTransportMode(
     TorTransportMode mode,
   );
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setLastSuccessfulTorTransport(
+  Future<Result<void, PreferencesFailure>> setLastSuccessfulTorTransport(
     TorTransport transport,
   );
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setThemeMode(
-    AppThemeMode themeMode,
-  );
+  Future<Result<void, PreferencesFailure>> setThemeMode(AppThemeMode themeMode);
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setErrorReportingEnabled(
+  Future<Result<void, PreferencesFailure>> setErrorReportingEnabled(
     bool enabled,
   );
 
   @useResult
-  Future<Result<void, SettingsStoreFailure>> setScreenCaptureProtectionEnabled(
+  Future<Result<void, PreferencesFailure>> setScreenCaptureProtectionEnabled(
     bool enabled,
   );
 }

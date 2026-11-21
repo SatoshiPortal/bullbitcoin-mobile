@@ -55,7 +55,7 @@ class SettingsLocator {
     locator.registerFactory<GetSwapRescueWalletsUsecase>(
       () => GetSwapRescueWalletsUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerLazySingleton<QuickActionsCubit>(
@@ -66,7 +66,7 @@ class SettingsLocator {
             : QuickActionsLayout.defaults,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
           exchange: locator<ExchangeFacade>(),
-          settings: locator<SettingsRepository>(),
+          settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<SettingsCubit>().stream
               .where((state) => state.storedSettings != null)
@@ -81,7 +81,7 @@ class SettingsLocator {
     locator.registerFactory<SetSettingsExchangeAccessUsecase>(
       () => SetSettingsExchangeAccessUsecase(
         locator<ExchangeFacade>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
       ),
     );
     locator.registerFactory<ExchangeAccessSettingsCubit>(
@@ -99,7 +99,7 @@ class SettingsLocator {
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         electrumSettings: locator<ElectrumDefaultsProvisioner>(),
       ),
     );
@@ -107,17 +107,14 @@ class SettingsLocator {
       () => SetAmountInputModeUsecase(locator<AmountInputPreferences>()),
     );
     locator.registerFactory<SetBitcoinUnitUsecase>(
-      () => SetBitcoinUnitUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetBitcoinUnitUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SetLanguageUsecase>(
-      () =>
-          SetLanguageUsecase(settingsRepository: locator<SettingsRepository>()),
+      () => SetLanguageUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SyncExchangeCurrencyUsecase>(
       () => SyncExchangeCurrencyUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',
         ),
@@ -127,41 +124,31 @@ class SettingsLocator {
       ),
     );
     locator.registerFactory<SetCurrencyUsecase>(
-      () =>
-          SetCurrencyUsecase(settingsRepository: locator<SettingsRepository>()),
+      () => SetCurrencyUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SetHideAmountsUsecase>(
-      () => SetHideAmountsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetHideAmountsUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SetIsSuperuserUsecase>(
-      () => SetIsSuperuserUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetIsSuperuserUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetIsDevModeUsecase>(
-      () => SetIsDevModeUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetIsDevModeUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetThemeModeUsecase>(
-      () => SetThemeModeUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetThemeModeUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetErrorReportingUsecase>(
-      () => SetErrorReportingUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () =>
+          SetErrorReportingUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetScreenCaptureProtectionUsecase>(
       () => SetScreenCaptureProtectionUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -226,7 +213,7 @@ class SettingsLocator {
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
         setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         setBitcoinUnitUsecase: locator<SetBitcoinUnitUsecase>(),
         setAmountInputModeUsecase: locator<SetAmountInputModeUsecase>(),
         setLanguageUsecase: locator<SetLanguageUsecase>(),

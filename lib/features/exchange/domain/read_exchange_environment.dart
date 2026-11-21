@@ -13,11 +13,14 @@ import 'package:meta/meta.dart';
 /// error.
 @useResult
 Future<Result<Environment, ExchangeFailure>> readExchangeEnvironment(
-  SettingsRepository settingsRepository,
+  Preferences settingsRepository,
   ExchangeFailure Function([String? logMessage]) onFailure,
 ) async {
   try {
-    final environment = (await settingsRepository.fetch()).environment;
+    final environment = ((await settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    )).environment;
     if (!exchangeNetworkAvailable(environment)) {
       log.info('Exchange capability unavailable network=${environment.name}');
       return const Err(ExchangeUnsupportedNetworkFailure());

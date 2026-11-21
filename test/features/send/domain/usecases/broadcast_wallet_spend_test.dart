@@ -25,7 +25,7 @@ class _Bitcoin extends Mock implements BitcoinBlockchainRepository {}
 
 class _Liquid extends Mock implements LiquidBlockchainRepository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 final class _Spends {
   final calls =
@@ -71,12 +71,14 @@ void main() {
 
   void environment({required bool developer}) =>
       when(settings.fetch).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: developer,
-          isDevModeEnabled: developer,
+        (_) async => Ok(
+          SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: developer,
+            isDevModeEnabled: developer,
+          ),
         ),
       );
 

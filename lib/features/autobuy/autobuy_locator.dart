@@ -14,7 +14,7 @@ class AutoBuyLocator {
       () => SetAutoBuyUsecase(
         locator<GetExchangeUserSummaryUsecase>(),
         locator<GetDefaultWalletsUsecase>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
         locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',
         ),

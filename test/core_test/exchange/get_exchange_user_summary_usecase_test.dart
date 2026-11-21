@@ -6,7 +6,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockUserRepository extends Mock implements ExchangeUserRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 void main() {
   // Legacy contract: autobuy and limit_orders catch this exception type

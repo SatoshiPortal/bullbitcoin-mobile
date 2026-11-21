@@ -11,7 +11,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockRecipientsFacade extends Mock implements RecipientsFacade {}
 
@@ -57,10 +57,12 @@ void main() {
       ),
     );
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
   });
@@ -69,10 +71,12 @@ void main() {
     'regtest refuses confirmation before backend or recipient access',
     () async {
       when(settingsRepository.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       final result = await usecase.execute(
@@ -191,10 +195,12 @@ void main() {
   test('routes testnet confirmation to the testnet repository', () async {
     final order = _MockWithdrawOrder();
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => testnetRepository.confirmWithdrawOrder('order-1'))

@@ -1,3 +1,5 @@
+import 'package:preferences/testing.dart';
+
 import 'dart:io';
 
 import 'package:preferences/storage.dart';
@@ -34,9 +36,18 @@ void main() {
         }
         var database = SqliteDatabase(NativeDatabase(file));
         var datasource = PreferencesDao(database);
-        var reader = SettingsRepositoryImpl(settingsDatasource: datasource);
-        expect((await reader.fetch()).startAmountsInFiat, isFalse);
-        final original = await reader.fetch();
+        var reader = PreferencesTesting.fromDao(datasource);
+        expect(
+          ((await reader.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).startAmountsInFiat,
+          isFalse,
+        );
+        final original = (await reader.fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        );
         var setter = SetAmountInputModeUsecase(reader);
         expect(
           await setter.execute(fiat: true),
@@ -47,9 +58,12 @@ void main() {
         database = SqliteDatabase(NativeDatabase(file));
         addTearDown(database.close);
         datasource = PreferencesDao(database);
-        reader = SettingsRepositoryImpl(settingsDatasource: datasource);
+        reader = PreferencesTesting.fromDao(datasource);
         addTearDown(reader.close);
-        final saved = await reader.fetch();
+        final saved = (await reader.fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        );
         expect(saved.startAmountsInFiat, isTrue);
         expect(saved.bitcoinUnit, original.bitcoinUnit);
         expect(saved.currencyCode, original.currencyCode);
@@ -58,7 +72,13 @@ void main() {
           await setter.execute(fiat: false),
           isA<Ok<void, SettingsFailure>>(),
         );
-        expect((await reader.fetch()).startAmountsInFiat, isFalse);
+        expect(
+          ((await reader.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).startAmountsInFiat,
+          isFalse,
+        );
         expect(SqliteDatabase.currentSchemaVersion, 16);
       },
     );
@@ -69,7 +89,7 @@ void main() {
     () async {
       final datasource = _Datasource();
       final setter = SetAmountInputModeUsecase(
-        SettingsRepositoryImpl(settingsDatasource: datasource),
+        PreferencesTesting.fromDao(datasource),
       );
       when(() => datasource.setStartAmountsInFiat(true))
           .thenThrow(Exception('private database reason'));

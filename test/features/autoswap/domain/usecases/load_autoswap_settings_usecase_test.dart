@@ -13,7 +13,7 @@ import 'package:mocktail/mocktail.dart';
 class MockGetAutoSwapSettingsUsecase extends Mock
     implements GetAutoSwapSettingsUsecase {}
 
-class MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -57,7 +57,7 @@ void main() {
       getSettingsUsecase: getSettings,
       walletRepository: wallets,
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => _settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(_settings));
   });
 
   AutoswapFailure failureOf(

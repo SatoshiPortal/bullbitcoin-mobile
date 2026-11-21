@@ -14,7 +14,7 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockPayjoinPolicy extends Mock implements PayjoinPolicyAccess {}
 
@@ -47,7 +47,7 @@ void main() {
 
     final settingsEntity = _MockSettings();
     when(() => settingsEntity.environment).thenReturn(Environment.mainnet);
-    when(settings.fetch).thenAnswer((_) async => settingsEntity);
+    when(settings.fetch).thenAnswer((_) async => Ok(settingsEntity));
     when(payjoinPolicy.load).thenAnswer(
       (_) async =>
           const Err<PayjoinPolicy, PayjoinFailure>(PayjoinStorageFailure()),
@@ -112,10 +112,12 @@ void main() {
       'regtest refuses pay ${refresh ? 'refresh' : 'creation'} before backend IO',
       () async {
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.regtest,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.regtest,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+            ),
           ),
         );
         final result = refresh

@@ -9,7 +9,7 @@ import 'package:sync/sync.dart' show WalletConnectionPort;
 
 void setupElectrum(GetIt locator) {
   final environment = EnvironmentAdapter(
-    settingsRepository: () => locator<SettingsRepository>(),
+    settingsRepository: () => locator<Preferences>(),
   );
   locator.registerLazySingleton<Electrum>(
     () => Electrum.open(

@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Servers extends Mock implements SwapServerSettingRepository {}
 
@@ -18,10 +18,12 @@ void main() {
         final settings = _Settings();
         final servers = _Servers();
         when(settings.fetch).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: environment,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
+          (_) async => Ok(
+            SettingsEntity(
+              environment: environment,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+            ),
           ),
         );
         when(() => servers.fetch(isTestnet: any(named: 'isTestnet')))

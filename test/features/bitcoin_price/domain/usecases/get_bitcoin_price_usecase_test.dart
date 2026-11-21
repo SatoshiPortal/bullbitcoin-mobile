@@ -17,7 +17,7 @@ void main() {
   setUp(() {
     environment = _MockActiveEnvironment();
     when(environment.readActiveEnvironment)
-        .thenAnswer((_) async => Environment.mainnet);
+        .thenAnswer((_) async => Ok(Environment.mainnet));
     getIndexPrice = FakeIndexPriceReader(fiatAmount: 114214.20);
     usecase = GetBitcoinPriceUsecase(
       environment: environment,
@@ -37,7 +37,7 @@ void main() {
 
   test('asks the testnet price in the testnet environment', () async {
     when(environment.readActiveEnvironment)
-        .thenAnswer((_) async => Environment.testnet);
+        .thenAnswer((_) async => Ok(Environment.testnet));
 
     expect(
       await usecase.execute(currencyCode: 'CAD'),

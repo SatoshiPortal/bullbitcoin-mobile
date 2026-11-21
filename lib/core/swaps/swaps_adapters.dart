@@ -108,7 +108,7 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
 /// wallet call, never a third-party explorer.
 class AppLockupChain implements swaps.LockupChain {
   final WalletConnectionPort _connections;
-  final SettingsRepository? _settingsRepository;
+  final Preferences? _settingsRepository;
 
   AppLockupChain(this._connections, {this._settingsRepository});
 
@@ -157,7 +157,10 @@ class AppLockupChain implements swaps.LockupChain {
       final repository = _settingsRepository;
       if (repository == null) throw const swaps.SwapsAuthorizationFailure();
       try {
-        final settings = await repository.fetch();
+        final settings = (await repository.fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        );
         if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
           throw const swaps.SwapsAuthorizationFailure();
         }

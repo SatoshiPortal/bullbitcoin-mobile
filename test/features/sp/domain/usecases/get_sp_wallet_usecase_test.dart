@@ -14,7 +14,7 @@ import 'package:mocktail/mocktail.dart';
 class MockEnsureSpSessionUsecase extends Mock
     implements EnsureSpSessionUsecase {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 SettingsEntity _makeSettings({
   bool? isSuperuser,
@@ -57,7 +57,7 @@ void main() {
   group('GetSpWalletUsecase', () {
     test('returns null when isSuperuser is not true', () async {
       when(() => settingsRepo.fetch())
-          .thenAnswer((_) async => _makeSettings(isSuperuser: false));
+          .thenAnswer((_) async => Ok(_makeSettings(isSuperuser: false)));
 
       final result = await usecase.execute();
 
@@ -67,7 +67,8 @@ void main() {
 
     test('returns null when isDevModeEnabled is not true', () async {
       when(() => settingsRepo.fetch()).thenAnswer(
-        (_) async => _makeSettings(isSuperuser: true, isDevModeEnabled: false),
+        (_) async =>
+            Ok(_makeSettings(isSuperuser: true, isDevModeEnabled: false)),
       );
 
       final result = await usecase.execute();
@@ -80,7 +81,7 @@ void main() {
       'returns null when ensureSpSession returns null (not set up)',
       () async {
         when(() => settingsRepo.fetch())
-            .thenAnswer((_) async => _makeSettings(isSuperuser: true));
+            .thenAnswer((_) async => Ok(_makeSettings(isSuperuser: true)));
         when(() => ensureSpSessionUsecase.execute())
             .thenAnswer((_) async => const Ok(null));
 
@@ -94,7 +95,7 @@ void main() {
     test('returns the wallet from ensureSpSession when gated-in', () async {
       final wallet = _makeWallet();
       when(() => settingsRepo.fetch())
-          .thenAnswer((_) async => _makeSettings(isSuperuser: true));
+          .thenAnswer((_) async => Ok(_makeSettings(isSuperuser: true)));
       when(() => ensureSpSessionUsecase.execute())
           .thenAnswer((_) async => Ok(wallet));
 
@@ -106,7 +107,7 @@ void main() {
 
     test('lets an ensureSpSession failure propagate unchanged', () async {
       when(() => settingsRepo.fetch())
-          .thenAnswer((_) async => _makeSettings(isSuperuser: true));
+          .thenAnswer((_) async => Ok(_makeSettings(isSuperuser: true)));
       when(() => ensureSpSessionUsecase.execute())
           .thenThrow(StateError('boom'));
 

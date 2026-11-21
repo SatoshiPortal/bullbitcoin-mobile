@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show Ok;
+
 import '../../../../frozen_outpoints_fixture.dart';
 
 import 'package:primitives/primitives.dart' show BitcoinUnit;
@@ -18,7 +20,7 @@ class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
 
 class _LiquidBlockchain extends Mock implements LiquidBlockchainRepository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
@@ -45,10 +47,12 @@ void main() {
         final liquid = _LiquidBlockchain();
         final error = StateError('synthetic programmer failure');
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
         when(
@@ -88,12 +92,14 @@ void main() {
       final settings = _Settings();
       final blockchain = _LiquidBlockchain();
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: true,
-          isDevModeEnabled: false,
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: true,
+            isDevModeEnabled: false,
+          ),
         ),
       );
       when(
@@ -121,7 +127,7 @@ void main() {
       final settings = _Settings();
       final value = _SettingsValue();
       final blockchain = _Blockchain();
-      when(settings.fetch).thenAnswer((_) async => value);
+      when(settings.fetch).thenAnswer((_) async => Ok(value));
       when(() => value.environment).thenReturn(Environment.regtest);
       when(() => value.isSuperuser).thenReturn(true);
       when(() => value.isDevModeEnabled).thenReturn(true);
@@ -161,12 +167,14 @@ void main() {
       final settings = _Settings();
       final blockchain = _Blockchain();
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: true,
-          isDevModeEnabled: false,
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: true,
+            isDevModeEnabled: false,
+          ),
         ),
       );
       when(() => blockchain.broadcastPsbt(_signedPublicTest, network: network))
@@ -196,12 +204,14 @@ void main() {
       final blockchain = _Blockchain();
       var authorized = true;
       when(settings.fetch).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: authorized ? Environment.regtest : Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: true,
-          isDevModeEnabled: authorized,
+        (_) async => Ok(
+          SettingsEntity(
+            environment: authorized ? Environment.regtest : Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: true,
+            isDevModeEnabled: authorized,
+          ),
         ),
       );
       final started = Completer<void>();

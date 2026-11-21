@@ -9,7 +9,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -29,7 +29,7 @@ void main() {
       settingsRepository: settingsRepository,
     );
     when(settingsRepository.readActiveEnvironment)
-        .thenAnswer((_) async => Environment.mainnet);
+        .thenAnswer((_) async => Ok(Environment.mainnet));
   });
 
   test('returns the wallets it was given', () async {

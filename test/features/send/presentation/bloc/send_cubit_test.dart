@@ -108,7 +108,7 @@ class _MockSelectBestWalletUsecase extends Mock
 class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
@@ -1233,11 +1233,13 @@ void main() {
   }) {
     when(() => getWalletsUsecase.execute())
         .thenAnswer((_) async => Ok([wallet]));
-    when(() => getSettingsUsecase.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettingsUsecase.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getSendPayjoinEnabledUsecase.execute())

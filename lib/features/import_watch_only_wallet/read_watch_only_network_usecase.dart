@@ -7,5 +7,8 @@ class ReadWatchOnlyNetworkUsecase {
   const ReadWatchOnlyNetworkUsecase(this._preferences);
 
   Future<NetworkEnv> execute() async =>
-      (await _preferences.readActiveEnvironment()).networkEnv;
+      ((await _preferences.readActiveEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).networkEnv;
 }

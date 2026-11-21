@@ -14,7 +14,7 @@ class GetExchangeAccountUsecase {
   const GetExchangeAccountUsecase({
     required ExchangeAccountRepository mainnetAccountRepository,
     required ExchangeAccountRepository testnetAccountRepository,
-    required SettingsRepository settingsRepository,
+    required Preferences settingsRepository,
     required this._access,
     required this._expire,
   }) : _mainnet = mainnetAccountRepository,
@@ -23,7 +23,7 @@ class GetExchangeAccountUsecase {
 
   final ExchangeAccountRepository _mainnet;
   final ExchangeAccountRepository _testnet;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   final ExchangeAccessRepository _access;
   final ExpireExchangeSessionUsecase _expire;
 

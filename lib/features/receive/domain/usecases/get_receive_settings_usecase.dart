@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Receive-owned boundary for the shared settings use-case, which still
 /// throws.
 class GetReceiveSettingsUsecase {
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
 
   const GetReceiveSettingsUsecase(this._getSettingsUsecase);
 
@@ -19,7 +19,10 @@ class GetReceiveSettingsUsecase {
     primitives.Network? selectedNetwork,
   }) async {
     try {
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final network =
           selectedNetwork ??
           primitives.BitcoinNetwork.values.firstWhere(

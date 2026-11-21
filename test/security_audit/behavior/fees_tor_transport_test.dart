@@ -20,7 +20,7 @@ class _MempoolServers extends Mock implements MempoolServerSettings {}
 
 class _ElectrumServers extends Mock implements ElectrumServersPort {}
 
-class _GlobalSettings extends Mock implements SettingsRepository {}
+class _GlobalSettings extends Mock implements Preferences {}
 
 SettingsEntity _torSettings(int port) => SettingsEntity(
   environment: Environment.mainnet,
@@ -75,12 +75,12 @@ void main() {
     final mempool = _Mempool();
     final mempoolServers = _MempoolServers();
     when(() => globalSettings.fetch())
-        .thenAnswer((_) async => _torSettings(socks.port));
+        .thenAnswer((_) async => Ok(_torSettings(socks.port)));
     when(() => mempool.servers).thenReturn(mempoolServers);
     when(() => mempoolServers.activeBase(network: BitcoinNetwork.mainnet))
         .thenAnswer((_) async => Ok(Uri.http('127.0.0.1:${oracle.port}')));
 
-    locator.registerSingleton<SettingsRepository>(globalSettings);
+    locator.registerSingleton<Preferences>(globalSettings);
     locator.registerSingleton<Mempool>(mempool);
     locator.registerSingleton<ElectrumServersPort>(electrumServers);
     FeesLocator.registerDatasources(locator);

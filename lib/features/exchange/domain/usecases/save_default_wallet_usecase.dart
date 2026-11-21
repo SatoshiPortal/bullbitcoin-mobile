@@ -5,7 +5,7 @@ import 'package:preferences/preferences.dart';
 class SaveDefaultWalletUsecase {
   final ExchangeRecipientRepository _mainnetRepository;
   final ExchangeRecipientRepository _testnetRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   SaveDefaultWalletUsecase({
     required this._mainnetRepository,
@@ -18,7 +18,10 @@ class SaveDefaultWalletUsecase {
     required String address,
     String? existingRecipientId,
   }) async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final isTestnet = settings.environment.requireHistoricalTestnet();
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;

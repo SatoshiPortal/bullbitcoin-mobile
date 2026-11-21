@@ -30,7 +30,7 @@ final class LimitOrdersLocator {
         testnet: locator<BbxApiClient>(
           instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 

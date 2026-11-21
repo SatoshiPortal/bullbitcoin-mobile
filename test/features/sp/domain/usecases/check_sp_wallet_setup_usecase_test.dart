@@ -13,7 +13,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../sp_fakes.dart';
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
@@ -158,7 +158,8 @@ void main() {
       // which honours the sentinel veto. Mirror that here: with the sentinel
       // present, ensure returns null.
       final settingsRepo = MockSettingsRepository();
-      when(() => settingsRepo.fetch()).thenAnswer((_) async => _makeSettings());
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => Ok(_makeSettings()));
       final ensureSpSession = MockEnsureSpSessionUsecase();
       when(() => ensureSpSession.execute())
           .thenAnswer((_) async => const Ok(null));

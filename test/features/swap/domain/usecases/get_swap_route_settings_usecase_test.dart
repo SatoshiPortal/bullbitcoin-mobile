@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockSwapRouteSettingRepository extends Mock
     implements SwapRouteSettingRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettingsEntity extends Mock implements SettingsEntity {}
 
@@ -28,7 +28,8 @@ void main() {
         .thenAnswer((_) async => const Ok(true));
     when(() => routeSettings.getRouteOverride())
         .thenAnswer((_) async => const Ok(SwapRouteOverride.boltzOnly));
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => Ok(settings));
     when(() => settings.isDevModeEnabled).thenReturn(true);
     usecase = GetSwapRouteSettingsUsecase(
       swapRouteSettingRepository: routeSettings,

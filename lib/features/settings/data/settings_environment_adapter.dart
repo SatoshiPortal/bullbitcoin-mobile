@@ -4,13 +4,16 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 class SettingsEnvironmentAdapter {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   SettingsEnvironmentAdapter({required this._settingsRepository});
 
   Future<Result<BitcoinNetwork, MempoolFailure>> getEnvironment() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final network = BitcoinNetwork.fromName(settings.environment.name);
       if (!NetworkCapabilities.supports(
         network,

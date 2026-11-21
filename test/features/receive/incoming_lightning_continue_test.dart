@@ -47,7 +47,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart' as swaps;
 
-class _MockSettings extends Mock implements GetSettingsUsecase {}
+class _MockSettings extends Mock implements Preferences {}
 
 class _UnsupportedReceiveSettings extends GetReceiveSettingsUsecase {
   const _UnsupportedReceiveSettings(super.settings);
@@ -122,11 +122,13 @@ void main() {
       'incoming Lightning URL blocks Continue when ${unsupported ? 'unsupported' : 'wallet is missing'}',
       (tester) async {
         final settings = _MockSettings();
-        when(() => settings.execute()).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+        when(() => settings.fetch()).thenAnswer(
+          (_) async => Ok(
+            SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
         final enabled = _MockWatchReceivePayjoinEnabledUsecase();

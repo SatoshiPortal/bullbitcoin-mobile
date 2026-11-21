@@ -111,7 +111,7 @@ class SendLocator {
       () => GetVisiblePayjoinTransactionUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<DetectBitcoinStringUsecase>(
-      () => DetectBitcoinStringUsecase(settings: locator<GetSettingsUsecase>()),
+      () => DetectBitcoinStringUsecase(settings: locator<Preferences>()),
     );
     locator.registerFactory<PrepareBitcoinSendUsecase>(
       () => PrepareBitcoinSendUsecase(
@@ -252,7 +252,7 @@ class SendLocator {
     );
     locator.registerFactory<GetSendExchangeRateUsecase>(
       () => GetSendExchangeRateUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
@@ -299,10 +299,10 @@ class SendLocator {
         ),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getSendExchangeRateUsecase: locator<GetSendExchangeRateUsecase>(),
         getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
-          settings: locator<GetSettingsUsecase>(),
+          settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),

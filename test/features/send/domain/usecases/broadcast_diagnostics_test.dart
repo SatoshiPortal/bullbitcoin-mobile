@@ -48,7 +48,7 @@ final class _Failing implements WalletConnectionPort {
   }
 }
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
@@ -129,10 +129,12 @@ void main() {
           });
           final settings = _Settings();
           when(settings.fetch).thenAnswer(
-            (_) async => const SettingsEntity(
-              environment: Environment.mainnet,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'USD',
+            (_) async => Ok(
+              const SettingsEntity(
+                environment: Environment.mainnet,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
             ),
           );
           // What sync reports once every server failed; the native causes and

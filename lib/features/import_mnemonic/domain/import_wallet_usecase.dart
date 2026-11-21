@@ -16,7 +16,7 @@ class ImportWalletUsecase {
 
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
   final Secrets _secrets;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletRepository _wallet;
   final ParentCustodyAdmissionPort _admission;
 
@@ -67,7 +67,10 @@ class ImportWalletUsecase {
     }
 
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final bitcoinNetwork = Network.fromEnvironment(
         environment: settings.environment.networkEnv,
         isLiquid: false,

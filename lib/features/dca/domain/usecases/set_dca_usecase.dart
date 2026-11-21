@@ -18,7 +18,7 @@ class SetDcaUsecase {
   // TODO: Don't use the repositories of other domains directly, but use reduced
   // interfaces for each domain just for what is needed from them in the DCA context/domain
   final WalletRepository _wallet;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletAddressRepository _walletAddressRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
@@ -44,7 +44,10 @@ class SetDcaUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _settingsRepository.fetch();
+      settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       if (e is Error) rethrow;
       log.severe(message: 'Failed to load settings', error: e, trace: st);

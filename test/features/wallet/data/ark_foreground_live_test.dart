@@ -26,7 +26,7 @@ import 'package:secrets/testing.dart';
 
 class _Bip85 extends Mock implements Bip85Repository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
@@ -96,9 +96,9 @@ void main() {
       final wallet = _Wallet();
       final bip85 = _Bip85();
       when(settings.readActiveEnvironment)
-          .thenAnswer((_) async => settingsValue.environment);
+          .thenAnswer((_) async => Ok(settingsValue.environment));
       when(settings.readLanguage)
-          .thenAnswer((_) async => settingsValue.language);
+          .thenAnswer((_) async => Ok(settingsValue.language));
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
       when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
       when(() => wallet.networkCode).thenReturn('bitcoinRegtest');

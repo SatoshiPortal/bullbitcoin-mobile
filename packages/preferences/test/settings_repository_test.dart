@@ -1,7 +1,8 @@
+import 'package:preferences/preferences.dart' show Preferences;
 import 'package:preferences/preferences_dao.dart';
-import 'package:preferences/src/data/settings_repository.dart';
+import 'package:preferences/testing.dart';
 import 'package:preferences/src/domain/settings_entity.dart';
-import 'package:preferences/src/domain/settings_store_failure.dart';
+import 'package:preferences/src/domain/preferences_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,8 +29,7 @@ void main() {
 
   late _MockDatasource datasource;
 
-  SettingsRepositoryImpl build() =>
-      SettingsRepositoryImpl(settingsDatasource: datasource);
+  Preferences build() => PreferencesTesting.fromDao(datasource);
 
   setUp(() => datasource = _MockDatasource());
 
@@ -41,7 +41,7 @@ void main() {
       final result = await build().setCurrency('CAD');
       final failure = _failureOf(result);
 
-      expect(failure, isA<SettingsStoreWriteFailure>());
+      expect(failure, isA<PreferencesWriteFailure>());
       expect(
         failure.logMessage,
         isNot(contains('SqliteException')),
@@ -55,7 +55,7 @@ void main() {
 
       expect(
         await build().setCurrency('CAD'),
-        isA<Ok<void, SettingsStoreFailure>>(),
+        isA<Ok<void, PreferencesFailure>>(),
       );
     });
 
@@ -76,7 +76,7 @@ void main() {
         await repository.setHideAmounts(true),
       ]) {
         final failure = _failureOf(result);
-        expect(failure, isA<SettingsStoreWriteFailure>());
+        expect(failure, isA<PreferencesWriteFailure>());
         expect(failure.logMessage, isNot(contains('SqliteException')));
       }
     });
@@ -93,7 +93,7 @@ void main() {
 
       expect(
         await repository.setCurrency('EUR'),
-        isA<Ok<void, SettingsStoreFailure>>(),
+        isA<Ok<void, PreferencesFailure>>(),
       );
     });
   });
@@ -106,10 +106,17 @@ void main() {
           .thenThrow(Exception(_rawReason));
       final repository = build();
       final seen = <String>[];
-      final sub = repository.currencyChangeStream.listen(seen.add);
+      final sub = repository.currencyChangeStream.listen(
+        (result) => seen.add(
+          result.fold(
+            (value) => value,
+            (failure) => fail('Unexpected failure: $failure'),
+          ),
+        ),
+      );
       addTearDown(sub.cancel);
 
-      await repository.setCurrency('CAD');
+      expect(await repository.setCurrency('CAD'), isA<Err>());
       await Future<void>.delayed(Duration.zero);
 
       expect(seen, isEmpty);
@@ -119,10 +126,17 @@ void main() {
       when(() => datasource.setCurrency(any())).thenAnswer((_) async {});
       final repository = build();
       final seen = <String>[];
-      final sub = repository.currencyChangeStream.listen(seen.add);
+      final sub = repository.currencyChangeStream.listen(
+        (result) => seen.add(
+          result.fold(
+            (value) => value,
+            (failure) => fail('Unexpected failure: $failure'),
+          ),
+        ),
+      );
       addTearDown(sub.cancel);
 
-      await repository.setCurrency('EUR');
+      expect(await repository.setCurrency('EUR'), isA<Ok>());
       await Future<void>.delayed(Duration.zero);
 
       expect(seen, ['EUR']);
@@ -134,10 +148,17 @@ void main() {
       when(() => datasource.setEnvironment(any())).thenAnswer((_) async {});
       final repository = build();
       final seen = <Environment>[];
-      final sub = repository.environmentChangeStream.listen(seen.add);
+      final sub = repository.environmentChangeStream.listen(
+        (result) => seen.add(
+          result.fold(
+            (value) => value,
+            (failure) => fail('Unexpected failure: $failure'),
+          ),
+        ),
+      );
       addTearDown(sub.cancel);
 
-      await repository.setEnvironment(Environment.testnet);
+      expect(await repository.setEnvironment(Environment.testnet), isA<Ok>());
       await Future<void>.delayed(Duration.zero);
 
       expect(seen, [Environment.testnet]);
@@ -148,10 +169,17 @@ void main() {
           .thenThrow(Exception(_rawReason));
       final repository = build();
       final seen = <Environment>[];
-      final sub = repository.environmentChangeStream.listen(seen.add);
+      final sub = repository.environmentChangeStream.listen(
+        (result) => seen.add(
+          result.fold(
+            (value) => value,
+            (failure) => fail('Unexpected failure: $failure'),
+          ),
+        ),
+      );
       addTearDown(sub.cancel);
 
-      await repository.setEnvironment(Environment.testnet);
+      expect(await repository.setEnvironment(Environment.testnet), isA<Err>());
       await Future<void>.delayed(Duration.zero);
 
       expect(seen, isEmpty);

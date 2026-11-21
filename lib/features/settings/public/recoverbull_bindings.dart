@@ -15,13 +15,16 @@ final class SettingsRecoverBullBindings {
     required String databasePath,
     @visibleForTesting String? regtestHost,
   }) async {
-    final settings = await locator<SettingsRepository>().fetch();
+    final settings = (await locator<Preferences>().fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final network = settings.environment.networkEnv;
     final host = regtestHost == null
         ? RegtestHostProfile.forNetwork(network)
         : RegtestHostProfile.forNetwork(network, host: regtestHost);
     final adapter = RecoverBullSettingsAdapter(
-      locator<SettingsRepository>(),
+      locator<Preferences>(),
       locator<RecoverBullPreferences>(),
       locator<Tor>().embedded,
       locator<Tor>(),

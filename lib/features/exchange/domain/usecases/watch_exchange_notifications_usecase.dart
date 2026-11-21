@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 /// raw reason. The lifted failure exists so a caller *could* react, though the
 /// socket is best-effort and the cubit deliberately does not surface it.
 class WatchExchangeNotificationsUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeNotificationRepository _exchangeNotificationRepository;
   final ExchangeAccessRepository _access;
 

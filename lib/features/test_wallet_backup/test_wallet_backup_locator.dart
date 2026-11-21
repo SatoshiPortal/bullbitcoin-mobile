@@ -18,7 +18,7 @@ class TestWalletBackupLocator {
     locator.registerLazySingleton<LoadWalletsForNetworkUsecase>(
       () => LoadWalletsForNetworkUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerLazySingleton<GetSecretFromFingerprintUsecase>(
@@ -32,7 +32,7 @@ class TestWalletBackupLocator {
     locator.registerFactory<CheckBackupUsecase>(
       () => CheckBackupUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         backupStatus: locator<RecoverBullFacade>().status,
       ),
     );

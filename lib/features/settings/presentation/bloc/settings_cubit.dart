@@ -66,7 +66,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
   final SetAmountInputModeUsecase _setAmountInputModeUsecase;
   final SetLanguageUsecase _setLanguageUsecase;
@@ -99,7 +99,12 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
-      _getSettingsUsecase.execute(),
+      _getSettingsUsecase.fetch().then(
+        (result) => result.fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        ),
+      ),
       PackageInfo.fromPlatform(),
     ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';

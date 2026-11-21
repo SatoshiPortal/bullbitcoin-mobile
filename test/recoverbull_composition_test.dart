@@ -51,7 +51,6 @@ void main() {
       services.registerLazySingleton<Secrets>(
         () => Secrets(scratchDirectory: () async => directory.path),
       );
-      await SettingsLocator.registerDatasources(services);
       await SettingsLocator.registerRepositories(services);
       // Replace native initialization through the published host seam; keep
       // the real backend, repository and owner registrations.

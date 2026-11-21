@@ -5,7 +5,7 @@ import 'package:preferences/preferences.dart';
 class UploadKycDocumentUsecase {
   final ExchangeKycRepository _mainnetRepository;
   final ExchangeKycRepository _testnetRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   UploadKycDocumentUsecase({
     required this._mainnetRepository,
@@ -19,7 +19,10 @@ class UploadKycDocumentUsecase {
     String docType = 'ID',
     String sourceDetail = 'SECURE_UPLOAD',
   }) async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final isTestnet = settings.environment.requireHistoricalTestnet();
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;

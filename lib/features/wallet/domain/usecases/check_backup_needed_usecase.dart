@@ -28,7 +28,10 @@ class CheckBackupNeededUsecase {
   Future<Result<bool, WalletFailure>> execute() async {
     final Environment environment;
     try {
-      environment = await _settingsRepository.readActiveEnvironment();
+      environment = (await _settingsRepository.readActiveEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } on Exception {
       log.warning('recoverbull.backup.status.unavailable');
       return const Err(WalletStorageFailure());

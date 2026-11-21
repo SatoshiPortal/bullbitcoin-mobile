@@ -9,6 +9,7 @@ final class WatchBuyBitcoinUnitUsecase {
 
   Stream<BitcoinUnit?> execute() => _preferences
       .watchDisplayPreferences()
+      .map((result) => result.fold((value) => value, (_) => null))
       .map((preferences) => preferences?.bitcoinUnit)
       .distinct();
 }

@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show Ok;
+
 import 'dart:async';
 
 import 'package:preferences/preferences.dart';
@@ -20,7 +22,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
-class _Settings extends Mock implements GetSettingsUsecase {}
+class _Settings extends Mock implements Preferences {}
 
 /// Exercises the stable camera text boundary across scanner API changes.
 void registerSendQrNetworkRegression({
@@ -42,14 +44,16 @@ void registerSendQrNetworkRegression({
       Future<SettingsEntity> Function()? readSettings,
     }) async {
       final settings = _Settings();
-      when(() => settings.execute()).thenAnswer(
-        (_) async => readSettings != null
-            ? await readSettings()
-            : SettingsEntity(
-                environment: environment,
-                bitcoinUnit: BitcoinUnit.sats,
-                currencyCode: 'CAD',
-              ),
+      when(() => settings.fetch()).thenAnswer(
+        (_) async => Ok(
+          readSettings != null
+              ? await readSettings()
+              : SettingsEntity(
+                  environment: environment,
+                  bitcoinUnit: BitcoinUnit.sats,
+                  currencyCode: 'CAD',
+                ),
+        ),
       );
       final cubit = buildCubit(DetectBitcoinStringUsecase(settings: settings));
       addTearDown(cubit.close);

@@ -18,7 +18,7 @@ import '../../features/exchange/data/bbx_api_test_http.dart';
 
 class _MockRepo extends Mock implements ExchangeSupportChatRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettingsEntity extends Mock implements SettingsEntity {}
 
@@ -103,7 +103,8 @@ void main() {
 
       final settings = _MockSettingsEntity();
       when(() => settings.environment).thenReturn(Environment.mainnet);
-      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => Ok(settings));
     });
 
     test(

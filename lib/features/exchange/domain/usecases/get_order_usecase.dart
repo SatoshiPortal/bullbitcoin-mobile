@@ -7,7 +7,7 @@ import 'package:bull_logger/bull_logger.dart';
 class GetOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetOrderUsecase({
     required this._mainnetExchangeOrderRepository,
@@ -17,7 +17,10 @@ class GetOrderUsecase {
 
   Future<Order> execute({required String orderId}) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final isTestnet = settings.environment.requireHistoricalTestnet();
       final repo = isTestnet
           ? _testnetExchangeOrderRepository

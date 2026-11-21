@@ -30,7 +30,7 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         secrets: locator<Secrets>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -39,7 +39,7 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         secrets: locator<Secrets>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 

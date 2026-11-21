@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 /// when none is given, on the network of the settings. Without one,
 /// [SwapPriceUnavailableFailure]: the transfer shows no fiat value then.
 class GetSwapExchangeRateUsecase {
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final IndexPriceReader _getIndexPrice;
 
   const GetSwapExchangeRateUsecase({
@@ -21,7 +21,10 @@ class GetSwapExchangeRateUsecase {
   Future<Result<double, SwapFailure>> execute({String? currencyCode}) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the transfer price',

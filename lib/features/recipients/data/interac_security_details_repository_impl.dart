@@ -9,7 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 final class InteracSecurityDetailsRepositoryImpl
     implements InteracSecurityDetailsRepository {
   final RecipientsRepository _recipientsRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   const InteracSecurityDetailsRepositoryImpl(
     this._recipientsRepository,
@@ -24,7 +24,10 @@ final class InteracSecurityDetailsRepositoryImpl
     // for it. The repository call below already returns a Result.
     final bool isTestnet;
     try {
-      final environment = (await _settingsRepository.fetch()).environment;
+      final environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(environment.name),
         NetworkCapability.exchange,

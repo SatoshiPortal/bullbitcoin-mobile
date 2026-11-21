@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 /// made while swaps on the current server are still open.
 class SetSwapServerUsecase {
   final SwapServerSettingRepository _swapServerSettingRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final SwapEngineSwitcher _swapEngineSwitcher;
   final SwapStore _swapStore;
 
@@ -28,8 +28,10 @@ class SetSwapServerUsecase {
   @useResult
   Future<Result<SwapServer, SwapFailure>> execute(String input) async {
     try {
-      final environment =
-          (await _settingsRepository.fetch()).environment.networkEnv;
+      final environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment.networkEnv;
       if (environment == NetworkEnv.regtest) {
         return const Err(SwapUnsupportedNetworkFailure());
       }

@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_curren
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserRepository {}
@@ -46,13 +46,14 @@ void main() {
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
     );
-    when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
+    when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
 
   group('SyncExchangeCurrencyUsecase', () {
     test('regtest refuses exchange currency sync before backend IO', () async {
       when(settings.fetch).thenAnswer(
-        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+        (_) async =>
+            Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
       final result = await usecase.execute('CAD');
       expect(result, isA<Err>());

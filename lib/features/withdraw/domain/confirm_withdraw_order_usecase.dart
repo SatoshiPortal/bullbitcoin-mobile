@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 class ConfirmWithdrawOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final RecipientsFacade _recipientsFacade;
 
   ConfirmWithdrawOrderUsecase({
@@ -29,7 +29,10 @@ class ConfirmWithdrawOrderUsecase {
   }) async {
     final WithdrawOrder order;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment.networkEnv;
       final exchangeNetwork = switch (environment) {
         NetworkEnv.mainnet => BitcoinNetwork.mainnet,

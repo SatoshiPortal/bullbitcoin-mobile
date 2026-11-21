@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 class GetExchangeAnnouncementsUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeAccessRepository _access;
 
   const GetExchangeAnnouncementsUsecase({

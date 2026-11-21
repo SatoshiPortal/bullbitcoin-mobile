@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 
 class _MockOrderRepository extends Mock implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockPayjoinReceiver extends Mock implements PayjoinReceiver {}
 
@@ -29,10 +29,12 @@ void main() {
     final receiver = _MockPayjoinReceiver();
     final policy = _MockPayjoinPolicyAccess();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     final result =
@@ -86,10 +88,12 @@ void main() {
       final policy = _MockPayjoinPolicyAccess();
 
       when(() => settings.fetch()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       when(() => policy.load()).thenAnswer(
@@ -171,10 +175,12 @@ void main() {
     final policy = _MockPayjoinPolicyAccess();
 
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => policy.load()).thenAnswer(

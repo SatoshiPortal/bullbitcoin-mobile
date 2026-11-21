@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 class _Settings extends Mock implements ActiveEnvironmentReader {}
@@ -39,7 +39,7 @@ void main() {
     () async {
       final settings = _Settings();
       when(settings.readActiveEnvironment)
-          .thenAnswer((_) async => Environment.regtest);
+          .thenAnswer((_) async => Ok(Environment.regtest));
       final importer = _ImportXpub();
       final imported = _Wallet();
       when(() => imported.network).thenReturn(Network.bitcoinRegtest);

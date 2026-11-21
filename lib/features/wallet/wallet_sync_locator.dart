@@ -47,9 +47,10 @@ class SyncLocator {
   }) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(
-        readNetwork: () async => (await locator<SettingsRepository>().fetch())
-            .environment
-            .networkEnv,
+        readNetwork: () async => ((await locator<Preferences>().fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        )).environment.networkEnv,
         readWalletUsecase: ReadWalletUsecase(locator<WalletRepository>()),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         syncWalletUsecase: locator<SyncWalletUsecase>(),

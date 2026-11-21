@@ -22,7 +22,7 @@ import 'package:mocktail/mocktail.dart';
 
 /// What the repository boundary already sanitized it to. If a use-case ever
 /// widened this — or let the core family through — the assertions below fail.
-const _sanitized = SettingsStoreWriteFailure('setCurrency failed: _Exception');
+const _sanitized = PreferencesWriteFailure('setCurrency failed: _Exception');
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
@@ -30,7 +30,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _Electrum extends Mock implements ElectrumDefaultsProvisioner {}
 
@@ -47,12 +47,14 @@ void main() {
   setUp(() {
     repository = _MockSettingsRepository();
     when(() => repository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-        isSuperuser: true,
-        isDevModeEnabled: true,
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ),
       ),
     );
   });
@@ -95,7 +97,7 @@ void main() {
       expect(failure, isA<SettingsStorageFailure>(), reason: name);
       expect(
         failure,
-        isNot(isA<SettingsStoreFailure>()),
+        isNot(isA<PreferencesFailure>()),
         reason: 'the core family must not escape into the cubit',
       );
       expect(

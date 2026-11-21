@@ -145,7 +145,7 @@ class PayLocator {
     );
     locator.registerFactory<GetPayExchangeRateUsecase>(
       () => GetPayExchangeRateUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );

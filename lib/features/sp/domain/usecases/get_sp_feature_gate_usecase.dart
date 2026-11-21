@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repo
 /// Admits SP only for the active network and the exact captured configuration.
 /// Missing configuration permits setup, never a live snapshot on its own.
 class GetSpFeatureGateUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final SpBackendConfigRepository _configRepository;
 
   GetSpFeatureGateUsecase({
@@ -19,7 +19,10 @@ class GetSpFeatureGateUsecase {
     SpBackendConfig? config,
     bool allowUnconfigured = false,
   }) async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final active = BitcoinNetwork.values.firstWhere(
       (network) => network.env == settings.environment.networkEnv,
     );
@@ -40,7 +43,10 @@ class GetSpFeatureGateUsecase {
             (config == null || value == config),
     };
     if (!admitted) return false;
-    final current = await _settingsRepository.fetch();
+    final current = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     return current.isSuperuser == true &&
         current.isDevModeEnabled == true &&
         current.environment == settings.environment;

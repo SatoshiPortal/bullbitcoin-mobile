@@ -9,7 +9,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockWizardRepository extends Mock implements WizardRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _Intervals implements BackgroundSyncIntervalRepository {
   _Intervals(this.stored);
@@ -159,7 +159,7 @@ void main() {
       ),
     );
     when(() => settings.setCurrency(any()))
-        .thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+        .thenAnswer((_) async => const Err(PreferencesWriteFailure('nope')));
 
     await usecase.execute();
 
@@ -189,9 +189,8 @@ void main() {
           },
         ),
       );
-      when(
-        () => settings.setCurrency(any()),
-      ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+      when(() => settings.setCurrency(any()))
+          .thenAnswer((_) async => const Err(PreferencesWriteFailure('nope')));
 
       await usecase.execute();
 

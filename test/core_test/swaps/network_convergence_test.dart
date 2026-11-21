@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:preferences/testing.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv, Ok;
 
 import 'dart:async';
 
@@ -24,9 +25,7 @@ void main() {
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 '
           'WHERE id = 1',
         );
-        final preferences = SettingsRepositoryImpl(
-          settingsDatasource: PreferencesDao(appDb),
-        );
+        final preferences = PreferencesTesting.fromDao(PreferencesDao(appDb));
         final swapDb = BoltzSwapsDatabase(NativeDatabase.memory());
         final storage = SwapStorage(
           rows: DriftSwapRowStore(swapDb),
@@ -87,10 +86,16 @@ void main() {
         });
         switcher.start();
 
-        await preferences.setEnvironment(settings.Environment.testnet);
+        expect(
+          await preferences.setEnvironment(settings.Environment.testnet),
+          isA<Ok>(),
+        );
         await buildEntered.future.timeout(const Duration(seconds: 3));
         if (rapid) {
-          await preferences.setEnvironment(settings.Environment.mainnet);
+          expect(
+            await preferences.setEnvironment(settings.Environment.mainnet),
+            isA<Ok>(),
+          );
           await pumpEventQueue();
         }
         buildRelease.complete();
@@ -98,7 +103,10 @@ void main() {
         await pumpEventQueue();
 
         expect(
-          (await preferences.fetch()).environment,
+          ((await preferences.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).environment,
           rapid ? settings.Environment.mainnet : settings.Environment.testnet,
         );
         expect(

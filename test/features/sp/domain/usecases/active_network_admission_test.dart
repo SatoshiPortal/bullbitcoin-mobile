@@ -18,7 +18,7 @@ import 'package:secrets/secrets.dart';
 
 import '../../sp_fakes.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Account extends FakeSpAccountRepository {
   void Function()? onSnapshot;
@@ -88,12 +88,14 @@ void main() {
     active = Environment.mainnet;
     settings = _Settings();
     when(settings.fetch).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: active,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-        isSuperuser: true,
-        isDevModeEnabled: true,
+      (_) async => Ok(
+        SettingsEntity(
+          environment: active,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ),
       ),
     );
     config = FakeSpBackendConfigRepository();

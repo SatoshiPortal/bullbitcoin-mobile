@@ -21,7 +21,7 @@ class _MockBip85Repository extends Mock implements Bip85Repository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 /// Failure paths of the three BIP85 usecases.
 ///
@@ -112,10 +112,12 @@ void main() {
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
   });
@@ -273,10 +275,12 @@ void main() {
 
     test('looks up the default wallet in the active environment', () async {
       when(() => settingsRepository.fetch()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       stubWallets([defaultWallet.copyWith(network: Network.bitcoinTestnet)]);

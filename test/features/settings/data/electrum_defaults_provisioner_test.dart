@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _AppSettings extends Mock implements SettingsRepository {}
+class _AppSettings extends Mock implements Preferences {}
 
 class _Status extends Mock implements ServerStatusPort {}
 
@@ -81,12 +81,14 @@ void main() {
     );
     app = _AppSettings();
     when(() => app.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        isSuperuser: true,
-        isDevModeEnabled: true,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          isSuperuser: true,
+          isDevModeEnabled: true,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     status = _Status();
@@ -429,12 +431,14 @@ void main() {
       var callbacks = 0;
       var catalogPresentAtActivation = false;
       when(() => app.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: selected,
-          isSuperuser: true,
-          isDevModeEnabled: true,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          SettingsEntity(
+            environment: selected,
+            isSuperuser: true,
+            isDevModeEnabled: true,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(() => app.setEnvironment(any())).thenAnswer((invocation) async {
@@ -571,12 +575,14 @@ void main() {
         expect(await _prepare(provisioner, NetworkEnv.regtest), isA<Ok>());
         var selected = Environment.regtest;
         when(() => app.fetch()).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: selected,
-            isSuperuser: true,
-            isDevModeEnabled: true,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+          (_) async => Ok(
+            SettingsEntity(
+              environment: selected,
+              isSuperuser: true,
+              isDevModeEnabled: true,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
         when(() => app.setEnvironment(any())).thenAnswer((invocation) async {
@@ -605,12 +611,14 @@ void main() {
     var selected = Environment.mainnet;
     var callbacks = 0;
     when(() => app.fetch()).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: selected,
-        isSuperuser: true,
-        isDevModeEnabled: true,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        SettingsEntity(
+          environment: selected,
+          isSuperuser: true,
+          isDevModeEnabled: true,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => app.setEnvironment(any())).thenAnswer((invocation) async {

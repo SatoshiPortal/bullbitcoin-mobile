@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 void main() {
   late _Settings settings;
@@ -13,10 +13,12 @@ void main() {
 
   void stubEnvironment(Environment environment) {
     when(settings.fetch).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: environment,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        SettingsEntity(
+          environment: environment,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
   }

@@ -29,7 +29,7 @@ class DefaultWalletsLocator {
         testnetRepository: locator<ExchangeRecipientRepository>(
           instanceName: 'testnet',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -41,7 +41,7 @@ class DefaultWalletsLocator {
         testnetRepository: locator<ExchangeRecipientRepository>(
           instanceName: 'testnet',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -53,7 +53,7 @@ class DefaultWalletsLocator {
         testnetRepository: locator<ExchangeRecipientRepository>(
           instanceName: 'testnet',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 

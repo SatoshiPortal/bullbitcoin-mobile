@@ -29,7 +29,7 @@ class OnboardingLocator {
     locator.registerFactory<CompletePhysicalBackupVerificationUsecase>(
       () => CompletePhysicalBackupVerificationUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 

@@ -7,18 +7,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Settings extends Mock implements GetSettingsUsecase {}
+class _Settings extends Mock implements Preferences {}
 
 class _Repository extends Mock implements FundingRepository {}
 
 void main() {
   test('regtest refuses funding before either repository', () async {
     final settings = _Settings();
-    when(() => settings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     final mainnet = _Repository();

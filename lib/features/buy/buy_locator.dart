@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart'
-    show AmountDisplayPreferencesReader, GetSettingsUsecase, SettingsRepository;
+    show AmountDisplayPreferencesReader, Preferences;
 import 'package:bb_mobile/features/buy/domain/watch_buy_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -36,7 +36,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         payjoinReceiver: locator<PayjoinReceiver>(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
@@ -49,7 +49,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         labelsFacade: locator<Labels>(),
       ),
     );
@@ -61,7 +61,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerFactory<AccelerateBuyOrderUsecase>(
@@ -72,7 +72,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerFactory<CancelAbandonedBuyPayjoinUsecase>(
@@ -92,7 +92,7 @@ class BuyLocator {
     locator.registerFactory<LoadBuyContextUsecase>(
       () => LoadBuyContextUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),

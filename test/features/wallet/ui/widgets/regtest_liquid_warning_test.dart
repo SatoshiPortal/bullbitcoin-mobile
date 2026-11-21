@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
@@ -15,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
@@ -31,11 +32,11 @@ void main() {
       final settings = _Settings();
       final references = _References();
       when(settings.readDeveloperEnvironment).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           environment: Environment.regtest,
           isSuperuser: true,
           isDevModeEnabled: true,
-        ),
+        )),
       );
       final cubit = NetworkWalletSetupCubit(
         LoadNetworkWalletSetupUsecase(settings, references),

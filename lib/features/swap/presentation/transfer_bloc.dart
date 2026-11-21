@@ -169,7 +169,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetSwapAmountQuotesUsecase? _getSwapAmountQuotesUsecase;
   Timer? _amountQuoteTimer;
   int? _preparingAmountGeneration;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
@@ -238,7 +238,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   ) async {
     emit(state.copyWith(isStarting: true));
     try {
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (_getSwapAmountQuotesUsecase != null) {
         add(const TransferAmountQuotesRequested());
         _amountQuoteTimer ??= Timer.periodic(const Duration(minutes: 1), (_) {

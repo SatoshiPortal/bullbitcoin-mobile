@@ -17,7 +17,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
@@ -54,7 +54,7 @@ void main() {
     references = _References();
     create = _CreateDefaults();
     when(() => settings.readDeveloperEnvironment())
-        .thenAnswer((_) async => regtest);
+        .thenAnswer((_) async => Ok(regtest));
     when(() => references.list()).thenAnswer((_) async => Ok([secret.id]));
     when(
       () => create.execute(
@@ -69,11 +69,11 @@ void main() {
       'remote descriptor keeps setup available on ${environment.name}',
       () async {
         when(settings.readDeveloperEnvironment).thenAnswer(
-          (_) async => (
+          (_) async => Ok((
             environment: environment,
             isSuperuser: regtest.isSuperuser,
             isDevModeEnabled: regtest.isDevModeEnabled,
-          ),
+          )),
         );
         final localRow = _Row();
         when(() => localRow.masterFingerprint).thenReturn(secret.id.hex);
@@ -171,11 +171,11 @@ void main() {
     'empty mainnet keeps onboarding without enumerating references',
     () async {
       when(() => settings.readDeveloperEnvironment()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           environment: Environment.mainnet,
           isSuperuser: regtest.isSuperuser,
           isDevModeEnabled: regtest.isDevModeEnabled,
-        ),
+        )),
       );
       final result = await LoadNetworkWalletSetupUsecase(
         settings,
@@ -208,11 +208,11 @@ void main() {
         [secret.id],
       );
       when(() => settings.readDeveloperEnvironment()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           environment: regtest.environment,
           isSuperuser: regtest.isSuperuser,
           isDevModeEnabled: false,
-        ),
+        )),
       );
       expect(
         await usecase.execute(),

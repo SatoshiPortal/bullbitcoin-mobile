@@ -13,7 +13,7 @@ import 'package:preferences/preferences.dart';
 class ExchangeNotificationService {
   final BbxApiNotificationDatasource _mainnetDatasource;
   final BbxApiNotificationDatasource _testnetDatasource;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   final StreamController<NotificationMessage> _messageController =
       StreamController<NotificationMessage>.broadcast();
@@ -49,7 +49,10 @@ class ExchangeNotificationService {
   }
 
   Future<BbxApiNotificationDatasource> _getDatasource() async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     _isTestnet = settings.environment.requireHistoricalTestnet();
     return _isTestnet ? _testnetDatasource : _mainnetDatasource;
   }

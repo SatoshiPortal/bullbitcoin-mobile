@@ -9,7 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:swaps/swaps.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Store extends Mock implements SwapStore {}
 
@@ -30,7 +30,7 @@ void main() {
         final changes = StreamController<settings.Environment>.broadcast();
         final preferences = _Settings();
         when(() => preferences.environmentChangeStream)
-            .thenAnswer((_) => changes.stream);
+            .thenAnswer((_) => (changes.stream).map((value) => Ok(value)));
         final watcher = _Watcher();
         when(watcher.stop).thenAnswer((_) async => const Ok(null));
         when(() => watcher.drained).thenAnswer((_) => Future.value());

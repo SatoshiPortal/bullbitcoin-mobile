@@ -50,111 +50,172 @@ class PreferencesDao extends DatabaseAccessor<GeneratedDatabase>
   /// Repair persisted developer authorization before exposing the active network.
   /// The transaction prevents a concurrent settings write between read and repair.
   Future<SettingsModel> fetch() => transaction(() async {
-    var row = await managers.settings.filter((f) => f.id(1)).getSingle();
+    var row = await managers.settings.filter((f) => f.id(1)).getSingleOrNull();
+    if (row == null) throw const PreferencesMissingRowException();
     if (row.environment != Environment.mainnet.name &&
         (!row.isSuperuser || !row.isDevModeEnabled)) {
       await setIsDevMode(false);
-      row = await managers.settings.filter((f) => f.id(1)).getSingle();
+      row = await managers.settings.filter((f) => f.id(1)).getSingleOrNull();
+      if (row == null) throw const PreferencesMissingRowException();
       log.warning('Active network restored category=developerAuthorization');
+    }
+    if (!Environment.values.any((value) => value.name == row?.environment) ||
+        !BitcoinUnit.values.any((value) => value.name == row?.bitcoinUnit)) {
+      throw const FormatException('Invalid stored preferences');
     }
     return SettingsModel.fromSqlite(row);
   });
 
+  Future<void> _requireUpdated(Future<int> pending) async {
+    if (await pending != 1) throw const PreferencesMissingRowException();
+  }
+
   Future<void> setEnvironment(Environment env) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), environment: Value(env.name)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update((f) => f(id: const Value(1), environment: Value(env.name))),
     );
   }
 
   Future<void> setStartAmountsInFiat(bool fiat) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), startAmountsInFiat: Value(fiat)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(id: const Value(1), startAmountsInFiat: Value(fiat)),
+          ),
     );
   }
 
   Future<void> setBitcoinUnit(BitcoinUnit bitcoinUnit) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), bitcoinUnit: Value(bitcoinUnit.name)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(id: const Value(1), bitcoinUnit: Value(bitcoinUnit.name)),
+          ),
     );
   }
 
   Future<void> setLanguage(Language language) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), language: Value(language.name)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update((f) => f(id: const Value(1), language: Value(language.name))),
     );
   }
 
   Future<void> setCurrency(String currencyCode) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), currency: Value(currencyCode)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update((f) => f(id: const Value(1), currency: Value(currencyCode))),
     );
   }
 
   Future<void> setHideAmounts(bool hide) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), hideAmounts: Value(hide)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update((f) => f(id: const Value(1), hideAmounts: Value(hide))),
     );
   }
 
   Future<void> setIsSuperuser(bool isSuperuser) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), isSuperuser: Value(isSuperuser)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(id: const Value(1), isSuperuser: Value(isSuperuser)),
+          ),
     );
   }
 
   Future<void> setIsDevMode(bool isEnabled) async {
-    await managers.settings.update(
-      (f) => f(
-        id: const Value(1),
-        isDevModeEnabled: Value(isEnabled),
-        environment: isEnabled
-            ? const Value.absent()
-            : Value(Environment.mainnet.name),
-      ),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(
+              id: const Value(1),
+              isDevModeEnabled: Value(isEnabled),
+              environment: isEnabled
+                  ? const Value.absent()
+                  : Value(Environment.mainnet.name),
+            ),
+          ),
     );
   }
 
   Future<void> setTorProxy({required bool enabled, required int port}) async {
-    await managers.settings.update(
-      (f) => f(
-        id: const Value(1),
-        useTorProxy: Value(enabled),
-        torProxyPort: Value(port),
-      ),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(
+              id: const Value(1),
+              useTorProxy: Value(enabled),
+              torProxyPort: Value(port),
+            ),
+          ),
     );
   }
 
   Future<void> setTorTransportMode(TorTransportMode mode) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), torTransportMode: Value(mode.name)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(id: const Value(1), torTransportMode: Value(mode.name)),
+          ),
     );
   }
 
   Future<void> setLastSuccessfulTorTransport(TorTransport transport) async {
-    await managers.settings.update(
-      (f) => f(
-        id: const Value(1),
-        lastSuccessfulTorTransport: Value(transport.name),
-      ),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(
+              id: const Value(1),
+              lastSuccessfulTorTransport: Value(transport.name),
+            ),
+          ),
     );
   }
 
   Future<void> setThemeMode(AppThemeMode themeMode) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
+          ),
     );
   }
 
   Future<void> setErrorReportingEnabled(bool enabled) async {
-    await managers.settings.update(
-      (f) => f(id: const Value(1), isErrorReportingEnabled: Value(enabled)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) =>
+                f(id: const Value(1), isErrorReportingEnabled: Value(enabled)),
+          ),
     );
   }
 
   Future<void> setScreenCaptureProtectionEnabled(bool enabled) async {
-    await managers.settings.update(
-      (f) =>
-          f(id: const Value(1), screenCaptureProtectionEnabled: Value(enabled)),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(
+              id: const Value(1),
+              screenCaptureProtectionEnabled: Value(enabled),
+            ),
+          ),
     );
   }
 
@@ -162,12 +223,20 @@ class PreferencesDao extends DatabaseAccessor<GeneratedDatabase>
     String? username,
     String? password,
   }) async {
-    await managers.settings.update(
-      (f) => f(
-        id: const Value(1),
-        exchangeTestnetBasicAuthUsername: Value(username),
-        exchangeTestnetBasicAuthPassword: Value(password),
-      ),
+    await _requireUpdated(
+      managers.settings
+          .filter((row) => row.id(1))
+          .update(
+            (f) => f(
+              id: const Value(1),
+              exchangeTestnetBasicAuthUsername: Value(username),
+              exchangeTestnetBasicAuthPassword: Value(password),
+            ),
+          ),
     );
   }
+}
+
+final class PreferencesMissingRowException implements Exception {
+  const PreferencesMissingRowException();
 }

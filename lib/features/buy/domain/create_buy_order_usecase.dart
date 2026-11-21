@@ -12,7 +12,7 @@ import 'package:primitives/primitives.dart';
 class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final PayjoinReceiver _payjoinReceiver;
   final PayjoinPolicyAccess _payjoinPolicy;
 
@@ -46,7 +46,10 @@ class CreateBuyOrderUsecase {
     int? payjoinAmountSat,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment.networkEnv;
       final exchangeNetwork = switch (environment) {
         NetworkEnv.mainnet => BitcoinNetwork.mainnet,

@@ -5,7 +5,7 @@ import 'package:preferences/preferences.dart';
 class DeleteDefaultWalletUsecase {
   final ExchangeRecipientRepository _mainnetRepository;
   final ExchangeRecipientRepository _testnetRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   DeleteDefaultWalletUsecase({
     required this._mainnetRepository,
@@ -18,7 +18,10 @@ class DeleteDefaultWalletUsecase {
     required WalletAddressType walletType,
     required String address,
   }) async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final isTestnet = settings.environment.requireHistoricalTestnet();
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;

@@ -17,7 +17,11 @@ class GetWalletTransactionsUsecase {
     bool sync = false,
   }) async {
     try {
-      final environment = await _settingsRepository.readActiveEnvironment();
+      final environment = (await _settingsRepository.readActiveEnvironment())
+          .fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
       final walletTransactions = await _walletTransactionRepository
           .getWalletTransactions(
             walletId: walletId,

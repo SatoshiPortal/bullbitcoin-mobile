@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Electrum extends Mock implements ElectrumDefaultsProvisioner {}
 
@@ -52,12 +52,14 @@ void main() {
       for (final developer in [null, false, true]) {
         test('$network requires both flags: $superuser $developer', () async {
           when(() => repository.fetch()).thenAnswer(
-            (_) async => SettingsEntity(
-              environment: Environment.mainnet,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'CAD',
-              isSuperuser: superuser,
-              isDevModeEnabled: developer,
+            (_) async => Ok(
+              SettingsEntity(
+                environment: Environment.mainnet,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'CAD',
+                isSuperuser: superuser,
+                isDevModeEnabled: developer,
+              ),
             ),
           );
           when(() => repository.setEnvironment(environment))
@@ -92,8 +94,9 @@ void main() {
     verifyNever(() => repository.fetch());
   });
 
-  test('read exception becomes a typed failure and never writes', () async {
-    when(() => repository.fetch()).thenThrow(Exception('private data'));
+  test('read failure refuses the network change and never writes', () async {
+    when(() => repository.fetch())
+        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
     final result = await usecase.execute(NetworkEnv.testnet);
     expect(
       (result as Err<void, SettingsFailure>).failure,
@@ -113,7 +116,7 @@ void main() {
 
   test('write refusal is not reported as a successful selection', () async {
     when(() => repository.setEnvironment(Environment.mainnet)).thenAnswer(
-      (_) async => const Err(SettingsStoreWriteFailure('storage details')),
+      (_) async => const Err(PreferencesWriteFailure('storage details')),
     );
     final result = await usecase.execute(NetworkEnv.mainnet);
     expect(
@@ -135,12 +138,14 @@ void main() {
   });
   test('regtest preparation failure leaves the network unchanged', () async {
     when(() => repository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-        isSuperuser: true,
-        isDevModeEnabled: true,
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ),
       ),
     );
     when(() => electrum.prepareForegroundStorage(NetworkEnv.regtest))
@@ -160,12 +165,14 @@ void main() {
       var permitted = true;
       final gate = Completer<Result<void, ElectrumFailure>>();
       when(() => repository.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-          isSuperuser: true,
-          isDevModeEnabled: permitted,
+        (_) async => Ok(
+          SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            isSuperuser: true,
+            isDevModeEnabled: permitted,
+          ),
         ),
       );
       when(() => electrum.prepareForegroundStorage(NetworkEnv.regtest))

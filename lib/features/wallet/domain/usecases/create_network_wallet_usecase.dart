@@ -30,7 +30,10 @@ final class CreateNetworkWalletUsecase {
     Fingerprint? reuse,
   }) async {
     try {
-      final settings = await _settings.readDeveloperEnvironment();
+      final settings = (await _settings.readDeveloperEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (network == NetworkEnv.mainnet ||
           network == NetworkEnv.signet ||
           settings.environment.networkEnv != network ||

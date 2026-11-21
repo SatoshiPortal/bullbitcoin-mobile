@@ -6,5 +6,7 @@ class WatchPriceCurrencyUsecase {
 
   const WatchPriceCurrencyUsecase(this._preferences);
 
-  Stream<String> execute() => _preferences.currencyChangeStream;
+  Stream<String> execute() => _preferences.currencyChangeStream.expand<String>(
+    (result) => result.fold((value) => [value], (_) => const []),
+  );
 }

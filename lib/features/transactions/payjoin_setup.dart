@@ -39,8 +39,10 @@ abstract final class PayjoinSetup {
     bool? capturedRegtest;
     Future<bool> isCurrent() async {
       try {
-        final active =
-            (await locator<GetSettingsUsecase>().execute()).activeNetwork;
+        final active = ((await locator<Preferences>().fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        )).activeNetwork;
         final captured = capturedRegtest;
         if (captured == null) return true;
         return captured
@@ -54,7 +56,10 @@ abstract final class PayjoinSetup {
     Future<RegtestHostProfile?>? capturedProfile;
     Future<RegtestHostProfile?> captureProfile() =>
         capturedProfile ??= () async {
-          final settings = await locator<GetSettingsUsecase>().execute();
+          final settings = (await locator<Preferences>().fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
           final host = RegtestHostProfile.forNetwork(settings.activeNetwork);
           capturedRegtest = host != null;
           return host;

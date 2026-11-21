@@ -16,7 +16,7 @@ import 'package:primitives/primitives.dart';
 
 class LoadBuyContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
@@ -40,7 +40,10 @@ class LoadBuyContextUsecase {
   userSummaryAndSettings() async {
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return Ok((userSummary: userSummary, settings: settings));
     } catch (e, st) {
       log.severe(
@@ -105,7 +108,10 @@ class LoadBuyContextUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the buy price',

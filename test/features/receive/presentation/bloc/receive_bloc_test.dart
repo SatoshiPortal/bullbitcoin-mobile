@@ -47,7 +47,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 class _MockGetReceiveSwapLimitsUsecase extends Mock
     implements GetReceiveSwapLimitsUsecase {}
 
-class _MockSettings extends Mock implements GetSettingsUsecase {}
+class _MockSettings extends Mock implements Preferences {}
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
@@ -530,11 +530,13 @@ void main() {
         'regtest Lightning uses Boltz preset=$preset warm=$warm without an Exchange order',
         () async {
           final inner = _MockSettings();
-          when(() => inner.execute()).thenAnswer(
-            (_) async => SettingsEntity(
-              environment: preset ? Environment.mainnet : Environment.regtest,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'USD',
+          when(() => inner.fetch()).thenAnswer(
+            (_) async => Ok(
+              SettingsEntity(
+                environment: preset ? Environment.mainnet : Environment.regtest,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
             ),
           );
           final selected = _testWallet(network: Network.bitcoinRegtest);
@@ -658,11 +660,13 @@ void main() {
 
   test('Liquid regtest is admitted and reaches the Liquid wallet lookup', () async {
     final inner = _MockSettings();
-    when(() => inner.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => inner.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     final selected = _testWallet(network: Network.bitcoinRegtest);

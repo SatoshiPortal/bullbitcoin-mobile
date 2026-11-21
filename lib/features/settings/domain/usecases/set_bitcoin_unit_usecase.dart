@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:meta/meta.dart';
 
 class SetBitcoinUnitUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   const SetBitcoinUnitUsecase({required this._settingsRepository});
 

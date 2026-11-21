@@ -14,7 +14,7 @@ import 'package:primitives/primitives.dart';
 class GetExchangeUserSummaryUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetExchangeUserSummaryUsecase({
     required this._mainnetExchangeUserRepository,
@@ -28,7 +28,10 @@ class GetExchangeUserSummaryUsecase {
     // surface as one, not as a raw exception. Type only in the message.
     final SettingsEntity settings;
     try {
-      settings = await _settingsRepository.fetch();
+      settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } on Error {
       rethrow;
     } catch (e) {

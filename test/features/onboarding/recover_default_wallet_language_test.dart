@@ -18,7 +18,7 @@ import 'package:primitives/primitives.dart' as p;
 import 'package:secrets/secrets.dart' as s;
 import 'package:secrets/testing.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Wallets extends Mock implements WalletRepository {}
 
@@ -55,12 +55,14 @@ void main() {
     registerFallbackValue(ScriptType.bip84);
     final settings = _Settings();
     when(settings.readActiveEnvironment)
-        .thenAnswer((_) async => Environment.mainnet);
+        .thenAnswer((_) async => Ok(Environment.mainnet));
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     final wallets = _Wallets();

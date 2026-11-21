@@ -14,7 +14,7 @@ final class RecoverBullSettingsAdapter
         RecoverBullRoutePort,
         RecoverBullEnvironmentPort,
         RecoverBullLegacySettingsPort {
-  final SettingsRepository _settings;
+  final Preferences _settings;
   final RecoverBullPreferences _preferences;
   final EmbeddedTor _embedded;
   final Tor _tor;
@@ -42,7 +42,10 @@ final class RecoverBullSettingsAdapter
   Future<bool> _runtimeIsCurrent() async {
     if (_closed) return false;
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return !_closed && _matchesRuntime(settings);
     } on Exception {
       return false;
@@ -52,7 +55,10 @@ final class RecoverBullSettingsAdapter
   @override
   Future<Result<BitcoinNetwork, RecoverBullFailure>> currentNetwork() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }
@@ -66,7 +72,10 @@ final class RecoverBullSettingsAdapter
   @override
   Future<Result<LegacyBackupSettings, RecoverBullFailure>> read() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }
@@ -79,7 +88,16 @@ final class RecoverBullSettingsAdapter
           ),
         );
       }
-      final preference = await _preferences.read();
+      final stored = await _preferences.read();
+      final RecoverBullServerPreference? preference;
+      switch (stored) {
+        case Ok(:final value):
+          preference = value;
+        case Err(failure: PreferencesInvalidFailure()):
+          return const Err(VaultInvalidFailure());
+        case Err():
+          return const Err(VaultStorageFailure());
+      }
       if (preference == null) return const Err(VaultStorageFailure());
       return Ok(
         LegacyBackupSettings(
@@ -135,7 +153,10 @@ final class RecoverBullSettingsAdapter
       if (_closed) {
         return const Err(VaultCancelledFailure());
       }
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }

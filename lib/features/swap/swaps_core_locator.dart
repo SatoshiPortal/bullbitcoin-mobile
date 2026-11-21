@@ -75,8 +75,10 @@ class SwapsLocator {
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
-    final environment =
-        (await locator<SettingsRepository>().fetch()).environment;
+    final environment = ((await locator<Preferences>().fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    )).environment;
     locator.registerLazySingleton<SwapServerSettingRepository>(
       SwapServerSettingRepositoryImpl.new,
     );
@@ -117,7 +119,7 @@ class SwapsLocator {
     );
     locator.registerLazySingleton<SwapEngineSwitcher>(
       () => SwapEngineSwitcher(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         engine: locator<SwitchableSwapEngine>(),
         swapWatcher: locator<SwapWatcher>(),
         build: ({required environment}) async => _buildEngine(
@@ -135,7 +137,7 @@ class SwapsLocator {
     locator.registerLazySingleton<AutoSwapSettingsRepository>(
       () => AutoSwapSettingsRepositoryImpl(
         locator<SqliteDatabase>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
       ),
     );
   }
@@ -170,7 +172,7 @@ class SwapsLocator {
       electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
       lockupChain: AppLockupChain(
         locator<WalletConnectionPort>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
       newAddressFor: (walletId) async =>
           (await addresses.generateNewReceiveAddress(walletId: walletId))

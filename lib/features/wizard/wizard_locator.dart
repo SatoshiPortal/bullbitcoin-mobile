@@ -29,7 +29,7 @@ class WizardLocator {
           return result is Ok;
         },
         wizardRepository: locator<WizardRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
       ),
     );

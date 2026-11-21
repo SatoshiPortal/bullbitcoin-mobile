@@ -19,7 +19,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockRepository extends Mock implements RecipientsRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSepaVirtualPayeeRepository extends Mock
     implements SepaVirtualPayeeRepository {}
@@ -236,10 +236,12 @@ void main() {
     test('returns the environment on success', () async {
       final settings = _MockSettingsRepository();
       when(() => settings.fetch()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
 

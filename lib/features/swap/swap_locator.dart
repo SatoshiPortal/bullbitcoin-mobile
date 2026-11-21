@@ -217,20 +217,20 @@ class SwapLocator {
     );
     locator.registerFactory<GetSwapExchangeRateUsecase>(
       () => GetSwapExchangeRateUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
     locator.registerFactory<GetSwapRouteUsecase>(
       () => GetSwapRouteUsecase(
         swapRouteSettingRepository: locator<SwapRouteSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
       ),
     );
     locator.registerFactory<GetSwapRouteSettingsUsecase>(
       () => GetSwapRouteSettingsUsecase(
         swapRouteSettingRepository: locator<SwapRouteSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
       ),
     );
     locator.registerFactory<SetSwapExchangeFallbackUsecase>(
@@ -243,13 +243,13 @@ class SwapLocator {
     locator.registerFactory<GetSwapServerUsecase>(
       () => GetSwapServerUsecase(
         swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
       ),
     );
     locator.registerFactory<SetSwapServerUsecase>(
       () => SetSwapServerUsecase(
         swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
         swapEngineSwitcher: locator<SwapEngineSwitcher>(),
         swapStore: locator<SwapStore>(),
       ),
@@ -367,10 +367,10 @@ class SwapLocator {
     locator.registerFactory<TransferBloc>(
       () => TransferBloc(
         getSwapAmountQuotesUsecase: GetSwapAmountQuotesUsecase(
-          settings: locator<GetSettingsUsecase>(),
+          settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),

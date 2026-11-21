@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -54,7 +54,7 @@ void main() {
       backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
     );
     when(settingsRepository.readActiveEnvironment)
-        .thenAnswer((_) async => Environment.mainnet);
+        .thenAnswer((_) async => Ok(Environment.mainnet));
   });
 
   test('a wallet with neither backup tested needs a backup', () async {

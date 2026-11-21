@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 /// on, in the active environment.
 class GetSwapRescueWalletsUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   const GetSwapRescueWalletsUsecase({
     required this._walletRepository,
@@ -22,7 +22,10 @@ class GetSwapRescueWalletsUsecase {
   }) async {
     final Environment environment;
     try {
-      environment = (await _settingsRepository.fetch()).environment;
+      environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
     } catch (e) {
       return Err(WalletStorageFailure('settings fetch: ${e.runtimeType}'));
     }

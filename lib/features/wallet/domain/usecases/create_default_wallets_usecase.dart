@@ -45,7 +45,11 @@ class CreateDefaultWalletsUsecase {
       return const Err(DefaultWalletMnemonicRequiredFailure());
     }
     try {
-      final environment = await _settingsRepository.readActiveEnvironment();
+      final environment = (await _settingsRepository.readActiveEnvironment())
+          .fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
 
       if (expectedNetwork != null &&
           environment.networkEnv != expectedNetwork) {

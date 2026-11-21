@@ -17,7 +17,7 @@ class DcaLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<StartDcaUsecase>(
       () => StartDcaUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',
         ),
@@ -35,7 +35,7 @@ class DcaLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         wallet: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletAddressRepository: locator<WalletAddressRepository>(),
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',

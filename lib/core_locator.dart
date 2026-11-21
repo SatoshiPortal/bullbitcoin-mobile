@@ -38,7 +38,6 @@ class CoreLocator {
     FeesLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
-    await SettingsLocator.registerDatasources(locator);
     Bip85DerivationsLocator.registerDatasources(locator);
   }
 
@@ -57,8 +56,11 @@ class CoreLocator {
     RegtestElectrumProfile? regtestProfile,
   }) async {
     await SettingsLocator.registerRepositories(locator);
-    final settingsRepository = locator<settings.SettingsRepository>();
-    final appSettings = await settingsRepository.fetch();
+    final settingsRepository = locator<settings.Preferences>();
+    final appSettings = (await settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final prepared = await locator<ElectrumDefaultsProvisioner>()
         .prepareForegroundStorage(
           appSettings.environment.networkEnv,
@@ -108,7 +110,6 @@ class CoreLocator {
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
-    SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases(locator);

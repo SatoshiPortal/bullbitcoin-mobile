@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart' show Preferences;
 import 'package:bb_mobile/features/settings/public/language_locale.dart'
     show LanguageExtension;
 
@@ -6,7 +7,6 @@ import 'dart:ui';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
@@ -36,11 +36,12 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   }
   final sqlite = SqliteDatabase();
   resources.onClose(sqlite.close);
-  final settings = SettingsRepositoryImpl(
-    settingsDatasource: sqlite.preferencesDao,
-  );
+  final settings = Preferences.open(database: sqlite);
   resources.onClose(settings.close);
-  final language = await settings.readLanguage();
+  final language = (await settings.readLanguage()).fold(
+    (value) => value,
+    (failure) => throw Exception('Preferences read failed'),
+  );
   // Browsing another network does not retire captured regtest obligations.
   final directory = '${documents.path}/ark';
   final registry = switch (SqliteArkAccountRegistry.open(

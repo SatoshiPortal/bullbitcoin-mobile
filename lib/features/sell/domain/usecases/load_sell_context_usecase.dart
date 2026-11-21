@@ -17,7 +17,7 @@ import 'package:primitives/primitives.dart';
 /// Sell's boundary onto the shared read-only core use-cases.
 class LoadSellContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
   final IndexPriceReader _getIndexPrice;
@@ -41,7 +41,10 @@ class LoadSellContextUsecase {
   userSummaryAndSettings() async {
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return Ok((userSummary: userSummary, settings: settings));
     } catch (e, st) {
       log.severe(
@@ -102,7 +105,10 @@ class LoadSellContextUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the sell price',

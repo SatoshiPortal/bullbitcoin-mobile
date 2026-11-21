@@ -18,7 +18,7 @@ class Bip85EntropyLocator {
         bip85Repository: locator<Bip85Repository>(),
         secrets: locator<Secrets>(),
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 

@@ -1,6 +1,23 @@
+export 'src/preferences.dart'
+    show
+        Preferences,
+        AnnouncementDismissals,
+        DismissedAnnouncement,
+        RecoverBullPreferences,
+        RecoverBullServerPreference;
 export 'src/domain/amount_display_preferences.dart';
-export 'src/domain/get_settings_usecase.dart' show GetSettingsUsecase;
 export 'src/domain/settings_entity.dart';
-export 'src/domain/settings_repository.dart';
-export 'src/domain/settings_store_failure.dart';
-export 'src/data/legacy_preferences.dart';
+export 'src/domain/preferences_failure.dart';
+export 'src/domain/settings_repository.dart'
+    show
+        ActiveEnvironmentReader,
+        ConnectionPreferences,
+        ConnectionPreferencesReader,
+        DeveloperEnvironmentPreferences,
+        DeveloperEnvironmentReader,
+        TorProxyPreferences,
+        TorProxyPreferencesReader,
+        ExchangeWebPreferences,
+        ExchangeTestnetBasicAuthPreferences,
+        RuntimeDisplayPreferencesReader,
+        AmountInputPreferences;

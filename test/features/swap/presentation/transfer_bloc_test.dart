@@ -78,7 +78,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
@@ -183,7 +183,7 @@ Matcher _paysTo(String address, {int? amountSat}) =>
 
 class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
 
-class _SettingsRepository extends Mock implements SettingsRepository {}
+class _SettingsRepository extends Mock implements Preferences {}
 
 Matcher _toWallet(String walletId) =>
     isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
@@ -371,11 +371,13 @@ void main() {
   tearDown(() => bloc.close());
 
   test('late quotes and input notifications cannot change a confirmed direct transfer', () async {
-    when(getSettings.execute).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+    when(getSettings.fetch).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     var reads = 0;
@@ -601,12 +603,14 @@ void main() {
         final blockchain = _Blockchain();
         final settings = _SettingsRepository();
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-            isSuperuser: true,
-            isDevModeEnabled: true,
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.testnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+              isSuperuser: true,
+              isDevModeEnabled: true,
+            ),
           ),
         );
         var broadcasts = 0;
@@ -2131,7 +2135,7 @@ void main() {
       bitcoinUnit: BitcoinUnit.sats,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
@@ -2157,7 +2161,7 @@ void main() {
       bitcoinUnit: BitcoinUnit.btc,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
@@ -2182,7 +2186,7 @@ void main() {
       bitcoinUnit: BitcoinUnit.btc,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
@@ -2208,7 +2212,7 @@ void main() {
       bitcoinUnit: BitcoinUnit.btc,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
@@ -2228,11 +2232,13 @@ void main() {
   });
 
   test('resumes the persisted non-default wallet pair', () async {
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getPendingOrders.execute())
@@ -2261,11 +2267,13 @@ void main() {
   });
 
   test('surfaces a typed failure from the order watcher', () async {
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getPendingOrders.execute())
@@ -2330,11 +2338,13 @@ void main() {
       final expired = _prepared(
         order: _order(deadline: DateTime.utc(2026, 1, 1, 0, 5)),
       );
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+      when(() => getSettings.fetch()).thenAnswer(
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(() => getPendingOrders.execute())
@@ -3302,11 +3312,13 @@ void main() {
       final destination = _destinationWallet().copyWith(
         network: Network.bitcoinRegtest,
       );
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+      when(() => getSettings.fetch()).thenAnswer(
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(() => getPendingOrders.execute())
@@ -3338,11 +3350,13 @@ void main() {
     final destination = _destinationWallet().copyWith(
       network: Network.bitcoinRegtest,
     );
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getPendingOrders.execute()).thenAnswer(

@@ -22,7 +22,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
@@ -58,11 +58,11 @@ void main() {
       addTearDown(() => temporary.deleteSync(recursive: true));
       final settings = _Settings();
       when(settings.readDeveloperEnvironment).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           environment: environment,
           isSuperuser: true,
           isDevModeEnabled: true,
-        ),
+        )),
       );
       final references = _References();
       final defaults = _Defaults();

@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
@@ -31,7 +32,7 @@ void main() {
   test('successful parsing clears a previous validation failure', () async {
     final settings = _MockActiveEnvironmentReader();
     when(() => settings.readActiveEnvironment())
-        .thenAnswer((_) async => Environment.testnet);
+        .thenAnswer((_) async => Ok(Environment.testnet));
     final cubit = ImportWatchOnlyCubit(
       importWatchOnlyDescriptorUsecase: _MockImportWatchOnlyDescriptorUsecase(),
       importWatchOnlyXpubUsecase: _MockImportWatchOnlyXpubUsecase(),
@@ -61,7 +62,7 @@ void main() {
     final importDescriptor = _MockImportWatchOnlyDescriptorUsecase();
     final settings = _MockActiveEnvironmentReader();
     when(() => settings.readActiveEnvironment())
-        .thenAnswer((_) async => Environment.testnet);
+        .thenAnswer((_) async => Ok(Environment.testnet));
     final cubit = ImportWatchOnlyCubit(
       watchOnlyWallet: wallet,
       importWatchOnlyDescriptorUsecase: importDescriptor,

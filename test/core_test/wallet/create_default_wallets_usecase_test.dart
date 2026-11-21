@@ -12,7 +12,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart' as s;
 import 'package:secrets/testing.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Wallets extends Mock implements WalletRepository {}
 
@@ -40,7 +40,7 @@ void main() {
     settings = _Settings();
     wallets = _Wallets();
     when(() => settings.readActiveEnvironment())
-        .thenAnswer((_) async => Environment.mainnet);
+        .thenAnswer((_) async => Ok(Environment.mainnet));
     when(
       () => wallets.getWallets(
         onlyDefaults: true,
@@ -98,7 +98,7 @@ void main() {
   test('regtest creates both defaults on regtest after native provisioning resumes', () async {
     var resumed = false;
     when(settings.readActiveEnvironment)
-        .thenAnswer((_) async => Environment.regtest);
+        .thenAnswer((_) async => Ok(Environment.regtest));
     when(
       () => wallets.getWallets(
         onlyDefaults: true,

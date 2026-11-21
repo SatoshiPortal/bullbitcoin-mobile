@@ -15,7 +15,7 @@ import 'package:primitives/primitives.dart';
 import '../../exchange/data/exchange_log_capture.dart';
 import '../../exchange/data/bbx_api_test_http.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 const _order = {
   'limitOrderId': 'lo-1',
@@ -56,10 +56,12 @@ void main() {
 
   void useEnvironment(Environment environment) {
     when(() => settings.fetch()).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: environment,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        SettingsEntity(
+          environment: environment,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
   }

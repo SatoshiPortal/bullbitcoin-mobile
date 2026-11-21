@@ -29,7 +29,10 @@ final class LoadNetworkWalletSetupUsecase {
   Future<Result<NetworkWalletSetup, NetworkWalletSetupFailure>>
   execute() async {
     try {
-      final settings = await _settings.readDeveloperEnvironment();
+      final settings = (await _settings.readDeveloperEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final network = settings.environment.networkEnv;
       if (network == NetworkEnv.mainnet) {
         return const Ok(NetworkWalletSetup(NetworkEnv.mainnet, []));

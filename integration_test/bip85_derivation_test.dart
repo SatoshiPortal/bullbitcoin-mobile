@@ -54,7 +54,7 @@ Future<void> main({bool isInitialized = false}) async {
     bip85Repository: bip85Repository,
     walletRepository: walletRepository,
     secrets: secrets,
-    settingsRepository: locator<SettingsRepository>(),
+    settingsRepository: locator<Preferences>(),
   );
 
   setUpAll(() async {

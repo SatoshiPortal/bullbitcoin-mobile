@@ -16,7 +16,7 @@ class _Access extends Mock implements ExchangeAccessRepository {}
 
 class _Account extends Mock implements ExchangeAccountRepository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Expire extends Mock implements ExpireExchangeSessionUsecase {}
 
@@ -40,10 +40,12 @@ void main() {
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
     when(() => access.epoch).thenAnswer((_) => epoch);
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.btc,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(
@@ -133,10 +135,12 @@ void main() {
 
   test('testnet uses the testnet account repository', () async {
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.btc,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(

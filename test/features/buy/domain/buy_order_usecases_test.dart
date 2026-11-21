@@ -14,7 +14,7 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
@@ -42,7 +42,7 @@ void main() {
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
   });
 
   test(
@@ -50,7 +50,7 @@ void main() {
     () async {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.regtest);
-      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
       final labels = _MockLabels();
       final refresh = RefreshBuyOrderUsecase(
         mainnetExchangeOrderRepository: mainnet,
@@ -148,7 +148,7 @@ void main() {
     test('uses the testnet repository on testnet', () async {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.testnet);
-      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
       when(() => testnet.refreshBuyOrder('order-1'))
           .thenAnswer((_) async => _MockBuyOrder());
 

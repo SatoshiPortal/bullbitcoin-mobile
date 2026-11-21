@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
@@ -33,7 +33,7 @@ void main() {
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
 
     usecase = RefreshSellOrderUsecase(
       mainnetExchangeOrderRepository: mainnet,
@@ -52,10 +52,12 @@ void main() {
 
   test('regtest refuses sell refresh before backend IO', () async {
     when(settingsRepository.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     final result = await usecase.execute(
@@ -211,7 +213,7 @@ void main() {
   test('uses the testnet repository on testnet', () async {
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.testnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
     final order = orderPaying(_confirmedAddress);
     when(() => testnet.refreshSellOrder('order-1'))
         .thenAnswer((_) async => order);

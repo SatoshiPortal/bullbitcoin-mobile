@@ -6,7 +6,7 @@ import 'package:bull_logger/bull_logger.dart';
 
 class GetSwapRouteUsecase {
   final SwapRouteSettingRepository _swapRouteSettingRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetSwapRouteUsecase({
     required this._swapRouteSettingRepository,
@@ -27,7 +27,11 @@ class GetSwapRouteUsecase {
     var devModeEnabled = false;
     try {
       devModeEnabled =
-          (await _settingsRepository.fetch()).isDevModeEnabled ?? false;
+          ((await _settingsRepository.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).isDevModeEnabled ??
+          false;
     } catch (e) {
       log.warning('Swap route: settings unreadable (${e.runtimeType})');
     }

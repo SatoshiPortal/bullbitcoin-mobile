@@ -18,7 +18,7 @@ import 'package:secrets/testing.dart';
 class _MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -98,7 +98,8 @@ void main() {
     // No wallet references any seed unless a test says so.
     when(() => walletRepository.getWallets())
         .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => Ok(settings));
   });
 
   void stubCreateWallet(Future<Wallet> Function() answer) {

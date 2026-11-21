@@ -12,7 +12,7 @@ import 'package:primitives/primitives.dart';
 class PlacePayOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final PayjoinPolicyAccess _payjoinPolicy;
   final WalletFacade _wallet;
 
@@ -44,7 +44,10 @@ class PlacePayOrderUsecase {
           );
         }
       }
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,

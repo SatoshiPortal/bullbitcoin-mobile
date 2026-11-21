@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 
 class CheckBackupUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final Future<rb.Result<rb.BackupStatus, rb.RecoverBullFailure>> Function(
     rb.VaultContext,
   )
@@ -25,7 +25,10 @@ class CheckBackupUsecase {
   @useResult
   Future<Result<bool, TestWalletBackupFailure>> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> defaultWallets;
       switch (await _walletRepository.getWallets(
         onlyDefaults: true,

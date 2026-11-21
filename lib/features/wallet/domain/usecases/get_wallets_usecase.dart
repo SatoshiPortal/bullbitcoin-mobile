@@ -29,7 +29,10 @@ class GetWalletsUsecase {
   }) async {
     final Environment environment;
     try {
-      environment = await _settingsRepository.readActiveEnvironment();
+      environment = (await _settingsRepository.readActiveEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(message: 'GetWalletsUsecase: settings', error: e, trace: st);
       return Err(WalletStorageFailure('settings fetch: ${e.runtimeType}'));

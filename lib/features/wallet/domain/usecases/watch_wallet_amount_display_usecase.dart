@@ -6,6 +6,7 @@ final class WatchWalletAmountDisplayUsecase {
 
   const WatchWalletAmountDisplayUsecase(this._preferences);
 
-  Stream<AmountDisplayPreferences?> execute() =>
-      _preferences.watchDisplayPreferences();
+  Stream<AmountDisplayPreferences?> execute() => _preferences
+      .watchDisplayPreferences()
+      .map((result) => result.fold((value) => value, (_) => null));
 }

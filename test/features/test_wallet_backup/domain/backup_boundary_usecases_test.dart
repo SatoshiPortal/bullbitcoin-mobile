@@ -19,7 +19,7 @@ import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockCompletePhysicalBackupVerificationUsecase extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
@@ -64,7 +64,7 @@ void main() {
         settingsRepository: settings,
         backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
       );
-      when(() => settings.fetch()).thenAnswer((_) async => _settings);
+      when(() => settings.fetch()).thenAnswer((_) async => Ok(_settings));
     });
 
     void stubWallets(List<Wallet> value) => when(
@@ -127,7 +127,7 @@ void main() {
         walletRepository: wallets,
         settingsRepository: settings,
       );
-      when(() => settings.fetch()).thenAnswer((_) async => _settings);
+      when(() => settings.fetch()).thenAnswer((_) async => Ok(_settings));
     });
 
     test('reports an empty list as a distinct failure, not an empty Ok, so '

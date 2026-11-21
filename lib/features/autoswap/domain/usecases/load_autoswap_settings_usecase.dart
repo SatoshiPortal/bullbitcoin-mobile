@@ -19,7 +19,7 @@ typedef AutoswapSettingsData = ({
 
 class LoadAutoswapSettingsUsecase {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final WalletRepository _walletRepository;
 
   const LoadAutoswapSettingsUsecase({
@@ -31,7 +31,10 @@ class LoadAutoswapSettingsUsecase {
   @useResult
   Future<Result<AutoswapSettingsData, AutoswapFailure>> execute() async {
     try {
-      final appSettings = await _getSettingsUsecase.execute();
+      final appSettings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
 
       final List<Wallet> wallets;

@@ -41,7 +41,7 @@ class AutoSwapLocator {
         locator<RecordPendingSwapLockupUsecase>(),
         locator<DropPendingSwapLockupUsecase>(),
         locator<WalletRepository>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
         locator<LiquidWalletRepository>(),
         locator<GetReceiveAddressUsecase>(),
         locator<BroadcastLiquidTransactionUsecase>(),
@@ -51,7 +51,7 @@ class AutoSwapLocator {
     locator.registerLazySingleton<ExchangeAutoswapProvider>(
       () => ExchangeAutoswapProvider(
         locator<WalletRepository>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
         locator<LiquidWalletRepository>(),
         locator<GetReceiveAddressUsecase>(),
         locator<BroadcastLiquidTransactionUsecase>(),
@@ -65,7 +65,7 @@ class AutoSwapLocator {
     locator.registerFactory<LoadAutoswapSettingsUsecase>(
       () => LoadAutoswapSettingsUsecase(
         getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         walletRepository: locator<WalletRepository>(),
       ),
     );

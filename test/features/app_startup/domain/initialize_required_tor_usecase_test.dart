@@ -12,7 +12,7 @@ class _MockAppStartupWalletPort extends Mock implements AppStartupWalletPort {}
 class _MockEnsureTorReadyUsecase extends Mock
     implements EnsureTorReadyUsecase {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockTor extends Mock implements Tor {}
 
@@ -73,7 +73,7 @@ void main() {
     when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
         .thenAnswer((_) async => const Ok(true));
     when(() => settingsRepository.fetch())
-        .thenAnswer((_) async => _settings(useTorProxy: true));
+        .thenAnswer((_) async => Ok(_settings(useTorProxy: true)));
     when(() => externalTor.verify(any()))
         .thenAnswer((_) async => TorReady(route));
 
@@ -90,7 +90,7 @@ void main() {
       when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
           .thenAnswer((_) async => const Ok(true));
       when(() => settingsRepository.fetch())
-          .thenAnswer((_) async => _settings(useTorProxy: true));
+          .thenAnswer((_) async => Ok(_settings(useTorProxy: true)));
       when(() => externalTor.verify(any())).thenAnswer(
         (_) async =>
             TorUnavailable(source: TorSource.external, failure: failure),
@@ -108,7 +108,7 @@ void main() {
     when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
         .thenAnswer((_) async => const Ok(true));
     when(() => settingsRepository.fetch())
-        .thenAnswer((_) async => _settings(useTorProxy: false));
+        .thenAnswer((_) async => Ok(_settings(useTorProxy: false)));
     when(() => ensureTorReadyUsecase.execute()).thenAnswer((_) async => ready);
 
     expect(await usecase.execute(), same(ready));

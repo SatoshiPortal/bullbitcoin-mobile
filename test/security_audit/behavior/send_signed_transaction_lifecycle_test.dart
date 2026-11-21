@@ -95,7 +95,7 @@ class _MockSelectBestWalletUsecase extends Mock
 class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}

@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockSwapRouteSettingRepository extends Mock
     implements SwapRouteSettingRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettingsEntity extends Mock implements SettingsEntity {}
 
@@ -34,7 +34,8 @@ void main() {
     routeSettings = _MockSwapRouteSettingRepository();
     settingsRepository = _MockSettingsRepository();
     settings = _MockSettingsEntity();
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => Ok(settings));
     when(() => settings.isDevModeEnabled).thenReturn(false);
     usecase = GetSwapRouteUsecase(
       swapRouteSettingRepository: routeSettings,

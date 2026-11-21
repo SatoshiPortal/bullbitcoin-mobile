@@ -37,11 +37,11 @@ class _Throwing implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Summary extends Mock implements GetExchangeUserSummaryUsecase {}
 
-class _GetSettings extends Mock implements GetSettingsUsecase {}
+class _GetSettings extends Mock implements Preferences {}
 
 class _Fees extends Mock implements GetNetworkFeesUsecase {}
 
@@ -80,10 +80,12 @@ void main() {
         final transport = _Throwing(cause);
         final settings = _Settings();
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
         final repository = BbxApiOrderRepository(

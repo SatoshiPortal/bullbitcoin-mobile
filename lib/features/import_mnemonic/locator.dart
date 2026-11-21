@@ -18,21 +18,21 @@ class ImportMnemonicLocator {
       () => CheckDuplicateMnemonicUsecase(
         secrets: locator<Secrets>(),
         metadata: locator<WalletMetadataDatasource>(),
-        settings: locator<SettingsRepository>(),
+        settings: locator<Preferences>(),
       ),
     );
     locator.registerFactory<ImportWalletUsecase>(
       () => ImportWalletUsecase(
         checkDuplicateMnemonicUsecase: locator<CheckDuplicateMnemonicUsecase>(),
         secrets: locator<Secrets>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletRepository: locator<WalletRepository>(),
         admission: locator<ParentCustodyAdmissionPort>(),
       ),
     );
     locator.registerFactory<CheckWalletStatusUsecase>(
       () => CheckWalletStatusUsecase(
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
         locator<ElectrumServersPort>(),
         locator<BitcoinWalletRepository>(),
         locator<Secrets>(),

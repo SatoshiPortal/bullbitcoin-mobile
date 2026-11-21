@@ -97,11 +97,11 @@ class ReceiveLocator {
       () => GetReceiveWalletsUsecase(locator<GetWalletsUsecase>()),
     );
     locator.registerFactory<GetReceiveSettingsUsecase>(
-      () => GetReceiveSettingsUsecase(locator<GetSettingsUsecase>()),
+      () => GetReceiveSettingsUsecase(locator<Preferences>()),
     );
     locator.registerFactory<ConvertReceiveAmountUsecase>(
       () => ConvertReceiveAmountUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
@@ -134,7 +134,7 @@ class ReceiveLocator {
         getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
         convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),
         getReceiveAmountQuotesUsecase: GetReceiveAmountQuotesUsecase(
-          settings: locator<GetSettingsUsecase>(),
+          settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
         prepareReceiveAddressUsecase: locator<PrepareReceiveAddressUsecase>(),

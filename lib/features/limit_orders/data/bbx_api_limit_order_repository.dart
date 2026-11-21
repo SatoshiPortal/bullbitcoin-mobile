@@ -18,7 +18,7 @@ typedef _Fallback = LimitOrdersFailure Function(String logMessage);
 final class BbxApiLimitOrderRepository implements LimitOrderRepository {
   final bbx.BbxApiClient _mainnet;
   final bbx.BbxApiClient _testnet;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   const BbxApiLimitOrderRepository({
     required this._mainnet,
@@ -127,7 +127,10 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
     Future<T> Function(bbx.BbxApiClient api) action,
   ) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.activeNetwork.name),
         NetworkCapability.exchange,

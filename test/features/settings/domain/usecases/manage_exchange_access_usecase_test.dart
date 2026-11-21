@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 class _Exchange extends Mock implements ExchangeFacade {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 void main() {
   late _Exchange exchange;
@@ -20,11 +20,13 @@ void main() {
 
   test('iOS non-superuser cannot activate exchange', () async {
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
-        isSuperuser: false,
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          isSuperuser: false,
+        ),
       ),
     );
     final usecase = SetSettingsExchangeAccessUsecase(
@@ -38,11 +40,13 @@ void main() {
 
   test('iOS superuser can activate exchange', () async {
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
-        isSuperuser: true,
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          isSuperuser: true,
+        ),
       ),
     );
     when(() => exchange.enable()).thenAnswer((_) async => const Ok(null));

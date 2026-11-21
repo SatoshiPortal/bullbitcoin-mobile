@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 class GetNetworkFeesUsecase {
   final FeesRepository _feesRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetNetworkFeesUsecase({
     required this._feesRepository,
@@ -19,8 +19,10 @@ class GetNetworkFeesUsecase {
       final requestedNetwork =
           network ??
           Network.fromEnvironment(
-            environment:
-                (await _settingsRepository.fetch()).environment.networkEnv,
+            environment: ((await _settingsRepository.fetch()).fold(
+              (value) => value,
+              (failure) => throw Exception('Preferences read failed'),
+            )).environment.networkEnv,
             isLiquid: isLiquid,
           );
       if (requestedNetwork.isLiquid != isLiquid) {

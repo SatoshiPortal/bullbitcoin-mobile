@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 class _Exchange extends Mock implements ExchangeFacade {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 SettingsEntity _settings(bool superuser) => SettingsEntity(
   environment: Environment.mainnet,
@@ -85,7 +85,8 @@ void main() {
         () => exchange.currentAccess,
       ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
       when(exchange.watchAccess).thenAnswer((_) => access.stream);
-      when(settings.fetch).thenAnswer((_) => pending.future);
+      when(settings.fetch)
+          .thenAnswer((_) => (pending.future).then((value) => Ok(value)));
       final values = <bool>[];
       final sub = WatchQuickActionsVisibilityUsecase(
         exchange: exchange,

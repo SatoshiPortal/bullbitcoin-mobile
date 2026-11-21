@@ -16,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
@@ -68,7 +68,8 @@ void main() {
       getTransactionOrderSwapsUsecase: getTransactionOrderSwapsUsecase,
     );
 
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => _settings());
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => Ok(_settings()));
     when(
       () => walletTransactionRepository.getWalletTransactions(
         txId: any(named: 'txId'),
@@ -85,10 +86,12 @@ void main() {
     'regtest tx lookup never queries public network feature histories',
     () async {
       when(settingsRepository.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(

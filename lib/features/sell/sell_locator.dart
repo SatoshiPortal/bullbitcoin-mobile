@@ -97,7 +97,7 @@ class SellLocator {
     locator.registerFactory<LoadSellContextUsecase>(
       () => LoadSellContextUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
         getIndexPrice: Pricer.getIndexPrice,
@@ -121,7 +121,7 @@ class SellLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
     );
@@ -140,7 +140,7 @@ class SellLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 

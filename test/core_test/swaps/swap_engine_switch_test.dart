@@ -13,7 +13,7 @@ class _MockStore extends Mock implements SwapStore {}
 
 class _MockBoltz extends Mock implements BoltzSwapRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSwapWatcher extends Mock implements SwapWatcher {}
 
@@ -79,7 +79,8 @@ void main() {
     late SwitchableSwapEngine repository;
     late _MockSettingsRepository settingsRepository;
     late _MockSwapWatcher watcher;
-    late StreamController<settings.Environment> environments;
+    late StreamController<Result<settings.Environment, PreferencesFailure>>
+    environments;
     late List<NetworkEnv> builds;
     late SwapEngineSwitcher switcher;
 
@@ -89,7 +90,10 @@ void main() {
       repository = SwitchableSwapEngine(mainnet.parts);
       settingsRepository = _MockSettingsRepository();
       watcher = _MockSwapWatcher();
-      environments = StreamController<settings.Environment>.broadcast();
+      environments =
+          StreamController<
+            Result<settings.Environment, PreferencesFailure>
+          >.broadcast();
       builds = [];
       when(() => settingsRepository.environmentChangeStream)
           .thenAnswer((_) => environments.stream);
@@ -117,7 +121,7 @@ void main() {
 
     test('switching to testnet stops the watcher, swaps the engine and '
         'restarts the watcher', () async {
-      environments.add(settings.Environment.testnet);
+      environments.add(const Ok(settings.Environment.testnet));
       await pumpEventQueue();
 
       expect(builds, [NetworkEnv.testnet]);
@@ -126,7 +130,7 @@ void main() {
     });
 
     test('a switch to the network already in use does nothing', () async {
-      environments.add(settings.Environment.mainnet);
+      environments.add(const Ok(settings.Environment.mainnet));
       await pumpEventQueue();
 
       expect(builds, isEmpty);

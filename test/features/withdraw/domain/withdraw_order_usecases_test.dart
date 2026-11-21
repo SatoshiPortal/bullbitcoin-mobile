@@ -17,7 +17,7 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
@@ -75,7 +75,7 @@ void main() {
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
   });
 
   group('CreateWithdrawOrderUsecase', () {
@@ -186,7 +186,7 @@ void main() {
     test('uses the testnet repository on testnet', () async {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.testnet);
-      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
       when(
         () => testnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),

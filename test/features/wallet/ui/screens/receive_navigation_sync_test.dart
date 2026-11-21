@@ -23,7 +23,7 @@ class _WalletBloc extends Mock implements WalletBloc {}
 
 class _PriceBloc extends Mock implements BitcoinPriceBloc {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
@@ -54,8 +54,11 @@ void main() {
     when(() => price.stream)
         .thenAnswer((_) => const Stream<BitcoinPriceState>.empty());
     final settings = _Settings();
-    when(settings.readDeveloperEnvironment)
-        .thenAnswer((_) => Completer<DeveloperEnvironmentPreferences>().future);
+    when(settings.readDeveloperEnvironment).thenAnswer(
+      (_) => (Completer<DeveloperEnvironmentPreferences>().future).then(
+        (value) => Ok(value),
+      ),
+    );
     final references = _References();
     NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
       LoadNetworkWalletSetupUsecase(settings, references),

@@ -9,7 +9,7 @@ import 'package:sync/sync.dart' as native show validateAddress;
 /// Validates the captured concrete environment before legacy parsing can
 /// collapse it into a testnet boolean. No raw input enters diagnostics.
 class DetectBitcoinStringUsecase {
-  final GetSettingsUsecase? _settings;
+  final Preferences? _settings;
 
   DetectBitcoinStringUsecase({this._settings});
 
@@ -17,7 +17,12 @@ class DetectBitcoinStringUsecase {
     required String data,
     primitives.NetworkEnv? environment,
   }) async {
-    final active = environment ?? (await _settings?.execute())?.activeNetwork;
+    final active =
+        environment ??
+        ((await _settings?.fetch())?.fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        ))?.activeNetwork;
     final input = data.trim();
     final uri = Uri.tryParse(input);
     final address = uri?.scheme.toLowerCase() == 'bitcoin'

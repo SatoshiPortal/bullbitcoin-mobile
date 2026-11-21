@@ -28,11 +28,11 @@ void main() {
       final storage = FakeSecureStoragePlatform()..install();
       final settings = _Settings();
       when(settings.readDeveloperEnvironment).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           environment: Environment.mainnet,
           isSuperuser: null,
           isDevModeEnabled: null,
-        ),
+        )),
       );
       final wallets = _Wallets();
       final create = _Create();
@@ -73,11 +73,11 @@ void main() {
           final settings = _Settings();
           var selected = initial;
           when(settings.readDeveloperEnvironment).thenAnswer(
-            (_) async => (
+            (_) async => Ok((
               environment: selected,
               isSuperuser: true,
               isDevModeEnabled: true,
-            ),
+            )),
           );
           final wallets = _Wallets();
           final create = _Create();
@@ -116,11 +116,11 @@ void main() {
       final storage = FakeSecureStoragePlatform()..install();
       final settings = _Settings();
       when(settings.readDeveloperEnvironment).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           environment: Environment.regtest,
           isSuperuser: true,
           isDevModeEnabled: enabled,
-        ),
+        )),
       );
       final create = _Create();
       final adapter = RecoverBullWalletAdapter(

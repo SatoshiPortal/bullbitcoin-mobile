@@ -19,7 +19,7 @@ import '../../../fake_index_price_reader.dart';
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
@@ -157,7 +157,9 @@ void main() {
   });
 
   group('satsToCurrency', () {
-    setUp(() => when(getSettings.execute).thenAnswer((_) async => _settings()));
+    setUp(
+      () => when(getSettings.fetch).thenAnswer((_) async => Ok(_settings())),
+    );
 
     test(
       'values the amount at the mainnet price of the settings currency',
@@ -186,8 +188,9 @@ void main() {
     });
 
     test('asks the testnet price in the testnet environment', () async {
-      when(getSettings.execute)
-          .thenAnswer((_) async => _settings(environment: Environment.testnet));
+      when(getSettings.fetch).thenAnswer(
+        (_) async => Ok(_settings(environment: Environment.testnet)),
+      );
 
       final result = await usecase.satsToCurrency();
 
@@ -217,7 +220,7 @@ void main() {
     });
 
     test('a failed settings read is sanitized', () async {
-      when(getSettings.execute).thenThrow(Exception(_rawReason));
+      when(getSettings.fetch).thenThrow(Exception(_rawReason));
 
       expect(
         await usecase.satsToCurrency(currencyCode: 'CAD'),

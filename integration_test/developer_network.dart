@@ -21,7 +21,10 @@ final _ok = isA<Ok<void, SettingsFailure>>();
 /// is attempted before any is asserted, so one failure cannot skip the others
 /// and leak developer mode into the groups that follow in the same run.
 Future<void> selectDeveloperNetwork(Environment environment) async {
-  final previous = await locator<SettingsRepository>().fetch();
+  final previous = (await locator<Preferences>().fetch()).fold(
+    (value) => value,
+    (failure) => throw StateError('Preferences unavailable'),
+  );
   addTearDown(() async {
     final restored = [
       await locator<SetEnvironmentUsecase>().execute(Environment.mainnet),

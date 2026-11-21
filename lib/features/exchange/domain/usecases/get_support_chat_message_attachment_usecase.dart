@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 class GetSupportChatMessageAttachmentUsecase {
   final ExchangeSupportChatRepository _mainnetRepository;
   final ExchangeSupportChatRepository _testnetRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetSupportChatMessageAttachmentUsecase({
     required this._mainnetRepository,
@@ -22,7 +22,10 @@ class GetSupportChatMessageAttachmentUsecase {
   execute(String attachmentId) async {
     final ExchangeSupportChatRepository repository;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       repository = settings.environment.requireHistoricalTestnet()
           ? _testnetRepository
           : _mainnetRepository;

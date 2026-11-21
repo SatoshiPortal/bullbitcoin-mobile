@@ -43,7 +43,7 @@ class _MockCoordinator extends Mock implements SyncCoordinator {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -68,14 +68,16 @@ void main() {
     settingsRepo = _MockSettingsRepository();
     // The sync tick reads GetSpWalletUsecase, which checks the feature gate.
     when(() => settingsRepo.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-        isSuperuser: true,
-      ).copyWith(isDevModeEnabled: true),
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+        ).copyWith(isDevModeEnabled: true),
+      ),
     );
-    locator.registerSingleton<SettingsRepository>(settingsRepo);
+    locator.registerSingleton<Preferences>(settingsRepo);
 
     // Real SP wiring: registers the whole use case + presentation graph.
     // A coordinator registration must not implicitly opt this isolated graph
@@ -117,12 +119,14 @@ void main() {
       () async {
         await cubit.load();
         when(() => settingsRepo.fetch()).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.regtest,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-            isSuperuser: true,
-            isDevModeEnabled: true,
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.regtest,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+              isSuperuser: true,
+              isDevModeEnabled: true,
+            ),
           ),
         );
         await cubit.load();

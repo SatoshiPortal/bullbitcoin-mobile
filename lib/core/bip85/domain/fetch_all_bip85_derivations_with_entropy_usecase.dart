@@ -17,13 +17,13 @@ import 'package:secrets/secrets.dart';
 class FetchAllBip85DerivationsWithEntropyUsecase {
   final Bip85Repository _bip85Repository;
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final Secrets _secrets;
 
   FetchAllBip85DerivationsWithEntropyUsecase({
     required Bip85Repository bip85Repository,
     required WalletRepository walletRepository,
-    required SettingsRepository settingsRepository,
+    required Preferences settingsRepository,
     required Secrets secrets,
   }) : this._(bip85Repository, walletRepository, settingsRepository, secrets);
 
@@ -43,7 +43,10 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
   >
   execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(
         onlyDefaults: true,

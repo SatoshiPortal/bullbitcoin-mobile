@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, Result, ScriptType;
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 final class _Wallets extends Fake implements GetWalletsUsecase {
   final Wallet wallet;
@@ -32,10 +32,12 @@ void main() {
   Future<BackupStatusSummary> summary(rb.BackupStatus status) async {
     final settings = _Settings();
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     final wallet = Wallet(

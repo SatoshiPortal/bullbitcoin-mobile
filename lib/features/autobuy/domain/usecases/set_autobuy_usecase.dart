@@ -13,7 +13,7 @@ import 'package:primitives/primitives.dart';
 class SetAutoBuyUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final GetDefaultWalletsUsecase _getDefaultWalletsUsecase;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
 
@@ -30,7 +30,10 @@ class SetAutoBuyUsecase {
     // The shared settings repository still throws, so this is its boundary.
     final ExchangeUserRepository userRepository;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.activeNetwork.name),
         NetworkCapability.exchange,

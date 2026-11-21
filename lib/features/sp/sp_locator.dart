@@ -208,14 +208,13 @@ class SpLocator {
       ),
     );
     locator.registerFactory<GetSpActiveNetworkUsecase>(
-      () => GetSpActiveNetworkUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () =>
+          GetSpActiveNetworkUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<GetSpFeatureGateUsecase>(
       () => GetSpFeatureGateUsecase(
         configRepository: locator<SpBackendConfigRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     // Singleton: the two use cases holding it are factories, so the exclusion
@@ -346,7 +345,7 @@ class SpLocator {
     locator.registerFactory<CreateSpWalletUsecase>(
       () => CreateSpWalletUsecase(
         getSpSecretUsecase: locator<GetSpSecretUsecase>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),

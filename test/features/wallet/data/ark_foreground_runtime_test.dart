@@ -30,7 +30,7 @@ class _Bip85 extends Mock implements Bip85Repository {}
 
 class _Admission extends Mock implements ParentCustodyAdmissionPort {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
@@ -372,9 +372,9 @@ void main() {
       final wallets = _Wallets();
       final wallet = _Wallet();
       when(settings.readActiveEnvironment)
-          .thenAnswer((_) async => settingsValue.environment);
+          .thenAnswer((_) async => Ok(settingsValue.environment));
       when(settings.readLanguage)
-          .thenAnswer((_) async => settingsValue.language);
+          .thenAnswer((_) async => Ok(settingsValue.language));
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
       when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
       when(() => wallet.networkCode).thenReturn('bitcoinRegtest');

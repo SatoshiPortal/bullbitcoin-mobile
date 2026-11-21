@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart'
 /// given. Without an amount, the price of one bitcoin. Without a price,
 /// [ReceivePriceUnavailableFailure]: receiving works on, with no fiat value.
 class ConvertReceiveAmountUsecase {
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final IndexPriceReader _getIndexPrice;
 
   const ConvertReceiveAmountUsecase({
@@ -26,7 +26,10 @@ class ConvertReceiveAmountUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } on Object catch (e, st) {
       // Logged HERE, at the boundary that owns the raw reason. The failure's
       // logMessage stays secondary (equality, debug): if a caller chooses not

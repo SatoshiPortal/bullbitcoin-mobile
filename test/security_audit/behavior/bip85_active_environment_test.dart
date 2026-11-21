@@ -18,7 +18,7 @@ class _MockBip85Repository extends Mock implements Bip85Repository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 /// BIP85 must use the default wallet of the environment the app is running in.
 ///
@@ -80,10 +80,12 @@ void main() {
 
     // The app is running on testnet.
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     // Only a testnet default wallet exists. Asking for mainnet finds nothing.

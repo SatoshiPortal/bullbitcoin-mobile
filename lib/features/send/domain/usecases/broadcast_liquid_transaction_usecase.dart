@@ -11,7 +11,7 @@ import 'package:preferences/preferences.dart';
 
 class BroadcastLiquidTransactionUsecase {
   final LiquidBlockchainRepository _liquidBlockchain;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletFacade? _wallet;
 
   BroadcastLiquidTransactionUsecase({
@@ -32,7 +32,10 @@ class BroadcastLiquidTransactionUsecase {
     String? walletId,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (network != null && isTestnet != null) {
         throw ArgumentError('Specify one network context');
       }

@@ -10,7 +10,7 @@ import 'package:bull_logger/bull_logger.dart';
 /// Serializes replacement while retaining the latest requested network and
 /// ownership of any work still draining after a Busy response.
 class SwapEngineSwitcher {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final SwitchableSwapEngine _engine;
   final SwapWatcher _swapWatcher;
   final Future<SwapEngineParts> Function({required NetworkEnv environment})
@@ -36,13 +36,15 @@ class SwapEngineSwitcher {
 
   void start() {
     if (_disposed) return;
-    _environmentChanges ??= _settingsRepository.environmentChangeStream.listen((
-      environment,
-    ) {
-      final target = environment.networkEnv;
-      if (target == _desiredEnvironment && !_failed) return;
-      unawaited(rebuild(environment: target).then<void>((_) {}));
-    });
+    _environmentChanges ??= _settingsRepository.environmentChangeStream
+        .expand<Environment>(
+          (result) => result.fold((value) => [value], (_) => const []),
+        )
+        .listen((environment) {
+          final target = environment.networkEnv;
+          if (target == _desiredEnvironment && !_failed) return;
+          unawaited(rebuild(environment: target).then<void>((_) {}));
+        });
   }
 
   /// Ok means activated. Busy retains the serialized transition; callers must

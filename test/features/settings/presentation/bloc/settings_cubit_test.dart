@@ -29,7 +29,7 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class _MockSetEnvironmentUsecase extends Mock
     implements SetEnvironmentUsecase {}

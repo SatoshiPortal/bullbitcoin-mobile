@@ -238,7 +238,11 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     WalletArkDisplayData? displayData;
     try {
       final locale =
-          (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
+          ((await locator<RuntimeDisplayPreferencesReader>().readLanguage())
+                  .fold(
+                    (value) => value,
+                    (failure) => throw Exception('Preferences read failed'),
+                  ))
               ?.locale ??
           const Locale('en');
       final openedMaintenance = await openArkForegroundMaintenance(
@@ -266,8 +270,13 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           runtime: locator<WalletNativeRuntime>(),
           account: config.id,
           selectedSource: selection.displaySourceWalletId,
-          currency: settings.readCurrency,
-          currencyChanges: settings.currencyChangeStream,
+          currency: () async => (await settings.readCurrency()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          ),
+          currencyChanges: settings.currencyChangeStream.expand<String>(
+            (result) => result.fold((value) => [value], (_) => const []),
+          ),
           isActive: () => policy.active,
         );
       }
@@ -446,7 +455,11 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
 
   Future<Result<(ArkAccountConfig, String), ArkFailure>> _select() async {
     try {
-      if (await _settings.readActiveEnvironment() != Environment.regtest) {
+      if ((await _settings.readActiveEnvironment()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          ) !=
+          Environment.regtest) {
         return const Err(ArkNetworkUnavailableFailure());
       }
       final eligible = (await _wallets.fetchAll())

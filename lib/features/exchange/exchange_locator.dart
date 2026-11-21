@@ -36,16 +36,19 @@ class ExchangeLocator {
   static void setup(GetIt locator) {
     Future<bool> platformAllowed() async =>
         !Platform.isIOS ||
-        ((await locator<settings_contract.SettingsRepository>().fetch())
-                .isSuperuser ??
+        (((await locator<settings_contract.Preferences>().fetch()).fold(
+              (value) => value,
+              (failure) => throw Exception('Preferences read failed'),
+            )).isSuperuser ??
             false);
     locator.registerLazySingleton<ExchangeAccessRepository>(
       () => ExchangeAccessRepositoryImpl(
         apiKeyRepository: locator<ExchangeApiKeyRepository>(),
         readEnvironment: () async =>
-            (await locator<settings_contract.SettingsRepository>().fetch())
-                .environment
-                .requireHistoricalTestnet(),
+            ((await locator<settings_contract.Preferences>().fetch()).fold(
+              (value) => value,
+              (failure) => throw Exception('Preferences read failed'),
+            )).environment.requireHistoricalTestnet(),
         platformAllowed: platformAllowed,
         disconnectNotifications: () async =>
             locator<ExchangeNotificationRepository>().disconnect(),
@@ -102,7 +105,7 @@ class ExchangeLocator {
     );
     locator.registerFactory<GetExchangeAccountUsecase>(
       () => GetExchangeAccountUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
         expire: locator<ExpireExchangeSessionUsecase>(),
         mainnetAccountRepository: BbxApiAccountRepository(
@@ -122,7 +125,7 @@ class ExchangeLocator {
         testnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'testnetExchangeUserRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
       ),
     );
@@ -135,7 +138,7 @@ class ExchangeLocator {
         testnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'testnetExchangeUserRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
       ),
     );
@@ -161,7 +164,7 @@ class ExchangeLocator {
 
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
-        settingsRepository: locator<settings_contract.SettingsRepository>(),
+        settingsRepository: locator<settings_contract.Preferences>(),
         sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
       ),
     );
@@ -176,7 +179,7 @@ class ExchangeLocator {
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
         access: locator<ExchangeAccessRepository>(),
-        settingsRepository: locator<settings_contract.SettingsRepository>(),
+        settingsRepository: locator<settings_contract.Preferences>(),
         exchangeNotificationRepository:
             locator<ExchangeNotificationRepository>(),
       ),

@@ -37,7 +37,7 @@ List<Transaction> _transactionsOf(
   bb.Err(:final failure) => fail('expected transactions, got $failure'),
 };
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
@@ -107,10 +107,12 @@ void main() {
     getTransactionOrderSwapsUsecase = _MockGetTransactionOrderSwapsUsecase();
 
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => payjoinSessions.list(any()))

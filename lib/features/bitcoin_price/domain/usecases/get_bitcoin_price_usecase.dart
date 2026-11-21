@@ -20,7 +20,10 @@ class GetBitcoinPriceUsecase {
   }) async {
     final Environment environment;
     try {
-      environment = await _environment.readActiveEnvironment();
+      environment = (await _environment.readActiveEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the bitcoin price',

@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 class RequestExchangeAccountDeletionUsecase {
   static const _message = 'I want to delete my account';
 
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final SendSupportChatMessageUsecase _sendSupportChatMessageUsecase;
 
   const RequestExchangeAccountDeletionUsecase({
