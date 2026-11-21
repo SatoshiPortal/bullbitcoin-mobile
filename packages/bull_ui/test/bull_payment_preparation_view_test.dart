@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 void main() {
-  for (final theme in [AppThemeType.light, AppThemeType.dark]) {
+  for (final theme in [Brightness.light, Brightness.dark]) {
     testWidgets('payment preparation and failure in ${theme.name}', (
       tester,
     ) async {
@@ -20,7 +20,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: AppTheme.themeData(theme),
+          theme: ThemeData(brightness: theme, extensions: testBullExtensions),
           home: Scaffold(
             body: Builder(
               builder: (context) => TextButton(
