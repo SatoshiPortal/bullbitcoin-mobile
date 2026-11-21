@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:primitives/primitives.dart' show Err;
+import 'package:primitives/primitives.dart' show Ok, Err;
 
 import 'dart:io';
 
@@ -26,7 +26,7 @@ class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
@@ -81,7 +81,8 @@ void main() {
         labels = _Labels();
         final metadata = _Metadata();
         when(() => metadata.fetch(origin)).thenAnswer((_) async => row);
-        when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+        when(() => labels.fetch(reference: any(named: 'reference')))
+            .thenAnswer((_) async => Ok([]));
         repository = WalletAddressRepository(
           native: native,
           walletMetadataDatasource: metadata,
@@ -135,7 +136,7 @@ void main() {
         );
         expect(await prepare.execute(walletId: origin), isA<Err>());
         verify(() => native.receive(row, advance: false)).called(5);
-        verifyNever(() => labels.fetchByReference(any()));
+        verifyNever(() => labels.fetch(reference: any(named: 'reference')));
         verifyZeroInteractions(sdk);
         expect(
           (await log.readLogs()).map((line) => line.split('\t').sublist(1, 3)),
@@ -163,7 +164,8 @@ void main() {
         when(() => native.receive(row, advance: true))
             .thenAnswer((_) async => (address: issuedAddress, index: 8));
         const error = WalletSnapshotException(SyncBusyFailure());
-        when(() => labels.fetchByReference(any())).thenThrow(error);
+        when(() => labels.fetch(reference: any(named: 'reference')))
+            .thenThrow(error);
         await expectLater(
           repository.generateNewReceiveAddress(walletId: origin),
           throwsA(same(error)),

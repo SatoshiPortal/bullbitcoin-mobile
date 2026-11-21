@@ -1070,7 +1070,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   /// Deletes a transaction note. Returns the [Result] so the caller can give
   /// the user feedback on failure; on success the note is dropped from state.
   @useResult
-  Future<Result<Null, TransactionFailure>> deleteTransactionNote(
+  Future<Result<void, TransactionFailure>> deleteTransactionNote(
     Label note,
   ) async {
     final walletTransaction = state.walletTransaction;

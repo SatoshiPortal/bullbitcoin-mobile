@@ -11,7 +11,7 @@ class ApplyCompletedOrderSwapLabelsUsecase {
   final GetOrderSwapsAwaitingLabelsUsecase _getOrders;
   final MarkOrderSwapLabelsAppliedUsecase _markApplied;
   final WalletTransactionRepository _walletTransactions;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final DateTime Function() _now;
 
   ApplyCompletedOrderSwapLabelsUsecase(

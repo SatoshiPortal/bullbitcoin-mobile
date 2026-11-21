@@ -29,7 +29,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   final GetReceiveAddressUsecase _getReceiveAddress;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
   final SwapFacade _swapFacade;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final Future<void> Function(Duration) _delay;
 
   ExchangeAutoswapProvider(

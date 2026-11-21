@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 /// Reads a labels file the user picked, then imports it.
 class ImportLabelsFromFileUsecase {
   final FileSystem _fileSystem;
-  final LabelsFacade _labels;
+  final Labels _labels;
 
   ImportLabelsFromFileUsecase({
     required this._fileSystem,

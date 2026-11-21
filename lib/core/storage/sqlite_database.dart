@@ -34,7 +34,7 @@ import 'sqlite_database.drift.dart';
   tables: [
     Transactions,
     WalletMetadatas,
-    Labels,
+    LabelsTable,
     Settings,
     PayjoinSenders,
     PayjoinReceivers,

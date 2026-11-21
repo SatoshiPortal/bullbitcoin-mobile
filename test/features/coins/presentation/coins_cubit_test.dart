@@ -33,7 +33,7 @@ class _MockUnfreezeUtxosUsecase extends Mock implements UnfreezeUtxosUsecase {}
 
 class _MockRefreshCoinsUsecase extends Mock implements RefreshCoinsUsecase {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockWatchStarted extends Mock
     implements WatchStartedWalletSyncsUsecase {}
@@ -46,7 +46,7 @@ void main() {
   late _MockFreezeUtxosUsecase freezeUtxos;
   late _MockUnfreezeUtxosUsecase unfreezeUtxos;
   late _MockRefreshCoinsUsecase refreshCoins;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockWatchStarted watchStarted;
   late _MockWatchFinished watchFinished;
   late StreamController<WalletRevisionState> revisions;
@@ -75,7 +75,7 @@ void main() {
     freezeUtxos = _MockFreezeUtxosUsecase();
     unfreezeUtxos = _MockUnfreezeUtxosUsecase();
     refreshCoins = _MockRefreshCoinsUsecase();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     watchStarted = _MockWatchStarted();
     watchFinished = _MockWatchFinished();
     startedController = StreamController<String>.broadcast();
@@ -85,8 +85,8 @@ void main() {
         .thenAnswer((_) => startedController.stream);
     when(() => watchFinished.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) => finishedController.stream);
-    when(() => labelsFacade.fetchDistinctLabels())
-        .thenAnswer((_) async => <String>{});
+    when(() => labelsFacade.suggestions())
+        .thenAnswer((_) async => Ok(<String>{}));
     when(() => refreshCoins.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) async {});
   });

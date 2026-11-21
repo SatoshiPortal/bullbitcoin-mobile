@@ -101,7 +101,7 @@ import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_l
 
 class _BroadcastReporter extends Mock implements LoggerReporter {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockSelectBestWalletUsecase extends Mock
     implements SelectBestWalletUsecase {}
@@ -494,7 +494,7 @@ Matcher _toAddress(String address) =>
 
 void main() {
   late _MockRetryPayjoinProposalUsecase retryPayjoinProposalUsecase;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
   late _MockGetSettingsUsecase getSettingsUsecase;
@@ -717,7 +717,7 @@ void main() {
 
   setUp(() {
     retryPayjoinProposalUsecase = _MockRetryPayjoinProposalUsecase();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
     getSettingsUsecase = _MockGetSettingsUsecase();

@@ -34,7 +34,7 @@ void main() {
         throwsA(isA<LabelValidationException>()),
       );
 
-      final rows = await db.select(db.labels).get();
+      final rows = await db.select(db.labelsTable).get();
       expect(
         rows,
         isEmpty,
@@ -54,7 +54,7 @@ void main() {
       );
 
       expect(stored.id, greaterThan(0));
-      final rows = await db.select(db.labels).get();
+      final rows = await db.select(db.labelsTable).get();
       expect(rows, hasLength(1));
     });
   });
@@ -75,9 +75,9 @@ void main() {
       // LabelEntity's validation (simulates data that predates a
       // validation fix, or any other source of a malformed row).
       await db
-          .into(db.labels)
+          .into(db.labelsTable)
           .insert(
-            LabelsCompanion.insert(
+            LabelsTableCompanion.insert(
               label: 'corrupt',
               reference: 'not-a-valid-64-char-txid',
               type: LabelTypeColumn.tx,

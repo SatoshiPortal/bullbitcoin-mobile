@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 /// before the change. This redoes only that join: one local query, no chain
 /// sync and no exchange call.
 class RefreshTransactionLabelsUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   RefreshTransactionLabelsUsecase({required this._labelsFacade});
 
@@ -22,7 +22,7 @@ class RefreshTransactionLabelsUsecase {
       return transactions;
     }
 
-    final labels = switch (await _labelsFacade.fetchAllOrFailure()) {
+    final labels = switch (await _labelsFacade.fetch()) {
       Ok(:final value) => value,
       // A failed read is not "the labels are gone": leave the list alone
       // rather than blanking every row until the next full load.

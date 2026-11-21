@@ -33,7 +33,7 @@ class _MockBroadcastLiquid extends Mock
 
 class _MockSwapFacade extends Mock implements SwapFacade {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 Wallet _wallet({required bool liquid}) => Wallet(
   origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
@@ -102,7 +102,7 @@ void main() {
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockBroadcastLiquid broadcastLiquid;
   late _MockSwapFacade swapFacade;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late ExchangeAutoswapProvider provider;
   late List<Duration> delays;
 
@@ -132,7 +132,7 @@ void main() {
     getReceiveAddress = _MockGetReceiveAddress();
     broadcastLiquid = _MockBroadcastLiquid();
     swapFacade = _MockSwapFacade();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     delays = [];
     provider = ExchangeAutoswapProvider(
       walletRepository,

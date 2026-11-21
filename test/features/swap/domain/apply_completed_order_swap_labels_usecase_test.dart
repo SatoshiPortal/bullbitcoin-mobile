@@ -22,13 +22,13 @@ class _MockMarkApplied extends Mock
 class _MockWalletTransactions extends Mock
     implements WalletTransactionRepository {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 void main() {
   late _MockGetOrders getOrders;
   late _MockMarkApplied markApplied;
   late _MockWalletTransactions walletTransactions;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late ApplyCompletedOrderSwapLabelsUsecase usecase;
   final now = DateTime.utc(2026, 8, 5, 12);
 
@@ -42,7 +42,7 @@ void main() {
     getOrders = _MockGetOrders();
     markApplied = _MockMarkApplied();
     walletTransactions = _MockWalletTransactions();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     usecase = ApplyCompletedOrderSwapLabelsUsecase(
       getOrders,
       markApplied,

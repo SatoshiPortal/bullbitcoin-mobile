@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 
 /// Receive-owned wrapper around the labels feature's public contract.
 class SaveReceiveAddressLabelUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const SaveReceiveAddressLabelUsecase(this._labelsFacade);
 
@@ -28,7 +28,8 @@ class SaveReceiveAddressLabelUsecase {
   }) async {
     try {
       if (note.isEmpty) {
-        final labels = await _labelsFacade.fetchByReference(address);
+        final labels = (await _labelsFacade.fetch(reference: address))
+            .fold((labels) => labels, (_) => const <Label>[]);
         for (final label in labels.where(
           (label) => label.type == LabelType.address,
         )) {

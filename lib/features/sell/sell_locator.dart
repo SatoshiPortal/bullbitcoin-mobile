@@ -181,7 +181,7 @@ class SellLocator {
         loadSellWalletUtxosUsecase: locator<LoadSellWalletUtxosUsecase>(),
         readSellPayinTxidUsecase: locator<ReadSellPayinTxidUsecase>(),
         storeSellTransactionLabel: StoreSellTransactionLabelUsecase(
-          locator<LabelsFacade>(),
+          locator<Labels>(),
         ),
         labelCompletedSellOrderUsecase:
             locator<LabelCompletedSellOrderUsecase>(),

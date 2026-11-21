@@ -49,7 +49,7 @@ class BuyLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
-        labelsFacade: locator<LabelsFacade>(),
+        labelsFacade: locator<Labels>(),
       ),
     );
     locator.registerFactory<RefreshBuyOrderUsecase>(

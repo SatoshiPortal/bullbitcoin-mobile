@@ -46,7 +46,7 @@ class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 class _MockBroadcastLiquid extends Mock
     implements BroadcastLiquidTransactionUsecase {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 Wallet _wallet({required bool liquid}) => Wallet(
   origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
@@ -76,7 +76,7 @@ void main() {
   late _MockLiquidWalletRepository liquidWalletRepository;
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockBroadcastLiquid broadcastLiquid;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late BoltzAutoswapProvider provider;
 
   const settings = AutoSwap(
@@ -130,7 +130,7 @@ void main() {
     liquidWalletRepository = _MockLiquidWalletRepository();
     getReceiveAddress = _MockGetReceiveAddress();
     broadcastLiquid = _MockBroadcastLiquid();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     provider = BoltzAutoswapProvider(
       getLimitsAndFees,
       createLiquidToBitcoinSwap,

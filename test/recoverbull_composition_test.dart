@@ -17,7 +17,7 @@ import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:labels/labels.dart';
+import 'package:labels/setup.dart';
 import 'package:secrets/secrets.dart';
 
 class _NativeTor implements TorNativeInitializer {

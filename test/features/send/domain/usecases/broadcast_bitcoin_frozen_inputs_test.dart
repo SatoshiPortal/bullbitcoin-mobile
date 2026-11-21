@@ -34,7 +34,7 @@ class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
@@ -70,7 +70,7 @@ void main() {
         walletUtxoRepository ??
         WalletUtxoRepositoryImpl(
           walletMetadataDatasource: _MockWalletMetadataDatasource(),
-          labelsFacade: _MockLabelsFacade(),
+          labelsFacade: _MockLabels(),
           walletValuesDatasource: _MockValues(),
           freezesDatasource: SyncFreezesDatasource(sync: () async => sync),
         ),

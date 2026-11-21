@@ -8,7 +8,7 @@ import 'package:primitives/generic_extensions.dart';
 import 'package:primitives/primitives.dart';
 
 class ExportLabelsToFileUsecase {
-  final LabelsFacade _labels;
+  final Labels _labels;
   final FileSystem _fileSystem;
 
   ExportLabelsToFileUsecase({required this._labels, required this._fileSystem});

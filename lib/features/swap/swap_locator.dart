@@ -198,7 +198,7 @@ class SwapLocator {
         locator<GetOrderSwapsAwaitingLabelsUsecase>(),
         locator<MarkOrderSwapLabelsAppliedUsecase>(),
         locator<WalletTransactionRepository>(),
-        locator<LabelsFacade>(),
+        locator<Labels>(),
       ),
     );
     locator.registerLazySingleton<RefreshOrderSwapsUsecase>(

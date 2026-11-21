@@ -1262,20 +1262,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   BullBorderedTile(
                                     onTap: () async {
                                       final cubit = context.read<SendCubit>();
-                                      final saved =
-                                          await LabelEntryBottomSheet.label(
-                                            context,
-                                            title: context
-                                                .loc
-                                                .transactionNoteAddTitle,
-                                            initialValue: state.label.isEmpty
-                                                ? null
-                                                : state.label,
-                                            hint:
-                                                context.loc.transactionNoteHint,
-                                            suggestionsFuture: cubit
-                                                .fetchDistinctLabels(),
-                                          );
+                                      final saved = await LabelEditor.label(
+                                        context,
+                                        title:
+                                            context.loc.transactionNoteAddTitle,
+                                        initialValue: state.label.isEmpty
+                                            ? null
+                                            : state.label,
+                                        hint: context.loc.transactionNoteHint,
+                                        suggestionsFuture: cubit
+                                            .fetchDistinctLabels(),
+                                      );
                                       if (saved == null || !context.mounted) {
                                         return;
                                       }

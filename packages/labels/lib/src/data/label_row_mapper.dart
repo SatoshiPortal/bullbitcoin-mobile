@@ -6,11 +6,11 @@ import 'package:labels/src/domain/new_label.dart';
 import 'package:labels/src/domain/primitive/label_type.dart';
 
 class LabelRowMapper {
-  static LabelsCompanion newLabelEntityToCompanion(NewLabel newLabel) {
+  static LabelsTableCompanion newLabelEntityToCompanion(NewLabel newLabel) {
     final type = _labelTypeToColumnType(newLabel.type);
 
     final id = newLabel.id;
-    return LabelsCompanion(
+    return LabelsTableCompanion(
       id: id == null ? const Value.absent() : Value(id),
       label: Value(newLabel.label),
       reference: Value(newLabel.reference),

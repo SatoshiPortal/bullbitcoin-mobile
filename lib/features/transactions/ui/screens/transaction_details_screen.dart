@@ -182,7 +182,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ? null
                 : () async {
                     final cubit = context.read<TransactionDetailsCubit>();
-                    final saved = await LabelEntryBottomSheet.label(
+                    final saved = await LabelEditor.label(
                       context,
                       title: context.loc.transactionNoteAddTitle,
                       suggestionsFuture: cubit.fetchDistinctLabels(),

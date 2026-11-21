@@ -10,7 +10,7 @@ class TrashLabelUsecase {
   TrashLabelUsecase({required this._labelRepository});
 
   @useResult
-  Future<Result<Null, LabelFailure>> execute(int id) async {
+  Future<Result<void, LabelFailure>> execute(int id) async {
     try {
       await _labelRepository.trash(id);
       return const Ok(null);

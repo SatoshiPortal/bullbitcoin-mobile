@@ -12,7 +12,7 @@ class ConfirmBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   ConfirmBuyOrderUsecase({
     required this._mainnetExchangeOrderRepository,

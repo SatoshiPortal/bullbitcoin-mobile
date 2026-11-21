@@ -11,7 +11,10 @@ const exchangeSellLabelSystem = 'exchange_sell';
 enum LabelTypeColumn { tx, address, pubkey, input, output, xpub }
 
 @DataClassName('LabelRow')
-class Labels extends Table {
+class LabelsTable extends Table {
+  @override
+  String get tableName => 'labels';
+
   IntColumn get id => integer().autoIncrement()();
   TextColumn get label => text()();
   TextColumn get reference => text()();

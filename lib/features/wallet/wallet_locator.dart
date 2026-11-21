@@ -198,7 +198,7 @@ class WalletLocator {
         native: locator<WalletNativeRuntime>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
+        labelsFacade: locator<Labels>(),
       ),
     );
 
@@ -258,7 +258,7 @@ class WalletLocator {
     locator.registerLazySingleton<WalletTransactionRepository>(
       () => WalletTransactionRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
+        labelsFacade: locator<Labels>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: locator<ForegroundWalletSync>().synchronize,
       ),

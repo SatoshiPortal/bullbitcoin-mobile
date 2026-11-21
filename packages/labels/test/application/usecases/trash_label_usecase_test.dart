@@ -23,9 +23,9 @@ void main() {
 
       final result = await usecase.execute(42);
 
-      expect(result, isA<Err<Null, LabelFailure>>());
+      expect(result, isA<Err<void, LabelFailure>>());
       expect(
-        (result as Err<Null, LabelFailure>).failure,
+        (result as Err<void, LabelFailure>).failure,
         isA<LabelUnexpectedFailure>(),
       );
     });
@@ -35,7 +35,7 @@ void main() {
 
       final result = await usecase.execute(42);
 
-      expect(result, isA<Ok<Null, LabelFailure>>());
+      expect(result, isA<Ok<void, LabelFailure>>());
     });
   });
 }

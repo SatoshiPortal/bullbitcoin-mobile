@@ -6,12 +6,12 @@ import 'package:meta/meta.dart';
 /// Deletes a note from a wallet transaction, translating the labels feature's
 /// failure into this feature's family.
 class DeleteTransactionNoteUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const DeleteTransactionNoteUsecase(this._labelsFacade);
 
   @useResult
-  Future<Result<Null, TransactionFailure>> execute(int noteId) async {
+  Future<Result<void, TransactionFailure>> execute(int noteId) async {
     final trashed = await _labelsFacade.trash(noteId);
     return trashed.mapErr(
       (failure) => TransactionUnexpectedFailure(

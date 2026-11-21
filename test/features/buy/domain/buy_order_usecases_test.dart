@@ -19,7 +19,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
@@ -52,7 +52,7 @@ void main() {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.regtest);
       when(settingsRepository.fetch).thenAnswer((_) async => settings);
-      final labels = _MockLabelsFacade();
+      final labels = _MockLabels();
       final refresh = RefreshBuyOrderUsecase(
         mainnetExchangeOrderRepository: mainnet,
         testnetExchangeOrderRepository: testnet,
@@ -162,7 +162,7 @@ void main() {
   });
 
   group('ConfirmBuyOrderUsecase', () {
-    late _MockLabelsFacade labels;
+    late _MockLabels labels;
 
     ConfirmBuyOrderUsecase build() => ConfirmBuyOrderUsecase(
       mainnetExchangeOrderRepository: mainnet,
@@ -172,7 +172,7 @@ void main() {
     );
 
     setUp(() {
-      labels = _MockLabelsFacade();
+      labels = _MockLabels();
       when(() => labels.store(any()))
           .thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
     });

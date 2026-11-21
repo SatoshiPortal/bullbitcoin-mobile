@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:labels/labels.dart';
 
 class LabelExchangeOrdersUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final ListAllOrdersUsecase _listAllOrdersUsecase;
   final WalletTransactionRepository _walletTransactionRepository;
 
@@ -26,7 +26,10 @@ class LabelExchangeOrdersUsecase {
       final ordersToLabel = orders ?? await _listAllOrdersUsecase.execute();
       if (ordersToLabel.isEmpty) return;
 
-      final existingLabels = await _labelsFacade.fetchAll();
+      final existingLabels = (await _labelsFacade.fetch()).fold(
+        (labels) => labels,
+        (_) => const <Label>[],
+      );
       final existingLabelReferences = {
         for (final label in existingLabels) (label.label, label.reference),
       };

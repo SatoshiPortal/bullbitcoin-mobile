@@ -46,7 +46,7 @@ class AutoSwapLocator {
         locator<LiquidWalletRepository>(),
         locator<GetReceiveAddressUsecase>(),
         locator<BroadcastLiquidTransactionUsecase>(),
-        locator<LabelsFacade>(),
+        locator<Labels>(),
       ),
     );
     locator.registerLazySingleton<ExchangeAutoswapProvider>(
@@ -57,7 +57,7 @@ class AutoSwapLocator {
         locator<GetReceiveAddressUsecase>(),
         locator<BroadcastLiquidTransactionUsecase>(),
         locator<SwapFacade>(),
-        locator<LabelsFacade>(),
+        locator<Labels>(),
       ),
     );
   }

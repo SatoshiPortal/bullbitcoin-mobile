@@ -48,7 +48,7 @@ class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
 
 class _Descriptor extends Mock implements satoshifier.Descriptor {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 class _Catalog extends Mock implements WalletCatalogPort {}
 

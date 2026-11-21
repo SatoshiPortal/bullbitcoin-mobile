@@ -16,9 +16,7 @@ void main() {
       final fromFile = read(
         'features/label_editor/lib/src/domain/import_labels_from_file_usecase.dart',
       );
-      final capability = read(
-        'packages/labels/lib/src/public/labels_facade.dart',
-      );
+      final capability = read('packages/labels/lib/src/public/labels.dart');
       final converter = read(
         'packages/labels/lib/src/data/labels_converter_adapter.dart',
       );

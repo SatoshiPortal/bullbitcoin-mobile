@@ -60,7 +60,7 @@ class TransactionsLocator {
     );
     locator.registerFactory<LabelExchangeOrdersUsecase>(
       () => LabelExchangeOrdersUsecase(
-        labelsFacade: locator<LabelsFacade>(),
+        labelsFacade: locator<Labels>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
       ),
@@ -87,13 +87,13 @@ class TransactionsLocator {
       () => GetTransactionOrderUsecase(locator<GetOrderUsecase>()),
     );
     locator.registerFactory<SaveTransactionNoteUsecase>(
-      () => SaveTransactionNoteUsecase(locator<LabelsFacade>()),
+      () => SaveTransactionNoteUsecase(locator<Labels>()),
     );
     locator.registerFactory<DeleteTransactionNoteUsecase>(
-      () => DeleteTransactionNoteUsecase(locator<LabelsFacade>()),
+      () => DeleteTransactionNoteUsecase(locator<Labels>()),
     );
     locator.registerFactory<GetTransactionNoteSuggestionsUsecase>(
-      () => GetTransactionNoteSuggestionsUsecase(locator<LabelsFacade>()),
+      () => GetTransactionNoteSuggestionsUsecase(locator<Labels>()),
     );
 
     locator.registerFactory<GetTransactionOrderSwapsUsecase>(
@@ -124,9 +124,7 @@ class TransactionsLocator {
     );
 
     locator.registerFactory<RefreshTransactionLabelsUsecase>(
-      () => RefreshTransactionLabelsUsecase(
-        labelsFacade: locator<LabelsFacade>(),
-      ),
+      () => RefreshTransactionLabelsUsecase(labelsFacade: locator<Labels>()),
     );
 
     locator.registerFactory<ExportTransactionsCsvUsecase>(

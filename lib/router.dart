@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
-import 'package:label_editor/label_editor.dart';
+import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:signers/routes.dart';
@@ -273,7 +273,7 @@ class AppRouter {
         onOpenTorSettings: (context) =>
             context.pushNamed(TorSettingsRoute.torSettings.name),
       ),
-      LabelsRouter.route(() => locator<LabelsFacade>()),
+      ...LabelEditorFeature.mount(labels: () => locator<Labels>()).routes,
       StatusCheckRouter.route,
       BtcMapFeature.route,
     ],

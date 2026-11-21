@@ -16,6 +16,7 @@ import 'package:label_editor/src/domain/note_violation_to_label_failure.dart';
 import 'package:labels/labels.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../label_editor_feature.dart' show labelEditorRouteName;
 import '../label_editor_l10n.dart';
 import '../presentation/label_failure_l10n.dart';
 import 'labels_widget.dart';
@@ -23,34 +24,23 @@ import 'labels_widget.dart';
 /// Shared bottom-sheet editor for user-entered annotations on payment
 /// entities. Two distinct semantic modes are exposed via static factories:
 ///
-/// - [LabelEntryBottomSheet.note] — the value is **counterparty-visible**
+/// - [LabelEditor.note] — the value is **counterparty-visible**
 ///   (BIP21 `message=`, lightning swap description, etc.). Always renders
 ///   a privacy disclosure so the user knows the value will leave the device.
-/// - [LabelEntryBottomSheet.label] — the value is a **private local
+/// - [LabelEditor.label] — the value is a **private local
 ///   annotation** (transaction tag, address bookmark). No disclosure.
 ///
 /// Both factories return the trimmed string when the user saves, or `null`
 /// on dismiss/cancel. Caller is responsible for persisting the result
-/// (typically via a bloc/cubit that calls `LabelsFacade.store`).
-class LabelEntryBottomSheet extends StatefulWidget {
-  const LabelEntryBottomSheet._({
-    required this.title,
-    this.initialValue,
-    this.suggestionsFuture,
-    this.hint,
-    this.disclosure,
-    this.allowEmpty = false,
-  });
+/// (typically via a bloc/cubit that calls `Labels.store`).
+abstract final class LabelEditor {
+  /// Opens the BIP-329 label management page.
+  static Future<void> open(BuildContext context) =>
+      context.pushNamed<void>(labelEditorRouteName);
 
-  final String title;
-  final String? initialValue;
-  final Future<Set<String>>? suggestionsFuture;
-  final String? hint;
-
-  /// Privacy notice rendered under the title when non-null.
-  /// Set by [LabelEntryBottomSheet.note]; null for [LabelEntryBottomSheet.label].
-  final String? disclosure;
-  final bool allowEmpty;
+  /// The localized validation error for an inline note, or null if valid.
+  static String? validateNote(BuildContext context, String value) =>
+      _validateNote(value)?.toTranslated(context);
 
   /// Open the sheet for a counterparty-visible note. The disclosure copy is
   /// resolved from `context.labelLoc.noteVisibleToSenderNotice`.
@@ -102,7 +92,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
   }) {
     return BullBottomSheet.show<String>(
       context: context,
-      child: LabelEntryBottomSheet._(
+      child: _LabelEntryBottomSheet(
         title: title,
         initialValue: initialValue,
         suggestionsFuture: suggestionsFuture,
@@ -112,12 +102,33 @@ class LabelEntryBottomSheet extends StatefulWidget {
       ),
     );
   }
-
-  @override
-  State<LabelEntryBottomSheet> createState() => _LabelEntryBottomSheetState();
 }
 
-class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
+class _LabelEntryBottomSheet extends StatefulWidget {
+  const _LabelEntryBottomSheet({
+    required this.title,
+    this.initialValue,
+    this.suggestionsFuture,
+    this.hint,
+    this.disclosure,
+    this.allowEmpty = false,
+  });
+
+  final String title;
+  final String? initialValue;
+  final Future<Set<String>>? suggestionsFuture;
+  final String? hint;
+
+  /// Privacy notice rendered under the title when non-null.
+  /// Set by [LabelEditor.note]; null for [LabelEditor.label].
+  final String? disclosure;
+  final bool allowEmpty;
+
+  @override
+  State<_LabelEntryBottomSheet> createState() => _LabelEntryBottomSheetState();
+}
+
+class _LabelEntryBottomSheetState extends State<_LabelEntryBottomSheet> {
   late final TextEditingController _controller;
   LabelFailure? _failure;
 
@@ -139,15 +150,8 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
   }
 
   void _revalidate() {
-    final violation = NoteValidator.validate(_controller.text);
     setState(() {
-      // Mapped to this feature's family, then translated at render time.
-      // NoteValidator used to hand back an English sentence built in
-      // core/utils, which this sheet painted verbatim — in every locale, for
-      // the receive, send and transactions flows that all open it.
-      _failure = violation == null
-          ? null
-          : mapNoteViolationToLabelFailure(violation);
+      _failure = _validateNote(_controller.text);
     });
   }
 
@@ -349,4 +353,9 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
       },
     );
   }
+}
+
+LabelFailure? _validateNote(String value) {
+  final violation = NoteValidator.validate(value);
+  return violation == null ? null : mapNoteViolationToLabelFailure(violation);
 }

@@ -4,6 +4,5 @@ export 'src/domain/note_validator.dart';
 export 'src/domain/primitive/label_system.dart';
 export 'src/domain/primitive/label_type.dart';
 export 'src/public/label.dart';
-export 'src/public/labels_facade.dart';
+export 'src/public/labels.dart';
 export 'src/public/new_label.dart';
-export 'src/setup.dart';

@@ -85,7 +85,7 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -328,7 +328,7 @@ final _wallet = Wallet(
 
 void main() {
   late _MockBroadcastBitcoinTransactionUsecase broadcastBitcoinTx;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockGetWalletUsecase getWalletUsecase;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
@@ -347,7 +347,7 @@ void main() {
 
   setUp(() {
     broadcastBitcoinTx = _MockBroadcastBitcoinTransactionUsecase();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     getWalletUsecase = _MockGetWalletUsecase();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();

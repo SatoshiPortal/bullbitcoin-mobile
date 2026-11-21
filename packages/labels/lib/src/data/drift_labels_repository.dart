@@ -9,7 +9,7 @@ import 'package:labels/src/domain/new_label.dart';
 
 import 'drift_labels_repository.drift.dart';
 
-@DriftAccessor(tables: [Labels])
+@DriftAccessor(tables: [LabelsTable])
 class DriftLabelsRepository extends DatabaseAccessor<GeneratedDatabase>
     with $DriftLabelsRepositoryMixin
     implements LabelsRepositoryPort {
@@ -41,11 +41,11 @@ class DriftLabelsRepository extends DatabaseAccessor<GeneratedDatabase>
       origin: newLabel.origin,
     );
     final companion = LabelRowMapper.newLabelEntityToCompanion(normalized);
-    final id = await into(labels).insert(
+    final id = await into(labelsTable).insert(
       companion,
       onConflict: DoUpdate(
         (old) => companion,
-        target: [labels.label, labels.reference],
+        target: [labelsTable.label, labelsTable.reference],
       ),
     );
 
@@ -70,7 +70,7 @@ class DriftLabelsRepository extends DatabaseAccessor<GeneratedDatabase>
   @override
   Future<List<LabelEntity>> fetchByLabel(String label) async {
     final rows = await (select(
-      labels,
+      labelsTable,
     )..where((row) => row.label.equals(label))).get();
     return _mapRowsTolerantly(rows);
   }
@@ -78,7 +78,7 @@ class DriftLabelsRepository extends DatabaseAccessor<GeneratedDatabase>
   @override
   Future<List<LabelEntity>> fetchByReference(String reference) async {
     final rows = await (select(
-      labels,
+      labelsTable,
     )..where((row) => row.reference.equals(reference))).get();
     return _mapRowsTolerantly(rows);
   }
@@ -86,19 +86,19 @@ class DriftLabelsRepository extends DatabaseAccessor<GeneratedDatabase>
   @override
   Future<LabelEntity?> fetchById(int id) async {
     final row = await (select(
-      labels,
+      labelsTable,
     )..where((row) => row.id.equals(id))).getSingleOrNull();
     return row != null ? LabelRowMapper.toLabelEntity(row) : null;
   }
 
   @override
   Future<void> trash(int id) async {
-    await (delete(labels)..where((row) => row.id.equals(id))).go();
+    await (delete(labelsTable)..where((row) => row.id.equals(id))).go();
   }
 
   @override
   Future<List<LabelEntity>> fetchAll() async {
-    final rows = await select(labels).get();
+    final rows = await select(labelsTable).get();
     return _mapRowsTolerantly(rows);
   }
 

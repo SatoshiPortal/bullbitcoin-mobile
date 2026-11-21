@@ -26,7 +26,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final LiquidWalletRepository _liquidWalletRepository;
   final GetReceiveAddressUsecase _getReceiveAddress;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const BoltzAutoswapProvider(
     this._getSwapLimitsAndFees,

@@ -4,7 +4,7 @@ import 'package:labels/labels_table.dart';
 
 import 'labels_test_database.drift.dart';
 
-@DriftDatabase(tables: [Labels, FrozenUtxos])
+@DriftDatabase(tables: [LabelsTable, FrozenUtxos])
 class LabelsTestDatabase extends $LabelsTestDatabase {
   LabelsTestDatabase(super.executor);
 

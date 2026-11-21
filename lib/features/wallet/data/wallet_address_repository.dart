@@ -22,7 +22,7 @@ class WalletAddressRepository {
   final WalletNativeLifecycle? _native;
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SyncWalletValuesDatasource _values;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   WalletAddressRepository({
     this._native,
@@ -73,7 +73,8 @@ class WalletAddressRepository {
         case Err()) {
       throw const InvalidWalletAddressException();
     }
-    final labels = await _labelsFacade.fetchByReference(issued.address);
+    final labels = (await _labelsFacade.fetch(reference: issued.address))
+        .fold((labels) => labels, (_) => const <Label>[]);
     return WalletAddressMapper.toEntity(
       WalletAddressModel(
         walletId: walletId,
@@ -191,7 +192,8 @@ class WalletAddressRepository {
 
     final result = <WalletAddress>[];
     for (var model in enrichedAddresses) {
-      final labels = await _labelsFacade.fetchByReference(model.address);
+      final labels = (await _labelsFacade.fetch(reference: model.address))
+          .fold((labels) => labels, (_) => const <Label>[]);
       final entity = WalletAddressMapper.toEntity(model, labels: labels);
       result.add(entity);
     }
@@ -281,7 +283,8 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final labels = await _labelsFacade.fetchByReference(address);
+    final labels = (await _labelsFacade.fetch(reference: address))
+        .fold((labels) => labels, (_) => const <Label>[]);
     return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
   }
 }

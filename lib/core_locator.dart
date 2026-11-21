@@ -17,7 +17,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
-import 'package:labels/labels.dart';
+import 'package:labels/setup.dart';
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {

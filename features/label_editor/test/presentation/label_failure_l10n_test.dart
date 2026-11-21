@@ -1,5 +1,6 @@
 import 'package:labels/labels.dart';
 import 'package:label_editor/label_editor.dart';
+import 'package:label_editor/src/domain/note_violation_to_label_failure.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -129,6 +130,31 @@ void main() {
       expect(message, contains('1 MiB'));
       expect(message, isNot(contains('1048576')));
     });
+  });
+
+  testWidgets('inline note validation uses the editor localizations', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [
+          LabelEditorLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: LabelEditorLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            expect(LabelEditor.validateNote(context, 'lunch'), isNull);
+            expect(
+              LabelEditor.validateNote(context, 'line\nnext'),
+              LabelEditorLocalizations.of(context)
+                  .labelsErrorNoteForbiddenWhitespace,
+            );
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
   });
 
   group('mapNoteViolationToLabelFailure', () {

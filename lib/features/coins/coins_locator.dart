@@ -46,9 +46,7 @@ class CoinsLocator {
         freezeUtxosUsecase: locator<FreezeUtxosUsecase>(),
         unfreezeUtxosUsecase: locator<UnfreezeUtxosUsecase>(),
         refreshCoinsUsecase: locator<RefreshCoinsUsecase>(),
-        loadCoinLabelFilters: LoadCoinLabelFiltersUsecase(
-          locator<LabelsFacade>(),
-        ),
+        loadCoinLabelFilters: LoadCoinLabelFiltersUsecase(locator<Labels>()),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:

@@ -1,9 +1,12 @@
 import 'package:labels/labels.dart';
 
 class LoadSendLabelSuggestionsUsecase {
-  final LabelsFacade _labels;
+  final Labels _labels;
 
   LoadSendLabelSuggestionsUsecase(this._labels);
 
-  Future<Set<String>> execute() => _labels.fetchDistinctLabels();
+  Future<Set<String>> execute() async => (await _labels.suggestions()).fold(
+    (suggestions) => suggestions,
+    (_) => const <String>{},
+  );
 }

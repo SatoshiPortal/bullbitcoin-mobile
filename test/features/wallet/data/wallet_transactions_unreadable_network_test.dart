@@ -11,7 +11,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 

@@ -14,15 +14,15 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockLabelsFacade extends Mock implements LabelsFacade {}
+class MockLabels extends Mock implements Labels {}
 
 void main() {
   setUpAll(() {
     // LabelsWidget, nested in the tile, resolves the facade in its State
     // field initializer. Nothing here deletes a label, so an unstubbed mock
     // is enough to let the tile build.
-    if (!locator.isRegistered<LabelsFacade>()) {
-      locator.registerSingleton<LabelsFacade>(MockLabelsFacade());
+    if (!locator.isRegistered<Labels>()) {
+      locator.registerSingleton<Labels>(MockLabels());
     }
   });
 

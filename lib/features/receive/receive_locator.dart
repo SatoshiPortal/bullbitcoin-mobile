@@ -113,13 +113,13 @@ class ReceiveLocator {
           GetReceiveAddressAtIndexUsecase(locator<GetAddressAtIndexUsecase>()),
     );
     locator.registerFactory<LoadReceiveAddressLabelUsecase>(
-      () => LoadReceiveAddressLabelUsecase(locator<LabelsFacade>()),
+      () => LoadReceiveAddressLabelUsecase(locator<Labels>()),
     );
     locator.registerFactory<SaveReceiveAddressLabelUsecase>(
-      () => SaveReceiveAddressLabelUsecase(locator<LabelsFacade>()),
+      () => SaveReceiveAddressLabelUsecase(locator<Labels>()),
     );
     locator.registerFactory<FetchReceiveNoteSuggestionsUsecase>(
-      () => FetchReceiveNoteSuggestionsUsecase(locator<LabelsFacade>()),
+      () => FetchReceiveNoteSuggestionsUsecase(locator<Labels>()),
     );
 
     locator.registerFactory<GetReceiveSwapLimitsUsecase>(

@@ -52,7 +52,7 @@ void main() {
       await directory.delete(recursive: true);
     });
     // Initialize normally before making subsequent writes fail in real SQLite.
-    await database.select(database.labels).get();
+    await database.select(database.labelsTable).get();
     await database.customStatement('PRAGMA query_only = ON');
     // Confirm SQLite's real write refusal independently of the logger.
     await expectLater(

@@ -292,10 +292,10 @@ class SendLocator {
           _ => const {},
         },
         loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(
-          locator<LabelsFacade>(),
+          locator<Labels>(),
         ),
         storeSendTransactionLabel: StoreSendTransactionLabelUsecase(
-          locator<LabelsFacade>(),
+          locator<Labels>(),
         ),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),

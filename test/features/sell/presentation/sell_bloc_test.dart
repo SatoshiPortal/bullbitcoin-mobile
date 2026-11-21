@@ -90,7 +90,7 @@ class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 class _MockPreviewBitcoinFeePresets extends Mock
     implements PreviewBitcoinFeePresetsUsecase {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockLabelCompletedSellOrderUsecase extends Mock
     implements LabelCompletedSellOrderUsecase {}
@@ -197,7 +197,7 @@ void main() {
   late _MockGetVisiblePayjoinTransaction getVisiblePayjoinTransaction;
   late _MockRetryPayjoin retryPayjoin;
   late _MockRefreshSellOrder refreshSellOrder;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockLabelCompletedSellOrderUsecase labelCompletedSellOrder;
   late _MockPreviewBitcoinFee previewBitcoinFee;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
@@ -293,7 +293,7 @@ void main() {
       (_) async => const Ok<PayjoinSenderSession?, SellFailure>(null),
     );
     refreshSellOrder = _MockRefreshSellOrder();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     labelCompletedSellOrder = _MockLabelCompletedSellOrderUsecase();
     when(() => labelCompletedSellOrder.execute(order: any(named: 'order')))
         .thenAnswer((_) async => const Ok<void, SellFailure>(null));

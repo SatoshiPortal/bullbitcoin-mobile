@@ -293,7 +293,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsLabelsButton,
       ),
       icon: Icons.sell,
-      open: (context) => context.push(LabelsRoute.labels.path),
+      open: LabelEditor.open,
       keywords: _keywords(
         localization.settingsSearchLabelsKeywords,
         english.settingsSearchLabelsKeywords,

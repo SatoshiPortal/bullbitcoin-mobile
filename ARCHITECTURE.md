@@ -94,7 +94,7 @@ The repository is the data **seam** and the single source of truth for one data 
 
 **The boundary rule — this one never bends.** A repository's **public signatures — returns *and* params — use only domain types**: entities, value objects, `Result<Entity, …>`. Wire models, library types (a BDK `LocalUtxo`, an LWK type, a Drift row), JSON `Map`s and DTOs **never cross the repository boundary** — they live and die inside `data/`. This is *why* entity and model stay separate (see "Entity vs. model" below); it is not abstraction for its own sake. *(Legacy leak to converge: `WalletAddressRepository` takes a `WalletModel` param — a `data/` model in a `domain/` contract; new code passes an id or an entity instead.)*
 
-- **Owns:** combining its datasources, caching, and **mapping wire model ↔ domain entity**; the single source of truth for one type. Real example: `WalletUtxoRepositoryImpl` injects its datasources (metadata, sync wallet values, sync freezes) plus the labels facade, picks BDK-vs-LWK from wallet metadata, maps `WalletUtxoModel → WalletUtxo`, and returns `List<WalletUtxo>`.
+- **Owns:** combining its datasources, caching, and **mapping wire model ↔ domain entity**; the single source of truth for one type. Real example: `WalletUtxoRepositoryImpl` injects its datasources (metadata, sync wallet values, sync freezes) plus the labels capability, picks BDK-vs-LWK from wallet metadata, maps `WalletUtxoModel → WalletUtxo`, and returns `List<WalletUtxo>`.
 - **Never:** orchestrate a user goal across **other repositories**, or sequence a multi-step workflow — that is a use-case.
 - **Smell:** a repository importing another repository; a "god repository" of unrelated methods; data-shaping leaking up into a use-case.
 
@@ -176,12 +176,12 @@ Three words, three jobs, kept strictly apart: **`Exception`** = thrown, low-leve
 
 A feature never reaches into another feature's `domain/`, `data/`, or `presentation/`. Its single cross-feature surface is the **facade**, and the facade *is* the interface between features — a **concrete class**, not an `abstract interface class`. There is nothing to define on top of it: its public method surface plus its `export` block **are** the contract. (Reach for an `abstract interface class` in front of a facade only to break a dependency cycle via DIP, or to mock the feature in another feature's tests — not by default.)
 
-The `export` block is the feature's whole public surface — its published types, any widgets meant for cross-feature reuse, its router and locator. `LabelsFacade` exports `label.dart`, its label UI, `router.dart`, and `locator.dart`; everything else under `labels/` is unreachable from outside.
+The `export` block is the feature's whole public surface — its published types, any widgets meant for cross-feature reuse, its router and locator. `Labels` publishes its label values and failures through `package:labels/labels.dart`; label UI lives in the separate Label Editor feature.
 
 **What its methods may return — the repository boundary rule, one level up:**
 
 - Only the feature's **published contract types**, which must be in the `export` block so callers can name them.
-- **Never** a deeper internal type: an `application/`/use-case type, a `data/models/` model, or another feature's entity. `LabelsFacade` maps its internal application label to the exported `Label` (`LabelMapper.applicationLabelToLabel`) before returning — the internal type never crosses the boundary.
+- **Never** a deeper internal type: an `application/`/use-case type, a `data/models/` model, or another feature's entity. `Labels` maps its internal application label to the exported `Label` before returning.
 
 **Is the published type the entity itself or a dedicated DTO? A stability call, not a rule:**
 
@@ -398,7 +398,7 @@ Each extracted package gets `resolution: workspace` and is listed under a `works
 
 **Invoice amounts.** The app and `satoshifier` use the round-up millisatoshi conversion from `primitives`. Satoshifier owns invoice amount validation.
 
-**Labels package (`packages/labels`) and Label Editor feature (`features/label_editor`).** Labels owns BIP-329, label persistence and the persisted user freeze port. Its accessor queries use owner-generated rows and attach to any Drift database composing the tables. Sync exposes raw wallet state and remains the single writer of freezes through its port. Consumers enrich wallet values with labels as needed. Label Editor handles private labels, counterparty-visible notes and BIP-329 document selection and saving. The feature owns its translations and uses the labels and file-system capabilities directly from its use cases.
+**Labels package (`packages/labels`) and Label Editor feature (`features/label_editor`).** Labels owns BIP-329, label persistence and the persisted user freeze port. Its accessor queries use owner-generated rows and attach to any Drift database composing the tables. Sync exposes raw wallet state and remains the single writer of freezes through its port. Consumers enrich wallet values with labels as needed. Label Editor handles private labels, counterparty-visible notes and BIP-329 document selection and saving. The feature owns its translations and uses the labels and file-system capabilities directly from its use cases. Consumers construct `Labels` with `Labels.open` and use the same typed `fetch` for full and reference-scoped reads. `package:labels/setup.dart` wires the reserved-address and Payjoin ports. `LabelEditorFeature.mount` supplies the route from `package:label_editor/setup.dart`, while callers use `LabelEditor` for typed navigation and localized inline note validation.
 
 **Quick Actions feature (`features/quick_actions`).** The feature composes the layout editor, its action catalogue and its existing SharedPreferences store. Callers provide action availability and navigation at composition.
 

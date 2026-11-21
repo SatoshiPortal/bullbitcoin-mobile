@@ -1,7 +1,7 @@
 import 'package:labels/labels.dart';
 
 class StoreSendTransactionLabelUsecase {
-  final LabelsFacade _labels;
+  final Labels _labels;
 
   StoreSendTransactionLabelUsecase(this._labels);
 

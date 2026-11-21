@@ -122,8 +122,8 @@ graph TB
     SETTINGS --> LABEL_EDITOR
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
-    LABELS[Labels Package<br/>Labels and Frozen UTXOs]
-    LABEL_EDITOR[Label Editor<br/>Workspace Feature]
+    LABELS[Labels Package<br/>Label persistence, BIP-329 and frozen UTXOs]
+    LABEL_EDITOR[Label Editor<br/>Notes, labels and BIP-329 files]
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]

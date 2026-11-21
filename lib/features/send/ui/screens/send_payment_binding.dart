@@ -717,7 +717,7 @@ final class _SendPaymentSession {
       confirmLabel: context.loc.sendConfirm,
       onBack: cubit.backClicked,
       onNote: () async {
-        final note = await LabelEntryBottomSheet.label(
+        final note = await LabelEditor.label(
           context,
           title: context.loc.transactionNoteAddTitle,
           initialValue: state.label.isEmpty ? null : state.label,

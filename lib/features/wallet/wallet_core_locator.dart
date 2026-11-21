@@ -87,7 +87,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         freezesDatasource: locator<SyncFreezesDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
+        labelsFacade: locator<Labels>(),
       ),
     );
   }

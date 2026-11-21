@@ -8,7 +8,7 @@ import 'package:file_system/file_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockLabels extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _Document extends Fake implements PickedDocument {
   @override

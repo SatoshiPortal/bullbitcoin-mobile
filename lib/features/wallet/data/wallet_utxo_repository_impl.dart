@@ -14,7 +14,7 @@ import 'package:labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final SyncWalletValuesDatasource _values;
   final SyncFreezesDatasource _freezes;
 
@@ -25,6 +25,10 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     required SyncFreezesDatasource freezesDatasource,
   }) : _values = walletValuesDatasource,
        _freezes = freezesDatasource;
+
+  Future<List<Label>> _fetchLabels(String reference) async =>
+      (await _labelsFacade.fetch(reference: reference))
+          .fold((labels) => labels, (_) => const <Label>[]);
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
@@ -55,17 +59,15 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
       coins.map((coin) async {
         final model = coin.model;
         // Get labels for the UTXO if any
-        final labelModels = await _labelsFacade.fetchByReference(
-          model.labelRef,
-        );
-        final txLabels = await _labelsFacade.fetchByReference(model.txId);
+        final labelModels = await _fetchLabels(model.labelRef);
+        final txLabels = await _fetchLabels(model.txId);
         // Get the possible address labels for the UTXO
         List<Label> addressLabels;
         switch (model) {
           case LiquidWalletUtxoModel _:
             final (standardAddressLabels, confidentialAddressLabels) = await (
-              _labelsFacade.fetchByReference(model.standardAddress),
-              _labelsFacade.fetchByReference(model.confidentialAddress),
+              _fetchLabels(model.standardAddress),
+              _fetchLabels(model.confidentialAddress),
             ).wait;
 
             addressLabels = [
@@ -73,7 +75,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
               ...confidentialAddressLabels,
             ];
           case BitcoinWalletUtxoModel _:
-            final labels = await _labelsFacade.fetchByReference(model.address);
+            final labels = await _fetchLabels(model.address);
             addressLabels = labels;
         }
 

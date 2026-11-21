@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 /// translated into this feature's family right here: nothing above this line
 /// should know another feature's failure type.
 class SaveTransactionNoteUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const SaveTransactionNoteUsecase(this._labelsFacade);
 

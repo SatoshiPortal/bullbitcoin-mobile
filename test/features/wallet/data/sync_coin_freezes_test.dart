@@ -21,7 +21,7 @@ import 'package:sync/testing.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +52,8 @@ void main() {
     labels = _Labels();
     when(() => metadata.fetch(walletId))
         .thenAnswer((_) async => _row(walletId));
-    when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+    when(() => labels.fetch(reference: any(named: 'reference')))
+        .thenAnswer((_) async => Ok([]));
   });
   tearDown(() async {
     await owner.close();

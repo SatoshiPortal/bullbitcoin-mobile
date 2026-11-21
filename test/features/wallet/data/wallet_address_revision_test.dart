@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -16,11 +17,11 @@ class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 void main() {
   test(
-    'Liquid address history includes the writer issued high-water',
+    'Liquid address history keeps the issued high-water when labels fail',
     () async {
       const id = 'elwpkh([aabbccdd/84h/1776h/0h])';
       final row = WalletMetadataModel(
@@ -59,7 +60,8 @@ void main() {
           .thenAnswer((_) async => []);
       when(() => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')))
           .thenAnswer((_) async => {});
-      when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+      when(() => labels.fetch(reference: any(named: 'reference')))
+          .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
       final repository = WalletAddressRepository(
         native: native,
         walletMetadataDatasource: metadata,
@@ -71,6 +73,7 @@ void main() {
         limit: 3,
       );
       expect(addresses.map((address) => address.index), [7, 6, 5]);
+      expect(addresses.expand((address) => address.labels), isEmpty);
       final next = await repository.getGeneratedReceiveAddresses(
         id,
         limit: 2,
