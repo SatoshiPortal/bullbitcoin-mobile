@@ -15,7 +15,7 @@ import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
-import 'package:network/network.dart';
+import 'package:network/setup.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';

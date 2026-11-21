@@ -33,7 +33,8 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_sc
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:network/network.dart';
+import 'package:network/network.dart' show NetworkFeature;
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -53,12 +54,14 @@ class SettingsRouter {
   static GoRoute route({
     required Widget Function(BuildContext) buildPriceHistory,
     required void Function(BuildContext) onBackupTestSucceeded,
+    required List<RouteBase> appSettingsRoutes,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
-      child: const AllSettingsScreen(),
+    builder: (context, state) => AllSettingsScreen(
+      watchServiceHealth: WatchSettingsServiceHealthUsecase(
+        locator<NetworkFeature>().status,
+      ).execute,
     ),
     routes: [
       GoRoute(
@@ -166,7 +169,7 @@ class SettingsRouter {
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
         routes: [
-          TorSettingsRouter.route,
+          ...appSettingsRoutes,
           GoRoute(
             name: SettingsRoute.permissions.name,
             path: SettingsRoute.permissions.path,

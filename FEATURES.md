@@ -127,7 +127,6 @@ graph TB
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]
-    NETWORK[Network]
     BIP85[BIP85]
     FEES[Fees]
     WALLETS[Wallets]
@@ -143,7 +142,6 @@ graph TB
     BACKUPS[Backups]
     SWAPS[Swaps]
     WITHDRAWAL[Withdrawal]
-    STATUS[Status]
     SEND[Send]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     SCANNING[QR and NFC Scanning]
@@ -218,7 +216,6 @@ graph TB
     RECEIVE --> BULL_PRICER
     SELL --> BULL_PRICER
     SEND --> BULL_PRICER
-    STATUS --> BULL_PRICER
     SWAPS --> BULL_PRICER
     HW_WALLETS --> SCREEN_AWAKE
     SCREEN_AWAKE --> BULL_LOGGER
@@ -259,7 +256,6 @@ graph TB
     BACKUPS --> BIP85
     APP_STARTUP --> RECOVERBULL
     WALLETS --> RECOVERBULL
-    STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> SECRETS
     BACKUPS --> APP_UNLOCK
@@ -348,7 +344,7 @@ graph TB
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
-    SETTINGS --> NETWORK
+    SETTINGS -->|service health and navigation| NETWORK
     NETWORK --> TOR
     NETWORK --> BULL_UI
     NETWORK --> BULL_PRICER
@@ -356,8 +352,6 @@ graph TB
     NETWORK --> RECOVERBULL
     NETWORK --> PRIMITIVES
     ONBOARDING --> NETWORK
-    STATUS --> BULL_PAYJOIN
-    STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
     SWAPS --> SECRETS
     SWAPS --> EXCHANGE
@@ -438,8 +432,6 @@ graph TB
     SELL --> FEES
     SELL --> SETTINGS
     SEND --> SETTINGS
-    STATUS --> ELECTRUM
-    STATUS --> WALLETS
     SWAPS --> AUTOSWAP
     SWAPS --> FEES
     SWAPS --> SETTINGS
@@ -455,7 +447,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -650,4 +642,4 @@ Wallet publishes destination validation and input through `public/payment_destin
 
 ## Network settings and service status
 
-The settings hub, onboarding and wallet error actions use the network member’s public routes. Its use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The app supplies a default wallet environment, existing Bitcoin fee probe and Tor preference access. Background Electrum composition remains independent of the network UI.
+The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The app supplies a default wallet environment, existing Bitcoin fee probe and Tor preference access. Background Electrum composition remains independent of the network UI.

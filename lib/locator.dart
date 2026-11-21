@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
-import 'package:network/network.dart' show StatusCheckLocator;
+import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:electrum/electrum.dart' show ElectrumFailure;
 import 'package:electrum/setup.dart' show RegtestElectrumProfile;
@@ -252,16 +252,27 @@ class AppLocator {
     SellLocator.setup(locator);
     WithdrawLocator.setup(locator);
     PayLocator.setup(locator);
-    SettingsNetworkBindings.setup(locator);
-    StatusCheckLocator.setup(
-      locator,
-      readDefaultNetwork: () =>
-          locator<GetDefaultWalletNetworkUsecase>().execute(),
-      checkBitcoinFees: (network) =>
-          FeesLocator.checkBitcoinFees(locator, network),
-      isTorRequired: () => locator<WalletRepository>().isTorRequired(),
-      readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
-        locator<SettingsRepository>(),
+    locator.registerSingleton(
+      NetworkFeature.mount(
+        services: locator,
+        bindings: (
+          readDefaultNetwork: () =>
+              locator<GetDefaultWalletNetworkUsecase>().execute(),
+          checkBitcoinFees: (network) =>
+              FeesLocator.checkBitcoinFees(locator, network),
+          isTorRequired: () => locator<WalletRepository>().isTorRequired(),
+          readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
+            locator<SettingsRepository>(),
+          ),
+          saveTorProxy: ({required enabled, required port}) =>
+              SettingsNetworkBindings.saveTorProxy(
+                locator<SettingsRepository>(),
+                enabled: enabled,
+                port: port,
+              ),
+          saveTorMode: (mode) =>
+              locator<SettingsRepository>().setTorTransportMode(mode),
+        ),
       ),
     );
 

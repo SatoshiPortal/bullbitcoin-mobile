@@ -1,11 +1,10 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network/src/status_check/domain/check_service_status_usecase.dart';
 import 'package:network/src/status_check/domain/service_status.dart';
 import 'package:network/src/status_check/ui/service_status_page.dart';
-import 'package:network/src/status_check/presentation/service_status_cubit.dart';
+import 'package:network/src/status_check/status_session.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../fixtures.dart';
@@ -24,8 +23,7 @@ void main() {
         onUpdate: any(named: 'onUpdate'),
       ),
     ).thenAnswer((_) async => const Ok(AllServicesStatus()));
-    final cubit = ServiceStatusCubit(checkServiceStatusUsecase: check);
-    addTearDown(cubit.close);
+    final status = buildNetworkStatus(() => check);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -33,13 +31,17 @@ void main() {
         supportedLocales: const [Locale('fr')],
         localizationsDelegates: networkTestLocalizationsDelegates,
         theme: networkTestTheme(),
-        home: BlocProvider.value(
-          value: cubit,
-          child: const ServiceStatusPage(),
-        ),
+        home: ServiceStatusPage(status: status),
       ),
     );
     await tester.pumpAndSettle();
+
+    verify(
+      () => check.execute(
+        initialStatus: any(named: 'initialStatus'),
+        onUpdate: any(named: 'onUpdate'),
+      ),
+    ).called(1);
 
     final action = find.byTooltip('Actualiser l’état des services');
     expect(action, findsOneWidget);
@@ -50,6 +52,6 @@ void main() {
         initialStatus: any(named: 'initialStatus'),
         onUpdate: any(named: 'onUpdate'),
       ),
-    ).called(2);
+    ).called(1);
   });
 }

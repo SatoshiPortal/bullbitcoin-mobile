@@ -1,16 +1,20 @@
+import 'dart:async';
+
 import '../domain/service_status.dart';
 import '../../network_l10n.dart';
-import '../presentation/service_status_cubit.dart';
-import '../presentation/service_status_state.dart';
-import '../presentation/status_check_failure_l10n.dart';
+import '../domain/network_failure.dart';
+import '../presentation/network_failure_l10n.dart';
+import '../status_session.dart';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bull_ui/bull_ui.dart'
     show BullThemeX, BullPullableBody, BullText, BullTypographyX;
 
 class ServiceStatusPage extends StatefulWidget {
-  const ServiceStatusPage({super.key});
+  final NetworkStatus status;
+
+  const ServiceStatusPage({required this.status, super.key});
 
   @override
   State<ServiceStatusPage> createState() => _ServiceStatusPageState();
@@ -18,14 +22,24 @@ class ServiceStatusPage extends StatefulWidget {
 
 class _ServiceStatusPageState extends State<ServiceStatusPage> {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  late final StatusSession _session;
+  late final Stream<Result<StatusSnapshot, NetworkFailure>> _updates;
 
   @override
   void initState() {
     super.initState();
+    _session = widget.status.session();
+    _updates = _session.watch();
     // Show the RefreshIndicator spinner and trigger the first check
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshIndicatorKey.currentState?.show();
     });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_session.close());
+    super.dispose();
   }
 
   @override
@@ -45,14 +59,23 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
           ),
         ],
       ),
-      body: BlocBuilder<ServiceStatusCubit, ServiceStatusState>(
-        builder: (context, state) {
-          final serviceStatus = state.serviceStatus;
-          final cubit = context.read<ServiceStatusCubit>();
+      body: StreamBuilder<Result<StatusSnapshot, NetworkFailure>>(
+        stream: _updates,
+        builder: (context, update) {
+          final serviceStatus = switch (update.data) {
+            Ok(:final value) => value.services,
+            _ => _session.snapshot.services,
+          };
+          final failure = switch (update.data) {
+            Err(:final failure) => failure,
+            _ => null,
+          };
 
           return BullPullableBody(
             indicatorKey: _refreshIndicatorKey,
-            onRefresh: cubit.checkStatus,
+            onRefresh: () async {
+              final _ = await _session.check();
+            },
             slivers: [
               SliverPadding(
                 padding: const EdgeInsets.symmetric(
@@ -61,7 +84,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                 ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    if (state.failure case final failure?) ...[
+                    if (failure != null) ...[
                       BullText(
                         failure.toTranslated(context),
                         style: context.bullType.body,
@@ -125,7 +148,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                           ),
                       ],
                     ),
-                    if (state.failure != null &&
+                    if (failure != null &&
                         serviceStatus.lastChecked != null) ...[
                       const SizedBox(height: 4),
                       Row(

@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
-import 'package:network/network.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -42,9 +42,6 @@ class _Chart extends MockCubit<PriceChartState> implements PriceChartCubit {}
 class _Announcements extends MockCubit<AnnouncementsState>
     implements AnnouncementsCubit {}
 
-class _ServiceStatus extends MockCubit<ServiceStatusState>
-    implements ServiceStatusCubit {}
-
 class _ExchangeAccess extends Mock implements ExchangeFacade {}
 
 class _MemoryQuickActionsStorage implements QuickActionsStorage {
@@ -78,7 +75,6 @@ class ArkShellVisualFixtures {
   final _price = _Price();
   final _chart = _Chart();
   final _announcements = _Announcements();
-  final _serviceStatus = _ServiceStatus();
   final _exchange = _ExchangeAccess();
   final _hostDependencies = GetIt.asNewInstance();
   final _settingsNavigator = GlobalKey<NavigatorState>();
@@ -125,7 +121,10 @@ class ArkShellVisualFixtures {
         GoRoute(
           name: SettingsRoute.settings.name,
           path: SettingsRoute.settings.path,
-          builder: (_, _) => const AllSettingsScreen(),
+          builder: (_, _) => AllSettingsScreen(
+            watchServiceHealth: () =>
+                Stream.value(SettingsServiceHealth.unhealthy),
+          ),
         ),
       ],
     );
@@ -230,12 +229,6 @@ class ArkShellVisualFixtures {
       const Stream<AnnouncementsState>.empty(),
       initialState: const AnnouncementsState(),
     );
-    whenListen(
-      _serviceStatus,
-      const Stream<ServiceStatusState>.empty(),
-      initialState: const ServiceStatusState(),
-    );
-    when(() => _serviceStatus.checkStatus()).thenAnswer((_) async {});
     when(() => _exchange.currentAccess)
         .thenReturn(const ExchangeAccessDisabled());
     when(_exchange.watchAccess)
@@ -245,7 +238,6 @@ class ArkShellVisualFixtures {
     when(_price.close).thenAnswer((_) async {});
     when(_chart.close).thenAnswer((_) async {});
     when(_announcements.close).thenAnswer((_) async {});
-    when(_serviceStatus.close).thenAnswer((_) async {});
   }
 
   Widget settings() => _wrap(
@@ -270,7 +262,6 @@ class ArkShellVisualFixtures {
         BlocProvider<BitcoinPriceBloc>.value(value: _price),
         BlocProvider<PriceChartCubit>.value(value: _chart),
         BlocProvider<AnnouncementsCubit>.value(value: _announcements),
-        BlocProvider<ServiceStatusCubit>.value(value: _serviceStatus),
       ],
       child: Builder(
         builder: (context) => Localizations.override(
@@ -308,7 +299,6 @@ class ArkShellVisualFixtures {
       _price.close(),
       _chart.close(),
       _announcements.close(),
-      _serviceStatus.close(),
     ]);
   }
 }

@@ -2,7 +2,7 @@ import '../../fixtures.dart';
 
 import 'package:network/src/mempool_settings/presentation/mempool_settings_cubit.dart';
 import 'package:network/src/mempool_settings/ui/widgets/add_custom_server_button.dart';
-import 'package:network/network.dart' show NetworkLocalizations;
+import 'package:network/setup.dart' show NetworkLocalizations;
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';

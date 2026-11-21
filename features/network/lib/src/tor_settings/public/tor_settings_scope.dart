@@ -6,8 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class TorSettingsScope extends StatefulWidget {
   final Widget child;
+  final TorSettingsCubit Function()? createCubit;
 
-  const TorSettingsScope({required this.child, super.key});
+  const TorSettingsScope({required this.child, this.createCubit, super.key});
 
   static Widget provideFrom({
     required BuildContext context,
@@ -26,7 +27,8 @@ final class _TorSettingsScopeState extends State<TorSettingsScope>
   @override
   void initState() {
     super.initState();
-    _cubit = GetIt.I<TorSettingsCubit>()..init();
+    _cubit = (widget.createCubit?.call() ?? GetIt.I<TorSettingsCubit>())
+      ..init();
     WidgetsBinding.instance.addObserver(this);
   }
 

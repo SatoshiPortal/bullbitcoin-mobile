@@ -15,7 +15,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullSettingsEntryItem,
         Gap,
         BullTypographyX;
-import 'package:go_router/go_router.dart';
 
 class AdvancedOptions extends StatelessWidget {
   const AdvancedOptions({super.key});
@@ -77,27 +76,28 @@ class AdvancedOptions extends StatelessWidget {
                       BullSettingsEntryItem(
                         icon: Icons.vpn_lock,
                         title: context.loc.torSettingsTitle,
-                        onTap: () => context.pushNamed(
-                          TorSettingsRoute.torSettings.name,
+                        onTap: () => NetworkNavigation.open(
+                          context,
+                          section: NetworkSection.tor,
                         ),
                       ),
                       BullSettingsEntryItem(
                         icon: Icons.hub,
                         title:
                             context.loc.onboardingAdvancedOptionsCustomElectrum,
-                        onTap: () {
-                          context.pushNamed(
-                            ElectrumSettingsRoute.electrumSettings.name,
-                          );
-                        },
+                        onTap: () => NetworkNavigation.open(
+                          context,
+                          section: NetworkSection.electrum,
+                        ),
                       ),
                       BullSettingsEntryItem(
                         icon: Icons.memory,
                         title:
                             context.loc.onboardingAdvancedOptionsCustomMempool,
-                        onTap: () {
-                          context.pushNamed(MempoolSettingsRoute.name);
-                        },
+                        onTap: () => NetworkNavigation.open(
+                          context,
+                          section: NetworkSection.mempool,
+                        ),
                       ),
                       BullSettingsEntryItem(
                         icon: Icons.cloud_circle,

@@ -1,27 +1,17 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:get_it/get_it.dart';
-import 'package:network/network.dart';
+import 'package:network/setup.dart';
 import 'package:primitives/primitives.dart';
 
 class SettingsNetworkBindings {
-  static void setup(GetIt locator) {
-    ElectrumSettingsLocator.setup(locator);
-    TorSettingsLocator.setup(
-      locator,
-      readPreferences: () => readTorPreferences(locator<SettingsRepository>()),
-      saveMode: (mode) =>
-          locator<SettingsRepository>().setTorTransportMode(mode),
-      saveProxy: ({required enabled, required port}) async {
-        return switch (await locator<SettingsRepository>().setTorProxy(
-          enabled: enabled,
-          port: port,
-        )) {
-          Ok() => true,
-          Err() => false,
-        };
-      },
-    );
-  }
+  static Future<bool> saveTorProxy(
+    SettingsRepository settings, {
+    required bool enabled,
+    required int port,
+  }) async =>
+      switch (await settings.setTorProxy(enabled: enabled, port: port)) {
+        Ok() => true,
+        Err() => false,
+      };
 
   static Future<TorPreferences> readTorPreferences(
     SettingsRepository settings,

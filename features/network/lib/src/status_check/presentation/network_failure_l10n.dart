@@ -1,11 +1,12 @@
 import '../../network_l10n.dart';
-import '../domain/status_check_failure.dart';
+import '../domain/network_failure.dart';
 
 import 'package:flutter/widgets.dart';
 
-extension StatusCheckFailureL10n on StatusCheckFailure {
+extension NetworkFailureL10n on NetworkFailure {
   String toTranslated(BuildContext context) => switch (this) {
     NoDefaultWalletFailure() => context.loc.statusCheckNoDefaultWalletError,
-    StatusCheckUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    NetworkUnexpectedFailure() ||
+    StatusCheckInterruptedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

@@ -205,6 +205,7 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,
         buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
             .buildHistory(onBack: () => context.pop()),
@@ -252,8 +253,7 @@ class AppRouter {
       ...LimitOrdersRouter.routes,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
-      ElectrumSettingsRouter.route,
-      MempoolSettingsRoute.route,
+      ...locator<NetworkFeature>().routes.root,
       SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
       SpRouter.route(
         sendRouteName: SendRoute.send.name,
@@ -271,10 +271,9 @@ class AppRouter {
         },
         onTested: _onBackupTestSucceeded,
         onOpenTorSettings: (context) =>
-            context.pushNamed(TorSettingsRoute.torSettings.name),
+            NetworkNavigation.open(context, section: NetworkSection.tor),
       ),
       ...LabelEditorFeature.mount(labels: () => locator<Labels>()).routes,
-      StatusCheckRouter.route,
       BtcMapFeature.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),

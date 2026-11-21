@@ -1,0 +1,101 @@
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_tor/tor.dart';
+import 'package:electrum/electrum.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:primitives/primitives.dart';
+
+import 'electrum_settings/electrum_settings_locator.dart';
+import 'electrum_settings/ui/electrum_settings_router.dart';
+import 'mempool_settings/router.dart';
+import 'network_navigation.dart';
+import 'status_check/domain/check_all_service_status_usecase.dart';
+import 'status_check/domain/check_electrum_status_usecase.dart';
+import 'status_check/domain/check_service_status_usecase.dart';
+import 'status_check/status_session.dart';
+import 'status_check/ui/service_status_page.dart';
+import 'tor_settings/domain/tor_preferences.dart';
+import 'tor_settings/presentation/tor_settings_cubit.dart';
+import 'tor_settings/public/tor_settings_scope.dart';
+import 'tor_settings/tor_settings_locator.dart';
+import 'tor_settings/ui/screens/tor_settings_screen.dart';
+import 'tor_settings/ui/tor_settings_router.dart';
+
+typedef NetworkRoutes = ({List<RouteBase> root, List<RouteBase> appSettings});
+
+typedef NetworkBindings = ({
+  Future<Result<NetworkEnv?, Failure>> Function() readDefaultNetwork,
+  Future<void> Function(BitcoinNetwork) checkBitcoinFees,
+  Future<bool> Function() isTorRequired,
+  ReadTorPreferences readTorPreferences,
+  SaveTorProxy saveTorProxy,
+  Future<Result<void, Failure>> Function(TorTransportMode) saveTorMode,
+});
+
+final class NetworkFeature {
+  final NetworkStatus status;
+  final NetworkRoutes routes;
+
+  const NetworkFeature._({required this.status, required this.routes});
+
+  static NetworkFeature mount({
+    required GetIt services,
+    required NetworkBindings bindings,
+  }) {
+    ElectrumSettingsLocator.setup(services);
+    setupTorSettings(
+      services,
+      readPreferences: bindings.readTorPreferences,
+      saveProxy: bindings.saveTorProxy,
+      saveMode: bindings.saveTorMode,
+    );
+
+    // RecoverBull is registered later in foreground startup. Resolve it when
+    // a screen opens its status session.
+    final status = buildNetworkStatus(
+      () => CheckServiceStatusUsecase(
+        readDefaultNetwork: bindings.readDefaultNetwork,
+        checkAllServiceStatusUsecase: CheckAllServiceStatusUsecase(
+          checkElectrumStatus: CheckElectrumStatusUsecase(
+            services<Electrum>().servers,
+          ),
+          getIndexPrice: Pricer.getIndexPrice,
+          payjoinPolicy: services<PayjoinPolicyAccess>(),
+          payjoinDiagnostics: services<PayjoinDiagnostics>(),
+          checkBitcoinFees: bindings.checkBitcoinFees,
+          isTorRequired: bindings.isTorRequired,
+          checkServerConnection: services<RecoverBullFacade>().checkServer,
+          readTorPreferences: bindings.readTorPreferences,
+          tor: services<Tor>(),
+        ),
+      ),
+    );
+
+    return NetworkFeature._(
+      status: status,
+      routes: (
+        root: List.unmodifiable([
+          ElectrumSettingsRouter.route,
+          MempoolSettingsRoute.route,
+          GoRoute(
+            path: '/service-status',
+            name: serviceStatusRouteName,
+            builder: (_, _) => ServiceStatusPage(status: status),
+          ),
+        ]),
+        appSettings: List.unmodifiable([
+          GoRoute(
+            name: TorSettingsRoute.torSettings.name,
+            path: TorSettingsRoute.torSettings.path,
+            builder: (_, _) => TorSettingsScope(
+              createCubit: services.get<TorSettingsCubit>,
+              child: const TorSettingsScreen(),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
+}

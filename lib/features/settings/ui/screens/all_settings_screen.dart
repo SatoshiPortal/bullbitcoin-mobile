@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
-import 'package:network/network.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -13,35 +13,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class AllSettingsScreen extends StatefulWidget {
-  const AllSettingsScreen({super.key});
+  final Stream<SettingsServiceHealth> Function() watchServiceHealth;
+
+  const AllSettingsScreen({required this.watchServiceHealth, super.key});
 
   @override
   State<AllSettingsScreen> createState() => _AllSettingsScreenState();
 }
 
 class _AllSettingsScreenState extends State<AllSettingsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ServiceStatusCubit>().checkStatus();
-  }
+  late final _serviceHealth = widget.watchServiceHealth();
 
   @override
-  Widget build(BuildContext context) => ExchangeAccessBuilder(
-    builder: (context, access) => _build(context, access),
+  Widget build(BuildContext context) => StreamBuilder<SettingsServiceHealth>(
+    stream: _serviceHealth,
+    builder: (context, snapshot) => ExchangeAccessBuilder(
+      builder: (context, access) => _build(context, access, snapshot.data),
+    ),
   );
 
-  Widget _build(BuildContext context, ExchangeAccess access) {
+  Widget _build(
+    BuildContext context,
+    ExchangeAccess access,
+    SettingsServiceHealth? serviceHealth,
+  ) {
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
-    );
-
-    final serviceStatusLoading = context.select(
-      (ServiceStatusCubit cubit) => cubit.state.isLoading,
-    );
-
-    final serviceStatus = context.select(
-      (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
     final ready = ExchangeAvailability.canManageAccount(access);
@@ -65,11 +62,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   item.buildTile(
                     context,
                     iconColor: item.id == SettingsItemId.servicesStatus
-                        ? serviceStatusLoading
-                              ? context.appColors.textMuted
-                              : serviceStatus.allServicesOnline
-                              ? context.appColors.success
-                              : context.appColors.error
+                        ? switch (serviceHealth) {
+                            null || SettingsServiceHealth.checking =>
+                              context.appColors.textMuted,
+                            SettingsServiceHealth.healthy =>
+                              context.appColors.success,
+                            SettingsServiceHealth.unhealthy =>
+                              context.appColors.error,
+                          }
                         : null,
                   ),
               ],

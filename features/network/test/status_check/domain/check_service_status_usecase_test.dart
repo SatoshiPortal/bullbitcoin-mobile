@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/src/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:network/src/status_check/domain/check_service_status_usecase.dart';
 import 'package:network/src/status_check/domain/service_status.dart';
-import 'package:network/src/status_check/domain/status_check_failure.dart';
+import 'package:network/src/status_check/domain/network_failure.dart';
 import 'package:primitives/primitives.dart';
 
 class _MockCheckAllServiceStatusUsecase extends Mock
@@ -32,7 +32,7 @@ void main() {
 
     expect(
       await usecase.execute(),
-      isA<Err<AllServicesStatus, StatusCheckFailure>>().having(
+      isA<Err<AllServicesStatus, NetworkFailure>>().having(
         (result) => result.failure,
         'failure',
         isA<NoDefaultWalletFailure>(),
@@ -46,10 +46,10 @@ void main() {
 
     expect(
       await usecase.execute(),
-      isA<Err<AllServicesStatus, StatusCheckFailure>>().having(
+      isA<Err<AllServicesStatus, NetworkFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<StatusCheckUnexpectedFailure>(),
+        isA<NetworkUnexpectedFailure>(),
       ),
     );
     verifyZeroInteractions(checkAll);
@@ -61,8 +61,8 @@ void main() {
       readNetwork = () async => throw Exception('connection reset');
       final result = await usecase.execute();
       expect(
-        (result as Err<AllServicesStatus, StatusCheckFailure>).failure,
-        isA<StatusCheckUnexpectedFailure>(),
+        (result as Err<AllServicesStatus, NetworkFailure>).failure,
+        isA<NetworkUnexpectedFailure>(),
       );
     },
   );
@@ -75,8 +75,8 @@ void main() {
 
       final result = await usecase.execute();
       expect(
-        (result as Err<AllServicesStatus, StatusCheckFailure>).failure,
-        isA<StatusCheckUnexpectedFailure>(),
+        (result as Err<AllServicesStatus, NetworkFailure>).failure,
+        isA<NetworkUnexpectedFailure>(),
       );
     },
   );
@@ -89,7 +89,7 @@ void main() {
 
     expect(
       await usecase.execute(),
-      isA<Ok<AllServicesStatus, StatusCheckFailure>>().having(
+      isA<Ok<AllServicesStatus, NetworkFailure>>().having(
         (result) => result.value,
         'status',
         status,

@@ -1,21 +1,13 @@
-import 'service_status.dart';
-import 'check_all_service_status_usecase.dart';
-
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'status_check_failure.dart';
+import 'check_all_service_status_usecase.dart';
+import 'network_failure.dart';
+import 'service_status.dart';
 
-import 'package:meta/meta.dart';
-
-/// Checks the status of all external services for the default wallet's
-/// network.
-///
-/// This is the sanitization boundary for `status_check`: it wraps two
-/// operations (loading the default network and checking its services) — `status_check` owns no repository of
-/// its own, so per the rollout standard, the first layer it owns (this
-/// use-case) is where the one `try/catch` lives. The raw reason is logged
-/// here; only a sanitized [StatusCheckFailure] is returned.
+/// Captures the default wallet's network and checks its services.
+/// This boundary logs probe exceptions and returns a sanitized [NetworkFailure].
 class CheckServiceStatusUsecase {
   final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
   final Future<Result<NetworkEnv?, Failure>> Function() _readDefaultNetwork;
@@ -26,7 +18,7 @@ class CheckServiceStatusUsecase {
   });
 
   @useResult
-  Future<Result<AllServicesStatus, StatusCheckFailure>> execute({
+  Future<Result<AllServicesStatus, NetworkFailure>> execute({
     AllServicesStatus initialStatus = const AllServicesStatus(),
     void Function(AllServicesStatus status)? onUpdate,
   }) async {
@@ -39,9 +31,7 @@ class CheckServiceStatusUsecase {
           return const Err(NoDefaultWalletFailure());
         case Err(:final failure):
           log.warning('status check: ${failure.logMessage}');
-          return Err(
-            StatusCheckUnexpectedFailure('wallets: ${failure.runtimeType}'),
-          );
+          return const Err(NetworkUnexpectedFailure());
       }
 
       final serviceStatus = await _checkAllServiceStatusUsecase.execute(
@@ -57,7 +47,7 @@ class CheckServiceStatusUsecase {
         error: e,
         trace: st,
       );
-      return Err(StatusCheckUnexpectedFailure(e.toString()));
+      return const Err(NetworkUnexpectedFailure());
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
-import 'package:network/network.dart' show NetworkLocalizations;
+import 'package:network/setup.dart' show NetworkLocalizations;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'

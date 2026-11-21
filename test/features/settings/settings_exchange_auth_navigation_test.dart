@@ -162,6 +162,7 @@ void main() {
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoute = SettingsRouter.route(
+      appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
       buildPriceHistory: (_) => const SizedBox.shrink(),
     );
@@ -252,6 +253,7 @@ void main() {
     });
     final route =
         SettingsRouter.route(
+          appSettingsRoutes: const [],
           onBackupTestSucceeded: (_) {},
           buildPriceHistory: (_) => const SizedBox.shrink(),
         ).routes.whereType<GoRoute>().singleWhere(

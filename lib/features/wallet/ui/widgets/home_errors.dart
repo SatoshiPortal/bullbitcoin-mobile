@@ -39,12 +39,14 @@ class HomeWarnings extends StatelessWidget {
               description: homeWarningDescription(context, warning),
               tagColor: context.appColors.error,
               bgColor: context.appColors.errorContainer,
-              onTap: () => context.pushNamed(switch (warning.action) {
-                WalletWarningAction.electrumSettings =>
-                  ElectrumSettingsRoute.electrumSettings.name,
-                WalletWarningAction.torSettings =>
-                  TorSettingsRoute.torSettings.name,
-              }),
+              onTap: () => NetworkNavigation.open(
+                context,
+                section: switch (warning.action) {
+                  WalletWarningAction.electrumSettings =>
+                    NetworkSection.electrum,
+                  WalletWarningAction.torSettings => NetworkSection.tor,
+                },
+              ),
             ),
           // A failed load used to be silent: the skeleton simply vanished
           // and the home screen showed 0 sats and no wallets, which reads

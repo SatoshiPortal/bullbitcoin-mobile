@@ -128,9 +128,7 @@ class CheckAllServiceStatusUsecase {
         ),
       ]);
 
-      final completed = current.copyWith(lastChecked: now);
-      onUpdate?.call(completed);
-      return completed;
+      return current.copyWith(lastChecked: now);
     } on Exception catch (e) {
       log.severe(
         message: 'Error checking service statuses',

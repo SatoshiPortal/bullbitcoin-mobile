@@ -391,7 +391,8 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsServiceStatusTitle,
       ),
       icon: Icons.monitor_heart,
-      open: (context) => context.pushNamed(StatusCheckRoute.serviceStatus.name),
+      open: (context) =>
+          NetworkNavigation.open(context, section: NetworkSection.status),
       keywords: _keywords(
         localization.settingsSearchServicesStatusKeywords,
         english.settingsSearchServicesStatusKeywords,
@@ -544,7 +545,7 @@ List<SettingsItem> buildSettingsItems({
       ),
       icon: Icons.hub,
       open: (context) =>
-          context.pushNamed(ElectrumSettingsRoute.electrumSettings.name),
+          NetworkNavigation.open(context, section: NetworkSection.electrum),
       keywords: _keywords(
         localization.settingsSearchElectrumKeywords,
         english.settingsSearchElectrumKeywords,
@@ -560,7 +561,8 @@ List<SettingsItem> buildSettingsItems({
         localization.bitcoinSettingsMempoolServerTitle,
       ),
       icon: Icons.memory,
-      open: (context) => context.pushNamed(MempoolSettingsRoute.name),
+      open: (context) =>
+          NetworkNavigation.open(context, section: NetworkSection.mempool),
       keywords: _keywords(
         localization.settingsSearchMempoolKeywords,
         english.settingsSearchMempoolKeywords,
@@ -686,7 +688,8 @@ List<SettingsItem> buildSettingsItems({
       title: localization.torSettingsTitle,
       path: path(SettingsItemSection.app, localization.torSettingsTitle),
       icon: Icons.vpn_lock,
-      open: (context) => context.pushNamed(TorSettingsRoute.torSettings.name),
+      open: (context) =>
+          NetworkNavigation.open(context, section: NetworkSection.tor),
       keywords: _keywords(
         localization.settingsSearchTorKeywords,
         english.settingsSearchTorKeywords,
