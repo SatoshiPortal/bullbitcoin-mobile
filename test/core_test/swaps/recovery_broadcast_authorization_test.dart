@@ -63,6 +63,7 @@ class _HeldSettings extends SettingsRepository {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   for (final (authorized, suspended) in [
     (true, false),
     (false, false),
@@ -133,7 +134,7 @@ void main() {
         BoltzSwapsDatabase db = BoltzSwapsDatabase(NativeDatabase(file));
         SwapStorage storage = SwapStorage(
           rows: DriftSwapRowStore(db),
-          secrets: secrets,
+          secrets: secrets.capability,
         );
         final chain = AppLockupChain(
           _Connections(server.port),
@@ -185,7 +186,10 @@ void main() {
         first.dispose();
         await db.close();
         db = BoltzSwapsDatabase(NativeDatabase(file));
-        storage = SwapStorage(rows: DriftSwapRowStore(db), secrets: secrets);
+        storage = SwapStorage(
+          rows: DriftSwapRowStore(db),
+          secrets: secrets.capability,
+        );
         final reopened = repository();
         addTearDown(() async {
           reopened.dispose();

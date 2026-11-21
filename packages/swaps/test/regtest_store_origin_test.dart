@@ -1,24 +1,14 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
 import 'package:drift/native.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv, Ok;
 import 'package:swaps/swaps.dart';
 import 'package:test/test.dart';
 
-class _Keychain implements SecretStore {
-  final values = <String, String>{};
-  @override
-  Future<String?> read(String key) async => values[key];
-  @override
-  Future<void> write(String key, String value) async {
-    values[key] = value;
-  }
-
-  @override
-  Future<void> delete(String key) async {
-    values.remove(key);
-  }
-}
-
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('every regtest row conversion retains its store origin without relabelling legacy rows', () async {
     final productionDb = BoltzSwapsDatabase(NativeDatabase.memory());
     final regtestDb = BoltzSwapsDatabase(NativeDatabase.memory());
@@ -26,7 +16,7 @@ void main() {
     addTearDown(regtestDb.close);
     final canonical = SwapStorage(
       rows: DriftSwapRowStore(productionDb),
-      secrets: _Keychain(),
+      secrets: ReproKeychainBackend().capability,
     );
     final isolated = canonical.regtestView(rows: DriftSwapRowStore(regtestDb));
     final production = SwapStoreImpl(
