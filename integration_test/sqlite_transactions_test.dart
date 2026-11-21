@@ -31,7 +31,10 @@ Future<void> main({bool isInitialized = false}) async {
       expect(sqliteTx, isNull);
 
       // Fetch a transaction and cache it in sqlite if not present
-      final result = await electrum.fetchBitcoinTransaction(txid: txid);
+      final result = await electrum.fetchBitcoinTransaction(
+        txid: txid,
+        network: BitcoinNetwork.mainnet,
+      );
       expect(result, isA<Ok>());
       expect(result.fold((tx) => tx.txid, (_) => null), txid);
 

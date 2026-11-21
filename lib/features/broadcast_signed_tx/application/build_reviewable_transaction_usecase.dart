@@ -21,6 +21,9 @@ class BuildReviewableTransactionUsecase {
   }) async {
     try {
       final bitcoinNetwork = await network;
+      if (bitcoinNetwork == null) {
+        return const Err(TransactionReviewNoServersFailure());
+      }
       final tx = TransactionReviewMapper.fromBitcoinTx(
         bitcoinTx,
         network: bitcoinNetwork,
@@ -29,6 +32,7 @@ class BuildReviewableTransactionUsecase {
       for (final input in tx.inputs) {
         final result = await _electrum.fetchBitcoinTransaction(
           txid: input.previousTxId,
+          network: bitcoinNetwork,
         );
         final BitcoinTx parentTx;
         switch (result) {
@@ -80,6 +84,8 @@ class BuildReviewableTransactionUsecase {
       switch (failure) {
         ElectrumTransactionFetchFailure(:final txid) =>
           TransactionReviewFetchFailure(txid: txid),
+        ElectrumUnsupportedNetworkFailure() =>
+          const TransactionReviewNoServersFailure(),
         ElectrumNoTransactionServersFailure(:final network) =>
           TransactionReviewNoServersFailure(network: network.toString()),
         _ => TransactionReviewUnexpectedFailure(failure.logMessage),

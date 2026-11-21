@@ -102,7 +102,6 @@ class ElectrumLocator {
       () => Electrum(
         serversPort: locator<ElectrumServersPort>(),
         repository: locator<ElectrumTransactionRepository>(),
-        environmentPort: locator<EnvironmentPort>(),
       ),
     );
     locator.registerLazySingleton<WalletConnectionPort>(

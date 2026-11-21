@@ -44,7 +44,12 @@ void main() {
   ) => usecase.execute(tx, network: Future.value(BitcoinNetwork.mainnet));
 
   test('maps Electrum lookup failures to the review failure family', () async {
-    when(() => electrum.fetchBitcoinTransaction(txid: 'parenttxid')).thenAnswer(
+    when(
+      () => electrum.fetchBitcoinTransaction(
+        txid: 'parenttxid',
+        network: BitcoinNetwork.mainnet,
+      ),
+    ).thenAnswer(
       (_) async => const Err(ElectrumTransactionFetchFailure('parenttxid')),
     );
 
@@ -67,8 +72,12 @@ void main() {
   test(
     'returns an input-resolution failure when the vout is out of range',
     () async {
-      when(() => electrum.fetchBitcoinTransaction(txid: 'parenttxid'))
-          .thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
+      when(
+        () => electrum.fetchBitcoinTransaction(
+          txid: 'parenttxid',
+          network: BitcoinNetwork.mainnet,
+        ),
+      ).thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
 
       final result = await review(_spendingParent(5));
 
@@ -94,8 +103,12 @@ void main() {
         ),
       ],
     );
-    when(() => electrum.fetchBitcoinTransaction(txid: 'parenttxid'))
-        .thenAnswer((_) async => Ok(parent));
+    when(
+      () => electrum.fetchBitcoinTransaction(
+        txid: 'parenttxid',
+        network: BitcoinNetwork.mainnet,
+      ),
+    ).thenAnswer((_) async => Ok(parent));
 
     final result = await review(_spendingParent(0));
 
