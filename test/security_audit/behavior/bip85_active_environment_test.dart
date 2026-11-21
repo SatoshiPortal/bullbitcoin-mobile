@@ -1,8 +1,10 @@
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/read_default_bip85_parent_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok, ScriptType;
@@ -45,6 +47,7 @@ void main() {
   late _MockWalletRepository walletRepository;
   late _MockSettingsRepository settingsRepository;
   late Secrets secrets;
+  late WithDefaultBip85WalletUsecase withDefault;
 
   setUpAll(() {
     registerFallbackValue(Bip85Application.bip39);
@@ -77,6 +80,12 @@ void main() {
     bip85Repository = _MockBip85Repository();
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
+    withDefault = WithDefaultBip85WalletUsecase(
+      ReadDefaultBip85ParentUsecase(
+        walletRepository,
+        settingsRepository,
+      ).execute,
+    );
 
     // The app is running on testnet.
     when(() => settingsRepository.fetch()).thenAnswer(
@@ -130,12 +139,12 @@ void main() {
     () async {
       final usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
         bip85Repository: bip85Repository,
-        walletRepository: walletRepository,
         secrets: secrets,
-        settingsRepository: settingsRepository,
       );
 
-      final result = await usecase.execute();
+      final result = await withDefault.execute(
+        (fingerprint) => usecase.execute(fingerprint: fingerprint),
+      );
 
       expect(
         result,
@@ -148,12 +157,12 @@ void main() {
   test('hex derivation uses the active-environment default wallet', () async {
     final usecase = DeriveNextBip85HexFromDefaultWalletUsecase(
       bip85Repository: bip85Repository,
-      walletRepository: walletRepository,
       secrets: secrets,
-      settingsRepository: settingsRepository,
     );
 
-    final result = await usecase.execute(length: 30);
+    final result = await withDefault.execute(
+      (fingerprint) => usecase.execute(fingerprint: fingerprint, length: 30),
+    );
 
     expect(
       result,

@@ -3,9 +3,11 @@
 /// http://127.0.0.1:3535 and http://127.0.0.1:3000.
 library;
 
+import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+
 import 'dart:io';
 
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
@@ -115,7 +117,7 @@ void main() {
         ..registerSingleton<ActiveEnvironmentReader>(settings)
         ..registerSingleton<RuntimeDisplayPreferencesReader>(settings)
         ..registerSingleton<WalletMetadataDatasource>(wallets)
-        ..registerSingleton<Bip85Repository>(bip85)
+        ..registerSingleton<Bip85Registry>(Bip85Registry(bip85.fetchAll))
         ..registerSingleton<Secrets>(secrets)
         ..registerSingleton<ParentCustodyAdmissionPort>(admission)
         ..registerSingleton<SeedReferences>(

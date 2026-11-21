@@ -30,7 +30,6 @@ const _allowedTargets = <String, String>{
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
-  'bip85_entropy': 'wallet',
   'bitcoin_price': 'settings',
   'broadcast_signed_tx': 'scanning send wallet',
   'buy': 'exchange fees fund_exchange transactions wallet',
@@ -65,7 +64,7 @@ const _allowedTargets = <String, String>{
   'swap': 'ark autoswap consolidation fees send transactions wallet',
   'test_wallet_backup': 'app_unlock onboarding recoverbull wallet',
   'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
-  'wallet': 'announcements ark backup_settings bitcoin_price consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
+  'wallet': 'announcements ark bip85_entropy backup_settings bitcoin_price consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

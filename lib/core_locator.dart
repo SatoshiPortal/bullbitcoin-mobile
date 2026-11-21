@@ -1,6 +1,5 @@
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
@@ -37,7 +36,6 @@ class CoreLocator {
     FeesLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
-    Bip85DerivationsLocator.registerDatasources(locator);
   }
 
   static void registerPorts(GetIt locator) {
@@ -89,7 +87,6 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
-    Bip85DerivationsLocator.registerRepositories(locator);
     return const Ok(null);
   }
 
@@ -111,6 +108,5 @@ class CoreLocator {
     FeesLocator.registerUseCases(locator);
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
-    Bip85DerivationsLocator.registerUsecases(locator);
   }
 }

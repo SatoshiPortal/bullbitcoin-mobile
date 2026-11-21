@@ -1,61 +1,30 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
-import 'package:preferences/preferences.dart';
 
 class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
-  final WalletRepository _walletRepository;
   final Secrets _secrets;
-  final Preferences _settingsRepository;
 
   DeriveNextBip85MnemonicFromDefaultWalletUsecase({
     required this._bip85Repository,
-    required this._walletRepository,
     required this._secrets,
-    required this._settingsRepository,
   });
 
   @useResult
   Future<Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure>>
   execute({
+    required Fingerprint fingerprint,
     bip39.MnemonicLength length = bip39.MnemonicLength.words12,
     String? alias,
   }) async {
     try {
-      // Derive from the default wallet of the environment the app is actually
-      // running in: a hardcoded mainnet lookup finds no wallet on testnet.
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      final List<Wallet> wallets;
-      switch (await _walletRepository.getWallets(
-        onlyDefaults: true,
-        onlyBitcoin: true,
-        environment: settings.environment,
-      )) {
-        case Ok(:final value):
-          wallets = value;
-        case Err(:final failure):
-          log.warning('bip85 mnemonic: ${failure.logMessage}');
-          return Err(
-            Bip85UnexpectedFailure('default wallet: ${failure.runtimeType}'),
-          );
-      }
-      if (wallets.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
-      final defaultWallet = wallets.first;
-
-      final secret = switch (await _secrets.fetch(
-        Fingerprint(defaultWallet.masterFingerprint),
-      )) {
+      final secret = switch (await _secrets.fetch(fingerprint)) {
         Ok(:final value) => value,
         Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };

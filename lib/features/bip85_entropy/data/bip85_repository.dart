@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
+import 'bip85_column_mapping.dart';
+
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_datasource.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -69,7 +70,7 @@ class Bip85Repository {
     Bip85Application application,
   ) async {
     try {
-      final applicationColumn = Bip85ApplicationColumn.fromEntity(application);
+      final applicationColumn = Bip85ApplicationMapping.fromEntity(application);
       final index = await _datasource.fetchNextIndexForApplication(
         applicationColumn,
       );

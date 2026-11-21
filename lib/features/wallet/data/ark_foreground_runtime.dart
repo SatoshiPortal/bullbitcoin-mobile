@@ -8,8 +8,7 @@ import 'dart:ui';
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
@@ -291,7 +290,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           locator<ParentCustodyAdmissionPort>(),
           SecretsArkParentPresence(secrets),
           managedRegistry,
-          ArkDerivationCollision(locator<Bip85Repository>()),
+          ArkDerivationCollision(locator<Bip85Registry>()),
         ),
         registry: managedRegistry,
         boardFunding: board,
@@ -496,7 +495,7 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
 
 /// Reads every historical BIP85 record, including revoked derivations.
 final class ArkDerivationCollision implements ArkChildCollisionPort {
-  final Bip85Repository _registry;
+  final Bip85Registry _registry;
   const ArkDerivationCollision(this._registry);
 
   @override

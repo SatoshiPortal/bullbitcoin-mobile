@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85/data/bip85_derivation_model.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_derivation_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;

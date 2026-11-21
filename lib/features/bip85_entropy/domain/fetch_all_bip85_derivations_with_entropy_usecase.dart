@@ -1,9 +1,6 @@
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:preferences/preferences.dart' hide Language;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
@@ -16,21 +13,15 @@ import 'package:secrets/secrets.dart';
 /// One keystore read and one PBKDF2 pass per row, today. A batch operation that materialises once for N paths is planned; correctness first.
 class FetchAllBip85DerivationsWithEntropyUsecase {
   final Bip85Repository _bip85Repository;
-  final WalletRepository _walletRepository;
-  final Preferences _settingsRepository;
   final Secrets _secrets;
 
   FetchAllBip85DerivationsWithEntropyUsecase({
     required Bip85Repository bip85Repository,
-    required WalletRepository walletRepository,
-    required Preferences settingsRepository,
     required Secrets secrets,
-  }) : this._(bip85Repository, walletRepository, settingsRepository, secrets);
+  }) : this._(bip85Repository, secrets);
 
   const FetchAllBip85DerivationsWithEntropyUsecase._(
     this._bip85Repository,
-    this._walletRepository,
-    this._settingsRepository,
     this._secrets,
   );
 
@@ -41,31 +32,9 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       Bip85Failure
     >
   >
-  execute() async {
+  execute({required Fingerprint fingerprint}) async {
     try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      final List<Wallet> wallets;
-      switch (await _walletRepository.getWallets(
-        onlyDefaults: true,
-        onlyBitcoin: true,
-        environment: settings.environment,
-      )) {
-        case Ok(:final value):
-          wallets = value;
-        case Err(:final failure):
-          log.warning('bip85 derivations: ${failure.logMessage}');
-          // The wallet layer's vocabulary stops here.
-          return Err(
-            Bip85UnexpectedFailure('default wallet: ${failure.runtimeType}'),
-          );
-      }
-      if (wallets.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
-      final secret = switch (await _secrets.fetch(
-        Fingerprint(wallets.first.masterFingerprint),
-      )) {
+      final secret = switch (await _secrets.fetch(fingerprint)) {
         Ok(:final value) => value,
         Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };

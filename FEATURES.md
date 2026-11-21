@@ -271,7 +271,6 @@ graph TB
     AUTOSWAP --> TRANSFER
     AUTOBUY --> DEFAULT_WALLETS
     BIP85 --> SECRETS
-    BIP85 --> SETTINGS
     BACKUPS --> BIP85
     APP_STARTUP --> RECOVERBULL
     WALLETS --> RECOVERBULL
@@ -532,7 +531,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
-- **Settings**: Used by Wallets, BIP85, Bitcoin Price
+- **Settings**: Used by Wallets, Bitcoin Price
 - **Swaps** (workspace package `packages/swaps`): the swap engine behind one provider-neutral surface — `SwapStore` (reads), `SwapResolver` (claim, refund, recovery; one per provider) and per-provider create methods (`BoltzSwaps`). Used by Swaps, Send, Receive, Autoswap, Transaction History, Wallets, Settings, All Seed View, App Startup
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
@@ -622,7 +621,7 @@ The architecture test records source dependencies, including internal imports an
 
 The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
 
-Develop also removes the price chart’s shell locator import; its obsolete entry is removed from `shell_imports_test.dart`. The existing `bip85_entropy → wallet` baseline remains unchanged.
+Develop also removes the price chart’s shell locator import; its obsolete entry is removed from `shell_imports_test.dart`. The BIP85 integration now removes `bip85_entropy → wallet`: Wallet selects the active-environment default Bitcoin fingerprint and passes it into BIP85 operations. The reviewed `wallet → bip85_entropy` edge supplies that binding and the read-only historical registry used by Ark collision checks. BIP85 owns the relocated domain, data and locator until Secrets absorbs the derivation registry (D58); no reverse feature edge is retained.
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 

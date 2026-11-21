@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
+import 'bip85_column_mapping.dart';
+
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 
@@ -42,8 +44,8 @@ class Bip85DerivationModel {
       path: entity.path,
       xprvFingerprint: entity.xprvFingerprint,
       alias: entity.alias,
-      status: Bip85StatusColumn.fromEntity(entity.status),
-      application: Bip85ApplicationColumn.fromEntity(entity.application),
+      status: Bip85StatusMapping.fromEntity(entity.status),
+      application: Bip85ApplicationMapping.fromEntity(entity.application),
     );
   }
 

@@ -1,14 +1,12 @@
-import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/activate_bip85_derivation_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_datasource.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/activate_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/alias_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:secrets/secrets.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:get_it/get_it.dart';
 
 class Bip85DerivationsLocator {
@@ -28,18 +26,14 @@ class Bip85DerivationsLocator {
     locator.registerFactory<DeriveNextBip85HexFromDefaultWalletUsecase>(
       () => DeriveNextBip85HexFromDefaultWalletUsecase(
         bip85Repository: locator<Bip85Repository>(),
-        walletRepository: locator<WalletRepository>(),
         secrets: locator<Secrets>(),
-        settingsRepository: locator<Preferences>(),
       ),
     );
 
     locator.registerFactory<DeriveNextBip85MnemonicFromDefaultWalletUsecase>(
       () => DeriveNextBip85MnemonicFromDefaultWalletUsecase(
         bip85Repository: locator<Bip85Repository>(),
-        walletRepository: locator<WalletRepository>(),
         secrets: locator<Secrets>(),
-        settingsRepository: locator<Preferences>(),
       ),
     );
 

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
@@ -198,6 +199,10 @@ class AppLocator {
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
+    Bip85EntropyLocator.setup(
+      locator,
+      readParent: WalletBip85Bindings.reader(locator),
+    );
     // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
@@ -284,7 +289,6 @@ class AppLocator {
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
-    Bip85EntropyLocator.setup(locator);
     RecipientsLocator.setup(locator);
 
     // Follows network switches from launch on, whether or not the swap

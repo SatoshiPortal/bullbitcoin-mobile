@@ -1,9 +1,11 @@
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/read_default_bip85_parent_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
@@ -46,6 +48,7 @@ void main() {
   late _MockWalletRepository walletRepository;
   late _MockSettingsRepository settingsRepository;
   late Secrets secrets;
+  late WithDefaultBip85WalletUsecase withDefault;
   late Wallet defaultWallet;
 
   Wallet walletFor(String fingerprint) => Wallet(
@@ -111,6 +114,12 @@ void main() {
     bip85Repository = _MockBip85Repository();
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
+    withDefault = WithDefaultBip85WalletUsecase(
+      ReadDefaultBip85ParentUsecase(
+        walletRepository,
+        settingsRepository,
+      ).execute,
+    );
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => Ok(
         const SettingsEntity(
@@ -128,16 +137,16 @@ void main() {
     setUp(() {
       usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
         bip85Repository: bip85Repository,
-        walletRepository: walletRepository,
         secrets: secrets,
-        settingsRepository: settingsRepository,
       );
     });
 
     test('no default wallet is its own failure, with no message', () async {
       stubWallets([]);
 
-      final failure = ((await usecase.execute()) as Err).failure;
+      final failure = ((await withDefault.execute(
+        (fingerprint) => usecase.execute(fingerprint: fingerprint),
+      )) as Err).failure;
 
       expect(failure, isA<Bip85NoDefaultWalletFailure>());
       expect(failure.logMessage, isNull);
@@ -149,7 +158,10 @@ void main() {
         stubWalletReadFailure();
 
         final failure =
-            ((await usecase.execute()) as Err).failure as Bip85Failure;
+            ((await withDefault.execute(
+                  (fingerprint) => usecase.execute(fingerprint: fingerprint),
+                )) as Err).failure
+                as Bip85Failure;
 
         expect(failure, isA<Bip85UnexpectedFailure>());
         // The wallet layer's reason stays in the log.
@@ -166,9 +178,22 @@ void main() {
         ),
       ).thenThrow(Exception('internal db error with secret path /data/user'));
 
-      final failure = ((await usecase.execute()) as Err).failure;
+      final failure = ((await withDefault.execute(
+        (fingerprint) => usecase.execute(fingerprint: fingerprint),
+      )) as Err).failure;
 
       expect(failure, isA<Bip85UnexpectedFailure>());
+    });
+
+    test('an invalid persisted fingerprint fails before derivation', () async {
+      stubWallets([walletFor('')]);
+
+      final result = await withDefault.execute(
+        (fingerprint) => usecase.execute(fingerprint: fingerprint),
+      );
+
+      expect((result as Err).failure, isA<Bip85UnexpectedFailure>());
+      verifyNever(() => bip85Repository.fetchNextIndexForApplication(any()));
     });
 
     test('derives and records at the allocated index', () async {
@@ -185,7 +210,9 @@ void main() {
         ),
       ).thenAnswer((_) async => const Ok("83696968'/39'/0'/12'/3'"));
 
-      final result = await usecase.execute();
+      final result = await withDefault.execute(
+        (fingerprint) => usecase.execute(fingerprint: fingerprint),
+      );
 
       expect(result, isA<Ok>());
       // Recorded against the secret that derived it, at the index the repository allocated.
@@ -207,9 +234,7 @@ void main() {
     setUp(() {
       usecase = DeriveNextBip85HexFromDefaultWalletUsecase(
         bip85Repository: bip85Repository,
-        walletRepository: walletRepository,
         secrets: secrets,
-        settingsRepository: settingsRepository,
       );
     });
 
@@ -217,7 +242,10 @@ void main() {
       stubWallets([]);
 
       expect(
-        ((await usecase.execute(length: 30)) as Err).failure,
+        ((await withDefault.execute(
+          (fingerprint) =>
+              usecase.execute(fingerprint: fingerprint, length: 30),
+        )) as Err).failure,
         isA<Bip85NoDefaultWalletFailure>(),
       );
     });
@@ -228,7 +256,10 @@ void main() {
         stubWalletReadFailure();
 
         final failure =
-            ((await usecase.execute(length: 30)) as Err).failure
+            ((await withDefault.execute(
+                  (fingerprint) =>
+                      usecase.execute(fingerprint: fingerprint, length: 30),
+                )) as Err).failure
                 as Bip85Failure;
 
         expect(failure, isA<Bip85UnexpectedFailure>());
@@ -242,7 +273,10 @@ void main() {
       () async {
         stubWallets([walletFor('00000000')]);
 
-        final failure = ((await usecase.execute(length: 30)) as Err).failure;
+        final failure = ((await withDefault.execute(
+          (fingerprint) =>
+              usecase.execute(fingerprint: fingerprint, length: 30),
+        )) as Err).failure;
 
         expect(failure, isA<Bip85UnexpectedFailure>());
         expect(failure, isNot(isA<Bip85NoDefaultWalletFailure>()));
@@ -255,7 +289,10 @@ void main() {
           .thenAnswer((_) async => const Err(Bip85StorageFailure('no index')));
 
       expect(
-        ((await usecase.execute(length: 30)) as Err).failure,
+        ((await withDefault.execute(
+          (fingerprint) =>
+              usecase.execute(fingerprint: fingerprint, length: 30),
+        )) as Err).failure,
         isA<Bip85StorageFailure>(),
       );
     });
@@ -267,8 +304,6 @@ void main() {
     setUp(() {
       usecase = FetchAllBip85DerivationsWithEntropyUsecase(
         bip85Repository: bip85Repository,
-        walletRepository: walletRepository,
-        settingsRepository: settingsRepository,
         secrets: secrets,
       );
     });
@@ -287,7 +322,12 @@ void main() {
       when(() => bip85Repository.fetchAll())
           .thenAnswer((_) async => const Ok([]));
 
-      expect(await usecase.execute(), isA<Ok>());
+      expect(
+        await withDefault.execute(
+          (fingerprint) => usecase.execute(fingerprint: fingerprint),
+        ),
+        isA<Ok>(),
+      );
       verify(
         () => walletRepository.getWallets(
           onlyDefaults: true,
@@ -301,7 +341,9 @@ void main() {
       stubWallets([]);
 
       expect(
-        ((await usecase.execute()) as Err).failure,
+        ((await withDefault.execute(
+          (fingerprint) => usecase.execute(fingerprint: fingerprint),
+        )) as Err).failure,
         isA<Bip85NoDefaultWalletFailure>(),
       );
     });
@@ -312,7 +354,10 @@ void main() {
         stubWalletReadFailure();
 
         final failure =
-            ((await usecase.execute()) as Err).failure as Bip85Failure;
+            ((await withDefault.execute(
+                  (fingerprint) => usecase.execute(fingerprint: fingerprint),
+                )) as Err).failure
+                as Bip85Failure;
 
         expect(failure, isA<Bip85UnexpectedFailure>());
         // The wallet layer's reason stays in the log.
@@ -330,7 +375,9 @@ void main() {
       ).thenThrow(Exception('internal db error with secret path /data/user'));
 
       expect(
-        ((await usecase.execute()) as Err).failure,
+        ((await withDefault.execute(
+          (fingerprint) => usecase.execute(fingerprint: fingerprint),
+        )) as Err).failure,
         isA<Bip85UnexpectedFailure>(),
       );
     });
@@ -349,7 +396,9 @@ void main() {
       Future<int> derived(Bip85DerivationEntity e) async {
         stubWallets([defaultWallet]);
         when(() => bip85Repository.fetchAll()).thenAnswer((_) async => Ok([e]));
-        return ((await usecase.execute()) as Ok).value.length;
+        return ((await withDefault.execute(
+          (fingerprint) => usecase.execute(fingerprint: fingerprint),
+        )) as Ok).value.length;
       }
 
       test('a well-formed HEX row is derived', () async {
@@ -397,7 +446,9 @@ void main() {
         ]),
       );
 
-      final result = await usecase.execute();
+      final result = await withDefault.execute(
+        (fingerprint) => usecase.execute(fingerprint: fingerprint),
+      );
 
       expect((result as Ok).value, isEmpty);
     });
