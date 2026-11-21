@@ -7,8 +7,6 @@ import 'dart:async';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:electrum/setup.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -27,7 +25,7 @@ import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart';
-import 'package:sync/sync.dart' show InputReservationPort;
+import 'package:sync/sync.dart' show InputReservationPort, WalletConnectionPort;
 
 abstract final class PayjoinSetup {
   static void setup(
@@ -80,16 +78,14 @@ abstract final class PayjoinSetup {
           locator<ArkFundingSigningGuard>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
-          locator<BdkBitcoinBlockchainDatasource>(),
-          locator<ElectrumServersPort>(),
+          locator<WalletConnectionPort>(),
           locator<WalletFacade>(),
         ),
         fees: AppPayjoinFeesAdapter(locator<FeesRepository>()),
         transactions: AppPayjoinTransactionAdapter(
           locator<WalletRepository>(),
           locator<WalletTransactionRepository>(),
-          locator<BdkBitcoinBlockchainDatasource>(),
-          locator<ElectrumServersPort>(),
+          locator<WalletConnectionPort>(),
           spendWallet: locator<WalletFacade>(),
         ),
         labels: locator<PayjoinLabelsPort>(),

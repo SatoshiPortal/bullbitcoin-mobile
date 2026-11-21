@@ -1,10 +1,10 @@
 import 'package:primitives/primitives.dart' show Ok;
 
+import '../../../../scripted_wallet_connections.dart';
 import '../../../../frozen_outpoints_fixture.dart';
 
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 import 'dart:async';
@@ -17,8 +17,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
-
-class _LiquidBlockchain extends Mock implements LiquidBlockchainRepository {}
 
 class _Settings extends Mock implements Preferences {}
 
@@ -44,7 +42,7 @@ void main() {
       () async {
         final settings = _Settings();
         final bitcoin = _Blockchain();
-        final liquid = _LiquidBlockchain();
+        final liquid = ScriptedWalletConnections();
         final error = StateError('synthetic programmer failure');
         when(settings.fetch).thenAnswer(
           (_) async => Ok(
@@ -61,15 +59,10 @@ void main() {
             network: Network.bitcoinMainnet,
           ),
         ).thenAnswer((_) async => throw error);
-        when(
-          () => liquid.broadcastTransaction(
-            signedPset: _signedPublicTest,
-            network: Network.liquidMainnet,
-          ),
-        ).thenAnswer((_) async => throw error);
+        liquid.reply = () => throw error;
         final future = isLiquid
             ? BroadcastLiquidTransactionUsecase(
-                liquidBlockchainRepository: liquid,
+                connections: liquid,
                 settingsRepository: settings,
               ).execute(_signedPublicTest)
             : BroadcastBitcoinTransactionUsecase(
@@ -90,7 +83,7 @@ void main() {
     'explicit Liquid testnet broadcast still checks current authorization',
     () async {
       final settings = _Settings();
-      final blockchain = _LiquidBlockchain();
+      final blockchain = ScriptedWalletConnections();
       when(settings.fetch).thenAnswer(
         (_) async => Ok(
           const SettingsEntity(
@@ -102,14 +95,8 @@ void main() {
           ),
         ),
       );
-      when(
-        () => blockchain.broadcastTransaction(
-          signedPset: _signedPublicTest,
-          network: Network.liquidTestnet,
-        ),
-      ).thenAnswer((_) async => 'txid');
       final usecase = BroadcastLiquidTransactionUsecase(
-        liquidBlockchainRepository: blockchain,
+        connections: blockchain,
         settingsRepository: settings,
       );
       try {
@@ -117,7 +104,7 @@ void main() {
       } on Exception {
         /* Refused before backend access. */
       }
-      verifyZeroInteractions(blockchain);
+      expect(blockchain.networks, isEmpty);
     },
   );
 

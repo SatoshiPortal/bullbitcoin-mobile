@@ -658,3 +658,7 @@ The settings hub, onboarding and wallet error actions use `NetworkNavigation`. T
 ## Wallet-independent transaction values
 
 `packages/sync` owns the Bitcoin and Liquid transaction values formerly in `lib/core/transactions`. Transaction review consumes `package:sync/transactions.dart`; wallet-history projections remain in `package:sync/sync.dart`. The separate entry libraries distinguish transaction review values from wallet-relative history without compatibility exports in the app.
+
+### Direct chain capability consumers
+
+Send uses `sync.broadcastLiquidTransaction` for wallet-independent Liquid broadcasts. Transactions uses the sync chain queries and broadcasts for Payjoin, with the published connection port supplied by composition. These paths no longer depend on the app blockchain datasource or the Liquid forwarding repository.

@@ -1,6 +1,5 @@
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:electrum/electrum.dart';
-import 'package:electrum/setup.dart';
+import '../../../scripted_wallet_connections.dart';
+
 import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -15,33 +14,13 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure;
 
-final class _Servers implements ElectrumServersPort {
-  @override
-  Future<bool> hasCustomServers({
-    required ElectrumServerNetwork network,
-  }) async => false;
-
-  int calls = 0;
-
-  @override
-  Future<T> runWithFallback<T>({
-    required ElectrumServerNetwork network,
-    required Future<T> Function(ElectrumConnection connection) operation,
-    bool Function(Object error)? isTransient,
-  }) {
-    calls++;
-    throw StateError('connection reset after send');
-  }
-}
-
 void main() {
-  late _Servers servers;
+  late ScriptedWalletConnections servers;
 
-  setUp(() => servers = _Servers());
+  setUp(() => servers = ScriptedWalletConnections());
 
   Future<void> broadcast(Result<SpendReceipt, SyncFailure> outcome) =>
       AppPayjoinBlockchainAdapter(
-        const BdkBitcoinBlockchainDatasource(),
         servers,
         WalletFacade(
           const Stream.empty(),
@@ -76,7 +55,7 @@ void main() {
     await broadcast(
       const Ok(SpendReceipt('txid', durable: false, guarded: true)),
     );
-    expect(servers.calls, 0);
+    expect(servers.networks, isEmpty);
   });
 
   for (final failure in <SyncFailure>[

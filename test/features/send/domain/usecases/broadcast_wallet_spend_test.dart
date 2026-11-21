@@ -1,6 +1,6 @@
+import '../../../../scripted_wallet_connections.dart';
 import '../../../../frozen_outpoints_fixture.dart';
 
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
@@ -22,8 +22,6 @@ import 'package:sync/sync.dart'
 // the authorization rule and name sync's refusals.
 
 class _Bitcoin extends Mock implements BitcoinBlockchainRepository {}
-
-class _Liquid extends Mock implements LiquidBlockchainRepository {}
 
 class _Settings extends Mock implements Preferences {}
 
@@ -67,7 +65,7 @@ void main() {
   late _Spends spends;
   late _Settings settings;
   late _Bitcoin bitcoin;
-  late _Liquid liquid;
+  late ScriptedWalletConnections liquid;
 
   void environment({required bool developer}) =>
       when(settings.fetch).thenAnswer(
@@ -86,7 +84,7 @@ void main() {
     spends = _Spends();
     settings = _Settings();
     bitcoin = _Bitcoin();
-    liquid = _Liquid();
+    liquid = ScriptedWalletConnections();
     environment(developer: false);
   });
 
@@ -222,7 +220,7 @@ void main() {
     BroadcastLiquidTransactionUsecase liquidUsecase() =>
         BroadcastLiquidTransactionUsecase(
           wallet: spends.facade,
-          liquidBlockchainRepository: liquid,
+          connections: liquid,
           settingsRepository: settings,
         );
 
@@ -236,7 +234,7 @@ void main() {
         'txid',
       );
       expect((spends.calls.single.transaction as SignedPset).pset, 'pset');
-      verifyZeroInteractions(liquid);
+      expect(liquid.networks, isEmpty);
     });
 
     test('a frozen input is a rejection', () async {
@@ -258,16 +256,12 @@ void main() {
     });
 
     test('without a wallet, the transaction goes to the servers', () async {
-      when(
-        () => liquid.broadcastTransaction(
-          signedPset: 'pset',
-          network: Network.liquidMainnet,
-        ),
-      ).thenAnswer((_) async => 'raw-txid');
+      liquid.reply = () => const Ok('raw-txid');
       expect(
         await liquidUsecase().execute('pset', network: Network.liquidMainnet),
         'raw-txid',
       );
+      expect(liquid.networks, [LiquidNetwork.mainnet]);
       expect(spends.calls, isEmpty);
     });
   });

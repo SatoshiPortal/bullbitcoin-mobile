@@ -5,7 +5,6 @@ import 'package:primitives/primitives.dart' hide Network;
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/send/data/liquid_blockchain_repository_impl.dart';
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:sync/sync.dart'
     show
@@ -146,9 +145,6 @@ void main() {
           };
           final connections = _Failing(failure);
           final bitcoin = BitcoinBlockchainRepository(connections: connections);
-          final liquid = LiquidBlockchainRepositoryImpl(
-            connections: connections,
-          );
           final btc = BroadcastBitcoinTransactionUsecase(
             wallet: WalletFacade(
               const Stream.empty(),
@@ -168,7 +164,7 @@ void main() {
             settingsRepository: settings,
           );
           final lbtc = BroadcastLiquidTransactionUsecase(
-            liquidBlockchainRepository: liquid,
+            connections: connections,
             settingsRepository: settings,
           );
           const wallet = WalletFacade(Stream.empty());

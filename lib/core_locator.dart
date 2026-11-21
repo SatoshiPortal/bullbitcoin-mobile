@@ -32,7 +32,6 @@ class CoreLocator {
         warningCallback: log.warning,
       ),
     );
-    BlockchainLocator.registerDatasources(locator);
     setupElectrum(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);

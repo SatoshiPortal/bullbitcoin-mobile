@@ -449,3 +449,7 @@ The Electrum setup library exposes the sync-owned connection contract through an
 Electrum also owns the declarations, generated rows and queries for `ElectrumServers`, `ElectrumSettings` and `Transactions`. The app's Drift composer attaches these tables to its existing SQLite file. The Electrum accessor uses the composed connection. The physical schema remains at version 16. Generate Electrum's Drift libraries before the app composer with `make build-runner`.
 
 `packages/mempool` generates the rows and accessor for `MempoolServers` and `MempoolSettings`. The app composer includes both tables in `bullbitcoin_sqlite.sqlite` at schema 16. The shell opens the capability with `Mempool.open`. Mempool Settings reads the app environment through its setup binding and passes a typed Bitcoin or Liquid network to `mempool.servers`. Fees resolve the active Bitcoin base through the same server capability. Explorer callers use `mempool.links` for typed URI results.
+
+### Wallet-independent chain operations
+
+Send and Payjoin consume the chain operations published by `sync` through `WalletConnectionPort`. The former `core/blockchain` adapters are removed. Electrum implements connection selection and fallback; Payjoin retains its script-based reconciliation for unrecognized transaction lookup replies, and Send retains authorization and presentation failure mapping.
