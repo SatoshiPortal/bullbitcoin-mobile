@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
@@ -7,7 +8,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
@@ -35,18 +36,24 @@ class _Settings extends Fake implements SettingsRepository {
   );
 }
 
-class _Picker implements DocumentPickerPort {
+class _Picker extends Fake implements FileSystem {
   @override
-  Future<Result<PickedDocument?, ExchangeSettingsFailure>> pick({
-    required List<String> allowedExtensions,
-  }) async => const Ok(
-    PickedDocument(
-      name: 'synthetic.pdf',
-      extension: 'pdf',
-      sizeBytes: 1,
-      bytes: [1],
-    ),
-  );
+  Future<Result<PickedDocument?, FileSystemFailure>> pick({
+    List<String> allowedExtensions = const [],
+  }) async => Ok(_Document());
+
+  @override
+  Future<Result<Uint8List, FileSystemFailure>> read(
+    PickedDocument document, {
+    required int maxBytes,
+  }) async => Ok(Uint8List.fromList([1]));
+}
+
+class _Document extends Fake implements PickedDocument {
+  @override
+  String get name => 'synthetic.pdf';
+  @override
+  String get extension => 'pdf';
 }
 
 class _Reporter implements LoggerReporter {
@@ -202,7 +209,7 @@ void main() {
       ),
     );
     final operation = UploadExchangeDocumentUsecase(
-      documentPicker: _Picker(),
+      fileSystem: _Picker(),
       uploadKycDocumentUsecase: UploadKycDocumentUsecase(
         mainnetRepository: kyc,
         testnetRepository: kyc,

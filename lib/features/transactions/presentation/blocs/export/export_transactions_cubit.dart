@@ -1,12 +1,12 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/save_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExportTransactionsCubit extends Cubit<ExportTransactionsState> {
   final ExportTransactionsCsvUsecase _exportTransactionsCsvUsecase;
-  final TransactionExportSaver _saver;
+  final SaveTransactionsCsvUsecase _saver;
 
   ExportTransactionsCubit({
     required this._exportTransactionsCsvUsecase,
@@ -33,7 +33,7 @@ class ExportTransactionsCubit extends Cubit<ExportTransactionsState> {
     // The save sits behind a native file picker, which routinely outlives the
     // screen that opened it: the user can dismiss the export before choosing a
     // destination. Emitting on a closed cubit throws.
-    final saveResult = await _saver.save(csv);
+    final saveResult = await _saver.execute(csv);
     if (isClosed) return;
 
     switch (saveResult) {

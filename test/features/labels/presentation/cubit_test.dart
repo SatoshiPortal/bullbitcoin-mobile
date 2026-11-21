@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:bb_mobile/features/labels/application/labels_converter_port.dart';
+import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
+import 'package:file_system/file_system.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
@@ -12,7 +18,9 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockExport extends Mock implements ExportLabelsUsecase {}
 
-class _MockImportFromFile extends Mock implements ImportLabelsFromFileUsecase {}
+class _MockImport extends Mock implements ImportLabelsUsecase {}
+
+class _MockConverter extends Mock implements LabelsConverterPort {}
 
 class _MockFilePicker extends Mock implements FilePickerPlatform {}
 
@@ -23,6 +31,9 @@ final class _PickedFile extends PlatformFile {
   _PickedFile(this.path);
 
   @override
+  Stream<Uint8List> readAsByteStream() => Stream.value(utf8.encode('{}'));
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
@@ -30,12 +41,16 @@ const _path = '/tmp/picked/labels.jsonl';
 
 void main() {
   late _MockExport export;
-  late _MockImportFromFile importFromFile;
+  late _MockImport import;
+  late _MockConverter converter;
   late _MockFilePicker picker;
 
   setUp(() {
     export = _MockExport();
-    importFromFile = _MockImportFromFile();
+    import = _MockImport();
+    converter = _MockConverter();
+    when(() => converter.maxImportBytes(LabelFormat.bip329)).thenReturn(42);
+    registerFallbackValue(FormattedLabelsBIP329(jsonl: ''));
     picker = _MockFilePicker();
     registerFallbackValue(LabelFormat.bip329);
     registerFallbackValue(FileType.any);
@@ -44,8 +59,11 @@ void main() {
 
   Bip329LabelsCubit buildCubit() => Bip329LabelsCubit(
     exportLabelsUsecase: export,
-    importLabelsFromFileUsecase: importFromFile,
-    filePicker: picker,
+    importLabelsFromFileUsecase: ImportLabelsFromFileUsecase(
+      fileSystem: FileSystem(picker: picker),
+      labelConverter: converter,
+      importLabels: import,
+    ),
   );
 
   void pickReturns(PlatformFile? result) =>
@@ -54,12 +72,8 @@ void main() {
 
   PlatformFile picked({String? path = _path}) => _PickedFile(path);
 
-  void importReturns(Result<int, LabelFailure> result) => when(
-    () => importFromFile.execute(
-      format: any(named: 'format'),
-      path: any(named: 'path'),
-    ),
-  ).thenAnswer((_) async => result);
+  void importReturns(Result<int, LabelFailure> result) =>
+      when(() => import.call(any())).thenAnswer((_) async => result);
 
   group('import from file', () {
     test('opens the picker without a type filter', () async {
@@ -82,12 +96,7 @@ void main() {
       await cubit.importLabelsFromFile(LabelFormat.bip329);
 
       expect(cubit.state, const Bip329LabelsState.initial());
-      verifyNever(
-        () => importFromFile.execute(
-          format: any(named: 'format'),
-          path: any(named: 'path'),
-        ),
-      );
+      verifyNever(() => import.call(any()));
     });
 
     test('a picker that throws is reported, not swallowed', () async {
@@ -119,7 +128,7 @@ void main() {
     });
 
     test(
-      'hands the picked path to the use-case and reports the count',
+      'hands the picked content to the use-case and reports the count',
       () async {
         pickReturns(picked());
         importReturns(const Ok(3));
@@ -128,9 +137,10 @@ void main() {
 
         await cubit.importLabelsFromFile(LabelFormat.bip329);
 
-        verify(
-          () => importFromFile.execute(format: LabelFormat.bip329, path: _path),
-        ).called(1);
+        final parsed =
+            verify(() => import.call(captureAny())).captured.single
+                as FormattedLabelsBIP329;
+        expect(parsed.jsonl, '{}');
         expect((cubit.state as Bip329LabelsImportSuccess).labelsCount, 3);
       },
     );
@@ -214,7 +224,7 @@ void main() {
     test(
       'forwards the use-case failure without reaching the file picker',
       () async {
-        when(() => export.call(any()))
+        when(() => export.save(any()))
             .thenAnswer((_) async => const Err(LabelsExportFailure()));
         final cubit = buildCubit();
         addTearDown(cubit.close);

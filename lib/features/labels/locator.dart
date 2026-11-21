@@ -16,12 +16,11 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/data/io_labels_file_datasource.dart';
-import 'package:bb_mobile/features/labels/domain/labels_file_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
+import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
@@ -39,9 +38,6 @@ class LabelsLocator {
       () => LabelsConverterPortRegistry({
         LabelFormat.bip329: locator<LabelsConverterPort>(),
       }),
-    );
-    locator.registerLazySingleton<LabelsFilePort>(
-      () => IoLabelsFileDatasource(),
     );
     locator.registerLazySingleton<WalletFreezePort>(
       () => WalletFreezeAdapter(
@@ -65,6 +61,7 @@ class LabelsLocator {
         labelRepository: locator<LabelsRepositoryPort>(),
         converterRegistry: locator<LabelsConverterPortRegistry>(),
         walletFreeze: locator<WalletFreezePort>(),
+        fileSystem: const FileSystem(),
       ),
     );
 
@@ -78,7 +75,7 @@ class LabelsLocator {
 
     locator.registerFactory<ImportLabelsFromFileUsecase>(
       () => ImportLabelsFromFileUsecase(
-        labelsFile: locator<LabelsFilePort>(),
+        fileSystem: const FileSystem(),
         labelConverter: locator<LabelsConverterPort>(),
         importLabels: locator<ImportLabelsUsecase>(),
       ),
