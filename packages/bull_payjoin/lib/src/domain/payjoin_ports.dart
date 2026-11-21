@@ -70,6 +70,14 @@ abstract interface class PayjoinTransactionPort {
     bool refresh = false,
   });
 
+  /// The id of a wallet transaction that spends every one of [outpoints], or
+  /// null. With [refresh] the wallet is synced first.
+  Future<String?> findTransactionSpending({
+    required String walletId,
+    required List<Outpoint> outpoints,
+    bool refresh = false,
+  });
+
   Future<void> refreshWallet(String walletId);
 }
 
