@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_cha
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
