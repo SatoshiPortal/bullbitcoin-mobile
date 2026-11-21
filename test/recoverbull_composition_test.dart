@@ -62,9 +62,7 @@ void main() {
       expect(nativeTor.calls, 1);
       TorLocator.registerRepositories(services);
       TorLocator.registerUsecases(services);
-      await ElectrumLocator.registerDatasources(services);
-      ElectrumLocator.registerRepositories(services);
-      ElectrumLocator.registerPorts(services);
+      setupElectrum(services);
       await WalletLocator.registerDatasources(services);
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);

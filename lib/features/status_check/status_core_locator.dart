@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';

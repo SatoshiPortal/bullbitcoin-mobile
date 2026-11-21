@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
@@ -32,7 +32,7 @@ class CoreLocator {
       ),
     );
     BlockchainLocator.registerDatasources(locator);
-    await ElectrumLocator.registerDatasources(locator);
+    setupElectrum(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
@@ -43,7 +43,6 @@ class CoreLocator {
   }
 
   static void registerPorts(GetIt locator) {
-    ElectrumLocator.registerPorts(locator);
     MempoolLocator.registerPorts(locator);
     LabelsLocator.registerPorts(locator);
   }
@@ -55,7 +54,7 @@ class CoreLocator {
     await SettingsLocator.registerRepositories(locator);
     final settingsRepository = locator<settings.SettingsRepository>();
     final appSettings = await settingsRepository.fetch();
-    final prepared = await locator<ElectrumSettingsFacade>()
+    final prepared = await locator<ElectrumDefaultsProvisioner>()
         .prepareForegroundStorage(
           appSettings.environment.networkEnv,
           regtestProfile: regtestProfile,
@@ -80,7 +79,6 @@ class CoreLocator {
       },
     );
     BlockchainLocator.registerRepositories(locator);
-    ElectrumLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
@@ -99,7 +97,6 @@ class CoreLocator {
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
     LabelsLocator.registerUseCases(locator);
-    ElectrumLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);

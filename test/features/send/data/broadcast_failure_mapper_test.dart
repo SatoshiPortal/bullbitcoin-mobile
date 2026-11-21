@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:flutter_test/flutter_test.dart';

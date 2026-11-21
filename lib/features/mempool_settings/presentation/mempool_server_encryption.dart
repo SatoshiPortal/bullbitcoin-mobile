@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
 
 extension MempoolServerEncryption on MempoolServerDto {

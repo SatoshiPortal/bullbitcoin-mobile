@@ -1,107 +1,107 @@
-import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
-import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
-import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
+import 'package:electrum/electrum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show BitcoinTx, TxScriptSig, TxVin, TxVout;
 
-class _MockTransactionPort extends Mock implements TransactionPort {}
+class _MockElectrum extends Mock implements Electrum {}
 
-class _MockTransaction extends Mock implements Transaction {}
+BitcoinTx _transaction({
+  required String txid,
+  List<TxVin> inputs = const [],
+  List<TxVout> outputs = const [],
+}) => BitcoinTx(
+  txid: txid,
+  version: 2,
+  size: BigInt.one,
+  vsize: BigInt.one,
+  locktime: 0,
+  vin: inputs,
+  vout: outputs,
+);
 
-class _MockTxInput extends Mock implements TxInput {}
-
-class _MockTxOutput extends Mock implements TxOutput {}
+BitcoinTx _spendingParent(int outputIndex) => _transaction(
+  txid: 'spenttxid',
+  inputs: [
+    TxVin(txid: 'parenttxid', vout: outputIndex, sequence: 0, scriptSig: null),
+  ],
+);
 
 void main() {
-  late _MockTransactionPort port;
+  late _MockElectrum electrum;
   late BuildReviewableTransactionUsecase usecase;
 
   setUp(() {
-    port = _MockTransactionPort();
-    usecase = BuildReviewableTransactionUsecase(transactionPort: port);
+    electrum = _MockElectrum();
+    usecase = BuildReviewableTransactionUsecase(electrum: electrum);
   });
 
-  Transaction txSpending(String parentTxId, int vout) {
-    final input = _MockTxInput();
-    when(() => input.previousTxId).thenReturn(parentTxId);
-    when(() => input.previousVout).thenReturn(vout);
-    final tx = _MockTransaction();
-    when(() => tx.inputs).thenReturn([input]);
-    when(() => tx.txid).thenReturn('spenttxid');
-    return tx;
-  }
+  Future<Result<ReviewableTransaction, TransactionReviewFailure>> review(
+    BitcoinTx tx,
+  ) => usecase.execute(tx, network: Future.value(BitcoinNetwork.mainnet));
 
-  group('BuildReviewableTransactionUsecase', () {
-    test('maps a TransactionPort fetch failure to a sanitized review failure '
-        'without leaking the raw reason', () async {
-      final tx = txSpending('parenttxid', 0);
-      when(() => port.fetch(txid: any(named: 'txid'))).thenThrow(
-        const TransactionPortError.fetchFailed(
-          txid: 'parenttxid',
-          message: 'electrum: connection reset by 1.2.3.4',
-        ),
-      );
-
-      final result = await usecase.execute(tx);
-
-      expect(
-        result,
-        isA<Err<ReviewableTransaction, TransactionReviewFailure>>(),
-      );
-      final failure =
-          (result as Err<ReviewableTransaction, TransactionReviewFailure>)
-              .failure;
-      expect(failure, isA<TransactionReviewFetchFailure>());
-      expect((failure as TransactionReviewFetchFailure).txid, 'parenttxid');
-      // The raw electrum reason is logged-only, never surfaced as the txid.
-      expect(failure.txid, isNot(contains('electrum')));
-    });
-
-    test(
-      'returns an input-resolution failure when the vout is out of range',
-      () async {
-        final tx = txSpending('parenttxid', 5);
-        final parentTx = _MockTransaction();
-        when(() => parentTx.txid).thenReturn('parenttxid');
-        when(() => parentTx.outputs).thenReturn(const []);
-        when(() => port.fetch(txid: any(named: 'txid')))
-            .thenAnswer((_) async => parentTx);
-
-        final result = await usecase.execute(tx);
-
-        expect(
-          (result as Err<ReviewableTransaction, TransactionReviewFailure>)
-              .failure,
-          isA<TransactionReviewInputResolutionFailure>(),
-        );
-      },
+  test('maps Electrum lookup failures to the review failure family', () async {
+    when(() => electrum.fetchBitcoinTransaction(txid: 'parenttxid')).thenAnswer(
+      (_) async => const Err(ElectrumTransactionFetchFailure('parenttxid')),
     );
 
-    test('resolves the input value and returns Ok on success', () async {
-      final tx = txSpending('parenttxid', 0);
-      final parentOutput = _MockTxOutput();
-      when(() => parentOutput.valueSat).thenReturn(4200);
-      when(() => parentOutput.address).thenReturn('bc1qexample');
-      final parentTx = _MockTransaction();
-      when(() => parentTx.txid).thenReturn('parenttxid');
-      when(() => parentTx.outputs).thenReturn([parentOutput]);
-      when(() => port.fetch(txid: any(named: 'txid')))
-          .thenAnswer((_) async => parentTx);
+    final result = await review(_spendingParent(0));
 
-      final result = await usecase.execute(tx);
+    expect(
+      result,
+      isA<Err<ReviewableTransaction, TransactionReviewFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TransactionReviewFetchFailure>().having(
+          (failure) => failure.txid,
+          'txid',
+          'parenttxid',
+        ),
+      ),
+    );
+  });
+
+  test(
+    'returns an input-resolution failure when the vout is out of range',
+    () async {
+      when(() => electrum.fetchBitcoinTransaction(txid: 'parenttxid'))
+          .thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
+
+      final result = await review(_spendingParent(5));
 
       expect(
         result,
-        isA<Ok<ReviewableTransaction, TransactionReviewFailure>>(),
+        isA<Err<ReviewableTransaction, TransactionReviewFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<TransactionReviewInputResolutionFailure>(),
+        ),
       );
-      final reviewable =
-          (result as Ok<ReviewableTransaction, TransactionReviewFailure>).value;
-      expect(reviewable.resolvedInputs, hasLength(1));
-      expect(reviewable.resolvedInputs.first.valueSat, 4200);
-    });
+    },
+  );
+
+  test('resolves the input value and address from the parsed parent', () async {
+    final parent = _transaction(
+      txid: 'parenttxid',
+      outputs: [
+        TxVout(
+          value: BigInt.from(4200),
+          n: 0,
+          scriptPubKey: TxScriptSig(bytes: [0, 20, ...List.filled(20, 0x22)]),
+        ),
+      ],
+    );
+    when(() => electrum.fetchBitcoinTransaction(txid: 'parenttxid'))
+        .thenAnswer((_) async => Ok(parent));
+
+    final result = await review(_spendingParent(0));
+
+    final reviewable =
+        (result as Ok<ReviewableTransaction, TransactionReviewFailure>).value;
+    expect(reviewable.resolvedInputs.single.valueSat, 4200);
+    expect(reviewable.resolvedInputs.single.address, startsWith('bc1q'));
   });
 }

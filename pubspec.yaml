@@ -24,6 +24,7 @@ workspace:
   - packages/background_tasks
   - packages/notifications
   - packages/sync
+  - packages/electrum
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_reporting
@@ -64,6 +65,7 @@ dependencies:
   notifications:
   flutter_local_notifications: ^23.0.2
   sync:
+  electrum:
   bull_tor:
   screen_privacy:
   bull_reporting:
