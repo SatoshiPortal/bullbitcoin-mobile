@@ -83,4 +83,54 @@ void main() {
       ),
     );
   });
+  test('stops reading when a second chunk exceeds the limit', () async {
+    selects(_ChunkedDocument());
+    final picked = await fileSystem.pick(allowedExtensions: ['pdf']);
+    final document = (picked as Ok<PickedDocument?, FileSystemFailure>).value;
+    if (document == null) fail('a document was selected');
+
+    expect(
+      await fileSystem.read(document, maxBytes: 3),
+      isA<Err<Uint8List, FileSystemFailure>>().having(
+        (result) => result.failure.kind,
+        'failure kind',
+        FileSystemFailureKind.tooLarge,
+      ),
+    );
+  });
+
+  test(
+    'save passes the selected filename, bytes and MIME type to the picker',
+    () async {
+      final bytes = Uint8List.fromList([1, 2]);
+      when(
+        () => picker.saveFile(
+          fileName: 'example.txt',
+          bytes: bytes,
+          mimeType: 'text/plain',
+        ),
+      ).thenAnswer((_) async => Uri.file('/export/example.txt'));
+
+      expect(
+        (await fileSystem.save(
+          filename: 'example.txt',
+          bytes: bytes,
+          mimeType: 'text/plain',
+        ) as Ok<bool, FileSystemFailure>).value,
+        isTrue,
+      );
+    },
+  );
+}
+
+final class _ChunkedDocument extends PlatformFile {
+  @override
+  Stream<Uint8List> readAsByteStream() async* {
+    yield Uint8List.fromList([1, 2]);
+    yield Uint8List.fromList([3, 4]);
+    fail('reading should stop before requesting another chunk');
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
