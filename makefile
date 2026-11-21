@@ -132,7 +132,15 @@ rust-bindings-codegen:
 onion-codegen:
 	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
 
-build-runner:
+# Table-owner package paths in dependency order. Add an owner here when its
+# tables leave the app; its modular outputs must exist before the composer runs.
+DRIFT_OWNER_PACKAGES :=
+
+.PHONY: drift-owners-build
+drift-owners-build:
+	@set -e; for owner in $(DRIFT_OWNER_PACKAGES); do (cd "$$owner" && fvm dart run build_runner build --force-jit); done
+
+build-runner: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
@@ -152,9 +160,9 @@ btc-map-build-runner:
 recoverbull-build-runner:
 	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
 
-build-runner-watch:
+build-runner-watch: drift-owners-build
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & (cd packages/bull_pricer && fvm dart run build_runner watch --force-jit) & (cd packages/swaps && fvm dart run build_runner watch --force-jit) & wait'
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; for owner in $(DRIFT_OWNER_PACKAGES); do (cd "$$owner" && fvm dart run build_runner watch --force-jit) & done; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & (cd packages/bull_pricer && fvm dart run build_runner watch --force-jit) & (cd packages/swaps && fvm dart run build_runner watch --force-jit) & wait'
 
 translations:
 	@echo "🌐 Generating translations files"

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_netwo
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_server_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/repositories/drift_mempool_server_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/mempool_servers_table.drift.dart';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

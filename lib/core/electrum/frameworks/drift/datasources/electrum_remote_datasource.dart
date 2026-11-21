@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/transactions_table.drift.dart'
+    show TransactionModel;
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:convert/convert.dart';
 import 'package:bull_tor/tor.dart';

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.drift.dart';
 import 'package:bb_mobile/features/announcements/data/models/announcement_dismissal_model.dart';
 
 /// Wraps the `dismissed_announcements` Drift table. Private to its repository;

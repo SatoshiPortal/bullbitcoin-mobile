@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/labels_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';

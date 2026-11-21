@@ -16,6 +16,8 @@ import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_servers_table.drift.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_settings_table.drift.dart';
 import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/features/electrum_settings/data/electrum_defaults_provisioner.dart';
 import 'package:bb_mobile/features/electrum_settings/data/electrum_server_storage_datasource.dart';

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.drift.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';

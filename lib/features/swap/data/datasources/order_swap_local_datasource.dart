@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/order_swaps_table.drift.dart';
 import 'package:drift/drift.dart';
 
 class OrderSwapLocalDatasource {

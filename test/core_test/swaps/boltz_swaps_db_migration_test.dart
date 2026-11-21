@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/swaps_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
 import 'package:swaps/swaps.dart' hide SwapDirection;
