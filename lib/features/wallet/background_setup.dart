@@ -19,7 +19,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/write.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:bb_mobile/features/settings/data/electrum/background_setup.dart';
 
 const paymentNotificationChannelId = PaymentNotifications.channelId;
 const _queueFilename = 'wallet_transaction_sync_queue.sqlite';

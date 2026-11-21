@@ -19,8 +19,6 @@
   "buyPayoutWillBeSentIn": "Ваша выплата будет отправлена ",
   "fundExchangeInstantSepaInfo": "Использовать только для транзакций ниже €20 000. Для более крупных транзакций используйте вариант регулярного SEPA.",
   "dcaChooseWalletTitle": "Выберите Bitcoin Wallet",
-  "torSettingsPortHint": "9050",
-  "electrumTimeoutPositiveError": "Время должно быть положительным",
   "sellSendPaymentAboveMax": "Вы пытаетесь продать выше максимальной суммы, которая может быть продана с этим кошельком.",
   "fundExchangeETransferLabelSecretAnswer": "Секретный ответ",
   "payPayinAmount": "Сумма выплат",
@@ -34,13 +32,11 @@
   "sendSendNetworkFee": "Отправить Сеть",
   "exchangeDcaUnableToGetConfig": "Невозможно получить конфигурацию DCA",
   "sellInstitutionNumber": "Число учреждений",
-  "mempoolSettingsCustomServer": "Пользовательский сервер",
   "fundExchangeMethodRegularSepa": "Регулярный SEPA",
   "addressViewTransactions": "Операции",
   "fundExchangeSinpeLabelPhone": "Отправить этот номер телефона",
   "importQrDeviceKruxStep3": "Нажмите XPUB - QR-код",
   "sellAdvancedOptions": "Дополнительные варианты",
-  "electrumPrivacyNoticeSave": "Сохранить",
   "withdrawOwnershipOtherAccount": "Это чей-то счет",
   "receiveInvoice": "Осветительный счет",
   "receiveGenerateAddress": "Создать новый адрес",
@@ -61,8 +57,6 @@
     }
   },
   "autoswapAlwaysBlockEnabledInfo": "Если включено, автосвопы с комиссией выше заданного лимита всегда будут блокироваться",
-  "electrumServerAlreadyExists": "Этот сервер уже существует",
-  "electrumServerUnreachable": "Сервер недоступен. Проверьте адрес и попробуйте снова.",
   "sellPaymentMethod": "Способ оплаты",
   "transactionLabelPreimage": "Преимущество",
   "coreSwapsChainCanCoop": "Своп завершится через мгновение.",
@@ -121,7 +115,6 @@
   "payInstantPayments": "Мгновенные платежи",
   "importWatchOnlyImportButton": "Импорт Watch-Only Wallet",
   "fundExchangeCrIbanCrcDescriptionBold": "точно",
-  "electrumTitle": "Параметры сервера Electrum",
   "importQrDeviceJadeStep7": "При необходимости выберите \"Вариации\" для изменения типа адреса",
   "transactionNetworkLightning": "Освещение",
   "paySecurityQuestionLength": "{count}/40 символов",
@@ -193,17 +186,6 @@
   "buyDocumentUpload": "Загрузка документов",
   "sendTransferFeeDescription": "Это общая плата, вычтенная из суммы, отправленной",
   "buyAboveMaxAmountError": "Вы пытаетесь купить выше максимальной суммы.",
-  "electrumTimeoutWarning": "Ваш таймаут ({timeoutValue} секунд) ниже рекомендуемого значения ({recommended} секунд) для этого стоп-гапа.",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "Показать PSBT",
   "receiveAddress": "Адрес",
   "broadcastSignedTxAmount": "Сумма",
@@ -237,12 +219,10 @@
   "coreSwapsChainFailedRefunding": "Своп скоро будет возвращён.",
   "sendSelectAmount": "Выберите сумму",
   "sellKYCRejected": "Проверка КИК отклонена",
-  "electrumNetworkLiquid": "Жидкость",
   "buyBelowMinAmountError": "Вы пытаетесь купить ниже минимальной суммы.",
   "exchangeLandingFeature6": "Единая история транзакций",
   "transactionStatusPaymentRefunded": "Оплата",
   "pinCodeSecurityPinTitle": "Безопасность PIN",
-  "electrumEmptyFieldError": "Это поле не может быть пустым",
   "transactionStatusPaymentInProgress": "Оплата",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Выберите сеть",
@@ -339,7 +319,6 @@
   "dcaWalletBitcoinSubtitle": "Минимальный 0,001 BTC",
   "sendOpenTheCamera": "Откройте камеру",
   "sendSwapId": "Идентификатор швапа",
-  "electrumServerOnline": "Онлайн",
   "fundExchangeAccountTitle": "Фонд вашего счета",
   "exchangeAppSettingsSaveButton": "Сохранить",
   "fundExchangeWarningTactic1": "Они обещают прибыль от инвестиций",
@@ -360,14 +339,12 @@
   "autoswapWarningOkButton": "ХОРОШО",
   "swapTitle": "Внутренний своп",
   "sendOutputTooSmall": "Выход за пределы пыли",
-  "torSettingsStatusConnected": "Готово",
   "payLightningNetwork": "Сеть освещения",
   "payCorporateNameHint": "Введите фирменное имя",
   "sellExternalWallet": "Внешний кошелек",
   "backupSettingsFailedToDeriveKey": "Не удалось вывести резервный ключ",
   "googleDriveProvider": "Google Drive",
   "sellAccountName": "Имя пользователя",
-  "statusCheckUnknown": "Неизвестный",
   "howToDecideVaultLocationText2": "Настраиваемое местоположение может быть гораздо более безопасным, в зависимости от того, какое место вы выберете. Вы также должны убедиться, что не потеряете резервный файл или потеряете устройство, на котором хранится ваш резервный файл.",
   "logSettingsLogsTitle": "Журналы",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Этот уникальный номер аккаунта создан только для вас",
@@ -386,7 +363,6 @@
   "testBackupDecryptVault": "Зашифрованное хранилище",
   "addressCardCopiedMessage": "Адрес, скопированный в буфер обмена",
   "totalFeeLabel": "Итого",
-  "mempoolCustomServerBottomSheetDescription": "Введите URL-адрес вашего пользовательского сервера mempool. Сервер будет проверен до сохранения.",
   "sellBelowMinAmountError": "Вы пытаетесь продать ниже минимальной суммы, которую можно продать с этим кошельком.",
   "buyAwaitingConfirmation": "Пробуждение подтверждения ",
   "payExpired": "Заключено",
@@ -450,7 +426,6 @@
   "howToDecideBackupText1": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
   "coldcardStep13": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на Coldcard. Сканируйте.",
   "payCoinjoinCompleted": "CoinJoin завершен",
-  "electrumAddCustomServer": "Добавить пользовательский сервер",
   "rbfSatsPerVbyte": "sats/vB",
   "broadcastSignedTxDoneButton": "Дон",
   "sendRecommendedFee": "Рекомендуемые: {rate}",
@@ -468,7 +443,6 @@
   "sendServerNetworkFees": "Фейсы сети сервера",
   "importWatchOnlyImport": "Импорт",
   "backupWalletBackupButton": "Назад",
-  "mempoolSettingsTitle": "Mempool Server",
   "sellSendPaymentFeePriority": "Очередность",
   "sellWalletBalance": "Остаток: {amount}",
   "@sellWalletBalance": {
@@ -552,7 +526,6 @@
   "fundExchangeInfoTransferCode": "Вы должны добавить код передачи как «сообщение» или «разум» при совершении платежа.",
   "hwChooseDevice": "Выберите аппаратный кошелек, который вы хотели бы подключить",
   "transactionListNoTransactions": "Пока никаких сделок.",
-  "torSettingsConnectionStatus": "Состояние подключения",
   "backupInstruction1": "Если вы потеряете резервное копирование на 12 слов, вы не сможете восстановить доступ к Bitcoin Wallet.",
   "sendErrorInvalidAddressOrInvoice": "Неверный адрес оплаты Bitcoin или счет",
   "sendErrorUnsupportedQrCodeFormat": "Неподдерживаемый формат QR-кода",
@@ -608,10 +581,8 @@
   },
   "payShowQrCode": "Показать код QR",
   "onboardingRecoverWalletButtonLabel": "Восстановление кошелька",
-  "torSettingsPortValidationEmpty": "Пожалуйста, введите номер порта",
   "swapAvailableBalance": "Имеющийся остаток",
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Описание оплаты",
-  "electrumPrivacyNoticeCancel": "Отмена",
   "coreSwapsLnSendPending": "Свап еще не инициализирован.",
   "payAmount": "Сумма",
   "sellMaximumAmount": "Максимальная сумма продажи: {amount}",
@@ -644,7 +615,6 @@
   "passwordLabel": "Пароль",
   "importQrDeviceError": "Не удалось импортировать кошелек",
   "onboardingSplashDescription": "Суверенная самоопека Bitcoin кошелёк и сервис обмена только Bitcoin.",
-  "statusCheckOffline": "Оффлайн",
   "fundExchangeCrIbanCrcDescriptionEnd": "... Средства будут добавлены в ваш баланс.",
   "payAccount": "Счет",
   "testBackupGoogleDrivePrivacyPart2": "не будет ",
@@ -657,7 +627,6 @@
   "autoswapWarningDontShowAgain": "Не повторяйте это предупреждение снова.",
   "sellInsufficientBalance": "Недостаточный баланс кошелька",
   "recoverWalletButton": "Recover Wallet",
-  "mempoolCustomServerDeleteMessage": "Вы уверены, что хотите удалить этот пользовательский сервер mempool? Вместо этого будет использоваться сервер по умолчанию.",
   "coldcardStep6": "   - Увеличить яркость экрана на вашем устройстве",
   "exchangeAppSettingsValidationWarning": "Пожалуйста, установите как языковые, так и валютные предпочтения перед сохранением.",
   "sellCashPickup": "Наличный пик",
@@ -675,7 +644,6 @@
   "confirmButton": "Подтверждение",
   "transactionSwapInfoClaimableTransfer": "Своп будет завершён автоматически в течение нескольких секунд. Если этого не произошло, вы можете попробовать получить средства вручную, нажав кнопку \"Retry Swap Claim\".",
   "payActualFee": "Фактические расходы",
-  "electrumValidateDomain": "Проверка домена",
   "importQrDeviceJadeFirmwareWarning": "Убедитесь, что ваше устройство обновляется до последней прошивки",
   "buyInputContinue": "Продолжить",
   "importQrDeviceJadeStep3": "Следуйте инструкциям устройства, чтобы разблокировать Jade",
@@ -720,28 +688,17 @@
   "pinCodeCreateTitle": "Создать новый значок",
   "swapTransferRefundInProgressTitle": "Возврат по свопу выполняется",
   "swapYouReceive": "Вы получите",
-  "electrumInvalidRetryError": "Invalid Retry Значение: {value}",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Выберите сеть",
   "informationWillNotLeave": "Эта информация ",
   "backupWalletInstructionSecurityRisk": "Любой, кто имеет доступ к вашей 12-ти словах резервного копирования, может украсть ваши биткойны. Спрячься.",
   "sellCadBalance": "CAD Баланс",
   "doNotShareWarning": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
-  "torSettingsPortNumber": "Номер порта",
   "payNameHint": "Имя получателя",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
   "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
-  "electrumReset": "Перезагрузка",
   "payInsufficientBalanceError": "Недостаточный баланс в выбранном кошельке для выполнения этого платежного поручения.",
   "backupCompletedTitle": "Закрытие завершено!",
   "sendHighFeeWarning": "Предупреждение",
-  "electrumStopGapNegativeError": "Stop Gap не может быть отрицательным",
   "walletButtonSend": "Отправить",
   "importColdcardInstructionsStep9": "Введите «Label» для вашего кошелька Coldcard Q и нажмите «Import»",
   "backupSettingsExportVault": "Экспортное хранилище",
@@ -752,17 +709,6 @@
   "sellPriceWillRefreshIn": "Цена освежится ",
   "buyVerifyIdentity": "Верификация",
   "exchangeDcaCancelDialogConfirmButton": "Да, деактивация",
-  "electrumServerUrlHint": "{network} {environment}",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "payEmailHint": "Адрес электронной почты",
   "backupWalletGoogleDrivePermissionWarning": "Google попросит вас поделиться личной информацией с этим приложением.",
   "importQrDeviceSeedsignerStep9": "Введите этикетку для вашего кошелька SeedSigner и импорт крана",
@@ -796,14 +742,6 @@
   },
   "broadcastSignedTxReviewTransaction": "Обзорная сделка",
   "importQrDeviceKeystoneStep5": "Выберите \"BULL\" из списка кошельков",
-  "electrumLoadFailedError": "Не удалось загрузить серверы ",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "buyAccelerateTransaction": "Ускорение связи",
   "backupSettingsTested": "Испытываемые",
   "receiveLiquidConfirmationMessage": "Это будет подтверждено через несколько секунд",
@@ -820,14 +758,12 @@
   "testBackupVerify": "Проверка",
   "transactionDetailLabelCreatedAt": "Создано",
   "fundExchangeJurisdictionArgentina": "🇦🇷 Аргентина",
-  "electrumAdvancedOptions": "Дополнительные параметры",
   "autoswapWarningCardSubtitle": "Свопа будет срабатывать, если ваш баланс Instant Payments превысит 0,02 BTC.",
   "transactionLabelSendAmount": "Отправить",
   "testedStatus": "Испытываемые",
   "fundExchangeWarningTactic6": "Они хотят, чтобы вы делились своим экраном",
   "buyYouReceive": "Вы получите",
   "payFilterPayments": "Фильтровые платежи",
-  "electrumCancel": "Отмена",
   "exchangeFileUploadButton": "Загрузка",
   "payCopied": "Копировал!",
   "transactionLabelReceiveNetworkFee": "Получение сетевой платы",
@@ -911,7 +847,6 @@
   },
   "transactionSwapProgressInProgress": "Прогресс",
   "fundExchangeWarningConfirmation": "Я подтверждаю, что меня не просят купить биткойн кем-то еще.",
-  "mempoolCustomServerDeleteTitle": "Удалить пользовательский сервер?",
   "confirmSendTitle": "Добавить",
   "buyKYCLevel1": "Уровень 1 - базовый",
   "sendErrorAmountAboveMaximum": "Сумма выше максимального предела свопа: {maxLimit}",
@@ -967,7 +902,6 @@
   "sendUnconfirmed": "Неподтвержденные",
   "testBackupRetrieveVaultDescription": "Тест, чтобы убедиться, что вы можете получить зашифрованное хранилище.",
   "fundExchangeLabelCvu": "CVU",
-  "electrumStopGap": "Остановите Гэп",
   "payBroadcastingTransaction": "Трансляция...",
   "fiatCurrencySettingsLabel": "Fiat валюта",
   "withdrawConfirmAmount": "Сумма",
@@ -981,7 +915,6 @@
   "walletDetailsDerivationPathLabel": "Путь вывода",
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin Адрес",
   "transactionDetailLabelExchangeRate": "Обменный курс",
-  "electrumServerOffline": "Оффлайн",
   "sendTransferFee": "Комиссия за своп",
   "testBackupPhysicalBackupDescription": "Запишите 12 слов на бумаге. Держите их в безопасности и убедитесь, что не потерять их.",
   "sendInitiatingSwap": "Начало обмена...",
@@ -1002,22 +935,6 @@
   },
   "payDecodingInvoice": "Удаление счета-фактуры...",
   "importColdcardInstructionsStep5": "Выберите \"Export Wallet\"",
-  "electrumStopGapTooHighError": "Стоп Гэп кажется слишком высоким. {maxStopGap}",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Таймаут кажется слишком высоким. (Макс: {maxTimeout} секунд)",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "Мгновенные платежи",
   "priceChartFetchingHistory": "Получение истории цен...",
   "sellDone": "Дон",
@@ -1029,7 +946,6 @@
   "importQrDeviceSpecterStep8": "На вашем мобильном устройстве нажмите Open Camera",
   "sellSendPaymentContinue": "Продолжить",
   "coreSwapsStatusPending": "Завершение",
-  "electrumDragToReorder": "(Долгая пресса, чтобы перетащить и изменить приоритет)",
   "autoswapTriggerAtBalanceInfoText": "Автообмен сработает, когда ваш баланс превысит этот максимальный баланс.",
   "exchangeLandingDisclaimerNotAvailable": "Услуги по обмену криптовалютами недоступны в мобильном приложении Bull Bitcoin.",
   "sendCustomFeeRate": "Пользовательские ставки",
@@ -1077,14 +993,6 @@
   "buyInputKycPending": "Проверка идентификации KYC",
   "importWatchOnlySelectDerivation": "Выбрать",
   "hwPassport": "Паспорт",
-  "electrumInvalidStopGapError": "Неверный стоп Значение разрыва: {value}",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €30,000",
   "walletDetailsSignerDeviceNotSupported": "Не поддерживается",
   "exchangeLandingDisclaimerLegal": "Доступ к услугам обмена будет ограничен странами, где Bull Bitcoin может легально работать и может потребовать KYC.",
@@ -1123,14 +1031,6 @@
   "buyInputKycMessage": "Вы должны сначала завершить проверку личности",
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
   "sendSats": "сидение",
-  "electrumInvalidTimeoutError": "Невероятная величина Timeout: {value}",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeKycLevelLimited": "Limited",
   "withdrawConfirmEmail": "Email",
   "buyNetworkFees": "Сетевые сборы",
@@ -1194,7 +1094,6 @@
   "testBackupGoogleDrivePrivacyPart1": "Эта информация ",
   "connectHardwareWalletKeystone": "Keystone",
   "importWalletTitle": "Добавить новый кошелек",
-  "mempoolSettingsDefaultServer": "По умолчанию",
   "sendPasteAddressOrInvoice": "Вставить адрес платежа или счет-фактуру",
   "swapToLabel": "В",
   "payLoadingRecipients": "Загрузка получателей...",
@@ -1213,7 +1112,6 @@
   "exchangeSupportChatInputHint": "Введите сообщение...",
   "electrumTestnet": "Testnet",
   "sellSelectWallet": "Выберите Wallet",
-  "mempoolCustomServerAdd": "Добавить пользовательский сервер",
   "sendHighFeeWarningDescription": "Общая плата {feePercent}% от суммы, которую вы отправляете",
   "@sendHighFeeWarningDescription": {
     "placeholders": {
@@ -1270,10 +1168,8 @@
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Ваш код передачи.",
   "recoverVia12WordsDescription": "Восстановите свой кошелек через 12 слов.",
   "dcaEnterLightningAddressLabel": "Адрес освещения",
-  "statusCheckOnline": "Онлайн",
   "buyPayoutMethod": "Метод выплаты",
   "exchangeAmountInputTitle": "Введите сумму",
-  "electrumCloseTooltip": "Закрыть",
   "payIbanHint": "Введите IBAN",
   "sendCoinConfirmations": "{count}",
   "@sendCoinConfirmations": {
@@ -1305,7 +1201,6 @@
   "exchangeAccountInfoEmailLabel": "Email",
   "sendSelectCoinsManually": "Выбрать монеты вручную",
   "importMnemonicEmpty": "Пустые",
-  "electrumBitcoinServerInfo": "Введите адрес сервера в формате: host:port (например, example.com:50001)",
   "sendErrorInsufficientBalanceForSwap": "Недостаточно баланса, чтобы оплатить этот своп через Жидкий и не в пределах свопов, чтобы заплатить через Bitcoin.",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "В кошельке BULL выберите предпочитаемый тип деривации. Если вы не уверены, выберите \"Segwit (BIP84)\"",
@@ -1333,18 +1228,15 @@
   "fundExchangeETransferLabelBeneficiaryName": "Используйте это как имя бенефициара E-transfer",
   "backupWalletErrorFileSystemPath": "Не удалось выбрать путь файловой системы",
   "coreSwapsLnSendCanCoop": "Свап завершится мгновенно.",
-  "electrumServerNotUsed": "Не используется",
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Физическая поддержка: ",
   "payDebitCardNumber": "Номер карты",
   "receiveRequestInboundLiquidity": "Получение запроса",
   "backupWalletHowToDecideBackupMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
   "exchangeSupportChatEmptyState": "Пока никаких сообщений. Начинайте разговор!",
   "payExternalWalletDescription": "Оплата за другой биткойн-кошелек",
-  "electrumRetryCountEmptyError": "Ретри Граф не может быть пустым",
   "physicalBackupTag": "Неверный (примите свое время)",
   "payCompletedDescription": "Ваш платеж был завершен, и получатель получил средства.",
   "swapExternalAddressHint": "Введите адрес внешнего кошелька",
-  "torSettingsDescConnecting": "Создание Соединение",
   "appleICloudProvider": "Apple iCloud",
   "exchangeAccountInfoVerificationNotVerified": "Не подтверждена",
   "fundExchangeWarningDescription": "Если кто-то просит вас купить биткойн или «помочь вам», будьте осторожны, они могут попытаться обмануть вас!",
@@ -1368,7 +1260,6 @@
       }
     }
   },
-  "torSettingsPortValidationInvalid": "Пожалуйста, введите действительный номер",
   "sellBankTransfer": "Банковский перевод",
   "importQrDeviceSeedsignerStep3": "Сканировать SeedQR или ввести 12- или 24-слововую семенную фразу",
   "replaceByFeeFastestTitle": "Самый быстрый",
@@ -1495,14 +1386,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер ",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "Болц Свап Фе",
   "swapInfoBanner": "Выполняйте своп Bitcoin между вашими кошельками без лишних усилий. Храните средства в кошельке мгновенных платежей только для повседневных расходов.",
   "payRBFEnabled": "RBF включен",
@@ -1512,7 +1395,6 @@
   "networkFeesLabel": "Сетевые сборы",
   "backupWalletPhysicalBackupDescription": "Запишите 12 слов на бумаге. Держите их в безопасности и убедитесь, что не потерять их.",
   "sendSwapInProgressBitcoin": "Свопа продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
-  "electrumDeleteServerTitle": "Удалить пользовательский сервер",
   "buySelfie": "Селфи с ID",
   "sellMxnBalance": "MXN Баланс",
   "fundExchangeWarningTactic4": "Они просят отправить биткойн на их адрес",
@@ -1552,7 +1434,6 @@
   },
   "buyConfirmationTimeValue": "10 минут",
   "buyConfirmAwaitingConfirmation": "Пробуждение подтверждения ",
-  "torSettingsSaveButton": "Сохранить",
   "allSeedViewShowSeedsButton": "Показать семена",
   "fundExchangeMethodBankTransferWireSubtitle": "Лучший и самый надежный вариант для больших сумм (как и на следующий день)",
   "fundExchangeCanadaPostStep4": "4. Кассир попросит увидеть часть выданного правительством ID и убедиться, что имя на вашем ID соответствует вашей учетной записи Bull Bitcoin",
@@ -1576,7 +1457,6 @@
   "sendAbsoluteFees": "Абсолютные сборы",
   "rbfErrorFeeTooLow": "Вы должны увеличить ставку сбора как минимум на 1 атт/вбайт по сравнению с первоначальной транзакцией",
   "backupWalletTitle": "Назад ваш кошелек",
-  "electrumPrivacyNoticeTitle": "Уведомление о конфиденциальности",
   "receiveLiquid": "Liquid",
   "payOpenChannelRequired": "Открытие канала требуется для этой оплаты",
   "coldcardStep1": "Войти в устройство Coldcard Q",
@@ -1657,14 +1537,6 @@
   "fundExchangeETransferDescription": "Любая сумма, которую вы отправляете из своего банка через Email E-Transfer, используя нижеприведенную информацию, будет зачислена на баланс вашего счета Bull Bitcoin в течение нескольких минут.",
   "sendClearSelection": "Чистый выбор",
   "fundExchangeLabelClabe": "CLABE",
-  "statusCheckLastChecked": "{time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "Quick & easy",
   "sellPayoutAmount": "Сумма выплат",
   "dcaConfirmFrequencyDaily": "Каждый день",
@@ -1707,14 +1579,6 @@
   "appStartupErrorTitle": "Ошибка запуска",
   "sendTitle": "Отправить",
   "importQrDeviceSeedsignerStep4": "Выберите \"Export Xpub\"",
-  "torSettingsPortDisplay": "Порт: {port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Транзитный номер",
   "importQrDeviceSpecterStep5": "Выберите \"Мастерские публичные ключи\"",
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
@@ -1739,7 +1603,6 @@
   "sendSwapCancelled": "Отменено",
   "backupWalletGoogleDrivePrivacyMessage4": "никогда ",
   "swapTransferCompletedTitle": "Своп завершён",
-  "torSettingsStatusDisconnected": "Отключение",
   "exchangeDcaCancelDialogTitle": "Отменить покупку Bitcoin?",
   "sellSendPaymentMxnBalance": "MXN Баланс",
   "fundExchangeSinpeLabelRecipientName": "Имя получателя",
@@ -1749,14 +1612,6 @@
   "importQrDeviceKruxInstructionsTitle": "Инструкции Krux",
   "transactionOrderLabelOriginName": "Название происхождения",
   "importQrDeviceKeystoneInstructionsTitle": "Инструкции по кистоне",
-  "electrumSavePriorityFailedError": "Не удалось сохранить приоритет сервера ",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "globalDefaultLiquidWalletLabel": "Мгновенные платежи",
   "sendTypeSwap": "Купить",
   "sendErrorAmountExceedsMaximum": "Сумма превышает максимальную сумму свопа",
@@ -1802,7 +1657,6 @@
   "exchangeFeatureSellBitcoin": "• Продавайте биткойн, получите оплату с Bitcoin",
   "hwSeedSigner": "SeedSigner",
   "payNetworkError": "Сетевая ошибка. Пожалуйста, попробуйте еще раз",
-  "electrumUnknownError": "Произошла ошибка",
   "payWhichWallet": "От какого кошелька вы хотите заплатить?",
   "autoswapBaseBalanceInfoText": "Баланс вашего мгновенного платежного кошелька вернется к этому целевому балансу после автоматического обмена.",
   "buyUpgradeKYC": "Улучшенный KYC Уровень",
@@ -1866,7 +1720,6 @@
   },
   "transactionDetailLabelAddressNotes": "Адресные записки",
   "coldcardInstructionsTitle": "Инструкции Coldcard Q",
-  "electrumDefaultServers": "По умолчанию",
   "onboardingRecoverWallet": "Recover Wallet",
   "scanningProgressLabel": "Сканирование: {percent}%",
   "@scanningProgressLabel": {
@@ -1882,7 +1735,6 @@
   "screenshotLabel": "Скриншот",
   "receiveLightning": "Освещение",
   "sendRecipientAddressOrInvoice": "Адрес или счет-фактура получателя",
-  "mempoolCustomServerUrlEmpty": "Введите URL-адрес сервера",
   "importQrDeviceKeystoneName": "Keystone",
   "payBitcoinAddress": "Bitcoin Адрес",
   "buyInsufficientBalanceTitle": "Недостаточный баланс",
@@ -1896,7 +1748,6 @@
   "connectHardwareWalletColdcardQ": "Coldcard Q",
   "addressCardIndexLabel": "Индекс: ",
   "dcaSetupContinue": "Продолжить",
-  "electrumFormatError": "Использовать хост:порт формат (например, example.com:50001)",
   "transactionFeesDeductedFrom": "Эти сборы будут вычтены из суммы, отправленной",
   "buyConfirmYouPay": "Ты платишь",
   "importWatchOnlyTitle": "Импорт только часов",
@@ -1945,10 +1796,8 @@
   "paySelectCoinsManually": "Выбрать монеты вручную",
   "replaceByFeeActivatedLabel": "Замена по фе активирована",
   "sendPaymentProcessing": "Платежи обрабатываются. Это может занять до минуты",
-  "electrumDefaultServersInfo": "Для защиты вашей конфиденциальности серверы по умолчанию не используются, когда настроены пользовательские серверы.",
   "transactionDetailLabelPayoutMethod": "Метод выплаты",
   "payPriceRefreshIn": "Цена освежится ",
-  "electrumProtocolError": "Не включайте протокол (ssl: или tcp://).",
   "receivePayjoinFailQuestion": "Нет времени ждать, или джоин провалился на стороне отправителя?",
   "importQrDeviceSeedsignerStep1": "Мощность на устройстве SeedSigner",
   "exchangeRecipientsTitle": "Получатели",
@@ -1960,7 +1809,6 @@
   "importQrDeviceJadeStep1": "Включите устройство Jade",
   "payNotLoggedInDescription": "Вы не вошли. Пожалуйста, зайдите, чтобы продолжить использование функции оплаты.",
   "testBackupEncryptedVaultTag": "Легко и просто (1 минута)",
-  "torSettingsProxyPort": "Tor Proxy Port",
   "fundExchangeErrorLoadingDetails": "Детали оплаты не могут быть загружены в данный момент. Пожалуйста, возвращайтесь и попробуйте снова, выберите другой способ оплаты или вернемся позже.",
   "fundExchangeErrorTitleOrdPo404": "Способ оплаты недоступен",
   "fundExchangeErrorTitleRcpPo404": "Способ оплаты недоступен",
@@ -1984,7 +1832,6 @@
   "coreSwapsStatusFailed": "Не удалось",
   "transactionFilterSell": "Печать",
   "fundExchangeSinpeWarningNoBitcoinDescription": " слово «Bitcoin» или «Crypto» в описании оплаты. Это блокирует вашу оплату.",
-  "electrumAddServer": "Добавить сервер",
   "addressViewCopyAddress": "Копировать адрес",
   "receiveBitcoin": "Bitcoin",
   "pinAuthenticationTitle": "Аутентификация",
@@ -2016,7 +1863,6 @@
   "coreScreensConfirmSend": "Добавить",
   "transactionDetailLabelSwapStatus": "Статус шва",
   "transactionDetailLabelAmountSent": "Высланная сумма",
-  "electrumStopGapEmptyError": "Стоп Гэп не может быть пустым",
   "typeLabel": "Тип: ",
   "buyInputInsufficientBalance": "Недостаточный баланс",
   "withdrawConfirmClabe": "CLABE",
@@ -2096,7 +1942,6 @@
     }
   },
   "sendSwapRefundCompleted": "Завершение возврата",
-  "torSettingsStatusUnknown": "Статус Неизвестный",
   "sendConfirmSwap": "Подтвердить",
   "sendSending": "Отправка",
   "withdrawConfirmAccount": "Счет",
@@ -2111,20 +1956,11 @@
   "bitboxCubitDeviceNotFound": "Устройство BitBox не найдено. Пожалуйста, подключите ваше устройство и попробуйте снова.",
   "buyStandardWithdrawal": "Стандартный вывод",
   "swapContinue": "Продолжить",
-  "electrumAddFailedError": "Не удалось добавить пользовательский сервер ",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelTransferFees": "Комиссии за своп",
   "importWalletSectionGeneric": "Генерические кошельки",
   "backupSettingsNotTested": "Not Tested",
   "googleDrivePrivacyMessage": "Google попросит вас поделиться личной информацией с этим приложением.",
   "errorGenericTitle": "Упс! Что-то не так",
-  "torSettingsStatusConnecting": "Подключение...",
   "receiveSwapID": "Идентификатор швапа",
   "backupWalletHowToDecideBackupModalTitle": "Как решить",
   "backupSettingsLabel": "Резервная копия",
@@ -2202,7 +2038,6 @@
   "transactionSwapStatusTransferStatus": "Статус свопа",
   "importQrDeviceSeedsignerStep8": "Сканировать QR-код, отображаемый на вашем SeedSigner",
   "backupKeyTitle": "Ключ резервного копирования",
-  "electrumDeletePrivacyNotice": "Уведомление о конфиденциальности:\n\nИспользование собственного узла гарантирует, что ни одна третья сторона не может связать ваш IP-адрес с вашими транзакциями. Удаляя свой последний пользовательский сервер, вы будете подключаться к серверу BullBitcoin.\n.\n",
   "dcaConfirmFrequencyWeekly": "Каждую неделю",
   "payInstitutionNumberHint": "Число учреждений",
   "sendSlowPaymentWarning": "Предупреждение о медленном платеже",
@@ -2238,7 +2073,6 @@
   "confirmLogoutTitle": "Подтверждение",
   "swapTransferCompletedMessage": "Ого, вы дождались! Своп успешно завершён.",
   "encryptedVaultTag": "Легко и просто (1 минута)",
-  "electrumDelete": "Удалить",
   "testBackupGoogleDrivePrivacyPart4": "никогда ",
   "sendCoinControl": "Контроль",
   "withdrawSuccessOrderDetails": "Детали заказа",
@@ -2248,7 +2082,6 @@
   "paySuccessfulPayments": "Успех",
   "navigationTabWallet": "Wallet",
   "howToDecideBackupTitle": "Как решить",
-  "statusCheckTitle": "Статус службы",
   "savingToDevice": "Сбережение к вашему устройству.",
   "fundExchangeLabelSwiftCode": "Код SWIFT",
   "buyEnterBitcoinAddress": "Введите адрес биткойна",
@@ -2388,7 +2221,6 @@
   "swapProgressRefundMessage": "При выполнении свопа произошла ошибка. Ваш возврат выполняется.",
   "dcaConfirmContinue": "Продолжить",
   "decryptVaultButton": "Зашифрованное хранилище",
-  "electrumNetworkBitcoin": "Bitcoin",
   "paySecureBitcoinWallet": "Безопасный биткойн-кошелек",
   "exchangeAppSettingsDefaultCurrencyLabel": "По умолчанию",
   "payRecipientName": "Имя получателя",
@@ -2438,7 +2270,6 @@
   "exchangeAccountInfoVerificationLimitedVerification": "Ограниченная проверка",
   "sendBuildingTransaction": "Строительная сделка...",
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
-  "electrumConfirm": "Подтверждение",
   "transactionDetailLabelOrderNumber": "Номер заказа",
   "transactionDetailLabelPaymentDescription": "Описание платежа",
   "pickPasswordInsteadButton": "Выберите пароль вместо >>",
@@ -2552,14 +2383,12 @@
   "swapProgressTitle": "Внутренний своп",
   "pinButtonConfirm": "Подтверждение",
   "coldcardStep2": "Добавить пароль, если у вас есть один (факультативно)",
-  "electrumInvalidNumberError": "Введите действительный номер",
   "coreWalletTransactionStatusConfirmed": "Подтверждено",
   "importQrDevicePassportStep12": "Настройка завершена.",
   "payRecipientDetails": "Реквизиты",
   "fundExchangeRestrictedTitle": "Пополнение недоступно",
   "fundExchangeRestrictedMessage": "Пополнение недоступно для вашего аккаунта. Пожалуйста, свяжитесь со службой поддержки для получения дополнительной информации.",
   "fundExchangeWarningTitle": "Следите за мошенниками",
-  "electrumRetryCount": "Retry Count",
   "walletDetailsDescriptorLabel": "Дескриптор",
   "importQrDeviceSeedsignerInstructionsTitle": "Инструкции для SeedSigner",
   "payFilterByType": "Фильтр по типу",
@@ -2572,7 +2401,6 @@
   "sendEstimatedDeliveryFewHours": "несколько часов",
   "dcaConfirmFrequencyMonthly": "Каждый месяц",
   "importWatchOnlyScriptType": "Тип сценария",
-  "electrumCustomServers": "Пользовательские серверы",
   "transactionStatusSwapFailed": "Плавка",
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "continueButton": "Продолжить",
@@ -2597,9 +2425,7 @@
   "mempoolCustomServerSaveSuccess": "Пользовательский сервер успешно сохранен",
   "sendErrorBalanceTooLowForMinimum": "Слишком низкий баланс для минимальной суммы свопов",
   "testBackupSuccessMessage": "Вы можете восстановить доступ к потерянному кошельку Bitcoin",
-  "electrumTimeout": "(вторые)",
   "transactionDetailLabelOrderStatus": "Статус заказа",
-  "electrumSaveFailedError": "Не удалось сохранить расширенные варианты",
   "importQrDeviceKruxStep6": "Вот так!",
   "payUnauthenticatedError": "Вы не проверены. Пожалуйста, зайдите, чтобы продолжить.",
   "payClabe": "CLABE",
@@ -2648,7 +2474,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "Ни один протокол не должен быть указан, SSL будет использоваться автоматически.",
   "sendDeviceConnected": "Устройство подключено",
   "swapErrorAmountAboveMaximum": "Сумма превышает максимальную сумму свопа: {max}",
   "@swapErrorAmountAboveMaximum": {
@@ -2679,7 +2504,6 @@
     }
   },
   "sendSwapInProgressInvoice": "Свопа продолжается. Счет будет оплачен через несколько секунд.",
-  "electrumRetryCountNegativeError": "Retry Count не может быть отрицательным",
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Добавить это как номер счета",
   "importQrDeviceJadeStep4": "Выберите \"Вариации\" из основного меню",
   "backupWalletSavingToDeviceTitle": "Сбережение к вашему устройству.",
@@ -2697,14 +2521,6 @@
   "paySendMax": "Макс",
   "googleDriveSignInMessage": "Вам нужно будет войти в Google Drive",
   "transactionDetailLabelCompletedAt": "Завершено",
-  "electrumDeleteConfirmation": "Вы уверены, что хотите удалить этот сервер?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Выберите тип кошелька для импорта",
   "importQrDeviceKeystoneStep1": "Включите ваш Keystone",
   "bitcoinSettingsBip85EntropiesTitle": "Детерминированные энтропии BIP85",
@@ -2728,7 +2544,6 @@
   "coreSwapsActionClaim": "Claim",
   "payShareInvoice": "Счет-фактура",
   "walletDetailsSignerDeviceLabel": "Устройство",
-  "electrumPrivacyNoticeContent1": "Уведомление о конфиденциальности: использование собственного узла гарантирует, что ни одна третья сторона не может связать ваш IP-адрес с вашими транзакциями.",
   "testBackupEnterKeyManually": "Введите ключ резервного копирования вручную >>",
   "fundExchangeWarningTactic3": "Они говорят, что работают на сбор долгов или налогов",
   "payCoinjoinFailed": "CoinJoin провалился",
@@ -2819,7 +2634,6 @@
   "payCompleted": "Выплата завершена!",
   "sellKYCPending": "Проверка КИК еще не завершена",
   "buyGetConfirmedFaster": "Получить подтверждение быстрее",
-  "electrumEnableSsl": "Включить SSL",
   "payCustomFee": "Пользовательские феи",
   "buyConfirmExpress": "Подтверждение",
   "fundExchangeBankTransferWireTimeframe": "Любые средства, которые вы отправляете, будут добавлены в ваш Bull Bitcoin в течение 1-2 рабочих дней.",
@@ -2859,12 +2673,8 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Порт должен быть между 1 и 65535",
-  "electrumTimeoutEmptyError": "Время не может быть пустым",
-  "electrumPrivacyNoticeContent2": "Однако, Если вы просматриваете транзакции через mempool, нажав на свою страницу Transaction ID или Recipient details, эта информация будет известна BullBitcoin.",
   "exchangeAccountInfoVerificationIdentityVerified": "Проверка подлинности",
   "importColdcardScanPrompt": "Сканировать QR-код из вашего Coldcard Q",
-  "torSettingsDescConnected": "Тор прокси работает и готов",
   "backupSettingsEncryptedVault": "Зашифрованное хранилище",
   "autoswapAlwaysBlockInfoDisabled": "Если выключено, у вас будет возможность разрешить автосвоп, заблокированный из-за высоких комиссий",
   "dcaSetupTitle": "Купить",
@@ -2887,7 +2697,6 @@
   "pinCodeConfirm": "Подтверждение",
   "mempoolNetworkLiquidTestnet": "Liquid Тестет",
   "payBitcoinOnChain": "Bitcoin на цепочке",
-  "torSettingsDescDisconnected": "Tor proxy не работает",
   "buyInstantPaymentWallet": "Мгновенный платежный кошелек",
   "autoswapMaxBalanceLabel": "Макс Мгновенный баланс",
   "satsBitcoinUnitSettingsLabel": "Отображение в сате",
@@ -3153,27 +2962,7 @@
   "autoswapWarningExplanationBold": "автоматически",
   "sendSelfTransfer": "Перевод себе",
   "autoswapInfoConsentMessage": "Autoswap в настоящее время включен, но не сработает, пока вы не дадите согласие. Хотите оставить его включенным?",
-  "mempoolServerStatusOnline": "В сети",
-  "mempoolServerStatusOffline": "Не в сети",
-  "mempoolServerStatusChecking": "Проверка...",
   "mempoolServerStatusUnknown": "Неизвестно",
-  "mempoolCustomServerSaveFailed": "Не удалось сохранить сервер",
-  "mempoolCustomServerInfoDescription": "Серверы mempool используются для оценки комиссий и открытия обозревателя блоков при просмотре деталей транзакции.",
-  "mempoolCustomServerUseSsl": "Использовать SSL",
-  "mempoolCustomServerSslAutoDetected": "(Определено автоматически)",
-  "mempoolCustomServerSslHelpText": "Для локальных (.local, частные IP) и Tor (.onion) серверов SSL обычно отключен. Публичные IP и домены должны использовать SSL.",
-  "mempoolErrorSameAsDefault": "Этот URL совпадает с сервером по умолчанию. Пожалуйста, используйте другой URL.",
-  "mempoolErrorConnectionTimeout": "Время соединения истекло. Сервер может быть медленным или недоступным.",
-  "mempoolErrorHostNotFound": "Сервер не найден. Проверьте URL и попробуйте снова.",
-  "mempoolErrorConnectionFailed": "Не удалось подключиться к серверу. Проверьте сетевое соединение и попробуйте снова.",
-  "mempoolErrorNotMempoolServer": "Этот URL не является сервером mempool. Проверьте адрес.",
-  "mempoolErrorServerUnavailable": "Сервер недоступен. Попробуйте позже.",
-  "mempoolErrorServerError": "На сервере произошла ошибка. Попробуйте позже.",
-  "mempoolErrorInvalidResponse": "Сервер вернул неверный ответ.",
-  "mempoolErrorInvalidUrl": "Недействительный URL-адрес сервера. Введите действительный домен или IP-адрес.",
-  "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер",
-  "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool",
-  "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер",
   "settingsErrorReportingTitle": "Отчет об ошибках",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -3330,7 +3119,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Высокие значения stop gap значительно увеличивают время синхронизации. Держите приложение открытым на переднем плане до завершения синхронизации — перевод в фоновый режим может прервать её.",
   "wizardSkipButton": "Пропустить",
   "wizardPageIndicator": "СТРАНИЦА {current} / {total}",
   "wizardNextButton": "Далее",
@@ -3943,19 +3731,6 @@
   "coreSwapsStatusUnknown": "Неизвестно",
   "sendSwapExpiredTitle": "Заявка истекла",
   "sendSwapExpiredMessage": "Срок этой заявки истёк до отправки средств. Из вашего кошелька ничего не отправлено.",
-  "torSettingsStatusCensored": "Похоже, соединение фильтруется",
-  "torSettingsDescCensored": "Tor не смог подключиться к сети. Обычно это означает, что соединение фильтруется.",
-  "torSettingsBootstrapProgress": "Подключение… {percent}%",
-  "torSettingsEmbeddedTitle": "Встроенный Tor",
-  "torSettingsEmbeddedDescription": "Встроенный Tor используется RecoverBull и серверами Bitcoin Electrum с адресом .onion. Остальной трафик приложения остаётся прямым.",
-  "torSettingsTransportMode": "Способ подключения",
-  "torSettingsModeAutomatic": "Автоматически",
-  "torSettingsModeDirect": "Прямое",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Сначала пробует прямое подключение к Tor, а если сеть, похоже, блокирует Tor, использует Snowflake.",
-  "torSettingsModeDirectDescription": "Подключается к сети Tor напрямую, без подключаемого транспорта.",
-  "torSettingsModeSnowflakeDescription": "Использует добровольные прокси Snowflake, чтобы достичь Tor из фильтруемой сети.",
-  "torSettingsActiveTransport": "Активный транспорт: {transport}",
   "settingsScreenPrivacyTitle": "Конфиденциальность экрана",
   "settingsScreenPrivacyDisabledMessage": "Теперь снимки экрана разрешены на конфиденциальных экранах",
   "settingsSearchHint": "Поиск по настройкам",
@@ -3990,8 +3765,6 @@
   "exchangeSupportChatLoadMessagesError": "Не удалось загрузить сообщения. Попробуйте ещё раз.",
   "exchangeSupportChatSendMessageError": "Не удалось отправить сообщение. Попробуйте ещё раз.",
   "exchangeSupportChatLoadAttachmentError": "Не удалось открыть вложение. Попробуйте ещё раз.",
-  "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
-  "statusCheckResultsMayBeOutdated": "Результаты могут быть устаревшими",
   "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова.",
   "sendErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
   "sendErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
@@ -4201,11 +3974,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках.",
   "settingsDarkModeTitle": "Тёмная тема",
   "settingsSourceCodeTitle": "Исходный код",
-  "torSettingsStatusNoInternetOrBlocked": "Нет интернета или сеть под цензурой",
-  "torSettingsDescNoInternetOrBlocked": "У этой сети нет доступа к интернету, или она блокирует Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не удалось подключиться к настроенному прокси SOCKS5.",
-  "serverEncrypted": "Зашифровано",
-  "serverUnencrypted": "Не зашифровано",
   "backgroundTasksTitle": "Фоновые задачи",
   "blockedInSystemSettings": "Заблокировано в настройках системы",
   "notificationsBlockedMessage": "Уведомления заблокированы в настройках системы.",

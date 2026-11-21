@@ -1,0 +1,49 @@
+import '../../../network_l10n.dart';
+import '../../presentation/electrum_settings_bloc.dart';
+import '../../../tor_settings/presentation/tor_settings_cubit.dart';
+
+import 'package:bull_tor/tor.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullThemeX, BullInfoCard;
+
+class TorProxyErrorBanner extends StatelessWidget {
+  const TorProxyErrorBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final useTorProxy = context.select(
+      (TorSettingsCubit cubit) => cubit.state.useTorProxy,
+    );
+    final torIsReady = context.select(
+      (TorSettingsCubit cubit) => cubit.state.connection is TorReady,
+    );
+    final activeOnionServersAreOffline = context.select(
+      (ElectrumSettingsBloc bloc) => bloc.state.activeOnionServersAreOffline,
+    );
+    final isLiquid = context.select(
+      (ElectrumSettingsBloc bloc) => bloc.state.isLiquid,
+    );
+
+    // Don't show banner if:
+    // - Tor is not enabled
+    // - Tor proxy is online
+    // - The active server set has no onion server or is not fully offline
+    // - Only show for Bitcoin (not Liquid)
+    if (!useTorProxy ||
+        torIsReady ||
+        !activeOnionServersAreOffline ||
+        isLiquid) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: BullInfoCard(
+        description: context.loc.torSettingsDescDisconnected,
+        tagColor: context.bull.error,
+        bgColor: context.bull.errorContainer,
+      ),
+    );
+  }
+}

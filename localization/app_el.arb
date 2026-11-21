@@ -42,14 +42,6 @@
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
   },
-  "torSettingsPortHint": "905050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "Ο χρόνος πρέπει να είναι θετικός",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "Προσπαθείτε να πουλήσετε πάνω από το μέγιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -82,10 +74,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Προσαρμοσμένος διακομιστής",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "Τακτικό SEPA",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -109,10 +97,6 @@
   "exchangeFileUploadSuccess": "File που αναρτήθηκε με επιτυχία",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "Εξοικονομήστε",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "Αυτός είναι ο λογαριασμός κάποιου άλλου",
   "@withdrawOwnershipOtherAccount": {
@@ -155,11 +139,6 @@
   "autoswapAlwaysBlockEnabledInfo": "Όταν είναι ενεργοποιημένο, οι αυτόματες ανταλλαγές με τέλη πάνω από το καθορισμένο όριο θα αποκλείονται πάντα",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "Αυτός ο server υπάρχει ήδη",
-  "electrumServerUnreachable": "Ο διακομιστής δεν είναι προσβάσιμος. Ελέγξτε τη διεύθυνση και δοκιμάστε ξανά.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "Μέθοδος πληρωμής",
   "@sellPaymentMethod": {
@@ -329,10 +308,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "ακριβώς",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "Electrum Server Guidelines",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "Εάν χρειαστεί, επιλέξτε \"Επιλογές\" για να αλλάξετε τον τύπο διευθύνσεων",
   "@importQrDeviceJadeStep7": {
@@ -560,18 +535,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "Τα χρονικά σας ({timeoutValue} δευτερόλεπτα) είναι χαμηλότερα από τη συνιστώμενη αξία ({recommended} δευτερόλεπτα) για αυτό το Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "Show PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -677,10 +640,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "Υγρό",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "Προσπαθείτε να αγοράσετε κάτω από το ελάχιστο ποσό.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -696,10 +655,6 @@
   "pinCodeSecurityPinTitle": "Ασφάλεια PIN",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "electrumEmptyFieldError": "Αυτό το πεδίο δεν μπορεί να είναι άδειο",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "Πληρωμή σε εξέλιξη",
   "@transactionStatusPaymentInProgress": {
@@ -982,10 +937,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "Χρηματοδότηση του λογαριασμού σας",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1046,10 +997,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Έτοιμο",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "Σημείωση",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1073,10 +1020,6 @@
   "sellAccountName": "Το όνομα λογαριασμού",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "Άγνωστο",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "logSettingsLogsTitle": "Logs",
   "@logSettingsLogsTitle": {
@@ -1133,10 +1076,6 @@
   "totalFeeLabel": "Total Fee",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Εισάγετε το URL του προσαρμοσμένου διακομιστή mempool σας. Ο διακομιστής θα επικυρωθεί πριν από την αποταμίευση.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "Προσπαθείτε να πουλήσετε κάτω από το ελάχιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
   "@sellBelowMinAmountError": {
@@ -1315,10 +1254,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "Προσθήκη Custom Server",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1352,10 +1287,6 @@
   "importWatchOnlyImport": "Εισαγόμενη εισαγωγή",
   "@importWatchOnlyImport": {
     "description": "Button label to import watch-only wallet"
-  },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "Προτεραιότητα",
   "@sellSendPaymentFeePriority": {
@@ -1544,10 +1475,6 @@
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
   },
-  "torSettingsConnectionStatus": "Κατάσταση σύνδεσης",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "Αν χάσετε 12 λέξεις αντίγραφα ασφαλείας, δεν θα είστε σε θέση να ανακτήσετε την πρόσβαση στο Bitcoin Wallet.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1691,10 +1618,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "Παρακαλώ εισάγετε έναν αριθμό λιμένα",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "Διαθέσιμο ισοζύγιο",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1702,10 +1625,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "Ακύρωση",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "Το Swap δεν έχει ακόμη οριστικοποιηθεί.",
   "@coreSwapsLnSendPending": {
@@ -1785,10 +1704,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -1820,10 +1735,6 @@
   "sellInsufficientBalance": "Ανεπαρκή ισορροπία πορτοφολιού",
   "@sellInsufficientBalance": {
     "description": "Error when wallet lacks funds"
-  },
-  "mempoolCustomServerDeleteMessage": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτόν τον προσαρμοσμένο διακομιστή mempool; Ο προεπιλεγμένος server θα χρησιμοποιηθεί αντ 'αυτού.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
   "@coldcardStep6": {
@@ -1892,10 +1803,6 @@
   "payActualFee": "Πραγματική Fee",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate Domain",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "Βεβαιωθείτε ότι η συσκευή σας ενημερώνεται στο τελευταίο firmware",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2069,15 +1976,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Invalid Retry Κόμη αξία: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Επιλέξτε Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2090,10 +1988,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "Αριθμός λιμένων",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "Εισάγετε όνομα παραλήπτη",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2101,10 +1995,6 @@
   "backupWalletPhysicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },
-  "electrumReset": "Επαναφορά",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
   },
   "payInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
   "@payInsufficientBalanceError": {
@@ -2117,10 +2007,6 @@
   "sendHighFeeWarning": "Υψηλή προειδοποίηση",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "Το Stop Gap δεν μπορεί να είναι αρνητικό",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "Αποστολή αποστολής",
   "@walletButtonSend": {
@@ -2169,18 +2055,6 @@
   "exchangeDcaCancelDialogConfirmButton": "Ναι, απενεργοποιημένη",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "Διεύθυνση URL διακομιστή {network} {environment}",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "Εισάγετε διεύθυνση ηλεκτρονικού ταχυδρομείου",
   "@payEmailHint": {
@@ -2268,10 +2142,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές ",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Εφαρμογή ηλεκτρονικού ταχυδρομείου",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2332,10 +2202,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "Προχωρημένες επιλογές",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "testedStatus": "Tested",
   "@testedStatus": {
     "description": "Status text indicating backup has been tested"
@@ -2351,10 +2217,6 @@
   "payFilterPayments": "Πληρωμές φίλτρου",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "Ακύρωση",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "Ανυψώστε την αναβάθμιση",
   "@exchangeFileUploadButton": {
@@ -2637,10 +2499,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "Διαγράψτε Custom Server?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "Επιβεβαίωση αποστολής",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -2787,10 +2645,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "Σταματήστε το χάσμα",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "Ραδιοτηλεόραση συναλλαγή...",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -2839,10 +2693,6 @@
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
   },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "sendTransferFee": "Τέλος ανταλλαγής",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
@@ -2889,24 +2739,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "Το Stop Gap φαίνεται πολύ υψηλό. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Το Timeout φαίνεται πολύ υψηλό. (Max. {maxTimeout} δευτερόλεπτα)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "Instant πληρωμές",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -2946,10 +2778,6 @@
   "coreSwapsStatusPending": "Pending",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(Long Press to drag and Change Prior)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "sendCustomFeeRate": "Custom Fee rate",
   "@sendCustomFeeRate": {
@@ -3097,15 +2925,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "Invalid Stop Τιμή του χάσματος: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Μόνο χρήση για μεγαλύτερες συναλλαγές άνω των €30.000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3236,15 +3055,6 @@
   "sendSats": "καθόταν",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "Ακυρωμένη αξία Timeout: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Limited",
   "@exchangeKycLevelLimited": {
@@ -3450,10 +3260,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Default Server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Παρακολουθήστε μια διεύθυνση πληρωμής ή τιμολόγιο",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3513,10 +3319,6 @@
   "sellSelectWallet": "Επιλέξτε Wallet",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "Προσθήκη Custom Server",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "Η συνολική αμοιβή είναι {feePercent}% του ποσού που στέλνετε",
   "@sendHighFeeWarningDescription": {
@@ -3625,10 +3427,6 @@
   "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
     "description": "Help text explaining payment description is the transfer code"
   },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "Μέθοδος πληρωμής",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -3636,10 +3434,6 @@
   "exchangeAmountInputTitle": "Εισάγετε το ποσό",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "Κλείστε κοντά",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "Εισάγετε IBAN",
   "@payIbanHint": {
@@ -3706,10 +3500,6 @@
   "importMnemonicEmpty": "Έμφαση",
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
-  },
-  "electrumBitcoinServerInfo": "Διεύθυνση διακομιστή σε μορφή: host:port (π.χ., παράδειγμα.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
   },
   "sendErrorInsufficientBalanceForSwap": "Όχι αρκετή ισορροπία για να πληρώσει αυτή την ανταλλαγή μέσω της Liquid και όχι εντός ορίων ανταλλαγής για να πληρώσει μέσω Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -3779,10 +3569,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "Δεν χρησιμοποιείται",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "payDebitCardNumber": "Debit Card Number",
   "@payDebitCardNumber": {
     "description": "Label for debit card number field"
@@ -3794,10 +3580,6 @@
   "payExternalWalletDescription": "Πληρώστε από ένα άλλο πορτοφόλι Bitcoin",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
-  },
-  "electrumRetryCountEmptyError": "Το Retry Count δεν μπορεί να είναι άδειο",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
   },
   "physicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@physicalBackupTag": {
@@ -3814,10 +3596,6 @@
   "swapExternalAddressHint": "Εισάγετε εξωτερική διεύθυνση πορτοφόλι",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "Δημιουργία σύνδεση Tor",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "exchangeAccountInfoVerificationNotVerified": "Δεν επαληθεύεται",
   "@exchangeAccountInfoVerificationNotVerified": {
@@ -3875,10 +3653,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "Παρακαλώ εισάγετε έναν έγκυρο αριθμό",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "Τράπεζα Μεταφοράς",
   "@sellBankTransfer": {
@@ -4221,10 +3995,6 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "electrumDeleteFailedError": "Επιθυμήθηκε να διαγράψει το προσαρμοσμένο διακομιστή[X30XX]",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4256,10 +4026,6 @@
   "sendSwapInProgressBitcoin": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "Διαγράψτε Custom Server",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "Selfie με ID",
   "@buySelfie": {
@@ -4382,10 +4148,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "Εξοικονομήστε",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "Show Seeds",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -4439,10 +4201,6 @@
   "backupWalletTitle": "Ανοίξτε το πορτοφόλι σας",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "Δήλωση απορρήτου",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "Υγρό",
   "@receiveLiquid": {
@@ -4681,15 +4439,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "Τελευταία έλεγχος: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "sellPayoutAmount": "Ποσό πληρωμής",
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
@@ -4806,15 +4555,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "Λιμάνι: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Αριθμός διαμετακόμισης",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -4899,10 +4639,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "Αποσυνδεδεδεμένοι",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "Ακυρώστε Bitcoin Recurring Buy?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -4930,10 +4666,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "Keystone Οδηγίες",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή ",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
   "@globalDefaultLiquidWalletLabel": {
@@ -5024,10 +4756,6 @@
   "payNetworkError": "Σφάλμα δικτύου. Παρακαλώ δοκιμάστε ξανά",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "Ένα λάθος συνέβη",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "Ποιο πορτοφόλι θέλετε να πληρώσετε από?",
   "@payWhichWallet": {
@@ -5178,10 +4906,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "Default Servers",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Ανακαλύψτε το Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5210,10 +4934,6 @@
   "sendRecipientAddressOrInvoice": "Η διεύθυνση ή το τιμολόγιο",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Παρακαλώ εισάγετε ένα URL server",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Keystone",
   "@importQrDeviceKeystoneName": {
@@ -5258,10 +4978,6 @@
   "dcaSetupContinue": "Συνεχίστε να συνεχίζετε",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "Χρησιμοποιήστε το host: τη μορφή τουport (π.χ., παράδειγμα.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "buyConfirmYouPay": "Πληρώνετε",
   "@buyConfirmYouPay": {
@@ -5376,10 +5092,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "Για την προστασία της ιδιωτικής ζωής σας, οι προεπιλεγμένοι διακομιστές δεν χρησιμοποιούνται όταν διαμορφώνονται προσαρμοσμένες διακομιστές.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Μέθοδος πληρωμής",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -5387,10 +5099,6 @@
   "payPriceRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "Μην συμπεριλάβετε πρωτόκολλο (ssl Reef ή tcIU).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "Δεν υπάρχει χρόνος να περιμένουμε ή να αποτύχει το payjoin στο πλευρό του αποστολέα?",
   "@receivePayjoinFailQuestion": {
@@ -5427,10 +5135,6 @@
   "payNotLoggedInDescription": "Δεν είστε συνδεδεμένοι. Παρακαλούμε συνδεθείτε για να συνεχίσετε να χρησιμοποιείτε το χαρακτηριστικό πληρωμής.",
   "@payNotLoggedInDescription": {
     "description": "Description for not logged in state"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
   "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
@@ -5471,10 +5175,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " τη λέξη \"Bitcoin\" ή \"Crypto\" στην περιγραφή πληρωμής. Αυτό θα εμποδίσει την πληρωμή σας.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "Add Server",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "Αντίγραφο διεύθυνση αντιγραφής",
   "@addressViewCopyAddress": {
@@ -5579,10 +5279,6 @@
   "transactionDetailLabelSwapStatus": "Καθεστώς Swap",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
-  },
-  "electrumStopGapEmptyError": "Το Stop Gap δεν μπορεί να είναι άδειο",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "Τύπος: ",
   "@typeLabel": {
@@ -5774,10 +5470,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "Άγνωστη κατάσταση",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Επιβεβαίωση Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -5834,10 +5526,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή ",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "Τέλη ανταλλαγής",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -5853,10 +5541,6 @@
   "errorGenericTitle": "Oops! Κάτι πήγε στραβά",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "Συνδέοντας...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
@@ -6007,10 +5691,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "Δήλωση απορρήτου:\n\nΧρησιμοποιώντας το δικό σας κόμβο διασφαλίζει ότι κανένα τρίτο μέρος δεν μπορεί να συνδέσει τη διεύθυνση IP σας με τις συναλλαγές σας. Με την διαγραφή του τελευταίου προσαρμοσμένου server σας, θα συνδεθείτε με έναν server BullBitcoin.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "Κάθε εβδομάδα",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -6095,10 +5775,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "Διαγράψτε",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "sendCoinControl": "Έλεγχος νομισμάτων",
   "@sendCoinControl": {
     "description": "Feature to manually select UTXOs"
@@ -6126,10 +5802,6 @@
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
-  },
-  "statusCheckTitle": "Service status",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "fundExchangeLabelSwiftCode": "Κωδικός SWIFT",
   "@fundExchangeLabelSwiftCode": {
@@ -6434,10 +6106,6 @@
   "@dcaConfirmContinue": {
     "description": "Continue button on DCA confirmation"
   },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "paySecureBitcoinWallet": "Secure Bitcoin πορτοφόλι",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -6554,10 +6222,6 @@
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
-  },
-  "electrumConfirm": "Επιβεβαίωση",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "coreScreensSendNetworkFeeLabel": "Στείλε δίκτυο Fee",
   "@coreScreensSendNetworkFeeLabel": {
@@ -6833,10 +6497,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "Εισάγετε έναν έγκυρο αριθμό",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "Επιβεβαιώθηκε",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -6854,10 +6514,6 @@
   "fundExchangeWarningTitle": "Παρακολουθήστε τους απατεώνες",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "Retry Count",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
@@ -6894,10 +6550,6 @@
   "importWatchOnlyScriptType": "Script Type",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "Custom Servers",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Σουβάλι",
   "@transactionStatusSwapFailed": {
@@ -6964,17 +6616,9 @@
   "@sendErrorBalanceTooLowForMinimum": {
     "description": "Error when balance is below minimum required for swap"
   },
-  "electrumTimeout": "Timeout (δεύτεροι)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "Θέση",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "Απέτυχε να σώσει προηγμένες επιλογές",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "Αυτό είναι!",
   "@importQrDeviceKruxStep6": {
@@ -7090,10 +6734,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "Κανένα πρωτόκολλο δεν πρέπει να καθορίζεται, το SSL θα χρησιμοποιείται αυτόματα.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "Συσκευή συνδεδεμένες",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -7159,10 +6799,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "Το Retry Count δεν μπορεί να είναι αρνητικό",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "importQrDeviceJadeStep4": "Επιλέξτε \"Επιλογές\" από το κύριο μενού",
   "@importQrDeviceJadeStep4": {
     "description": "Jade instruction step 4"
@@ -7218,15 +6854,6 @@
   "transactionDetailLabelCompletedAt": "Πλήρης",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
-  },
-  "electrumDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον server;\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
   },
   "importMnemonicSelectType": "Επιλέξτε έναν τύπο πορτοφολιού για εισαγωγή",
   "@importMnemonicSelectType": {
@@ -7296,10 +6923,6 @@
   "walletDetailsSignerDeviceLabel": "Signer Deviceer",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "Δήλωση απορρήτου: Χρησιμοποιώντας το δικό σας κόμβο διασφαλίζει ότι κανένα τρίτο μέρος δεν μπορεί να συνδέσει τη διεύθυνση IP σας, με τις συναλλαγές σας.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "fundExchangeWarningTactic3": "Λένε ότι εργάζονται για το χρέος ή τη συλλογή φόρων",
   "@fundExchangeWarningTactic3": {
@@ -7534,10 +7157,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "Enable SSL SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "Custom Fee",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -7634,18 +7253,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Το λιμάνι πρέπει να είναι μεταξύ 1 και 65535",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "Το Timeout δεν μπορεί να είναι άδειο",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "Ωστόσο, Εάν βλέπετε συναλλαγές μέσω mempool κάνοντας κλικ στην σελίδα ID ή αναληπτικών λεπτομερειών, αυτές οι πληροφορίες θα είναι γνωστές στο BullBitcoin.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "Ταυτότητα επαληθευμένη",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -7653,10 +7260,6 @@
   "importColdcardScanPrompt": "Βάλτε τον κωδικό QR από το Coldcard Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor proxy τρέχει και είναι έτοιμο",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "Κατακρυπτόμενος Vault",
   "@backupSettingsEncryptedVault": {
@@ -7725,10 +7328,6 @@
   "payBitcoinOnChain": "Bitcoin on-chain",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor proxy δεν τρέχει",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "Instant Payment πορτοφόλι",
   "@buyInstantPaymentWallet": {
@@ -9197,7 +8796,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Οι υψηλές τιμές stop gap αυξάνουν σημαντικά τον χρόνο συγχρονισμού. Διατηρήστε την εφαρμογή ανοιχτή στο προσκήνιο μέχρι να ολοκληρωθεί ο συγχρονισμός — η μετακίνηση στο παρασκήνιο μπορεί να τον διακόψει.",
   "wizardSkipButton": "Παράλειψη",
   "wizardPageIndicator": "ΣΕΛΙΔΑ {current} / {total}",
   "wizardNextButton": "Επόμενο",
@@ -9399,7 +8997,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
   "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά.",
-  "mempoolErrorInvalidUrl": "Μη έγκυρη διεύθυνση URL διακομιστή. Εισαγάγετε έγκυρο domain ή διεύθυνση IP.",
   "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9686,26 +9283,7 @@
   "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
   "swapRescueButton": "Επαναφορά",
   "swapRescueSuccess": "Η ανταλλαγή επαναφέρθηκε — θα συνεχιστεί τώρα",
-  "mempoolServerStatusOnline": "Σε λειτουργία",
-  "mempoolServerStatusOffline": "Εκτός λειτουργίας",
-  "mempoolServerStatusChecking": "Έλεγχος...",
   "mempoolServerStatusUnknown": "Άγνωστο",
-  "mempoolCustomServerSaveFailed": "Αποτυχία αποθήκευσης διακομιστή",
-  "mempoolCustomServerInfoDescription": "Οι διακομιστές mempool χρησιμοποιούνται για την εκτίμηση τελών και το άνοιγμα του block explorer κατά την προβολή λεπτομερειών συναλλαγής.",
-  "mempoolCustomServerUseSsl": "Χρήση SSL",
-  "mempoolCustomServerSslAutoDetected": "(Αυτόματος εντοπισμός)",
-  "mempoolCustomServerSslHelpText": "Για τοπικούς διακομιστές (.local, ιδιωτικές IP) και διακομιστές Tor (.onion), το SSL είναι συνήθως απενεργοποιημένο. Οι δημόσιες IP και τα domains θα πρέπει να χρησιμοποιούν SSL.",
-  "mempoolErrorSameAsDefault": "Αυτό το URL είναι ίδιο με τον προεπιλεγμένο διακομιστή. Χρησιμοποιήστε διαφορετικό URL.",
-  "mempoolErrorConnectionTimeout": "Η σύνδεση έληξε. Ο διακομιστής μπορεί να είναι αργός ή μη προσβάσιμος.",
-  "mempoolErrorHostNotFound": "Δεν είναι δυνατή η εύρεση αυτού του διακομιστή. Ελέγξτε το URL και δοκιμάστε ξανά.",
-  "mempoolErrorConnectionFailed": "Αδυναμία σύνδεσης με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο δίκτυο και δοκιμάστε ξανά.",
-  "mempoolErrorNotMempoolServer": "Αυτό το URL δεν φαίνεται να είναι διακομιστής mempool. Επαληθεύστε τη διεύθυνση.",
-  "mempoolErrorServerUnavailable": "Ο διακομιστής δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
-  "mempoolErrorServerError": "Ο διακομιστής αντιμετώπισε σφάλμα. Δοκιμάστε ξανά αργότερα.",
-  "mempoolErrorInvalidResponse": "Ο διακομιστής επέστρεψε μη έγκυρη απόκριση.",
-  "mempoolErrorSaveServerFailed": "Αποτυχία αποθήκευσης διακομιστή",
-  "mempoolErrorLoadFailed": "Αποτυχία φόρτωσης δεδομένων διακομιστή mempool",
-  "mempoolErrorDeleteFailed": "Αποτυχία διαγραφής προσαρμοσμένου διακομιστή",
   "receivePayjoinNoUtxos": "Λάβετε πρώτα κεφάλαια για να το ενεργοποιήσετε.\nΑπαιτούνται UTXOs για να χρησιμοποιήσετε το payjoin.",
   "payViewReceipt": "Προβολή απόδειξης",
   "paySinpeReceipt": "Απόδειξη SINPE",
@@ -9851,19 +9429,6 @@
   "coreSwapsStatusUnknown": "Άγνωστο",
   "sendSwapExpiredTitle": "Η παραγγελία έληξε",
   "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας.",
-  "torSettingsStatusCensored": "Η σύνδεση φαίνεται φιλτραρισμένη",
-  "torSettingsDescCensored": "Το Tor δεν μπόρεσε να φτάσει στο δίκτυο. Αυτό συνήθως σημαίνει ότι η σύνδεση φιλτράρεται.",
-  "torSettingsBootstrapProgress": "Σύνδεση… {percent}%",
-  "torSettingsEmbeddedTitle": "Ενσωματωμένο Tor",
-  "torSettingsEmbeddedDescription": "Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion. Η υπόλοιπη κίνηση της εφαρμογής παραμένει άμεση.",
-  "torSettingsTransportMode": "Μέθοδος σύνδεσης",
-  "torSettingsModeAutomatic": "Αυτόματα",
-  "torSettingsModeDirect": "Άμεση",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Δοκιμάζει πρώτα άμεση σύνδεση Tor και χρησιμοποιεί το Snowflake αν το δίκτυο φαίνεται να μπλοκάρει το Tor.",
-  "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
-  "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
-  "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
   "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
   "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες",
   "settingsSearchHint": "Αναζήτηση ρυθμίσεων",
@@ -9898,8 +9463,6 @@
   "exchangeSupportChatLoadMessagesError": "Δεν ήταν δυνατή η φόρτωση των μηνυμάτων. Δοκιμάστε ξανά.",
   "exchangeSupportChatSendMessageError": "Δεν ήταν δυνατή η αποστολή του μηνύματός σας. Δοκιμάστε ξανά.",
   "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά.",
-  "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
-  "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα",
   "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
   "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
@@ -10109,11 +9672,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
   "settingsDarkModeTitle": "Σκούρα λειτουργία",
   "settingsSourceCodeTitle": "Πηγαίος κώδικας",
-  "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
-  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
-  "serverEncrypted": "Κρυπτογραφημένο",
-  "serverUnencrypted": "Μη κρυπτογραφημένο",
   "backgroundTasksTitle": "Εργασίες στο παρασκήνιο",
   "blockedInSystemSettings": "Αποκλείστηκε στις ρυθμίσεις συστήματος",
   "notificationsBlockedMessage": "Οι ειδοποιήσεις έχουν αποκλειστεί στις ρυθμίσεις συστήματος.",

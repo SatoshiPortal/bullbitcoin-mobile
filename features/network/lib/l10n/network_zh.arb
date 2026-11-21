@@ -1,0 +1,243 @@
+{
+  "torSettingsPortHint": "9050",
+  "electrumTimeoutPositiveError": "超时时间必须是正值",
+  "mempoolSettingsCustomServer": "自定义服务器",
+  "electrumPrivacyNoticeSave": "Save",
+  "electrumServerAlreadyExists": "这个服务器已经存在",
+  "electrumServerUnreachable": "无法连接服务器。请检查地址后重试。",
+  "electrumTitle": "Electrum服务器设置",
+  "save": "Save",
+  "electrumTimeoutWarning": "你的排位({timeoutValue}秒)低于建议值({recommended}秒).",
+  "@electrumTimeoutWarning": {
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "流动资金",
+  "electrumEmptyFieldError": "这个领域是空洞的",
+  "electrumServerOnline": "在线",
+  "torSettingsStatusConnected": "就绪",
+  "statusCheckUnknown": "不详",
+  "mempoolCustomServerBottomSheetDescription": "进入您的海关特网服务器。 服务器在储蓄之前将予以验证.",
+  "electrumAddCustomServer": "添加习俗服务器",
+  "mempoolSettingsTitle": "默思服务器",
+  "torSettingsConnectionStatus": "关系",
+  "torSettingsPortValidationEmpty": "请进入港口号",
+  "electrumPrivacyNoticeCancel": "Cancel",
+  "statusCheckOffline": "离岸价格",
+  "mempoolCustomServerDeleteMessage": "你们是否希望删除这一定制的超级服务器? 相反,将使用违约服务器.",
+  "electrumValidateDomain": "A. 鉴定领域",
+  "electrumInvalidRetryError": "Invalid Retry 数额:{value}",
+  "@electrumInvalidRetryError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "港口数量",
+  "electrumReset": "收 复",
+  "electrumStopGapNegativeError": "消除差距是负面的",
+  "electrumServerUrlHint": "{network} {environment} 服务器URL",
+  "@electrumServerUrlHint": {
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "未能装载服务器",
+  "@electrumLoadFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAdvancedOptions": "A. 先进选择",
+  "electrumCancel": "Cancel",
+  "mempoolCustomServerDeleteTitle": "删除习俗服务器?",
+  "electrumStopGap": "消除差距",
+  "electrumServerOffline": "离岸价格",
+  "electrumStopGapTooHighError": "消除差距似乎太高。 (Max. {maxStopGap}",
+  "@electrumStopGapTooHighError": {
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "时间不够。 ({maxTimeout}秒)",
+  "@electrumTimeoutTooHighError": {
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(大声疾呼,改变优先事项)",
+  "electrumInvalidStopGapError": "无效 差距值:{value}",
+  "@electrumInvalidStopGapError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "失效时差值:{value}",
+  "@electrumInvalidTimeoutError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "删除",
+  "mempoolSettingsDefaultServer": "违约服务器",
+  "electrumTestnet": "测试网",
+  "mempoolCustomServerAdd": "添加习俗服务器",
+  "statusCheckOnline": "在线",
+  "electrumCloseTooltip": "近距离",
+  "electrumBitcoinServerInfo": "正式服务器地址: 东道:port(例如:com:50001)",
+  "electrumServerNotUsed": "未使用",
+  "electrumRetryCountEmptyError": "收复国不能成为空洞",
+  "torSettingsDescConnecting": "成立 联系",
+  "torSettingsPortValidationInvalid": "请输入有效号码",
+  "electrumDeleteFailedError": "未能删除海关服务器",
+  "@electrumDeleteFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteServerTitle": "删除自定义服务器",
+  "torSettingsSaveButton": "Save",
+  "electrumPrivacyNoticeTitle": "隐私通知",
+  "electrumMainnet": "Mainnet",
+  "statusCheckLastChecked": "上次检查:{time}",
+  "@statusCheckLastChecked": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "港口:{port}",
+  "@torSettingsPortDisplay": {
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "互不关联",
+  "electrumSavePriorityFailedError": "未能节省服务器优先事项",
+  "@electrumSavePriorityFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumUnknownError": "发生错误",
+  "electrumDefaultServers": "违约服务器",
+  "mempoolCustomServerUrlEmpty": "请输入URL服务器",
+  "electrumFormatError": "使用地:港口形式(例如:50001)",
+  "cancel": "Cancel",
+  "electrumDefaultServersInfo": "为了保护你的隐私,在定制服务器配置时,不使用违约服务器.",
+  "electrumProtocolError": "不包括议定书.",
+  "torSettingsProxyPort": "Tor Proxy Port",
+  "electrumAddServer": "增加服务器",
+  "electrumStopGapEmptyError": "消除差距是空洞的",
+  "torSettingsStatusUnknown": "身份不明",
+  "electrumAddFailedError": "未能增加海关服务器",
+  "@electrumAddFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsStatusConnecting": "连接......",
+  "electrumDeletePrivacyNotice": "隐私通知:\n\n利用你自己的节点,确保任何第三方都不得将你的IP地址与你的交易联系起来。 您将删除其最后的海关服务器,与一台Bit硬币服务器连接。\n.\n",
+  "electrumDelete": "删除",
+  "statusCheckTitle": "服务",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "doneButton": "Done",
+  "electrumNetworkBitcoin": "页: 1",
+  "electrumConfirm": "执 行",
+  "electrumInvalidNumberError": "进入有效编号",
+  "electrumRetryCount": "业余",
+  "electrumCustomServers": "海关服务器",
+  "electrumTimeout": "时间表(秒)",
+  "electrumSaveFailedError": "未能节省先进选择",
+  "electrumLiquidSslInfo": "任何议定书都不得具体指明,《特别法》将自动使用.",
+  "electrumRetryCountNegativeError": "收复数可能为负数",
+  "electrumDeleteConfirmation": "你们是否希望删除这一服务器?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "隐私通知:使用你自己的节点确保没有任何第三方能够把你的IP地址与你的交易联系起来.",
+  "torSettingsTitle": "三、背景",
+  "electrumEnableSsl": "Enable SSL",
+  "torSettingsPortValidationRange": "港口必须在1至65535之间",
+  "electrumTimeoutEmptyError": "空洞",
+  "electrumPrivacyNoticeContent2": "然而, 如果你通过点击您的Transaction ID或接收人的详细页面来看待交易,则这些信息将公布于Bit.",
+  "torSettingsDescConnected": "代理正在运行并准备就绪",
+  "torSettingsDescDisconnected": "委托代理公司没有运行",
+  "mempoolServerStatusOnline": "在线",
+  "mempoolServerStatusOffline": "离线",
+  "mempoolServerStatusChecking": "检查中...",
+  "mempoolServerStatusUnknown": "未知",
+  "mempoolCustomServerSaveFailed": "保存服务器失败",
+  "mempoolCustomServerInfoDescription": "Mempool 服务器用于费用估算以及在查看交易详情时打开区块浏览器。",
+  "mempoolCustomServerUseSsl": "使用 SSL",
+  "mempoolCustomServerSslAutoDetected": "(自动检测)",
+  "mempoolCustomServerSslHelpText": "对于本地服务器（.local、私有 IP）和 Tor（.onion）服务器，SSL 通常是禁用的。公共 IP 和域名应使用 SSL。",
+  "mempoolErrorSameAsDefault": "此 URL 与默认服务器相同。请使用不同的 URL。",
+  "mempoolErrorConnectionTimeout": "连接超时。请检查服务器地址并重试。",
+  "mempoolErrorHostNotFound": "找不到服务器。请验证 URL 是否正确。",
+  "mempoolErrorConnectionFailed": "无法连接到服务器。请检查您的网络连接。",
+  "mempoolErrorNotMempoolServer": "服务器响应，但似乎不是 Mempool 服务器。",
+  "mempoolErrorServerUnavailable": "服务器暂时不可用。请稍后重试。",
+  "mempoolErrorServerError": "服务器遇到错误。请稍后重试或尝试其他服务器。",
+  "mempoolErrorInvalidResponse": "服务器返回了意外的响应。",
+  "mempoolErrorInvalidUrl": "服务器 URL 无效。请输入有效的域名或 IP 地址。",
+  "mempoolErrorSaveServerFailed": "保存服务器失败",
+  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败",
+  "mempoolErrorDeleteFailed": "删除自定义服务器失败",
+  "electrumStopGapHighWarning": "较高的 stop gap 值会显著增加同步时间。请在同步完成之前保持应用在前台运行 — 将应用切换到后台可能会中断同步。",
+  "torSettingsStatusCensored": "连接似乎被过滤",
+  "torSettingsDescCensored": "Tor 无法连接到网络。这通常意味着连接正在被过滤。",
+  "torSettingsBootstrapProgress": "正在连接… {percent}%",
+  "torSettingsEmbeddedTitle": "内置 Tor",
+  "torSettingsEmbeddedDescription": "内置 Tor 由 RecoverBull 和 Bitcoin Electrum 的 .onion 服务器使用。应用的其他流量仍为直连。",
+  "torSettingsTransportMode": "连接方式",
+  "torSettingsModeAutomatic": "自动",
+  "torSettingsModeDirect": "直连",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "先尝试直连 Tor；若网络似乎屏蔽 Tor，则改用 Snowflake。",
+  "torSettingsModeDirectDescription": "不使用可插拔传输，直接连接 Tor 网络。",
+  "torSettingsModeSnowflakeDescription": "通过志愿者提供的 Snowflake 代理，从被过滤的网络连接 Tor。",
+  "torSettingsActiveTransport": "当前传输方式：{transport}",
+  "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
+  "statusCheckResultsMayBeOutdated": "结果可能已过时",
+  "torSettingsStatusNoInternetOrBlocked": "无法连接互联网或网络受审查",
+  "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。",
+  "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。",
+  "serverEncrypted": "已加密",
+  "serverUnencrypted": "未加密"
+}

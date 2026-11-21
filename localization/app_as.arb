@@ -116,7 +116,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "উচ্চ স্টপ গেপ মূল্যবোধে চিংক্ৰনাইজেচন সময় উল্লেখযোগ্যভাৱে বঢ়াই দিয়ে। চিংক্ৰনাইজেচন সম্পূৰ্ণ নোহোৱালৈকে এপটো ফৰগ্ৰাউণ্ডত খোলা ৰাখক — পটভূমিত ৰাখিলে ই বাধাগ্ৰস্ত হ'ব পাৰে।",
   "wizardSkipButton": "এৰি যাওক",
   "wizardPageIndicator": "পৃষ্ঠা {current} / {total}",
   "wizardNextButton": "পৰৱৰ্তী",
@@ -260,64 +259,15 @@
   "walletDetailsSignerLabel": "Signer",
   "walletDetailsSignerDeviceLabel": "Signer ডিভাইচ",
   "walletDetailsSignerDeviceNotSupported": "সমৰ্থিত নহয়",
-  "mempoolSettingsTitle": "Mempool চাৰ্ভাৰ",
   "mempoolSettingsDescription": "বিভিন্ন নেটৱৰ্কৰ বাবে কাষ্টম mempool চাৰ্ভাৰ কনফিগাৰ কৰক। প্ৰতিটো নেটৱৰ্কে ব্লক এক্সপ্লোৰাৰ আৰু মাচুল অনুমানৰ বাবে নিজৰ চাৰ্ভাৰ ব্যৱহাৰ কৰিব পাৰে।",
-  "mempoolSettingsDefaultServer": "ডিফল্ট চাৰ্ভাৰ",
-  "mempoolSettingsCustomServer": "কাষ্টম চাৰ্ভাৰ",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
-  "mempoolCustomServerAdd": "কাষ্টম চাৰ্ভাৰ যোগ কৰক",
   "mempoolCustomServerDelete": "মচক",
-  "mempoolCustomServerDeleteTitle": "কাষ্টম চাৰ্ভাৰ মচিব?",
-  "mempoolCustomServerDeleteMessage": "আপুনি নিশ্চিতভাৱে এই কাষ্টম mempool চাৰ্ভাৰ মচিব বিচাৰে? পৰিৱৰ্তে ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰা হ'ব।",
   "mempoolCustomServerUrl": "চাৰ্ভাৰ URL",
-  "mempoolCustomServerUrlEmpty": "অনুগ্ৰহ কৰি এটা চাৰ্ভাৰ URL দিয়ক",
   "mempoolCustomServerSaveSuccess": "কাষ্টম চাৰ্ভাৰ সফলভাৱে সংৰক্ষণ হৈছে",
-  "mempoolCustomServerBottomSheetDescription": "আপোনাৰ কাষ্টম mempool চাৰ্ভাৰৰ URL দিয়ক। সংৰক্ষণৰ আগতে চাৰ্ভাৰ যাচাই কৰা হ'ব।",
-  "mempoolServerStatusOnline": "অনলাইন",
-  "mempoolServerStatusOffline": "অফলাইন",
-  "mempoolServerStatusChecking": "পৰীক্ষা কৰা হৈছে...",
   "mempoolServerStatusUnknown": "অজ্ঞাত",
-  "mempoolCustomServerSaveFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
-  "mempoolCustomServerInfoDescription": "Mempool চাৰ্ভাৰসমূহ মাচুল অনুমান আৰু লেনদেন বিৱৰণ চাওঁতে ব্লক এক্সপ্লোৰাৰ খোলাৰ বাবে ব্যৱহাৰ কৰা হয়।",
-  "mempoolCustomServerUseSsl": "SSL ব্যৱহাৰ কৰক",
-  "mempoolCustomServerSslAutoDetected": "(স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা হৈছে)",
-  "mempoolCustomServerSslHelpText": "স্থানীয় (.local, ব্যক্তিগত IP) আৰু Tor (.onion) চাৰ্ভাৰৰ বাবে SSL সাধাৰণতে অক্ষম। পাব্লিক IP আৰু ডমেইনে SSL ব্যৱহাৰ কৰিব লাগে।",
-  "mempoolErrorSameAsDefault": "এই URL ডিফল্ট চাৰ্ভাৰৰ দৰেই। অনুগ্ৰহ কৰি এটা ভিন্ন URL ব্যৱহাৰ কৰক।",
-  "mempoolErrorConnectionTimeout": "সংযোগৰ সময় শেষ হৈছে। চাৰ্ভাৰটো লেহেমীয়া বা অপ্ৰাপ্য হ'ব পাৰে।",
-  "mempoolErrorHostNotFound": "এই চাৰ্ভাৰ বিচাৰি পোৱা নগ'ল। অনুগ্ৰহ কৰি URL পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorConnectionFailed": "চাৰ্ভাৰৰ সৈতে সংযোগ কৰিবলৈ অক্ষম। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorNotMempoolServer": "এই URL এটা mempool চাৰ্ভাৰ নহয় যেন লাগিছে। অনুগ্ৰহ কৰি ঠিকনা যাচাই কৰক।",
-  "mempoolErrorServerUnavailable": "চাৰ্ভাৰ উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorServerError": "চাৰ্ভাৰত ভুল হৈছে। পিছত পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorInvalidResponse": "চাৰ্ভাৰে অবৈধ সঁহাৰি দিছে।",
-  "mempoolErrorInvalidUrl": "অমান্য চাৰ্ভাৰ URL। এটা বৈধ ডমেইন বা IP ঠিকনা দিয়ক।",
-  "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
-  "@mempoolErrorSaveServerFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "mempoolErrorLoadFailed": "Mempool চাৰ্ভাৰ ডেটা লোড কৰিবলৈ বিফল হৈছে",
-  "@mempoolErrorLoadFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "mempoolErrorDeleteFailed": "কাষ্টম চাৰ্ভাৰ মচিবলৈ বিফল হৈছে",
-  "@mempoolErrorDeleteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "walletSettingsImportWalletTitle": "Wallet আমদানি কৰক",
   "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্ৰচাৰ কৰক",
   "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
@@ -5639,42 +5589,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "electrumTitle": "Electrum চাৰ্ভাৰ ছেটিংছ",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
-  "electrumNetworkLiquid": "Liquid",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
-  "electrumAdvancedOptions": "উন্নত বিকল্পসমূহ",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
-  "electrumAddCustomServer": "কাষ্টম চাৰ্ভাৰ যোগ কৰক",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
-  "electrumCloseTooltip": "বন্ধ কৰক",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
-  "electrumServerUrlHint": "{network} {environment} চাৰ্ভাৰ URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
@@ -5682,245 +5596,6 @@
   "electrumTestnet": "Testnet",
   "@electrumTestnet": {
     "description": "Testnet environment label"
-  },
-  "electrumEmptyFieldError": "এই ক্ষেত্ৰখন খালী থাকিব নোৱাৰে",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
-  "electrumLiquidSslInfo": "কোনো protocol নিৰ্দিষ্ট কৰিব নালাগে, SSL স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰ কৰা হ'ব।",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
-  "electrumAddServer": "চাৰ্ভাৰ যোগ কৰক",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
-  "electrumEnableSsl": "SSL সক্ৰিয় কৰক",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
-  "electrumProtocolError": "protocol (ssl:// বা tcp://) অন্তৰ্ভুক্ত নকৰিব।",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
-  },
-  "electrumFormatError": "host:port ফৰ্মেট ব্যৱহাৰ কৰক (যেনে, example.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
-  },
-  "electrumBitcoinServerInfo": "চাৰ্ভাৰৰ ঠিকনা এই ফৰ্মেটত দিয়ক: host:port (যেনে, example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
-  "electrumStopGap": "Stop Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
-  "electrumTimeout": "Timeout (ছেকেণ্ড)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
-  "electrumRetryCount": "পুনৰ চেষ্টাৰ সংখ্যা",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
-  "electrumValidateDomain": "ডমেইন যাচাই কৰক",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
-  },
-  "electrumStopGapEmptyError": "Stop Gap খালী থাকিব নোৱাৰে",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
-  },
-  "electrumInvalidNumberError": "এটা বৈধ সংখ্যা দিয়ক",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
-  "electrumStopGapNegativeError": "Stop Gap ঋণাত্মক হ'ব নোৱাৰে",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
-  },
-  "electrumStopGapTooHighError": "Stop Gap বেছি বেছি বলে মনে হয়। (সৰ্বোচ্চ {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "Timeout খালী থাকিব নোৱাৰে",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumTimeoutPositiveError": "Timeout ধনাত্মক হ'ব লাগিব",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "electrumTimeoutTooHighError": "Timeout বেছি বেছি বলে মনে হয়। (সৰ্বোচ্চ {maxTimeout} ছেকেণ্ড)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumRetryCountEmptyError": "পুনৰ চেষ্টাৰ সংখ্যা খালী থাকিব নোৱাৰে",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "electrumRetryCountNegativeError": "পুনৰ চেষ্টাৰ সংখ্যা ঋণাত্মক হ'ব নোৱাৰে",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
-  "electrumTimeoutWarning": "আপোনাৰ timeout ({timeoutValue} ছেকেণ্ড) এই Stop Gap ৰ বাবে প্ৰস্তাৱিত মানৰ ({recommended} ছেকেণ্ড) তলত আছে।",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidStopGapError": "অবৈধ Stop Gap মান: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidTimeoutError": "অবৈধ Timeout মান: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidRetryError": "অবৈধ পুনৰ চেষ্টাৰ সংখ্যাৰ মান: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSaveFailedError": "উন্নত বিকল্পসমূহ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "electrumUnknownError": "এটা ত্ৰুটি ঘটিছে",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
-  },
-  "electrumReset": "পুনৰাৰম্ভ কৰক",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
-  "electrumConfirm": "নিশ্চিত কৰক",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
-  "electrumDeleteServerTitle": "কাষ্টম চাৰ্ভাৰ মচক",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
-  },
-  "electrumDeletePrivacyNotice": "গোপনীয়তাৰ জাননী:\n\nআপোনাৰ নিজৰ node ব্যৱহাৰ কৰাটো নিশ্চিত কৰে যে কোনো তৃতীয় পক্ষই আপোনাৰ IP ঠিকনা আপোনাৰ লেনদেনৰ সৈতে সংযুক্ত কৰিব নোৱাৰে। আপোনাৰ শেষ কাষ্টম চাৰ্ভাৰ মচি আপুনি BullBitcoin চাৰ্ভাৰৰ সৈতে সংযোগ কৰিব।\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
-  "electrumDeleteConfirmation": "আপুনি নিশ্চিতভাৱে এই চাৰ্ভাৰটো মচিব বিচাৰেনে?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumCancel": "বাতিল",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
-  "electrumDelete": "মচক",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
-  "electrumDefaultServers": "ডিফল্ট চাৰ্ভাৰসমূহ",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
-  "electrumDefaultServersInfo": "আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ, কাষ্টম চাৰ্ভাৰ কনফিগাৰ কৰা হ'লে ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰা নহয়।",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
-  "electrumCustomServers": "কাষ্টম চাৰ্ভাৰসমূহ",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
-  },
-  "electrumDragToReorder": "(অগ্ৰাধিকাৰ সলনি কৰিবলৈ দীৰ্ঘ-প্ৰেছ কৰি টানক)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "electrumLoadFailedError": "চাৰ্ভাৰসমূহ লোড কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "electrumSavePriorityFailedError": "চাৰ্ভাৰৰ অগ্ৰাধিকাৰ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
-  "electrumAddFailedError": "কাষ্টম চাৰ্ভাৰ যোগ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
-  "electrumDeleteFailedError": "কাষ্টম চাৰ্ভাৰ মচিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
-  "electrumServerAlreadyExists": "এই চাৰ্ভাৰ ইতিমধ্যে আছে",
-  "electrumServerUnreachable": "ছাৰ্ভাৰটো নাগাল পোৱা নগ’ল। ঠিকনাটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
-  "electrumPrivacyNoticeTitle": "গোপনীয়তাৰ জাননী",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
-  "electrumPrivacyNoticeContent1": "গোপনীয়তাৰ জাননী: আপোনাৰ নিজৰ node ব্যৱহাৰ কৰাটো নিশ্চিত কৰে যে কোনো তৃতীয় পক্ষই আপোনাৰ IP ঠিকনা আপোনাৰ লেনদেনৰ সৈতে সংযুক্ত কৰিব নোৱাৰে।",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeContent2": "অৱশ্যে, যদি আপুনি আপোনাৰ Transaction ID বা Recipient Details পৃষ্ঠাত ক্লিক কৰি mempool ৰ জৰিয়তে লেনদেন চায়, তেন্তে এই তথ্য BullBitcoin লৈ জনা হ'ব।",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeCancel": "বাতিল",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
-  },
-  "electrumPrivacyNoticeSave": "সংৰক্ষণ কৰক",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
-  },
-  "electrumServerNotUsed": "ব্যৱহাৰ নহয়",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
-  "electrumServerOnline": "অনলাইন",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
-  "electrumServerOffline": "অফলাইন",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "addressViewNoAddressesFound": "কোনো ঠিকনা পোৱা নগ'ল",
   "@addressViewNoAddressesFound": {
@@ -6361,31 +6036,6 @@
   "@save": {
     "description": "Generic save button label"
   },
-  "statusCheckTitle": "সেৱাৰ স্থিতি",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "statusCheckLastChecked": "শেষবাৰ পৰীক্ষা কৰা হৈছিল: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "statusCheckOnline": "অনলাইন",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
-  "statusCheckOffline": "অফলাইন",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
-  "statusCheckUnknown": "অজ্ঞাত",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "torSettingsTitle": "Tor ছেটিংছ",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -6393,75 +6043,6 @@
   "torSettingsEnableProxy": "Tor Proxy সামৰ্থ্য কৰক",
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "torSettingsPortNumber": "Port নম্বৰ",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "torSettingsPortValidationEmpty": "অনুগ্ৰহ কৰি এটা port নম্বৰ দিয়ক",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
-  "torSettingsPortValidationInvalid": "অনুগ্ৰহ কৰি এটা বৈধ নম্বৰ দিয়ক",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
-  },
-  "torSettingsPortValidationRange": "Port 1 আৰু 65535-ৰ মাজত হ'ব লাগিব",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "torSettingsSaveButton": "সংৰক্ষণ কৰক",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
-  "torSettingsConnectionStatus": "সংযোগৰ স্থিতি",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
-  "torSettingsStatusConnected": "সাজু",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
-  "torSettingsStatusConnecting": "সংযোগ কৰা হৈছে...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
-  "torSettingsStatusDisconnected": "বিচ্ছিন্ন",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
-  "torSettingsStatusUnknown": "স্থিতি অজ্ঞাত",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
-  "torSettingsDescConnected": "Tor proxy চলি আছে আৰু সাজু",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
-  },
-  "torSettingsDescConnecting": "Tor সংযোগ স্থাপন কৰা হৈছে",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
-  "torSettingsDescDisconnected": "Tor proxy চলি নাই",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "withdrawSuccessTitle": "উত্তোলন আৰম্ভ হৈছে",
   "@withdrawSuccessTitle": {
@@ -7276,19 +6857,6 @@
   "coreSwapsStatusUnknown": "অজ্ঞাত",
   "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
   "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
-  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
-  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
-  "torSettingsBootstrapProgress": "সংযোগ কৰি আছে… {percent}%",
-  "torSettingsEmbeddedTitle": "অন্তৰ্নিহিত Tor",
-  "torSettingsEmbeddedDescription": "অন্তৰ্নিহিত Tor ব্যৱহাৰ কৰে RecoverBull আৰু Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে। এপৰ বাকী ট্ৰেফিক পোনপটীয়াকৈয়ে থাকে।",
-  "torSettingsTransportMode": "সংযোগৰ পদ্ধতি",
-  "torSettingsModeAutomatic": "স্বয়ংক্ৰিয়",
-  "torSettingsModeDirect": "পোনপটীয়া",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
-  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
-  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
-  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
   "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
   "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে",
   "settingsSearchHint": "ছেটিংছ সন্ধান কৰক",
@@ -7323,8 +6891,6 @@
   "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে",
   "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
@@ -7534,11 +7100,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
   "settingsDarkModeTitle": "আন্ধাৰ ম'ড",
   "settingsSourceCodeTitle": "উৎস ক'ড",
-  "torSettingsStatusNoInternetOrBlocked": "ইণ্টাৰনেট নাই বা নেটৱৰ্ক সেন্সৰ কৰা",
-  "torSettingsDescNoInternetOrBlocked": "এই নেটৱৰ্কত ইণ্টাৰনেট নাই, বা ই Tor অৱৰোধ কৰে।",
   "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।",
-  "serverEncrypted": "এনক্ৰিপ্ট কৰা",
-  "serverUnencrypted": "এনক্ৰিপ্ট নকৰা",
   "backgroundTasksTitle": "নেপথ্যৰ কাম",
   "blockedInSystemSettings": "ছিষ্টেম ছেটিংছত অৱৰুদ্ধ",
   "notificationsBlockedMessage": "ছিষ্টেম ছেটিংছত জাননী অৱৰুদ্ধ কৰা আছে।",

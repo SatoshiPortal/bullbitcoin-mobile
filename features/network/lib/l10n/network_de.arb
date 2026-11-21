@@ -1,0 +1,267 @@
+{
+  "torSettingsPortHint": "9050",
+  "electrumTimeoutPositiveError": "Timeout muss positiv sein.",
+  "mempoolSettingsCustomServer": "Eigener Server",
+  "electrumServerAlreadyExists": "Dieser Server existiert bereits",
+  "electrumServerUnreachable": "Server ist nicht erreichbar. Überprüfen Sie die Adresse und versuchen Sie es erneut.",
+  "electrumTitle": "Electrum-Server-Einstellungen",
+  "electrumTimeoutWarning": "Ihr Timeout ({timeoutValue} Sekunden) ist niedriger als der empfohlene Wert ({recommended} Sekunden) für diesen Stop-Gap.",
+  "@electrumTimeoutWarning": {
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "Liquid",
+  "electrumEmptyFieldError": "Dieses Feld darf nicht leer sein",
+  "electrumServerOnline": "Online",
+  "torSettingsStatusConnected": "Bereit",
+  "statusCheckUnknown": "Unbekannt",
+  "mempoolCustomServerBottomSheetDescription": "Geben Sie die URL des benutzerdefinierten Mempool-Servers ein. Der Server wird vor dem Speichern überprüft.",
+  "electrumAddCustomServer": "Benutzerdefinierten Server hinzufügen",
+  "mempoolSettingsTitle": "Mempool-Server",
+  "torSettingsConnectionStatus": "Verbindungsstatus",
+  "torSettingsPortValidationEmpty": "Bitte geben Sie eine Portnummer ein.",
+  "statusCheckOffline": "Offline",
+  "mempoolCustomServerDeleteMessage": "Sind Sie sicher, dass Sie diesen benutzerdefinierten Mempool-Server löschen möchten? Anschließend wird der Standardserver verwendet.",
+  "electrumValidateDomain": "Gültige Domain",
+  "electrumInvalidRetryError": "Ungültiger Wiederholungswert: {value}.",
+  "@electrumInvalidRetryError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Portnummer",
+  "electrumReset": "Zurücksetzen",
+  "electrumStopGapNegativeError": "Stop-Gap kann nicht negativ sein.",
+  "electrumServerUrlHint": "{network} {environment} Server-URL.",
+  "@electrumServerUrlHint": {
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "Server konnten nicht geladen werden.",
+  "@electrumLoadFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAdvancedOptions": "Erweiterte Optionen",
+  "mempoolCustomServerDeleteTitle": "Benutzerdefinierten Server löschen?",
+  "electrumStopGap": "Stop Gap",
+  "electrumServerOffline": "Offline",
+  "electrumStopGapTooHighError": "Stop Gap scheint zu hoch zu sein. Maximal {maxStopGap}.",
+  "@electrumStopGapTooHighError": {
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "Timeout scheint zu hoch zu sein (maximal {maxTimeout} Sekunden).",
+  "@electrumTimeoutTooHighError": {
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(Drücken und halten zum Verschieben und Ändern der Priorität)",
+  "electrumInvalidStopGapError": "Ungültiger Stop Gap-Wert: {value}.",
+  "@electrumInvalidStopGapError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Ungültiger Timeout-Wert: {value}.",
+  "@electrumInvalidTimeoutError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Löschen",
+  "mempoolSettingsDefaultServer": "Standard-Server",
+  "electrumTestnet": "Testnet",
+  "mempoolCustomServerAdd": "Benutzerdefinierten Server hinzufügen",
+  "statusCheckOnline": "Online",
+  "electrumCloseTooltip": "Schließen",
+  "electrumBitcoinServerInfo": "Geben Sie die Serveradresse im Format: Host:Port (z.B. example.com:50001) ein.",
+  "electrumServerNotUsed": "Nicht verwendet",
+  "electrumRetryCountEmptyError": "Wiederholungen kann nicht leer sein.",
+  "torSettingsDescConnecting": "Tor-Verbindung wird aufgebaut",
+  "torSettingsPortValidationInvalid": "Bitte geben Sie eine gültige Nummer ein.",
+  "electrumDeleteFailedError": "Fehler beim Löschen des benutzerdefinierten Servers",
+  "@electrumDeleteFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteServerTitle": "Benutzerdefinierten Server löschen",
+  "electrumPrivacyNoticeTitle": "Datenschutzhinweis",
+  "electrumMainnet": "Mainnet",
+  "statusCheckLastChecked": "Zuletzt überprüft: {time}",
+  "@statusCheckLastChecked": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "Port: {port}",
+  "@torSettingsPortDisplay": {
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "Getrennt",
+  "electrumSavePriorityFailedError": "Fehler beim Speichern der Serverpriorität",
+  "@electrumSavePriorityFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDefaultServers": "Standardserver",
+  "mempoolCustomServerUrlEmpty": "Bitte geben Sie eine Server-URL ein.",
+  "electrumFormatError": "Verwenden Sie das Host:Port-Format (z.B. example.com:50001).",
+  "electrumDefaultServersInfo": "Um Ihre Privatsphäre zu schützen, werden Standardserver nicht verwendet, wenn benutzerdefinierte Server konfiguriert sind.",
+  "electrumProtocolError": "Protokoll nicht enthalten (ssl:// oder tcp://).",
+  "torSettingsProxyPort": "Tor-Proxy-Port",
+  "electrumAddServer": "Server hinzufügen",
+  "electrumStopGapEmptyError": "Stop Gap kann nicht leer sein.",
+  "torSettingsStatusUnknown": "Unbekannter Status",
+  "electrumAddFailedError": "Fehler beim Hinzufügen des benutzerdefinierten Servers",
+  "@electrumAddFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsStatusConnecting": "Wird verbunden…",
+  "electrumDeletePrivacyNotice": "Datenschutzerklärung:\n\nDurch die Verwendung Ihres eigenen Knotens wird sichergestellt, dass keine Dritten Ihre IP-Adresse mit Ihren Transaktionen in Verbindung bringen können. Durch das Löschen Ihres letzten benutzerdefinierten Servers stellen Sie eine Verbindung zu einem Bull Bitcoin-Server her.",
+  "electrumDelete": "Löschen",
+  "statusCheckTitle": "Servicestatus",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "doneButton": "Fertig",
+  "electrumNetworkBitcoin": "Bitcoin",
+  "electrumConfirm": "Bestätigen",
+  "electrumInvalidNumberError": "Bitte geben Sie eine gültige Nummer ein.",
+  "electrumRetryCount": "Wiederholungen",
+  "electrumCustomServers": "Benutzerdefinierter Electrum-Server",
+  "electrumTimeout": "Zeitüberschreitung (Sekunden)",
+  "electrumSaveFailedError": "Erweiterte Optionen konnten nicht gespeichert werden.",
+  "electrumLiquidSslInfo": "Es sollte kein Protokoll angegeben werden, SSL wird automatisch verwendet.",
+  "electrumRetryCountNegativeError": "Wiederholungen kann nicht negativ sein.",
+  "electrumDeleteConfirmation": "Möchten Sie diesen Server wirklich löschen?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "Datenschutzhinweis: Mit Ihrem eigenen Knoten wird sichergestellt, dass kein Dritter Ihre IP-Adresse mit Ihren Transaktionen verknüpfen kann.",
+  "torSettingsTitle": "Tor-Einstellungen",
+  "electrumEnableSsl": "SSL aktivieren",
+  "torSettingsPortValidationRange": "Port muss zwischen 1 und 65535 sein",
+  "electrumTimeoutEmptyError": "Timeout kann nicht leer sein.",
+  "electrumPrivacyNoticeContent2": "Allerdings werden diese Informationen Bull Bitcoin bekannt, wenn Sie Transaktionen über Mempool anzeigen, indem Sie auf Ihre Transaktions-ID oder Empfänger-Detailseite tippen.",
+  "torSettingsDescConnected": "Tor-Proxy läuft und ist bereit",
+  "torSettingsDescDisconnected": "Tor-Proxy läuft nicht",
+  "electrumPrivacyNoticeSave": "Speichern",
+  "save": "Speichern",
+  "electrumPrivacyNoticeCancel": "Abbrechen",
+  "electrumCancel": "Abbrechen",
+  "torSettingsSaveButton": "Speichern",
+  "electrumUnknownError": "Es ist ein Fehler aufgetreten.",
+  "cancel": "Abbrechen",
+  "electrumStopGapHighWarning": "Hohe Stop-Gap-Werte verlängern die Synchronisationszeit erheblich. Lassen Sie die App im Vordergrund geöffnet, bis die Synchronisation abgeschlossen ist — Ein Wechsel in den Hintergrund kann sie unterbrechen.",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Wird geprüft…",
+  "mempoolServerStatusUnknown": "Unbekannt",
+  "mempoolCustomServerSaveFailed": "Server konnte nicht gespeichert werden",
+  "mempoolCustomServerInfoDescription": "Mempool-Server werden für die Gebührenschätzung und zum Öffnen des Block-Explorers beim Anzeigen von Transaktionsdetails verwendet.",
+  "mempoolCustomServerUseSsl": "SSL verwenden",
+  "mempoolCustomServerSslAutoDetected": "(Automatisch erkannt)",
+  "mempoolCustomServerSslHelpText": "Für lokale Server (.local, private IPs) und Tor-Server (.onion) ist SSL in der Regel deaktiviert. Öffentliche IPs und Domains sollten SSL verwenden.",
+  "mempoolErrorSameAsDefault": "Diese URL ist dieselbe wie die des Standardservers. Bitte verwenden Sie eine andere URL.",
+  "mempoolErrorConnectionTimeout": "Zeitüberschreitung bei der Verbindung. Der Server ist möglicherweise langsam oder nicht erreichbar.",
+  "mempoolErrorHostNotFound": "Dieser Server konnte nicht gefunden werden. Bitte überprüfen Sie die URL und versuchen Sie es erneut.",
+  "mempoolErrorConnectionFailed": "Verbindung zum Server nicht möglich. Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
+  "mempoolErrorNotMempoolServer": "Diese URL scheint kein Mempool-Server zu sein. Bitte überprüfen Sie die Adresse.",
+  "mempoolErrorServerUnavailable": "Der Server ist nicht verfügbar. Bitte versuchen Sie es später erneut.",
+  "mempoolErrorServerError": "Beim Server ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+  "mempoolErrorInvalidResponse": "Der Server hat eine ungültige Antwort zurückgegeben.",
+  "mempoolErrorInvalidUrl": "Ungültige Server-URL. Geben Sie eine gültige Domain oder IP-Adresse ein.",
+  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden",
+  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden",
+  "mempoolErrorDeleteFailed": "Fehler beim Löschen des benutzerdefinierten Servers",
+  "statusCheckDisabled": "Deaktiviert",
+  "torSettingsStatusCensored": "Verbindung scheint gefiltert",
+  "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
+  "torSettingsBootstrapProgress": "Verbindung wird hergestellt… {percent} %",
+  "torSettingsEmbeddedTitle": "Integriertes Tor",
+  "torSettingsEmbeddedDescription": "Die integrierte Tor-Verbindung wird von RecoverBull und für Bitcoin-Electrum-Server mit .onion-Adresse verwendet. Der übrige Datenverkehr der App wird direkt übertragen.",
+  "torSettingsTransportMode": "Verbindungsmethode",
+  "torSettingsModeAutomatic": "Automatisch",
+  "torSettingsModeDirect": "Direkt",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Versucht zunächst, eine direkte Tor-Verbindung herzustellen, und verwendet Snowflake, wenn das Netzwerk Tor zu blockieren scheint.",
+  "torSettingsModeDirectDescription": "Stellt ohne zusätzliches Transportprotokoll eine direkte Verbindung zum Tor-Netzwerk her.",
+  "torSettingsModeSnowflakeDescription": "Nutzt von Freiwilligen betriebene Snowflake-Proxys, um Tor aus einem gefilterten Netzwerk zu erreichen.",
+  "torSettingsActiveTransport": "Aktiver Transport: {transport}",
+  "mempoolErrorNetworkMismatch": "Dieser Server verwendet ein anderes Bitcoin-Netzwerk.",
+  "statusCheckNoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut.",
+  "statusCheckResultsMayBeOutdated": "Die Ergebnisse könnten veraltet sein",
+  "torSettingsExternalProxyReachable": "Proxy erreichbar",
+  "torSettingsExternalProxyReachableDescription": "Der konfigurierte SOCKS5-Proxy hat eine Verbindung angenommen.",
+  "torSettingsExternalProxyChecking": "Proxy wird geprüft",
+  "torSettingsExternalProxyCheckingDescription": "Bull prüft den konfigurierten SOCKS5-Proxy.",
+  "torSettingsExternalProxyUnavailable": "SOCKS5-Proxy nicht verfügbar",
+  "torSettingsExternalProxyUnavailableDescription": "Bull konnte keine Verbindung zum konfigurierten SOCKS5-Proxy herstellen.",
+  "torSettingsExternalProxyNotChecked": "Proxy nicht geprüft",
+  "torSettingsExternalProxyNotCheckedDescription": "Bull hat den konfigurierten SOCKS5-Proxy noch nicht geprüft.",
+  "torSettingsRetry": "Erneut versuchen",
+  "torSettingsLearnAboutOrbot": "Mehr über Orbot erfahren",
+  "torSettingsOrbotLinkFailed": "Die Orbot-Website konnte nicht geöffnet werden.",
+  "torSettingsLocalProxyTitle": "Lokaler SOCKS5-Proxy (erweitert)",
+  "torSettingsLocalProxyDescription": "Sie können Orbot im VPN-Modus verwenden, um den Netzwerkverkehr von Bull über Tor zu leiten. Wenn Sie unten den SOCKS-Port von Orbot konfigurieren, wird nur der Datenverkehr von RecoverBull und Bitcoin-Electrum-Servern mit .onion-Adresse über Tor geleitet.",
+  "torSettingsLocalProxyPortHelper": "Häufig verwendeter lokaler SOCKS5-Port: 9050",
+  "torSettingsEmbeddedStatusUnknownDescription": "Der integrierte Tor hat noch keinen Verbindungsstatus gemeldet.",
+  "torSettingsLocalProxyStatus": "Status des lokalen SOCKS5-Proxys",
+  "mempoolErrorOnionRouteUnavailable": "Der .onion-Server ist nicht erreichbar. Prüfen Sie, ob Ihre Tor-Verbindung verfügbar ist, und versuchen Sie es erneut.",
+  "electrumConfiguredExternalTorUnavailable": "Ihr konfigurierter Tor-Proxy ist nicht verfügbar. Öffnen Sie die Tor-Einstellungen, um die Verbindung wiederherzustellen.",
+  "electrumOpenTorSettings": "Tor-Einstellungen öffnen",
+  "torSettingsProxyAttemptPort": "Versuchter Port: {port}",
+  "torSettingsProxyAttemptWithActivePort": "Versuchter Port: {attemptedPort} · Aktiver Port: {activePort}",
+  "torTitle": "Tor",
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
+  "serverEncrypted": "Verschlüsselt",
+  "serverUnencrypted": "Unverschlüsselt"
+}

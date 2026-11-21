@@ -18,8 +18,6 @@
   "buyPayoutWillBeSentIn": "Die Auszahlung erfolgt in ",
   "fundExchangeInstantSepaInfo": "Nur für Transaktionen unter 20.000 €. Für größere Transaktionen verwenden Sie bitte die reguläre SEPA-Option.",
   "dcaChooseWalletTitle": "Bitcoin-Wallet wählen",
-  "torSettingsPortHint": "9050",
-  "electrumTimeoutPositiveError": "Timeout muss positiv sein.",
   "sellSendPaymentAboveMax": "Sie versuchen, einen Betrag zu verkaufen, der über dem Höchstbetrag liegt, der mit dieser Wallet verkauft werden kann.",
   "fundExchangeETransferLabelSecretAnswer": "Geheime Antwort",
   "payPayinAmount": "Einzahlungsbetrag",
@@ -33,7 +31,6 @@
   "sendSendNetworkFee": "Netzwerkgebühr (Senden)",
   "exchangeDcaUnableToGetConfig": "Sparplan-Einstellungen konnten nicht abgerufen werden",
   "sellInstitutionNumber": "Institutsnummer",
-  "mempoolSettingsCustomServer": "Eigener Server",
   "fundExchangeMethodRegularSepa": "Reguläres SEPA",
   "addressViewTransactions": "Transaktionen",
   "fundExchangeSinpeLabelPhone": "Senden Sie an diese Telefonnummer.",
@@ -59,8 +56,6 @@
     }
   },
   "autoswapAlwaysBlockEnabledInfo": "Wenn aktiviert, werden Auto-Swaps mit Gebühren über der festgelegten Grenze immer gesperrt.",
-  "electrumServerAlreadyExists": "Dieser Server existiert bereits",
-  "electrumServerUnreachable": "Server ist nicht erreichbar. Überprüfen Sie die Adresse und versuchen Sie es erneut.",
   "sellPaymentMethod": "Zahlungsmethode",
   "transactionNoteHint": "Notiz",
   "transactionLabelPreimage": "Preimage",
@@ -119,7 +114,6 @@
   "payInstantPayments": "Sofortzahlungen",
   "importWatchOnlyImportButton": "Watch-Only-Wallet importieren",
   "fundExchangeCrIbanCrcDescriptionBold": "genau",
-  "electrumTitle": "Electrum-Server-Einstellungen",
   "importQrDeviceJadeStep7": "Wählen Sie bei Bedarf „Options“ aus, um den Adresstyp zu ändern.",
   "transactionNetworkLightning": "Lightning",
   "paySecurityQuestionLength": "{count}/40 Zeichen",
@@ -189,17 +183,6 @@
   "buyDocumentUpload": "Dokumente hochladen",
   "sendTransferFeeDescription": "Dies ist die Gesamtgebühr, die vom gesendeten Betrag abgezogen wird",
   "buyAboveMaxAmountError": "Sie versuchen, über dem Höchstbetrag zu kaufen.",
-  "electrumTimeoutWarning": "Ihr Timeout ({timeoutValue} Sekunden) ist niedriger als der empfohlene Wert ({recommended} Sekunden) für diesen Stop-Gap.",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "PSBT anzeigen",
   "receiveAddress": "Empfängeradresse",
   "broadcastSignedTxAmount": "Betrag",
@@ -233,12 +216,10 @@
   "coreSwapsChainFailedRefunding": "Der Swap wird in Kürze zurückerstattet.",
   "sendSelectAmount": "Betrag auswählen",
   "sellKYCRejected": "KYC-Prüfung abgelehnt",
-  "electrumNetworkLiquid": "Liquid",
   "buyBelowMinAmountError": "Sie versuchen, unter dem Mindestbetrag zu kaufen.",
   "exchangeLandingFeature6": "Einheitliche Transaktionshistorie",
   "transactionStatusPaymentRefunded": "Zahlung zurückerstattet",
   "pinCodeSecurityPinTitle": "Sicherheits-PIN",
-  "electrumEmptyFieldError": "Dieses Feld darf nicht leer sein",
   "transactionStatusPaymentInProgress": "Zahlung läuft",
   "connectHardwareWalletKrux": "Krux",
   "receiveSelectNetwork": "Netzwerk auswählen",
@@ -333,7 +314,6 @@
   "dcaWalletBitcoinSubtitle": "Mindestens 0,001 BTC",
   "sendOpenTheCamera": "Kamera öffnen",
   "sendSwapId": "Swap-ID",
-  "electrumServerOnline": "Online",
   "fundExchangeAccountTitle": "Konto aufladen",
   "fundExchangeWarningTactic1": "Sie versprechen eine Rendite auf die Investition.",
   "testBackupDefaultWallets": "Standard-Wallets",
@@ -351,7 +331,6 @@
   "verifyButton": "Überprüfen",
   "swapTitle": "Interner Swap",
   "sendOutputTooSmall": "Output unterhalb der Staubgrenze",
-  "torSettingsStatusConnected": "Bereit",
   "receiveNote": "Notiz",
   "payLightningNetwork": "Lightning-Netzwerk",
   "payCorporateNameHint": "Firmenname eingeben",
@@ -359,7 +338,6 @@
   "backupSettingsFailedToDeriveKey": "Fehler beim Ableiten des Sicherungsschlüssels",
   "googleDriveProvider": "Google Drive",
   "sellAccountName": "Kontoname",
-  "statusCheckUnknown": "Unbekannt",
   "howToDecideVaultLocationText2": "Ein benutzerdefinierter Speicherort kann je nach Wahl deutlich sicherer sein. Sie müssen jedoch auch sicherstellen, dass Sie die Sicherungsdatei nicht verlieren und das Gerät, auf dem Ihre Sicherungsdatei gespeichert ist, nicht verloren geht.",
   "logSettingsLogsTitle": "Protokolle",
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Diese einzigartige Kontonummer wird nur für Sie erstellt.",
@@ -378,7 +356,6 @@
   "testBackupDecryptVault": "Tresor entschlüsseln",
   "addressCardCopiedMessage": "Adresse in Zwischenablage kopiert",
   "totalFeeLabel": "Gesamtgebühren",
-  "mempoolCustomServerBottomSheetDescription": "Geben Sie die URL des benutzerdefinierten Mempool-Servers ein. Der Server wird vor dem Speichern überprüft.",
   "sellBelowMinAmountError": "Sie versuchen, unterhalb des Mindestbetrags dieser Wallet zu verkaufen.",
   "buyAwaitingConfirmation": "Warten auf Bestätigung",
   "payExpired": "Abgelaufen",
@@ -442,7 +419,6 @@
   "receivePaymentReceived": "Zahlung erhalten!",
   "howToDecideBackupText1": "Eine der häufigsten Ursachen, warum Menschen ihre Bitcoin verlieren, ist der Verlust ihrer physischen Sicherung. Jeder, der Ihre physische Sicherung findet, kann alle Ihre Bitcoin entnehmen. Wenn Sie sehr zuversichtlich sind, dass Sie sie gut verstecken und nie verlieren werden, ist dies eine gute Option.",
   "payCoinjoinCompleted": "CoinJoin abgeschlossen",
-  "electrumAddCustomServer": "Benutzerdefinierten Server hinzufügen",
   "rbfSatsPerVbyte": "sats/vB",
   "broadcastSignedTxDoneButton": "Fertig",
   "sendRecommendedFee": "Empfohlen: {rate} Sat/vB",
@@ -460,7 +436,6 @@
   "sendServerNetworkFees": "Server-Netzwerkgebühren",
   "importWatchOnlyImport": "Importieren",
   "backupWalletBackupButton": "Sicherung",
-  "mempoolSettingsTitle": "Mempool-Server",
   "sellSendPaymentFeePriority": "Priorität",
   "sellWalletBalance": "Guthaben: {amount}",
   "@sellWalletBalance": {
@@ -540,7 +515,6 @@
   "fundExchangeInfoTransferCode": "Sie müssen den Überweisungscode als „Nachricht“ oder „Verwendungszweck“ bei der Zahlung angeben.",
   "hwChooseDevice": "Wählen Sie die Hardware-Wallet aus, die Sie verbinden möchten.",
   "transactionListNoTransactions": "Noch keine Transaktionen.",
-  "torSettingsConnectionStatus": "Verbindungsstatus",
   "backupInstruction1": "Wenn Sie Ihre 12 Wörter (Seed-Phrase) verlieren, können Sie den Zugriff auf die Bitcoin-Wallet nicht wiederherstellen.",
   "sendErrorInvalidAddressOrInvoice": "Ungültige Bitcoin-Adresse oder Invoice.",
   "sendErrorUnsupportedQrCodeFormat": "Nicht unterstütztes QR-Code-Format",
@@ -594,7 +568,6 @@
   },
   "payShowQrCode": "QR-Code anzeigen",
   "onboardingRecoverWalletButtonLabel": "Wallet wiederherstellen",
-  "torSettingsPortValidationEmpty": "Bitte geben Sie eine Portnummer ein.",
   "swapAvailableBalance": "Verfügbares Guthaben",
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Zahlungsbeschreibung",
   "coreSwapsLnSendPending": "Swap wurde noch nicht eingeleitet.",
@@ -627,7 +600,6 @@
   "paySecurityAnswer": "Sicherheitsantwort",
   "importQrDeviceError": "Wallet-Import fehlgeschlagen",
   "onboardingSplashDescription": "Souveräne, selbstverwahrte reine Bitcoin-Wallet und Bitcoin-Börse.",
-  "statusCheckOffline": "Offline",
   "fundExchangeCrIbanCrcDescriptionEnd": ". Das Guthaben wird Ihrem Konto gutgeschrieben.",
   "payAccount": "Konto",
   "testBackupGoogleDrivePrivacyPart2": "werden nicht ",
@@ -640,7 +612,6 @@
   "autoswapWarningDontShowAgain": "Diese Warnung nicht mehr anzeigen.",
   "sellInsufficientBalance": "Unzureichendes Wallet-Guthaben",
   "recoverWalletButton": "Wallet wiederherstellen",
-  "mempoolCustomServerDeleteMessage": "Sind Sie sicher, dass Sie diesen benutzerdefinierten Mempool-Server löschen möchten? Anschließend wird der Standardserver verwendet.",
   "exchangeAppSettingsValidationWarning": "Bitte legen Sie vor dem Speichern sowohl die Sprach- als auch die Währungseinstellungen fest.",
   "sellCashPickup": "Bargeldabholung",
   "coreSwapsLnReceivePaid": "Der Absender hat die Rechnung bezahlt.",
@@ -656,7 +627,6 @@
   "confirmButton": "Bestätigen",
   "transactionSwapInfoClaimableTransfer": "Der Swap wird innerhalb weniger Sekunden automatisch abgeschlossen. Ist dies nicht der Fall, können Sie die Einlösung manuell versuchen, indem Sie auf die Schaltfläche „Swap erneut einlösen“ tippen.",
   "payActualFee": "Tatsächliche Gebühren",
-  "electrumValidateDomain": "Gültige Domain",
   "importQrDeviceJadeFirmwareWarning": "Stellen Sie sicher, dass Ihr Gerät auf die neueste Firmware aktualisiert ist.",
   "buyInputContinue": "Fortfahren",
   "importQrDeviceJadeStep3": "Folgen Sie den Anweisungen auf dem Gerät, um die Jade zu entsperren.",
@@ -701,28 +671,17 @@
   "pinCodeCreateTitle": "Neue PIN erstellen",
   "swapTransferRefundInProgressTitle": "Swap-Rückerstattung läuft",
   "swapYouReceive": "Sie erhalten",
-  "electrumInvalidRetryError": "Ungültiger Wiederholungswert: {value}.",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Netzwerk auswählen",
   "informationWillNotLeave": "Diese Informationen ",
   "backupWalletInstructionSecurityRisk": "Jeder mit Zugriff auf Ihre 12-Wort-Sicherung kann Ihre Bitcoins stehlen. Bewahren Sie sie sicher auf.",
   "sellCadBalance": "CAD-Guthaben",
   "doNotShareWarning": "ZEIGE SIE NIEMANDEM",
-  "torSettingsPortNumber": "Portnummer",
   "payNameHint": "Name des Empfängers eingeben",
   "pleaseWaitFetching": "Bitte warten Sie, während Ihre Sicherungsdatei abgerufen wird.",
   "backupWalletPhysicalBackupTag": "Vertrauenslos (benötigt etwas Zeit)",
-  "electrumReset": "Zurücksetzen",
   "payInsufficientBalanceError": "Das Guthaben in der ausgewählten Wallet reicht nicht aus, um diesen Zahlungsauftrag auszuführen.",
   "backupCompletedTitle": "Sicherung abgeschlossen!",
   "sendHighFeeWarning": "Warnung: hohe Gebühren.",
-  "electrumStopGapNegativeError": "Stop-Gap kann nicht negativ sein.",
   "walletButtonSend": "Senden",
   "backupSettingsExportVault": "Tresor exportieren",
   "autoswapRecipientRequired": "*",
@@ -732,17 +691,6 @@
   "sellPriceWillRefreshIn": "Der Preis wird aktualisiert in ",
   "buyVerifyIdentity": "Identität verifizieren",
   "exchangeDcaCancelDialogConfirmButton": "Ja, beenden",
-  "electrumServerUrlHint": "{network} {environment} Server-URL.",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "payEmailHint": "E-Mail-Adresse eingeben",
   "backupWalletGoogleDrivePermissionWarning": "Google wird Sie bitten, personenbezogene Daten mit dieser App zu teilen.",
   "importQrDeviceSeedsignerStep9": "Geben Sie einen Namen für Ihre SeedSigner-Wallet ein und tippen Sie auf „Importieren“.",
@@ -775,14 +723,6 @@
   },
   "broadcastSignedTxReviewTransaction": "Transaktion überprüfen",
   "importQrDeviceKeystoneStep5": "Wählen Sie „BULL“ aus der Liste der Wallets.",
-  "electrumLoadFailedError": "Server konnten nicht geladen werden.",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "buyAccelerateTransaction": "Transaktion beschleunigen",
   "backupSettingsTested": "Getestet",
   "receiveLiquidConfirmationMessage": "Bestätigung in wenigen Sekunden.",
@@ -797,7 +737,6 @@
   "testBackupVerify": "Überprüfen",
   "transactionDetailLabelCreatedAt": "Erstellt am",
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentinien",
-  "electrumAdvancedOptions": "Erweiterte Optionen",
   "autoswapWarningCardSubtitle": "Tippen Sie zum Deaktivieren, Konfigurieren oder um mehr zu erfahren",
   "transactionLabelSendAmount": "Sendebetrag",
   "testedStatus": "Getestet",
@@ -884,7 +823,6 @@
     }
   },
   "fundExchangeWarningConfirmation": "Ich bestätige, dass ich nicht von jemand anderem gebeten wurde, Bitcoin für ihn zu kaufen.",
-  "mempoolCustomServerDeleteTitle": "Benutzerdefinierten Server löschen?",
   "confirmSendTitle": "Senden bestätigen",
   "buyKYCLevel1": "Stufe 1 – Basis",
   "sendErrorAmountAboveMaximum": "Betrag über Höchstbetrag: {maxLimit} sats.",
@@ -939,7 +877,6 @@
   "sendUnconfirmed": "Unbestätigt",
   "testBackupRetrieveVaultDescription": "Testen Sie, um sicherzustellen, dass Sie Ihren verschlüsselten Tresor abrufen können.",
   "fundExchangeLabelCvu": "CVU",
-  "electrumStopGap": "Stop Gap",
   "payBroadcastingTransaction": "Transaktion wird übertragen…",
   "fiatCurrencySettingsLabel": "Fiat-Währung",
   "withdrawConfirmAmount": "Betrag",
@@ -953,7 +890,6 @@
   "walletDetailsDerivationPathLabel": "Ableitungspfad",
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin-Adresse",
   "transactionDetailLabelExchangeRate": "Wechselkurs",
-  "electrumServerOffline": "Offline",
   "sendTransferFee": "Swap-Gebühr",
   "testBackupPhysicalBackupDescription": "Schreiben Sie Ihre 12 Wörter (Seed-Phrase) auf ein Stück Papier. Bewahren Sie sie sicher auf und achten Sie darauf, dass Sie sie nicht verlieren.",
   "sendInitiatingSwap": "Swap wird eingeleitet…",
@@ -972,22 +908,6 @@
     }
   },
   "payDecodingInvoice": "Invoice wird entschlüsselt…",
-  "electrumStopGapTooHighError": "Stop Gap scheint zu hoch zu sein. Maximal {maxStopGap}.",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Timeout scheint zu hoch zu sein (maximal {maxTimeout} Sekunden).",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "Sofortzahlungen",
   "priceChartFetchingHistory": "Preisverlauf wird abgerufen…",
   "sellDone": "Fertig",
@@ -999,7 +919,6 @@
   "importQrDeviceSpecterStep8": "Tippen Sie auf Ihrem mobilen Gerät auf „Kamera öffnen“.",
   "sellSendPaymentContinue": "Fortfahren",
   "coreSwapsStatusPending": "Ausstehend",
-  "electrumDragToReorder": "(Drücken und halten zum Verschieben und Ändern der Priorität)",
   "autoswapTriggerAtBalanceInfoText": "Auto-Swap wird ausgelöst, wenn Ihr Guthaben diesen Höchstbetrag überschreitet.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptowährungs-Tauschdienste sind in der mobilen App von Bull Bitcoin nicht möglich.",
   "sendCustomFeeRate": "Benutzerdefinierter Gebührensatz",
@@ -1046,14 +965,6 @@
   "buyInputKycPending": "KYC-Identitätsprüfung ausstehend",
   "importWatchOnlySelectDerivation": "Ableitung auswählen",
   "hwPassport": "Foundation Passport",
-  "electrumInvalidStopGapError": "Ungültiger Stop Gap-Wert: {value}.",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Nur für größere Transaktionen über 30.000 €",
   "walletDetailsSignerDeviceNotSupported": "Nicht unterstützt",
   "exchangeLandingDisclaimerLegal": "Der Zugang zu den Handelsdiensten ist auf Länder beschränkt, in denen Bull Bitcoin legal tätig ist, und kann eine Identitätsprüfung erfordern.",
@@ -1092,14 +1003,6 @@
   "buyInputKycMessage": "Sie müssen zuerst die Identitätsprüfung abschließen.",
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Juristische Identifikationsnummer (Costa Rica)",
   "sendSats": "sats",
-  "electrumInvalidTimeoutError": "Ungültiger Timeout-Wert: {value}.",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeKycLevelLimited": "Begrenzt",
   "withdrawConfirmEmail": "E-Mail",
   "buyNetworkFees": "Netzwerkgebühren",
@@ -1160,7 +1063,6 @@
   "testBackupGoogleDrivePrivacyPart1": "Diese Informationen ",
   "connectHardwareWalletKeystone": "Keystone",
   "importWalletTitle": "Neue Wallet hinzufügen",
-  "mempoolSettingsDefaultServer": "Standard-Server",
   "sendPasteAddressOrInvoice": "Zahlungsadresse oder Invoice einfügen",
   "swapToLabel": "An",
   "payLoadingRecipients": "Empfänger werden geladen…",
@@ -1179,7 +1081,6 @@
   "exchangeSupportChatInputHint": "Nachricht eingeben…",
   "electrumTestnet": "Testnet",
   "sellSelectWallet": "Wallet auswählen",
-  "mempoolCustomServerAdd": "Benutzerdefinierten Server hinzufügen",
   "sendHighFeeWarningDescription": "Gesamtgebühr beträgt {feePercent}% des Betrags, den Sie senden.",
   "@sendHighFeeWarningDescription": {
     "placeholders": {
@@ -1234,10 +1135,8 @@
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Ihr Transfercode.",
   "recoverVia12WordsDescription": "Stellen Sie Ihre Wallet mit 12 Wörtern wieder her.",
   "dcaEnterLightningAddressLabel": "Lightning-Adresse eingeben",
-  "statusCheckOnline": "Online",
   "buyPayoutMethod": "Auszahlungsmethode",
   "exchangeAmountInputTitle": "Betrag eingeben",
-  "electrumCloseTooltip": "Schließen",
   "payIbanHint": "IBAN eingeben",
   "sendCoinConfirmations": "{count} Bestätigungen",
   "@sendCoinConfirmations": {
@@ -1269,7 +1168,6 @@
   "exchangeAccountInfoEmailLabel": "E-Mail",
   "sendSelectCoinsManually": "Coins manuell auswählen",
   "importMnemonicEmpty": "Leer",
-  "electrumBitcoinServerInfo": "Geben Sie die Serveradresse im Format: Host:Port (z.B. example.com:50001) ein.",
   "sendErrorInsufficientBalanceForSwap": "Nicht genug Guthaben, um diesen Swap über Liquid zu bezahlen, und nicht innerhalb der Swap-Grenzwerte, um über Bitcoin zu zahlen.",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "Wählen Sie in der Bull Bitcoin-App Ihren bevorzugten Ableitungstyp. Wenn Sie unsicher sind, wählen Sie „SegWit (BIP84)“.",
@@ -1295,17 +1193,14 @@
   "fundExchangeETransferLabelBeneficiaryName": "Als E-Transfer-Empfänger verwenden",
   "backupWalletErrorFileSystemPath": "Dateisystempfad nicht ausgewählt.",
   "coreSwapsLnSendCanCoop": "Swap wird in Kürze abgeschlossen.",
-  "electrumServerNotUsed": "Nicht verwendet",
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Physische Sicherung:",
   "payDebitCardNumber": "Debitkartennummer",
   "receiveRequestInboundLiquidity": "Kapazität anfordern",
   "backupWalletHowToDecideBackupMoreInfo": "Besuchen Sie recoverbull.com für weitere Informationen.",
   "exchangeSupportChatEmptyState": "Noch keine Nachrichten. Starten Sie ein Gespräch!",
   "payExternalWalletDescription": "Von einer anderen Bitcoin-Wallet bezahlen",
-  "electrumRetryCountEmptyError": "Wiederholungen kann nicht leer sein.",
   "physicalBackupTag": "Vertrauenslos (benötigt etwas Zeit)",
   "swapExternalAddressHint": "Externe Wallet-Adresse eingeben.",
-  "torSettingsDescConnecting": "Tor-Verbindung wird aufgebaut",
   "appleICloudProvider": "Apple iCloud",
   "exchangeAccountInfoVerificationNotVerified": "Nicht verifiziert",
   "fundExchangeWarningDescription": "Wenn jemand Sie auffordert, Bitcoin zu kaufen oder Ihnen „zu helfen“, seien Sie vorsichtig, denn möglicherweise versucht er, Sie zu betrügen!",
@@ -1329,7 +1224,6 @@
       }
     }
   },
-  "torSettingsPortValidationInvalid": "Bitte geben Sie eine gültige Nummer ein.",
   "sellBankTransfer": "Banküberweisung",
   "importQrDeviceSeedsignerStep3": "Scannen Sie einen SeedQR oder geben Sie Ihren 12- oder 24-Wort-Seed ein.",
   "replaceByFeeFastestTitle": "Schnellste",
@@ -1450,14 +1344,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Fehler beim Löschen des benutzerdefinierten Servers",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "Boltz-Swap-Gebühr",
   "swapInfoBanner": "Swappen Sie Bitcoin nahtlos zwischen Ihren Wallets. Bewahren Sie nur Guthaben für alltägliche Ausgaben in der Wallet für Sofortzahlungen auf.",
   "payRBFEnabled": "RBF aktiviert",
@@ -1467,7 +1353,6 @@
   "networkFeesLabel": "Netzwerkgebühren",
   "backupWalletPhysicalBackupDescription": "Schreiben Sie Ihre 12 Wörter (Seed-Phrase) auf ein Stück Papier. Bewahren Sie sie sicher auf und achten Sie darauf, dass Sie sie nicht verlieren.",
   "sendSwapInProgressBitcoin": "Der Swap läuft. Bitcoin-Transaktionen können eine Weile zur Bestätigung benötigen. Sie können zum Startbildschirm zurückkehren und warten.",
-  "electrumDeleteServerTitle": "Benutzerdefinierten Server löschen",
   "buySelfie": "Selfie mit ID",
   "sellMxnBalance": "MXN-Guthaben",
   "fundExchangeWarningTactic4": "Sie bitten darum, Bitcoin an ihre Adresse zu senden.",
@@ -1530,7 +1415,6 @@
   "sendAbsoluteFees": "Gesamtgebühren",
   "rbfErrorFeeTooLow": "Sie müssen den Gebührensatz um mindestens 1 sat/vbyte gegenüber der ursprünglichen Transaktion erhöhen.",
   "backupWalletTitle": "Sichern Sie Ihre Wallet",
-  "electrumPrivacyNoticeTitle": "Datenschutzhinweis",
   "receiveLiquid": "Liquid",
   "payOpenChannelRequired": "Für diese Zahlung ist das Öffnen eines Kanals erforderlich",
   "transactionDetailLabelBitcoinTxId": "Bitcoin Transaktions-ID",
@@ -1609,14 +1493,6 @@
   "fundExchangeETransferDescription": "Jeder Betrag, den Sie von Ihrer Bank über E-Mail E-Transfer mit den untenstehenden Informationen senden, wird innerhalb von wenigen Minuten auf Ihr Bull Bitcoin-Guthaben gutgeschrieben.",
   "sendClearSelection": "Auswahl löschen",
   "fundExchangeLabelClabe": "CLABE",
-  "statusCheckLastChecked": "Zuletzt überprüft: {time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "Schnell und einfach",
   "sellPayoutAmount": "Auszahlungsbetrag",
   "dcaConfirmFrequencyDaily": "Jeden Tag",
@@ -1658,14 +1534,6 @@
   "appStartupErrorTitle": "Startup-Fehler",
   "sendTitle": "Senden",
   "importQrDeviceSeedsignerStep4": "Wählen Sie „Export Xpub“.",
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Transitnummer",
   "importQrDeviceSpecterStep5": "Wählen Sie „Master Public Keys“.",
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
@@ -1689,7 +1557,6 @@
   "sendSwapCancelled": "Swap storniert",
   "backupWalletGoogleDrivePrivacyMessage4": "niemals ",
   "swapTransferCompletedTitle": "Swap abgeschlossen",
-  "torSettingsStatusDisconnected": "Getrennt",
   "exchangeDcaCancelDialogTitle": "Bitcoin-Sparplan beenden?",
   "sellSendPaymentMxnBalance": "MXN-Guthaben",
   "fundExchangeSinpeLabelRecipientName": "Empfängername",
@@ -1699,14 +1566,6 @@
   "importQrDeviceKruxInstructionsTitle": "Krux-Anleitung",
   "transactionOrderLabelOriginName": "Ursprungsname",
   "importQrDeviceKeystoneInstructionsTitle": "Keystone-Anleitung",
-  "electrumSavePriorityFailedError": "Fehler beim Speichern der Serverpriorität",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "globalDefaultLiquidWalletLabel": "Sofortzahlungen",
   "sendTypeSwap": "Swap",
   "sendErrorAmountExceedsMaximum": "Betrag überschreitet Höchstgrenze.",
@@ -1811,7 +1670,6 @@
     }
   },
   "transactionDetailLabelAddressNotes": "Adressnotizen",
-  "electrumDefaultServers": "Standardserver",
   "onboardingRecoverWallet": "Wallet wiederherstellen",
   "scanningProgressLabel": "Wird gescannt: {percent}%",
   "@scanningProgressLabel": {
@@ -1827,7 +1685,6 @@
   "screenshotLabel": "Screenshot",
   "receiveLightning": "Lightning",
   "sendRecipientAddressOrInvoice": "Empfängeradresse oder Invoice",
-  "mempoolCustomServerUrlEmpty": "Bitte geben Sie eine Server-URL ein.",
   "importQrDeviceKeystoneName": "Keystone",
   "payBitcoinAddress": "Bitcoin-Adresse",
   "buyInsufficientBalanceTitle": "Unzureichendes Guthaben",
@@ -1840,7 +1697,6 @@
   "connectHardwareWalletColdcardQ": "Coldcard Q",
   "addressCardIndexLabel": "Index:",
   "dcaSetupContinue": "Fortfahren",
-  "electrumFormatError": "Verwenden Sie das Host:Port-Format (z.B. example.com:50001).",
   "transactionFeesDeductedFrom": "Diese Gebühren werden vom überwiesenen Betrag abgezogen.",
   "buyConfirmYouPay": "Sie zahlen",
   "importWatchOnlyTitle": "Watch-Only importieren",
@@ -1888,10 +1744,8 @@
   "paySelectCoinsManually": "Coins manuell auswählen",
   "replaceByFeeActivatedLabel": "Gebührenerhöhung aktiviert",
   "sendPaymentProcessing": "Die Zahlung wird bearbeitet. Das kann eine Minute dauern.",
-  "electrumDefaultServersInfo": "Um Ihre Privatsphäre zu schützen, werden Standardserver nicht verwendet, wenn benutzerdefinierte Server konfiguriert sind.",
   "transactionDetailLabelPayoutMethod": "Auszahlungsmethode",
   "payPriceRefreshIn": "Der Preis wird aktualisiert in ",
-  "electrumProtocolError": "Protokoll nicht enthalten (ssl:// oder tcp://).",
   "receivePayjoinFailQuestion": "Keine Zeit zum Warten oder Payjoin ist auf der Absenderseite fehlgeschlagen?",
   "importQrDeviceSeedsignerStep1": "Öffnen Sie Ihren SeedSigner.",
   "exchangeRecipientsTitle": "Empfänger",
@@ -1903,7 +1757,6 @@
   "importQrDeviceJadeStep1": "Schalten Sie Ihr Jade-Gerät ein",
   "payNotLoggedInDescription": "Sie sind nicht angemeldet. Bitte melden Sie sich an, um die Bezahlfunktion weiterhin nutzen zu können.",
   "testBackupEncryptedVaultTag": "Einfach und schnell (1 Minute)",
-  "torSettingsProxyPort": "Tor-Proxy-Port",
   "fundExchangeErrorLoadingDetails": "Die Zahlungsdetails konnten derzeit nicht geladen werden. Bitte versuchen Sie es erneut und wählen Sie eine andere Zahlungsmethode oder versuchen Sie es später erneut.",
   "fundExchangeErrorTitleOrdPo404": "Zahlungsoption nicht verfügbar",
   "fundExchangeErrorTitleRcpPo404": "Zahlungsoption nicht verfügbar",
@@ -1926,7 +1779,6 @@
   "fundExchangeSpeiTransfer": "SPEI-Überweisung",
   "transactionFilterSell": "Verkauf",
   "fundExchangeSinpeWarningNoBitcoinDescription": "das Wort „Bitcoin“ oder „Crypto“ in der Zahlungsbeschreibung. Dies wird Ihre Zahlung blockieren.",
-  "electrumAddServer": "Server hinzufügen",
   "addressViewCopyAddress": "Adresse kopieren",
   "receiveBitcoin": "Bitcoin",
   "sellErrorNoWalletSelected": "Es wurde keine Wallet zum Senden der Zahlung ausgewählt.",
@@ -1957,7 +1809,6 @@
   "coreScreensConfirmSend": "Senden bestätigen",
   "transactionDetailLabelSwapStatus": "Swap-Status",
   "transactionDetailLabelAmountSent": "Gesendeter Betrag",
-  "electrumStopGapEmptyError": "Stop Gap kann nicht leer sein.",
   "typeLabel": "Typ:",
   "buyInputInsufficientBalance": "Unzureichendes Guthaben",
   "withdrawConfirmClabe": "CLABE",
@@ -2038,7 +1889,6 @@
     }
   },
   "sendSwapRefundCompleted": "Swap-Rückerstattung abgeschlossen",
-  "torSettingsStatusUnknown": "Unbekannter Status",
   "sendConfirmSwap": "Swap bestätigen",
   "sendSending": "Wird gesendet…",
   "withdrawConfirmAccount": "Konto",
@@ -2052,20 +1902,11 @@
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "buyStandardWithdrawal": "Standardauszahlung",
   "swapContinue": "Fortfahren",
-  "electrumAddFailedError": "Fehler beim Hinzufügen des benutzerdefinierten Servers",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelTransferFees": "Swap-Gebühren",
   "importWalletSectionGeneric": "Generische Wallets",
   "backupSettingsNotTested": "Nicht getestet",
   "googleDrivePrivacyMessage": "Google wird Sie bitten, personenbezogene Daten mit dieser App zu teilen.",
   "errorGenericTitle": "Ups! Etwas ist schief gelaufen",
-  "torSettingsStatusConnecting": "Wird verbunden…",
   "receiveSwapID": "Swap-ID",
   "backupWalletHowToDecideBackupModalTitle": "Wie entscheiden",
   "backupSettingsLabel": "Wallet sichern",
@@ -2142,7 +1983,6 @@
   "transactionSwapStatusTransferStatus": "Swap-Status",
   "importQrDeviceSeedsignerStep8": "Scannen Sie den QR-Code auf Ihrem SeedSigner.",
   "backupKeyTitle": "Sicherungsschlüssel",
-  "electrumDeletePrivacyNotice": "Datenschutzerklärung:\n\nDurch die Verwendung Ihres eigenen Knotens wird sichergestellt, dass keine Dritten Ihre IP-Adresse mit Ihren Transaktionen in Verbindung bringen können. Durch das Löschen Ihres letzten benutzerdefinierten Servers stellen Sie eine Verbindung zu einem Bull Bitcoin-Server her.",
   "dcaConfirmFrequencyWeekly": "Jede Woche",
   "payInstitutionNumberHint": "Institutsnummer eingeben",
   "sendSlowPaymentWarning": "Zahlung könnte lange dauern.",
@@ -2176,7 +2016,6 @@
   "confirmLogoutTitle": "Abmeldung bestätigen",
   "swapTransferCompletedMessage": "Danke, dass Sie gewartet haben! Der Swap wurde erfolgreich abgeschlossen.",
   "encryptedVaultTag": "Einfach und schnell (1 Minute)",
-  "electrumDelete": "Löschen",
   "testBackupGoogleDrivePrivacyPart4": "niemals ",
   "sendCoinControl": "Coin-Auswahl",
   "withdrawSuccessOrderDetails": "Bestelldetails",
@@ -2186,7 +2025,6 @@
   "paySuccessfulPayments": "Erfolgreich",
   "navigationTabWallet": "Wallet",
   "howToDecideBackupTitle": "Wie entscheiden",
-  "statusCheckTitle": "Servicestatus",
   "savingToDevice": "Wird auf Ihr Gerät gespeichert…",
   "fundExchangeLabelSwiftCode": "SWIFT-Code",
   "buyEnterBitcoinAddress": "Bitcoin-Adresse eingeben",
@@ -2327,7 +2165,6 @@
   "swapProgressRefundMessage": "Beim Swap ist ein Fehler aufgetreten. Ihre Rückerstattung läuft.",
   "dcaConfirmContinue": "Fortfahren",
   "decryptVaultButton": "Tresor entschlüsseln",
-  "electrumNetworkBitcoin": "Bitcoin",
   "paySecureBitcoinWallet": "Sichere Bitcoin-Wallet",
   "exchangeAppSettingsDefaultCurrencyLabel": "Standardwährung",
   "payRecipientName": "Empfängername",
@@ -2375,7 +2212,6 @@
   "exchangeAccountInfoVerificationLimitedVerification": "Begrenzte Überprüfung",
   "sendBuildingTransaction": "Transaktion wird erstellt…",
   "fundExchangeMethodEmailETransfer": "E-Mail E-Transfer",
-  "electrumConfirm": "Bestätigen",
   "transactionDetailLabelOrderNumber": "Bestellnummer",
   "transactionDetailLabelPaymentDescription": "Zahlungsbeschreibung",
   "pickPasswordInsteadButton": "Zu Passwort wechseln >>",
@@ -2486,14 +2322,12 @@
   "fundExchangeCrIbanUsdDescriptionEnd": "Das Guthaben wird Ihrem Konto gutgeschrieben.",
   "swapProgressTitle": "Interner Swap",
   "pinButtonConfirm": "Bestätigen",
-  "electrumInvalidNumberError": "Bitte geben Sie eine gültige Nummer ein.",
   "coreWalletTransactionStatusConfirmed": "Bestätigt",
   "importQrDevicePassportStep12": "Einrichtung abgeschlossen.",
   "payRecipientDetails": "Angaben zum Empfänger",
   "fundExchangeRestrictedTitle": "Einzahlung nicht verfügbar",
   "fundExchangeRestrictedMessage": "Einzahlungen sind für Ihr Konto nicht verfügbar. Bitte kontaktieren Sie den Support für weitere Informationen.",
   "fundExchangeWarningTitle": "Achtung: Betrugsrisiko",
-  "electrumRetryCount": "Wiederholungen",
   "walletDetailsDescriptorLabel": "Descriptor",
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-Anleitung",
   "payFilterByType": "Nach Typ filtern",
@@ -2506,7 +2340,6 @@
   "sendEstimatedDeliveryFewHours": "In wenigen Stunden",
   "dcaConfirmFrequencyMonthly": "Jeden Monat",
   "importWatchOnlyScriptType": "Skript-Typ",
-  "electrumCustomServers": "Benutzerdefinierter Electrum-Server",
   "transactionStatusSwapFailed": "Swap fehlgeschlagen",
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Juristische Identifikationsnummer (Costa Rica)",
   "continueButton": "Fortfahren",
@@ -2531,9 +2364,7 @@
   "mempoolCustomServerSaveSuccess": "Benutzerdefinierter Server erfolgreich gespeichert",
   "sendErrorBalanceTooLowForMinimum": "Guthaben zu niedrig für den Mindest-Swap-Betrag.",
   "testBackupSuccessMessage": "Sie können den Zugriff auf eine verlorene Bitcoin-Wallet wiederherstellen.",
-  "electrumTimeout": "Zeitüberschreitung (Sekunden)",
   "transactionDetailLabelOrderStatus": "Bestellstatus",
-  "electrumSaveFailedError": "Erweiterte Optionen konnten nicht gespeichert werden.",
   "importQrDeviceKruxStep6": "Das war's!",
   "payUnauthenticatedError": "Sie sind nicht authentifiziert. Bitte melden Sie sich an, um fortzufahren.",
   "payClabe": "CLABE",
@@ -2581,7 +2412,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "Es sollte kein Protokoll angegeben werden, SSL wird automatisch verwendet.",
   "sendDeviceConnected": "Geräte angeschlossen",
   "swapErrorAmountAboveMaximum": "Höchstbetrag: {max} sats.",
   "@swapErrorAmountAboveMaximum": {
@@ -2612,7 +2442,6 @@
     }
   },
   "sendSwapInProgressInvoice": "Der Swap läuft. Die Invoice wird in wenigen Sekunden bezahlt.",
-  "electrumRetryCountNegativeError": "Wiederholungen kann nicht negativ sein.",
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Dies als Kontonummer hinzufügen",
   "importQrDeviceJadeStep4": "Wählen Sie „Options“ aus dem Hauptmenü.",
   "backupWalletSavingToDeviceTitle": "Auf Ihr Gerät speichern",
@@ -2629,14 +2458,6 @@
   "paySendMax": "Max",
   "googleDriveSignInMessage": "Sie müssen sich bei Google Drive anmelden.",
   "transactionDetailLabelCompletedAt": "Abgeschlossen am",
-  "electrumDeleteConfirmation": "Möchten Sie diesen Server wirklich löschen?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Wählen Sie einen Wallet-Typ zum Importieren.",
   "importQrDeviceKeystoneStep1": "Schalten Sie Ihren Keystone ein",
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministische Entropie",
@@ -2660,7 +2481,6 @@
   "coreSwapsActionClaim": "Einlösen",
   "payShareInvoice": "Invoice teilen",
   "walletDetailsSignerDeviceLabel": "Signiergerät",
-  "electrumPrivacyNoticeContent1": "Datenschutzhinweis: Mit Ihrem eigenen Knoten wird sichergestellt, dass kein Dritter Ihre IP-Adresse mit Ihren Transaktionen verknüpfen kann.",
   "testBackupEnterKeyManually": "Sicherungsschlüssel manuell eingeben >>",
   "fundExchangeWarningTactic3": "Sie sagen, sie arbeiten für Schulden- oder Steuereintreibung.",
   "payCoinjoinFailed": "CoinJoin fehlgeschlagen",
@@ -2750,7 +2570,6 @@
   "payCompleted": "Zahlung abgeschlossen!",
   "sellKYCPending": "KYC-Prüfung läuft",
   "buyGetConfirmedFaster": "Beschleunige die Bestätigung",
-  "electrumEnableSsl": "SSL aktivieren",
   "payCustomFee": "Benutzerdefinierte Gebühren",
   "buyConfirmExpress": "Express-Zahlung bestätigen",
   "fundExchangeBankTransferWireTimeframe": "Jeder Betrag, den Sie senden, wird innerhalb von 1–2 Werktagen zu Ihrem Bull Bitcoin-Guthaben hinzugefügt.",
@@ -2789,12 +2608,8 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Port muss zwischen 1 und 65535 sein",
-  "electrumTimeoutEmptyError": "Timeout kann nicht leer sein.",
-  "electrumPrivacyNoticeContent2": "Allerdings werden diese Informationen Bull Bitcoin bekannt, wenn Sie Transaktionen über Mempool anzeigen, indem Sie auf Ihre Transaktions-ID oder Empfänger-Detailseite tippen.",
   "exchangeAccountInfoVerificationIdentityVerified": "Identität bestätigt",
   "importColdcardScanPrompt": "Scannen Sie den QR-Code von Ihrem Coldcard Q.",
-  "torSettingsDescConnected": "Tor-Proxy läuft und ist bereit",
   "backupSettingsEncryptedVault": "Verschlüsselter Tresor",
   "autoswapAlwaysBlockInfoDisabled": "Bei Deaktivierung erhalten Sie die Möglichkeit, einen Auto-Swap zuzulassen, der aufgrund hoher Gebühren blockiert wird.",
   "dcaSetupTitle": "Sparplan einrichten",
@@ -2817,7 +2632,6 @@
   "pinCodeConfirm": "Bestätigen",
   "mempoolNetworkLiquidTestnet": "Liquid-Testnet",
   "payBitcoinOnChain": "Bitcoin On-Chain",
-  "torSettingsDescDisconnected": "Tor-Proxy läuft nicht",
   "buyInstantPaymentWallet": "Wallet für Sofortzahlungen",
   "autoswapMaxBalanceLabel": "Maximales Sofortzahlungs-Guthaben",
   "satsBitcoinUnitSettingsLabel": "In Sats anzeigen",
@@ -2845,7 +2659,6 @@
   "autoswapRecipientWalletRequired": "*",
   "pinCodeLoading": "Wird geladen",
   "fundExchangeCrIbanUsdLabelRecipientName": "Empfängername",
-  "electrumPrivacyNoticeSave": "Speichern",
   "save": "Speichern",
   "walletDeletionFailedOkButton": "OK",
   "sendChange": "Wechselgeld",
@@ -2858,12 +2671,10 @@
   "transactionSwapProgressCompleted": "Abgeschlossen",
   "exchangeDcaCancelDialogCancelButton": "Abbrechen",
   "importWatchOnlyType": "Typ",
-  "electrumPrivacyNoticeCancel": "Abbrechen",
   "passwordLabel": "Passwort",
   "walletBalanceUnconfirmedIncoming": "In Bearbeitung",
   "exchangeAuthOk": "OK",
   "transactionDetailLabelPayjoinCompleted": "Abgeschlossen",
-  "electrumCancel": "Abbrechen",
   "anErrorOccurred": "Es ist ein Fehler aufgetreten.",
   "transactionSwapProgressInProgress": "In Bearbeitung",
   "payFailedPayments": "Fehlgeschlagen",
@@ -2872,10 +2683,8 @@
   "autoswapSave": "Speichern",
   "cancelButton": "Abbrechen",
   "receiveSave": "Speichern",
-  "torSettingsSaveButton": "Speichern",
   "exchangeAuthLoginFailedOkButton": "OK",
   "transactionStatusInProgress": "In Bearbeitung",
-  "electrumUnknownError": "Es ist ein Fehler aufgetreten.",
   "sendAdvancedSettings": "Erweiterte Einstellungen",
   "transactionDetailLabelStatus": "Status",
   "cancel": "Abbrechen",
@@ -3189,7 +2998,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Hohe Stop-Gap-Werte verlängern die Synchronisationszeit erheblich. Lassen Sie die App im Vordergrund geöffnet, bis die Synchronisation abgeschlossen ist — Ein Wechsel in den Hintergrund kann sie unterbrechen.",
   "wizardSkipButton": "Überspringen",
   "wizardPageIndicator": "SEITE {current} / {total}",
   "wizardNextButton": "Weiter",
@@ -3391,27 +3199,7 @@
   "appStartupContactSupportMessage": "Kontaktieren Sie die Kundenbetreuung unter app.bullbitcoin.com/support.",
   "importWalletBitboxAndroidOnly": "BitBox wird nur unter Android unterstützt",
   "importWatchOnlyXpubLabel": "XPUB",
-  "mempoolServerStatusOnline": "Online",
-  "mempoolServerStatusOffline": "Offline",
-  "mempoolServerStatusChecking": "Wird geprüft…",
   "mempoolServerStatusUnknown": "Unbekannt",
-  "mempoolCustomServerSaveFailed": "Server konnte nicht gespeichert werden",
-  "mempoolCustomServerInfoDescription": "Mempool-Server werden für die Gebührenschätzung und zum Öffnen des Block-Explorers beim Anzeigen von Transaktionsdetails verwendet.",
-  "mempoolCustomServerUseSsl": "SSL verwenden",
-  "mempoolCustomServerSslAutoDetected": "(Automatisch erkannt)",
-  "mempoolCustomServerSslHelpText": "Für lokale Server (.local, private IPs) und Tor-Server (.onion) ist SSL in der Regel deaktiviert. Öffentliche IPs und Domains sollten SSL verwenden.",
-  "mempoolErrorSameAsDefault": "Diese URL ist dieselbe wie die des Standardservers. Bitte verwenden Sie eine andere URL.",
-  "mempoolErrorConnectionTimeout": "Zeitüberschreitung bei der Verbindung. Der Server ist möglicherweise langsam oder nicht erreichbar.",
-  "mempoolErrorHostNotFound": "Dieser Server konnte nicht gefunden werden. Bitte überprüfen Sie die URL und versuchen Sie es erneut.",
-  "mempoolErrorConnectionFailed": "Verbindung zum Server nicht möglich. Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-  "mempoolErrorNotMempoolServer": "Diese URL scheint kein Mempool-Server zu sein. Bitte überprüfen Sie die Adresse.",
-  "mempoolErrorServerUnavailable": "Der Server ist nicht verfügbar. Bitte versuchen Sie es später erneut.",
-  "mempoolErrorServerError": "Beim Server ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-  "mempoolErrorInvalidResponse": "Der Server hat eine ungültige Antwort zurückgegeben.",
-  "mempoolErrorInvalidUrl": "Ungültige Server-URL. Geben Sie eine gültige Domain oder IP-Adresse ein.",
-  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden",
-  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden",
-  "mempoolErrorDeleteFailed": "Fehler beim Löschen des benutzerdefinierten Servers",
   "payViewReceipt": "Beleg anzeigen",
   "paySinpeReceipt": "SINPE-Beleg",
   "transactionFilterWithdraw": "Auszahlung",
@@ -3877,7 +3665,6 @@
   "sellYouSold": "Sie haben {amount} für {fiatAmount} verkauft",
   "transactionDetailLabelRecipient": "Empfänger",
   "transactionDetailLoadError": "Die Transaktionsdetails konnten nicht geladen werden.",
-  "statusCheckDisabled": "Deaktiviert",
   "transactionDetailLabelPayjoinInProgress": "In Bearbeitung",
   "addressViewErrorWalletNotFound": "Diese Wallet konnte nicht gefunden werden.",
   "addressViewErrorLoadFailed": "Ihre Adressen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
@@ -3893,19 +3680,6 @@
   "coreSwapsStatusUnknown": "Unbekannt",
   "sendSwapExpiredTitle": "Auftrag abgelaufen",
   "sendSwapExpiredMessage": "Dieser Auftrag ist abgelaufen, bevor Guthaben gesendet wurde. Aus Ihrer Wallet wurde nichts gesendet.",
-  "torSettingsStatusCensored": "Verbindung scheint gefiltert",
-  "torSettingsDescCensored": "Tor konnte das Netzwerk nicht erreichen. Das deutet oft auf eine gefilterte Verbindung hin.",
-  "torSettingsBootstrapProgress": "Verbindung wird hergestellt… {percent} %",
-  "torSettingsEmbeddedTitle": "Integriertes Tor",
-  "torSettingsEmbeddedDescription": "Die integrierte Tor-Verbindung wird von RecoverBull und für Bitcoin-Electrum-Server mit .onion-Adresse verwendet. Der übrige Datenverkehr der App wird direkt übertragen.",
-  "torSettingsTransportMode": "Verbindungsmethode",
-  "torSettingsModeAutomatic": "Automatisch",
-  "torSettingsModeDirect": "Direkt",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Versucht zunächst, eine direkte Tor-Verbindung herzustellen, und verwendet Snowflake, wenn das Netzwerk Tor zu blockieren scheint.",
-  "torSettingsModeDirectDescription": "Stellt ohne zusätzliches Transportprotokoll eine direkte Verbindung zum Tor-Netzwerk her.",
-  "torSettingsModeSnowflakeDescription": "Nutzt von Freiwilligen betriebene Snowflake-Proxys, um Tor aus einem gefilterten Netzwerk zu erreichen.",
-  "torSettingsActiveTransport": "Aktiver Transport: {transport}",
   "sellDepositAddress": "Einzahlungsadresse",
   "payDepositAddress": "Einzahlungsadresse",
   "sellDepositAddressChangedError": "Die Einzahlungsadresse dieses Auftrags hat sich unerwartet geändert. Senden Sie zu Ihrer Sicherheit keine Zahlung für diesen Auftrag. Gehen Sie zurück und erstellen Sie einen neuen Auftrag.",
@@ -3920,7 +3694,6 @@
   "swapErrorRateLimited": "Zu viele Anfragen. Warten Sie {seconds} Sekunden und versuchen Sie es erneut.",
   "announcementAppUpdateRequiredTitle": "BULL aktualisieren",
   "announcementAppUpdateRequiredDescription": "Um Lightning-Zahlungen und den Swap-Dienst zu nutzen, aktualisieren Sie die BULL-App bitte auf die neue Version.",
-  "mempoolErrorNetworkMismatch": "Dieser Server verwendet ein anderes Bitcoin-Netzwerk.",
   "transactionPayjoinFallbackProcessing": "Wird als reguläre Transaktion verarbeitet…",
   "swapErrorRouteUnavailable": "{fromNetwork} → {toNetwork} ist nicht verfügbar.",
   "swapErrorRouteUnavailableGeneric": "Dieser Swap ist nicht verfügbar.",
@@ -3959,8 +3732,6 @@
   "exchangeSupportChatLoadMessagesError": "Nachrichten konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
   "exchangeSupportChatSendMessageError": "Ihre Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
   "exchangeSupportChatLoadAttachmentError": "Der Anhang konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
-  "statusCheckNoDefaultWalletError": "Keine Standard-Bitcoin-Wallet gefunden. Bitte legen Sie eine Standard-Wallet fest und versuchen Sie es erneut.",
-  "statusCheckResultsMayBeOutdated": "Die Ergebnisse könnten veraltet sein",
   "onboardingBackupVerificationError": "Ihre Wallet wurde wiederhergestellt, aber die Backup-Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
   "sendErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
   "sendErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
@@ -3989,8 +3760,6 @@
   "sendErrorTransactionChanged": "Die Transaktionsdetails haben sich geändert. Überprüfen Sie Betrag, Zieladresse und Gebühren und bestätigen Sie die Transaktion erneut.",
   "torSettingsExternalProxyTitle": "Externer Tor-Proxy (erweitert)",
   "torSettingsExternalProxyDescription": "Sie können Orbot im VPN-Modus verwenden, um den Netzwerkverkehr von Bull über Tor zu leiten. Wenn Sie unten den SOCKS-Port von Orbot konfigurieren, wird nur der Datenverkehr von RecoverBull und Bitcoin-Electrum-Servern mit .onion-Adresse über Tor geleitet.",
-  "torSettingsExternalProxyReachable": "Proxy erreichbar",
-  "torSettingsExternalProxyReachableDescription": "Der konfigurierte SOCKS5-Proxy hat eine Verbindung angenommen.",
   "torStatusReady": "Tor ist bereit",
   "torStatusConnecting": "Verbindung zu Tor wird hergestellt: {progress} %",
   "torStatusNotStarted": "Tor wurde nicht gestartet",
@@ -4003,37 +3772,18 @@
   "torStatusNotStartedDescription": "Der integrierte Tor startet automatisch, wenn RecoverBull oder ein Bitcoin-Server mit .onion-Adresse es benötigt.",
   "torStatusTelemetryUnavailable": "Schaltkreispfade und Datendurchsatz werden von der integrierten Tor-Engine nicht bereitgestellt.",
   "torStatusProxyEndpointLabel": "SOCKS5-Endpunkt",
-  "torSettingsExternalProxyChecking": "Proxy wird geprüft",
-  "torSettingsExternalProxyCheckingDescription": "Bull prüft den konfigurierten SOCKS5-Proxy.",
   "torSettingsExternalProxyUnavailable": "SOCKS5-Proxy nicht verfügbar",
   "torSettingsExternalProxyUnavailableDescription": "Bull konnte keine Verbindung zum konfigurierten SOCKS5-Proxy herstellen.",
-  "torSettingsExternalProxyNotChecked": "Proxy nicht geprüft",
-  "torSettingsExternalProxyNotCheckedDescription": "Bull hat den konfigurierten SOCKS5-Proxy noch nicht geprüft.",
-  "torSettingsRetry": "Erneut versuchen",
-  "torSettingsLearnAboutOrbot": "Mehr über Orbot erfahren",
-  "torSettingsOrbotLinkFailed": "Die Orbot-Website konnte nicht geöffnet werden.",
-  "torSettingsLocalProxyTitle": "Lokaler SOCKS5-Proxy (erweitert)",
-  "torSettingsLocalProxyDescription": "Sie können Orbot im VPN-Modus verwenden, um den Netzwerkverkehr von Bull über Tor zu leiten. Wenn Sie unten den SOCKS-Port von Orbot konfigurieren, wird nur der Datenverkehr von RecoverBull und Bitcoin-Electrum-Servern mit .onion-Adresse über Tor geleitet.",
-  "torSettingsLocalProxyPortHelper": "Häufig verwendeter lokaler SOCKS5-Port: 9050",
-  "torSettingsEmbeddedStatusUnknownDescription": "Der integrierte Tor hat noch keinen Verbindungsstatus gemeldet.",
-  "torSettingsLocalProxyStatus": "Status des lokalen SOCKS5-Proxys",
-  "mempoolErrorOnionRouteUnavailable": "Der .onion-Server ist nicht erreichbar. Prüfen Sie, ob Ihre Tor-Verbindung verfügbar ist, und versuchen Sie es erneut.",
-  "electrumConfiguredExternalTorUnavailable": "Ihr konfigurierter Tor-Proxy ist nicht verfügbar. Öffnen Sie die Tor-Einstellungen, um die Verbindung wiederherzustellen.",
-  "electrumOpenTorSettings": "Tor-Einstellungen öffnen",
-  "torSettingsProxyAttemptPort": "Versuchter Port: {port}",
-  "torSettingsProxyAttemptWithActivePort": "Versuchter Port: {attemptedPort} · Aktiver Port: {activePort}",
   "settingsBackupTitle": "Sicherung",
   "settingsSearchBackupKeywords": "Sicherung|Wiederherstellung|Wallet wiederherstellen|Seed sichern",
   "settingsAppTitle": "App",
   "settingsWalletTitle": "Wallet",
   "settingsExchangeTitle": "Handel",
-  "torTitle": "Tor",
   "bitcoinSettingsAutoTransferTitle": "Auto-Swap",
   "bitcoinSettingsElectrumServerTitle": "Electrum-Server-Einstellungen",
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server-Einstellungen",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
   "walletLoadFailed": "Ihre Wallets konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   "walletWarningElectrumBitcoinDown": "Bitcoin-Server nicht verfügbar",
   "walletWarningElectrumLiquidDown": "Liquid-Server nicht verfügbar",
@@ -4415,14 +4165,10 @@
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
   "settingsSourceCodeTitle": "Quellcode",
-  "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
-  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
   "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen",
   "mnemonicWordCountLabel": "Wörter",
   "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
   "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt",
-  "serverEncrypted": "Verschlüsselt",
-  "serverUnencrypted": "Unverschlüsselt",
   "backgroundTasksTitle": "Hintergrundaufgaben",
   "blockedInSystemSettings": "In den Systemeinstellungen blockiert",
   "notificationsBlockedMessage": "Benachrichtigungen sind in den Systemeinstellungen blockiert.",

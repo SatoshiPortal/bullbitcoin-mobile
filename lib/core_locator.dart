@@ -1,7 +1,7 @@
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
-import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
+import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:bull_tor/tor.dart';

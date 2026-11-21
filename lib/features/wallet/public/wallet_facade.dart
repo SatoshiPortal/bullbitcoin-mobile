@@ -1,3 +1,6 @@
+export '../domain/usecases/get_default_wallet_network_usecase.dart'
+    show GetDefaultWalletNetworkUsecase;
+
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 

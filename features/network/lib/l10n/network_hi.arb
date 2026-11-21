@@ -1,0 +1,487 @@
+{
+  "@@locale": "hi",
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "electrumTimeoutPositiveError": "टाइमआउट सकारात्मक होना चाहिए",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "mempoolSettingsCustomServer": "कस्टम सर्वर",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "electrumPrivacyNoticeSave": "सहेजें",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerAlreadyExists": "यह सर्वर पहले से ही मौजूद है",
+  "electrumServerUnreachable": "सर्वर तक नहीं पहुँचा जा सका। पता जाँचें और पुनः प्रयास करें।",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumTitle": "Electrum सर्वर सेटिंग्स",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "save": "सहेजें",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "electrumTimeoutWarning": "आपका टाइमआउट ({timeoutValue} सेकंड) इस स्टॉप गैप के लिए अनुशंसित मान ({recommended} सेकंड) से कम है।।",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "तरल",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumEmptyFieldError": "यह क्षेत्र खाली नहीं हो सकता है",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumServerOnline": "ऑनलाइन",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "torSettingsStatusConnected": "तैयार",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "statusCheckUnknown": "अज्ञात",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "mempoolCustomServerBottomSheetDescription": "अपने कस्टम mempool सर्वर का URL दर्ज करें। सर्वर को सहेजने से पहले सत्यापित किया जाएगा।",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "electrumAddCustomServer": "कस्टम सर्वर जोड़ें",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "mempoolSettingsTitle": "Mempool सर्वर",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "torSettingsConnectionStatus": "सम्पर्क करने का विवरण",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsPortValidationEmpty": "कृपया एक पोर्ट नंबर दर्ज करें",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "electrumPrivacyNoticeCancel": "रद्द करना",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "statusCheckOffline": "ऑफलाइन",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "mempoolCustomServerDeleteMessage": "क्या आप वाकई इस कस्टम mempool सर्वर को हटाना चाहते हैं? इसके बजाय डिफ़ॉल्ट सर्वर का उपयोग किया जाएगा।",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "electrumValidateDomain": "मान्य डोमेन",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumInvalidRetryError": "Invalid Retry गणना मान: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "पोर्ट नंबर",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "electrumReset": "रीसेट करें",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumStopGapNegativeError": "स्टॉप गैप नकारात्मक नहीं हो सकता",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumServerUrlHint": "{network} {environment} सर्वर यूआरएल",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "सर्वर लोड करने में विफल ",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails"
+  },
+  "electrumAdvancedOptions": "उन्नत विकल्प",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumCancel": "रद्द करना",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "mempoolCustomServerDeleteTitle": "कस्टम सर्वर हटाएं?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "electrumStopGap": "स्टॉप गैप",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumServerOffline": "ऑफलाइन",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
+  "electrumStopGapTooHighError": "स्टॉप गैप बहुत अधिक लगता है। मैक्स। {maxStopGap}",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "टाइमआउट बहुत अधिक लगता है। (Max. {maxTimeout} सेकंड)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(प्राथमिकता को खींचने और बदलने के लिए लंबे प्रेस)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumInvalidStopGapError": "अवैध रोक अंतर मान: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "अमान्य टाइमआउट मान: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "डिलीट",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "mempoolSettingsDefaultServer": "डिफ़ॉल्ट सर्वर",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "electrumTestnet": "टेस्टनेट",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "mempoolCustomServerAdd": "कस्टम सर्वर जोड़ें",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "statusCheckOnline": "ऑनलाइन",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "electrumCloseTooltip": "बंद",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumBitcoinServerInfo": "प्रारूप में सर्वर पता दर्ज करें: होस्ट:पोर्ट (उदाहरण के लिए, उदाहरण.कॉम:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumServerNotUsed": "प्रयुक्त नहीं",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumRetryCountEmptyError": "Retry गिनती खाली नहीं हो सकता",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "torSettingsDescConnecting": "स्थापना टोर कनेक्शन",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsPortValidationInvalid": "कृपया मान्य नंबर दर्ज करें",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "electrumDeleteFailedError": "कस्टम सर्वर  को हटाने में विफल",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails"
+  },
+  "electrumDeleteServerTitle": "कस्टम सर्वर हटाएं",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "torSettingsSaveButton": "सहेजें",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "electrumPrivacyNoticeTitle": "गोपनीयता नोटिस",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumMainnet": "मेननेट",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "statusCheckLastChecked": "अंतिम जाँच: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "पोर्ट: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "डिस्कनेक्ट",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "electrumSavePriorityFailedError": "सर्वर प्राथमिकता को बचाने में विफल ",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails"
+  },
+  "electrumUnknownError": "त्रुटि हुई",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumDefaultServers": "डिफ़ॉल्ट सर्वर",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "mempoolCustomServerUrlEmpty": "कृपया एक सर्वर URL दर्ज करें",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "electrumFormatError": "मेजबान का उपयोग करें:पोर्ट प्रारूप (उदाहरण के लिए, उदाहरण.कॉम: 50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "cancel": "रद्द करना",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "electrumDefaultServersInfo": "अपनी गोपनीयता की रक्षा के लिए, डिफ़ॉल्ट सर्वर का उपयोग तब नहीं किया जाता जब कस्टम सर्वर को कॉन्फ़िगर किया जाता है।।",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumProtocolError": "प्रोटोकॉल (sssl:// या tcp://)।",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "torSettingsProxyPort": "Tor Proxy पोर्ट",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "electrumAddServer": "सर्वर जोड़ें",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "electrumStopGapEmptyError": "स्टॉप गैप खाली नहीं हो सकता",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "torSettingsStatusUnknown": "Unknown",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "electrumAddFailedError": "कस्टम सर्वर  जोड़ने में विफल",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails"
+  },
+  "torSettingsStatusConnecting": "कनेक्ट ..।",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "electrumDeletePrivacyNotice": "गोपनीयता सूचना:\n\nअपने खुद के नोड का उपयोग यह सुनिश्चित करता है कि कोई तृतीय पक्ष आपके लेनदेन के साथ अपने आईपी पते को लिंक नहीं कर सकता है। अपने अंतिम कस्टम सर्वर को हटाकर, आप एक BullBitcoin सर्वर से जुड़ जायेंगे।\n.\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDelete": "डिलीट",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "statusCheckTitle": "सेवा की स्थिति",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "दान",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "electrumNetworkBitcoin": "बिटकॉइन",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumConfirm": "पुष्टि",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumInvalidNumberError": "मान्य संख्या दर्ज करें",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumRetryCount": "Retry गिनती",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumCustomServers": "कस्टम सर्वर",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumTimeout": "टाइमआउट (सेकेंड)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumSaveFailedError": "उन्नत विकल्पों को बचाने में विफल",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumLiquidSslInfo": "कोई प्रोटोकॉल निर्दिष्ट नहीं किया जाना चाहिए, SSL स्वचालित रूप से इस्तेमाल किया जाएगा।।",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumRetryCountNegativeError": "Retry गिनती नकारात्मक नहीं हो सकती",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumDeleteConfirmation": "क्या आप इस सर्वर को हटाना चाहते हैं?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "गोपनीयता नोटिस: अपनी खुद की नोड का उपयोग यह सुनिश्चित करता है कि आपकी लेनदेन के साथ कोई तृतीय पक्ष आपके आईपी पते को लिंक नहीं कर सकता है।।",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "torSettingsTitle": "Tor सेटिंग्स",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "electrumEnableSsl": "SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "torSettingsPortValidationRange": "पोर्ट 1 और 65535 के बीच होना चाहिए",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "electrumTimeoutEmptyError": "टाइमआउट खाली नहीं हो सकता",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumPrivacyNoticeContent2": "हालांकि, यदि आप अपने लेनदेन आईडी या प्राप्तकर्ता विवरण पृष्ठ पर क्लिक करके मेम्पूल के माध्यम से लेनदेन को देखते हैं, तो इस जानकारी को बुलबिटकॉइन से जाना जाता है।।",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "torSettingsDescConnected": "Tor प्रॉक्सी चल रहा है और तैयार है",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescDisconnected": "Tor प्रॉक्सी नहीं चल रहा है",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "electrumStopGapHighWarning": "उच्च स्टॉप गैप मान सिंक समय को काफी बढ़ा देते हैं। सिंक पूरा होने तक ऐप को फ़ोरग्राउंड में खुला रखें — बैकग्राउंड में डालने से यह बाधित हो सकता है।",
+  "mempoolServerStatusOnline": "ऑनलाइन",
+  "mempoolServerStatusOffline": "ऑफलाइन",
+  "mempoolServerStatusChecking": "जाँच हो रही है...",
+  "mempoolServerStatusUnknown": "अज्ञात",
+  "mempoolCustomServerSaveFailed": "सर्वर सहेजने में विफल",
+  "mempoolCustomServerInfoDescription": "Mempool सर्वर शुल्क अनुमान और लेनदेन विवरण देखते समय ब्लॉक एक्सप्लोरर खोलने के लिए उपयोग किए जाते हैं।",
+  "mempoolCustomServerUseSsl": "SSL का उपयोग करें",
+  "mempoolCustomServerSslAutoDetected": "(स्वतः पहचाना गया)",
+  "mempoolCustomServerSslHelpText": "स्थानीय (.local, निजी IP) और Tor (.onion) सर्वर के लिए, SSL आमतौर पर अक्षम होता है। सार्वजनिक IP और डोमेन को SSL का उपयोग करना चाहिए।",
+  "mempoolErrorSameAsDefault": "यह URL डिफ़ॉल्ट सर्वर के समान है। कृपया एक अलग URL का उपयोग करें।",
+  "mempoolErrorConnectionTimeout": "कनेक्शन समय समाप्त हो गया। सर्वर धीमा या अनुपलब्ध हो सकता है।",
+  "mempoolErrorHostNotFound": "यह सर्वर नहीं मिल सका। कृपया URL जाँचें और पुनः प्रयास करें।",
+  "mempoolErrorConnectionFailed": "सर्वर से कनेक्ट नहीं हो सका। अपना नेटवर्क कनेक्शन जाँचें और पुनः प्रयास करें।",
+  "mempoolErrorNotMempoolServer": "यह URL mempool सर्वर नहीं लगता। कृपया पता सत्यापित करें।",
+  "mempoolErrorServerUnavailable": "सर्वर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
+  "mempoolErrorServerError": "सर्वर में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
+  "mempoolErrorInvalidResponse": "सर्वर ने अमान्य प्रतिक्रिया दी।",
+  "mempoolErrorInvalidUrl": "अमान्य सर्वर URL। एक मान्य डोमेन या IP पता दर्ज करें।",
+  "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल",
+  "@mempoolErrorSaveServerFailed": {
+    "description": "Error when saving mempool server fails"
+  },
+  "mempoolErrorLoadFailed": "Mempool सर्वर डेटा लोड करने में विफल",
+  "@mempoolErrorLoadFailed": {
+    "description": "Error when loading mempool server data fails"
+  },
+  "mempoolErrorDeleteFailed": "कस्टम सर्वर हटाने में विफल",
+  "@mempoolErrorDeleteFailed": {
+    "description": "Error when deleting custom mempool server fails"
+  },
+  "torSettingsStatusCensored": "कनेक्शन फ़िल्टर किया हुआ लगता है",
+  "torSettingsDescCensored": "Tor नेटवर्क तक नहीं पहुँच सका। आमतौर पर इसका मतलब है कि कनेक्शन फ़िल्टर किया जा रहा है।",
+  "torSettingsBootstrapProgress": "कनेक्ट हो रहा है… {percent}%",
+  "torSettingsEmbeddedTitle": "अंतर्निहित Tor",
+  "torSettingsEmbeddedDescription": "अंतर्निहित Tor का उपयोग RecoverBull और Bitcoin Electrum के .onion सर्वर करते हैं। ऐप का बाकी ट्रैफ़िक सीधा रहता है।",
+  "torSettingsTransportMode": "कनेक्शन विधि",
+  "torSettingsModeAutomatic": "स्वचालित",
+  "torSettingsModeDirect": "सीधा",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "पहले सीधा Tor कनेक्शन आज़माता है और यदि नेटवर्क Tor को रोकता प्रतीत हो तो Snowflake का उपयोग करता है।",
+  "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
+  "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
+  "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
+  "statusCheckNoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
+  "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं",
+  "torSettingsStatusNoInternetOrBlocked": "इंटरनेट नहीं है या नेटवर्क सेंसर है",
+  "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
+  "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।",
+  "serverEncrypted": "एन्क्रिप्टेड",
+  "serverUnencrypted": "एन्क्रिप्टेड नहीं"
+}

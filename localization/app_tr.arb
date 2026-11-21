@@ -46,14 +46,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "Zamanout pozitif olmalıdır",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -106,10 +98,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Özel Sunucu",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "Düzenli SEPAPA",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -133,10 +121,6 @@
   "exchangeFileUploadSuccess": "Dosya başarıyla yüklendi",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "Kaydet",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "Bu başka birinin hesabı",
   "@withdrawOwnershipOtherAccount": {
@@ -179,11 +163,6 @@
   "autoswapAlwaysBlockEnabledInfo": "Etkinleştirildiğinde, ücreti belirlenen sınırın üzerinde olan otomatik takaslar her zaman engellenecektir",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "Bu sunucu zaten var",
-  "electrumServerUnreachable": "Sunucuya ulaşılamıyor. Adresi kontrol edip tekrar deneyin.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "Ödeme Yöntemi",
   "@sellPaymentMethod": {
@@ -373,10 +352,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "tam",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "Electrum Server Ayarları",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "Gerekirse, adresi türü değiştirmek için \"ops\" seçeneğini seçin",
   "@importQrDeviceJadeStep7": {
@@ -608,18 +583,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "Saatiniz ({timeoutValue} saniye) bu Dur Gap için önerilen değerden ({recommended} saniye) daha düşük.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "Göster PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -743,10 +706,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "Sıvı",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "Minimum miktarın altında satın almaya çalışıyorsunuz.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -762,10 +721,6 @@
   "pinCodeSecurityPinTitle": "Güvenlik PIN",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "electrumEmptyFieldError": "Bu alan boş olamaz",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "İlerlemede Ödeme",
   "@transactionStatusPaymentInProgress": {
@@ -1096,10 +1051,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "Hesabınızı finanse edin",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1180,10 +1131,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Hazır",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "Not",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1211,10 +1158,6 @@
   "sellAccountName": "Hesap Adı",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "Bilinmeyen",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "howToDecideVaultLocationText2": "Özel bir yer, seçtiğiniz yere bağlı olarak çok daha güvenli olabilir. Ayrıca yedekleme dosyasını kaybetmemek veya yedekleme dosyasınınızın depolandığı cihazı kaybetmekten emin olmalısınız.",
   "@howToDecideVaultLocationText2": {
@@ -1283,10 +1226,6 @@
   "totalFeeLabel": "Toplam Ücret",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Özel mempool sunucunuzun URL'sini girin. Sunucu tasarruf etmeden önce onaylanacaktır.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "Bu cüzdanla satılabilecek minimum miktarın altında satmaya çalışıyorsunuz.",
   "@sellBelowMinAmountError": {
@@ -1490,10 +1429,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "Add private Server",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "satmak/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1535,10 +1470,6 @@
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "Ücret Önceliği",
   "@sellSendPaymentFeePriority": {
@@ -1767,10 +1698,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "Bağlantı Durumu",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "12 kelime yedeklemenizi kaybederseniz, Bitcoin Wallet'e erişmek mümkün olmayacaktır.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1932,10 +1859,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "Lütfen bir port numarası girin",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "Mevcut denge dengesi",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1943,10 +1866,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Ödeme Açıklama",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "Cancel",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "Swap henüz başlangıç değildir.",
   "@coreSwapsLnSendPending": {
@@ -2034,10 +1953,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2085,10 +2000,6 @@
   "recoverWalletButton": "Recover Cüzdan",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "Bu özel mempool sunucuyu silmek istediğinizden emin misiniz? Varsayılan sunucu bunun yerine kullanılacaktır.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Cihazınızda ekran parlaklığı artırmak",
   "@coldcardStep6": {
@@ -2165,10 +2076,6 @@
   "payActualFee": "Actual Fee",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate Domain",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "Cihazınızın en son donanıma güncel olduğundan emin olun",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2354,15 +2261,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Invalid Retry Sayı değeri: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Network Select Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2383,10 +2281,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "Port Number",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "Alıcı adı girin",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2399,10 +2293,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "electrumReset": "Reset",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "payInsufficientBalanceError": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
   "@payInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
@@ -2414,10 +2304,6 @@
   "sendHighFeeWarning": "Yüksek ücret uyarı uyarısı",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "Dur Gap negatif olamaz",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "Send Send Send Gönder",
   "@walletButtonSend": {
@@ -2462,18 +2348,6 @@
   "exchangeDcaCancelDialogConfirmButton": "Evet, deactivate",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} Sunucu URL'si",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "E-posta adresi girin",
   "@payEmailHint": {
@@ -2565,10 +2439,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu ",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "E-posta Bildirimleri",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2637,10 +2507,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "Gelişmiş Seçenekler",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "autoswapWarningCardSubtitle": "Bir takas, Instant Payments bakiyenizin 0.02 BTC'yi aştığını tetiklenecektir.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
@@ -2664,10 +2530,6 @@
   "payFilterPayments": "Filtre Ödemeleri",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "Cancel",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "Download",
   "@exchangeFileUploadButton": {
@@ -2994,10 +2856,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "Onay Gönder",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -3170,10 +3028,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "Dur Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "Yayınlama işlemi...",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -3230,10 +3084,6 @@
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "sendTransferFee": "Takas Ücreti",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
@@ -3288,24 +3138,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "Dur Gap çok yüksek görünüyor. (Max. {maxStopGap}",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Zamanout çok yüksek görünüyor. (Max. {maxTimeout} saniyeler)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "Anında ödeme",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -3349,10 +3181,6 @@
   "coreSwapsStatusPending": "Pending",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(Danışman ve değişim önceliği değiştirmek için uzun basın)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "autoswapTriggerAtBalanceInfoText": "Autoswap, bakiyenizin bu maksimum dengenin üzerinde gittiğinde tetiklenecektir.",
   "@autoswapTriggerAtBalanceInfoText": {
@@ -3520,15 +3348,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "Invalid Stop Gap değeri: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3679,15 +3498,6 @@
   "sendSats": "satrançlar",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "Invalid Timeout değeri: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Sınırlı",
   "@exchangeKycLevelLimited": {
@@ -3919,10 +3729,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Varsayılan Server Server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Bir ödeme adresi veya fatura",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3994,10 +3800,6 @@
   "sellSelectWallet": "Cüzdan seçin",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "Add private Server",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "Toplam ücret {feePercent}% of the amount you are send",
   "@sendHighFeeWarningDescription": {
@@ -4131,10 +3933,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "Payout yöntemi",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4142,10 +3940,6 @@
   "exchangeAmountInputTitle": "Girin",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "Close",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "Gir IBAN",
   "@payIbanHint": {
@@ -4225,10 +4019,6 @@
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
   },
-  "electrumBitcoinServerInfo": "Formda sunucu adresi girin: host:port (e.g., example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "sendErrorInsufficientBalanceForSwap": "Bu değişimi sıvı ile ödemek için yeterli bir denge değil ve Bitcoin üzerinden ödemek için takas sınırları içinde değil.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4301,10 +4091,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "Kullanılmıyor",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Fiziksel yedekleme: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4329,10 +4115,6 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "electrumRetryCountEmptyError": "Retry Count boş olamaz",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
   "physicalBackupTag": "Güvensiz (zamanınızı alın)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
@@ -4348,10 +4130,6 @@
   "swapExternalAddressHint": "Dış cüzdan adresi girin",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "Kurmak Tor bağlantısı",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "appleICloudProvider": "Apple",
   "@appleICloudProvider": {
@@ -4421,10 +4199,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "Lütfen geçerli bir sayı girin",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "Banka Transfer",
   "@sellBankTransfer": {
@@ -4822,10 +4596,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu ",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4861,10 +4631,6 @@
   "sendSwapInProgressBitcoin": "Değişim devam ediyor. Bitcoin işlemleri onaylarken alabilir. Eve dönebilir ve bekleyebilirsin.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "Delete Custom Server",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "ID ile Selfie",
   "@buySelfie": {
@@ -5007,10 +4773,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "Kaydet",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "Show Seeds",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -5084,10 +4846,6 @@
   "backupWalletTitle": "Cüzdanınızı Değiştirin",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "Gizlilik Bildirimi",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "Sıvı",
   "@receiveLiquid": {
@@ -5341,15 +5099,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "Son kontrol: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "Hızlı ve kolay",
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
@@ -5492,15 +5241,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Transit Numarası",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5597,10 +5337,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "Ayrıştırma",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "Bitcoin Recurring Buy?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5636,10 +5372,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "Keystone Talimatları",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu ",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Anında ödeme",
   "@globalDefaultLiquidWalletLabel": {
@@ -5721,10 +5453,6 @@
   "payNetworkError": "Ağ hatası. Lütfen tekrar deneyin",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "Bir hata oluştu",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "Hangi cüzdan ödeme yapmak istiyorsunuz?",
   "@payWhichWallet": {
@@ -5887,10 +5615,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "Varsayılan Servers",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Recover Cüzdan",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5927,10 +5651,6 @@
   "sendRecipientAddressOrInvoice": "Recipient'in adresi veya fatura",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Lütfen bir sunucu URL girin",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Keystone",
   "@importQrDeviceKeystoneName": {
@@ -5983,10 +5703,6 @@
   "dcaSetupContinue": "Devam etmeye devam et",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "Host:port format (e.g., örneğin.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "Bu ücretler gönderilen miktartan silinecektir",
   "@transactionFeesDeductedFrom": {
@@ -6121,10 +5837,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "Gizliliğinizi korumak için, varsayılan sunucular özel sunucular yapılandırıldığında kullanılmaz.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Payout yöntemi",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6132,10 +5844,6 @@
   "payPriceRefreshIn": "Fiyat yenilenecek ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "Protokol dahil etmeyin (ssl http veya tcp http).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "Kiracının tarafında beklemek veya parajoin başarısız oldu mu?",
   "@receivePayjoinFailQuestion": {
@@ -6181,10 +5889,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
   "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
   "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
   "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
@@ -6228,10 +5932,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " ödeme açıklamasında \"Bitcoin\" veya \"Crypto\" kelimesi. Bu, ödemenizi engelleyecektir.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "Add Server",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "Copy Address",
   "@addressViewCopyAddress": {
@@ -6364,10 +6064,6 @@
   "transactionDetailLabelAmountSent": "Gönderilen miktar",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "Dur Gap boş olamaz",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "Tipi: ",
   "@typeLabel": {
@@ -6594,10 +6290,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "Durum Bilinmeyen",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -6654,10 +6346,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu ",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "Takas ücretleri",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6677,10 +6365,6 @@
   "errorGenericTitle": "Oops! Bir şey ters gitti yanlış bir şey gitti",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "Connecting...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
@@ -6874,10 +6558,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "Gizlilik Bildirimi:\n\nKendi düğümünü kullanarak, üçüncü tarafın IP adresinizi işlemlerinizle bağlayabileceğini garanti eder. Son özel sunucunuzu silerek, bir BullBitcoin sunucusuna bağlanacaksınız.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "Her hafta her hafta",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -6992,10 +6672,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "Delete",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "asla ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -7031,10 +6707,6 @@
   "howToDecideBackupTitle": "Nasıl karar verilir",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "Hizmet Durumu",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "savingToDevice": "Cihazınıza tasarruf edin.",
   "@savingToDevice": {
@@ -7434,10 +7106,6 @@
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
   },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "paySecureBitcoinWallet": "Güvenli Bitcoin cüzdanı",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -7579,10 +7247,6 @@
   "fundExchangeMethodEmailETransfer": "E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
-  },
-  "electrumConfirm": "Onay Onay Onay Onaylandı",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "Sipariş Numarası",
   "transactionDetailLabelPaymentDescription": "Ödeme açıklaması",
@@ -7915,10 +7579,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "Geçerli bir sayı girin",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "Onaylandı",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -7936,10 +7596,6 @@
   "fundExchangeWarningTitle": "Dolandırıcılar için dikkat edin",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "Retry Count",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
@@ -7988,10 +7644,6 @@
   "importWatchOnlyScriptType": "Senaryo Type",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "Özel Servers",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Swap Başarısız",
   "@transactionStatusSwapFailed": {
@@ -8070,17 +7722,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "Timeout (saniyeler)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "Sipariş Durumu",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "Gelişmiş seçenekleri kurtarmak için başarısız oldu",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "İşte bu!",
   "@importQrDeviceKruxStep6": {
@@ -8191,10 +7835,6 @@
   "@importQrDeviceButtonInstructions": {
     "description": "ImportQrDevice: Button to show setup instructions"
   },
-  "electrumLiquidSslInfo": "Hiçbir protokol belirtilmemelidir, SSL otomatik olarak kullanılacaktır.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "Cihaz bağlantılı",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -8269,10 +7909,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "Retry Count olumsuz olamaz",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Bunu hesap numarası olarak ekleyin",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
@@ -8345,15 +7981,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "electrumDeleteConfirmation": "Bu sunucuyu silmek istediğinizden emin misiniz?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Import etmek için bir cüzdan türü seçin",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8422,10 +8049,6 @@
   "walletDetailsSignerDeviceLabel": "Signer Device",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "Gizlilik Bildirimi: Kendi düğümünü kullanarak, üçüncü tarafın IP adresinizi, işlemlerinizle bağlantı kurabileceğini garanti eder.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "Backup key manuel >>",
   "@testBackupEnterKeyManually": {
@@ -8659,10 +8282,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "Enable SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "Özel Ücretler",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -8771,18 +8390,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Port 1 ile 65535 arasında olmalıdır",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "Zamanout boş olamaz",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "Ancak, İşlem ID veya Recipient Details sayfanıza tıklayarak mempool üzerinden işlemleri görürseniz, bu bilgiler BullBitcoin tarafından bilinecektir.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "Kimlik doğrulandı",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8790,10 +8397,6 @@
   "importColdcardScanPrompt": "QR kodunu Coldcard Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor proxy sürüyor ve hazır",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "Encrypted Vault",
   "@backupSettingsEncryptedVault": {
@@ -8882,10 +8485,6 @@
   "payBitcoinOnChain": "Bitcoin on-chain",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor proxy çalışmıyor",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "Anında ödeme cüzdanı",
   "@buyInstantPaymentWallet": {
@@ -9197,7 +8796,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir.",
   "wizardSkipButton": "Atla",
   "wizardPageIndicator": "SAYFA {current} / {total}",
   "wizardNextButton": "İleri",
@@ -9283,7 +8881,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
   "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
-  "mempoolErrorInvalidUrl": "Geçersiz sunucu URL'si. Geçerli bir alan adı veya IP adresi girin.",
   "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9570,26 +9167,7 @@
   "swapRescueWalletHint": "Bir cüzdan seçin",
   "swapRescueButton": "Geri Yükle",
   "swapRescueSuccess": "Takas geri yüklendi — şimdi devam edecek",
-  "mempoolServerStatusOnline": "Çevrimiçi",
-  "mempoolServerStatusOffline": "Çevrimdışı",
-  "mempoolServerStatusChecking": "Kontrol ediliyor...",
   "mempoolServerStatusUnknown": "Bilinmiyor",
-  "mempoolCustomServerSaveFailed": "Sunucu kaydedilemedi",
-  "mempoolCustomServerInfoDescription": "Mempool sunucuları, ücret tahmini yapmak ve işlem detaylarını görüntülerken blok gezginini açmak için kullanılır.",
-  "mempoolCustomServerUseSsl": "SSL kullan",
-  "mempoolCustomServerSslAutoDetected": "(Otomatik algılandı)",
-  "mempoolCustomServerSslHelpText": "Yerel (.local, özel IP'ler) ve Tor (.onion) sunucularında SSL genellikle devre dışıdır. Genel IP'ler ve alan adları SSL kullanmalıdır.",
-  "mempoolErrorSameAsDefault": "Bu URL varsayılan sunucuyla aynı. Lütfen farklı bir URL kullanın.",
-  "mempoolErrorConnectionTimeout": "Bağlantı zaman aşımına uğradı. Sunucu yavaş olabilir veya ulaşılamıyor olabilir.",
-  "mempoolErrorHostNotFound": "Bu sunucu bulunamıyor. Lütfen URL'yi kontrol edip tekrar deneyin.",
-  "mempoolErrorConnectionFailed": "Sunucuya bağlanılamıyor. Ağ bağlantınızı kontrol edip tekrar deneyin.",
-  "mempoolErrorNotMempoolServer": "Bu URL bir mempool sunucusu gibi görünmüyor. Lütfen adresi doğrulayın.",
-  "mempoolErrorServerUnavailable": "Sunucu kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
-  "mempoolErrorServerError": "Sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
-  "mempoolErrorInvalidResponse": "Sunucu geçersiz bir yanıt döndürdü.",
-  "mempoolErrorSaveServerFailed": "Sunucu kaydedilemedi",
-  "mempoolErrorLoadFailed": "Mempool sunucu verileri yüklenemedi",
-  "mempoolErrorDeleteFailed": "Özel sunucu silinemedi",
   "exchangeStatisticsBuySellRatioDesc": "Alım ve satımdan gelen toplam hacim yüzdesi",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin satın almak için harcanan toplam miktar",
   "exchangeStatisticsSellVolumeDesc": "Bitcoin satışından elde edilen toplam miktar",
@@ -9851,19 +9429,6 @@
   "coreSwapsStatusUnknown": "Bilinmiyor",
   "sendSwapExpiredTitle": "Sipariş Süresi Doldu",
   "sendSwapExpiredMessage": "Bu siparişin süresi, herhangi bir fon gönderilmeden önce doldu. Cüzdanınızdan hiçbir şey gönderilmedi.",
-  "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
-  "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
-  "torSettingsBootstrapProgress": "Bağlanıyor… %{percent}",
-  "torSettingsEmbeddedTitle": "Gömülü Tor",
-  "torSettingsEmbeddedDescription": "Gömülü Tor, RecoverBull ve Bitcoin Electrum .onion sunucuları tarafından kullanılır. Uygulamanın diğer trafiği doğrudan kalır.",
-  "torSettingsTransportMode": "Bağlantı yöntemi",
-  "torSettingsModeAutomatic": "Otomatik",
-  "torSettingsModeDirect": "Doğrudan",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Önce doğrudan Tor bağlantısını dener; ağ Tor'u engelliyor görünüyorsa Snowflake kullanır.",
-  "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
-  "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
-  "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
   "settingsScreenPrivacyTitle": "Ekran gizliliği",
   "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor",
   "settingsSearchHint": "Ayarlarda ara",
@@ -9898,8 +9463,6 @@
   "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin.",
-  "statusCheckNoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
-  "statusCheckResultsMayBeOutdated": "Sonuçlar güncel olmayabilir",
   "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
   "sendErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
@@ -10109,11 +9672,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil.",
   "settingsDarkModeTitle": "Karanlık mod",
   "settingsSourceCodeTitle": "Kaynak kodu",
-  "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
-  "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
-  "serverEncrypted": "Şifreli",
-  "serverUnencrypted": "Şifresiz",
   "backgroundTasksTitle": "Arka plan görevleri",
   "blockedInSystemSettings": "Sistem ayarlarında engellendi",
   "notificationsBlockedMessage": "Bildirimler sistem ayarlarında engellendi.",

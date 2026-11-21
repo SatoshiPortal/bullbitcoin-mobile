@@ -46,14 +46,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050년",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "Timeout은 긍정적이어야한다",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -106,10 +98,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "사용자 지정 서버",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "일반 SEPA",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -133,10 +121,6 @@
   "exchangeFileUploadSuccess": "File 성공적으로 업로드",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "제품 정보",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "이것은 다른 사람의 계정입니다",
   "@withdrawOwnershipOtherAccount": {
@@ -179,11 +163,6 @@
   "autoswapAlwaysBlockEnabledInfo": "활성화하면 설정한 한도를 초과하는 수수료의 자동 스왑은 항상 차단됩니다",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "이 서버는 이미 존재합니다",
-  "electrumServerUnreachable": "서버에 연결할 수 없습니다. 주소를 확인하고 다시 시도하세요.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "지불 방법",
   "@sellPaymentMethod": {
@@ -373,10 +352,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "견적 요청",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "Electrum 서버 설정",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "필요한 경우, \"Options\"를 선택하여 주소 유형 변경",
   "@importQrDeviceJadeStep7": {
@@ -612,18 +587,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "타임 아웃 ({timeoutValue} 초)은 권장 값 ({recommended} 초)보다 낮습니다.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "PSBT 소개",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -747,10 +710,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "제품정보",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "최소 금액 아래 구매하려고 합니다.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -766,10 +725,6 @@
   "pinCodeSecurityPinTitle": "보안 PIN",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "electrumEmptyFieldError": "이 분야는 비어있을 수 없습니다",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "결제 진행",
   "@transactionStatusPaymentInProgress": {
@@ -1100,10 +1055,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "- 한국어",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "계정 생성",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1184,10 +1135,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "준비됨",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "* 이름",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1215,10 +1162,6 @@
   "sellAccountName": "계정 이름",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "이름 *",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "howToDecideVaultLocationText2": "사용자 정의 위치는 당신이 선택할 수있는 위치에 따라 훨씬 더 안전 할 수 있습니다. 백업 파일을 잃거나 백업 파일이 저장되는 장치에 장치를 잃지 않도록해야합니다.",
   "@howToDecideVaultLocationText2": {
@@ -1291,10 +1234,6 @@
   "totalFeeLabel": "총 비용",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "사용자 정의 mempool 서버의 URL을 입력하십시오. 서버는 저장하기 전에 유효합니다.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "이 지갑과 함께 판매 할 수있는 최소 금액 아래 판매하려고합니다.",
   "@sellBelowMinAmountError": {
@@ -1498,10 +1437,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "Custom Server 추가",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "통계/VB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1543,10 +1478,6 @@
   "backupWalletBackupButton": "지원하다",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Mempool 서버",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "요금 우선",
   "@sellSendPaymentFeePriority": {
@@ -1775,10 +1706,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "연결 상태",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "12 단어 백업을 잃으면 Bitcoin Wallet에 액세스 할 수 없습니다.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1940,10 +1867,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "항구 번호를 입력하십시오",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "유효한 균형",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1951,10 +1874,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "지불 묘사",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "이름 *",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "스왑은 아직 초기화되지 않습니다.",
   "@coreSwapsLnSendPending": {
@@ -2042,10 +1961,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "옵션 정보",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "· 펀드는 계정 잔액에 추가됩니다.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2093,10 +2008,6 @@
   "recoverWalletButton": "지갑 복구",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "이 사용자 정의 mempool 서버를 삭제하시겠습니까? 기본 서버는 대신 사용됩니다.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - 장치의 화면 밝기 증가",
   "@coldcardStep6": {
@@ -2173,10 +2084,6 @@
   "payActualFee": "실제 요금",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate 도메인",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "최신 펌웨어 업데이트 확인",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2362,15 +2269,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "잘못된 Retry 카운트 값: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "네트워크",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2391,10 +2289,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "항구 수",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "자주 묻는 질문",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2407,10 +2301,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "electrumReset": "지원하다",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "payInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 지불 순서를 완료합니다.",
   "@payInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
@@ -2422,10 +2312,6 @@
   "sendHighFeeWarning": "높은 수수료 경고",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "Gap를 멈추지 않을 수 없습니다",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "지원하다",
   "@walletButtonSend": {
@@ -2474,18 +2360,6 @@
   "exchangeDcaCancelDialogConfirmButton": "예, 비활성화",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} 서버 URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "자주 묻는 질문",
   "@payEmailHint": {
@@ -2577,10 +2451,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "로드 서버에 실패",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "이메일 알림",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2649,10 +2519,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "고급 옵션",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "autoswapWarningCardSubtitle": "스왑은 즉시 지불 잔액이 0.02 BTC를 초과하면 트리거됩니다.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
@@ -2676,10 +2542,6 @@
   "payFilterPayments": "필터 결제",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "이름 *",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "기타 제품",
   "@exchangeFileUploadButton": {
@@ -3006,10 +2868,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "사용자 정의 서버 삭제?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "견적 요청",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -3190,10 +3048,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "공지사항",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "방송 거래 ...",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -3250,10 +3104,6 @@
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "electrumServerOffline": "옵션 정보",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "sendTransferFee": "스왑 수수료",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
@@ -3308,24 +3158,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "Gap은 너무 높다. (최대. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Timeout은 너무 높다. (최대. {maxTimeout} 초)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "즉시 결제",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -3369,10 +3201,6 @@
   "coreSwapsStatusPending": "관련 기사",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(지게 눌러 드래그 및 변경 우선 순위)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "autoswapTriggerAtBalanceInfoText": "Autoswap은 잔액이 최대 잔액 위에 올라갈 때 트리거됩니다.",
   "@autoswapTriggerAtBalanceInfoText": {
@@ -3540,15 +3368,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "잘못된 정지 갭 값: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "만 € 30,000 이상의 거래에 사용",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3699,15 +3518,6 @@
   "sendSats": "뚱 베어",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "잘못된 타임아웃 값: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "가격 :",
   "@exchangeKycLevelLimited": {
@@ -3943,10 +3753,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "기본 서버",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "결제 주소 또는 송장",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -4018,10 +3824,6 @@
   "sellSelectWallet": "지갑 선택",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "Custom Server 추가",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "총 수수료는 전송 금액의 {feePercent} %입니다",
   "@sendHighFeeWarningDescription": {
@@ -4155,10 +3957,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "- 한국어",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "Payout 방법",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4166,10 +3964,6 @@
   "exchangeAmountInputTitle": "자주 묻는 질문",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "뚱 베어",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "IBAN 소개",
   "@payIbanHint": {
@@ -4249,10 +4043,6 @@
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
   },
-  "electrumBitcoinServerInfo": "형식의 서버 주소를 입력하십시오 : 호스트 : 포트 (예 : example.com : 50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "sendErrorInsufficientBalanceForSwap": "Liquid를 통해 이 스왑을 지불하고 Bitcoin을 통해 지불 할 수 없습니다.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4329,10 +4119,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "이름 *",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "물리적 백업: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4357,10 +4143,6 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "electrumRetryCountEmptyError": "Retry Count는 비어있을 수 없습니다",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
   "physicalBackupTag": "신뢰할 수 있는 (시간 소요)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
@@ -4376,10 +4158,6 @@
   "swapExternalAddressHint": "외부 지갑 주소를 입력하십시오",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "회사연혁 Tor 연결",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "appleICloudProvider": "애플 iCloud",
   "@appleICloudProvider": {
@@ -4449,10 +4227,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "유효한 번호를 입력하세요",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "은행 송금",
   "@sellBankTransfer": {
@@ -4850,10 +4624,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz 교환 수수료",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4889,10 +4659,6 @@
   "sendSwapInProgressBitcoin": "스왑은 진행 중입니다. Bitcoin 거래는 확인하는 동안 걸릴 수 있습니다. 집과 대기를 반환 할 수 있습니다.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "사용자 정의 서버",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "ID를 가진 Selfie",
   "@buySelfie": {
@@ -5035,10 +4801,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "제품 정보",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "씨앗보기",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -5112,10 +4874,6 @@
   "backupWalletTitle": "지갑 백업",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "회사연혁",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "제품정보",
   "@receiveLiquid": {
@@ -5378,15 +5136,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "마지막 검사: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "빠르고 & 쉬운",
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
@@ -5533,15 +5282,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "항구: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "교통수단",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5638,10 +5378,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "연결하기",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "Bitcoin Recurring 구매를 취소합니까?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5677,10 +5413,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "Keystone 지침",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "서버 우선순위 저장 실패",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "즉시 결제",
   "@globalDefaultLiquidWalletLabel": {
@@ -5771,10 +5503,6 @@
   "payNetworkError": "네트워크 오류. 다시 시도",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "오류가 발생했습니다",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "어떤 지갑에서 지불 하시겠습니까?",
   "@payWhichWallet": {
@@ -5941,10 +5669,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "기본 서버",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "지갑 복구",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5981,10 +5705,6 @@
   "sendRecipientAddressOrInvoice": "Recipient의 주소 또는 송장",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "서버 URL을 입력하십시오",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "키스톤",
   "@importQrDeviceKeystoneName": {
@@ -6037,10 +5757,6 @@
   "dcaSetupContinue": "계속하기",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "호스트:포트 형식 (예: example.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "이 요금은 전송된 금액에서 공제됩니다",
   "@transactionFeesDeductedFrom": {
@@ -6188,10 +5904,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "개인 정보를 보호하려면, 기본 서버는 사용자 지정 서버가 구성될 때 사용되지 않습니다.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Payout 방법",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6199,10 +5911,6 @@
   "payPriceRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "프로토콜 (ssl:// 또는 tcp://)을 포함하지 마십시오.",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "기다리거나 payjoin이 보낸 사람의 측에 실패 했습니까?",
   "@receivePayjoinFailQuestion": {
@@ -6248,10 +5956,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "torSettingsProxyPort": "Tor 프록시 포트",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
   "fundExchangeErrorLoadingDetails": "지불 세부사항은 이 순간에 적재될 수 없습니다. 다시 가서 다시 시도, 다른 지불 방법을 선택하거나 나중에 다시 온다.",
   "fundExchangeErrorTitleOrdPo404": "결제 옵션 사용 불가",
   "fundExchangeErrorTitleRcpPo404": "결제 옵션을 사용할 수 없음",
@@ -6295,10 +5999,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " 지불 설명에서 \"Bitcoin\"또는 \"Crypto\"라는 단어. 결제를 차단합니다.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "서버 추가",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "본문 바로가기",
   "@addressViewCopyAddress": {
@@ -6435,10 +6135,6 @@
   "transactionDetailLabelAmountSent": "전송 금액",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "Gap을 중지 할 수 없습니다",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "유형: ",
   "@typeLabel": {
@@ -6665,10 +6361,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "상태 Unknown",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Swap을 확인",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -6729,10 +6421,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "사용자 정의 서버 추가 실패",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "스왑 수수료",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6752,10 +6440,6 @@
   "errorGenericTitle": "인기 있는 뭔가 잘못되었습니다",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "연결 ...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "스왑 ID",
   "@receiveSwapID": {
@@ -6949,10 +6633,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "이메일:\n\n자신의 노드를 사용하여 제3자가 귀하의 트랜잭션과 IP 주소를 연결할 수 있다는 것을 보장합니다. 마지막 사용자 정의 서버를 삭제하면 BullBitcoin 서버에 연결됩니다.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "매주",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -7067,10 +6747,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "기타 제품",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "없음 ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -7106,10 +6782,6 @@
   "howToDecideBackupTitle": "결정하는 방법",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "서비스 상태",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "savingToDevice": "당신의 장치에 저장.",
   "@savingToDevice": {
@@ -7509,10 +7181,6 @@
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
   },
-  "electrumNetworkBitcoin": "비트 코인",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "paySecureBitcoinWallet": "Bitcoin 지갑 보안",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -7654,10 +7322,6 @@
   "fundExchangeMethodEmailETransfer": "이메일 E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
-  },
-  "electrumConfirm": "제품정보",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "주문 번호",
   "transactionDetailLabelPaymentDescription": "결제 설명",
@@ -7994,10 +7658,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "유효한 번호를 입력",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "이름 *",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -8015,10 +7675,6 @@
   "fundExchangeWarningTitle": "사기꾼에 대한 조심",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "Retry 조사",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "연구분야",
   "@walletDetailsDescriptorLabel": {
@@ -8067,10 +7723,6 @@
   "importWatchOnlyScriptType": "Script 유형",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "사용자 정의 서버",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "스왑 실패",
   "@transactionStatusSwapFailed": {
@@ -8149,17 +7801,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "운동 (둘째로)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "주문 상태",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "고급 옵션을 저장할 실패",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "그것은!",
   "@importQrDeviceKruxStep6": {
@@ -8279,10 +7923,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "프로토콜이 지정되지 않아 SSL은 자동으로 사용됩니다.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "연결 장치",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -8357,10 +7997,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "Retry Count는 부정적인 수 없습니다",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "계정 번호로 추가",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
@@ -8433,15 +8069,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "electrumDeleteConfirmation": "이 서버를 삭제하시겠습니까?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8510,10 +8137,6 @@
   "walletDetailsSignerDeviceLabel": "Signer 장치",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "개인 정보 보호 정책 : 자신의 노드를 사용하여 제 3자가 귀하의 IP 주소를 링크 할 수 없다는 것을 보장합니다.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "백업 키를 수동으로 입력 >>",
   "@testBackupEnterKeyManually": {
@@ -8764,10 +8387,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "SSL 사용",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "회사 소개",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -8880,18 +8499,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "항구는 1과 65535 사이에서 있어야 합니다",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "타임아웃은 비어있을 수 없습니다",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "그러나, Transaction ID 또는 Recipient Details 페이지를 클릭하여 mempool을 통해 트랜잭션을 볼 경우, 이 정보는 BullBitcoin으로 알려집니다.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "Identity 인증",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8899,10 +8506,6 @@
   "importColdcardScanPrompt": "Coldcard Q에서 QR 코드를 스캔",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor 프록시는 실행 및 준비",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "암호화된 Vault",
   "@backupSettingsEncryptedVault": {
@@ -8991,10 +8594,6 @@
   "payBitcoinOnChain": "비트코인",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor 프록시는 실행되지 않습니다",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "즉시 결제 지갑",
   "@buyInstantPaymentWallet": {
@@ -9197,7 +8796,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "높은 stop gap 값은 동기화 시간을 크게 증가시킵니다. 동기화가 완료될 때까지 앱을 포그라운드에서 열어두십시오 — 백그라운드로 전환하면 중단될 수 있습니다.",
   "wizardSkipButton": "건너뛰기",
   "wizardPageIndicator": "페이지 {current} / {total}",
   "wizardNextButton": "다음",
@@ -9283,7 +8881,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
   "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요.",
-  "mempoolErrorInvalidUrl": "잘못된 서버 URL입니다. 유효한 도메인 또는 IP 주소를 입력하세요.",
   "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9570,26 +9167,7 @@
   "swapRescueWalletHint": "지갑 선택",
   "swapRescueButton": "복구",
   "swapRescueSuccess": "스왑이 복구되었습니다 — 곧 재개됩니다",
-  "mempoolServerStatusOnline": "온라인",
-  "mempoolServerStatusOffline": "오프라인",
-  "mempoolServerStatusChecking": "확인 중...",
   "mempoolServerStatusUnknown": "알 수 없음",
-  "mempoolCustomServerSaveFailed": "서버 저장에 실패했습니다",
-  "mempoolCustomServerInfoDescription": "Mempool 서버는 수수료 추정과 트랜잭션 세부정보를 볼 때 블록 탐색기를 여는 데 사용됩니다.",
-  "mempoolCustomServerUseSsl": "SSL 사용",
-  "mempoolCustomServerSslAutoDetected": "(자동 감지됨)",
-  "mempoolCustomServerSslHelpText": "로컬(.local, 사설 IP) 및 Tor(.onion) 서버의 경우 일반적으로 SSL이 비활성화됩니다. 공용 IP와 도메인에는 SSL을 사용해야 합니다.",
-  "mempoolErrorSameAsDefault": "이 URL은 기본 서버와 동일합니다. 다른 URL을 사용해 주세요.",
-  "mempoolErrorConnectionTimeout": "연결 시간이 초과되었습니다. 서버가 느리거나 응답하지 않을 수 있습니다.",
-  "mempoolErrorHostNotFound": "이 서버를 찾을 수 없습니다. URL을 확인하고 다시 시도해 주세요.",
-  "mempoolErrorConnectionFailed": "서버에 연결할 수 없습니다. 네트워크 연결을 확인하고 다시 시도해 주세요.",
-  "mempoolErrorNotMempoolServer": "이 URL은 Mempool 서버가 아닌 것 같습니다. 주소를 확인해 주세요.",
-  "mempoolErrorServerUnavailable": "서버를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "mempoolErrorServerError": "서버에서 오류가 발생했습니다. 나중에 다시 시도해 주세요.",
-  "mempoolErrorInvalidResponse": "서버가 잘못된 응답을 반환했습니다.",
-  "mempoolErrorSaveServerFailed": "서버 저장에 실패했습니다",
-  "mempoolErrorLoadFailed": "Mempool 서버 데이터를 불러오지 못했습니다",
-  "mempoolErrorDeleteFailed": "사용자 지정 서버 삭제에 실패했습니다",
   "mempoolErrorUnexpected": "예기치 않은 오류가 발생했습니다",
   "mempoolErrorUpdateSettingsFailed": "설정을 업데이트하지 못했습니다: {error}",
   "exchangeStatisticsBuySellRatioDesc": "매수 대비 매도 비율(전체 거래량 대비 백분율)",
@@ -9851,19 +9429,6 @@
   "coreSwapsStatusUnknown": "알 수 없음",
   "sendSwapExpiredTitle": "주문 만료",
   "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다.",
-  "torSettingsStatusCensored": "연결이 차단된 것으로 보입니다",
-  "torSettingsDescCensored": "Tor가 네트워크에 연결하지 못했습니다. 보통 연결이 차단되고 있다는 뜻입니다.",
-  "torSettingsBootstrapProgress": "연결 중… {percent}%",
-  "torSettingsEmbeddedTitle": "내장 Tor",
-  "torSettingsEmbeddedDescription": "내장 Tor는 RecoverBull과 Bitcoin Electrum .onion 서버에서 사용됩니다. 앱의 다른 트래픽은 그대로 직접 연결됩니다.",
-  "torSettingsTransportMode": "연결 방식",
-  "torSettingsModeAutomatic": "자동",
-  "torSettingsModeDirect": "직접",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "먼저 Tor에 직접 연결하고, 네트워크가 Tor를 차단하는 것으로 보이면 Snowflake를 사용합니다.",
-  "torSettingsModeDirectDescription": "플러그형 전송 없이 Tor 네트워크에 직접 연결합니다.",
-  "torSettingsModeSnowflakeDescription": "자원봉사자의 Snowflake 프록시를 이용해 차단된 네트워크에서 Tor에 연결합니다.",
-  "torSettingsActiveTransport": "활성 전송: {transport}",
   "settingsScreenPrivacyTitle": "화면 개인정보 보호",
   "settingsScreenPrivacyDisabledMessage": "이제 민감한 화면에서 스크린샷이 허용됩니다",
   "settingsSearchHint": "설정 검색",
@@ -9898,8 +9463,6 @@
   "exchangeSupportChatLoadMessagesError": "메시지를 불러오지 못했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatSendMessageError": "메시지를 보내지 못했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatLoadAttachmentError": "첨부 파일을 열지 못했습니다. 다시 시도해 주세요.",
-  "statusCheckNoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
-  "statusCheckResultsMayBeOutdated": "결과가 오래되었을 수 있습니다",
   "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
   "sendErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sendErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
@@ -10109,11 +9672,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다.",
   "settingsDarkModeTitle": "다크 모드",
   "settingsSourceCodeTitle": "소스 코드",
-  "torSettingsStatusNoInternetOrBlocked": "인터넷이 없거나 검열된 네트워크",
-  "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
   "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
-  "serverEncrypted": "암호화됨",
-  "serverUnencrypted": "암호화되지 않음",
   "backgroundTasksTitle": "백그라운드 작업",
   "blockedInSystemSettings": "시스템 설정에서 차단됨",
   "notificationsBlockedMessage": "시스템 설정에서 알림이 차단되어 있습니다.",
