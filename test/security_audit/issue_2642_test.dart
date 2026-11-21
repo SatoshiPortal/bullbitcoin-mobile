@@ -12,7 +12,7 @@ void main() {
       String read(String path) => File(path).readAsStringSync();
 
       final page = read('features/label_editor/lib/src/ui/page.dart');
-      final datasource = read('packages/file_system/lib/file_system.dart');
+      final datasource = read('packages/file_system/lib/src/file_system.dart');
       final fromFile = read(
         'features/label_editor/lib/src/domain/import_labels_from_file_usecase.dart',
       );
