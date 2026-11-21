@@ -32,9 +32,13 @@ class _SellOrder extends Mock implements SellOrder {}
 class _PayOrder extends Mock implements FiatPaymentOrder {}
 
 void main() {
-  for (final sell in [true, false]) {
+  for (final (sell, locale) in [
+    (true, const Locale('en')),
+    (false, const Locale('en')),
+    (false, const Locale('fr')),
+  ]) {
     testWidgets(
-      '${sell ? 'sell' : 'pay'} preparation, error, ready and sending',
+      '${sell ? 'sell' : 'pay'} preparation, error, ready and sending (${locale.languageCode})',
       (tester) async {
         final wallet = _Wallet();
         when(() => wallet.label).thenReturn('Test wallet');
@@ -52,10 +56,17 @@ void main() {
             addresses: UserAutoBuyAddresses(),
           ),
         );
-        const recipient = RecipientViewModel(
+        final recipient = RecipientViewModel(
           id: 'test-recipient',
-          type: RecipientType.interacEmailCad,
+          type: locale.languageCode == 'fr'
+              ? RecipientType.bankTransferCad
+              : RecipientType.interacEmailCad,
           email: 'test@example.com',
+          firstname: 'Test',
+          lastname: 'Recipient',
+          institutionNumber: '001',
+          transitNumber: '00001',
+          accountNumber: '0000001',
         );
         final sellInput = SellWalletSelectionState(
           userSummary: summary,
@@ -89,6 +100,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
+            locale: locale,
             localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: MultiBlocProvider(
@@ -173,6 +185,10 @@ void main() {
         payStates.add(payState);
         await tester.pump();
         expect(find.byType(AddressViewer), findsOneWidget);
+        if (locale.languageCode == 'fr') {
+          expect(find.text('Virement bancaire'), findsOneWidget);
+          expect(find.text('Bank Transfer'), findsNothing);
+        }
         expect(
           tester.widget<AddressViewer>(find.byType(AddressViewer)).data,
           address,
