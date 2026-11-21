@@ -105,6 +105,25 @@ graph TB
     IMPORT_MNEMONIC[Mnemonic Import]
     ONBOARDING[Onboarding]
     SETTINGS[Settings]
+    PREFERENCES[Preferences Package]
+    CORE -->|Drift composition| PREFERENCES
+    SETTINGS --> PREFERENCES
+    WALLETS --> PREFERENCES
+    BTC_PRICE --> PREFERENCES
+    COINS --> PREFERENCES
+    BUY --> PREFERENCES
+    ANNOUNCEMENTS --> PREFERENCES
+    EXCHANGE --> PREFERENCES
+    SWAPS --> PREFERENCES
+    SEND --> PREFERENCES
+    SELL --> PREFERENCES
+    RECIPIENTS --> PREFERENCES
+    PAY --> PREFERENCES
+    DCA --> PREFERENCES
+    PREFERENCES --> PRIMITIVES
+    PREFERENCES --> TOR
+    PREFERENCES --> BULL_REPORTING
+    PREFERENCES --> BULL_LOGGER
     LOGS[Logs<br/>Workspace Feature]
     NETWORK[Network settings and service status<br/>Workspace Feature]
     RECOVERBULL[RecoverBull<br/>Workspace Feature]
@@ -270,7 +289,6 @@ graph TB
     BUY --> TX_HISTORY
     BUY --> FUNDING
     BUY --> LABELS
-    BUY --> SETTINGS
     COINS --> UTXO_MGMT
     COINS --> LABELS
     SEND --> LABELS
@@ -414,27 +432,20 @@ graph TB
     IMPORT_WALLET --> SIGNERS
     BUY --> FEES
     CONSOLIDATION --> SEND
-    DCA --> SETTINGS
     DEFAULT_WALLETS --> EXCHANGE
     DEFAULT_WALLETS -->|public destination validation and input| WALLETS
-    EXCHANGE --> SETTINGS
     EXCHANGE_SUPPORT_CHAT --> EXCHANGE
     FEES --> WALLETS
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
     SETTINGS -->|active environment reader| MEMPOOL_SETTINGS
     PAY --> FEES
-    PAY --> SETTINGS
     SEND --> SIGNERS
-    RECIPIENTS --> SETTINGS
     REPLACE_BY_FEE --> FEES
     REPLACE_BY_FEE --> SEND
     SELL --> FEES
-    SELL --> SETTINGS
-    SEND --> SETTINGS
     SWAPS --> AUTOSWAP
     SWAPS --> FEES
-    SWAPS --> SETTINGS
     TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
 

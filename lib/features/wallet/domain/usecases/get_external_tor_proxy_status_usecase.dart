@@ -1,19 +1,19 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_tor/tor.dart';
 
 enum ExternalTorProxyStatus { disabled, available, unavailable }
 
 class GetExternalTorProxyStatusUsecase {
-  final SettingsRepository _settingsRepository;
+  final TorProxyPreferencesReader _settingsRepository;
   final Tor _tor;
 
   const GetExternalTorProxyStatusUsecase(this._settingsRepository, this._tor);
 
   Future<ExternalTorProxyStatus> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = await _settingsRepository.readTorProxyPreferences();
       if (!settings.useTorProxy) return ExternalTorProxyStatus.disabled;
       final TorProxyEndpoint endpoint;
       try {

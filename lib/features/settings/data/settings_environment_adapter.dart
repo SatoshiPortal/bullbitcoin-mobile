@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:mempool/mempool.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 class SettingsEnvironmentAdapter {

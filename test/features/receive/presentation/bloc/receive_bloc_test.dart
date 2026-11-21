@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:labels/storage.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';

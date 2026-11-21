@@ -9,6 +9,7 @@ sealed class BuyState with _$BuyState {
     @Default('') String amountInput,
     @Default(true) bool isFiatCurrencyInput,
     @Default(BitcoinUnit.btc) BitcoinUnit bitcoinUnit,
+    BitcoinUnit? displayBitcoinUnit,
     @Default('') String currencyInput,
     @Default(0.0) double exchangeRate,
     @Default([]) List<Wallet> wallets,

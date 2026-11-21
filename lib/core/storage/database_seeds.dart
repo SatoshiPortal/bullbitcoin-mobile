@@ -2,7 +2,7 @@ import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:electrum/storage.dart';
-import 'package:bb_mobile/core/storage/tables/recoverbull_table.drift.dart';
+import 'package:preferences/recoverbull_table.drift.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mempool/storage.dart';

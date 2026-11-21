@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:preferences/preferences.dart' hide Environment;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:primitives/primitives.dart';

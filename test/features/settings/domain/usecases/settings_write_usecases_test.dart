@@ -3,9 +3,7 @@ import 'package:electrum/setup.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -208,7 +206,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Err(_sanitized)),
     () =>
-        SetExchangeTestnetBasicAuthUsecase(settingsRepository: repository)
+        SetExchangeTestnetBasicAuthUsecase(preferences: repository)
             .execute(username: 'u', password: 'p'),
   );
 

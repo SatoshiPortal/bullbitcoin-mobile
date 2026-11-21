@@ -21,3 +21,9 @@ class BitcoinPriceCurrencyChanged extends BitcoinPriceEvent {
 
   const BitcoinPriceCurrencyChanged({required this.currencyCode});
 }
+
+final class _BitcoinPriceAmountDisplayChanged extends BitcoinPriceEvent {
+  final AmountDisplayPreferences? preferences;
+
+  const _BitcoinPriceAmountDisplayChanged(this.preferences);
+}

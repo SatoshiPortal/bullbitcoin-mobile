@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/src/domain/settings_repository.dart';
+import 'package:preferences/src/domain/settings_entity.dart';
 
 class GetSettingsUsecase {
   final SettingsRepository _settingsRepository;

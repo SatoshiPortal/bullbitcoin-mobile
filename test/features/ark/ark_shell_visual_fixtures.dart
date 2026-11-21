@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -188,10 +189,16 @@ class ArkShellVisualFixtures {
       confirmedBalanceSat: BigInt.from(1234),
       isPhysicalBackupTested: true,
     );
+    const amountDisplay = (
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'CAD',
+      hideAmounts: false,
+    );
     whenListen(
       _wallet,
       const Stream<WalletState>.empty(),
       initialState: WalletState(
+        amountDisplay: amountDisplay,
         status: WalletStatus.success,
         wallets: [bitcoin],
         backupNeeded: false,
@@ -215,6 +222,7 @@ class ArkShellVisualFixtures {
       _price,
       const Stream<BitcoinPriceState>.empty(),
       initialState: const BitcoinPriceState(
+        amountDisplay: amountDisplay,
         currency: 'CAD',
         bitcoinPrice: 100000,
       ),

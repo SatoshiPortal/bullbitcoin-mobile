@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -13,8 +12,6 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWallet extends Mock implements Wallet {}
-
-class _MockSettings extends Mock implements SettingsEntity {}
 
 /// The load path behind the wallet home screen. Before #1895 a failure here
 /// threw `GetWalletsException('$e')` — the raw reason stringified into an
@@ -31,9 +28,8 @@ void main() {
       walletRepository: walletRepository,
       settingsRepository: settingsRepository,
     );
-    final settings = _MockSettings();
-    when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.readActiveEnvironment)
+        .thenAnswer((_) async => Environment.mainnet);
   });
 
   test('returns the wallets it was given', () async {
@@ -90,7 +86,7 @@ void main() {
   });
 
   test('sanitizes a throwing settings read', () async {
-    when(settingsRepository.fetch)
+    when(settingsRepository.readActiveEnvironment)
         .thenThrow(StateError('SqliteException(13): disk image is malformed'));
 
     final result = await usecase.execute();

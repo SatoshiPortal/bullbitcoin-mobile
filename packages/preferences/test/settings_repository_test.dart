@@ -1,7 +1,7 @@
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'package:preferences/preferences_dao.dart';
+import 'package:preferences/src/data/settings_repository.dart';
+import 'package:preferences/src/domain/settings_entity.dart';
+import 'package:preferences/src/domain/settings_store_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,7 +17,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
-class _MockDatasource extends Mock implements SettingsDatasource {}
+class _MockDatasource extends Mock implements PreferencesDao {}
 
 void main() {
   setUpAll(() {
@@ -28,8 +28,8 @@ void main() {
 
   late _MockDatasource datasource;
 
-  SettingsRepository build() =>
-      SettingsRepository(settingsDatasource: datasource);
+  SettingsRepositoryImpl build() =>
+      SettingsRepositoryImpl(settingsDatasource: datasource);
 
   setUp(() => datasource = _MockDatasource());
 

@@ -1,7 +1,9 @@
+import 'package:preferences/preferences.dart' show Language;
+
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show Language, TranslationWarningBottomSheet;
+    show TranslationWarningBottomSheet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';

@@ -4,12 +4,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as primitives;
@@ -44,7 +42,7 @@ class _Connections implements sync.WalletConnectionPort {
 }
 
 // Scheduling seam around the actual SQLite-backed settings read.
-class _HeldSettings extends SettingsRepository {
+class _HeldSettings extends SettingsRepositoryImpl {
   bool hold = false;
   final entered = Completer<void>();
   final release = Completer<void>();
@@ -123,7 +121,7 @@ void main() {
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 WHERE id=1',
         );
         final preferences = _HeldSettings(
-          settingsDatasource: SettingsDatasource(sqlite: appDb),
+          settingsDatasource: PreferencesDao(appDb),
         );
         await preferences.setEnvironment(settings.Environment.testnet);
         final directory = await Directory.systemTemp.createTemp(

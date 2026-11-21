@@ -1,10 +1,11 @@
+import 'package:preferences/storage.dart' show PreferencesDao;
+
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/settings/data/recoverbull_settings_adapter.dart';
 import 'package:bb_mobile/features/settings/domain/regtest_recoverbull_profile.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
@@ -25,7 +26,7 @@ class _Sessions extends Mock implements TorSessions {}
 
 class _Tor extends Mock implements Tor {}
 
-class _UnreadDatabase extends Mock implements SqliteDatabase {}
+class _UnreadPreferencesDao extends Mock implements PreferencesDao {}
 
 SettingsEntity _selected(
   Environment environment, {
@@ -94,7 +95,7 @@ void main() {
   RecoverBullSettingsAdapter adapter({bool regtest = true}) {
     final value = RecoverBullSettingsAdapter(
       settings,
-      database,
+      RecoverBullPreferences(PreferencesDao(database)),
       embedded,
       tor,
       regtestProfile: regtest ? _profile() : null,
@@ -112,9 +113,11 @@ void main() {
         () async {
           selected = _selected(initial);
           final services = GetIt.asNewInstance();
-          final unreadDatabase = _UnreadDatabase();
+          final unreadDao = _UnreadPreferencesDao();
           services.registerSingleton<SettingsRepository>(settings);
-          services.registerSingleton<SqliteDatabase>(unreadDatabase);
+          services.registerSingleton<RecoverBullPreferences>(
+            RecoverBullPreferences(unreadDao),
+          );
           services.registerSingleton<Tor>(tor);
           addTearDown(services.reset);
           final capturedPath = await SettingsRecoverBullBindings.setup(
@@ -161,7 +164,7 @@ void main() {
               isA<VaultContextChangedFailure>(),
             ),
           );
-          verifyZeroInteractions(unreadDatabase);
+          verifyZeroInteractions(unreadDao);
           verifyZeroInteractions(external);
           verifyZeroInteractions(embedded);
         },
@@ -376,7 +379,9 @@ void main() {
         selected = _selected(environment);
         final services = GetIt.asNewInstance();
         services.registerSingleton<SettingsRepository>(settings);
-        services.registerSingleton<SqliteDatabase>(database);
+        services.registerSingleton<RecoverBullPreferences>(
+          RecoverBullPreferences(database.preferencesDao),
+        );
         services.registerSingleton<Tor>(tor);
         final path = await SettingsRecoverBullBindings.setup(
           services,

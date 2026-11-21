@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:bull_logger/bull_logger.dart';

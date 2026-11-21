@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/amount_input_mode_setting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';

@@ -1,3 +1,6 @@
+import 'package:preferences/preferences.dart'
+    show AmountDisplayPreferencesReader;
+import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -38,6 +41,9 @@ class CoinsLocator {
     // Cubit — built per route with the target wallet id.
     locator.registerFactoryParam<CoinsCubit, String, void>(
       (walletId, _) => CoinsCubit(
+        watchAmountDisplayUsecase: WatchCoinsAmountDisplayUsecase(
+          locator<AmountDisplayPreferencesReader>(),
+        ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletFacade>(),
         ),

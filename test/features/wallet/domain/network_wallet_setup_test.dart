@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
@@ -35,10 +34,9 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late Secret secret;
-  const regtest = SettingsEntity(
+  const regtest = (
     environment: Environment.regtest,
-    bitcoinUnit: BitcoinUnit.sats,
-    currencyCode: 'CAD',
+
     isSuperuser: true,
     isDevModeEnabled: true,
   );
@@ -55,7 +53,8 @@ void main() {
     settings = _Settings();
     references = _References();
     create = _CreateDefaults();
-    when(() => settings.fetch()).thenAnswer((_) async => regtest);
+    when(() => settings.readDeveloperEnvironment())
+        .thenAnswer((_) async => regtest);
     when(() => references.list()).thenAnswer((_) async => Ok([secret.id]));
     when(
       () => create.execute(
@@ -69,9 +68,13 @@ void main() {
     test(
       'remote descriptor keeps setup available on ${environment.name}',
       () async {
-        when(
-          settings.fetch,
-        ).thenAnswer((_) async => regtest.copyWith(environment: environment));
+        when(settings.readDeveloperEnvironment).thenAnswer(
+          (_) async => (
+            environment: environment,
+            isSuperuser: regtest.isSuperuser,
+            isDevModeEnabled: regtest.isDevModeEnabled,
+          ),
+        );
         final localRow = _Row();
         when(() => localRow.masterFingerprint).thenReturn(secret.id.hex);
         when(() => localRow.signer).thenReturn(Signer.local);
@@ -167,8 +170,12 @@ void main() {
   test(
     'empty mainnet keeps onboarding without enumerating references',
     () async {
-      when(() => settings.fetch()).thenAnswer(
-        (_) async => regtest.copyWith(environment: Environment.mainnet),
+      when(() => settings.readDeveloperEnvironment()).thenAnswer(
+        (_) async => (
+          environment: Environment.mainnet,
+          isSuperuser: regtest.isSuperuser,
+          isDevModeEnabled: regtest.isDevModeEnabled,
+        ),
       );
       final result = await LoadNetworkWalletSetupUsecase(
         settings,
@@ -200,8 +207,13 @@ void main() {
             .reusable,
         [secret.id],
       );
-      when(() => settings.fetch())
-          .thenAnswer((_) async => regtest.copyWith(isDevModeEnabled: false));
+      when(() => settings.readDeveloperEnvironment()).thenAnswer(
+        (_) async => (
+          environment: regtest.environment,
+          isSuperuser: regtest.isSuperuser,
+          isDevModeEnabled: false,
+        ),
+      );
       expect(
         await usecase.execute(),
         isA<Err<NetworkWalletSetup, NetworkWalletSetupFailure>>(),

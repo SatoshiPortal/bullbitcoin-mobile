@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:primitives/primitives.dart';
 
 import 'data/ark_installation_state.dart';
@@ -31,8 +33,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transacti
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart'
-    as settings;
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -52,7 +52,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
@@ -95,14 +94,14 @@ class WalletLocator {
     );
     locator.registerFactory<LoadNetworkWalletSetupUsecase>(
       () => LoadNetworkWalletSetupUsecase(
-        locator<SettingsRepository>(),
+        locator<DeveloperEnvironmentReader>(),
         locator<WalletSecretReferencesRepository>(),
         locator<Secrets>(),
       ),
     );
     locator.registerFactory<CreateNetworkWalletUsecase>(
       () => CreateNetworkWalletUsecase(
-        locator<SettingsRepository>(),
+        locator<DeveloperEnvironmentReader>(),
         locator<WalletSecretReferencesRepository>(),
         locator<Secrets>(),
         locator<CreateDefaultWalletsUsecase>(),
@@ -159,7 +158,7 @@ class WalletLocator {
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(
         secrets: locator<Secrets>(),
-        settingsRepository: locator<settings.SettingsRepository>(),
+        settingsRepository: locator<ActiveEnvironmentReader>(),
         walletRepository: locator<WalletRepository>(),
         resumeProvisioning: locator<WalletNativeRuntime>().resumeProvisioning,
       ),
@@ -269,7 +268,7 @@ class WalletLocator {
     locator.registerFactory<CheckBackupNeededUsecase>(
       () => CheckBackupNeededUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<ActiveEnvironmentReader>(),
         backupStatus: locator<RecoverBullFacade>().status,
       ),
     );
@@ -315,7 +314,7 @@ class WalletLocator {
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
       () => GetExternalTorProxyStatusUsecase(
-        locator<SettingsRepository>(),
+        locator<TorProxyPreferencesReader>(),
         locator<Tor>(),
       ),
     );
@@ -348,6 +347,9 @@ class WalletLocator {
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
+        watchAmountDisplayUsecase: WatchWalletAmountDisplayUsecase(
+          locator<AmountDisplayPreferencesReader>(),
+        ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletFacade>(),
         ),

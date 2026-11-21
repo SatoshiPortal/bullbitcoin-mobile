@@ -8,7 +8,7 @@ import 'package:notifications/notifications.dart'
     show NotificationPermissionsFacade, notificationPermissions;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
     show ExchangeAvailability, ExchangeAccessResolving;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';

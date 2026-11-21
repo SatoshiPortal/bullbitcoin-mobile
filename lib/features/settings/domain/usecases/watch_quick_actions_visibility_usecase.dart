@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
 /// Combines the exchange state with the platform and network restrictions.

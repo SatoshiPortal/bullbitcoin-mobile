@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -9,16 +8,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
-class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
+class _Wallet extends MockBloc<WalletEvent, WalletState>
+    implements WalletBloc {}
 
 Future<void> _pump(WidgetTester tester, {required bool hideAmounts}) async {
-  final settings = _Settings();
+  final wallet = _Wallet();
   whenListen(
-    settings,
-    const Stream<SettingsState>.empty(),
-    initialState: SettingsState(
-      storedSettings: SettingsEntity(
-        environment: Environment.mainnet,
+    wallet,
+    const Stream<WalletState>.empty(),
+    initialState: WalletState(
+      amountDisplay: (
         bitcoinUnit: BitcoinUnit.btc,
         currencyCode: 'CAD',
         hideAmounts: hideAmounts,
@@ -26,8 +25,8 @@ Future<void> _pump(WidgetTester tester, {required bool hideAmounts}) async {
     ),
   );
   await tester.pumpWidget(
-    BlocProvider<SettingsCubit>.value(
-      value: settings,
+    BlocProvider<WalletBloc>.value(
+      value: wallet,
       child: MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         locale: const Locale('en'),

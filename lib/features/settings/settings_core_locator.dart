@@ -1,39 +1,62 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as domain;
-import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
 import 'package:get_it/get_it.dart';
+import 'package:preferences/preferences.dart' as domain;
+import 'package:preferences/storage.dart';
 
 class SettingsLocator {
   static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<SettingsDatasource>(
-      () => SettingsDatasource(sqlite: locator<SqliteDatabase>()),
+    locator.registerLazySingleton<PreferencesDao>(
+      () => locator<SqliteDatabase>().preferencesDao,
     );
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
-    locator.registerLazySingleton<SettingsRepository>(
+    locator.registerLazySingleton<domain.SettingsRepository>(
       () =>
-          SettingsRepository(settingsDatasource: locator<SettingsDatasource>()),
+          SettingsRepositoryImpl(settingsDatasource: locator<PreferencesDao>()),
     );
 
-    // Register the interface for new code, resolving to the same instance
-    locator.registerLazySingleton<domain.SettingsRepository>(
-      () => locator<SettingsRepository>(),
+    locator.registerLazySingleton<domain.AmountDisplayPreferencesReader>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.ActiveEnvironmentReader>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.ConnectionPreferencesReader>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.DeveloperEnvironmentReader>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.RuntimeDisplayPreferencesReader>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.AmountInputPreferences>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.TorProxyPreferencesReader>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.ExchangeTestnetBasicAuthPreferences>(
+      () => locator<domain.SettingsRepository>(),
+    );
+    locator.registerLazySingleton<domain.AnnouncementDismissals>(
+      () => domain.AnnouncementDismissals(locator<PreferencesDao>()),
+    );
+    locator.registerLazySingleton<domain.RecoverBullPreferences>(
+      () => domain.RecoverBullPreferences(locator<PreferencesDao>()),
     );
   }
 
   static void registerUsecases(GetIt locator) {
-    locator.registerFactory<GetSettingsUsecase>(
-      () =>
-          GetSettingsUsecase(settingsRepository: locator<SettingsRepository>()),
+    locator.registerFactory<domain.GetSettingsUsecase>(
+      () => domain.GetSettingsUsecase(
+        settingsRepository: locator<domain.SettingsRepository>(),
+      ),
     );
-    locator.registerFactory<WatchCurrencyChangesUsecase>(
-      () => WatchCurrencyChangesUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+    locator.registerFactory<domain.WatchCurrencyChangesUsecase>(
+      () => domain.WatchCurrencyChangesUsecase(
+        settingsRepository: locator<domain.SettingsRepository>(),
       ),
     );
   }

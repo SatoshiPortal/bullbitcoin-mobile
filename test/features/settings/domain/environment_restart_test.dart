@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,16 +1,22 @@
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_bitcoin_price_amount_display_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
+import 'package:preferences/preferences.dart'
+    show
+        AmountDisplayPreferences,
+        GetSettingsUsecase,
+        WatchCurrencyChangesUsecase;
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, ConvertAmount, Err, Ok;
+    show BitcoinUnit, Err, Ok, ConvertAmount;
 
 part 'bitcoin_price_bloc.freezed.dart';
 part 'bitcoin_price_event.dart';
@@ -18,10 +24,19 @@ part 'bitcoin_price_state.dart';
 
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
+    WatchBitcoinPriceAmountDisplayUsecase? watchAmountDisplayUsecase,
     required this._getSettingsUsecase,
     required this._getBitcoinPriceUsecase,
     required this._watchCurrencyChangesUsecase,
   }) : super(const BitcoinPriceState()) {
+    on<_BitcoinPriceAmountDisplayChanged>((event, emit) {
+      emit(state.copyWith(amountDisplay: event.preferences));
+    });
+    _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
+      preferences,
+    ) {
+      if (!isClosed) add(_BitcoinPriceAmountDisplayChanged(preferences));
+    });
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
@@ -35,6 +50,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     );
   }
 
+  late final StreamSubscription<AmountDisplayPreferences?>?
+  _amountDisplaySubscription;
   final GetSettingsUsecase _getSettingsUsecase;
   final GetBitcoinPriceUsecase _getBitcoinPriceUsecase;
   final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
@@ -52,6 +69,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
   @override
   Future<void> close() async {
+    await _amountDisplaySubscription?.cancel();
     await _currencyChangeSubscription.cancel();
     return super.close();
   }

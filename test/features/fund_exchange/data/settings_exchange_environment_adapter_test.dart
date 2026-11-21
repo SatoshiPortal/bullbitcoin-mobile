@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/fund_exchange/data/funding_repository_impl.dart';
 import 'package:bb_mobile/features/fund_exchange/data/settings_exchange_environment_adapter.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';

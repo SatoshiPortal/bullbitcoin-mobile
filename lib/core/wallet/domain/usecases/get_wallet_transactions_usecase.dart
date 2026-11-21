@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 
 class GetWalletTransactionsUsecase {
-  final SettingsRepository _settingsRepository;
+  final ActiveEnvironmentReader _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
 
   GetWalletTransactionsUsecase({
@@ -17,8 +17,7 @@ class GetWalletTransactionsUsecase {
     bool sync = false,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
+      final environment = await _settingsRepository.readActiveEnvironment();
       final walletTransactions = await _walletTransactionRepository
           .getWalletTransactions(
             walletId: walletId,

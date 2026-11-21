@@ -2,13 +2,11 @@ import 'package:primitives/primitives.dart' show NetworkEnv;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:swaps/swaps.dart';
@@ -26,8 +24,8 @@ void main() {
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 '
           'WHERE id = 1',
         );
-        final preferences = SettingsRepository(
-          settingsDatasource: SettingsDatasource(sqlite: appDb),
+        final preferences = SettingsRepositoryImpl(
+          settingsDatasource: PreferencesDao(appDb),
         );
         final swapDb = BoltzSwapsDatabase(NativeDatabase.memory());
         final storage = SwapStorage(

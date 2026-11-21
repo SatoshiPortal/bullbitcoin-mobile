@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

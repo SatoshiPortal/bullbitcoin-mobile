@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
@@ -21,7 +20,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:secrets/secrets.dart';
 
 class _Settings extends Mock implements SettingsRepository {}
@@ -59,13 +57,11 @@ void main() {
       );
       addTearDown(() => temporary.deleteSync(recursive: true));
       final settings = _Settings();
-      when(settings.fetch).thenAnswer(
-        (_) async => SettingsEntity(
+      when(settings.readDeveloperEnvironment).thenAnswer(
+        (_) async => (
           environment: environment,
           isSuperuser: true,
           isDevModeEnabled: true,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
         ),
       );
       final references = _References();

@@ -6,9 +6,8 @@ library;
 import 'dart:io';
 
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
@@ -96,7 +95,10 @@ void main() {
       final wallets = _Wallets();
       final wallet = _Wallet();
       final bip85 = _Bip85();
-      when(() => settings.fetch()).thenAnswer((_) async => settingsValue);
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => settingsValue.environment);
+      when(settings.readLanguage)
+          .thenAnswer((_) async => settingsValue.language);
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
       when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
       when(() => wallet.networkCode).thenReturn('bitcoinRegtest');
@@ -110,7 +112,8 @@ void main() {
         mayCreate: true,
       );
       locator
-        ..registerSingleton<SettingsRepository>(settings)
+        ..registerSingleton<ActiveEnvironmentReader>(settings)
+        ..registerSingleton<RuntimeDisplayPreferencesReader>(settings)
         ..registerSingleton<WalletMetadataDatasource>(wallets)
         ..registerSingleton<Bip85Repository>(bip85)
         ..registerSingleton<Secrets>(secrets)

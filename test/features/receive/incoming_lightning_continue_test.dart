@@ -3,13 +3,12 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';

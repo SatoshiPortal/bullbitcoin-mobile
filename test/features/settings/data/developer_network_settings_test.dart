@@ -1,15 +1,15 @@
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
+import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SqliteDatabase database;
-  late SettingsDatasource datasource;
+  late PreferencesDao datasource;
 
   setUp(() async {
     database = SqliteDatabase(NativeDatabase.memory());
-    datasource = SettingsDatasource(sqlite: database);
+    datasource = PreferencesDao(database);
     await database.customStatement(
       "UPDATE settings SET environment = 'testnet', "
       'is_superuser = 1, is_dev_mode_enabled = 1 WHERE id = 1',

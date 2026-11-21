@@ -1,5 +1,5 @@
 import 'package:flutter/rendering.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -45,10 +45,16 @@ Future<void> _pumpTopSection(
   final settings = _Settings();
   final price = _Price();
   final chart = _Chart();
+  final amountDisplay = (
+    bitcoinUnit: BitcoinUnit.btc,
+    currencyCode: 'CAD',
+    hideAmounts: hideAmounts,
+  );
   whenListen(
     wallet,
     const Stream<WalletState>.empty(),
     initialState: WalletState(
+      amountDisplay: amountDisplay,
       status: WalletStatus.success,
       unconfirmedIncomingBalance: unconfirmedIncomingBalance,
     ),
@@ -68,7 +74,8 @@ Future<void> _pumpTopSection(
   whenListen(
     price,
     const Stream<BitcoinPriceState>.empty(),
-    initialState: const BitcoinPriceState(
+    initialState: BitcoinPriceState(
+      amountDisplay: amountDisplay,
       currency: 'CAD',
       bitcoinPrice: 100000,
     ),

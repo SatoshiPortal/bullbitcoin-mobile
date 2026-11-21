@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 
-export '../domain/settings_entity.dart';
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
@@ -37,6 +36,18 @@ class SettingsFacade {
     if (settings == null) return;
     await cubit.toggleHideAmounts(!(settings.hideAmounts ?? true));
   }
+
+  static Future<void> setAmountsHidden(BuildContext context, bool hide) async {
+    final cubit = context.read<SettingsCubit>();
+    final settings = cubit.state.storedSettings;
+    if (settings == null) return;
+    await cubit.toggleHideAmounts(hide);
+  }
+
+  static Future<void> changeDisplayCurrency(
+    BuildContext context,
+    String currencyCode,
+  ) => context.read<SettingsCubit>().changeCurrency(currencyCode);
 
   static Widget amountScope({
     required Widget child,

@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 

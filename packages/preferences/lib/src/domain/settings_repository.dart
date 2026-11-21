@@ -1,17 +1,83 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'amount_display_preferences.dart';
+
+import 'package:preferences/src/domain/settings_entity.dart';
+import 'package:preferences/src/domain/settings_store_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:bull_tor/tor.dart';
 
-/// Reads still throw (`fetch` has ~79 call sites app-wide); the write side is
-/// the sanitized boundary: implementations catch, log the raw reason and
-/// return a [SettingsStoreFailure].
-abstract interface class SettingsRepository {
-  Stream<String> get currencyChangeStream;
+abstract interface class ActiveEnvironmentReader {
+  Future<Environment> readActiveEnvironment();
+}
 
+typedef ConnectionPreferences = ({
+  bool? isSuperuser,
+  bool? isDevModeEnabled,
+  bool useTorProxy,
+  int torProxyPort,
+});
+
+abstract interface class ConnectionPreferencesReader
+    implements ActiveEnvironmentReader {
+  Future<ConnectionPreferences> readConnectionPreferences();
+}
+
+typedef DeveloperEnvironmentPreferences = ({
+  Environment environment,
+  bool? isSuperuser,
+  bool? isDevModeEnabled,
+});
+
+abstract interface class DeveloperEnvironmentReader {
+  Future<DeveloperEnvironmentPreferences> readDeveloperEnvironment();
+}
+
+typedef TorProxyPreferences = ({bool useTorProxy, int torProxyPort});
+
+abstract interface class TorProxyPreferencesReader {
+  Future<TorProxyPreferences> readTorProxyPreferences();
+}
+
+typedef ExchangeWebPreferences = ({
+  Environment environment,
+  String? exchangeTestnetBasicAuthUsername,
+  String? exchangeTestnetBasicAuthPassword,
+});
+
+abstract interface class ExchangeTestnetBasicAuthPreferences {
+  Future<ExchangeWebPreferences> readExchangeWebPreferences();
+
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  });
+}
+
+abstract interface class RuntimeDisplayPreferencesReader {
+  Future<Language?> readLanguage();
+  Future<String> readCurrency();
+  Stream<String> get currencyChangeStream;
+}
+
+abstract interface class AmountInputPreferences {
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setStartAmountsInFiat(bool fiat);
+}
+
+/// The legacy settings aggregate. New consumers can use the narrow readers
+/// and writers that this repository implements.
+abstract interface class SettingsRepository
+    implements
+        AmountDisplayPreferencesReader,
+        ConnectionPreferencesReader,
+        AmountInputPreferences,
+        DeveloperEnvironmentReader,
+        TorProxyPreferencesReader,
+        RuntimeDisplayPreferencesReader,
+        ExchangeTestnetBasicAuthPreferences {
   /// The environment after each successful [setEnvironment].
   Stream<Environment> get environmentChangeStream;
 
@@ -95,10 +161,4 @@ abstract interface class SettingsRepository {
   Future<Result<void, SettingsStoreFailure>> setScreenCaptureProtectionEnabled(
     bool enabled,
   );
-
-  @useResult
-  Future<Result<void, SettingsStoreFailure>> setExchangeTestnetBasicAuth({
-    String? username,
-    String? password,
-  });
 }

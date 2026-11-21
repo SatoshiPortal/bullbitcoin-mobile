@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
@@ -139,9 +138,7 @@ class _BtcTotalAmt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletState = context.select((WalletBloc bloc) => bloc.state);
-    final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
-    );
+    final bitcoinUnit = walletState.amountDisplay?.bitcoinUnit;
 
     final showSkeleton =
         walletState.status == WalletStatus.initial ||

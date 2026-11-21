@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';

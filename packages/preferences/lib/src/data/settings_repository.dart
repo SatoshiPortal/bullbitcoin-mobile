@@ -1,24 +1,25 @@
-import 'package:bb_mobile/features/settings/data/settings_mapper.dart';
+import 'package:preferences/src/data/settings_mapper.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/data/settings_model.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as domain;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import '../domain/amount_display_preferences.dart';
+
+import 'package:preferences/preferences_dao.dart';
+import 'package:preferences/src/data/settings_model.dart';
+import 'package:preferences/src/domain/settings_repository.dart' as domain;
+import 'package:preferences/src/domain/settings_entity.dart';
+import 'package:preferences/src/domain/settings_store_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 
-class SettingsRepository implements domain.SettingsRepository {
-  final SettingsDatasource _settingsDatasource;
+class SettingsRepositoryImpl implements domain.SettingsRepository {
+  final PreferencesDao _settingsDatasource;
   final StreamController<String> _currencyChangeController;
   final StreamController<Environment> _environmentChangeController;
 
-  SettingsRepository({required this._settingsDatasource})
+  SettingsRepositoryImpl({required this._settingsDatasource})
     : _currencyChangeController = StreamController<String>.broadcast(),
       _environmentChangeController = StreamController<Environment>.broadcast();
 
@@ -86,6 +87,117 @@ class SettingsRepository implements domain.SettingsRepository {
       );
       return Err(SettingsStoreWriteFailure('store failed: ${e.runtimeType}'));
     }
+  }
+
+  @override
+  Stream<AmountDisplayPreferences?> watchDisplayPreferences() =>
+      _settingsDatasource
+          .watchSettings()
+          .map((row) {
+            if (row == null) return null;
+            final unit = BitcoinUnit.values.asNameMap()[row.bitcoinUnit];
+            if (unit == null) return null;
+            return (
+              bitcoinUnit: unit,
+              hideAmounts: row.hideAmounts,
+              currencyCode: row.currency,
+            );
+          })
+          .transform(
+            StreamTransformer<
+              AmountDisplayPreferences?,
+              AmountDisplayPreferences?
+            >.fromHandlers(
+              handleError: (error, trace, sink) {
+                if (error is Exception) {
+                  log.warning(
+                    'Could not watch display preferences: ${error.runtimeType}',
+                    trace: trace,
+                  );
+                  sink.add(null);
+                } else {
+                  sink.addError(error, trace);
+                }
+              },
+            ),
+          )
+          .distinct();
+
+  @override
+  Future<Language?> readLanguage() async => (await fetch()).language;
+
+  @override
+  Future<String> readCurrency() async => (await fetch()).currencyCode;
+
+  @override
+  Future<Result<void, SettingsStoreFailure>> setStartAmountsInFiat(
+    bool fiat,
+  ) async {
+    try {
+      await _settingsDatasource.setStartAmountsInFiat(fiat);
+      return const Ok(null);
+    } on Exception catch (error, trace) {
+      log.severe(
+        message: 'Failed to persist amount input preference',
+        error: error.runtimeType,
+        trace: trace,
+      );
+      return Err(
+        SettingsStoreWriteFailure(
+          'setStartAmountsInFiat failed: ${error.runtimeType}',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Environment> readActiveEnvironment() async =>
+      (await fetch()).environment;
+
+  @override
+  Future<domain.ConnectionPreferences> readConnectionPreferences() async {
+    final settings = await fetch();
+    return (
+      isSuperuser: settings.isSuperuser,
+      isDevModeEnabled: settings.isDevModeEnabled,
+      useTorProxy: settings.useTorProxy,
+      torProxyPort: settings.torProxyPort,
+    );
+  }
+
+  @override
+  Future<domain.DeveloperEnvironmentPreferences>
+  readDeveloperEnvironment() async {
+    final settings = await fetch();
+    return (
+      environment: settings.environment,
+      isSuperuser: settings.isSuperuser,
+      isDevModeEnabled: settings.isDevModeEnabled,
+    );
+  }
+
+  @override
+  Future<domain.TorProxyPreferences> readTorProxyPreferences() async {
+    final settings = await fetch();
+    return (
+      useTorProxy: settings.useTorProxy,
+      torProxyPort: settings.torProxyPort,
+    );
+  }
+
+  @override
+  Future<domain.ExchangeWebPreferences> readExchangeWebPreferences() async {
+    final settings = await fetch();
+    final useTestnet = settings.environment == Environment.testnet;
+    return (
+      environment: settings.environment,
+      exchangeTestnetBasicAuthUsername: useTestnet
+          ? settings.exchangeTestnetBasicAuthUsername
+          : null,
+      exchangeTestnetBasicAuthPassword: useTestnet
+          ? settings.exchangeTestnetBasicAuthPassword
+          : null,
+    );
   }
 
   @override

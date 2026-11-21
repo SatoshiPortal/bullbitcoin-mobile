@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -54,7 +54,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   Future<void> _load() async {
     final result = await locator<GetExchangeWebSettingsUsecase>().execute();
     if (!mounted) return;
-    final SettingsEntity settingsState;
+    final ExchangeWebPreferences settingsState;
     switch (result) {
       case Ok(:final value):
         settingsState = value;

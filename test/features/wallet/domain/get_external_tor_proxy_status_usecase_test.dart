@@ -1,6 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/src/domain/ports/external_tor_port.dart';
@@ -26,14 +24,8 @@ class _FakeExternalTorPort implements ExternalTorPort {
   }
 }
 
-SettingsEntity settings({required bool useTorProxy, int port = 9050}) =>
-    SettingsEntity(
-      environment: Environment.mainnet,
-      bitcoinUnit: BitcoinUnit.sats,
-      currencyCode: 'USD',
-      useTorProxy: useTorProxy,
-      torProxyPort: port,
-    );
+TorProxyPreferences settings({required bool useTorProxy, int port = 9050}) =>
+    (useTorProxy: useTorProxy, torProxyPort: port);
 
 void main() {
   setUpAll(() {
@@ -69,7 +61,8 @@ void main() {
 
   test('returns unavailable when the enabled proxy handshake fails', () async {
     final repository = _MockSettingsRepository();
-    when(repository.fetch).thenAnswer((_) async => settings(useTorProxy: true));
+    when(repository.readTorProxyPreferences)
+        .thenAnswer((_) async => settings(useTorProxy: true));
     final port = _FakeExternalTorPort(false);
 
     final status = await usecase(repository, port).execute();
@@ -79,7 +72,8 @@ void main() {
 
   test('returns available when the enabled proxy handshake succeeds', () async {
     final repository = _MockSettingsRepository();
-    when(repository.fetch).thenAnswer((_) async => settings(useTorProxy: true));
+    when(repository.readTorProxyPreferences)
+        .thenAnswer((_) async => settings(useTorProxy: true));
     final port = _FakeExternalTorPort(true);
 
     final status = await usecase(repository, port).execute();
@@ -89,7 +83,7 @@ void main() {
 
   test('returns disabled without checking a disabled proxy', () async {
     final repository = _MockSettingsRepository();
-    when(repository.fetch)
+    when(repository.readTorProxyPreferences)
         .thenAnswer((_) async => settings(useTorProxy: false));
     final port = _FakeExternalTorPort(true);
 
@@ -101,7 +95,7 @@ void main() {
 
   test('returns unavailable for an invalid enabled port', () async {
     final repository = _MockSettingsRepository();
-    when(repository.fetch)
+    when(repository.readTorProxyPreferences)
         .thenAnswer((_) async => settings(useTorProxy: true, port: 0));
     final port = _FakeExternalTorPort(true);
 

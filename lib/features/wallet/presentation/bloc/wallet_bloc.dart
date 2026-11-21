@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -35,6 +37,7 @@ part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
+    WatchWalletAmountDisplayUsecase? watchAmountDisplayUsecase,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._retrySwapsOnRefreshUsecase,
     required this._getWalletsUsecase,
@@ -52,6 +55,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchSpWalletUsecase,
     required this._checkSpFeatureGateForWalletUsecase,
   }) : super(const WalletState()) {
+    on<_WalletAmountDisplayChanged>((event, emit) {
+      emit(state.copyWith(amountDisplay: event.preferences));
+    });
+    _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
+      preferences,
+    ) {
+      if (!isClosed) add(_WalletAmountDisplayChanged(preferences));
+    });
     _revisionsSubscription = watchWalletRevisionsUsecase?.execute().listen((
       walletId,
     ) {
@@ -70,6 +81,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
   }
 
+  late final StreamSubscription<AmountDisplayPreferences?>?
+  _amountDisplaySubscription;
   final GetWalletsUsecase _getWalletsUsecase;
   final ReadWalletUsecase _readWalletUsecase;
   final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
@@ -117,7 +130,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
+    await _amountDisplaySubscription?.cancel();
     _revisionsSubscription?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();

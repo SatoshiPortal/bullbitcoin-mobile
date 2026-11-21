@@ -9,7 +9,7 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 
 class Bip85EntropyLocator {
   static void setup(GetIt locator) {

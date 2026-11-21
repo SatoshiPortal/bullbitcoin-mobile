@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bip21_uri/bip21_uri.dart';

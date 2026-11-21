@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart';
+
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
@@ -7,7 +9,6 @@ import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dar
 import 'data/wallet_native_runtime.dart';
 
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
@@ -101,7 +102,7 @@ class WalletLocator {
     );
     locator.registerFactory<GetWalletsUsecase>(
       () => GetWalletsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<ActiveEnvironmentReader>(),
         walletRepository: locator<WalletRepository>(),
       ),
     );
@@ -148,7 +149,7 @@ class WalletLocator {
     );
     locator.registerFactory<GetWalletTransactionsUsecase>(
       () => GetWalletTransactionsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<ActiveEnvironmentReader>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
       ),
     );

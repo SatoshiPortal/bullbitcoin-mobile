@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_cha
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';

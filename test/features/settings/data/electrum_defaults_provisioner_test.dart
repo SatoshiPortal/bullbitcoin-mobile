@@ -7,10 +7,9 @@ import 'package:electrum/setup.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:electrum/storage.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

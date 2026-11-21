@@ -7,8 +7,7 @@ import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:mempool/mempool.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as settings;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/swap/swaps_core_locator.dart';
@@ -87,7 +86,6 @@ class CoreLocator {
     BlockchainLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
-    await SettingsLocator.registerRepositories(locator);
     await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);

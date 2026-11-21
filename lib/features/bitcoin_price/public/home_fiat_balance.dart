@@ -2,7 +2,8 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show SettingsFacade;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,9 +41,7 @@ class HomeFiatBalance extends StatelessWidget {
     final currencies = blocCurrencies != null && blocCurrencies.isNotEmpty
         ? blocCurrencies
         : SupportedCurrency.codes;
-    final currentCurrency = context.select(
-      (SettingsCubit cubit) => cubit.state.currencyCode ?? 'CAD',
-    );
+    final currentCurrency = priceState.amountDisplay?.currencyCode ?? 'CAD';
 
     Widget picker(Widget child) => BullPickerMenu<String>(
       tooltip: context.loc.currencySettingsDefaultFiatCurrencyLabel,
@@ -56,7 +55,7 @@ class HomeFiatBalance extends StatelessWidget {
       ],
       onChanged: (picked) {
         if (picked == currentCurrency) return;
-        context.read<SettingsCubit>().changeCurrency(picked);
+        SettingsFacade.changeDisplayCurrency(context, picked);
       },
       child: child,
     );
@@ -65,9 +64,7 @@ class HomeFiatBalance extends StatelessWidget {
         ? const _HomeFiatBalanceSkeleton()
         : FiatAmountText(
             formattedAmount: priceState.calculateFiatPrice(balanceSat),
-            hideAmounts: context.select(
-              (SettingsCubit cubit) => cubit.state.hideAmounts ?? true,
-            ),
+            hideAmounts: priceState.amountDisplay?.hideAmounts ?? true,
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.onPrimary,
           );

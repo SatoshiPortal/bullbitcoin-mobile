@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:network/network.dart' show NetworkFeature;

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/settings/data/settings_model.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/src/data/settings_model.dart';
+import 'package:preferences/src/domain/settings_entity.dart';
 
 SettingsEntity settingsEntityFromModel(SettingsModel s) => SettingsEntity(
   environment: s.environment,

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/src/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/features/settings/data/settings_table.drift.dart';
+import 'package:preferences/settings_table.drift.dart';
 import 'package:bull_tor/tor.dart';
 
 class SettingsModel {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/models/notification_message_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 
 /// Primary/driving adapter that receives WebSocket notification events
 /// and exposes them as a stream for the application to consume.

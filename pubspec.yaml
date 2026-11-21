@@ -30,6 +30,7 @@ workspace:
   - packages/electrum
   - packages/bull_tor
   - packages/mempool
+  - packages/preferences
   - packages/screen_privacy
   - packages/bull_reporting
   - packages/screen_awake
@@ -75,6 +76,7 @@ dependencies:
   electrum:
   bull_tor:
   mempool:
+  preferences:
   screen_privacy:
   bull_reporting:
   screen_awake:

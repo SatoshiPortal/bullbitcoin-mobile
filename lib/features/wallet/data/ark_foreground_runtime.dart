@@ -10,9 +10,8 @@ import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -197,7 +196,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
 }) async {
   try {
     final selection = _WalletArkSelection(
-      locator<SettingsRepository>(),
+      locator<ActiveEnvironmentReader>(),
       locator<WalletMetadataDatasource>(),
       arkUrl,
       primaryEsploraUrl,
@@ -239,7 +238,8 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     WalletArkDisplayData? displayData;
     try {
       final locale =
-          (await locator<SettingsRepository>().fetch()).language?.locale ??
+          (await locator<RuntimeDisplayPreferencesReader>().readLanguage())
+              ?.locale ??
           const Locale('en');
       final openedMaintenance = await openArkForegroundMaintenance(
         path: '${directory.path}/reminders.sqlite',
@@ -261,12 +261,12 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           : _ScheduledArkRegistry(registry, dispatcher);
       final board = boardFunding.bind(client, selection.sourceWalletId);
       if (locator.isRegistered<WalletNativeRuntime>()) {
-        final settings = locator<SettingsRepository>();
+        final settings = locator<RuntimeDisplayPreferencesReader>();
         displayData = WalletArkDisplayData(
           runtime: locator<WalletNativeRuntime>(),
           account: config.id,
           selectedSource: selection.displaySourceWalletId,
-          currency: () async => (await settings.fetch()).currencyCode,
+          currency: settings.readCurrency,
           currencyChanges: settings.currencyChangeStream,
           isActive: () => policy.active,
         );
@@ -403,7 +403,7 @@ final class _SelectionFailure implements Exception {
 }
 
 final class _WalletArkSelection implements ArkAccountSelectionPort {
-  final SettingsRepository _settings;
+  final ActiveEnvironmentReader _settings;
   final WalletMetadataDatasource _wallets;
   final Uri _arkUrl;
   final Uri _esploraUrl;
@@ -446,7 +446,7 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
 
   Future<Result<(ArkAccountConfig, String), ArkFailure>> _select() async {
     try {
-      if ((await _settings.fetch()).environment != Environment.regtest) {
+      if (await _settings.readActiveEnvironment() != Environment.regtest) {
         return const Err(ArkNetworkUnavailableFailure());
       }
       final eligible = (await _wallets.fetchAll())

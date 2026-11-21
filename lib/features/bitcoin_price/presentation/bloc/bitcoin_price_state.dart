@@ -3,6 +3,7 @@ part of 'bitcoin_price_bloc.dart';
 @freezed
 sealed class BitcoinPriceState with _$BitcoinPriceState {
   const factory BitcoinPriceState({
+    AmountDisplayPreferences? amountDisplay,
     @Default(false) bool loadingPrice,
     PricerFailure? failure,
     @Default(false) bool startupFailed,

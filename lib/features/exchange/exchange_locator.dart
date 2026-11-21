@@ -15,9 +15,8 @@ import 'package:bb_mobile/features/exchange/data/bbx_api_account_repository.dart
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as settings_contract;
+import 'package:preferences/preferences.dart';
+import 'package:preferences/preferences.dart' as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
@@ -97,7 +96,8 @@ class ExchangeLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetExchangeWebSettingsUsecase>(
       () => GetExchangeWebSettingsUsecase(
-        settingsRepository: locator<settings_contract.SettingsRepository>(),
+        preferences:
+            locator<settings_contract.ExchangeTestnetBasicAuthPreferences>(),
       ),
     );
     locator.registerFactory<GetExchangeAccountUsecase>(

@@ -1,6 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
@@ -30,11 +28,11 @@ void main() {
     (tester) async {
       final settings = _Settings();
       final references = _References();
-      when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
+      when(settings.readDeveloperEnvironment).thenAnswer(
+        (_) async => (
           environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+          isSuperuser: false,
+          isDevModeEnabled: false,
         ),
       );
       final cubit = NetworkWalletSetupCubit(
@@ -69,7 +67,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pumpWidget(app());
       expect(creations, 1);
-      verify(settings.fetch).called(1);
+      verify(settings.readDeveloperEnvironment).called(1);
       verifyZeroInteractions(references);
       expect(cubit.isClosed, isFalse);
       await tester.pumpWidget(const SizedBox.shrink());

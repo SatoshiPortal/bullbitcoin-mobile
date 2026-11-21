@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'package:secrets/secrets.dart' show Secrets;
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_recipient_address_validator.dart';
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';

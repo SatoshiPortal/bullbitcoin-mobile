@@ -3,6 +3,8 @@ part of 'buy_bloc.dart';
 @freezed
 sealed class BuyEvent with _$BuyEvent {
   const factory BuyEvent.started() = _BuyStarted;
+  const factory BuyEvent.displayBitcoinUnitChanged(BitcoinUnit? unit) =
+      _BuyDisplayBitcoinUnitChanged;
   const factory BuyEvent.amountInputChanged(String amount) =
       _BuyAmountInputChanged;
   const factory BuyEvent.currencyInputChanged(String currencyCode) =

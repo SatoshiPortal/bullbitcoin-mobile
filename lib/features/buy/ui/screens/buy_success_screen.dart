@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/buy/domain/buy_payjoin_window.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:clock/clock.dart';
@@ -70,7 +69,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
     final buyOrder = context.select((BuyBloc bloc) => bloc.state.buyOrder!);
     final payoutAmountBtc = buyOrder.payoutAmount;
     final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
+      (BuyBloc bloc) => bloc.state.displayBitcoinUnit,
     );
     final payoutAmountSat = ConvertAmount.btcToSats(
       payoutAmountBtc,

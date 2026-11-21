@@ -1,7 +1,7 @@
 import '../exchange_access.dart';
 import '../repositories/exchange_access_repository.dart';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';

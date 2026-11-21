@@ -1,12 +1,11 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/limit_orders/data/bbx_api_limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';

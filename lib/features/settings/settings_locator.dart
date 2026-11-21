@@ -9,8 +9,7 @@ import 'package:bb_mobile/features/settings/presentation/exchange_access_setting
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
@@ -40,9 +39,6 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/features/settings/data/amount_input_preference_repository_impl.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/repositories/amount_input_preference_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
@@ -107,12 +103,8 @@ class SettingsLocator {
         electrumSettings: locator<ElectrumDefaultsProvisioner>(),
       ),
     );
-    locator.registerLazySingleton<AmountInputPreferenceRepository>(
-      () => AmountInputPreferenceRepositoryImpl(locator<SettingsDatasource>()),
-    );
     locator.registerFactory<SetAmountInputModeUsecase>(
-      () =>
-          SetAmountInputModeUsecase(locator<AmountInputPreferenceRepository>()),
+      () => SetAmountInputModeUsecase(locator<AmountInputPreferences>()),
     );
     locator.registerFactory<SetBitcoinUnitUsecase>(
       () => SetBitcoinUnitUsecase(
@@ -175,7 +167,7 @@ class SettingsLocator {
 
     locator.registerFactory<SetExchangeTestnetBasicAuthUsecase>(
       () => SetExchangeTestnetBasicAuthUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        preferences: locator<ExchangeTestnetBasicAuthPreferences>(),
       ),
     );
 

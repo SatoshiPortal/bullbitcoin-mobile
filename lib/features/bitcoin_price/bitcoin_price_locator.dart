@@ -1,5 +1,10 @@
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
+import 'package:preferences/preferences.dart'
+    show
+        AmountDisplayPreferencesReader,
+        GetSettingsUsecase,
+        WatchCurrencyChangesUsecase;
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_bitcoin_price_amount_display_usecase.dart';
+
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -28,6 +33,9 @@ class BitcoinPriceLocator {
     // Bloc
     locator.registerFactory<BitcoinPriceBloc>(
       () => BitcoinPriceBloc(
+        watchAmountDisplayUsecase: WatchBitcoinPriceAmountDisplayUsecase(
+          locator<AmountDisplayPreferencesReader>(),
+        ),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         getBitcoinPriceUsecase: locator<GetBitcoinPriceUsecase>(),
         watchCurrencyChangesUsecase: locator<WatchCurrencyChangesUsecase>(),

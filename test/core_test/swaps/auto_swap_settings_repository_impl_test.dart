@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settin
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err;
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';

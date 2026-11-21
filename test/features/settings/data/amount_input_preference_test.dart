@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/data/amount_input_preference_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:drift/native.dart';
@@ -14,7 +12,7 @@ import 'package:primitives/primitives.dart';
 import '../../../migrations_test/bull_database/generated/schema_v15.dart'
     as v15;
 
-class _Datasource extends Mock implements SettingsDatasource {}
+class _Datasource extends Mock implements PreferencesDao {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -35,13 +33,11 @@ void main() {
           await old.close();
         }
         var database = SqliteDatabase(NativeDatabase(file));
-        var datasource = SettingsDatasource(sqlite: database);
-        var reader = SettingsRepository(settingsDatasource: datasource);
+        var datasource = PreferencesDao(database);
+        var reader = SettingsRepositoryImpl(settingsDatasource: datasource);
         expect((await reader.fetch()).startAmountsInFiat, isFalse);
         final original = await reader.fetch();
-        var setter = SetAmountInputModeUsecase(
-          AmountInputPreferenceRepositoryImpl(datasource),
-        );
+        var setter = SetAmountInputModeUsecase(reader);
         expect(
           await setter.execute(fiat: true),
           isA<Ok<void, SettingsFailure>>(),
@@ -50,16 +46,14 @@ void main() {
         await database.close();
         database = SqliteDatabase(NativeDatabase(file));
         addTearDown(database.close);
-        datasource = SettingsDatasource(sqlite: database);
-        reader = SettingsRepository(settingsDatasource: datasource);
+        datasource = PreferencesDao(database);
+        reader = SettingsRepositoryImpl(settingsDatasource: datasource);
         addTearDown(reader.close);
         final saved = await reader.fetch();
         expect(saved.startAmountsInFiat, isTrue);
         expect(saved.bitcoinUnit, original.bitcoinUnit);
         expect(saved.currencyCode, original.currencyCode);
-        setter = SetAmountInputModeUsecase(
-          AmountInputPreferenceRepositoryImpl(datasource),
-        );
+        setter = SetAmountInputModeUsecase(reader);
         expect(
           await setter.execute(fiat: false),
           isA<Ok<void, SettingsFailure>>(),
@@ -75,7 +69,7 @@ void main() {
     () async {
       final datasource = _Datasource();
       final setter = SetAmountInputModeUsecase(
-        AmountInputPreferenceRepositoryImpl(datasource),
+        SettingsRepositoryImpl(settingsDatasource: datasource),
       );
       when(() => datasource.setStartAmountsInFiat(true))
           .thenThrow(Exception('private database reason'));

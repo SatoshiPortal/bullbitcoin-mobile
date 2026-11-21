@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';

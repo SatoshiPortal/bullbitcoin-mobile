@@ -1,7 +1,6 @@
 import 'package:mempool/mempool.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

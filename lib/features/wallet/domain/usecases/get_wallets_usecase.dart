@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -9,7 +8,7 @@ import 'package:meta/meta.dart';
 
 class GetWalletsUsecase {
   final WalletRepository _wallet;
-  final SettingsRepository _settingsRepository;
+  final ActiveEnvironmentReader _settingsRepository;
 
   GetWalletsUsecase({
     required WalletRepository walletRepository,
@@ -30,7 +29,7 @@ class GetWalletsUsecase {
   }) async {
     final Environment environment;
     try {
-      environment = (await _settingsRepository.fetch()).environment;
+      environment = await _settingsRepository.readActiveEnvironment();
     } catch (e, st) {
       log.severe(message: 'GetWalletsUsecase: settings', error: e, trace: st);
       return Err(WalletStorageFailure('settings fetch: ${e.runtimeType}'));

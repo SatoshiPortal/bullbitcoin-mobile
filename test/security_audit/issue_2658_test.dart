@@ -10,12 +10,7 @@ void main() {
 
     expect(source, isNot(contains("package:bull_tor")));
     expect(source, isNot(contains('SocksTCPClient')));
-    expect(
-      source,
-      isNot(
-        contains('core/settings/domain/repositories/settings_repository.dart'),
-      ),
-    );
+    expect(source, isNot(contains('TorProxyPreferencesReader')));
     expect(source, isNot(contains('useTorProxy')));
     expect(source, isNot(contains('torProxyPort')));
   });

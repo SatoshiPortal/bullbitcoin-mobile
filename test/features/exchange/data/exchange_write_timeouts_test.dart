@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/features/recipients/domain/repositories/recipients_rep
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';

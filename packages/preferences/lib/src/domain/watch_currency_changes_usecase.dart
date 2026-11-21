@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/src/domain/settings_repository.dart';
 
 class WatchCurrencyChangesUsecase {
   final SettingsRepository _settingsRepository;

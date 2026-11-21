@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:secrets/secrets.dart';
@@ -55,7 +54,8 @@ void main() {
     when(() => price.stream)
         .thenAnswer((_) => const Stream<BitcoinPriceState>.empty());
     final settings = _Settings();
-    when(settings.fetch).thenAnswer((_) => Completer<SettingsEntity>().future);
+    when(settings.readDeveloperEnvironment)
+        .thenAnswer((_) => Completer<DeveloperEnvironmentPreferences>().future);
     final references = _References();
     NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
       LoadNetworkWalletSetupUsecase(settings, references),

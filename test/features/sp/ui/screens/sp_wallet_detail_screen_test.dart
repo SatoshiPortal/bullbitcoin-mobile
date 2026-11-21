@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bull_ui/bull_ui.dart' show BullTransactionListItem;
 
 import 'dart:async';
@@ -29,6 +31,8 @@ import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
+
+class _MockWalletBloc extends Mock implements WalletBloc {}
 
 class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
 
@@ -63,6 +67,17 @@ Widget _buildPage({
   required BitcoinPriceBloc bitcoinPriceBloc,
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
+  final walletBloc = _MockWalletBloc();
+  when(() => walletBloc.state).thenReturn(
+    const WalletState(
+      amountDisplay: (
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+        hideAmounts: false,
+      ),
+    ),
+  );
+  when(() => walletBloc.stream).thenAnswer((_) => const Stream.empty());
   return MaterialApp(
     navigatorKey: navigatorKey,
     theme: AppTheme.themeData(AppThemeType.light),
@@ -74,6 +89,7 @@ Widget _buildPage({
     home: MultiBlocProvider(
       providers: [
         BlocProvider<SpCubit>.value(value: cubit),
+        BlocProvider<WalletBloc>.value(value: walletBloc),
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
         BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
       ],

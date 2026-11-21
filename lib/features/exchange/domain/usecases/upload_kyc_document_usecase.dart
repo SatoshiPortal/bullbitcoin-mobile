@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 
 class UploadKycDocumentUsecase {
   final ExchangeKycRepository _mainnetRepository;

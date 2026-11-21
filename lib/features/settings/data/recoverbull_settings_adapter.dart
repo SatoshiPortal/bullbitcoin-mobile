@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 
 import '../domain/regtest_recoverbull_profile.dart';
-import '../domain/settings_entity.dart';
 
 /// Settings owns environment selection, proxy preference and the legacy row.
 final class RecoverBullSettingsAdapter
@@ -17,7 +15,7 @@ final class RecoverBullSettingsAdapter
         RecoverBullEnvironmentPort,
         RecoverBullLegacySettingsPort {
   final SettingsRepository _settings;
-  final SqliteDatabase _database;
+  final RecoverBullPreferences _preferences;
   final EmbeddedTor _embedded;
   final Tor _tor;
   final RegtestRecoverBullProfile? regtestProfile;
@@ -27,7 +25,7 @@ final class RecoverBullSettingsAdapter
 
   RecoverBullSettingsAdapter(
     this._settings,
-    this._database,
+    this._preferences,
     this._embedded,
     this._tor, {
     this.regtestProfile,
@@ -81,14 +79,12 @@ final class RecoverBullSettingsAdapter
           ),
         );
       }
-      final row = await _database.managers.recoverbull
-          .filter((f) => f.id(1))
-          .getSingleOrNull();
-      if (row == null) return const Err(VaultStorageFailure());
+      final preference = await _preferences.read();
+      if (preference == null) return const Err(VaultStorageFailure());
       return Ok(
         LegacyBackupSettings(
-          server: Uri.parse(row.url),
-          permissionGranted: row.isPermissionGranted,
+          server: preference.server,
+          permissionGranted: preference.permissionGranted,
         ),
       );
     } on FormatException {

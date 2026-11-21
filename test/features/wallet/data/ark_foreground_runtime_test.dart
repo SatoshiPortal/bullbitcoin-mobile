@@ -8,9 +8,8 @@ import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -372,7 +371,10 @@ void main() {
       settingsValue = _SettingsValue();
       final wallets = _Wallets();
       final wallet = _Wallet();
-      when(() => settings.fetch()).thenAnswer((_) async => settingsValue);
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => settingsValue.environment);
+      when(settings.readLanguage)
+          .thenAnswer((_) async => settingsValue.language);
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
       when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
       when(() => wallet.networkCode).thenReturn('bitcoinRegtest');
@@ -380,7 +382,8 @@ void main() {
       when(() => wallet.isDefault).thenReturn(true);
       when(() => wallet.masterFingerprint).thenReturn('12345678');
       when(() => wallet.id).thenReturn('owned-regtest-wallet');
-      locator.registerSingleton<SettingsRepository>(settings);
+      locator.registerSingleton<ActiveEnvironmentReader>(settings);
+      locator.registerSingleton<RuntimeDisplayPreferencesReader>(settings);
       locator.registerSingleton<WalletMetadataDatasource>(wallets);
       locator.registerSingleton<Bip85Repository>(_Bip85());
       FakeSecureStoragePlatform().install();

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_us
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;

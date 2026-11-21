@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
+import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 
 import 'dart:async';
@@ -24,6 +26,7 @@ const _syncReloadDebounce = Duration(seconds: 3);
 class CoinsCubit extends Cubit<CoinsState> {
   CoinsCubit({
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
+    WatchCoinsAmountDisplayUsecase? watchAmountDisplayUsecase,
     required String walletId,
     required this._getUtxosUsecase,
     required this._freezeUtxosUsecase,
@@ -33,6 +36,11 @@ class CoinsCubit extends Cubit<CoinsState> {
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
   }) : super(CoinsState(walletId: walletId)) {
+    _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
+      preferences,
+    ) {
+      if (!isClosed) emit(state.copyWith(amountDisplay: preferences));
+    });
     _startedSub = watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) {
@@ -52,6 +60,8 @@ class CoinsCubit extends Cubit<CoinsState> {
   final RefreshCoinsUsecase _refreshCoinsUsecase;
   final LoadCoinLabelFiltersUsecase _loadCoinLabelFilters;
 
+  late final StreamSubscription<AmountDisplayPreferences?>?
+  _amountDisplaySubscription;
   StreamSubscription? _startedSub;
   StreamSubscription? _finishedSub;
   StreamSubscription? _revisionsSubscription;
@@ -60,6 +70,7 @@ class CoinsCubit extends Cubit<CoinsState> {
   @override
   Future<void> close() async {
     _debounceTimer?.cancel();
+    await _amountDisplaySubscription?.cancel();
     await _revisionsSubscription?.cancel();
     await _startedSub?.cancel();
     await _finishedSub?.cancel();

@@ -6,15 +6,16 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
-import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart';
+import 'package:preferences/dismissed_announcements_table.dart';
 import 'package:electrum/storage.dart';
 import 'package:labels/frozen_utxos_table.dart';
 import 'package:labels/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
-import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
-import 'package:bb_mobile/features/settings/data/settings_table.dart';
+import 'package:preferences/recoverbull_table.dart';
+import 'package:preferences/settings_table.dart';
+import 'package:preferences/preferences_dao.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:mempool/storage.dart';
@@ -31,6 +32,7 @@ import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 import 'sqlite_database.drift.dart';
 
 @DriftDatabase(
+  daos: [PreferencesDao],
   tables: [
     Transactions,
     WalletMetadatas,

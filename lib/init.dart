@@ -12,7 +12,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:network/setup.dart';

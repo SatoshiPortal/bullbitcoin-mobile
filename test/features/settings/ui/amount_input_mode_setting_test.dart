@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/features/settings/ui/widgets/amount_input_mode_setting.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';

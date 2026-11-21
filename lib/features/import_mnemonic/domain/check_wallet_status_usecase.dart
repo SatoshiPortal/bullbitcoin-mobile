@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

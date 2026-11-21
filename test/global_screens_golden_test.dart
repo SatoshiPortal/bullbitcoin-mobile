@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'dart:async';
@@ -84,9 +85,15 @@ void main() {
           signerDevice: null,
           balanceSat: BigInt.from(1000000),
         );
+        const amountDisplay = (
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          hideAmounts: false,
+        );
         final wallets = _Wallet();
         when(() => wallets.state).thenReturn(
           WalletState(
+            amountDisplay: amountDisplay,
             status: WalletStatus.success,
             wallets: [wallet],
             backupNeeded: false,
@@ -110,6 +117,7 @@ void main() {
         final price = _Price();
         when(() => price.state).thenReturn(
           const BitcoinPriceState(
+            amountDisplay: amountDisplay,
             currency: 'CAD',
             bitcoinPrice: 125000,
             availableCurrencies: ['CAD', 'USD'],

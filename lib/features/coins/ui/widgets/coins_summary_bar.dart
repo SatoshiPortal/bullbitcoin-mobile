@@ -1,8 +1,8 @@
+import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,10 +29,11 @@ class CoinsSummaryBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final bitcoinUnit =
-        context.select((SettingsCubit c) => c.state.bitcoinUnit) ??
+        context.select((CoinsCubit c) => c.state.amountDisplay?.bitcoinUnit) ??
         BitcoinUnit.btc;
     final hideAmounts =
-        context.select((SettingsCubit c) => c.state.hideAmounts) ?? true;
+        context.select((CoinsCubit c) => c.state.amountDisplay?.hideAmounts) ??
+        true;
 
     String fmt(BigInt sat) {
       if (hideAmounts) return '••••';

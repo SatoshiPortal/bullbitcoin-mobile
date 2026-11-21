@@ -1,5 +1,5 @@
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 
 class EnvironmentAdapter {
   final SettingsRepository Function() _settingsRepository;

@@ -5,8 +5,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:mempool/mempool.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Ok;
 import 'package:bb_mobile/features/fees/fees_locator.dart';

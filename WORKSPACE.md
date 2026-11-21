@@ -60,6 +60,8 @@ graph TD
   style novlang stroke:#dd8ff2
   onion["onion"]
   style onion stroke:#cb1217
+  preferences["preferences"]
+  style preferences stroke:#f493f6
   primitives["primitives"]
   style primitives stroke:#5ced91
   rust_bindings["rust_bindings"]
@@ -145,6 +147,10 @@ graph TD
   network --> primitives
   notifications --> bull_logger
   notifications --> primitives
+  preferences --> bull_logger
+  preferences --> bull_reporting
+  preferences --> bull_tor
+  preferences --> primitives
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings
@@ -188,6 +194,7 @@ graph TD
     notifications
     novlang
     onion
+    preferences
     primitives
     rust_bindings
     satoshifier

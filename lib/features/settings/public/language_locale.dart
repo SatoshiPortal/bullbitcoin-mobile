@@ -1,6 +1,6 @@
 import 'dart:ui' show Locale;
 
-import '../domain/settings_entity.dart' show Language;
+import 'package:preferences/preferences.dart' show Language;
 
 extension LanguageExtension on Language {
   Locale get locale => Locale.fromSubtags(
