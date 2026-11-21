@@ -281,6 +281,16 @@ void main() {
     final response =
         Completer<Result<ConfidentialSepaAvailability, SellFailure>>();
     final loc = await pumpFlow(tester, availabilityResponse: response);
+    final loading = find.bySemanticsLabel(loc.sellLoadingGeneric);
+    expect(loading, findsOneWidget);
+    expect(
+      tester
+          .getSemantics(loading)
+          .getSemanticsData()
+          .flagsCollection
+          .isLiveRegion,
+      isTrue,
+    );
     expect(find.text(loc.sellPayoutTitle), findsOneWidget);
     expect(find.text(loc.sellPayoutBalance), findsNothing);
     expect(find.text(loc.fundExchangeMethodInstantSepa), findsNothing);
@@ -296,6 +306,7 @@ void main() {
     );
     response.complete(const Ok(ConfidentialSepaAvailability.ready));
     await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel(loc.sellLoadingGeneric), findsNothing);
     expect(find.text(loc.sellPayoutBalance), findsOneWidget);
     expect(find.text(loc.sellPayoutSepaDescription), findsOneWidget);
     expect(
