@@ -25,7 +25,12 @@ void main() {
           unavailable.connection,
           available.connection,
         ]);
-        final fees = Fees.open(connections: connections, mempool: mempool);
+        final fees = Fees.open(
+          connections: connections,
+          mempool: mempool,
+          readPreference: (_) async => null,
+          writePreference: (_, _) async {},
+        );
 
         expect(
           await fees.estimate(network),

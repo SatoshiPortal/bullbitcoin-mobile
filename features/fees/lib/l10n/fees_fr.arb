@@ -1,0 +1,10 @@
+{
+  "settingsTitle": "Source des frais Bitcoin",
+  "electrumLabel": "Electrum",
+  "mempoolLabel": "Mempool",
+  "electrumDescription": "Estimations du serveur Electrum configuré.",
+  "mempoolDescription": "Estimations du serveur Mempool configuré.",
+  "loadError": "Impossible de charger la source des frais.",
+  "saveError": "Impossible d’enregistrer ce choix. La source précédente est toujours active.",
+  "retry": "Réessayer"
+}

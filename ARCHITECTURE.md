@@ -356,7 +356,7 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 `packages/google_drive` owns Google sign-in and listing, reading, writing and deleting files in the app data folder. `GoogleDrive.open()` creates the transport. Its operations return typed results, `revokeAccess()` revokes the user grant, and synchronous `dispose()` releases local resources. RecoverBull owns the vault format, metadata mapping and account-scoped vault selection.
 
-**Fees package (`packages/fees`) and Fees feature (`features/fees`).** `Fees.open` publishes typed estimates for Bitcoin and Liquid. It uses the sync wallet connection port for Electrum and the Mempool capability for fee endpoint selection. The `fees_feature` member owns the reusable fee picker and preview widgets. The app supplies the labels already shared by the legacy payment flows and resolves the environment for callers without a wallet network.
+**Fees package (`packages/fees`) and Fees feature (`features/fees`).** `Fees.open` publishes typed estimates for Bitcoin and Liquid. It uses the sync wallet connection port for Electrum and the Mempool capability for fee endpoint selection. The `fees_feature` member owns the reusable fee picker, preview widgets and the fee source settings route contributed by `FeesFeature.mount`. `Fees` owns the preference key and typed reads and writes, using the host preferences store. The app supplies the labels already shared by the legacy payment flows and resolves the environment for callers without a wallet network.
 
 **Target layout.** As modules are extracted (one at a time, never a big-bang), they become pub-workspace members:
 

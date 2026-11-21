@@ -6,14 +6,24 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 resolution: workspace
+flutter:
+  generate: true
+  uses-material-design: true
 dependencies:
   bull_ui:
   material_ui: ^1.11.0
   fees:
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  go_router: ^18.1.4
+  intl: any
   primitives:
   freezed_annotation: ^3.1.0
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   build_runner: ^2.10.4
   freezed: ^4.0.0

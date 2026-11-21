@@ -17,18 +17,56 @@ class Fees {
   final ElectrumFeeSource _electrum;
   final Mempool _mempool;
   final FeesDatasource _http;
+  final Future<String?> Function(String key) _readPreference;
+  final Future<void> Function(String key, String value) _writePreference;
 
-  Fees._(this._electrum, this._mempool, this._http);
+  static const _sourceKey = 'bitcoinFeeSource';
+
+  Fees._(
+    this._electrum,
+    this._mempool,
+    this._http,
+    this._readPreference,
+    this._writePreference,
+  );
 
   static Fees open({
     required WalletConnectionPort connections,
     required Mempool mempool,
+    required Future<String?> Function(String key) readPreference,
+    required Future<void> Function(String key, String value) writePreference,
     Dio Function(String baseUrl)? mempoolHttpClient,
   }) => Fees._(
     ElectrumFeeSource(connections),
     mempool,
     FeesDatasource(dioBuilder: mempoolHttpClient),
+    readPreference,
+    writePreference,
   );
+
+  @useResult
+  Future<Result<FeeSource, FeesFailure>> readSource() async {
+    try {
+      final saved = await _readPreference(_sourceKey);
+      return Ok(
+        saved == FeeSource.mempool.name
+            ? FeeSource.mempool
+            : FeeSource.electrum,
+      );
+    } on Exception {
+      return const Err(FeeSourceReadFailure());
+    }
+  }
+
+  @useResult
+  Future<Result<void, FeesFailure>> saveSource(FeeSource source) async {
+    try {
+      await _writePreference(_sourceKey, source.name);
+      return const Ok(null);
+    } on Exception {
+      return const Err(FeeSourceWriteFailure());
+    }
+  }
 
   /// Liquid uses its relay floor and regtest always uses local Electrum.
   @useResult
@@ -41,11 +79,22 @@ class Fees {
     BitcoinNetwork.signet => Future.value(
       const Err(FeeEstimateUnavailableFailure()),
     ),
-    final BitcoinNetwork bitcoin => switch (source ?? FeeSource.electrum) {
-      FeeSource.electrum => _electrum.estimate(bitcoin),
-      FeeSource.mempool => _estimateMempool(bitcoin),
-    },
+    final BitcoinNetwork bitcoin => _estimateBitcoin(bitcoin, source),
   };
+
+  Future<Result<FeeOptions, FeesFailure>> _estimateBitcoin(
+    BitcoinNetwork network,
+    FeeSource? override,
+  ) async {
+    final Result<FeeSource, FeesFailure> source = override == null
+        ? await readSource()
+        : Ok(override);
+    return switch (source) {
+      Err(:final failure) => Err(failure),
+      Ok(value: FeeSource.electrum) => _electrum.estimate(network),
+      Ok(value: FeeSource.mempool) => _estimateMempool(network),
+    };
+  }
 
   Future<Result<FeeOptions, FeesFailure>> _estimateMempool(
     BitcoinNetwork network,

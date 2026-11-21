@@ -118,6 +118,7 @@ void main() {
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,
+        SettingsItemId.feeSource,
         SettingsItemId.broadcastTransaction,
       ]);
     });

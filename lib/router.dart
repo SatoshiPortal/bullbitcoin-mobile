@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
+import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
@@ -254,6 +255,7 @@ class AppRouter {
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
       ...locator<NetworkFeature>().routes.root,
+      ...locator<FeesFeature>().routes,
       SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
       SpRouter.route(
         sendRouteName: SendRoute.send.name,

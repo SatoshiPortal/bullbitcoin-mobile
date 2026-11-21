@@ -33,7 +33,12 @@ void main() {
       );
       final mempool = _Mempool();
       final port = _RegtestConnection(connection);
-      final fees = Fees.open(connections: port, mempool: mempool);
+      final fees = Fees.open(
+        connections: port,
+        mempool: mempool,
+        readPreference: (_) async => null,
+        writePreference: (_, _) async {},
+      );
 
       expect(
         await fees.estimate(BitcoinNetwork.regtest),

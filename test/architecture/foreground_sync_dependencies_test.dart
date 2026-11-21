@@ -58,7 +58,7 @@ const _allowedTargets = <String, String>{
   'scanning': 'signers',
   'sell': 'bitcoin_price exchange fees recipients send transactions wallet',
   'send': 'ark coins consolidation fees label_editor signers sp swap transactions wallet',
-  'settings': 'address_view all_seed_view app_unlock ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings import_wallet label_editor logs network pay pin_code quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
+  'settings': 'address_view all_seed_view app_unlock ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings fees import_wallet label_editor logs network pay pin_code quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
   'sp': 'wallet',
   'support': 'exchange_support_chat',
   'swap': 'ark autoswap consolidation fees send transactions wallet',

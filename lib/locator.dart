@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:fees_feature/fees_feature.dart' show FeesFeature;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
@@ -185,12 +187,16 @@ class AppLocator {
     );
     if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
-    locator.registerLazySingleton(
-      () => Fees.open(
+    locator.registerLazySingleton(() {
+      final preferences = SharedPreferencesAsync();
+      return Fees.open(
         connections: locator<WalletConnectionPort>(),
         mempool: locator<Mempool>(),
-      ),
-    );
+        readPreference: preferences.getString,
+        writePreference: preferences.setString,
+      );
+    });
+    locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
     locator.registerFactory(
       () => AppFeeEstimates(fees: locator(), settingsRepository: locator()),
     );

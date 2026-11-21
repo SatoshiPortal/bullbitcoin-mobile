@@ -7,3 +7,11 @@ sealed class FeesFailure extends Failure {
 final class FeeEstimateUnavailableFailure extends FeesFailure {
   const FeeEstimateUnavailableFailure();
 }
+
+final class FeeSourceReadFailure extends FeesFailure {
+  const FeeSourceReadFailure();
+}
+
+final class FeeSourceWriteFailure extends FeesFailure {
+  const FeeSourceWriteFailure();
+}

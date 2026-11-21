@@ -58,6 +58,8 @@ void main() {
     fees = Fees.open(
       connections: connections,
       mempool: mempool,
+      readPreference: (_) async => null,
+      writePreference: (_, _) async {},
       mempoolHttpClient: (base) {
         bases.add(base);
         return http;

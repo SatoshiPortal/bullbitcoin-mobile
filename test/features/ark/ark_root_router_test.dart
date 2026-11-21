@@ -1,3 +1,5 @@
+import 'package:fees_feature/fees_feature.dart' show FeesFeature;
+
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -76,6 +78,9 @@ void main() {
           ),
         ),
       );
+      locator.registerSingleton(
+        FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -87,6 +92,7 @@ void main() {
         await locator.unregister<QuickActionsCubit>();
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
+        await locator.unregister<FeesFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });

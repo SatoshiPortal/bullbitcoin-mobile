@@ -128,3 +128,5 @@ bull_logs.tsv
 
 # Generated network feature localizations
 /features/network/lib/generated/l10n/
+/features/fees/lib/generated/l10n/
+/features/fees/untranslated-messages.txt

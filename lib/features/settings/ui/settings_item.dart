@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:network/network.dart';
+import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:label_editor/label_editor.dart';
@@ -53,6 +54,7 @@ enum SettingsItemId {
   swapRestore,
   electrum,
   mempool,
+  feeSource,
   testnetMode,
   seedViewer,
   bip85,
@@ -88,6 +90,7 @@ const walletSettingsItemOrder = [
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
   SettingsItemId.mempool,
+  SettingsItemId.feeSource,
   SettingsItemId.broadcastTransaction,
 ];
 
@@ -207,6 +210,7 @@ List<SettingsItem> buildSettingsItems({
   required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
+  final feeSourceTitle = FeesNavigation.settingsTitle(localization.localeName);
   final arkTitle = arkLocalizationsForLanguage(localization.localeName).title;
   final rootSection = localization.settingsScreenTitle;
   final backupSection = localization.settingsBackupTitle;
@@ -569,6 +573,15 @@ List<SettingsItem> buildSettingsItems({
         [english.bitcoinSettingsMempoolServerTitle],
       ),
     ),
+    SettingsItem(
+      id: SettingsItemId.feeSource,
+      section: SettingsItemSection.wallet,
+      title: feeSourceTitle,
+      path: path(SettingsItemSection.wallet, feeSourceTitle),
+      icon: Icons.tune,
+      open: FeesNavigation.openSettings,
+      keywords: [FeesNavigation.settingsTitle('en'), 'Electrum', 'Mempool'],
+    ),
     if (isSuperuser)
       SettingsItem(
         id: SettingsItemId.seedViewer,
@@ -835,6 +848,7 @@ List<SettingsItem> buildSettingsItems({
       SettingsItemId.ark => NetworkCapability.ark,
       SettingsItemId.sp => NetworkCapability.silentPayments,
       SettingsItemId.mempool ||
+      SettingsItemId.feeSource ||
       SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,
       _ => null,
     };

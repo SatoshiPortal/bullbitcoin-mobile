@@ -60,7 +60,12 @@ void main() {
     when(() => mempoolServers.activeBase(network: BitcoinNetwork.mainnet))
         .thenAnswer((_) async => Ok(Uri.http('127.0.0.1:${oracle.port}')));
 
-    final fees = Fees.open(connections: electrum, mempool: mempool);
+    final fees = Fees.open(
+      connections: electrum,
+      mempool: mempool,
+      readPreference: (_) async => null,
+      writePreference: (_, _) async {},
+    );
     final result = await fees.estimate(
       BitcoinNetwork.mainnet,
       source: FeeSource.mempool,
