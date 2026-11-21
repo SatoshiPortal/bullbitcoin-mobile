@@ -28,24 +28,6 @@ bool preimageMatchesInvoice({
   }
 }
 
-double calculatePercentage(num amount, num fee) {
-  if (amount == 0) return 0.0;
-  final percent = (fee / amount) * 100;
-  return double.parse(percent.toStringAsFixed(2));
-}
-
-class StringFormatting {
-  static String truncateMiddle(
-    String input, {
-    int head = 8,
-    int tail = 8,
-    String placeholder = '...',
-  }) {
-    if (input.length <= head + tail + placeholder.length) return input;
-    return '${input.substring(0, head)}$placeholder${input.substring(input.length - tail)}';
-  }
-}
-
 class ConversionConstants {
   static final satsAmountOfOneBitcoin = BigInt.from(100000000);
 }

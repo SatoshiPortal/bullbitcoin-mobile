@@ -1,5 +1,5 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:intl/intl.dart';
+import 'package:primitives/src/bitcoin_unit.dart' show BitcoinUnit;
 
 class FormatAmount {
   static String sats(int satsAmount) {

@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' show Keychain, bitcoinPublicDescriptor;
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
+import 'package:primitives/primitives.dart'
+    show Err, Ok, Result, ScriptType, ScriptTypeX, XpubType;
 import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
@@ -291,7 +292,7 @@ class WalletMetadataService {
       xpubFingerprint: bip32Xpub.fingerprintHex,
       signer: Signer.none,
       signerDevice: null,
-      xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
+      xpub: bip32Xpub.convert(scriptType.getXpubType(network.shared)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
       label: label,

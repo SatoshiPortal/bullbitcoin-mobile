@@ -1,5 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, ConvertAmount;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/wallet/public/coin_selection.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';

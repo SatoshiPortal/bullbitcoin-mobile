@@ -129,7 +129,9 @@ wallet/
     wallet_utxo_repository_impl.dart     # (legacy lives under data/repositories/ — converge)
 ```
 
-**An entity that cannot hold a bad value** (illustrative — shared value objects belong in `lib/core/primitives/`):
+The app imports `ConvertAmount` and `FormatAmount` from `primitives`. Amount formatting uses Intl without a Flutter dependency.
+
+**An entity that cannot hold a bad value** (illustrative — shared value objects belong in `packages/primitives`):
 
 ```dart
 class Amount {
@@ -388,9 +390,17 @@ Each extracted package gets `resolution: workspace` and is listed under a `works
 
 **Encapsulation is enforced, not conventional.** Each package exposes a curated public API in `lib/<name>.dart` (`export 'src/…' show …`); everything under `lib/src/` is package-internal. Importing another package's `src/` trips the `implementation_imports` lint, which CI (`flutter analyze --fatal-infos`) and the pre-commit hook turn into a failure — and CI forbids bypassing it with `// ignore`. The most sensitive internals stay library-private (`_`) so they are not in any importable library at all.
 
+**Shared display helpers.** The app and `swaps` use `StringFormatting` and `calculatePercentage` from `primitives`.
+
 **Sealed UI as a security tool.** A package can expose a *widget* that uses a secret internally without ever exposing the secret value. The mnemonic-display case is the canonical example: `secrets` exports `MnemonicView` and `MnemonicChallenge` — the display and the "tap your words in order" backup check — but no function that returns the words: `Secret.revealMnemonic` is `@internal`, so the only callers are those two widgets and a feature that reaches for it gets an `invalid_use_of_internal_member` error. The widgets are built from the handle, `secret.widgets.mnemonicView(…)`, and their constructors are `@internal` too. The host styles one word or one tile at a time and receives widgets for the layout, so the list itself never crosses the boundary. The mnemonic lives only in `lib/src/`, is read inside the widget's own state, and never crosses the package boundary — so a feature developer can show the user their words but cannot obtain them programmatically. Because Dart has no cross-package "friend" visibility, the widget must live in the same package that holds the seed, which is why `secrets` depends on Flutter although it is an infrastructure package. The words are painted, not placed in a `Text`, so walking the element tree yields none of them. This seal stops programmatic leakage only — not OS-level capture; pair it with screenshot blocking (`no_screenshot`), exclusion from the accessibility/semantics tree, and treating the revealed value as ephemeral.
 
+**Extended public keys.** `primitives` owns `XpubType`, its version bytes and its case-sensitive text prefix lookup. Satoshifier uses this type in its public API and owns the supported-network check for construction and the checksum check for parsing.
+
+**Invoice amounts.** The app and `satoshifier` use the round-up millisatoshi conversion from `primitives`. Satoshifier owns invoice amount validation.
+
 **Design-system package (`bull_ui`).** [`packages/bull_ui`](packages/bull_ui/README.md) owns shared Flutter components and reads the app's tokens through a `ThemeExtension`. It depends on Flutter, shared pure-Dart primitives and leaf UI libraries. Features own their screens, localized content, navigation and state. The November 2026 UI migration retired `lib/core/widgets` and `lib/core/screens` together in one change. `test/architecture/legacy_ui_boundary_test.dart` enforces the resulting directory and import boundary. The dev-only `bull_ui_catalogue` renders the design system in isolation.
+
+**Generic extensions.** Import `package:primitives/generic_extensions.dart` to opt in to its iterable and date extensions.
 
 **Custody coverage.** RecoverBull creation, restoration and backup inspection use `secrets`; inspection returns a computed fingerprint without reading or writing the keystore. Recovery creates the default wallets from a `Secret` handle. A RecoverBull vault contains the words and their language; a protected wallet requires its passphrase separately at restoration. `make custody-check` resolves production symbols to reject private derivation and vault decryption outside the package, with named exceptions for swap-scoped credentials. It checks known operations, not arbitrary information flow. The pre-import scan receives only public descriptors from `secrets.preview`; public derivation outputs and explicitly exported BIP85 children remain application inputs.
 

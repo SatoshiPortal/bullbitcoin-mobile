@@ -4,6 +4,36 @@ import 'package:satoshifier/_test_value.dart';
 
 void main() {
   group('ExtendedPubkey', () {
+    test(
+      'keeps extended-key construction limited to Bitcoin mainnet and testnet',
+      () {
+        for (final network in Network.values) {
+          if (network == Network.bitcoinMainnet ||
+              network == Network.bitcoinTestnet) {
+            continue;
+          }
+          expect(
+            () => ExtendedPubkey(
+              pubkey: const [],
+              derivation: Derivation.bip84,
+              network: network,
+            ),
+            throwsA(
+              'Invalid derivation: Derivation.bip84 for network: $network',
+            ),
+          );
+        }
+      },
+    );
+
+    test('rejects an extended-key prefix with different case', () {
+      final withUppercasePrefix = TestValue.xpub.replaceFirst('xpub', 'XPUB');
+      expect(
+        () => ExtendedPubkey.parse(withUppercasePrefix),
+        throwsA('Invalid xpub type'),
+      );
+    });
+
     test('parses xpub and pubBase58 matches input', () {
       final parsed = ExtendedPubkey.parse(TestValue.xpub);
       expect(parsed.pubBase58, TestValue.xpub);

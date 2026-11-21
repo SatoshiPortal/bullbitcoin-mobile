@@ -14,7 +14,9 @@ import 'package:primitives/primitives.dart'
     show
         BitcoinTransactionRecipient,
         BitcoinUnit,
+        ConvertAmount,
         Err,
+        FormatAmount,
         NetworkEnv,
         Ok,
         Result,
@@ -37,8 +39,6 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

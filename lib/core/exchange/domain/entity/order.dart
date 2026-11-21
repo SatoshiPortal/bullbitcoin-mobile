@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order.freezed.dart';

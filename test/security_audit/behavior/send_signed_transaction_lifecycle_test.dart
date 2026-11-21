@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:primitives/primitives.dart' show Ok, ScriptType;
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, Ok, ScriptType;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 
 // Behavioral proof for two audit findings on SendCubit:

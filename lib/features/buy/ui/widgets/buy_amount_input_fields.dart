@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:material_ui/material_ui.dart';

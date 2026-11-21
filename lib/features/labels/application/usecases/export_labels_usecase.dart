@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/utils/generic_extensions.dart';
+import 'package:primitives/generic_extensions.dart';
 import 'package:bb_mobile/features/labels/application/labels_converter_port_registry.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart';

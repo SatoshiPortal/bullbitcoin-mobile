@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fees/public/custom_fee_list_item.dart';
 import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';

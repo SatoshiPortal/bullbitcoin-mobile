@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' as primitives show msatsToSats;
+
 class Utils {
   /// A BTC amount: digits, optionally a fraction of at most eight digits.
   ///
@@ -46,7 +48,7 @@ class Utils {
     if (msats < 0) {
       throw FormatException('Invalid msats amount: $msats');
     }
-    final sats = (msats + 999) ~/ 1000;
+    final sats = primitives.msatsToSats(msats);
     _checkSatsBounds(sats);
     return sats;
   }
