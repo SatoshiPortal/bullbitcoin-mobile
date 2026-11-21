@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_backend_config_mapper.dart';
 import 'package:bb_mobile/features/sp/data/sp_backend_config_model.dart';
@@ -11,9 +11,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 
 class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
-  static const String _storageKey = 'sp_backend_config';
-
-  final KeyValueStorageDatasource<String> _storage;
+  final SilentPaymentKeychain _storage;
 
   // Cached view of "is set up" for the GoRouter redirect, which cannot await.
   bool _isSetUp = false;
@@ -29,10 +27,14 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
   @override
   Future<Result<void, SpFailure>> save(SpBackendConfig config) async {
     try {
-      await _storage.saveValue(
-        key: _storageKey,
-        value: jsonEncode(SpBackendConfigMapper.toModel(config).toJson()),
+      final result = await _storage.writeBackend(
+        jsonEncode(SpBackendConfigMapper.toModel(config).toJson()),
       );
+      if (result case Err(:final failure)) {
+        return Err(
+          SpUnexpected('SP backend config save failed: ${failure.logMessage}'),
+        );
+      }
       return const Ok(null);
     } catch (e) {
       return Err(SpUnexpected('SP backend config save failed: $e'));
@@ -43,7 +45,16 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
   Future<Result<SpBackendConfig?, SpFailure>> fetch() async {
     final String? jsonString;
     try {
-      jsonString = await _storage.getValue(_storageKey);
+      switch (await _storage.readBackend()) {
+        case Ok(:final value):
+          jsonString = value;
+        case Err(:final failure):
+          return Err(
+            SpUnexpected(
+              'SP backend config read failed: ${failure.logMessage}',
+            ),
+          );
+      }
     } catch (e) {
       // A locked keystore must not throw past the repository boundary.
       return Err(SpUnexpected('SP backend config read failed: $e'));
@@ -69,7 +80,14 @@ class KeyValueSpBackendConfigRepository implements SpBackendConfigRepository {
   @override
   Future<Result<void, SpFailure>> delete() async {
     try {
-      await _storage.deleteValue(_storageKey);
+      final result = await _storage.deleteBackend();
+      if (result case Err(:final failure)) {
+        return Err(
+          SpUnexpected(
+            'SP backend config delete failed: ${failure.logMessage}',
+          ),
+        );
+      }
       return const Ok(null);
     } catch (e) {
       return Err(SpUnexpected('SP backend config delete failed: $e'));

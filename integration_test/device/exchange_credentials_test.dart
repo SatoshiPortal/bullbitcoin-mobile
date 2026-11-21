@@ -1,3 +1,6 @@
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -19,91 +22,63 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbi
 import 'package:flutter/widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/storage/storage_locator.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
 
-/// Synthetic cases access only this test namespace through the real storage driver.
-class _Storage implements KeyValueStorageDatasource<String> {
-  final KeyValueStorageDatasource<String> backend;
-  bool refuseReads = false;
-  static const prefix = '__credential_refactor_probe__';
-  static const keys = ['exchange_api_key', 'exchange_api_key_testnet'];
-
-  _Storage(this.backend);
-
-  @override
-  Future<String?> getValue(String key) {
-    if (refuseReads) {
-      throw const FileSystemException('Simulated storage refusal');
-    }
-    return backend.getValue('$prefix$key');
-  }
-
-  @override
-  Future<void> saveValue({required String key, required String value}) =>
-      backend.saveValue(key: '$prefix$key', value: value);
-
-  @override
-  Future<void> deleteValue(String key) => backend.deleteValue('$prefix$key');
-
-  @override
-  Future<bool> hasValue(String key) async => await getValue(key) != null;
-
-  @override
-  Future<Map<String, String>> getAll() async {
-    final values = <String, String>{};
-    for (final key in keys) {
-      final value = await getValue(key);
-      if (value != null) values[key] = value;
-    }
-    return values;
-  }
-
-  /// Removes only this test's namespaced probe keys.
-  Future<void> clearProbeKeys() async {
-    for (final key in keys) {
-      await deleteValue(key);
-    }
-  }
-}
-
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('native exchange credential probes', () {
     final locator = GetIt.asNewInstance();
-    late _Storage storage;
+    late ExchangeKeychain storage;
+    late ExchangeKeychainProbe probe;
     late ExchangeApiKeyRepositoryImpl repository;
+    Future<void> storeCredential(
+      String value, {
+      required bool isTestnet,
+    }) async {
+      expect(
+        await storage.write(value, isTestnet: isTestnet) is Ok,
+        isTrue,
+        reason: 'synthetic credential must be persisted',
+      );
+    }
+
     var completedProbes = 0;
     const livePreprod = bool.fromEnvironment('TEST_EXCHANGE_LIVE');
     const expectedProbes = livePreprod ? 7 : 6;
 
     // Register every test synchronously before platform initialization can yield.
     setUpAll(() async {
-      await StorageLocator.registerDatasources(locator);
-      storage = _Storage(
-        locator<KeyValueStorageDatasource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-        ),
+      final secrets = Secrets(
+        scratchDirectory: () async => Directory.systemTemp.path,
       );
+      locator.registerSingleton<Secrets>(secrets);
+      probe = ExchangeKeychainProbe()..install();
+      storage = secrets.exchangeKeychain;
       repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
     });
 
     setUp(() async {
-      storage.refuseReads = false;
-      await storage.clearProbeKeys();
+      probe.refuseReads = false;
+      probe.install();
+      for (final isTestnet in [false, true]) {
+        expect(await storage.delete(isTestnet: isTestnet) is Ok, isTrue);
+      }
     });
     tearDown(() async {
-      storage.refuseReads = false;
-      await storage.clearProbeKeys();
+      probe.refuseReads = false;
+      await probe.clearWrittenProbeKeys();
       completedProbes++;
     });
     tearDownAll(() async {
-      await locator.reset();
+      try {
+        await probe.clearWrittenProbeKeys();
+      } finally {
+        probe.restore();
+        await locator.reset();
+      }
       expect(completedProbes, expectedProbes);
       // Fixture cleanup alone must not count as an executed widget test.
       expect(binding.results, hasLength(expectedProbes));
@@ -123,9 +98,9 @@ void main() {
           absent is Ok<String?, ExchangeApiKeyFailure> && absent.value == null,
           isTrue,
         );
-        await storage.saveValue(
-          key: 'exchange_api_key_testnet',
-          value: jsonEncode({'key': 'synthetic', 'isActive': false}),
+        await storeCredential(
+          jsonEncode({'key': 'synthetic', 'isActive': false}),
+          isTestnet: true,
         );
         final inactive = await repository.readActiveApiKey(isTestnet: true);
         expect(
@@ -139,13 +114,13 @@ void main() {
     testWidgets('native storage rereads rotation and isolates environments', (
       tester,
     ) async {
-      await storage.saveValue(
-        key: 'exchange_api_key',
-        value: jsonEncode({'key': 'main-synthetic', 'isActive': true}),
+      await storeCredential(
+        jsonEncode({'key': 'main-synthetic', 'isActive': true}),
+        isTestnet: false,
       );
-      await storage.saveValue(
-        key: 'exchange_api_key_testnet',
-        value: jsonEncode({'key': 'test-synthetic', 'isActive': true}),
+      await storeCredential(
+        jsonEncode({'key': 'test-synthetic', 'isActive': true}),
+        isTestnet: true,
       );
       final first = await repository.readActiveApiKey(isTestnet: true);
       expect(
@@ -153,9 +128,9 @@ void main() {
             first.value == 'test-synthetic',
         isTrue,
       );
-      await storage.saveValue(
-        key: 'exchange_api_key_testnet',
-        value: jsonEncode({'key': 'rotated-synthetic', 'isActive': true}),
+      await storeCredential(
+        jsonEncode({'key': 'rotated-synthetic', 'isActive': true}),
+        isTestnet: true,
       );
       final rotated = await repository.readActiveApiKey(isTestnet: true);
       expect(
@@ -183,13 +158,13 @@ void main() {
     testWidgets('native authentication does not require account metadata', (
       tester,
     ) async {
-      await storage.saveValue(
-        key: 'exchange_api_key_testnet',
-        value: jsonEncode({
+      await storeCredential(
+        jsonEncode({
           'key': 'synthetic',
           'isActive': true,
           'createdAt': 'invalid',
         }),
+        isTestnet: true,
       );
       final value = await repository.readActiveApiKey(isTestnet: true);
       expect(
@@ -203,7 +178,7 @@ void main() {
       tester,
     ) async {
       const corrupt = '{"key":"synthetic", broken';
-      await storage.saveValue(key: 'exchange_api_key_testnet', value: corrupt);
+      await storeCredential(corrupt, isTestnet: true);
       final invalid = await repository.readActiveApiKey(isTestnet: true);
       expect(
         invalid is Err<String?, ExchangeApiKeyFailure> &&
@@ -211,19 +186,25 @@ void main() {
         isTrue,
       );
       expect(
-        await storage.getValue('exchange_api_key_testnet') == corrupt,
+        (await storage.read(
+              isTestnet: true,
+            ) as Ok<String?, SecretFailure>).value ==
+            corrupt,
         isTrue,
       );
-      storage.refuseReads = true;
+      probe.refuseReads = true;
       final unavailable = await repository.readActiveApiKey(isTestnet: true);
       expect(
         unavailable is Err<String?, ExchangeApiKeyFailure> &&
             unavailable.failure is ExchangeApiKeyReadFailure,
         isTrue,
       );
-      storage.refuseReads = false;
+      probe.refuseReads = false;
       expect(
-        await storage.getValue('exchange_api_key_testnet') == corrupt,
+        (await storage.read(
+              isTestnet: true,
+            ) as Ok<String?, SecretFailure>).value ==
+            corrupt,
         isTrue,
       );
     });
@@ -264,19 +245,19 @@ void main() {
           await subscription.cancel();
           await server.close(force: true);
         });
-        await storage.saveValue(
-          key: 'exchange_api_key_testnet',
-          value: jsonEncode({'key': 'http-synthetic', 'isActive': true}),
+        await storeCredential(
+          jsonEncode({'key': 'http-synthetic', 'isActive': true}),
+          isTestnet: true,
         );
         await client.get<void>('/probe');
-        await storage.saveValue(
-          key: 'exchange_api_key_testnet',
-          value: jsonEncode({'key': 'socket-synthetic', 'isActive': true}),
+        await storeCredential(
+          jsonEncode({'key': 'socket-synthetic', 'isActive': true}),
+          isTestnet: true,
         );
         await socket.connect();
         expect(socket.isConnected, isTrue);
         socket.disconnect();
-        storage.refuseReads = true;
+        probe.refuseReads = true;
         await expectLater(
           client.get<void>('/probe'),
           throwsA(
@@ -369,60 +350,66 @@ void main() {
       testWidgets(
         'read-only preprod calls retain the existing testnet session',
         (tester) async {
-          core_exchange.ExchangeLocator.registerDatasources(locator);
-          core_exchange.ExchangeLocator.registerRepositories(locator);
-          final credentials = locator<ExchangeApiKeyRepository>();
-          final before = await credentials.readActiveApiKey(isTestnet: true);
-          final authenticated =
-              before is Ok<String?, ExchangeApiKeyFailure> &&
-              before.value != null;
-          expect(
-            authenticated,
-            isTrue,
-            reason: 'requires an existing preprod session',
-          );
-          final account = await locator<ExchangeUserRepository>(
-            instanceName: 'testnetExchangeUserRepository',
-          ).getUserSummary();
-          expect(
-            account is Ok,
-            isTrue,
-            reason: 'preprod account read must succeed',
-          );
-          final orders = await locator<ExchangeOrderRepository>(
-            instanceName: 'testnetExchangeOrderRepository',
-          ).getOrders();
-          expect(
-            orders is Ok,
-            isTrue,
-            reason: 'preprod history read must succeed',
-          );
-          final recipients = await BullbitcoinApiRecipientsGateway(
-            authenticatedApiClient: locator<Dio>(
-              instanceName: 'authenticatedBullBitcoinApiTestClient',
-            ),
-          ).listRecipients(isTestnet: true);
-          expect(
-            recipients is Ok,
-            isTrue,
-            reason: 'preprod recipients read must succeed',
-          );
-          final after = await credentials.readActiveApiKey(isTestnet: true);
-          final unchanged = switch ((before, after)) {
-            (Ok(value: final original), Ok(value: final current)) =>
-              original == current,
-            _ => false,
-          };
-          expect(
-            unchanged,
-            isTrue,
-            reason: 'read-only probes must preserve the credential',
-          );
-          expect(
-            after is Ok<String?, ExchangeApiKeyFailure> && after.value != null,
-            isTrue,
-            reason: 'read-only probes must not clear the existing session',
-          );
+          probe.restore();
+          try {
+            core_exchange.ExchangeLocator.registerDatasources(locator);
+            core_exchange.ExchangeLocator.registerRepositories(locator);
+            final credentials = locator<ExchangeApiKeyRepository>();
+            final before = await credentials.readActiveApiKey(isTestnet: true);
+            final authenticated =
+                before is Ok<String?, ExchangeApiKeyFailure> &&
+                before.value != null;
+            expect(
+              authenticated,
+              isTrue,
+              reason: 'requires an existing preprod session',
+            );
+            final account = await locator<ExchangeUserRepository>(
+              instanceName: 'testnetExchangeUserRepository',
+            ).getUserSummary();
+            expect(
+              account is Ok,
+              isTrue,
+              reason: 'preprod account read must succeed',
+            );
+            final orders = await locator<ExchangeOrderRepository>(
+              instanceName: 'testnetExchangeOrderRepository',
+            ).getOrders();
+            expect(
+              orders is Ok,
+              isTrue,
+              reason: 'preprod history read must succeed',
+            );
+            final recipients = await BullbitcoinApiRecipientsGateway(
+              authenticatedApiClient: locator<Dio>(
+                instanceName: 'authenticatedBullBitcoinApiTestClient',
+              ),
+            ).listRecipients(isTestnet: true);
+            expect(
+              recipients is Ok,
+              isTrue,
+              reason: 'preprod recipients read must succeed',
+            );
+            final after = await credentials.readActiveApiKey(isTestnet: true);
+            final unchanged = switch ((before, after)) {
+              (Ok(value: final original), Ok(value: final current)) =>
+                original == current,
+              _ => false,
+            };
+            expect(
+              unchanged,
+              isTrue,
+              reason: 'read-only probes must preserve the credential',
+            );
+            expect(
+              after is Ok<String?, ExchangeApiKeyFailure> &&
+                  after.value != null,
+              isTrue,
+              reason: 'read-only probes must not clear the existing session',
+            );
+          } finally {
+            probe.install();
+          }
         },
       );
     }

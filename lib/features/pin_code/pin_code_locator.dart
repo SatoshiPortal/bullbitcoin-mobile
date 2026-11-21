@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
@@ -10,29 +8,21 @@ import 'package:get_it/get_it.dart';
 
 class PinCodeLocator {
   static void setup(GetIt locator) {
-    // Todo: check what can be moved to core (since the pin code repository is needed both in settings as in app unlock)
-
-    // Repositories
-    locator.registerLazySingleton<PinCodeRepository>(
-      () => PinCodeRepository(
-        locator<KeyValueStorageDatasource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-        ),
-      ),
-    );
-
     // Use cases
     locator.registerFactory<SetPinCodeUsecase>(
-      () => SetPinCodeUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+      () =>
+          SetPinCodeUsecase(accessKeychain: locator<Secrets>().accessKeychain),
     );
 
     locator.registerFactory<DeletePinCodeUsecase>(
-      () =>
-          DeletePinCodeUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+      () => DeletePinCodeUsecase(
+        accessKeychain: locator<Secrets>().accessKeychain,
+      ),
     );
     locator.registerFactory<IsPinCodeSetUsecase>(
-      () =>
-          IsPinCodeSetUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+      () => IsPinCodeSetUsecase(
+        accessKeychain: locator<Secrets>().accessKeychain,
+      ),
     );
 
     // Blocs

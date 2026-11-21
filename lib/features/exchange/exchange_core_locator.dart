@@ -22,7 +22,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_mes
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -117,9 +117,7 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeApiKeyRepository>(
       () => ExchangeApiKeyRepositoryImpl(
-        secureStorage: locator<KeyValueStorageDatasource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-        ),
+        secureStorage: locator<Secrets>().exchangeKeychain,
       ),
     );
 

@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_d
 import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:swaps/swaps.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
@@ -27,8 +26,9 @@ class AppStartupLocator {
 
     // Use cases
     locator.registerFactory<ResetAppDataUsecase>(
-      () =>
-          ResetAppDataUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+      () => ResetAppDataUsecase(
+        accessKeychain: locator<Secrets>().accessKeychain,
+      ),
     );
     locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
       () => CheckForExistingDefaultWalletsUsecase(

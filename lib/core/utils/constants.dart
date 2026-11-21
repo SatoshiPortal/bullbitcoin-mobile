@@ -102,7 +102,6 @@ class ApiServiceConstants {
 }
 
 class LocatorInstanceNameConstants {
-  static const secureStorageDatasource = 'secureStorageDatasource';
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
