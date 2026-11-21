@@ -1068,6 +1068,8 @@ void main() {
   });
 
   group('an expired sender is terminal from our side', () {
+    setUp(() => engine.fallbackRetryDelay = Duration.zero);
+
     test('a failed fallback releases the frozen inputs', () async {
       final model = expiredSender();
       await local.storeSender(model);
@@ -1113,15 +1115,15 @@ void main() {
       await engine.resumePayjoinsOnStartup();
       await engine.resumePayjoinsOnStartup();
 
-      // The inputs were released by the first attempt, so the user may have
-      // rebuilt the payment on other coins. A second broadcast of this
+      // The inputs were released once the first expiry gave up, so the user
+      // may have rebuilt the payment on other coins. A second broadcast of this
       // original could then confirm alongside it and pay the order twice.
       verify(
         () => blockchain.broadcastPsbt(
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
-      ).called(1);
+      ).called(3);
     });
 
     test('a later resume never broadcasts an abandoned proposal', () async {
@@ -1787,5 +1789,126 @@ void main() {
         expect(persisted!.sender, model.sender);
       },
     );
+  });
+
+  group('a sender whose original could not be posted', () {
+    setUp(() => registerFallbackValue(sender()));
+
+    void failPostAfterPersist(PayjoinSenderModel model) =>
+        when(
+          () => pdk.createSender(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            originalPsbt: any(named: 'originalPsbt'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            amountSat: any(named: 'amountSat'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+            persistBeforePost: any(named: 'persistBeforePost'),
+          ),
+        ).thenAnswer((inv) async {
+          final persist =
+              inv.namedArguments[#persistBeforePost]
+                  as Future<void> Function(PayjoinSenderModel);
+          await persist(model);
+          throw SendCreationException('Payjoin session expired');
+        });
+
+    Future<internal.PayjoinSender> start(PayjoinSenderModel model) =>
+        engine.createPayjoinSender(
+          walletId: model.walletId,
+          isTestnet: true,
+          bip21: model.id,
+          originalPsbt: model.originalPsbt,
+          amountSat: model.amountSat,
+          networkFeesSatPerVb: 1,
+        );
+
+    void broadcastResults(List<bool> succeeds) {
+      var call = 0;
+      when(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async {
+        final ok = call < succeeds.length && succeeds[call];
+        call++;
+        if (!ok) throw StateError('electrum unavailable');
+      });
+    }
+
+    test('broadcasts the original at once and starts as aborted', () async {
+      final model = sender();
+      failPostAfterPersist(model);
+      broadcastResults([true]);
+      final emitted = engine.payjoinStream.first;
+
+      final started = await start(model);
+
+      expect(started.isAborted, isTrue);
+      expect(started.originalTxId, model.originalTxId);
+      expect((await local.fetchSender(model.id))?.isAborted, isTrue);
+      expect((await emitted).isAborted, isTrue);
+      verify(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: model.originalPsbt,
+        ),
+      ).called(1);
+    });
+
+    test('keeps the row for the expiry fallback when the broadcast fails, '
+        'which then retries', () async {
+      engine.fallbackRetryDelay = Duration.zero;
+      final model = expiredSender();
+      failPostAfterPersist(model);
+      broadcastResults([false]);
+
+      await expectLater(start(model), throwsA(isA<SendCreationException>()));
+
+      final row = await local.fetchSender(model.id);
+      expect(row?.isAborted, isFalse);
+      expect(row?.isExpired, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isNotEmpty);
+      verify(() => pdk.startListeningForProposal(any())).called(1);
+
+      broadcastResults([false, true]);
+      await engine.resumePayjoinsOnStartup();
+
+      expect((await local.fetchSender(model.id))?.isAborted, isTrue);
+      verify(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).called(3);
+    });
+
+    test('a build failure persists and broadcasts nothing', () async {
+      final model = sender();
+      when(
+        () => pdk.createSender(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          originalPsbt: any(named: 'originalPsbt'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          amountSat: any(named: 'amountSat'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          persistBeforePost: any(named: 'persistBeforePost'),
+        ),
+      ).thenThrow(SendCreationException('build failed'));
+
+      await expectLater(start(model), throwsA(isA<SendCreationException>()));
+
+      expect(await local.fetchSender(model.id), isNull);
+      verifyNever(
+        () => blockchain.broadcastPsbt(
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      );
+    });
   });
 }
