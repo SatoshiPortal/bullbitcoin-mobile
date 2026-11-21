@@ -208,6 +208,17 @@ void main() {
     }
   }
 
+  // Checking a passphrase shows no spinner, so flush could return before the
+  // real derivation finishes; wait for the outcome itself instead.
+  Future<void> settleUntil(WidgetTester tester, bool Function() done) async {
+    for (var i = 0; i < 100 && !done(); i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump();
+    }
+  }
+
   // The words are sealed inside `MnemonicChallenge` and carry no text the
   // test could look for: which wallet is on screen is read from the
   // challenge's key, which is that wallet's fingerprint.
@@ -286,12 +297,21 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.enterText(find.byType(TextField), 'Mixed');
     await tester.tap(find.text('Continue'));
-    await flush(tester);
+    await settleUntil(
+      tester,
+      () => find.text('Incorrect passphrase.').evaluate().isNotEmpty,
+    );
     expect(find.text('Incorrect passphrase.'), findsOneWidget);
     verifyNever(() => completeUsecase.execute());
 
+    var completed = false;
+    when(() => completeUsecase.execute()).thenAnswer((_) async {
+      completed = true;
+      return const Ok(null);
+    });
     await tester.enterText(find.byType(TextField), ' Mixed ');
     await tester.tap(find.text('Continue'));
+    await settleUntil(tester, () => completed);
     await flush(tester);
     verify(() => completeUsecase.execute()).called(1);
   });
