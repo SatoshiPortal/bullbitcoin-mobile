@@ -1,4 +1,3 @@
-import 'package:electrum/src/application/dtos/requests/add_custom_server_request.dart';
 import 'package:electrum/src/domain/electrum_server.dart';
 import 'package:electrum/src/domain/entities/electrum_settings.dart';
 import 'package:electrum/src/domain/electrum_failure.dart';
@@ -31,18 +30,10 @@ class AddCustomServerUsecase {
   });
 
   @useResult
-  Future<Result<ElectrumServerStatus, ElectrumFailure>> execute(
-    AddCustomServerRequest request,
+  Future<Result<ElectrumServer, ElectrumFailure>> execute(
+    ElectrumServer server,
   ) async {
     try {
-      final server = ElectrumServer.createCustom(
-        host: request.host,
-        port: request.port,
-        network: request.network,
-        priority: request.priority,
-        enableSsl: request.enableSsl,
-      );
-
       final ElectrumServer? existingServer;
       switch (await _electrumServerRepository.fetchByUrl(
         server.url,
@@ -117,8 +108,11 @@ class AddCustomServerUsecase {
 
       // Both checks passed — persist the server.
       final saveResult = await _electrumServerRepository.save(server);
-      return saveResult.map((_) => ElectrumServerStatus.online);
+      return saveResult.map((_) => server);
     } on OnionServerWithoutTorException {
+      log.warning('Electrum custom server probe unavailable category=tor');
+      return const Err(ElectrumExternalTorProxyUnavailableFailure());
+    } on ClearnetServerWithoutConfiguredTorException {
       log.warning('Electrum custom server probe unavailable category=tor');
       return const Err(ElectrumExternalTorProxyUnavailableFailure());
     } on Exception {

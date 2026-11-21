@@ -1,11 +1,6 @@
-import 'package:electrum/src/application/dtos/electrum_server_dto.dart';
-import 'package:electrum/src/application/dtos/electrum_settings_dto.dart';
-import 'package:electrum/src/application/dtos/requests/load_electrum_server_data_request.dart';
-import 'package:electrum/src/application/dtos/responses/load_electrum_server_data_response.dart';
 import 'package:electrum/src/domain/electrum_server.dart';
 import 'package:electrum/src/domain/entities/electrum_settings.dart';
 import 'package:electrum/src/domain/electrum_failure.dart';
-import 'package:electrum/src/domain/ports/environment_port.dart';
 import 'package:electrum/src/domain/ports/server_status_port.dart';
 import 'package:electrum/src/domain/ports/electrum_tor_session_port.dart';
 import 'package:electrum/src/domain/repositories/electrum_server_repository.dart';
@@ -18,10 +13,14 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
+import '../value_objects/electrum_endpoint.dart';
+import '../value_objects/electrum_server_url.dart';
+import '../value_objects/electrum_server_checks.dart';
+import '../errors/electrum_fallback_exception.dart';
+
 class LoadElectrumServerDataUsecase {
   final ElectrumServerRepository _electrumServerRepository;
   final ElectrumSettingsRepository _electrumSettingsRepository;
-  final EnvironmentPort _environmentPort;
   final ServerStatusPort _serverStatusPort;
   final ElectrumTorSessionPort _torSessionPort;
   final Future<ElectrumPreferences> Function() _readPreferences;
@@ -29,25 +28,17 @@ class LoadElectrumServerDataUsecase {
   const LoadElectrumServerDataUsecase({
     required this._electrumServerRepository,
     required this._electrumSettingsRepository,
-    required this._environmentPort,
     required this._serverStatusPort,
     required this._torSessionPort,
     required this._readPreferences,
   });
 
   @useResult
-  Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> execute(
-    LoadElectrumServerDataRequest request, {
-    void Function(LoadElectrumServerDataResponse response)? onUpdate,
+  Future<Result<ElectrumServerChecks, ElectrumFailure>> execute({
+    required ElectrumServerNetwork network,
+    void Function(ElectrumServerChecks response)? onUpdate,
   }) async {
     try {
-      final isLiquid = request.isLiquid;
-      final environment = await _environmentPort.getEnvironment();
-      final network = ElectrumServerNetwork.fromEnvironment(
-        environment: environment,
-        isLiquid: isLiquid,
-      );
-
       final (serversResult, settingsResult) = await (
         _electrumServerRepository.fetchAll(network: network),
         _electrumSettingsRepository.fetchByNetwork(network),
@@ -74,50 +65,33 @@ class LoadElectrumServerDataUsecase {
       }
 
       final appSettings = await _readPreferences();
-      final serverDtos = servers
-          .map((server) => ElectrumServerDto.fromDomain(server))
-          .toList();
-      final settingsDto = ElectrumSettingsDto.fromDomain(settings);
+      final endpoints = servers.map(toElectrumEndpoint).toList();
+      final options = toElectrumOptions(settings);
       final serverStatusMap = {
         for (final server in servers) server.url: ElectrumServerStatus.unknown,
       };
 
-      LoadElectrumServerDataResponse response() =>
-          LoadElectrumServerDataResponse(
-            servers: serverDtos,
-            serverStatuses: Map.unmodifiable(serverStatusMap),
-            settings: settingsDto,
-          );
+      ElectrumServerChecks response() => ElectrumServerChecks(
+        servers: endpoints,
+        serverStatuses: serverStatusMap,
+        settings: options,
+      );
 
       onUpdate?.call(response());
       await Future.wait(
         servers.map((server) async {
-          final effectiveTimeout = ElectrumConnection.resolveEffectiveTimeout(
-            url: server.url,
-            configuredTimeout: settings.timeout,
-          );
-          ElectrumTorRoute? route;
           try {
-            route = await _torSessionPort.open(
-              network: network,
-              serverUrl: server.url,
-              isCustom: server.isCustom,
-              externalProxyEnabled: appSettings.useTorProxy,
-              externalProxyPort: appSettings.torProxyPort,
-            );
-            serverStatusMap[server.url] = await _serverStatusPort.checkElectrum(
+            serverStatusMap[server.url] = await _probe(
               url: server.url,
               network: network,
-              validateDomain: !server.isCustom || settings.validateDomain,
-              timeout: effectiveTimeout,
-              retry: settings.retry,
-              proxyEndpoint: route?.endpoint,
+              isCustom: server.isCustom,
+              settings: settings,
+              preferences: appSettings,
             );
           } on Exception {
             serverStatusMap[server.url] = ElectrumServerStatus.offline;
           } finally {
             onUpdate?.call(response());
-            await route?.close();
           }
         }),
       );
@@ -126,6 +100,70 @@ class LoadElectrumServerDataUsecase {
     } on Exception {
       log.warning('Electrum server data unavailable');
       return const Err(ElectrumUnexpectedFailure());
+    }
+  }
+
+  Future<Result<ElectrumServerStatus, ElectrumFailure>> checkEndpoint(
+    ElectrumEndpoint endpoint,
+  ) async {
+    final settings = await _electrumSettingsRepository.fetchByNetwork(
+      endpoint.network,
+    );
+    switch (settings) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        try {
+          return Ok(
+            await _probe(
+              url: endpoint.url,
+              network: endpoint.network,
+              isCustom: endpoint.isCustom,
+              settings: value,
+              preferences: await _readPreferences(),
+            ),
+          );
+        } on OnionServerWithoutTorException {
+          return const Err(ElectrumExternalTorProxyUnavailableFailure());
+        } on ClearnetServerWithoutConfiguredTorException {
+          return const Err(ElectrumExternalTorProxyUnavailableFailure());
+        } on Exception {
+          return const Err(ElectrumServerUnreachableFailure());
+        }
+    }
+  }
+
+  Future<ElectrumServerStatus> _probe({
+    required String url,
+    required ElectrumServerNetwork network,
+    required bool isCustom,
+    required ElectrumSettings settings,
+    required ElectrumPreferences preferences,
+  }) async {
+    final route = await _torSessionPort.open(
+      network: network,
+      serverUrl: url,
+      isCustom: isCustom,
+      externalProxyEnabled: preferences.useTorProxy,
+      externalProxyPort: preferences.torProxyPort,
+    );
+    try {
+      if (route == null && ElectrumServerUrl(url).isOnion) {
+        throw OnionServerWithoutTorException(url);
+      }
+      return await _serverStatusPort.checkElectrum(
+        url: url,
+        network: network,
+        validateDomain: !isCustom || settings.validateDomain,
+        timeout: ElectrumConnection.resolveEffectiveTimeout(
+          url: url,
+          configuredTimeout: settings.timeout,
+        ),
+        retry: settings.retry,
+        proxyEndpoint: route?.endpoint,
+      );
+    } finally {
+      await route?.close();
     }
   }
 }

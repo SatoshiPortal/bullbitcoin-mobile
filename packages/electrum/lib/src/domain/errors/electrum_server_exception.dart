@@ -7,13 +7,6 @@ sealed class ElectrumServerException implements Exception {
   String toString() => message;
 }
 
-class InvalidPriorityException extends ElectrumServerException {
-  final int value;
-
-  InvalidPriorityException(this.value)
-    : super('priority must be non-negative, got: $value');
-}
-
 class InvalidPortException extends ElectrumServerException {
   final int port;
 

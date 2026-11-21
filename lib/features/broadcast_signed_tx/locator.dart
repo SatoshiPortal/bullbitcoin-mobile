@@ -15,7 +15,9 @@ class BroadcastSignedTxLocator {
 
   static void registerUsecases(GetIt locator) {
     locator.registerLazySingleton<BuildReviewableTransactionUsecase>(
-      () => BuildReviewableTransactionUsecase(electrum: locator<Electrum>()),
+      () => BuildReviewableTransactionUsecase(
+        electrum: locator<Electrum>().transactions,
+      ),
     );
     locator.registerFactory<VerifyBroadcastSignedTxUsecase>(
       () => VerifyBroadcastSignedTxUsecase(locator<SendFacade>()),

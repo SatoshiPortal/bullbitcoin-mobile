@@ -1,6 +1,8 @@
 import 'package:electrum/src/domain/errors/electrum_settings_exception.dart';
 import 'package:electrum/src/domain/electrum_server_network.dart';
 
+import '../value_objects/electrum_options.dart';
+
 class ElectrumSettings {
   int _stopGap;
   int _timeout;
@@ -10,9 +12,6 @@ class ElectrumSettings {
   //  as they are tied to just one environment, so it's final
   final ElectrumServerNetwork _network;
   String? _socks5;
-
-  static const int maxStopGap = 5000;
-  static const int maxTimeout = 300; // 5 minutes
 
   ElectrumSettings({
     required this._stopGap,
@@ -60,13 +59,13 @@ class ElectrumSettings {
   }
 
   void _ensureValidStopGap(int stopGap) {
-    if (stopGap < 0 || stopGap > maxStopGap) {
+    if (stopGap < 0 || stopGap > ElectrumOptions.maxStopGap) {
       throw InvalidStopGapException(stopGap);
     }
   }
 
   void _ensureValidTimeout(int timeout) {
-    if (timeout <= 0 || timeout > maxTimeout) {
+    if (timeout <= 0 || timeout > ElectrumOptions.maxTimeout) {
       throw InvalidTimeoutException(timeout);
     }
   }
@@ -77,3 +76,12 @@ class ElectrumSettings {
     }
   }
 }
+
+ElectrumOptions toElectrumOptions(ElectrumSettings settings) => ElectrumOptions(
+  stopGap: settings.stopGap,
+  timeout: settings.timeout,
+  retry: settings.retry,
+  validateDomain: settings.validateDomain,
+  network: settings.network,
+  socks5: settings.socks5,
+);

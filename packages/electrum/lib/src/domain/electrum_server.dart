@@ -5,8 +5,7 @@ class ElectrumServer {
   final String _url;
   final ElectrumServerNetwork _network;
   final bool _isCustom;
-  // Only the priority can be modified after creation
-  int _priority;
+  final int _priority;
 
   ElectrumServer._({
     required this._url,
@@ -81,13 +80,5 @@ class ElectrumServer {
     return enableSsl
         ? 'ssl://$urlWithoutProtocol'
         : 'tcp://$urlWithoutProtocol';
-  }
-
-  void updatePriority(int newPriority) {
-    if (newPriority < 0) {
-      throw InvalidPriorityException(newPriority);
-    }
-
-    _priority = newPriority;
   }
 }

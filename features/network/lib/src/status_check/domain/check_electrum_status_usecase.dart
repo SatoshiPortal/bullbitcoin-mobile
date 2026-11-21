@@ -1,53 +1,16 @@
 import 'package:electrum/electrum.dart';
-import 'package:bull_tor/tor.dart';
+import 'package:primitives/primitives.dart';
 
 class CheckElectrumStatusUsecase {
-  final ElectrumServersPort _electrumServersPort;
-  final ServerStatusPort _serverStatusPort;
+  final ElectrumServers _servers;
 
-  CheckElectrumStatusUsecase({
-    required this._electrumServersPort,
-    required this._serverStatusPort,
-  });
+  CheckElectrumStatusUsecase(this._servers);
 
-  Future<bool> execute(ElectrumServerNetwork serverNetwork) async {
-    try {
-      return await _electrumServersPort.runWithFallback<bool>(
-        network: serverNetwork,
-        operation: (connection) async {
-          // An empty string is "no proxy", not a malformed one: settings persist
-          // `''` in practice, and treating it as malformed marked every server
-          // offline.
-          final socks5 = connection.socks5?.trim();
-          final proxyEndpoint = switch (socks5) {
-            null || '' => null,
-            final proxy =>
-              TorProxyEndpoint.tryParse(proxy) ??
-                  (throw const _ElectrumServerOfflineException()),
-          };
-          final status = await _serverStatusPort.checkElectrum(
-            url: connection.url,
-            network: serverNetwork,
-            // The user's own setting, so "online" here means the sync can
-            // actually reach the server too.
-            validateDomain: connection.validateDomain,
-            // The configured clearnet timeout is seeded at 5s. Onion routes
-            // raise it to the shared 30s minimum used by the real BDK sync.
-            timeout: connection.effectiveTimeout,
-            retry: connection.retry,
-            proxyEndpoint: proxyEndpoint,
-          );
-          if (status == ElectrumServerStatus.online) return true;
-          throw const _ElectrumServerOfflineException();
-        },
-        isTransient: (error) => error is _ElectrumServerOfflineException,
-      );
-    } on Exception {
-      return false;
-    }
+  Future<bool> execute(ElectrumServerNetwork network) async {
+    final result = await _servers.check(network: network);
+    return switch (result) {
+      Ok(value: ElectrumServerStatus.online) => true,
+      _ => false,
+    };
   }
-}
-
-final class _ElectrumServerOfflineException implements Exception {
-  const _ElectrumServerOfflineException();
 }

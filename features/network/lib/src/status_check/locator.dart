@@ -26,8 +26,7 @@ class StatusCheckLocator {
           readDefaultNetwork: readDefaultNetwork,
           checkAllServiceStatusUsecase: CheckAllServiceStatusUsecase(
             checkElectrumStatus: CheckElectrumStatusUsecase(
-              electrumServersPort: locator<ElectrumServersPort>(),
-              serverStatusPort: locator<ServerStatusPort>(),
+              locator<Electrum>().servers,
             ),
             getIndexPrice: Pricer.getIndexPrice,
             payjoinPolicy: locator<PayjoinPolicyAccess>(),

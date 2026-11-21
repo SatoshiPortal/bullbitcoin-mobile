@@ -22,13 +22,9 @@ class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
       final model = ElectrumSettingsModel.fromEntity(settings);
       await _datasource.store(model);
       return const Ok(null);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to save electrum settings',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumSaveFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to save electrum settings');
+      return const Err(ElectrumSaveFailure());
     }
   }
 
@@ -37,13 +33,9 @@ class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
     try {
       final models = await _datasource.fetchAll();
       return Ok(models.map((m) => m.toEntity()).toList());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch all electrum settings',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch all electrum settings');
+      return const Err(ElectrumLoadFailure());
     }
   }
 
@@ -53,14 +45,11 @@ class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
   ) async {
     try {
       final model = await _datasource.fetchByNetwork(network);
+      if (model == null) return const Err(ElectrumLoadFailure());
       return Ok(model.toEntity());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch electrum settings by network',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch electrum settings by network');
+      return const Err(ElectrumLoadFailure());
     }
   }
 
@@ -71,13 +60,9 @@ class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
     try {
       final models = await _datasource.fetchByEnvironment(environment);
       return Ok(models.map((m) => m.toEntity()).toList());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch electrum settings by environment',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch electrum settings by environment');
+      return const Err(ElectrumLoadFailure());
     }
   }
 }

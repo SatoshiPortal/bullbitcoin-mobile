@@ -17,6 +17,7 @@ import 'package:sync/sync.dart'
         isLiquidStatusConflict;
 
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';

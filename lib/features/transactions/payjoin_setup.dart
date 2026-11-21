@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';

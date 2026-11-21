@@ -8,7 +8,10 @@ abstract interface class ElectrumServerRepository {
   @useResult
   Future<Result<void, ElectrumFailure>> save(ElectrumServer server);
   @useResult
-  Future<Result<void, ElectrumFailure>> batchSave(List<ElectrumServer> servers);
+  Future<Result<List<ElectrumServer>, ElectrumFailure>> reorderCustomServers({
+    required ElectrumServerNetwork network,
+    required List<String> urls,
+  });
   @useResult
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchAll({
     ElectrumServerNetwork? network,

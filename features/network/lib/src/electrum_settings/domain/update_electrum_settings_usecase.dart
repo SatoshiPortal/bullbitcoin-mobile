@@ -2,19 +2,19 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 
+import 'electrum_settings_failure.dart';
+
 /// Persists either explicit advanced settings or the domain-validation change
 /// that accompanies switching between default and custom servers.
 class UpdateElectrumSettingsUsecase {
-  final SetAdvancedElectrumOptionsUsecase _saveOptions;
+  final ElectrumServerOptions _options;
 
-  const UpdateElectrumSettingsUsecase(this._saveOptions);
+  const UpdateElectrumSettingsUsecase(this._options);
 
-  Future<Result<ElectrumSettingsDto, AdvancedOptionsFailure>> execute(
-    ElectrumSettingsDto options,
+  Future<Result<ElectrumOptions, AdvancedOptionsFailure>> execute(
+    ElectrumOptions options,
   ) async {
-    return switch (await _saveOptions.execute(
-      SetAdvancedElectrumOptionsRequest(options: options),
-    )) {
+    return switch (await _options.store(options)) {
       Ok() => Ok(options),
       Err(
         failure: ElectrumInvalidStopGapFailure(:final value, :final logMessage),
@@ -38,13 +38,13 @@ class UpdateElectrumSettingsUsecase {
   }
 }
 
-Future<ElectrumSettingsDto?> syncElectrumDomainValidation({
+Future<ElectrumOptions?> syncElectrumDomainValidation({
   required UpdateElectrumSettingsUsecase updateSettings,
-  required ElectrumSettingsDto? current,
+  required ElectrumOptions? current,
   required bool validateDomain,
 }) async {
   if (current == null || current.validateDomain == validateDomain) return null;
-  final updated = ElectrumSettingsDto(
+  final updated = ElectrumOptions(
     retry: current.retry,
     timeout: current.timeout,
     stopGap: current.stopGap,

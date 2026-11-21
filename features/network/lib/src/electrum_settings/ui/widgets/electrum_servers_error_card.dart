@@ -1,9 +1,9 @@
+import '../../domain/electrum_settings_failure.dart';
+
 import 'package:bull_ui/bull_ui.dart'
     show BullThemeX, BullButton, BullButtonSize;
 
 import '../../../network_l10n.dart';
-
-import 'package:electrum/electrum.dart';
 
 import '../../presentation/electrum_settings_failure_l10n.dart';
 import '../../../tor_settings/ui/tor_settings_router.dart';

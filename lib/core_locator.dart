@@ -1,4 +1,5 @@
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';

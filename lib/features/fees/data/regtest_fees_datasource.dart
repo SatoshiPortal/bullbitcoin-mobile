@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:sync/sync.dart' show WalletConnection, estimateBitcoinFees;

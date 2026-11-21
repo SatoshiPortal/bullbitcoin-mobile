@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show BitcoinTx;
 
 class BuildReviewableTransactionUsecase {
-  final Electrum _electrum;
+  final ElectrumTransactions _electrum;
 
   BuildReviewableTransactionUsecase({required this._electrum});
 
@@ -30,8 +30,8 @@ class BuildReviewableTransactionUsecase {
       );
       final resolvedInputs = <ResolvedInput>[];
       for (final input in tx.inputs) {
-        final result = await _electrum.fetchBitcoinTransaction(
-          txid: input.previousTxId,
+        final result = await _electrum.fetch(
+          input.previousTxId,
           network: bitcoinNetwork,
         );
         final BitcoinTx parentTx;

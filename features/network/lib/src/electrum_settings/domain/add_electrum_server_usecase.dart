@@ -1,25 +1,21 @@
 import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 
+import 'electrum_settings_failure.dart';
 import 'update_electrum_settings_usecase.dart';
 
 class AddElectrumServerUsecase {
-  final AddCustomServerUsecase _addServer;
+  final ElectrumServers _servers;
   final UpdateElectrumSettingsUsecase _updateSettings;
-  final HasActiveCustomBitcoinOnionServerUsecase _hasActiveOnionServer;
 
-  const AddElectrumServerUsecase(
-    this._addServer,
-    this._updateSettings,
-    this._hasActiveOnionServer,
-  );
+  const AddElectrumServerUsecase(this._servers, this._updateSettings);
 
   Future<
     Result<
       ({
-        ElectrumServerDto server,
+        ElectrumEndpoint server,
         ElectrumServerStatus status,
-        ElectrumSettingsDto? options,
+        ElectrumOptions? options,
         bool hasActiveCustomBitcoinOnionServer,
       }),
       ElectrumServersFailure
@@ -30,17 +26,14 @@ class AddElectrumServerUsecase {
     required bool enableSsl,
     required ElectrumServerNetwork network,
     required int? lastPriority,
-    required ElectrumSettingsDto? Function() currentOptions,
+    required ElectrumOptions? Function() currentOptions,
   }) async {
-    final cleanUrl = ElectrumUrlParser.tryParse(url)?.cleanUrl ?? url;
-    final server = ElectrumServerDto(
-      url: cleanUrl,
+    switch (await _servers.store(
+      url,
       network: network,
-      isCustom: true,
-      priority: lastPriority == null ? 0 : lastPriority + 1,
+      priority: (lastPriority ?? -1) + 1,
       enableSsl: enableSsl,
-    );
-    switch (await _addServer.execute(AddCustomServerRequest(server: server))) {
+    )) {
       case Ok(:final value):
         // Custom TLS certificates often fail strict domain validation.
         final options = await syncElectrumDomainValidation(
@@ -48,12 +41,15 @@ class AddElectrumServerUsecase {
           current: currentOptions(),
           validateDomain: false,
         );
+        final onion = await _servers.hasActiveCustomBitcoinOnionServer();
         return Ok((
-          server: server,
-          status: value,
+          server: value,
+          status: ElectrumServerStatus.online,
           options: options,
-          hasActiveCustomBitcoinOnionServer: await _hasActiveOnionServer
-              .execute(),
+          hasActiveCustomBitcoinOnionServer: onion.fold(
+            (value) => value,
+            (_) => false,
+          ),
         ));
       case Err(:final failure):
         final message = failure.logMessage;

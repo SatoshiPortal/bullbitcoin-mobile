@@ -25,7 +25,7 @@ class ElectrumServerStorageDatasource {
     log.fine('Electrum server stored network=${server.network}');
   }
 
-  Future<void> storeBatch(List<ElectrumServerModel> servers) async {
+  Future<void> _storeBatch(List<ElectrumServerModel> servers) async {
     await _sqlite.batch((batch) {
       for (final server in servers) {
         batch.insert(
@@ -37,6 +37,32 @@ class ElectrumServerStorageDatasource {
     });
     log.fine('Electrum server priorities stored count=${servers.length}');
   }
+
+  Future<List<ElectrumServerModel>?> reorderCustomServers(
+    ElectrumServerNetwork network,
+    List<String> urls,
+  ) => _sqlite.transaction(() async {
+    final customRows = _sqlite.serverRows.filter(
+      (row) => row.network.equals(network.storageName) & row.isCustom(true),
+    );
+    final current = {for (final row in await customRows.get()) row.url: row};
+    final ordered = urls.toSet();
+    if (ordered.length != urls.length ||
+        ordered.length != current.length ||
+        !ordered.every(current.containsKey)) {
+      return null;
+    }
+
+    final rows = <ElectrumServerRow>[];
+    for (final (priority, url) in urls.indexed) {
+      final row = current[url];
+      if (row == null) return null;
+      rows.add(row.copyWith(priority: priority));
+    }
+    final models = rows.map(ElectrumServerModel.fromSqlite).toList();
+    await _storeBatch(models);
+    return models;
+  });
 
   Future<ElectrumServerModel?> fetchByUrl(
     String url, {
@@ -81,9 +107,8 @@ class ElectrumServerStorageDatasource {
             (f) => f.url.equals(url) & f.network.equals(network.storageName),
           )
           .getSingleOrNull();
-      final managed = existing?.isCustom == true
-          ? _managedDefault(url, network)
-          : null;
+      if (existing?.isCustom != true) return false;
+      final managed = _managedDefault(url, network);
       final deleted = await _sqlite.serverRows
           .filter(
             (f) => f.url.equals(url) & f.network.equals(network.storageName),

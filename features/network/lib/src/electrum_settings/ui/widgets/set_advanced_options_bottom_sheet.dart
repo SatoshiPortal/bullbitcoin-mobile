@@ -217,9 +217,9 @@ class _SetAdvancedOptionsBottomSheetState
                           if (n < 0) {
                             return context.loc.electrumStopGapNegativeError;
                           }
-                          if (n > ElectrumSettings.maxStopGap) {
+                          if (n > ElectrumOptions.maxStopGap) {
                             return context.loc.electrumStopGapTooHighError(
-                              ElectrumSettings.maxStopGap.toString(),
+                              ElectrumOptions.maxStopGap.toString(),
                             );
                           }
                           return null;
@@ -306,9 +306,9 @@ class _SetAdvancedOptionsBottomSheetState
                           if (n <= 0) {
                             return context.loc.electrumTimeoutPositiveError;
                           }
-                          if (n > ElectrumSettings.maxTimeout) {
+                          if (n > ElectrumOptions.maxTimeout) {
                             return context.loc.electrumTimeoutTooHighError(
-                              ElectrumSettings.maxTimeout.toString(),
+                              ElectrumOptions.maxTimeout.toString(),
                             );
                           }
                           return null;

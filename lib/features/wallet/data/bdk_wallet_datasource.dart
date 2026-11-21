@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';

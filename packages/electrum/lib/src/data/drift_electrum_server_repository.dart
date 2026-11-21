@@ -27,17 +27,17 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   }
 
   @override
-  Future<Result<void, ElectrumFailure>> batchSave(
-    List<ElectrumServer> servers,
-  ) async {
+  Future<Result<List<ElectrumServer>, ElectrumFailure>> reorderCustomServers({
+    required ElectrumServerNetwork network,
+    required List<String> urls,
+  }) async {
     try {
-      final models = servers
-          .map((e) => ElectrumServerModel.fromEntity(e))
-          .toList();
-      await _datasource.storeBatch(models);
-      return const Ok(null);
+      final models = await _datasource.reorderCustomServers(network, urls);
+      return models == null
+          ? const Err(ElectrumInvalidOrderFailure())
+          : Ok(models.map((model) => model.toEntity()).toList());
     } on Exception {
-      log.warning('Failed to batch save electrum servers');
+      log.warning('Failed to reorder custom electrum servers');
       return const Err(ElectrumSaveFailure());
     }
   }

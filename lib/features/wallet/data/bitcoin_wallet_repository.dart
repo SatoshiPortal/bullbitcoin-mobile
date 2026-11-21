@@ -35,7 +35,7 @@ import 'package:primitives/primitives.dart'
     show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';

@@ -67,15 +67,12 @@ class ElectrumSettingsStorageDatasource {
     return settings;
   }
 
-  Future<ElectrumSettingsModel> fetchByNetwork(
+  Future<ElectrumSettingsModel?> fetchByNetwork(
     ElectrumServerNetwork network,
   ) async {
     final row = await _sqlite.settingsRows
         .filter((f) => f.network(network))
-        .getSingle();
-
-    final settings = ElectrumSettingsModel.fromSqlite(row);
-
-    return settings;
+        .getSingleOrNull();
+    return row == null ? null : ElectrumSettingsModel.fromSqlite(row);
   }
 }

@@ -1,40 +1,15 @@
 /// Electrum connection, settings and transaction capabilities.
 library;
 
-export 'src/application/dtos/electrum_server_dto.dart';
-export 'src/application/dtos/electrum_settings_dto.dart';
-export 'src/application/dtos/requests/add_custom_server_request.dart';
-export 'src/application/dtos/requests/load_electrum_server_data_request.dart';
-export 'src/application/dtos/requests/set_advanced_electrum_options_request.dart';
-export 'src/application/dtos/requests/set_custom_servers_priority_request.dart';
-export 'src/application/dtos/responses/load_electrum_server_data_response.dart';
-export 'src/application/dtos/responses/set_custom_servers_priority_response.dart';
-export 'src/background_setup.dart';
-export 'src/data/electrum_defaults_provisioner.dart';
-export 'src/domain/delete_custom_server_request.dart';
-export 'src/domain/entities/electrum_settings.dart';
-export 'src/domain/electrum_default_endpoints.dart';
 export 'src/domain/electrum_environment.dart';
 export 'src/domain/electrum_failure.dart';
-export 'src/domain/electrum_network_unauthorized_exception.dart';
-export 'src/domain/electrum_preferences.dart';
-export 'src/domain/electrum_server.dart';
 export 'src/domain/electrum_server_network.dart';
 export 'src/domain/electrum_url_parser.dart';
-export 'src/domain/errors/electrum_fallback_exception.dart';
-export 'src/domain/ports/electrum_servers_port.dart';
-export 'src/domain/ports/environment_port.dart';
-export 'src/domain/ports/server_status_port.dart';
-export 'src/domain/regtest_electrum_profile.dart';
-export 'src/domain/usecases/add_custom_server_usecase.dart';
-export 'src/domain/usecases/delete_custom_server_usecase.dart';
-export 'src/domain/usecases/has_active_custom_bitcoin_onion_server_usecase.dart';
-export 'src/domain/usecases/load_electrum_server_data_usecase.dart';
-export 'src/domain/usecases/set_advanced_electrum_options_usecase.dart';
-export 'src/domain/usecases/set_custom_servers_priority_usecase.dart';
-export 'src/domain/value_objects/electrum_connection.dart';
+export 'src/domain/value_objects/electrum_endpoint.dart' show ElectrumEndpoint;
+export 'src/domain/value_objects/electrum_options.dart' show ElectrumOptions;
+export 'src/domain/value_objects/electrum_server_checks.dart';
 export 'src/domain/value_objects/electrum_server_status.dart';
 export 'src/domain/value_objects/electrum_server_url.dart';
 export 'src/domain/value_objects/electrum_sync_result.dart';
-export 'src/electrum.dart';
-export 'src/electrum_locator.dart';
+export 'src/electrum.dart'
+    show Electrum, ElectrumServers, ElectrumServerOptions, ElectrumTransactions;

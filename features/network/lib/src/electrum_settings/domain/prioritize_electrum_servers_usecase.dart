@@ -1,42 +1,42 @@
 import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 
-class PrioritizeElectrumServersUsecase {
-  final SetCustomServersPriorityUsecase _saveOrder;
-  final HasActiveCustomBitcoinOnionServerUsecase _hasActiveOnionServer;
+import 'electrum_settings_failure.dart';
 
-  const PrioritizeElectrumServersUsecase(
-    this._saveOrder,
-    this._hasActiveOnionServer,
-  );
+class PrioritizeElectrumServersUsecase {
+  final ElectrumServers _servers;
+
+  const PrioritizeElectrumServersUsecase(this._servers);
 
   Future<
     Result<
       ({
-        List<ElectrumServerDto> servers,
+        List<ElectrumEndpoint> servers,
         bool hasActiveCustomBitcoinOnionServer,
       }),
       ElectrumServersFailure
     >
   >
   execute({
-    required List<ElectrumServerDto> servers,
+    required List<String> urls,
+    required ElectrumServerNetwork network,
     required int oldIndex,
     required int newIndex,
   }) async {
-    final reordered = [...servers];
+    final reordered = [...urls];
     reordered.insert(
       oldIndex < newIndex ? newIndex - 1 : newIndex,
       reordered.removeAt(oldIndex),
     );
-    switch (await _saveOrder.execute(
-      SetCustomServersPriorityRequest(servers: reordered),
-    )) {
+    switch (await _servers.prioritize(reordered, network: network)) {
       case Ok(:final value):
+        final onion = await _servers.hasActiveCustomBitcoinOnionServer();
         return Ok((
-          servers: value.servers,
-          hasActiveCustomBitcoinOnionServer: await _hasActiveOnionServer
-              .execute(),
+          servers: value,
+          hasActiveCustomBitcoinOnionServer: onion.fold(
+            (value) => value,
+            (_) => false,
+          ),
         ));
       case Err(:final failure):
         return Err(ElectrumServersSavePriorityFailure(failure.logMessage));

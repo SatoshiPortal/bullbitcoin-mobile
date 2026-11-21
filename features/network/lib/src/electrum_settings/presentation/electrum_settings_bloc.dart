@@ -1,3 +1,4 @@
+import '../domain/electrum_settings_failure.dart';
 import '../domain/load_electrum_settings_usecase.dart';
 import '../domain/add_electrum_server_usecase.dart';
 import '../domain/prioritize_electrum_servers_usecase.dart';
@@ -94,7 +95,7 @@ class ElectrumSettingsBloc
   }
 
   ElectrumSettingsState _stateWithServerData(
-    LoadElectrumServerDataResponse response, {
+    ElectrumServerChecks response, {
     required bool isLoadingData,
     bool? hasActiveCustomBitcoinOnionServer,
   }) {
@@ -102,7 +103,7 @@ class ElectrumSettingsBloc
     final servers = response.servers;
     final settings = response.settings;
 
-    ElectrumServerViewModel toViewModel(ElectrumServerDto server) =>
+    ElectrumServerViewModel toViewModel(ElectrumEndpoint server) =>
         ElectrumServerViewModel(
           url: server.url,
           network: server.network,
@@ -170,7 +171,7 @@ class ElectrumSettingsBloc
         final server = value.server;
         final newServer = ElectrumServerViewModel(
           network: network,
-          url: event.enableSsl ? 'ssl://${server.url}' : 'tcp://${server.url}',
+          url: server.url,
           status: value.status,
           priority: server.priority,
         );
@@ -221,16 +222,8 @@ class ElectrumSettingsBloc
       isLiquid: state.isLiquid,
     );
     switch (await _prioritizeServers.execute(
-      servers: currentServers
-          .map(
-            (server) => ElectrumServerDto(
-              isCustom: true,
-              url: server.url,
-              network: network,
-              priority: server.priority,
-            ),
-          )
-          .toList(),
+      urls: currentServers.map((server) => server.url).toList(),
+      network: network,
       oldIndex: event.movedFromListIndex,
       newIndex: event.movedToListIndex,
     )) {
@@ -381,7 +374,7 @@ class ElectrumSettingsBloc
     }
 
     switch (await _updateSettings.execute(
-      ElectrumSettingsDto(
+      ElectrumOptions(
         stopGap: stopGap,
         timeout: timeout,
         retry: retry,
@@ -419,10 +412,10 @@ class ElectrumSettingsBloc
     _loadGeneration++;
   }
 
-  ElectrumSettingsDto? _currentOptions(ElectrumServerNetwork network) {
+  ElectrumOptions? _currentOptions(ElectrumServerNetwork network) {
     final current = state.advancedOptions;
     if (current == null) return null;
-    return ElectrumSettingsDto(
+    return ElectrumOptions(
       stopGap: current.stopGap,
       timeout: current.timeout,
       retry: current.retry,
@@ -433,7 +426,7 @@ class ElectrumSettingsBloc
   }
 
   ElectrumAdvancedOptionsViewModel? _optionsViewModel(
-    ElectrumSettingsDto? options,
+    ElectrumOptions? options,
   ) => options == null
       ? null
       : ElectrumAdvancedOptionsViewModel(

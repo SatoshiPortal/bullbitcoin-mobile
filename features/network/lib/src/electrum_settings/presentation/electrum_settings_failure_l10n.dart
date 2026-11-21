@@ -1,6 +1,7 @@
 import '../../network_l10n.dart';
 
-import 'package:electrum/electrum.dart';
+import '../domain/electrum_settings_failure.dart';
+
 import 'package:flutter/widgets.dart';
 
 /// User-facing, localized message for each Electrum settings failure. The

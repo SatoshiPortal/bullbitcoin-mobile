@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 

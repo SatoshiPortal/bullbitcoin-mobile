@@ -3,8 +3,8 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:network/network.dart' show StatusCheckLocator;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:electrum/electrum.dart'
-    show ElectrumFailure, RegtestElectrumProfile;
+import 'package:electrum/electrum.dart' show ElectrumFailure;
+import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/network_bindings.dart';

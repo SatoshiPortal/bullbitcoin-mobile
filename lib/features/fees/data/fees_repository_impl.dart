@@ -1,4 +1,5 @@
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';

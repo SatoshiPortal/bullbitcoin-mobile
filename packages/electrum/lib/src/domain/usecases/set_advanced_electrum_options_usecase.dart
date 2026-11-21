@@ -1,4 +1,5 @@
-import 'package:electrum/src/application/dtos/requests/set_advanced_electrum_options_request.dart';
+import '../value_objects/electrum_options.dart';
+
 import 'package:electrum/src/domain/entities/electrum_settings.dart';
 import 'package:electrum/src/domain/electrum_failure.dart';
 import 'package:electrum/src/domain/errors/electrum_settings_exception.dart';
@@ -15,12 +16,10 @@ class SetAdvancedElectrumOptionsUsecase {
   });
 
   @useResult
-  Future<Result<void, ElectrumFailure>> execute(
-    SetAdvancedElectrumOptionsRequest request,
-  ) async {
+  Future<Result<void, ElectrumFailure>> execute(ElectrumOptions options) async {
     // Fetch current settings.
     final ElectrumSettings settings;
-    switch (await _electrumSettingsRepository.fetchByNetwork(request.network)) {
+    switch (await _electrumSettingsRepository.fetchByNetwork(options.network)) {
       case Ok(:final value):
         settings = value;
       case Err(:final failure):
@@ -32,11 +31,11 @@ class SetAdvancedElectrumOptionsUsecase {
     // unforeseen fault, so the bloc's loading flag is always reset.
     try {
       settings.update(
-        newStopGap: request.stopGap,
-        newTimeout: request.timeout,
-        newRetry: request.retry,
-        newValidateDomain: request.validateDomain,
-        newSocks5Supplier: () => request.socks5,
+        newStopGap: options.stopGap,
+        newTimeout: options.timeout,
+        newRetry: options.retry,
+        newValidateDomain: options.validateDomain,
+        newSocks5Supplier: () => options.socks5,
       );
       return await _electrumSettingsRepository.save(settings);
     } on InvalidStopGapException catch (e) {
@@ -45,13 +44,9 @@ class SetAdvancedElectrumOptionsUsecase {
       return Err(ElectrumInvalidTimeoutFailure(e.value));
     } on InvalidRetryException catch (e) {
       return Err(ElectrumInvalidRetryFailure(e.value));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to set advanced electrum options',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumUnexpectedFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to set advanced electrum options');
+      return const Err(ElectrumUnexpectedFailure());
     }
   }
 }

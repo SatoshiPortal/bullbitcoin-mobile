@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart' show ElectrumDefaultEndpoints;
+import 'package:electrum/setup.dart' show ElectrumDefaultEndpoints;
 import 'package:material_ui/material_ui.dart';
 
 class Device {

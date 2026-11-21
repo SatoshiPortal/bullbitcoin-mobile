@@ -14,6 +14,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
