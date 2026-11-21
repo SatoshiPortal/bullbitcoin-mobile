@@ -7,6 +7,17 @@ import 'test_app.dart';
 
 void main() {
   group('BullDetailsTableItem', () {
+    test('rejects onValueTap for custom value widgets', () {
+      expect(
+        () => BullDetailsTableItem(
+          label: 'Fee',
+          displayWidget: const Text('Fastest'),
+          onValueTap: () {},
+        ),
+        throwsAssertionError,
+      );
+    });
+
     setUp(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(SystemChannels.platform, (_) async => null);
