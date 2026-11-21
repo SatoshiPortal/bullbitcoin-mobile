@@ -27,29 +27,31 @@ class PriceChartWidget extends StatelessWidget {
     return BlocListener<BitcoinPriceBloc, BitcoinPriceState>(
       listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
       listener: (context, state) {
-        BullSnackBar.show(
-          context,
-          message: state.failure!.toTranslated(context),
-        );
+        final failure = state.failure;
+        if (failure != null) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
+        }
       },
       child: BlocBuilder<PriceChartCubit, PriceChartState>(
         builder: (context, state) {
           final rates = state.prices;
           final hasNoLocalData = rates.isEmpty;
 
-          if (state.failure != null && hasNoLocalData) {
+          final failure = state.failure;
+          if (failure != null && hasNoLocalData) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   BullText(
-                    state.failure!.toTranslated(context),
+                    failure.toTranslated(context),
                     style: context.bullType.body
                         .copyWith(fontWeight: FontWeight.w500)
                         .copyWith(color: foreground),
                   ),
                   const Gap(16),
                   IconButton(
+                    tooltip: context.loc.retry,
                     onPressed: () {
                       context.read<PriceChartCubit>().loadPriceHistory(
                         currency: state.currency,
@@ -163,6 +165,7 @@ class _PriceDisplay extends StatelessWidget {
         : SupportedCurrency.codes;
 
     return BullPickerMenu<String>(
+      tooltip: context.loc.fiatCurrencySettingsLabel,
       value: currency,
       items: [
         for (final code in currencies)
@@ -308,57 +311,82 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
     final padding = priceRange * 0.1;
 
     final displayIndex =
-        widget.selectedIndex ?? _touchedIndex ?? rates.length - 1;
-
-    return GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        final box = context.findRenderObject() as RenderBox?;
-        if (box == null) return;
-
-        final localPosition = box.globalToLocal(details.globalPosition);
-        final width = box.size.width;
-        final index = ((localPosition.dx / width) * rates.length)
+        (widget.selectedIndex ?? _touchedIndex ?? rates.length - 1)
             .clamp(0, rates.length - 1)
             .toInt();
 
-        if (index != _touchedIndex) {
-          setState(() {
-            _touchedIndex = index;
-          });
-          widget.onTap(index);
-        }
-      },
-      onTapDown: (details) {
-        final box = context.findRenderObject() as RenderBox?;
-        if (box == null) return;
+    return Semantics(
+      container: true,
+      label: context.loc.priceHistoryTitle,
+      slider: rates.length > 1,
+      value: _dateAt(context, displayIndex),
+      increasedValue: displayIndex < rates.length - 1
+          ? _dateAt(context, displayIndex + 1)
+          : null,
+      decreasedValue: displayIndex > 0
+          ? _dateAt(context, displayIndex - 1)
+          : null,
+      onIncrease: displayIndex < rates.length - 1
+          ? () => _select(displayIndex + 1)
+          : null,
+      onDecrease: displayIndex > 0 ? () => _select(displayIndex - 1) : null,
+      child: GestureDetector(
+        excludeFromSemantics: true,
+        onHorizontalDragUpdate: (details) {
+          final box = context.findRenderObject() as RenderBox?;
+          if (box == null) return;
 
-        final localPosition = box.globalToLocal(details.globalPosition);
-        final width = box.size.width;
-        final index = ((localPosition.dx / width) * rates.length)
-            .clamp(0, rates.length - 1)
-            .toInt();
+          final localPosition = box.globalToLocal(details.globalPosition);
+          final width = box.size.width;
+          final index = ((localPosition.dx / width) * rates.length)
+              .clamp(0, rates.length - 1)
+              .toInt();
 
-        setState(() {
-          _touchedIndex = index;
-        });
-        widget.onTap(index);
-      },
-      child: CustomPaint(
-        size: Size.infinite,
-        painter: _ChartPainter(
-          prices: prices,
-          minPrice: minPrice - padding,
-          maxPrice: maxPrice + padding,
-          lineColor: widget.foregroundColor,
-          selectedIndex: displayIndex,
-          lineAnimation: _lineAnimation,
-          pulseAnimation: _pulseAnimation,
-          repaint: _chartAnimations,
-          dotColor: widget.selectionColor,
-          borderColor: widget.foregroundColor,
+          if (index != _touchedIndex) {
+            _select(index);
+          }
+        },
+        onTapDown: (details) {
+          final box = context.findRenderObject() as RenderBox?;
+          if (box == null) return;
+
+          final localPosition = box.globalToLocal(details.globalPosition);
+          final width = box.size.width;
+          final index = ((localPosition.dx / width) * rates.length)
+              .clamp(0, rates.length - 1)
+              .toInt();
+
+          _select(index);
+        },
+        child: CustomPaint(
+          size: Size.infinite,
+          painter: _ChartPainter(
+            prices: prices,
+            minPrice: minPrice - padding,
+            maxPrice: maxPrice + padding,
+            lineColor: widget.foregroundColor,
+            selectedIndex: displayIndex,
+            lineAnimation: _lineAnimation,
+            pulseAnimation: _pulseAnimation,
+            repaint: _chartAnimations,
+            dotColor: widget.selectionColor,
+            borderColor: widget.foregroundColor,
+          ),
         ),
       ),
     );
+  }
+
+  String _dateAt(BuildContext context, int index) {
+    final date = widget.rates[index].time.toLocal();
+    return DateFormat.yMMMd(bullDateLocale(context)).add_jm().format(date);
+  }
+
+  void _select(int index) {
+    setState(() {
+      _touchedIndex = index;
+    });
+    widget.onTap(index);
   }
 }
 
