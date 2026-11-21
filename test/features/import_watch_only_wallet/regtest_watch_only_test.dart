@@ -79,7 +79,7 @@ void main() {
       WatchOnlyWalletEntity.parse(
         descriptor,
         selectedNetwork: Network.bitcoinRegtest,
-        signerDevice: SignerDeviceEntity.seedsigner,
+        signerDevice: SignerDevice.seedsigner,
       ),
       throwsFormatException,
     );
@@ -95,7 +95,7 @@ void main() {
       expect(entity.pubkey, tpub);
       final hardwareScanned = await WatchOnlyWalletEntity.parse(
         tpub,
-        signerDevice: SignerDeviceEntity.seedsigner,
+        signerDevice: SignerDevice.seedsigner,
       );
       expect(
         () => hardwareScanned.captureNetwork(Network.bitcoinRegtest),

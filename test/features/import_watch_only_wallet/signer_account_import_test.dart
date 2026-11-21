@@ -19,7 +19,7 @@ void main() {
           derivationPath: "m/84'/0'/0'",
           xpub: xpub,
           scriptType: ScriptType.bip84,
-          device: SignerDeviceEntity.ledgerNanoX,
+          device: SignerDevice.ledgerNanoX,
           network: NetworkEnv.testnet,
         );
         final result = ledger
@@ -39,8 +39,8 @@ void main() {
       '${ledger ? 'Ledger' : 'BitBox'} import preserves the captured account',
       () {
         final device = ledger
-            ? SignerDeviceEntity.ledgerNanoX
-            : SignerDeviceEntity.bitbox02;
+            ? SignerDevice.ledgerNanoX
+            : SignerDevice.bitbox02;
         final account = SignerAccount(
           masterFingerprint: '86241f88',
           derivationPath: "m/84'/0'/0'",

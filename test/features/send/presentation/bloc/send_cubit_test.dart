@@ -422,7 +422,7 @@ Wallet _bitcoinHardwareWallet() => Wallet(
   externalPublicDescriptor: '',
   internalPublicDescriptor: '',
   signer: SignerEntity.remote,
-  signerDevice: SignerDeviceEntity.ledgerNanoX,
+  signerDevice: SignerDevice.ledgerNanoX,
   balanceSat: BigInt.from(1000000),
 );
 

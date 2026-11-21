@@ -1,6 +1,5 @@
-import 'package:signers/signers.dart' show SignersLocalizations;
+import 'package:signers/routes.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/signers_psbt_routes.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -13,6 +12,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
@@ -45,13 +45,19 @@ void main() {
         );
         when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
         final requests = <(String, Wallet?)>[];
+        final services = GetIt.asNewInstance();
+        addTearDown(services.reset);
+        final feature = SignersFeature.mount(
+          services: services,
+          writeNfc: (_, _, _, _) async {},
+        );
         final router = GoRouter(
           routes: [
             GoRoute(
               path: '/',
               builder: (_, _) => const Scaffold(body: ShowPsbtButton()),
             ),
-            PsbtRouterConfig.route,
+            ...feature.routes,
           ],
         );
         addTearDown(router.dispose);

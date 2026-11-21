@@ -11,6 +11,8 @@ import 'package:bull_ui/bull_ui.dart' show BullTopBar;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
+import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
@@ -47,11 +49,20 @@ void main() {
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       locator.registerSingleton<RecoverBullFeature>(recovery);
+      final signerServices = GetIt.asNewInstance();
+      locator.registerSingleton(
+        SignersFeature.mount(
+          services: signerServices,
+          writeNfc: (_, _, _, _) async {},
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
         await quickActions.close();
         await recovery.dispose();
+        await locator.unregister<SignersFeature>();
+        await signerServices.reset();
         await locator.unregister<ExchangeFacade>();
         await locator.unregister<QuickActionsCubit>();
         await locator.unregister<RecoverBullFeature>();

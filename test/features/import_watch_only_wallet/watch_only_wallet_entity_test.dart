@@ -14,20 +14,20 @@ void main() {
     test('attaches signerDevice to descriptor imports', () async {
       final entity = await WatchOnlyWalletEntity.parse(
         descriptor,
-        signerDevice: SignerDeviceEntity.coldcardQ,
+        signerDevice: SignerDevice.coldcardQ,
       );
 
       expect(entity, isA<WatchOnlyDescriptorEntity>());
       expect(
         (entity as WatchOnlyDescriptorEntity).signerDevice,
-        SignerDeviceEntity.coldcardQ,
+        SignerDevice.coldcardQ,
       );
     });
 
     test('does not attach signerDevice to xpub imports', () async {
       final entity = await WatchOnlyWalletEntity.parse(
         xpub,
-        signerDevice: SignerDeviceEntity.coldcardQ,
+        signerDevice: SignerDevice.coldcardQ,
       );
 
       expect(entity, isA<WatchOnlyXpubEntity>());

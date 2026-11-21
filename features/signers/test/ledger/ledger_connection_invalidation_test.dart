@@ -57,9 +57,9 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  Future<LedgerDeviceModel> scan() async => (await datasource.scanDevices(
-    deviceType: SignerDeviceEntity.ledgerNanoSPlus,
-  )).single;
+  Future<LedgerDeviceModel> scan() async =>
+      (await datasource.scanDevices(deviceType: SignerDevice.ledgerNanoSPlus))
+          .single;
 
   test('dispose during USB retry delay prevents another native open', () async {
     final device = await scan();
@@ -192,7 +192,7 @@ void main() {
     () async {
       available = false;
       final abandoned = datasource.scanDevices(
-        deviceType: SignerDeviceEntity.ledgerNanoSPlus,
+        deviceType: SignerDevice.ledgerNanoSPlus,
       );
       final rejected = expectLater(
         abandoned,

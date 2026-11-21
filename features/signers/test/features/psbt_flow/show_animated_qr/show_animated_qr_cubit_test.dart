@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:primitives/primitives.dart';
 import 'package:signers/src/psbt_flow/domain/generate_psbt_qr_parts_usecase.dart';
 import 'package:signers/src/psbt_flow/domain/psbt_flow_failure.dart';

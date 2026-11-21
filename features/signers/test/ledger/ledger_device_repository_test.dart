@@ -1,4 +1,4 @@
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/data/datasources/ledger_device_datasource.dart';
 import 'package:signers/src/ledger/data/models/ledger_device_model.dart';
 import 'package:signers/src/ledger/data/repositories/ledger_device_repository_impl.dart';
@@ -20,7 +20,7 @@ void main() {
     id: 'device-1',
     name: 'Nano X',
     connectionType: LedgerConnectionType.usb,
-    deviceType: SignerDeviceEntity.ledgerNanoX,
+    deviceType: SignerDevice.ledgerNanoX,
   );
 
   setUpAll(() {

@@ -1,6 +1,6 @@
 import 'package:signers/src/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:signers/src/bitbox/domain/repositories/bitbox_device_repository.dart';
-import 'package:signers/src/signer_device_entity.dart';
+import 'package:signers/src/signer_device.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:signers/src/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:signers/src/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
@@ -21,7 +21,7 @@ const _ledger = LedgerDeviceEntity(
   id: 'ledger',
   name: 'Ledger',
   connectionType: LedgerConnectionType.usb,
-  deviceType: SignerDeviceEntity.ledgerNanoSPlus,
+  deviceType: SignerDevice.ledgerNanoSPlus,
 );
 const _bitbox = BitBoxDeviceEntity(
   deviceName: 'BitBox',

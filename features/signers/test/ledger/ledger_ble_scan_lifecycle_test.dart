@@ -78,7 +78,7 @@ void main() {
       try {
         final original = datasource.scanDevices(
           scanDuration: const Duration(milliseconds: 500),
-          deviceType: SignerDeviceEntity.ledgerNanoX,
+          deviceType: SignerDevice.ledgerNanoX,
         );
         final originalRejected = expectLater(
           original,
@@ -90,7 +90,7 @@ void main() {
         await firstStop.future.timeout(const Duration(seconds: 2));
         final replacement = datasource.scanDevices(
           scanDuration: const Duration(seconds: 2),
-          deviceType: SignerDeviceEntity.ledgerNanoX,
+          deviceType: SignerDevice.ledgerNanoX,
         );
         await Future<void>.delayed(const Duration(milliseconds: 50));
         final startsBeforeStopCompleted = starts;

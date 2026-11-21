@@ -220,7 +220,7 @@ Wallet _wallet(Network network, {bool remote = false}) => Wallet(
   externalPublicDescriptor: '',
   internalPublicDescriptor: '',
   signer: remote ? SignerEntity.remote : SignerEntity.local,
-  signerDevice: remote ? SignerDeviceEntity.jade : null,
+  signerDevice: remote ? SignerDevice.jade : null,
   balanceSat: BigInt.from(100000),
 );
 

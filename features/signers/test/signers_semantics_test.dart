@@ -1,5 +1,3 @@
-import 'package:signers/routes.dart';
-
 import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:bull_ui/bull_ui.dart';
@@ -8,7 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
+import 'package:signers/routes.dart';
 import 'package:signers/signers.dart';
+import 'package:signers/src/bitbox_flow/bitbox_action.dart';
+import 'package:signers/src/bitbox_flow/ui/screens/bitbox_action_screen.dart';
+import 'package:signers/src/ledger_flow/ledger_action.dart';
+import 'package:signers/src/ledger_flow/ui/screens/ledger_action_screen.dart';
 import 'package:signers/src/psbt_flow/domain/psbt_qr_encoder_port.dart';
 import 'package:signers/src/psbt_flow/domain/psbt_flow_failure.dart';
 import 'package:signers/src/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
@@ -37,7 +40,7 @@ void main() {
   late GetIt services;
   setUp(() {
     services = GetIt.asNewInstance();
-    setupSigners(services);
+    SignersFeature.mount(services: services, writeNfc: (_, _, _, _) async {});
   });
   tearDown(() => services.reset());
 
@@ -50,8 +53,9 @@ void main() {
       services.registerSingleton<PsbtQrEncoderPort>(_Encoder());
       await tester.pumpWidget(
         _app(
-          const Scaffold(
+          Scaffold(
             body: ShowAnimatedQrWidget(
+              services: services,
               psbt: 'psbt',
               qrType: QrType.urqr,
               showSlider: true,
@@ -87,15 +91,17 @@ void main() {
           await tester.pumpWidget(
             _app(
               ledger
-                  ? const LedgerActionScreen(
-                      action: LedgerAction.importWallet(),
-                      parameters: LedgerRouteParams(
+                  ? LedgerActionScreen(
+                      services: services,
+                      action: const LedgerAction.importWallet(),
+                      parameters: const LedgerRouteParams(
                         network: NetworkEnv.mainnet,
                       ),
                     )
-                  : const BitBoxActionScreen(
-                      action: BitBoxAction.importWallet(),
-                      parameters: BitBoxRouteParams(
+                  : BitBoxActionScreen(
+                      services: services,
+                      action: const BitBoxAction.importWallet(),
+                      parameters: const BitBoxRouteParams(
                         network: NetworkEnv.mainnet,
                       ),
                     ),

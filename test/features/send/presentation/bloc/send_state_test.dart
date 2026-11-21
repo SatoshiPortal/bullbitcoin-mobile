@@ -692,7 +692,7 @@ void main() {
             externalPublicDescriptor: '',
             internalPublicDescriptor: '',
             signer: SignerEntity.remote,
-            signerDevice: SignerDeviceEntity.ledgerNanoX,
+            signerDevice: SignerDevice.ledgerNanoX,
             balanceSat: BigInt.from(100000),
           ),
         ),

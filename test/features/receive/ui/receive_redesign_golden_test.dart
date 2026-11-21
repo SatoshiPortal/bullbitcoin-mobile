@@ -33,7 +33,7 @@ Wallet _wallet({
   String name = 'Savings',
   bool liquid = false,
   bool empty = false,
-  SignerDeviceEntity? hardware,
+  SignerDevice? hardware,
 }) => Wallet(
   origin: name,
   label: name,
@@ -55,9 +55,9 @@ ReceiveState _state(String name) {
     liquid: liquid,
     empty: name == 'advanced-empty',
     hardware: name == 'advanced-ledger'
-        ? SignerDeviceEntity.ledgerNanoX
+        ? SignerDevice.ledgerNanoX
         : name == 'advanced-bitbox'
-        ? SignerDeviceEntity.bitbox02
+        ? SignerDevice.bitbox02
         : null,
   );
   final date = DateTime.utc(2026, 11, 19);

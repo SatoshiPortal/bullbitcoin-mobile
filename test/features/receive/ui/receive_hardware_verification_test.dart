@@ -1,5 +1,5 @@
 import 'package:signers/routes.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -12,6 +12,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -20,11 +21,11 @@ class _Receive extends Mock implements ReceiveBloc {}
 void main() {
   for (final ledger in [true, false]) {
     testWidgets(
-      'named ${ledger ? 'Ledger' : 'BitBox'} verification preserves the address and path',
+      'named ${ledger ? 'Ledger' : 'BitBox'} verification opens the mounted route',
       (tester) async {
         final device = ledger
-            ? SignerDeviceEntity.ledgerNanoX
-            : SignerDeviceEntity.bitbox02;
+            ? SignerDevice.ledgerNanoX
+            : SignerDevice.bitbox02;
         final wallet = Wallet(
           origin: 'hardware',
           network: Network.bitcoinMainnet,
@@ -53,7 +54,12 @@ void main() {
           ),
         );
         when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
-        Object? parameters;
+        final services = GetIt.asNewInstance();
+        addTearDown(services.reset);
+        final feature = SignersFeature.mount(
+          services: services,
+          writeNfc: (_, _, _, _) async {},
+        );
         final router = GoRouter(
           routes: [
             GoRoute(
@@ -64,16 +70,7 @@ void main() {
                     : const VerifyAddressOnBitBoxButton(),
               ),
             ),
-            GoRoute(
-              path: '/verify',
-              name: ledger
-                  ? LedgerRoute.ledgerVerifyAddress.name
-                  : BitBoxRoute.bitboxVerifyAddress.name,
-              builder: (context, state) {
-                parameters = state.extra;
-                return const Scaffold(body: Text('Hardware route'));
-              },
-            ),
+            ...feature.routes,
           ],
         );
         addTearDown(router.dispose);
@@ -95,22 +92,20 @@ void main() {
           find.text(ledger ? 'Verify on Ledger' : 'Verify on BitBox'),
         );
         await tester.pumpAndSettle();
-        expect(find.text('Hardware route'), findsOneWidget);
-        if (ledger) {
-          expect(parameters, isA<LedgerRouteParams>());
-          final value = parameters as LedgerRouteParams;
-          expect(value.network, NetworkEnv.mainnet);
-          expect(value.address, 'bc1qpublic');
-          expect(value.derivationPath, '${wallet.derivationPath}/0/7');
-          expect(value.requestedDeviceType, device);
-        } else {
-          expect(parameters, isA<BitBoxRouteParams>());
-          final value = parameters as BitBoxRouteParams;
-          expect(value.network, NetworkEnv.mainnet);
-          expect(value.address, 'bc1qpublic');
-          expect(value.derivationPath, '${wallet.derivationPath}/0/7');
-          expect(value.requestedDeviceType, device);
-        }
+        final loc = await SignersLocalizations.delegate.load(
+          const Locale('en'),
+        );
+        final title = find.text(
+          ledger ? loc.ledgerVerifyTitle : loc.bitboxActionVerifyAddressTitle,
+        );
+        expect(title, findsOneWidget);
+        expect(
+          GoRouterState.of(tester.element(title)).uri.path,
+          ledger ? '/ledger-verify-address' : '/bitbox-verify-address',
+        );
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
       },
     );
   }

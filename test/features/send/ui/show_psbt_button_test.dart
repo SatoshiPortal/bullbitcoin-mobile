@@ -5,7 +5,6 @@ import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/signers_psbt_routes.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -16,6 +15,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSendCubit extends Mock implements SendCubit {}
@@ -45,7 +45,7 @@ void main() {
       externalPublicDescriptor: '',
       internalPublicDescriptor: '',
       signer: SignerEntity.remote,
-      signerDevice: SignerDeviceEntity.coldcardMk4,
+      signerDevice: SignerDevice.coldcardMk4,
       balanceSat: BigInt.from(100000),
     );
     final cubit = _MockSendCubit();
@@ -58,6 +58,18 @@ void main() {
       ),
     );
     Object? broadcastExtra;
+    final services = GetIt.asNewInstance();
+    addTearDown(services.reset);
+    String? written;
+    String? nfcTitle;
+    final feature = SignersFeature.mount(
+      services: services,
+      writeNfc: (_, title, data, onSuccess) async {
+        nfcTitle = title;
+        written = data;
+        onSuccess();
+      },
+    );
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -75,7 +87,7 @@ void main() {
             ),
           ),
         ),
-        PsbtRouterConfig.route,
+        ...feature.routes,
         // Stands in for the broadcast route so the hand-off record is visible.
         GoRoute(
           name: BroadcastSignedTxRoute.broadcastHome.name,
@@ -104,20 +116,24 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text(l10n.oopsSomethingWentWrong), findsNothing);
-    expect(find.byType(ShowPsbtScreen), findsOneWidget);
-    final screen = tester.widget<ShowPsbtScreen>(find.byType(ShowPsbtScreen));
-    expect(screen.psbt, psbt);
-    expect(screen.signerDevice, SignerDeviceEntity.coldcardMk4);
-
-    await tester.tap(
-      find.text(
-        SignersLocalizations.of(tester.element(find.byType(ShowPsbtScreen)))
-            .psbtFlowDone,
-      ),
+    final signersLoc = await SignersLocalizations.delegate.load(
+      const Locale('en'),
     );
+    final nfc = find.text(signersLoc.psbtFlowSignViaNfc);
+    expect(nfc, findsOneWidget);
+    expect(GoRouterState.of(tester.element(nfc)).uri.path, '/show-psbt');
+
+    await tester.tap(nfc);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
+    expect(written, psbt);
+    expect(
+      nfcTitle,
+      signersLoc.psbtFlowSignViaNfcSheetTitle(
+        SignerDevice.coldcardMk4.displayName,
+      ),
+    );
     expect(
       broadcastExtra,
       isA<({String psbt, Wallet? wallet})>()

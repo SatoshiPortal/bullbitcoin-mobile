@@ -40,7 +40,7 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
     selectedNetwork: selectedNetwork,
     signerDevice: selectedNetwork == Network.bitcoinRegtest
         ? null
-        : SignerDeviceEntity.seedsigner,
+        : SignerDevice.seedsigner,
   );
   final cubit = _MockImportWatchOnlyCubit();
   when(() => cubit.state).thenReturn(
@@ -85,10 +85,7 @@ void main() {
     expect(find.text('Type'), findsOneWidget);
     expect(find.text(satoshifier.Derivation.bip84.label), findsOneWidget);
     expect(find.text('Signing Device'), findsOneWidget);
-    expect(
-      find.text(SignerDeviceEntity.seedsigner.displayName),
-      findsOneWidget,
-    );
+    expect(find.text(SignerDevice.seedsigner.displayName), findsOneWidget);
     expect(find.text('Label'), findsOneWidget);
     expect(find.text('Import'), findsOneWidget);
 
@@ -117,10 +114,7 @@ void main() {
     );
     expect(find.text('Regtest'), findsOneWidget);
     expect(find.text('Signing Device'), findsNothing);
-    expect(
-      find.byType(DropdownButtonFormField<SignerDeviceEntity?>),
-      findsNothing,
-    );
+    expect(find.byType(DropdownButtonFormField<SignerDevice?>), findsNothing);
   });
 
   testWidgets(

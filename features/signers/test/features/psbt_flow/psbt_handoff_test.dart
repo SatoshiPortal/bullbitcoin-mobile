@@ -1,7 +1,8 @@
 import 'package:signers/routes.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:signers/src/psbt_flow/show_psbt/show_psbt_screen.dart';
-import 'package:signers/signers.dart' show SignersLocalizations;
+import 'package:signers/signers.dart';
+import 'package:get_it/get_it.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,12 @@ void main() {
       (tester) async {
         PsbtHandoffResult? result;
         var returned = false;
+        final services = GetIt.asNewInstance();
+        addTearDown(services.reset);
+        final feature = SignersFeature.mount(
+          services: services,
+          writeNfc: (_, _, _, _) async {},
+        );
         final router = GoRouter(
           routes: [
             GoRoute(
@@ -21,20 +28,17 @@ void main() {
               builder: (context, state) => Scaffold(
                 body: TextButton(
                   onPressed: () async {
-                    result = await context.push<PsbtHandoffResult>('/sign');
+                    result = await SignersNavigation.showPsbt(
+                      context,
+                      psbt: 'unsigned',
+                    );
                     returned = true;
                   },
                   child: const Text('Open'),
                 ),
               ),
             ),
-            GoRoute(
-              path: '/sign',
-              builder: (_, _) => ShowPsbtScreen(
-                psbt: 'unsigned',
-                writeNfc: (_, _, _, _) async {},
-              ),
-            ),
+            ...feature.routes,
           ],
         );
         addTearDown(router.dispose);
