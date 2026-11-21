@@ -100,12 +100,14 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
     status: LimitOrderStatus.fromValue(order.status),
     createdAt: DateTime.parse(order.createdAt),
     expiresAt: DateTime.parse(order.expiresAt),
-    executedAt: order.executedAt == null
-        ? null
-        : DateTime.parse(order.executedAt!),
-    cancelledAt: order.cancelledAt == null
-        ? null
-        : DateTime.parse(order.cancelledAt!),
+    executedAt: switch (order.executedAt) {
+      final timestamp? => DateTime.parse(timestamp),
+      null => null,
+    },
+    cancelledAt: switch (order.cancelledAt) {
+      final timestamp? => DateTime.parse(timestamp),
+      null => null,
+    },
     executedOrderId: order.executedOrderId,
     address: order.address ?? '',
   );

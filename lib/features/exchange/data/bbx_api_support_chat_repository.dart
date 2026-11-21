@@ -71,17 +71,18 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
       await _commcenter.sendMessageToSupport(
         text: text,
         source: _source,
-        attachments: attachments
-            ?.where((a) => a.fileData != null)
-            .map(
-              (a) => bbx.NewSupportAttachment(
-                fileName: a.fileName,
-                fileType: a.fileType,
-                fileSize: a.fileSize,
-                fileData: a.fileData!,
-              ),
-            )
-            .toList(),
+        attachments: attachments == null
+            ? null
+            : [
+                for (final attachment in attachments)
+                  if (attachment.fileData case final fileData?)
+                    bbx.NewSupportAttachment(
+                      fileName: attachment.fileName,
+                      fileType: attachment.fileType,
+                      fileSize: attachment.fileSize,
+                      fileData: fileData,
+                    ),
+              ],
       );
       return const Ok(null);
     } on ApiKeyException catch (e, st) {
