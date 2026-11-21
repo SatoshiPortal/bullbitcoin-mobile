@@ -105,6 +105,7 @@ void main() {
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
+                onOpenPayjoinSettings: (_) {},
                 createSetupCubit: createSetupCubit,
               ),
             ],

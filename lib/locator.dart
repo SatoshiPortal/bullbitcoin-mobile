@@ -60,6 +60,7 @@ import 'package:bb_mobile/features/settings/data/settings_environment_adapter.da
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
@@ -252,7 +253,12 @@ class AppLocator {
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
     AutoSwapLocator.setup(locator);
-    AnnouncementsLocator.setup(locator);
+    AnnouncementsLocator.setup(
+      locator,
+      isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
+      watchAppUpdateRequired: () =>
+          locator<SwapFacade>().watchAppUpdateRequired(),
+    );
     // Lifecycle side effect lives in the composition root, not in DI
     // registration: the background handler opts out via
     // [startOrderSwapWatcher] so polling only runs in the foreground app.

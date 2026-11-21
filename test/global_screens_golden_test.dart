@@ -165,6 +165,7 @@ void main() {
                     extendBodyBehindAppBar: true,
                     appBar: WalletHomeAppBar(onSettings: () {}),
                     body: WalletHomeScreen(
+                      onOpenPayjoinSettings: () {},
                       arkHost: null,
                       createSetupCubit: () => throw StateError(
                         'Populated preview does not create wallets',

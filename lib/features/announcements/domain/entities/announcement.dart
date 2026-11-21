@@ -26,8 +26,7 @@ sealed class AnnouncementAction {
 }
 
 /// Tapping the announcement navigates somewhere. The concrete destination is
-/// resolved in the ui layer (`ui/announcement_navigation.dart`) from the
-/// [Announcement]'s id, so `domain/` never imports another feature's router.
+/// resolved by the carousel from the [Announcement]'s id.
 final class NavigateAction extends AnnouncementAction {
   const NavigateAction();
 }

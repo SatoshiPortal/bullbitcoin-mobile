@@ -14,18 +14,26 @@ enum AnnouncementDismissChoice {
 /// read (open the linked page) or dismiss it. Returns `null` if cancelled
 /// (barrier tap).
 abstract final class AnnouncementDismissDialog {
-  static Future<AnnouncementDismissChoice?> show(BuildContext context) {
+  static Future<AnnouncementDismissChoice?> show(
+    BuildContext context, {
+    required bool canRead,
+  }) {
     return BullDialog.show<AnnouncementDismissChoice>(
       context: context,
-      builder: (dialogContext) => _AnnouncementDismissDialogBody(dialogContext),
+      builder: (dialogContext) =>
+          _AnnouncementDismissDialogBody(dialogContext, canRead: canRead),
     );
   }
 }
 
 class _AnnouncementDismissDialogBody extends StatelessWidget {
-  const _AnnouncementDismissDialogBody(this.dialogContext);
+  const _AnnouncementDismissDialogBody(
+    this.dialogContext, {
+    required this.canRead,
+  });
 
   final BuildContext dialogContext;
+  final bool canRead;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +61,11 @@ class _AnnouncementDismissDialogBody extends StatelessWidget {
               child: BullButton.secondary(
                 size: BullButtonSize.small,
                 label: context.loc.announcementDismissConfirmRead,
-                onPressed: () =>
-                    Navigator.of(dialogContext)
-                        .pop(AnnouncementDismissChoice.read),
+                onPressed: canRead
+                    ? () =>
+                          Navigator.of(dialogContext)
+                              .pop(AnnouncementDismissChoice.read)
+                    : null,
               ),
             ),
             const Gap(12),

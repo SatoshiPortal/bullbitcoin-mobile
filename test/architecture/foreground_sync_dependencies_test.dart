@@ -23,7 +23,6 @@ import 'package:path/path.dart' as p;
 const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'app_unlock wallet',
-  'announcements': 'settings swap',
   'app_startup':
       'app_unlock import_mnemonic logs onboarding recoverbull settings wallet',
   'app_unlock': 'pin_code wallet',

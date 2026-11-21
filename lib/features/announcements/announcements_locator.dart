@@ -6,10 +6,13 @@ import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_updat
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class AnnouncementsLocator {
-  static void setup(GetIt locator) {
+  static void setup(
+    GetIt locator, {
+    required bool Function() isAppUpdateRequired,
+    required Stream<bool> Function() watchAppUpdateRequired,
+  }) {
     // Data
     locator.registerLazySingleton<AnnouncementDismissalRepository>(
       () => AnnouncementDismissalRepositoryImpl(
@@ -21,11 +24,11 @@ class AnnouncementsLocator {
     locator.registerFactory<GetVisibleAnnouncementsUsecase>(
       () => GetVisibleAnnouncementsUsecase(
         locator<AnnouncementDismissalRepository>(),
-        locator<SwapFacade>(),
+        isAppUpdateRequired,
       ),
     );
     locator.registerFactory<WatchAppUpdateAnnouncementUsecase>(
-      () => WatchAppUpdateAnnouncementUsecase(locator<SwapFacade>()),
+      () => WatchAppUpdateAnnouncementUsecase(watchAppUpdateRequired),
     );
     locator.registerFactory<DismissAnnouncementUsecase>(
       () => DismissAnnouncementUsecase(

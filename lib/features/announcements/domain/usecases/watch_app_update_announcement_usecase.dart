@@ -1,9 +1,7 @@
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-
 class WatchAppUpdateAnnouncementUsecase {
-  final SwapFacade _swapFacade;
+  final Stream<bool> Function() _watchAppUpdateRequired;
 
-  WatchAppUpdateAnnouncementUsecase(this._swapFacade);
+  WatchAppUpdateAnnouncementUsecase(this._watchAppUpdateRequired);
 
-  Stream<bool> execute() => _swapFacade.watchAppUpdateRequired();
+  Stream<bool> execute() => _watchAppUpdateRequired();
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcement_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -16,7 +17,7 @@ class AnnouncementCard extends StatelessWidget {
   });
 
   final Announcement announcement;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final VoidCallback onDismiss;
 
   @override
@@ -47,16 +48,13 @@ class AnnouncementCard extends StatelessWidget {
         Positioned(
           top: 0,
           right: 0,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onDismiss,
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: BullIcon(
-                BullIcons.close,
-                size: 18,
-                color: colors.onSurfaceVariant,
-              ),
+          child: BullInlineIconButton(
+            onPressed: onDismiss,
+            tooltip: context.loc.announcementDismissConfirmAction,
+            icon: BullIcon(
+              BullIcons.close,
+              size: 18,
+              color: colors.onSurfaceVariant,
             ),
           ),
         ),

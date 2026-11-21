@@ -147,6 +147,7 @@ class ArkShellVisualFixtures {
               name: WalletRoute.walletHome.name,
               path: WalletRoute.walletHome.path,
               builder: (_, _) => WalletHomeScreen(
+                onOpenPayjoinSettings: () {},
                 arkHost: fixture._host,
                 // A loaded, nonempty WalletState cannot enter setup. Fail if
                 // a future lifecycle change tries to do so in this fixture.

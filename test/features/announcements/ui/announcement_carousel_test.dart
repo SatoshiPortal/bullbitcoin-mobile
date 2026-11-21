@@ -74,8 +74,12 @@ Future<void> _pumpCarousel(
             value: cubit,
             // Mirrors the wallet home screen: inside a sliver, so the carousel
             // is laid out against an unbounded height exactly as in the app.
-            child: const CustomScrollView(
-              slivers: [SliverToBoxAdapter(child: AnnouncementCarousel())],
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: AnnouncementCarousel(onOpenPayjoinSettings: () {}),
+                ),
+              ],
             ),
           ),
         ),

@@ -3,27 +3,26 @@ import 'package:bb_mobile/features/announcements/domain/entities/announcement.da
 import 'package:bb_mobile/features/announcements/domain/entities/announcement_catalog.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockDismissalRepository extends Mock
     implements AnnouncementDismissalRepository {}
 
-class _MockSwapFacade extends Mock implements SwapFacade {}
-
 void main() {
   late _MockDismissalRepository dismissalRepository;
   late GetVisibleAnnouncementsUsecase usecase;
-  late _MockSwapFacade swapFacade;
+  late bool isAppUpdateRequired;
 
   setUp(() {
     dismissalRepository = _MockDismissalRepository();
-    swapFacade = _MockSwapFacade();
+    isAppUpdateRequired = false;
     when(() => dismissalRepository.getDismissals())
         .thenAnswer((_) async => const []);
-    when(() => swapFacade.isAppUpdateRequired).thenReturn(false);
-    usecase = GetVisibleAnnouncementsUsecase(dismissalRepository, swapFacade);
+    usecase = GetVisibleAnnouncementsUsecase(
+      dismissalRepository,
+      () => isAppUpdateRequired,
+    );
   });
 
   test('the catalog contains the app update warning', () {
@@ -41,7 +40,7 @@ void main() {
   });
 
   test('returns the app update announcement after HTTP 418', () async {
-    when(() => swapFacade.isAppUpdateRequired).thenReturn(true);
+    isAppUpdateRequired = true;
 
     final result = await usecase.execute();
 

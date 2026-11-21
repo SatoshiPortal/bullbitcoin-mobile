@@ -23,6 +23,7 @@ class WalletHomeScreen extends StatefulWidget {
   final ArkForegroundHost? arkHost;
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
+  final VoidCallback onOpenPayjoinSettings;
   final VoidCallback onImportNetworkWallet;
   final VoidCallback onRecoverEncryptedVault;
   final QuickActionsCubit quickActions;
@@ -34,6 +35,7 @@ class WalletHomeScreen extends StatefulWidget {
     required this.arkHost,
     required this.createSetupCubit,
     required this.onEmptyMainnet,
+    required this.onOpenPayjoinSettings,
     required this.onImportNetworkWallet,
     required this.onRecoverEncryptedVault,
     required this.quickActions,
@@ -177,7 +179,11 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(child: AnnouncementCarousel()),
+              SliverToBoxAdapter(
+                child: AnnouncementCarousel(
+                  onOpenPayjoinSettings: widget.onOpenPayjoinSettings,
+                ),
+              ),
               const SliverToBoxAdapter(child: HomeWarnings()),
               const SliverToBoxAdapter(child: HomeConsolidationBanner()),
               SliverToBoxAdapter(

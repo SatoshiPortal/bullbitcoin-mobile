@@ -1,19 +1,19 @@
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_failure_l10n.dart';
-import 'package:bb_mobile/features/announcements/ui/announcement_navigation.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_dismiss_dialog.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 /// The home-screen announcements section: a [BullCarousel] of
 /// dismissible banners. Renders nothing (zero height) when there are
 /// no visible announcements — including the moment the user dismisses the last
 /// one, which animates the section closed.
 class AnnouncementCarousel extends StatelessWidget {
-  const AnnouncementCarousel({super.key});
+  const AnnouncementCarousel({super.key, required this.onOpenPayjoinSettings});
+
+  final VoidCallback onOpenPayjoinSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +22,12 @@ class AnnouncementCarousel extends StatelessWidget {
       // Fires only when a new failure appears, not on every rebuild.
       listenWhen: (previous, current) =>
           current.failure != null && previous.failure != current.failure,
-      listener: (context, state) => BullSnackBar.show(
-        context,
-        message: state.failure!.toTranslated(context),
-      ),
+      listener: (context, state) {
+        final failure = state.failure;
+        if (failure != null) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
+        }
+      },
       // Narrow rebuild: only when the visible set changes.
       child:
           BlocSelector<
@@ -47,7 +49,10 @@ class AnnouncementCarousel extends StatelessWidget {
                           right: 13,
                           top: 13,
                         ),
-                        child: _CarouselBody(announcements: announcements),
+                        child: _CarouselBody(
+                          announcements: announcements,
+                          onOpenPayjoinSettings: onOpenPayjoinSettings,
+                        ),
                       ),
               );
             },
@@ -57,29 +62,37 @@ class AnnouncementCarousel extends StatelessWidget {
 }
 
 class _CarouselBody extends StatelessWidget {
-  const _CarouselBody({required this.announcements});
+  const _CarouselBody({
+    required this.announcements,
+    required this.onOpenPayjoinSettings,
+  });
 
   final List<Announcement> announcements;
+  final VoidCallback onOpenPayjoinSettings;
 
-  void _onTap(BuildContext context, Announcement announcement) {
-    switch (announcement.action) {
-      case NavigateAction():
-        context.pushNamed(announcement.route.name);
-      case NoAction():
-        break;
-    }
-  }
+  VoidCallback? _actionFor(Announcement announcement) => switch ((
+    announcement.action,
+    announcement.id,
+  )) {
+    (NavigateAction(), AnnouncementId.payjoinPrivacy) => onOpenPayjoinSettings,
+    (NavigateAction(), AnnouncementId.appUpdateRequired) ||
+    (NoAction(), _) => null,
+  };
 
   Future<void> _onDismiss(
     BuildContext context,
     Announcement announcement,
   ) async {
     final cubit = context.read<AnnouncementsCubit>();
-    final choice = await AnnouncementDismissDialog.show(context);
+    final action = _actionFor(announcement);
+    final choice = await AnnouncementDismissDialog.show(
+      context,
+      canRead: action != null,
+    );
     switch (choice) {
       case AnnouncementDismissChoice.read:
-        if (context.mounted && announcement.action is NavigateAction) {
-          _onTap(context, announcement);
+        if (context.mounted) {
+          action?.call();
         }
       case AnnouncementDismissChoice.dismiss:
         await cubit.dismiss(announcement.id);
@@ -95,7 +108,7 @@ class _CarouselBody extends StatelessWidget {
         for (final announcement in announcements)
           AnnouncementCard(
             announcement: announcement,
-            onTap: () => _onTap(context, announcement),
+            onTap: _actionFor(announcement),
             onDismiss: () => _onDismiss(context, announcement),
           ),
       ],

@@ -192,6 +192,8 @@ class AppRouter {
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
+            onOpenPayjoinSettings: (context) =>
+                context.pushNamed(SettingsRoute.payjoinSettings.name),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
