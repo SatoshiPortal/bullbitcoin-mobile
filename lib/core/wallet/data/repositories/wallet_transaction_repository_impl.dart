@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -66,6 +67,19 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     );
 
     return transactions.firstOrNull;
+  }
+
+  @override
+  Future<String?> findTransactionSpending({
+    required String walletId,
+    required List<Outpoint> outpoints,
+  }) async {
+    final wallet = (await _getPublicWalletModels(walletId: walletId)).single;
+    if (wallet is! PublicBdkWalletModel) return null;
+    return _bdkWalletTransactionDatasource.findTransactionSpending(
+      wallet: wallet,
+      outpoints: outpoints.toSet(),
+    );
   }
 
   Future<List<WalletTransaction>> _getWalletTransactions({

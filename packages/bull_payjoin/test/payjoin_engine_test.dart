@@ -64,6 +64,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(Uint8List(0));
+    registerFallbackValue(<Outpoint>[]);
   });
 
   PayjoinReceiverModel receiver({
@@ -174,6 +175,12 @@ void main() {
         refresh: any(named: 'refresh'),
       ),
     ).thenAnswer((_) async => false);
+    when(
+      () => transactions.findTransactionSpending(
+        walletId: any(named: 'walletId'),
+        outpoints: any(named: 'outpoints'),
+      ),
+    ).thenAnswer((_) async => null);
     when(() => transactions.refreshWallet(any())).thenAnswer((_) async {});
     logs = _CaptureLogPort();
     engine = PayjoinRepositoryImpl(
@@ -1378,6 +1385,222 @@ void main() {
       expect(row?.txId, payjoinTxId);
     },
   );
+
+  group('a receiver whose payjoin lands under another txid', () {
+    // The sender's input carries a scriptSig (nested segwit), so signing
+    //  changes the txid the receiver stored from its own proposal.
+    const proposalPsbt =
+        'cHNidP8BAHsCAAAAAhERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
+        'REREREREREREREREREREREREREREREREREREREREREQBAAAAAP3///8B8EkCAAAAAAAWABQi'
+        'IiIiIiIiIiIiIiIiIiIiIiIiIgAAAAAAAQEfaIcBAAAAAAAWABQzMzMzMzMzMzMzMzMzMzMz'
+        'MzMzMwABAR8YxAAAAAAAABYAFFVVVVVVVVVVVVVVVVVVVVVVVVVVAAA=';
+    final senderInput = (txId: '11' * 32, vout: 0);
+    final receiverInput = (txId: '44' * 32, vout: 1);
+    const signedTxId = 'signed-payjoin';
+    late String storedTxId;
+
+    setUp(() async {
+      storedTxId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+    });
+
+    PayjoinReceiverModel proposed({bool expired = false}) {
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+        proposalPsbt: proposalPsbt,
+        transactionId: storedTxId,
+      );
+      if (!expired) return model;
+      return model.copyWith(
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+      );
+    }
+
+    void walletSpends(Map<String, List<Outpoint>> spends) {
+      when(
+        () => transactions.findTransactionSpending(
+          walletId: any(named: 'walletId'),
+          outpoints: any(named: 'outpoints'),
+        ),
+      ).thenAnswer((inv) async {
+        final wanted = inv.namedArguments[#outpoints] as List<Outpoint>;
+        for (final MapEntry(key: txId, value: inputs) in spends.entries) {
+          if (wanted.isNotEmpty && inputs.toSet().containsAll(wanted)) {
+            return txId;
+          }
+        }
+        return null;
+      });
+    }
+
+    StreamController<void> walletEvents() {
+      final events = StreamController<void>.broadcast();
+      addTearDown(events.close);
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => events.stream);
+      return events;
+    }
+
+    Future<PayjoinReceiverModel?> completedRow(String id) async {
+      final deadline = DateTime.now().add(const Duration(seconds: 5));
+      PayjoinReceiverModel? row;
+      while (DateTime.now().isBefore(deadline)) {
+        row = await local.fetchReceiver(id);
+        if (row?.isCompleted == true) break;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      return row;
+    }
+
+    test(
+      'completes on the spend of its inputs and records the real txid',
+      () async {
+        final model = proposed();
+        await local.storeReceiver(model);
+        final events = walletEvents();
+        walletSpends({
+          signedTxId: [senderInput, receiverInput],
+        });
+        final labelled = Completer<String>();
+        when(
+          () => labels.labelTransaction(
+            walletId: any(named: 'walletId'),
+            transactionId: any(named: 'transactionId'),
+          ),
+        ).thenAnswer((inv) async {
+          labelled.complete(inv.namedArguments[#transactionId] as String);
+        });
+
+        await engine.resumePayjoinsOnStartup();
+        events.add(null);
+
+        final row = await completedRow(model.id);
+        expect(row?.isCompleted, isTrue);
+        expect(row?.txId, signedTxId);
+        expect(
+          await labelled.future.timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => 'never labelled',
+          ),
+          signedTxId,
+        );
+      },
+    );
+
+    test(
+      'completes instead of expiring when the payjoin already landed',
+      () async {
+        final model = proposed(expired: true);
+        await local.storeReceiver(model);
+        walletSpends({
+          signedTxId: [senderInput, receiverInput],
+        });
+
+        await engine.resumePayjoinsOnStartup();
+
+        final row = await local.fetchReceiver(model.id);
+        expect(row?.isCompleted, isTrue);
+        expect(row?.isExpired, isFalse);
+        expect(row?.txId, signedTxId);
+        expect(logs.withCode(PayjoinLogCode.sessionCompleted), hasLength(1));
+      },
+    );
+
+    test('a receiver already marked expired heals on the next start', () async {
+      final model = proposed(expired: true);
+      await local.storeReceiver(model);
+      await local.markExpired(model.copyWith(isExpired: true));
+      expect((await local.fetchReceiver(model.id))?.isExpired, isTrue);
+      final events = walletEvents();
+      walletSpends({
+        signedTxId: [senderInput, receiverInput],
+      });
+
+      await engine.resumePayjoinsOnStartup();
+      events.add(null);
+
+      final row = await completedRow(model.id);
+      expect(row?.isCompleted, isTrue);
+      expect(row?.isExpired, isFalse);
+      expect(row?.txId, signedTxId);
+    });
+
+    test('an active poll finds the payjoin by its inputs', () async {
+      final model = proposed();
+      await local.storeReceiver(model);
+      walletEvents();
+      walletSpends({
+        signedTxId: [senderInput, receiverInput],
+      });
+
+      await engine.resumePayjoinsOnStartup();
+
+      final row = await completedRow(model.id);
+      expect(row?.isCompleted, isTrue);
+      expect(row?.txId, signedTxId);
+      verify(
+        () => transactions.isTransactionVisible(
+          walletId: model.walletId,
+          transactionId: storedTxId,
+          refresh: true,
+        ),
+      ).called(1);
+    });
+
+    test(
+      'an active poll miss syncs the wallet without waiting for it',
+      () async {
+        final model = proposed();
+        await local.storeReceiver(model);
+        final events = walletEvents();
+        final spends = <String, List<Outpoint>>{};
+        walletSpends(spends);
+        when(() => transactions.refreshWallet(any())).thenAnswer((_) {
+          spends[signedTxId] = [senderInput, receiverInput];
+          events.add(null);
+          return Completer<void>().future;
+        });
+
+        await engine.resumePayjoinsOnStartup();
+
+        final row = await completedRow(model.id);
+        expect(row?.isCompleted, isTrue);
+        expect(row?.txId, signedTxId);
+        verify(() => transactions.refreshWallet(model.walletId)).called(1);
+      },
+    );
+
+    test('an unreadable proposal is logged and watched by its txid', () async {
+      final model = proposed().copyWith(proposalPsbt: 'not-a-psbt');
+      await local.storeReceiver(model);
+
+      await engine.resumePayjoinsOnStartup();
+
+      final warning = logs.withCode(PayjoinLogCode.watchFailure).single;
+      expect(warning.level, PayjoinLogLevel.warning);
+      expect(warning.sessionRef, PayjoinSession.logRefForId(model.id));
+    });
+
+    test('spends of other outpoints do not complete it', () async {
+      final model = proposed(expired: true);
+      await local.storeReceiver(model);
+      final events = walletEvents();
+      walletSpends({
+        'self-spend': [receiverInput],
+        'unrelated': [(txId: '66' * 32, vout: 0), senderInput],
+      });
+
+      await engine.resumePayjoinsOnStartup();
+      events.add(null);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final row = await local.fetchReceiver(model.id);
+      expect(row?.isCompleted, isFalse);
+      expect(row?.isExpired, isTrue);
+      expect(row?.txId, storedTxId);
+    });
+  });
 
   group('a retried sender', () {
     // A second proposal for the same payment, on a payjoin of its own.
