@@ -1,3 +1,4 @@
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
@@ -8,10 +9,6 @@ import 'package:bb_mobile/features/receive/ui/widgets/receive_advanced_settings.
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' show EdgeInsetsDirectional;
@@ -472,15 +469,13 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
       final chain = address.keyChain == WalletAddressKeyChain.external
           ? '0'
           : '1';
-      context.pushNamed(
-        LedgerRoute.ledgerVerifyAddress.name,
-        extra: LedgerRouteParams(
-          network: wallet.network.environment,
-          address: state.address,
-          derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
-          requestedDeviceType: wallet.signerDevice,
-          scriptType: wallet.scriptType,
-        ),
+      SignersNavigation.verifyLedger(
+        context,
+        network: wallet.network.environment,
+        address: state.address,
+        derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
+        requestedDeviceType: wallet.signerDevice,
+        scriptType: wallet.scriptType,
       );
     },
   );
@@ -506,15 +501,13 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
       final chain = address.keyChain == WalletAddressKeyChain.external
           ? '0'
           : '1';
-      context.pushNamed(
-        BitBoxRoute.bitboxVerifyAddress.name,
-        extra: BitBoxRouteParams(
-          network: wallet.network.environment,
-          address: state.address,
-          derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
-          requestedDeviceType: wallet.signerDevice,
-          scriptType: wallet.scriptType,
-        ),
+      SignersNavigation.verifyBitBox(
+        context,
+        network: wallet.network.environment,
+        address: state.address,
+        derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
+        requestedDeviceType: wallet.signerDevice,
+        scriptType: wallet.scriptType,
       );
     },
   );

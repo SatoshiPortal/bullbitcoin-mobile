@@ -140,6 +140,7 @@ build-runner:
 	@(cd packages/swaps && fvm dart run build_runner build --force-jit)
 	@(cd packages/rust_bindings && fvm dart run build_runner build --force-jit)
 	@(cd packages/satoshifier && fvm dart run build_runner build --force-jit)
+	@(cd features/signers && fvm dart run build_runner build --force-jit)
 	@$(MAKE) recoverbull-build-runner
 	@$(MAKE) btc-map-build-runner
 
@@ -162,6 +163,7 @@ translations:
 	@(cd features/btc_map && fvm flutter gen-l10n)
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
+	@(cd features/signers && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations

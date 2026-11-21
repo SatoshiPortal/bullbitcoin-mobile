@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2647 pairing failure propagation', () {
     test('empty startPairing result is treated as success-like empty code', () {
       final source = File(
-        'lib/core/bitbox/data/datasources/bitbox_device_datasource.dart',
+        'features/signers/lib/src/bitbox/data/datasources/bitbox_device_datasource.dart',
       ).readAsStringSync();
       expect(source, contains('final pairingCode = await bitbox.startPairing'));
       expect(source, contains("return pairingCode ?? '';"));

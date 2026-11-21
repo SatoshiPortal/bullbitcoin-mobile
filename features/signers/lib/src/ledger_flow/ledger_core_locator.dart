@@ -1,0 +1,64 @@
+import 'package:signers/src/ledger/data/datasources/ledger_device_datasource.dart';
+import 'package:signers/src/ledger/data/repositories/ledger_device_repository_impl.dart';
+import 'package:signers/src/ledger/domain/repositories/ledger_device_repository.dart';
+import 'package:signers/src/ledger/domain/usecases/connect_ledger_device_usecase.dart';
+import 'package:signers/src/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
+import 'package:signers/src/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
+import 'package:signers/src/ledger_flow/domain/read_ledger_account_usecase.dart';
+import 'package:signers/src/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
+import 'package:signers/src/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
+import 'package:signers/src/ledger/domain/usecases/verify_address_ledger_usecase.dart';
+import 'package:get_it/get_it.dart';
+
+class LedgerLocator {
+  static void registerDatasources(GetIt locator) {
+    locator.registerLazySingleton<LedgerDeviceDatasource>(
+      () => LedgerDeviceDatasource(),
+    );
+  }
+
+  static void registerRepositories(GetIt locator) {
+    locator.registerLazySingleton<LedgerDeviceRepository>(
+      () => LedgerDeviceRepositoryImpl(
+        datasource: locator<LedgerDeviceDatasource>(),
+      ),
+    );
+  }
+
+  static void registerUsecases(GetIt locator) {
+    locator.registerFactory<ScanLedgerDevicesUsecase>(
+      () => ScanLedgerDevicesUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<ConnectLedgerDeviceUsecase>(
+      () => ConnectLedgerDeviceUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<DisconnectLedgerDeviceUsecase>(
+      () => DisconnectLedgerDeviceUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<DisposeLedgerConnectionsUsecase>(
+      () => DisposeLedgerConnectionsUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<ReadLedgerAccountUsecase>(
+      () => ReadLedgerAccountUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+    locator.registerFactory<SignPsbtLedgerUsecase>(
+      () =>
+          SignPsbtLedgerUsecase(repository: locator<LedgerDeviceRepository>()),
+    );
+    locator.registerFactory<VerifyAddressLedgerUsecase>(
+      () => VerifyAddressLedgerUsecase(
+        repository: locator<LedgerDeviceRepository>(),
+      ),
+    );
+  }
+}

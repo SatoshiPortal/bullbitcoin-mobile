@@ -1,12 +1,10 @@
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
-import 'package:bb_mobile/features/bitbox/bitbox_core_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/ledger/ledger_core_locator.dart';
 import 'package:bb_mobile/features/mempool_settings/mempool_core_locator.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings;
@@ -42,8 +40,6 @@ class CoreLocator {
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);
     Bip85DerivationsLocator.registerDatasources(locator);
-    LedgerLocator.registerDatasources(locator);
-    BitBoxCoreLocator.registerDatasources(locator);
   }
 
   static void registerPorts(GetIt locator) {
@@ -92,8 +88,6 @@ class CoreLocator {
     await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
-    LedgerLocator.registerRepositories(locator);
-    BitBoxCoreLocator.registerRepositories(locator);
     return const Ok(null);
   }
 
@@ -114,8 +108,6 @@ class CoreLocator {
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases(locator);
-    LedgerLocator.registerUsecases(locator);
-    BitBoxCoreLocator.registerUsecases(locator);
   }
 
   static void registerFacades(GetIt locator) {

@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2615 device attestation', () {
     test('connection and pairing contain no attestation verification', () {
       final source = File(
-        'lib/core/bitbox/data/datasources/bitbox_device_datasource.dart',
+        'features/signers/lib/src/bitbox/data/datasources/bitbox_device_datasource.dart',
       ).readAsStringSync();
       expect(source, contains('BitBoxApi.openDevice'));
       expect(source, contains('bitbox.startPairing'));

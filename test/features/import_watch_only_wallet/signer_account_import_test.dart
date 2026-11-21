@@ -1,9 +1,8 @@
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/features/ledger/domain/signer_account.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

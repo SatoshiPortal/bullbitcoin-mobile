@@ -62,6 +62,8 @@ graph TD
   style screen_privacy stroke:#7725dd
   secrets["secrets"]
   style secrets stroke:#07e9ae
+  signers["signers"]
+  style signers stroke:#5be3aa
   swaps["swaps"]
   style swaps stroke:#3665e3
   sync["sync"]
@@ -115,6 +117,14 @@ graph TD
   secrets --> primitives
   secrets --> bull_logger
   secrets --> rust_bindings
+  signers --> bitbox_transport
+  signers --> bull_logger
+  signers --> bull_ui
+  signers --> primitives
+  signers --> rust_bindings
+  signers --> satoshifier
+  signers --> screen_awake
+  signers --> sync
   swaps --> rust_bindings
   swaps --> boltz_stream
   swaps --> primitives
@@ -155,5 +165,6 @@ graph TD
     bull_logs
     bull_quick_actions
     bull_recoverbull
+    signers
   end
 ```
