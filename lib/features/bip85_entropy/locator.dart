@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:preferences/preferences.dart';
 
 class Bip85EntropyLocator {

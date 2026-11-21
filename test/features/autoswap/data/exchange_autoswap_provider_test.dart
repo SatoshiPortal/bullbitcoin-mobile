@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';

@@ -11,8 +11,8 @@ import 'package:path/path.dart' as p;
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// In particular, sp/swap -> wallet predates foreground sync: repository
-// compatibility exports and swap's wallet navigation remain out of scope.
+// SP and swap still import the wallet repository, and swap uses wallet
+// navigation. Both feature edges predate foreground sync.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
 // These four edges are documented in FEATURES.md.

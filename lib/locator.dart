@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';

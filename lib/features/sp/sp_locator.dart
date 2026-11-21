@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_active_network_usec
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:preferences/preferences.dart';

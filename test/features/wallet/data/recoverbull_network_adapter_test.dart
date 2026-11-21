@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/recoverbull_wallet_adapter.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';

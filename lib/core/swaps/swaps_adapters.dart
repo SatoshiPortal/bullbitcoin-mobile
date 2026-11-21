@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';

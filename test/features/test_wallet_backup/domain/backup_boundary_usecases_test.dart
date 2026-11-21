@@ -3,7 +3,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, ScriptType;
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';

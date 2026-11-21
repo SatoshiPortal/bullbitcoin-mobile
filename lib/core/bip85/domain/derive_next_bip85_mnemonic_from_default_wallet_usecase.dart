@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
