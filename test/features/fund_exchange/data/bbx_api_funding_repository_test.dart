@@ -519,10 +519,18 @@ void main() {
         );
       });
 
-      test('$name: an unknown adapter exception is unexpected', () async {
-        final repository = _new(_ThrowingAdapter(Exception('boom')));
+      test('$name: an unknown adapter exception omits foreign text', () async {
+        final repository = _new(
+          _ThrowingAdapter(Exception('fixture-sensitive-funding-cause')),
+        );
 
         final failure = failureOf(await call(repository));
+
+        expect(failure.logMessage, startsWith('DioException('));
+        expect(
+          failure.logMessage,
+          isNot(contains('fixture-sensitive-funding-cause')),
+        );
 
         expect(
           failure,

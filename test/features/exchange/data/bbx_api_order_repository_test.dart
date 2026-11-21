@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../../core/exchange/order_json_fixture.dart';
+import 'exchange_log_capture.dart';
 import 'bbx_api_test_http.dart';
 
 const _rpcError = {
@@ -218,6 +219,33 @@ void main() {
   });
 
   group('getOrders', () {
+    test(
+      'order history hides server identifiers and invalid dates from logs',
+      () async {
+        final capture = await captureExchangeLogs();
+        final http = FakeBbxHttp(
+          body: _list([
+            orderJsonFixture(orderId: 'good-order'),
+            orderJsonFixture(
+              orderId: 'fixture-sensitive-order-id',
+              overrides: const {'createdAt': 'fixture-sensitive-date'},
+            ),
+          ]),
+        );
+
+        final orders = _valueOf(await _repository(http).getOrders());
+
+        expect(orders.map((order) => order.orderId), ['good-order']);
+        expect(capture.reporter.errors, [
+          ('Error mapping exchange order', 'FormatException'),
+        ]);
+        final logs = (await capture.logger.readLogs()).join('\n');
+        expect(logs, contains('Error mapping exchange order'));
+        expect(logs, isNot(contains('fixture-sensitive-order-id')));
+        expect(logs, isNot(contains('fixture-sensitive-date')));
+      },
+    );
+
     test('maps the history, dropping what cannot be read', () async {
       final http = FakeBbxHttp(
         body: _list([
@@ -1196,26 +1224,32 @@ void main() {
       expect(created.nextPurchaseDate, DateTime.utc(2026, 11, 27));
     });
 
-    test('an unknown frequency is a generic exception', () async {
-      await expectLater(
-        create(
-          FakeBbxHttp(
-            body: {
-              'result': {
-                'element': {...dca, 'recurringFrequency': 'YEARLY'},
+    test(
+      'an unknown frequency keeps the server value out of the failure',
+      () async {
+        await expectLater(
+          create(
+            FakeBbxHttp(
+              body: {
+                'result': {
+                  'element': {...dca, 'recurringFrequency': 'YEARLY'},
+                },
               },
-            },
+            ),
           ),
-        ),
-        throwsA(
-          isA<Exception>().having(
-            (e) => '$e',
-            'message',
-            contains('Unknown frequency: YEARLY'),
+          throwsA(
+            isA<Exception>().having(
+              (e) => '$e',
+              'message',
+              allOf(
+                contains('Unknown DCA frequency'),
+                isNot(contains('YEARLY')),
+              ),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('a refusal is a generic exception without the message', () async {
       await expectLater(

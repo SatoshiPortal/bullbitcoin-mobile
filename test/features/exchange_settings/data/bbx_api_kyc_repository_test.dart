@@ -23,9 +23,10 @@ class _UploadHttp implements HttpClientAdapter {
   final int status;
   final Object? body;
   final DioExceptionType? error;
+  final String? errorMessage;
   final List<_Sent> sent = [];
 
-  _UploadHttp({this.status = 200, this.body, this.error});
+  _UploadHttp({this.status = 200, this.body, this.error, this.errorMessage});
 
   @override
   Future<ResponseBody> fetch(
@@ -45,7 +46,11 @@ class _UploadHttp implements HttpClientAdapter {
       latin1.decode(bytes).replaceAll(boundary, 'BOUNDARY'),
     ));
     if (error case final type?) {
-      throw DioException(requestOptions: options, type: type);
+      throw DioException(
+        requestOptions: options,
+        type: type,
+        message: errorMessage,
+      );
     }
     return ResponseBody.fromString(
       jsonEncode(body),
@@ -162,17 +167,25 @@ void main() {
     });
   }
 
-  test('a transport error is a failed result like before', () async {
-    final result = await _upload(
-      _new(_UploadHttp(error: DioExceptionType.connectionTimeout)),
-    );
+  test(
+    'a transport error keeps the raw exception message out of the failure',
+    () async {
+      final result = await _upload(
+        _new(
+          _UploadHttp(
+            error: DioExceptionType.connectionTimeout,
+            errorMessage: 'fixture-sensitive-upload-path',
+          ),
+        ),
+      );
 
-    expect(result.isSuccess, isFalse);
-    expect(
-      result.errorMessage,
-      'Failed to upload document: DioException [connection timeout]: null',
-    );
-  });
+      expect(result.isSuccess, isFalse);
+      expect(
+        result.errorMessage,
+        'Failed to upload document: DioException(connectionTimeout, status: null)',
+      );
+    },
+  );
 
   test('signed out throws ApiKeyNotFoundException like before', () async {
     Future<ExchangeKycRepository> signedOut(
