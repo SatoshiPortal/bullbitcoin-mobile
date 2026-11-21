@@ -759,7 +759,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // reflect this broadcast promptly instead of waiting on whatever
       // unrelated sync happens to run next (the same staleness class of gap
       // as the receiver's own payjoin-tx watcher — see _watchForBroadcast).
-      _syncWalletAfterBroadcast(resolvedModel.walletId);
+      _syncWalletInBackground(resolvedModel.walletId);
 
       // That single sync is not enough on its own: it can be throttled by
       // the sync coordinator or race the broadcast (observed live: a
@@ -1854,7 +1854,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     // Best-effort, non-blocking: see _broadcastOriginalTransaction's call
     // for why this can't wait on some unrelated sync to run.
-    _syncWalletAfterBroadcast(completedModel.walletId);
+    _syncWalletInBackground(completedModel.walletId);
 
     // The session is resolved by the payjoin transaction we just broadcast:
     // stop the original-tx fallback watch armed at session creation (it
@@ -2076,8 +2076,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   /// Arms the next active poll for [_watchForTransaction]: after an
-  /// exponentially backed-off delay, forces a sync'd wallet-transaction
-  /// lookup and either resolves the session or reschedules itself. The
+  /// exponentially backed-off delay, asks the server about [txId], reads the
+  /// wallet for a spend of [spentOutpoints], and either resolves the session
+  /// or reschedules itself. A payjoin landing under another txid only shows
+  /// up in the wallet, so a miss also starts a wallet sync without waiting
+  /// for it: the passive watcher matches the spend when it finishes. The
   /// `watchers` map is the single source of truth for "still watched": once
   /// [_stopWatching] removed the session, a pending poll callback becomes a
   /// no-op.
@@ -2128,8 +2131,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
 
       // Re-check: the session may have resolved through the passive watcher
-      // (or been torn down) while the sync'd lookup was in flight.
+      // (or been torn down) while the lookup was in flight.
       if (!watchers.containsKey(key)) return;
+
+      if (seenTxId == null && spentOutpoints.isNotEmpty) {
+        _syncWalletInBackground(walletId);
+      }
 
       if (seenTxId != null) {
         // Guarded: this runs inside a Timer callback, so a throw would be an
@@ -2323,7 +2330,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       return null;
     }
     _stopWatching(payjoinId);
-    _syncWalletAfterBroadcast(abortedModel.walletId);
+    _syncWalletInBackground(abortedModel.walletId);
     final abortedEntity = abortedModel.toEntity();
     _payjoinStreamController.add(abortedEntity);
     _log.fine(
@@ -2370,8 +2377,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   /// Fire-and-forget wallet sync after WE broadcast a transaction (either a
-  /// real payjoin proposal or a plain fallback) — the only two places this
-  /// repository itself puts a new transaction on the network. Not awaited by
+  /// real payjoin proposal or a plain fallback), or while a receiver polls
+  /// for a payjoin that may have landed under another txid. Not awaited by
   /// callers: it must never delay resolving the payjoin session (this can
   /// take a real network round-trip), and a transient failure here (no
   /// network at that exact moment) shouldn't be treated as the broadcast —
@@ -2385,7 +2392,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// opposed to the future it returns rejecting) would otherwise be caught by
   /// that outer try/catch and misreported as the broadcast having failed,
   /// even though it already succeeded.
-  void _syncWalletAfterBroadcast(String walletId) {
+  void _syncWalletInBackground(String walletId) {
     unawaited(
       Future(() => _transactions.refreshWallet(walletId)).catchError((
         Object e,

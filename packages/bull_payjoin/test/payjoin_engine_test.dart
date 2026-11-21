@@ -1526,6 +1526,51 @@ void main() {
       expect(row?.txId, signedTxId);
     });
 
+    test('an active poll finds the payjoin by its inputs', () async {
+      final model = proposed();
+      await local.storeReceiver(model);
+      walletEvents();
+      walletSpends({
+        signedTxId: [senderInput, receiverInput],
+      });
+
+      await engine.resumePayjoinsOnStartup();
+
+      final row = await completedRow(model.id);
+      expect(row?.isCompleted, isTrue);
+      expect(row?.txId, signedTxId);
+      verify(
+        () => transactions.isTransactionVisible(
+          walletId: model.walletId,
+          transactionId: storedTxId,
+          refresh: true,
+        ),
+      ).called(1);
+    });
+
+    test(
+      'an active poll miss syncs the wallet without waiting for it',
+      () async {
+        final model = proposed();
+        await local.storeReceiver(model);
+        final events = walletEvents();
+        final spends = <String, List<Outpoint>>{};
+        walletSpends(spends);
+        when(() => transactions.refreshWallet(any())).thenAnswer((_) {
+          spends[signedTxId] = [senderInput, receiverInput];
+          events.add(null);
+          return Completer<void>().future;
+        });
+
+        await engine.resumePayjoinsOnStartup();
+
+        final row = await completedRow(model.id);
+        expect(row?.isCompleted, isTrue);
+        expect(row?.txId, signedTxId);
+        verify(() => transactions.refreshWallet(model.walletId)).called(1);
+      },
+    );
+
     test('spends of other outpoints do not complete it', () async {
       final model = proposed(expired: true);
       await local.storeReceiver(model);
