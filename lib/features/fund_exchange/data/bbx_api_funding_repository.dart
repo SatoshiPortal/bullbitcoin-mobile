@@ -44,7 +44,14 @@ class BbxApiFundingRepository implements FundingRepository {
 
       final paymentProcessorCode =
           GetFundingDetailsRequestParamsModel.fromFundingMethod(fundingMethod)
-              .paymentProcessorCode!;
+              .paymentProcessorCode;
+      if (paymentProcessorCode == null) {
+        return const Err(
+          FundExchangeUnexpectedFailure(
+            'Missing funding payment processor code',
+          ),
+        );
+      }
       final details = await _call(
         method,
         () => _api.recipients.getUserPaymentProcessorCode(paymentProcessorCode),
