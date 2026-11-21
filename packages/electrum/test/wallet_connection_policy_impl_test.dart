@@ -1,5 +1,6 @@
 import 'package:electrum/testing.dart';
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';

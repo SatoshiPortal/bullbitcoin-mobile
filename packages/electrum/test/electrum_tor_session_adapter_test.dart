@@ -1,7 +1,12 @@
 import 'package:electrum/testing.dart';
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
+import 'package:drift/native.dart';
+import 'package:primitives/primitives.dart';
+
+import 'electrum_test_database.dart';
+
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -12,8 +17,6 @@ class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
 class _MockTorSessions extends Mock implements TorSessions {}
 
 class _MockExternalTor extends Mock implements ExternalTor {}
-
-class _MockEnvironment extends Mock implements EnvironmentPort {}
 
 void main() {
   late _MockTor tor;
@@ -37,16 +40,17 @@ void main() {
     registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
 
-  test('can be resolved before the Tor facade is registered', () {
-    final locator = GetIt.asNewInstance();
-    ElectrumLocator.registerPorts(
-      locator,
-      environment: _MockEnvironment(),
+  test('opens and exposes the sync connection policy before Tor is ready', () {
+    final database = ElectrumTestDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final electrum = Electrum.open(
+      database: database,
+      readNetwork: () async => NetworkEnv.mainnet,
       readPreferences: () async => throw StateError('Settings are not ready'),
-      tor: () => locator<Tor>(),
+      tor: () => throw StateError('Tor is not ready'),
     );
 
-    expect(locator<ElectrumTorSessionPort>(), isA<ElectrumTorSessionAdapter>());
+    expect(electrum.walletConnections, isA<WalletConnectionPolicyImpl>());
   });
 
   test('opens an embedded session for Bitcoin onion servers', () async {

@@ -3,7 +3,7 @@ import 'package:electrum/testing.dart';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 

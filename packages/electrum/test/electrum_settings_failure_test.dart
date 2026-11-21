@@ -1,5 +1,6 @@
 import 'package:electrum/testing.dart';
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -11,8 +12,6 @@ class _MockSettingsRepository extends Mock
     implements ElectrumSettingsRepository {}
 
 class _MockServerStatusPort extends Mock implements ServerStatusPort {}
-
-class _MockEnvironmentPort extends Mock implements EnvironmentPort {}
 
 class _MockTorSessionPort extends Mock implements ElectrumTorSessionPort {}
 
@@ -54,28 +53,6 @@ void main() {
     );
   });
 
-  group('DeleteCustomServerUsecase', () {
-    test('propagates the sanitized failure from the repository', () async {
-      final repo = _MockServerRepository();
-      final usecase = DeleteCustomServerUsecase(electrumServerRepository: repo);
-      when(
-        () => repo.delete(
-          url: any(named: 'url'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer(
-        (_) async => const Err(ElectrumDeleteFailure('raw db error')),
-      );
-
-      final result = await usecase.execute(
-        DeleteCustomServerRequest(url: 'ssl://a:50002', network: _network),
-      );
-
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<ElectrumDeleteFailure>());
-    });
-  });
-
   group('AddCustomServerUsecase', () {
     late _MockServerRepository serverRepo;
     late _MockSettingsRepository electrumSettingsRepo;
@@ -84,13 +61,11 @@ void main() {
     late _MockAppSettingsRepository appSettingsRepository;
     late AddCustomServerUsecase usecase;
 
-    AddCustomServerRequest request() => AddCustomServerRequest(
-      server: ElectrumServerDto(
-        url: 'a.example:50002',
-        network: _network,
-        isCustom: true,
-        priority: 0,
-      ),
+    ElectrumServer request() => ElectrumServer.createCustom(
+      host: 'a.example',
+      port: 50002,
+      network: _network,
+      priority: 0,
     );
 
     setUp(() {
@@ -204,13 +179,11 @@ void main() {
       ).thenAnswer((_) async => ElectrumServerStatus.offline);
 
       final result = await usecase.execute(
-        AddCustomServerRequest(
-          server: ElectrumServerDto(
-            url: 'liquid.example:995',
-            network: liquidNetwork,
-            isCustom: true,
-            priority: 0,
-          ),
+        ElectrumServer.createCustom(
+          host: 'liquid.example',
+          port: 995,
+          network: liquidNetwork,
+          priority: 0,
         ),
       );
 
@@ -337,13 +310,11 @@ void main() {
       ).thenAnswer((_) async => ElectrumServerStatus.offline);
 
       final result = await usecase.execute(
-        AddCustomServerRequest(
-          server: ElectrumServerDto(
-            url: 'hidden.onion:50002',
-            network: _network,
-            isCustom: true,
-            priority: 0,
-          ),
+        ElectrumServer.createCustom(
+          host: 'hidden.onion',
+          port: 50002,
+          network: _network,
+          priority: 0,
         ),
       );
 
@@ -492,16 +463,13 @@ void main() {
     late _MockSettingsRepository settingsRepo;
     late SetAdvancedElectrumOptionsUsecase usecase;
 
-    SetAdvancedElectrumOptionsRequest request(int stopGap) =>
-        SetAdvancedElectrumOptionsRequest(
-          options: ElectrumSettingsDto(
-            stopGap: stopGap,
-            timeout: 5,
-            retry: 1,
-            validateDomain: true,
-            network: _network,
-          ),
-        );
+    ElectrumOptions request(int stopGap) => ElectrumOptions(
+      stopGap: stopGap,
+      timeout: 5,
+      retry: 1,
+      validateDomain: true,
+      network: _network,
+    );
 
     setUp(() {
       settingsRepo = _MockSettingsRepository();
@@ -543,24 +511,24 @@ void main() {
       () async {
         final serverRepo = _MockServerRepository();
         final settingsRepo = _MockSettingsRepository();
-        final envPort = _MockEnvironmentPort();
+
         final statusPort = _MockServerStatusPort();
         final torSessionPort = _MockTorSessionPort();
         final appSettingsRepository = _MockAppSettingsRepository();
         final usecase = LoadElectrumServerDataUsecase(
           electrumServerRepository: serverRepo,
           electrumSettingsRepository: settingsRepo,
-          environmentPort: envPort,
+
           serverStatusPort: statusPort,
           torSessionPort: torSessionPort,
           readPreferences: appSettingsRepository.fetch,
         );
-        // EnvironmentPort still throws; the use-case is the boundary that maps it.
-        when(() => envPort.getEnvironment()).thenThrow(Exception('boom'));
+        when(() => serverRepo.fetchAll(network: _network))
+            .thenAnswer((_) async => const Ok([]));
+        when(() => settingsRepo.fetchByNetwork(_network))
+            .thenThrow(Exception('boom'));
 
-        final result = await usecase.execute(
-          LoadElectrumServerDataRequest(isLiquid: false),
-        );
+        final result = await usecase.execute(network: _network);
 
         expect(result, isA<Err>());
         expect((result as Err).failure, isA<ElectrumUnexpectedFailure>());
@@ -570,7 +538,7 @@ void main() {
     test('checks an onion server through a closed isolated route', () async {
       final serverRepo = _MockServerRepository();
       final settingsRepo = _MockSettingsRepository();
-      final envPort = _MockEnvironmentPort();
+
       final statusPort = _MockServerStatusPort();
       final torSessionPort = _MockTorSessionPort();
       final appSettingsRepository = _MockAppSettingsRepository();
@@ -587,13 +555,12 @@ void main() {
       final usecase = LoadElectrumServerDataUsecase(
         electrumServerRepository: serverRepo,
         electrumSettingsRepository: settingsRepo,
-        environmentPort: envPort,
+
         serverStatusPort: statusPort,
         torSessionPort: torSessionPort,
         readPreferences: appSettingsRepository.fetch,
       );
-      when(() => envPort.getEnvironment())
-          .thenAnswer((_) async => ElectrumEnvironment.mainnet);
+
       when(
         () =>
             serverRepo.fetchAll(network: ElectrumServerNetwork.bitcoinMainnet),
@@ -622,9 +589,9 @@ void main() {
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
 
-      final updates = <LoadElectrumServerDataResponse>[];
+      final updates = <ElectrumServerChecks>[];
       final result = await usecase.execute(
-        LoadElectrumServerDataRequest(isLiquid: false),
+        network: _network,
         onUpdate: updates.add,
       );
 
@@ -655,7 +622,7 @@ void main() {
       () async {
         final serverRepo = _MockServerRepository();
         final settingsRepo = _MockSettingsRepository();
-        final envPort = _MockEnvironmentPort();
+
         final statusPort = _MockServerStatusPort();
         final torSessionPort = _MockTorSessionPort();
         final appSettingsRepository = _MockAppSettingsRepository();
@@ -678,8 +645,7 @@ void main() {
             priority: 1,
           ),
         ];
-        when(() => envPort.getEnvironment())
-            .thenAnswer((_) async => ElectrumEnvironment.mainnet);
+
         when(
           () => serverRepo.fetchAll(
             network: ElectrumServerNetwork.bitcoinMainnet,
@@ -717,15 +683,13 @@ void main() {
         final usecase = LoadElectrumServerDataUsecase(
           electrumServerRepository: serverRepo,
           electrumSettingsRepository: settingsRepo,
-          environmentPort: envPort,
+
           serverStatusPort: statusPort,
           torSessionPort: torSessionPort,
           readPreferences: appSettingsRepository.fetch,
         );
 
-        final result = await usecase.execute(
-          LoadElectrumServerDataRequest(isLiquid: false),
-        );
+        final result = await usecase.execute(network: _network);
 
         expect(result, isA<Ok>());
         verify(
@@ -743,7 +707,7 @@ void main() {
     test('marks all Bitcoin probes offline without opening sockets when unavailable', () async {
       final serverRepo = _MockServerRepository();
       final settingsRepo = _MockSettingsRepository();
-      final envPort = _MockEnvironmentPort();
+
       final statusPort = _MockServerStatusPort();
       final torSessionPort = _MockTorSessionPort();
       final appSettingsRepository = _MockAppSettingsRepository();
@@ -753,8 +717,7 @@ void main() {
         isCustom: true,
         priority: 0,
       );
-      when(() => envPort.getEnvironment())
-          .thenAnswer((_) async => ElectrumEnvironment.mainnet);
+
       when(
         () =>
             serverRepo.fetchAll(network: ElectrumServerNetwork.bitcoinMainnet),
@@ -775,15 +738,13 @@ void main() {
       final usecase = LoadElectrumServerDataUsecase(
         electrumServerRepository: serverRepo,
         electrumSettingsRepository: settingsRepo,
-        environmentPort: envPort,
+
         serverStatusPort: statusPort,
         torSessionPort: torSessionPort,
         readPreferences: appSettingsRepository.fetch,
       );
 
-      final result = await usecase.execute(
-        LoadElectrumServerDataRequest(isLiquid: false),
-      );
+      final result = await usecase.execute(network: _network);
 
       expect(result, isA<Ok>());
       final response = (result as Ok).value;
@@ -807,38 +768,6 @@ void main() {
           proxyEndpoint: any(named: 'proxyEndpoint'),
         ),
       );
-    });
-  });
-
-  group('SetCustomServersPriorityUsecase', () {
-    setUpAll(() {
-      registerFallbackValue(<ElectrumServer>[]);
-    });
-
-    test('propagates the save failure from batchSave — no raw leak', () async {
-      final repo = _MockServerRepository();
-      final usecase = SetCustomServersPriorityUsecase(
-        electrumServerRepository: repo,
-      );
-      when(
-        () => repo.batchSave(any()),
-      ).thenAnswer((_) async => const Err(ElectrumSaveFailure('raw db error')));
-
-      final result = await usecase.execute(
-        SetCustomServersPriorityRequest(
-          servers: [
-            ElectrumServerDto(
-              url: 'ssl://a:50002',
-              network: _network,
-              isCustom: true,
-              priority: 0,
-            ),
-          ],
-        ),
-      );
-
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<ElectrumSaveFailure>());
     });
   });
 }

@@ -13,7 +13,8 @@ import 'features/wallet/data/ark_funding_test_fixture.dart';
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:electrum/electrum.dart'
-    show ElectrumFailure, ElectrumSaveFailure, RegtestElectrumProfile;
+    show ElectrumFailure, ElectrumSaveFailure;
+import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 
 import 'dart:io';
 

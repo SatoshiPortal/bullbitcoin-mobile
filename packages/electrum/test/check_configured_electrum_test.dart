@@ -1,5 +1,7 @@
 import 'package:electrum/electrum.dart';
-import 'package:network/src/status_check/domain/check_electrum_status_usecase.dart';
+import 'package:electrum/setup.dart';
+import 'package:electrum/testing.dart';
+import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -9,14 +11,13 @@ void main() {
       _connection(socks5: '127.0.0.1:41001'),
     );
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
-    final adapter = CheckElectrumStatusUsecase(
-      electrumServersPort: serversPort,
-      serverStatusPort: statusPort,
+    final online = await checkConfiguredElectrum(
+      serversPort,
+      statusPort,
+      ElectrumServerNetwork.bitcoinMainnet,
     );
 
-    final online = await adapter.execute(ElectrumServerNetwork.bitcoinMainnet);
-
-    expect(online, isTrue);
+    expect(online, isA<Ok<ElectrumServerStatus, ElectrumFailure>>());
     expect(serversPort.network, ElectrumServerNetwork.bitcoinMainnet);
     expect(statusPort.proxyEndpoint?.authority, '127.0.0.1:41001');
     expect(statusPort.timeout, ElectrumConnection.onionMinimumTimeout);
@@ -28,12 +29,11 @@ void main() {
       _connection(url: 'ssl://electrum.example.com:50002'),
     );
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
-    final adapter = CheckElectrumStatusUsecase(
-      electrumServersPort: serversPort,
-      serverStatusPort: statusPort,
+    await checkConfiguredElectrum(
+      serversPort,
+      statusPort,
+      ElectrumServerNetwork.bitcoinMainnet,
     );
-
-    await adapter.execute(ElectrumServerNetwork.bitcoinMainnet);
 
     expect(statusPort.timeout, 5);
   });
@@ -41,41 +41,56 @@ void main() {
   test('an empty proxy string means no proxy, not a malformed one', () async {
     final serversPort = _FakeElectrumServersPort(_connection(socks5: '  '));
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
-    final adapter = CheckElectrumStatusUsecase(
-      electrumServersPort: serversPort,
-      serverStatusPort: statusPort,
+    final online = await checkConfiguredElectrum(
+      serversPort,
+      statusPort,
+      ElectrumServerNetwork.bitcoinMainnet,
     );
 
-    final online = await adapter.execute(ElectrumServerNetwork.bitcoinMainnet);
-
-    expect(online, isTrue);
+    expect(online, isA<Ok<ElectrumServerStatus, ElectrumFailure>>());
     expect(statusPort.proxyEndpoint, isNull);
   });
 
   test('does not bypass a malformed configured proxy', () async {
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
-    final adapter = CheckElectrumStatusUsecase(
-      electrumServersPort: _FakeElectrumServersPort(
-        _connection(socks5: 'not-an-endpoint'),
-      ),
-      serverStatusPort: statusPort,
+    final online = await checkConfiguredElectrum(
+      _FakeElectrumServersPort(_connection(socks5: 'not-an-endpoint')),
+      statusPort,
+      ElectrumServerNetwork.bitcoinMainnet,
     );
 
-    final online = await adapter.execute(ElectrumServerNetwork.bitcoinMainnet);
-
-    expect(online, isFalse);
+    expect(online, isA<Err<ElectrumServerStatus, ElectrumFailure>>());
     expect(statusPort.calls, 0);
   });
 
-  test('reports an unreachable active server set as offline', () async {
-    final adapter = CheckElectrumStatusUsecase(
-      electrumServersPort: _FakeElectrumServersPort(_connection()),
-      serverStatusPort: _FakeServerStatusPort(ElectrumServerStatus.offline),
-    );
+  test(
+    'tries the next configured endpoint when the first is offline',
+    () async {
+      final first = _connection(url: 'ssl://first.example:50002');
+      final second = _connection(url: 'ssl://second.example:50002');
+      final status = _FakeServerStatusPort(
+        ElectrumServerStatus.online,
+        offlineUrl: first.url,
+      );
 
+      final result = await checkConfiguredElectrum(
+        _FakeElectrumServersPort(first, fallback: [second]),
+        status,
+        ElectrumServerNetwork.bitcoinMainnet,
+      );
+      expect(result, isA<Ok<ElectrumServerStatus, ElectrumFailure>>());
+      expect(status.checked, [first.url, second.url]);
+    },
+  );
+
+  test('reports an unreachable active server set as offline', () async {
     expect(
-      await adapter.execute(ElectrumServerNetwork.bitcoinMainnet),
-      isFalse,
+      await checkConfiguredElectrum(
+        _FakeElectrumServersPort(_connection()),
+        _FakeServerStatusPort(ElectrumServerStatus.offline),
+        ElectrumServerNetwork.bitcoinMainnet,
+      ),
+      isA<Err<ElectrumServerStatus, ElectrumFailure>>(),
     );
   });
 }
@@ -103,9 +118,10 @@ final class _FakeElectrumServersPort implements ElectrumServersPort {
   }) async => false;
 
   final ElectrumConnection connection;
+  final List<ElectrumConnection> fallback;
   ElectrumServerNetwork? network;
 
-  _FakeElectrumServersPort(this.connection);
+  _FakeElectrumServersPort(this.connection, {this.fallback = const []});
 
   @override
   Future<T> runWithFallback<T>({
@@ -114,7 +130,13 @@ final class _FakeElectrumServersPort implements ElectrumServersPort {
     bool Function(Object error)? isTransient,
   }) {
     this.network = network;
-    return operation(connection);
+    return runElectrumFallback(
+      servers: [connection, ...fallback],
+      urlOf: (server) => server.url,
+      isCustomOf: (server) => server.isCustom,
+      operation: operation,
+      isTransient: isTransient,
+    );
   }
 }
 
@@ -124,9 +146,12 @@ final class _FakeServerStatusPort implements ServerStatusPort {
   int? timeout;
   bool? validateDomain;
   int? retry;
-  int calls = 0;
+  final List<String> checked = [];
+  final String? offlineUrl;
 
-  _FakeServerStatusPort(this.result);
+  int get calls => checked.length;
+
+  _FakeServerStatusPort(this.result, {this.offlineUrl});
 
   @override
   Future<ElectrumServerStatus> checkElectrum({
@@ -137,12 +162,12 @@ final class _FakeServerStatusPort implements ServerStatusPort {
     int? retry,
     TorProxyEndpoint? proxyEndpoint,
   }) async {
-    calls++;
+    checked.add(url);
     this.timeout = timeout;
     this.retry = retry;
     this.proxyEndpoint = proxyEndpoint;
     this.validateDomain = validateDomain;
-    return result;
+    return url == offlineUrl ? ElectrumServerStatus.offline : result;
   }
 
   @override

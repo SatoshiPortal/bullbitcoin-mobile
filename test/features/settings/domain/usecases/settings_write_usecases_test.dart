@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 
 import 'dart:io';
 

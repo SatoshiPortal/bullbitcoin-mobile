@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show BitcoinTx, TxScriptSig, TxVin, TxVout;
 
-class _MockElectrum extends Mock implements Electrum {}
+class _MockElectrum extends Mock implements ElectrumTransactions {}
 
 BitcoinTx _transaction({
   required String txid,
@@ -47,14 +47,10 @@ void main() {
   }) => usecase.execute(tx, network: Future.value(network));
 
   test('maps Electrum lookup failures to the review failure family', () async {
-    when(
-      () => electrum.fetchBitcoinTransaction(
-        txid: 'parenttxid',
-        network: BitcoinNetwork.mainnet,
-      ),
-    ).thenAnswer(
-      (_) async => const Err(ElectrumTransactionFetchFailure('parenttxid')),
-    );
+    when(() => electrum.fetch('parenttxid', network: BitcoinNetwork.mainnet))
+        .thenAnswer(
+          (_) async => const Err(ElectrumTransactionFetchFailure('parenttxid')),
+        );
 
     final result = await review(_spendingParent(0));
 
@@ -75,12 +71,8 @@ void main() {
   test(
     'returns an input-resolution failure when the vout is out of range',
     () async {
-      when(
-        () => electrum.fetchBitcoinTransaction(
-          txid: 'parenttxid',
-          network: BitcoinNetwork.mainnet,
-        ),
-      ).thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
+      when(() => electrum.fetch('parenttxid', network: BitcoinNetwork.mainnet))
+          .thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
 
       final result = await review(_spendingParent(5));
 
@@ -106,12 +98,8 @@ void main() {
         ),
       ],
     );
-    when(
-      () => electrum.fetchBitcoinTransaction(
-        txid: 'parenttxid',
-        network: BitcoinNetwork.mainnet,
-      ),
-    ).thenAnswer((_) async => Ok(parent));
+    when(() => electrum.fetch('parenttxid', network: BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => Ok(parent));
 
     final result = await review(_spendingParent(0));
 
@@ -122,12 +110,8 @@ void main() {
   });
 
   test('an unavailable Bitcoin network prevents any parent lookup', () async {
-    when(
-      () => electrum.fetchBitcoinTransaction(
-        txid: 'parenttxid',
-        network: any(named: 'network'),
-      ),
-    ).thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
+    when(() => electrum.fetch('parenttxid', network: any(named: 'network')))
+        .thenAnswer((_) async => Ok(_transaction(txid: 'parenttxid')));
 
     final result = await review(_spendingParent(0), network: null);
 
@@ -153,12 +137,8 @@ void main() {
         ),
       ],
     );
-    when(
-      () => electrum.fetchBitcoinTransaction(
-        txid: 'parenttxid',
-        network: BitcoinNetwork.testnet,
-      ),
-    ).thenAnswer((_) async => Ok(parent));
+    when(() => electrum.fetch('parenttxid', network: BitcoinNetwork.testnet))
+        .thenAnswer((_) async => Ok(parent));
 
     final result = await review(
       _transaction(
@@ -177,12 +157,8 @@ void main() {
       transaction.resolvedInputs.map((input) => input.address),
       everyElement(startsWith('tb1q')),
     );
-    verify(
-      () => electrum.fetchBitcoinTransaction(
-        txid: 'parenttxid',
-        network: BitcoinNetwork.testnet,
-      ),
-    ).called(2);
+    verify(() => electrum.fetch('parenttxid', network: BitcoinNetwork.testnet))
+        .called(2);
     verifyNoMoreInteractions(electrum);
   });
 }

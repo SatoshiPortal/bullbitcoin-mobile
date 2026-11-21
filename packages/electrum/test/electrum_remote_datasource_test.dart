@@ -2,7 +2,7 @@ import 'package:electrum/testing.dart';
 
 import 'dart:io';
 
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 
 import 'electrum_test_database.dart';
 

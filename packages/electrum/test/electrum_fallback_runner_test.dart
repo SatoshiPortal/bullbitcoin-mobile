@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:electrum/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 

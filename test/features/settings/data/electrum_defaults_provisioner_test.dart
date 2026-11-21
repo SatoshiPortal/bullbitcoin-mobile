@@ -3,6 +3,7 @@ import 'package:electrum/testing.dart';
 import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
 import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 
 import 'dart:io';
 
@@ -16,8 +17,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 class _AppSettings extends Mock implements SettingsRepository {}
-
-class _Environment extends Mock implements EnvironmentPort {}
 
 class _Status extends Mock implements ServerStatusPort {}
 
@@ -55,7 +54,6 @@ void main() {
   late DriftElectrumServerRepository servers;
   late DriftElectrumSettingsRepository settings;
   late _AppSettings app;
-  late _Environment environment;
   late _Status status;
   late _Tor tor;
 
@@ -92,9 +90,6 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    environment = _Environment();
-    when(() => environment.getEnvironment())
-        .thenAnswer((_) async => ElectrumEnvironment.regtest);
     status = _Status();
     when(
       () => status.checkElectrum(
@@ -131,21 +126,14 @@ void main() {
   LoadElectrumServerDataUsecase loader() => LoadElectrumServerDataUsecase(
     electrumServerRepository: servers,
     electrumSettingsRepository: settings,
-    environmentPort: environment,
     serverStatusPort: status,
     torSessionPort: tor,
     readPreferences: readPreferences,
   );
 
-  Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> loadNetwork(
+  Future<Result<ElectrumServerChecks, ElectrumFailure>> loadNetwork(
     ElectrumServerNetwork network,
-  ) {
-    when(() => environment.getEnvironment())
-        .thenAnswer((_) async => network.environment);
-    return loader().execute(
-      LoadElectrumServerDataRequest(isLiquid: network.isLiquid),
-    );
-  }
+  ) => loader().execute(network: network);
 
   SetActiveNetworkUsecase selector() => SetActiveNetworkUsecase(
     settingsRepository: app,
@@ -177,7 +165,7 @@ void main() {
           network: ElectrumServerNetwork.liquidRegtest,
           operation: (connection) async => connection,
         ),
-        loader().execute(LoadElectrumServerDataRequest(isLiquid: true)),
+        loader().execute(network: ElectrumServerNetwork.liquidRegtest),
       ).wait;
       expect(prepared, isA<Ok>());
       expect(connection.url, 'tcp://127.0.0.1:50001');
@@ -194,7 +182,7 @@ void main() {
 
   test('unprepared readers fail closed without writes or probes', () async {
     expect(
-      await loader().execute(LoadElectrumServerDataRequest(isLiquid: true)),
+      await loader().execute(network: ElectrumServerNetwork.liquidRegtest),
       isA<Err>(),
     );
     await expectLater(
@@ -471,6 +459,109 @@ void main() {
         isA<Ok>(),
       );
       expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
+    },
+  );
+
+  test(
+    'Electrum reads and updates existing v16 custom order and options',
+    () async {
+      const network = ElectrumServerNetwork.bitcoinMainnet;
+      const first = 'tcp://first.example:50001';
+      const second = 'ssl://second.example:50002';
+      const defaultUrl = 'ssl://default.example:50002';
+      await DatabaseSeeds.seedDefaultElectrumSettings(database);
+      for (final (url, priority, isCustom) in [
+        (first, 7, true),
+        (second, 9, true),
+        (defaultUrl, 0, false),
+      ]) {
+        await database
+            .into(database.electrumServers)
+            .insert(
+              ElectrumServerRow(
+                url: url,
+                network: network.storageName,
+                priority: priority,
+                isCustom: isCustom,
+              ),
+            );
+      }
+      final electrum = Electrum.open(
+        database: database,
+        readNetwork: () async => NetworkEnv.mainnet,
+        readPreferences: readPreferences,
+        tor: () => throw StateError('Catalog reads must not open Tor'),
+      );
+
+      final original = await electrum.servers.fetch(network: network);
+      expect(
+        original.fold(
+          (servers) => servers
+              .where((server) => server.isCustom)
+              .map((server) => server.url),
+          (_) => null,
+        ),
+        [first, second],
+      );
+      final reordered = await electrum.servers.prioritize([
+        second,
+        first,
+      ], network: network);
+      expect(
+        reordered.fold(
+          (servers) => servers.map((server) => (server.url, server.priority)),
+          (_) => null,
+        ),
+        [(second, 0), (first, 1)],
+      );
+      final staleOrder = await electrum.servers.prioritize([
+        first,
+        defaultUrl,
+      ], network: network);
+      expect(
+        staleOrder,
+        isA<Err<List<ElectrumEndpoint>, ElectrumFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ElectrumInvalidOrderFailure>(),
+        ),
+      );
+      final persisted = await electrum.servers.fetch(network: network);
+      expect(
+        persisted.fold(
+          (servers) => servers
+              .where((server) => server.isCustom)
+              .map((server) => server.url),
+          (_) => null,
+        ),
+        [second, first],
+      );
+
+      final stored = await electrum.servers.options.store(
+        const ElectrumOptions(
+          stopGap: 45,
+          timeout: 17,
+          retry: 2,
+          validateDomain: false,
+          network: network,
+          socks5: '',
+        ),
+      );
+      expect(stored, isA<Ok>());
+      final options = await electrum.servers.options.fetch(network: network);
+      expect(
+        options.fold(
+          (options) => (
+            options.stopGap,
+            options.timeout,
+            options.retry,
+            options.validateDomain,
+            options.socks5,
+          ),
+          (_) => null,
+        ),
+        (45, 17, 2, false, ''),
+      );
     },
   );
 

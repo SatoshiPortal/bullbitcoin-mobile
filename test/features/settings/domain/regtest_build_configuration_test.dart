@@ -7,7 +7,7 @@ import 'package:bull_ui/bull_ui.dart' show BullPickerChip;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

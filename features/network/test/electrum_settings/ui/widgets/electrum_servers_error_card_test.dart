@@ -1,6 +1,7 @@
+import 'package:network/src/electrum_settings/domain/electrum_settings_failure.dart';
+
 import '../../../fixtures.dart';
 
-import 'package:electrum/electrum.dart';
 import 'package:network/src/electrum_settings/ui/widgets/electrum_servers_error_card.dart';
 import 'package:network/src/tor_settings/ui/tor_settings_router.dart';
 import 'package:network/generated/l10n/network_localizations.dart';

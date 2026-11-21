@@ -1,4 +1,4 @@
-import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bull_tor/tor.dart' show torConnectDeadline;
 import 'package:flutter_test/flutter_test.dart';
 
