@@ -104,7 +104,11 @@ class BullInfoCard extends StatelessWidget {
         ? card
         : Semantics(
             button: true,
-            label: title?.isNotEmpty == true ? title : description,
+            label: title != null && title.isNotEmpty
+                ? '$title\n$description'
+                : description,
+            onTap: onTap,
+            excludeSemantics: true,
             child: InkWell(onTap: onTap, child: card),
           );
   }
