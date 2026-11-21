@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/recipients/public/recipient_type_label.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
@@ -203,36 +204,9 @@ class PaySendPaymentScreen extends StatelessWidget {
                         ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientType,
-                        displayValue: recipient != null
-                            ? switch (recipient.type) {
-                                // TODO: Use localization labels instead of hardcoded strings.
-                                // CANADA types
-                                RecipientType.interacEmailCad =>
-                                  context.loc.recipientsTypeInteracEmail,
-                                RecipientType.billPaymentCad => 'Bill Payment',
-                                RecipientType.bankTransferCad =>
-                                  'Bank Transfer',
-                                // EUROPE types
-                                RecipientType.sepaEur => 'SEPA Transfer',
-                                RecipientType.confidentialSepaEur =>
-                                  context.loc.recipientsTypeConfidentialSepa,
-                                // MEXICO types
-                                RecipientType.speiClabeMxn => 'SPEI CLABE',
-                                RecipientType.speiSmsMxn => 'SPEI SMS',
-                                RecipientType.speiCardMxn => 'SPEI Card',
-                                // COSTA RICA types
-                                RecipientType.sinpeIbanUsd =>
-                                  'SINPE IBAN (USD)',
-                                RecipientType.sinpeIbanCrc =>
-                                  'SINPE IBAN (CRC)',
-                                RecipientType.sinpeMovilCrc => 'SINPE Móvil',
-                                // ARGENTINA types
-                                RecipientType.bankAccountArgentina =>
-                                  'CBU/CVU Argentina',
-                                RecipientType.pseColombia => 'Bank Account COP',
-                                RecipientType.nequiColombia => 'Nequi',
-                              }
-                            : null,
+                        displayValue: recipient == null
+                            ? null
+                            : recipientTypeLabel(context, recipient.type),
                       ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientName,
