@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2650 error classification', () {
     test('error patterns are centralized and cover device cancellation', () {
       final source = File(
-        'lib/core/bitbox/data/datasources/bitbox_device_datasource.dart',
+        'features/signers/lib/src/bitbox/data/datasources/bitbox_device_datasource.dart',
       ).readAsStringSync();
 
       expect(source, contains('_errorPatterns'));

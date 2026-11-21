@@ -8,6 +8,7 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/signers
   - features/ark
   - packages/ark
   - packages/secrets
@@ -43,6 +44,7 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  signers:
   ark:
   bull_ark:
   cupertino_ui: ^1.1.6
@@ -88,7 +90,6 @@ dependencies:
   rust_bindings:
   boltz_stream:
   bitbox_transport:
-  universal_ble: ^3.3.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7
@@ -131,11 +132,6 @@ dependencies:
   satoshifier:
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
-  ledger_bitcoin:
-    git:
-      url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
-      path: packages/ledger-bitcoin
-      ref: d71f36e95a763491adab95fc1f5abf86f532ac4e
   permission_handler: ^13.0.2
   cbor: ^6.3.7
   ur:

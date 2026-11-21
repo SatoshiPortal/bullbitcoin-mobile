@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: signers_en.arb
+output-localization-file: signers_localizations.dart
+output-class: SignersLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false

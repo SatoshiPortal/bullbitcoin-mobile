@@ -1,0 +1,201 @@
+import 'package:signers/src/signers_l10n.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInstructionsSheet;
+
+class QrDeviceInstructions {
+  static Future<void> showKruxInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.kruxInstructionsTitle,
+      instructions: [
+        context.loc.kruxStep1,
+        context.loc.kruxStep2,
+        context.loc.kruxStep3,
+        context.loc.kruxStep4,
+        context.loc.kruxStep5,
+        context.loc.kruxStep6,
+        context.loc.kruxStep7,
+        context.loc.kruxStep8,
+        context.loc.kruxStep9,
+        context.loc.kruxStep10,
+        context.loc.kruxStep11,
+        context.loc.kruxStep12,
+        context.loc.kruxStep13,
+        context.loc.kruxStep14,
+        context.loc.kruxStep15,
+        context.loc.kruxStep16,
+      ],
+    );
+  }
+
+  static Future<void> showKeystoneInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.keystoneInstructionsTitle,
+      instructions: [
+        context.loc.keystoneStep1,
+        context.loc.keystoneStep2,
+        context.loc.keystoneStep3,
+        context.loc.keystoneStep4,
+        context.loc.keystoneStep5,
+        context.loc.keystoneStep6,
+        context.loc.keystoneStep7,
+        context.loc.keystoneStep8,
+        context.loc.keystoneStep9,
+        context.loc.keystoneStep10,
+        context.loc.keystoneStep11,
+        context.loc.keystoneStep12,
+        context.loc.keystoneStep13,
+        context.loc.keystoneStep14,
+      ],
+    );
+  }
+
+  static Future<void> showPassportInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.passportInstructionsTitle,
+      instructions: [
+        context.loc.passportStep1,
+        context.loc.passportStep2,
+        context.loc.passportStep3,
+        context.loc.passportStep4,
+        context.loc.passportStep5,
+        context.loc.passportStep6,
+        context.loc.passportStep7,
+        context.loc.passportStep8,
+        context.loc.passportStep9,
+        context.loc.passportStep10,
+        context.loc.passportStep11,
+        context.loc.passportStep12,
+        context.loc.passportStep13,
+        context.loc.passportStep14,
+      ],
+    );
+  }
+
+  static Future<void> showSeedSignerInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.seedsignerInstructionsTitle,
+      instructions: [
+        context.loc.seedsignerStep1,
+        context.loc.seedsignerStep2,
+        context.loc.seedsignerStep3,
+        context.loc.seedsignerStep4,
+        context.loc.seedsignerStep5,
+        context.loc.seedsignerStep6,
+        context.loc.seedsignerStep7,
+        context.loc.seedsignerStep8,
+        context.loc.seedsignerStep9,
+        context.loc.seedsignerStep10,
+        context.loc.seedsignerStep11,
+        context.loc.seedsignerStep12,
+        context.loc.seedsignerStep13,
+        context.loc.seedsignerStep14,
+      ],
+    );
+  }
+
+  static Future<void> showSpecterInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.psbtFlowSpecterTitle,
+      instructions: [
+        context.loc.psbtFlowTurnOnDevice('Specter'),
+        context.loc.psbtFlowClickScan,
+        context.loc.psbtFlowScanQrShown,
+        context.loc.psbtFlowTroubleScanningTitle,
+        '   - ${context.loc.psbtFlowIncreaseBrightness}',
+        '   - ${context.loc.psbtFlowMoveLaser}',
+        '   - ${context.loc.psbtFlowMoveBack}',
+        context.loc.psbtFlowSelectSeed('Specter'),
+        context.loc.psbtFlowReviewTransaction('Specter'),
+        context.loc.psbtFlowSignTransactionOnDevice('Specter'),
+        context.loc.psbtFlowDeviceShowsQr('Specter'),
+        context.loc.psbtFlowClickDone,
+        context.loc.psbtFlowScanDeviceQr('Specter'),
+        context.loc.psbtFlowTransactionImported,
+        context.loc.psbtFlowReadyToBroadcast,
+      ],
+    );
+  }
+
+  static Future<void> showColdcardQInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.psbtFlowColdcardQInstructionsTitle,
+      instructions: [
+        context.loc.psbtFlowColdcardQStep1,
+        context.loc.psbtFlowColdcardQStep2,
+        context.loc.psbtFlowColdcardQStep3,
+        context.loc.psbtFlowColdcardQStep4,
+        context.loc.psbtFlowColdcardQStep5,
+        context.loc.psbtFlowColdcardQStep6,
+        context.loc.psbtFlowColdcardQStep7,
+        context.loc.psbtFlowColdcardQStep8,
+        context.loc.psbtFlowColdcardQStep9,
+        context.loc.psbtFlowColdcardQStep10,
+        context.loc.psbtFlowColdcardQStep11,
+        context.loc.psbtFlowColdcardQStep12,
+        context.loc.psbtFlowColdcardQStep13,
+        context.loc.psbtFlowColdcardQStep14,
+        context.loc.psbtFlowColdcardQStep15,
+        context.loc.psbtFlowColdcardQStep16,
+        context.loc.psbtFlowColdcardQStep17,
+        context.loc.psbtFlowColdcardQStep18,
+        context.loc.psbtFlowColdcardQStep19,
+        context.loc.psbtFlowColdcardQStep20,
+        context.loc.psbtFlowColdcardQStep21,
+        context.loc.psbtFlowColdcardQStep22,
+        context.loc.psbtFlowColdcardQStep23,
+      ],
+    );
+  }
+
+  static Future<void> showColdcardMk4Instructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.psbtFlowColdcardMk4InstructionsTitle,
+      instructions: [
+        context.loc.psbtFlowColdcardMk4Step1,
+        context.loc.psbtFlowColdcardMk4Step2,
+        context.loc.psbtFlowColdcardMk4Step3,
+        context.loc.psbtFlowColdcardMk4Step4,
+        context.loc.psbtFlowColdcardMk4Step5,
+        context.loc.psbtFlowColdcardMk4Step6,
+        context.loc.psbtFlowColdcardMk4Step7,
+        context.loc.psbtFlowColdcardMk4Step8,
+        context.loc.psbtFlowColdcardMk4Step9,
+        context.loc.psbtFlowColdcardMk4Step10,
+        context.loc.psbtFlowColdcardMk4Step11,
+        context.loc.psbtFlowColdcardMk4Step12,
+        context.loc.psbtFlowColdcardMk4Step13,
+      ],
+    );
+  }
+
+  static Future<void> showJadeInstructions(BuildContext context) {
+    return BullInstructionsSheet.show(
+      context,
+      title: context.loc.jadeInstructionsTitle,
+      instructions: [
+        context.loc.jadeStep1,
+        context.loc.jadeStep2,
+        context.loc.jadeStep3,
+        context.loc.jadeStep4,
+        context.loc.jadeStep5,
+        context.loc.jadeStep6,
+        context.loc.jadeStep7,
+        context.loc.jadeStep8,
+        context.loc.jadeStep9,
+        context.loc.jadeStep10,
+        context.loc.jadeStep11,
+        context.loc.jadeStep12,
+        context.loc.jadeStep13,
+        context.loc.jadeStep14,
+        context.loc.jadeStep15,
+      ],
+    );
+  }
+}

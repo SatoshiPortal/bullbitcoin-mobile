@@ -23,7 +23,7 @@ import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
-import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
@@ -40,11 +40,9 @@ import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dar
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
-import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_flow_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -111,6 +109,7 @@ class AppLocator {
     RegtestElectrumProfile? regtestProfile,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
+    setupSigners(locator);
 
     // One instance per isolate; background tasks must not use its keystore.
     // Liquid signing removes its temporary children after use. Stale caches
@@ -220,7 +219,6 @@ class AppLocator {
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
-    PsbtFlowLocator.setup(locator);
     SwapLocator.setup(locator);
     AutoSwapLocator.setup(locator);
     AnnouncementsLocator.setup(locator);
@@ -253,9 +251,7 @@ class AppLocator {
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
     Bip85EntropyLocator.setup(locator);
-    LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
-    BitBoxLocator.setup(locator);
 
     // Follows network switches from launch on, whether or not the swap
     // watcher has started yet: the engine must match the network the first

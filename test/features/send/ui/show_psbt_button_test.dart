@@ -1,11 +1,11 @@
+import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
-import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart';
+import 'package:bb_mobile/signers_psbt_routes.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -109,7 +109,12 @@ void main() {
     expect(screen.psbt, psbt);
     expect(screen.signerDevice, SignerDeviceEntity.coldcardMk4);
 
-    await tester.tap(find.text(l10n.psbtFlowDone));
+    await tester.tap(
+      find.text(
+        SignersLocalizations.of(tester.element(find.byType(ShowPsbtScreen)))
+            .psbtFlowDone,
+      ),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 

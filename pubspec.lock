@@ -1375,7 +1375,7 @@ packages:
     source: hosted
     version: "3.0.2"
   ledger_bitcoin:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "packages/ledger-bitcoin"
       ref: d71f36e95a763491adab95fc1f5abf86f532ac4e
@@ -2238,7 +2238,7 @@ packages:
     source: hosted
     version: "1.4.0"
   universal_ble:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: universal_ble
       sha256: bfbc5dea17fa04e365d3870309d8a8a49067ff5195a84d4f6f73c92aa96bf7ed

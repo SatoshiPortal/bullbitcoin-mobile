@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:signers/routes.dart';
+import 'package:bb_mobile/signers_psbt_routes.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,0 +1,1021 @@
+{
+  "bitboxErrorMultipleDevicesFound": "Birçok BitBox cihazı bulundu. Lütfen sadece bir cihazın bağlantılı olmasını sağlayın.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "Yardıma mı ihtiyacınız var?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "Bull Bitcoin cüzdanı, Jade'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "Click Scan",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "Pasaport cihazınıza giriş",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "Click PSBT",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "Telefonunuzun USB izinlerine izin verdiğinden emin olun.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - Cihazınızda ekran parlaklığı artırmak",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "Jade size kendi QR kodunu gösterecektir.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "Pairing Device",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "ledgerButtonNeedHelp": "Yardıma mı ihtiyacınız var?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerImportButton": "Başlayın",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxActionPairDeviceButton": "Başlangıç",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - Cihazınızı daha yakın veya daha fazla hareket etmeye çalışın",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "ledgerActionFailedMessage": "{action} Başarısız",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep12": "Bull Bitcoin cüzdanı, SeedSigner'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "Güvenli bağlantı kurmak...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   - QR kodunu sürekli tutun ve merkezied",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "ledgerHelpStep3": "Ledger’in Bluetooth’un ortaya çıktığını emin olun.",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "BitBox cüzdanınız başarıyla ithal edilmiştir.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "psbtFlowPartProgress": "Bölüm {current} / {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyTitle": "Adresi Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "seedsignerStep1": "SeedSigner cihazınızı açın",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerProcessingSign": "Kayıt İşlemleri",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "jadeStep6": "   - Cihazınızda ekran parlaklığı artırmak",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "ledgerVerifyButton": "Verify Address",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "kruxStep14": "Bull Bitcoin cüzdanı, Krux'taki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Please enter your password on the BitBox device to keep.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "psbtFlowScanDeviceQr": "Bull Bitcoin cüzdanı, QR kodunu {device} taramanızı isteyecektir. Bunu yorumlayın.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "ledgerSuccessVerifyTitle": "Ledger'de adresleme ...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - Cihazınızda ekran parlaklığı artırmak",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "Vakıf Pasaport Kuralları",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "Cüzdan Başarılı Bir Şekilde Üretildi",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "bitboxErrorOperationCancelled": "Operasyon iptal edildi. Lütfen tekrar deneyin.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "Blockstream Jade PSBT Talimatlar",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "psbtFlowReviewTransaction": "İşlem sizin {device}'inizde ithal edildikten sonra, varış adresini ve miktarı gözden geçirin.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "Cihazınızda ekran parlaklığı artırmak",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "Kayıt İşlemleri",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "ledgerErrorDeviceLocked": "Ledger cihazı kilitlidir. Lütfen cihazınızı açın ve tekrar deneyin.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerHelpStep4": "Bitcoin uygulamasının son versiyonunu Ledger Live'dan yükledikten emin olun.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerSuccessSignDescription": "İşleminiz başarıyla imzalanmıştır.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerHelpStep1": "Ledger cihazınızı yeniden başlatın.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerConnectingSubtext": "Güvenli bağlantı kurmak...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "Cihaz çiftleştirilmedi. Lütfen ilk önce çiftleşme sürecini tamamlamak.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "Saat-sadece cüzdanınızı kurmak...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "bitboxActionImportWalletTitle": "İthalat BitBox Wallet",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "Talimatlar",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "BitBox'da yüklü en son bilgisayarınız olduğundan emin olun.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "BitBox02 ekran ile bu adresi karşılaştırın",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "ledgerVerifyAddressLabel": "Doğrulama Adresi:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "jadeStep1": "Jade cihazınıza giriş",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "psbtFlowTroubleScanningTitle": "Bir sorun taramanız varsa:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "seedsignerInstructionsTitle": "SeedSigner Talimatlar",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Lütfen BitBox cihazınızdaki çift kodu doğrulayın...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "Click Sign",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "Bull cüzdanında gösterilen QR kodu",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "BitBox cihazına bağlanmak için başarısız oldu. Lütfen bağlantınızı kontrol edin.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "Saat-sadece cüzdanınızı kurmak...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "Ben yaptım",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "ledgerWalletTypeSegwitDescription": "Yerli SegWit - Önerilen",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "bitboxActionImportWalletProcessing": "İthalat",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "Bull cüzdanında gösterilen QR kodu",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "Bir sorun taramanız varsa:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "ledgerHelpTitle": "Ledger Troubleshooting",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "psbtFlowMoveBack": "Cihazınızı biraz geri hareket etmeye çalışın",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep2": "Click Scan",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerWalletTypeLabel": "Cüzdan Türü:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "keystoneStep6": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "ledgerInstructionsIos": "Ledger'inizin Bitcoin uygulaması açıldı ve Bluetooth etkinleştirildiğinden emin olun.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "passportStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "psbtFlowSelectSeed": "İşlem sizin {device}'inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerSuccessAddressVerified": "Adres doğrulama başarıyla!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "kruxStep10": "İşlem Krux'inizde ithal edildiğinde, varış adresini ve miktarı gözden geçirin.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "Güvenli bağlantı kurmak için başarısız oldu. Lütfen tekrar deneyin.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "İşlem Anahtar taşınızda ithal edildiğinde, varış adresini ve miktarı gözden geçirin.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "Specter Talimatlar",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "BitBox cihazı bulunamadı.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "ledgerScanningMessage": "Yakınlarda Ledger cihazları arıyorsunuz...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "ledgerHelpStep2": "Telefonunuzun Bluetooth'in döndü ve izin verildiğinden emin olun.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "keystoneStep5": "   - Cihazınızda ekran parlaklığı artırmak",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   - Cihazınızı biraz geri taşımayı deneyin",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "Krux'inizde işlemi imzalamak için düğmeleri tıklayın.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Lütfen Bitcoin uygulamasını Ledger cihazınızda açın ve tekrar deneyin.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Yaşlı format",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "seedsignerStep9": "Hedef adresi ve miktarı gözden geçirin ve SeedSigner'inizin imzasını onaylayın.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "Click Sign with QR Code",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "Anahtar taşınızda işlemi imzalamak için düğmeleri tıklayın.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "BitBox'da Adres Verify",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "Cüzdan Başarılı Bir Şekilde Üretildi",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "Start Signing",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep14": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "ledgerSuccessVerifyDescription": "Adres Ledger cihazınızda doğrulandı.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "psbtFlowSignTransaction": "Kayıt işlemi",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "ledgerConnectingMessage": "{deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveQRCode": "QR Kodu",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "Jade üzerinde işlemi imzalamak için düğmeleri tıklayın.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "Bilinmeyen hata meydana geldi",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowTransactionImported": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "kruxStep4": "Kameradan Yük",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "Lütfen bu adresi BitBox cihazınızda doğrulayın",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "ledgerConnectTitle": "Ledger Cihazınızı Bağlayın",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "bitboxScreenConnecting": "BitBox'a bağlanın",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Lütfen şifrenizi BitBox cihazına girin...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "Adres BitBox cihazınızda doğrulandı.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "ledgerHelpStep5": "Emin olun Ledger cihazı en son bilgisayarı kullanıyor, Ledger Live masaüstü uygulamasını kullanarak bilgisayarı güncelleyebilirsiniz.",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "psbtFlowScanQrShown": "Bull cüzdanında gösterilen QR kodu",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Lütfen BitBox cihazınızdaki adresi onaylayın.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "Keystone Talimatları",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "BitBox'da adres göstermek...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "İşlem Başarılı Bir Şekilde İmzalandı",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerSuccessImportDescription": "Ledger cüzdanınız başarıyla ithal edildi.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionUnlockDeviceButton": "Unlock Device Device",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "ledgerInstructionsAndroidUsb": "Emin olun Ledger, Bitcoin uygulaması açıldı ve USB üzerinden bağlanır.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "bitboxScreenTryAgainButton": "Tekrar tekrar deneyin",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "psbtFlowClickDone": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Device Unlocked Başarılı bir şekilde başarılı bir şekilde",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "Operasyon zamanı çıktı. Lütfen tekrar deneyin.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "{device} cihazınızı açın",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "Click Scan",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "psbtFlowSignTransactionOnDevice": "İşlemi {device} cihazınızda imzalamak için düğmelere tıklayın.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "keystoneStep7": "   - Cihazınızı biraz geri taşımayı deneyin",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "Bull cüzdanında gösterilen QR kodu",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "Bir sorun taramanız varsa:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "BitBox02 cihazınızı dövme ve yeniden bağlantı kurarak yeniden başlatın.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "Bull Bitcoin cüzdanı, Anahtarstone üzerindeki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "ledgerErrorRejectedByUser": "İşlem, Ledger cihazı üzerindeki kullanıcı tarafından reddedildi.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "passportStep10": "Pasaport daha sonra size kendi QR kodunu gösterecektir.",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "Lütfen işlemi Ledger cihazınızda onaylayın...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "seedsignerStep10": "TohumSigner size kendi QR kodunu gösterecektir.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   - Cihazınızı biraz geri taşımayı deneyin",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "İşlem SeedSigner'inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "ledgerButtonManagePermissions": "Uygulama İzinleri Yönetin",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Yerli SegWit - Önerilen",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "BitBox02'de onay için bekleyin...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "Device Paired Başarılı Bir Şekilde",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "BitBox cihazları bulunamadı. Cihazınızın USB aracılığıyla ve bağlantılı olduğundan emin olun.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "kruxStep6": "Bir sorun taramanız varsa:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "ledgerProcessingVerify": "Ledger'e hitap etmek...",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "jadeStep2": "Bir tane varsa bir geçiş ekleyin (isteğen)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "Keystone cihazınıza giriş",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "Bull cüzdanında gösterilen QR kodu",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "Kayıt İşlemleri",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "\"Scan QR\" seçeneği seçin",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "ledgerWalletTypeSelectTitle": "Cüzdan seçin Tipi Tipi Tipi Tipi",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerImportTitle": "Import Ledger Wallet",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "bitboxScreenScanning": "Cihazlar için Tarama",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "ledgerHelpSubtitle": "İlk olarak, Ledger cihazınızın açık olduğundan ve Bitcoin uygulaması açılır. Cihazınız hala uygulama ile bağlantı yapmazsa, aşağıdakileri deneyin:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "bitboxActionImportWalletButton": "Başlayın",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "jadeStep4": "Bull cüzdanında gösterilen QR kodu",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "PSBT imzalanması için gereklidir",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "kruxInstructionsTitle": "Krux Talimatlar",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "ledgerErrorDeviceBusy": "Başka bir program Ledger'ınızı kullanıyor. Lütfen onu kapatın (örneğin, Ledger Live) ve tekrar deneyin.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "No Ledger bağlantısı mevcut",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "bitboxScreenActionFailed": "{action} Başarısız",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "Bir sorun taramanız varsa:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "Verify Address",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "İlk olarak, BitBox02 cihazınızın telefon USB portuna bağlı olduğundan emin olun. Cihazınız hala uygulama ile bağlantı yapmazsa, aşağıdakileri deneyin:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "Doğrulama Adresi:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "USB izinleri BitBox cihazlarına bağlanmak için gereklidir.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Lütfen BitBox cihazınızdaki işlemi onaylayın...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "BitBox cihazınız şimdi çiftleştirilir ve kullanıma hazırdır.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "BitBox cihazınıza bakmak...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Bağlantı türü ilklenmedi.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerErrorPermissionDenied": "Ledger cihazlarına bağlanmak için Bluetooth izinleri gereklidir.",
+  "ledgerErrorNoDevicesFound": "Ledger cihazı bulunamadı. Cihazınızın açık ve Bluetooth'un etkin olduğundan emin olun.",
+  "ledgerErrorMultipleDevicesFound": "Birden fazla Ledger cihazı bulundu. Lütfen yakında yalnızca bir cihaz olduğundan emin olun.",
+  "ledgerErrorDeviceNotFound": "Ledger cihazı bulunamadı.",
+  "ledgerErrorDeviceMismatch": "Cihaz uyuşmazlığı tespit edildi.",
+  "ledgerErrorInvalidPsbt": "Geçersiz PSBT formatı tespit edildi.",
+  "ledgerErrorMissingDerivationPath": "Türetme yolu gereklidir",
+  "ledgerErrorMissingScriptType": "Betik türü gereklidir",
+  "ledgerProcessingVerifySubtext": "Lütfen Adresinizi Ledger cihazınızda onaylayın.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerInstructionsAndroidDual": "Ledger'inizin Bitcoin uygulaması açıldı ve Bluetooth etkinleştirildiğinden emin olun.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "jadeStep9": "İşlem Jade'nizde ithal edildiğinde, varış adresini ve miktarı gözden geçirin.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "İşleminiz başarıyla imzalanmıştır.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - Cihazınızda ekran parlaklığı artırmak",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "BitBox02'nizin USB aracılığıyla kilidini ve bağlantılı olduğundan emin olun.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "BitBox cihazından gelen uygun yanıt. Lütfen tekrar deneyin.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "Cüzdan Türü:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "İşlem pasaportunuzda ithal edildikten sonra, varış adresini ve miktarı gözden geçirin.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "Start Signing",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "Pasaportunuzda işlemi imzalamak için düğmeleri tıklayın.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "Krux daha sonra size kendi QR kodunu gösterecektir.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "ledgerScanningTitle": "Cihazlar için Tarama",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "BitBox cihazınız şimdi açılıyor ve kullanıma hazır.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "Şifre girin",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "Keystone daha sonra size kendi QR kodunu gösterecektir.",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "ledgerSuccessSignTitle": "İşlem Başarılı Bir Şekilde İmzalandı",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   - Cihazınızı biraz geri taşımayı deneyin",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "Bu kodu BitBox02 ekranını eşleştirin, sonra cihazı doğrulayın.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "Krux cihazınıza giriş",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "Adres TYT başarıyla başarılı bir şekilde",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "Cüzdan seçin Tipi Tipi Tipi Tipi",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "Uygulama İzinleri Yönetin",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "psbtFlowMoveLaser": "Kırmızı lazeri hareket ettirin ve QR kodunun üzerinde",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "{device} size kendi QR kodunu gösterecektir.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenPairingCode": "Pairing Code",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "ledgerProcessingImport": "İthalat",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerErrorMissingAddress": "Adres doğrulama için gereklidir",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Unlocking Device",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "Bir sorun taramanız varsa:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "ledgerButtonTryAgain": "Tekrar tekrar deneyin",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "Verify Address",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "BitBox Cihazınızı Bağlayın",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "ledgerSignTitle": "Kayıt İşlemleri",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "psbtFlowSignViaNfc": "NFC ile imzala",
+  "psbtFlowSignViaNfcSheetTitle": "PSBT'yi NFC ile göndermek için {deviceName} cihazınıza dokunun",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Talimatları",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Talimatları",
+  "psbtFlowColdcardQStep1": "Coldcard Q cihazınıza giriş yapın",
+  "psbtFlowColdcardQStep2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "psbtFlowColdcardQStep3": "Tercih ettiğiniz imzalama yöntemini seçin:",
+  "psbtFlowColdcardQStep4": "QR kodu için:",
+  "psbtFlowColdcardQStep5": "   - Coldcard Q'nuzda \"Scan any QR code\" seçeneğini seçin",
+  "psbtFlowColdcardQStep6": "   - Bull cüzdanında gösterilen QR kodunu tarayın",
+  "psbtFlowColdcardQStep7": "   - Taramada sorun yaşarsanız:",
+  "psbtFlowColdcardQStep8": "     - Cihazınızın ekran parlaklığını artırın",
+  "psbtFlowColdcardQStep9": "     - Kırmızı lazeri QR kodunun üzerinde yukarı aşağı hareket ettirin",
+  "psbtFlowColdcardQStep10": "     - Cihazınızı biraz geriye çekmeyi deneyin",
+  "psbtFlowColdcardQStep11": "NFC için:",
+  "psbtFlowColdcardQStep12": "   - Coldcard Q'nuzda \"Ready to Sign\" seçeneğini seçin, ardından NFC düğmesine dokunun",
+  "psbtFlowColdcardQStep13": "   - Telefonunuzu Coldcard Q'ya dokundurun",
+  "psbtFlowColdcardQStep14": "   - PSBT'nin aktarılmasını bekleyin",
+  "psbtFlowColdcardQStep15": "İşlem Coldcard Q'nuza aktarıldıktan sonra, hedef adresi ve miktarı gözden geçirin.",
+  "psbtFlowColdcardQStep16": "İşlemi Coldcard Q'nuzda imzalamak için düğmelere tıklayın.",
+  "psbtFlowColdcardQStep17": "Coldcard Q daha sonra imzalanmış işlemin QR kodunu gösterecek veya NFC aktarımını hazırlayacaktır.",
+  "psbtFlowColdcardQStep18": "QR ile imzaladıysanız, Bull Bitcoin cüzdanında \"Ben yaptım\"a tıklayın.",
+  "psbtFlowColdcardQStep19": "Bull Bitcoin cüzdanı, imzalanmış işlemin QR kodunu taramanızı veya NFC ile almanızı isteyecektir.",
+  "psbtFlowColdcardQStep20": "   - QR için: Coldcard Q'daki QR kodunu tarayın",
+  "psbtFlowColdcardQStep21": "   - NFC için: telefonunuzu Coldcard Q'ya dokundurun",
+  "psbtFlowColdcardQStep22": "İmzalanmış işlem Bull Bitcoin cüzdanına aktarılacaktır.",
+  "psbtFlowColdcardQStep23": "Artık yayınlanmaya hazır. Yayınla'ya tıkladığınız anda, işlem Bitcoin ağında yayınlanacaktır.",
+  "psbtFlowColdcardMk4Step1": "Coldcard Mk4 cihazınıza giriş yapın",
+  "psbtFlowColdcardMk4Step2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
+  "psbtFlowColdcardMk4Step3": "Coldcard Mk4'ünüzde \"Ready to Sign\" seçeneğini seçin, ardından 3 numaralı düğmeye dokunun",
+  "psbtFlowColdcardMk4Step4": "Telefonunuzu Coldcard Mk4'e dokundurun",
+  "psbtFlowColdcardMk4Step5": "PSBT'nin aktarılmasını bekleyin",
+  "psbtFlowColdcardMk4Step6": "İşlem Coldcard Mk4'ünüze aktarıldıktan sonra, hedef adresi ve miktarı gözden geçirin.",
+  "psbtFlowColdcardMk4Step7": "İşlemi Coldcard Mk4'ünüzde imzalamak için düğmelere tıklayın.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 daha sonra imzalanmış işlemi NFC aktarımı için hazırlayacaktır.",
+  "psbtFlowColdcardMk4Step9": "Bull Bitcoin cüzdanında, yayın ekranında NFC'ye dokunun.",
+  "psbtFlowColdcardMk4Step10": "İmzalanmış işlemi almak için telefonunuzu Coldcard Mk4'e dokundurun.",
+  "psbtFlowColdcardMk4Step11": "İmzalanmış işlem Bull Bitcoin cüzdanına aktarılacaktır.",
+  "psbtFlowColdcardMk4Step12": "Bull Bitcoin cüzdanında işlem detaylarını gözden geçirin.",
+  "psbtFlowColdcardMk4Step13": "Artık yayınlanmaya hazır. Yayınla'ya tıkladığınız anda, işlem Bitcoin ağında yayınlanacaktır.",
+  "bitboxErrorBluetoothPermissionDenied": "BitBox02 Nova'nıza bağlanmak için Bluetooth izni gereklidir.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth kullanılamıyor. Bluetooth'u açın ve tekrar deneyin.",
+  "bitboxErrorNoBleDevicesFound": "Yakında BitBox02 Nova bulunamadı. Bluetooth'u kontrol edip tekrar deneyin.",
+  "bitboxErrorMultipleBleDevicesFound": "Birden fazla BitBox02 Nova cihazı bulundu. Yakında yalnızca bir tane bırakın ve tekrar deneyin.",
+  "bitboxErrorOperationFailed": "BitBox işlemi başarısız oldu. Lütfen tekrar deneyin.",
+  "bitboxScreenConnectSubtextBluetooth": "BitBox02 Nova'nızın kilidinin açık ve Bluetooth'un etkin olduğundan emin olun.",
+  "bitboxScreenScanningSubtextBluetooth": "Yakınlarda BitBox02 Nova'nız aranıyor...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Sorun Giderme",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Cihazınız uygulamayla hâlâ bağlanmıyorsa, şunları deneyin:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Bluetooth'un açık ve bu uygulama için izinli olduğundan emin olun.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "BitBox02 Nova'nızda Bluetooth'un etkin olduğundan emin olun.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "BitBox02 Nova'nızı yeniden başlatın ve tekrar bağlanmayı deneyin.",
+  "psbtFlowInvalidPsbtError": "Bu işlem okunamadı. Geri dönüp yeniden oluşturun.",
+  "psbtFlowQrEncodingError": "Bu işlem QR koduna dönüştürülemedi."
+}

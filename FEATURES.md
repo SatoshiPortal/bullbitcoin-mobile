@@ -70,21 +70,19 @@ graph TB
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_SETTINGS -->|order statistics| BBX_API
 
+    SIGNERS[Signers<br/>Workspace Feature]
+    SIGNERS --> PRIMITIVES
+    SIGNERS --> SYNC
+    SIGNERS --> BULL_UI
+
     %% Feature modules
     ARK[Ark Journeys<br/>Workspace Feature]
     ARK_NATIVE[Ark Package<br/>Native lifecycle and protocol operations]
     ARK --> ARK_NATIVE
-    ARK --> SECRETS
-    ARK --> PRIMITIVES
-    ARK --> BULL_UI
-    ARK --> BG_TASKS
-    ARK --> NOTIFICATIONS
     ARK_NATIVE --> PRIMITIVES
     TRANSFER --> ARK
     SWAPS --> ARK
     TRANSFER -->|public receive address| WALLETS
-    SEND --> ARK
-    SETTINGS --> ARK
     APP_STARTUP --> ARK
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
     WIZARD[Wizard]
@@ -129,10 +127,14 @@ graph TB
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     SCANNING[QR and NFC Scanning]
     IMPORT_COLDCARD[Coldcard Import]
-    PSBT_FLOW[PSBT Flow]
     BROADCAST_SIGNED_TX -->|public QR and NFC scanning| SCANNING
     IMPORT_COLDCARD -->|public NFC scanning| SCANNING
-    PSBT_FLOW -->|public NFC scanning| SCANNING
+    CORE -->|signer NFC callback| SCANNING
+    SCANNING --> SIGNERS
+    RECEIVE --> SIGNERS
+    WALLETS --> SIGNERS
+    IMPORT_COLDCARD --> SIGNERS
+    IMPORT_QR_DEVICE --> SIGNERS
     IMPORT_WATCH_ONLY[Watch-Only Wallet Import]
     IMPORT_WATCH_ONLY -->|public QR scanning| SCANNING
     WALLETS -->|public QR scanning| SCANNING
@@ -365,20 +367,15 @@ graph TB
     WITHDRAWAL --> TX_HISTORY
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
-    BITBOX[BitBox]
-    LEDGER[Ledger]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     MEMPOOL_SETTINGS[Mempool Settings]
-    PSBT_FLOW[PSBT Flow]
     WIZARD[Wizard]
     APP_STARTUP --> SETTINGS
     AUTOBUY --> EXCHANGE
     AUTOBUY --> WALLETS
     AUTOSWAP --> SEND
     AUTOSWAP --> SETTINGS
-    IMPORT_WALLET --> BITBOX
-    BITBOX --> LEDGER
-    BROADCAST_SIGNED_TX --> SEND
+    IMPORT_WALLET --> SIGNERS
     BUY --> FEES
     CONSOLIDATION --> SEND
     DCA --> SETTINGS
@@ -390,13 +387,12 @@ graph TB
     FEES --> ELECTRUM_SETTINGS
     FEES --> WALLETS
     LABELS --> WALLETS
-    IMPORT_WALLET --> LEDGER
-    IMPORT_WATCH_ONLY --> LEDGER
+    IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
     MEMPOOL_SETTINGS --> SETTINGS
     PAY --> FEES
     PAY --> SETTINGS
-    SEND --> PSBT_FLOW
+    SEND --> SIGNERS
     RECIPIENTS --> SETTINGS
     REPLACE_BY_FEE --> FEES
     REPLACE_BY_FEE --> SEND
@@ -552,7 +548,6 @@ The architecture test records source dependencies, including internal imports an
 | `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `autoswap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
-| `bitbox → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/bitbox/ui/screens/bitbox_action_screen.dart -> lib/features/wallet/domain/wallet.dart` |
 | `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `buy → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/buy/buy_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
@@ -566,12 +561,10 @@ The architecture test records source dependencies, including internal imports an
 | `fees → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/fees/domain/get_network_fees_usecase.dart -> lib/features/wallet/domain/wallet.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
 | `labels → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/labels/frameworks/bip329_codec.dart -> lib/features/wallet/data/wallet_metadata_service.dart` |
-| `ledger → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/ledger/ui/screens/ledger_action_screen.dart -> lib/features/wallet/domain/wallet.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `mempool_settings → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/mempool_settings/data/settings_environment_adapter.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `pay → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/pay/pay_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `psbt_flow → wallet` | Network behavior: Transaction review retains the captured wallet/network when routing to signing and broadcast. | `lib/features/psbt_flow/show_psbt/show_psbt_screen.dart -> lib/features/wallet/domain/wallet.dart` |
 | `recipients → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/recipients/recipients_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
 | `recipients → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/recipients/domain/usecases/get_recipients_environment_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `replace_by_fee → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
@@ -620,3 +613,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 `packages/secrets` owns the legacy OS keychain through closed access, exchange, Silent Payments and swap capabilities. Access compares the PIN internally; no stored PIN leaves the package. Consumers select a capability rather than a key or arbitrary prefix. The generic `lib/core/storage` secure key-value datasource and its custody exception are removed. Existing keys and Android/iOS plugin options are preserved, with no data migration. Silent Payments configuration remains in its existing keychain entries even though it is not secret.
 
 `packages/swaps` depends directly on `secrets`: `SwapStorage` owns the legacy `swap_` key composition and maps `SwapKeychain` failures inside the engine. Composition injects the closed capability directly, with no feature-owned secret-store bridge. Its regtest view shares the canonical capability and fingerprint allocation locks; only swap blobs use the separate `swap_regtest_` namespace.
+
+## Signer ownership (2026-11-20)
+
+`features/signers` replaces the Ledger, BitBox and PSBT-flow owners. Import consumes public accounts; Send and Receive pass the wallet network. Scanning and wallet import consume the published URQR/device types. NFC presentation and route assembly stay in the shell through callbacks, so signers has no scanning, wallet, settings or import dependency. Existing consumer edges to signer internals become edges to its public library; the retired reverse edges are removed. BBQR transaction decoding remains blocked on the shell-owned `BitcoinTx`; BBQR encoding is extracted.

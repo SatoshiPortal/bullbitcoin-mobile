@@ -1,6 +1,5 @@
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
-import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart'
-    show PsbtHandoffResult;
 
 import '../../../coins/public/coins_facade.dart' show CoinsRoute;
 import '../widgets/send_leave_payment_dialog.dart';
@@ -40,11 +39,6 @@ import 'package:bb_mobile/core/utils/payment_request.dart'
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
@@ -3094,13 +3088,14 @@ class ShowPsbtButton extends StatelessWidget {
           SendWalletBitcoin(:final wallet) => wallet,
           _ => null,
         };
-        final result = await context.pushNamed<PsbtHandoffResult>(
-          PsbtFlowRoutes.show.name,
-          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
+        if (unsignedPsbt == null) return;
+        final result = await SignersNavigation.showPsbt(
+          context,
+          psbt: unsignedPsbt,
+          signerDevice: signerDevice,
         );
         if (result == PsbtHandoffResult.readyToReadSignedTransaction &&
             context.mounted) {
-          if (unsignedPsbt == null) return;
           await SendPsbtHandoff.of(context)(context, unsignedPsbt, wallet);
         }
       },
@@ -3133,17 +3128,20 @@ class SignLedgerButton extends StatelessWidget {
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
         final wallet = context.read<SendCubit>().state.selectedWallet;
-        if (unsignedPsbt == null || wallet == null) return;
+        if (unsignedPsbt == null ||
+            wallet == null ||
+            derivationPath == null ||
+            scriptType == null) {
+          return;
+        }
 
-        final result = await context.pushNamed<String>(
-          LedgerRoute.ledgerSignTransaction.name,
-          extra: LedgerRouteParams(
-            network: wallet.network.environment,
-            psbt: unsignedPsbt,
-            derivationPath: derivationPath,
-            requestedDeviceType: deviceType,
-            scriptType: scriptType,
-          ),
+        final result = await SignersNavigation.signLedger(
+          context,
+          network: wallet.network.environment,
+          psbt: unsignedPsbt,
+          derivationPath: derivationPath,
+          requestedDeviceType: deviceType,
+          scriptType: scriptType,
         );
 
         if (result != null && context.mounted) {
@@ -3187,17 +3185,20 @@ class SignBitBoxButton extends StatelessWidget {
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
         final wallet = context.read<SendCubit>().state.selectedWallet;
-        if (unsignedPsbt == null || wallet == null) return;
+        if (unsignedPsbt == null ||
+            wallet == null ||
+            derivationPath == null ||
+            scriptType == null) {
+          return;
+        }
 
-        final result = await context.pushNamed<String>(
-          BitBoxRoute.bitboxSignTransaction.name,
-          extra: BitBoxRouteParams(
-            network: wallet.network.environment,
-            psbt: unsignedPsbt,
-            derivationPath: derivationPath,
-            requestedDeviceType: deviceType,
-            scriptType: scriptType,
-          ),
+        final result = await SignersNavigation.signBitBox(
+          context,
+          network: wallet.network.environment,
+          psbt: unsignedPsbt,
+          derivationPath: derivationPath,
+          requestedDeviceType: deviceType,
+          scriptType: scriptType,
         );
 
         if (result != null && context.mounted) {

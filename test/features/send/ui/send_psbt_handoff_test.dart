@@ -1,5 +1,6 @@
+import 'package:signers/signers.dart' show SignersLocalizations;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/signers_psbt_routes.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -86,7 +87,9 @@ void main() {
           ),
         );
         if (confirm) {
-          await tester.tap(find.text(loc.psbtFlowDone));
+          await tester.tap(
+            find.text(SignersLocalizations.of(context).psbtFlowDone),
+          );
         } else {
           router.pop();
         }

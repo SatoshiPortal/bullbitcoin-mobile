@@ -1,24 +1,19 @@
-import 'package:bb_mobile/features/ledger/domain/signer_account.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_failure_l10n.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:primitives/primitives.dart' show NetworkCapability;
 
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullTabMenuVerticalButton, BullText, Gap, BullTypographyX;
@@ -132,10 +127,10 @@ class ImportWalletPage extends StatelessWidget {
                       onTap: network == null
                           ? null
                           : () async {
-                              final account = await context
-                                  .pushNamed<SignerAccount>(
-                                    LedgerRoute.importLedger.name,
-                                    extra: LedgerRouteParams(network: network),
+                              final account =
+                                  await SignersNavigation.importLedger(
+                                    context,
+                                    network: network,
                                   );
                               if (account == null || !context.mounted) return;
                               final result = GetLedgerWatchOnlyWalletUsecase()
@@ -165,14 +160,12 @@ class ImportWalletPage extends StatelessWidget {
                       onTap: network == null
                           ? null
                           : () async {
-                              final account = await context
-                                  .pushNamed<SignerAccount>(
-                                    BitBoxRoute.importBitBox.name,
-                                    extra: BitBoxRouteParams(
-                                      network: network,
-                                      requestedDeviceType:
-                                          SignerDeviceEntity.bitbox02,
-                                    ),
+                              final account =
+                                  await SignersNavigation.importBitBox(
+                                    context,
+                                    network: network,
+                                    requestedDeviceType:
+                                        SignerDeviceEntity.bitbox02,
                                   );
                               if (account == null || !context.mounted) return;
                               final result = GetBitBoxWatchOnlyWalletUsecase()

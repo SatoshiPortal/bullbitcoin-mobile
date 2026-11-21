@@ -1,0 +1,51 @@
+name: signers
+description: Hardware signer discovery, public accounts, signing and QR handoff.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+dependencies:
+  bitbox_transport:
+  bs58check: ^1.0.2
+  bull_logger:
+  bull_ui:
+  cbor: ^6.3.7
+  convert: ^3.1.2
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  freezed_annotation: ^3.1.0
+  get_it: ^9.1.1
+  go_router: ^18.1.4
+  intl: any
+  ledger_bitcoin:
+    git:
+      url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
+      path: packages/ledger-bitcoin
+      ref: d71f36e95a763491adab95fc1f5abf86f532ac4e
+  material_ui: ^1.11.0
+  meta: ^1.17.0
+  permission_handler: ^13.0.2
+  primitives:
+  rust_bindings:
+  satoshifier:
+  screen_awake:
+  sync:
+  universal_ble: ^3.3.0
+  ur:
+    git:
+      url: https://github.com/bukata-sa/bc-ur-dart.git
+      ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
+dev_dependencies:
+  fake_async: ^1.3.3
+  build_runner: ^2.10.4
+  freezed: ^4.0.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+flutter:
+  uses-material-design: true
+  generate: true

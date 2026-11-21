@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/ledger/domain/signer_account.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:primitives/primitives.dart';
