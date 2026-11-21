@@ -970,19 +970,15 @@
   "importQrDeviceSpecterStep2": "Введіть Ваш кошик",
   "importColdcardInstructionsStep10": "Комплектація",
   "dcaChooseWalletTitle": "Виберіть гаманець Bitcoin",
-  "torSettingsPortHint": "9050 р",
-  "electrumTimeoutPositiveError": "Потрібні бути позитивними",
   "fundExchangeETransferLabelSecretAnswer": "Секрет відповіді",
   "sendScheduledPayment": "Графік роботи",
   "withdrawOwnershipQuestion": "Хто такий обліковий запис належить?",
   "sendSendNetworkFee": "Закупи хостинг »",
   "exchangeDcaUnableToGetConfig": "Неможливо отримати конфігурацію DCA",
   "sellInstitutionNumber": "Кількість установ",
-  "mempoolSettingsCustomServer": "Власний сервер",
   "fundExchangeMethodRegularSepa": "Звичайна СПА",
   "addressViewTransactions": "Твитнуть",
   "importQrDeviceKruxStep3": "Натисніть XPUB - QR-код",
-  "electrumPrivacyNoticeSave": "Зберегти",
   "withdrawOwnershipOtherAccount": "Це чужий рахунок",
   "receiveInvoice": "Блискавка Invoice",
   "receiveGenerateAddress": "Створити новий сайт",
@@ -1001,8 +997,6 @@
     }
   },
   "autoswapAlwaysBlockEnabledInfo": "Якщо ввімкнено, автообміни з комісією понад встановлений ліміт завжди блокуватимуться",
-  "electrumServerAlreadyExists": "Цей сервер вже існує",
-  "electrumServerUnreachable": "Сервер недоступний. Перевірте адресу та спробуйте ще раз.",
   "sellPaymentMethod": "Спосіб оплати",
   "importColdcardInstructionsStep2": "Вкажіть прохід, якщо це можливо",
   "satsSuffix": " атласне",
@@ -1040,7 +1034,6 @@
     }
   },
   "importWatchOnlyImportButton": "Імпорт Watch-Only Wallet",
-  "electrumTitle": "Налаштування серверів Electrum",
   "importQrDeviceJadeStep7": "Щоб змінити тип адреси",
   "sendBroadcastingTransaction": "Трансляція угоди.",
   "swapReceiveExactAmountLabel": "Отримати точний розмір",
@@ -1081,17 +1074,6 @@
   "buyDocumentUpload": "Документи",
   "sendTransferFeeDescription": "Це загальна плата, яка відхилена від суми, відправленого",
   "buyAboveMaxAmountError": "Ви намагаєтеся придбати над максимальною кількістю.",
-  "electrumTimeoutWarning": "Ваш час ({timeoutValue} секунди) нижче рекомендованого значення ({recommended} секунд) для цього Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "Показати PSBT",
   "broadcastSignedTxAmount": "Сума",
   "hwJade": "Блокстрім Jade",
@@ -1114,10 +1096,8 @@
   "allSeedViewIUnderstandButton": "Я витримую",
   "coreScreensExternalTransfer": "Зовнішній обмін",
   "sellKYCRejected": "Перевірка KYC відхилено",
-  "electrumNetworkLiquid": "Рідина",
   "buyBelowMinAmountError": "Ви намагаєтеся придбати нижче мінімальної суми.",
   "exchangeLandingFeature6": "Історія угод",
-  "electrumEmptyFieldError": "Це поле не може бути порожнім",
   "connectHardwareWalletKrux": "Кошик",
   "receiveSelectNetwork": "Оберіть мережу",
   "sellLoadingGeneric": "Завантаження.",
@@ -1183,7 +1163,6 @@
   "payPasteInvoice": "Паста Invoice",
   "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
   "sendSwapId": "Обмін ID",
-  "electrumServerOnline": "Інтернет",
   "testBackupDefaultWallets": "Гаманець за замовчуванням",
   "autoswapRecipientWalletInfoText": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
   "withdrawAboveMaxAmountError": "Максимальна сума {amount} {currency}",
@@ -1198,11 +1177,9 @@
   "autoswapWarningOkButton": "ЗАРЕЄСТРУВАТИСЯ",
   "swapTitle": "Внутрішній обмін",
   "sendOutputTooSmall": "Вихід нижче обмеження пилу",
-  "torSettingsStatusConnected": "Готово",
   "backupSettingsFailedToDeriveKey": "Переміщений для відновлення ключа резервного копіювання",
   "googleDriveProvider": "Українська",
   "sellAccountName": "Назва облікового запису",
-  "statusCheckUnknown": "Невідомо",
   "howToDecideVaultLocationText2": "Зручне розташування може бути набагато більш безпечною, в залежності від місця розташування, яку ви обираєте. Ви також повинні переконатися, що не втратити файл резервного копіювання або втратити пристрій, на якому зберігаються файли резервного копіювання.",
   "sendErrorLiquidWalletRequired": "Рідкий гаманець повинен використовуватися для рідини для блискавки",
   "dcaSetupInsufficientBalance": "Недостатній баланс",
@@ -1212,7 +1189,6 @@
   "swapTransferPendingMessage": "Обмін виконується. Підтвердження транзакцій Bitcoin може тривати деякий час. Ви можете повернутися на головний екран і зачекати.",
   "testBackupDecryptVault": "Розшифрування за замовчуванням",
   "totalFeeLabel": "Всього Фе",
-  "mempoolCustomServerBottomSheetDescription": "Введіть URL-адресу вашого користувацького сервера mempool. Сервер буде дійсний до економії.",
   "payExpired": "Зареєструватися",
   "payPaymentSuccessful": "Вдалий платіж",
   "exchangeHomeWithdraw": "Зняття",
@@ -1252,7 +1228,6 @@
   "bip85NextMnemonic": "Далі Mnemonic",
   "coldcardStep13": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на Coldcard. Сканування.",
   "payCoinjoinCompleted": "CoinJoin завершено",
-  "electrumAddCustomServer": "Додати користувальницький сервер",
   "rbfSatsPerVbyte": "сати/ВБ",
   "broadcastSignedTxDoneButton": "Сонце",
   "sendRecommendedFee": "{rate} sat/vB",
@@ -1268,7 +1243,6 @@
   "sendServerNetworkFees": "Статус на сервери",
   "importWatchOnlyImport": "Імпорт",
   "backupWalletBackupButton": "Зареєструватися",
-  "mempoolSettingsTitle": "Статус на сервери",
   "sellWalletBalance": "Баланс: {amount}",
   "@sellWalletBalance": {
     "placeholders": {
@@ -1326,7 +1300,6 @@
   },
   "fundExchangeInfoTransferCode": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.",
   "hwChooseDevice": "Виберіть апаратний гаманець, який ви хочете підключитися",
-  "torSettingsConnectionStatus": "Статус на сервери",
   "sendErrorInvalidAddressOrInvoice": "Плата за неоплату Bitcoin або Invoice",
   "sendErrorUnsupportedQrCodeFormat": "Непідтримуваний формат QR-коду",
   "broadcastSignedTxScanQR": "Сканування QR-коду з вашого апаратного гаманця",
@@ -1361,9 +1334,7 @@
       }
     }
   },
-  "torSettingsPortValidationEmpty": "Будь ласка, введіть номер порту",
   "swapAvailableBalance": "Доступний баланс",
-  "electrumPrivacyNoticeCancel": "Зареєструватися",
   "sellMaximumAmount": "Максимальна сума продажу: {amount}",
   "@sellMaximumAmount": {
     "placeholders": {
@@ -1388,14 +1359,12 @@
   },
   "broadcastSignedTxPageTitle": "Трансляція підписана угода",
   "importQrDeviceError": "Заборонено імпортувати гаманець",
-  "statusCheckOffline": "Оффлайн",
   "testBackupGoogleDrivePrivacyPart2": "не буде ",
   "backupWalletGoogleDrivePrivacyMessage2": "не буде ",
   "payAddressRequired": "Обов'язкова інформація",
   "payTotalAmount": "Загальна кількість",
   "autoswapWarningDontShowAgain": "Не показувати цю попередження знову.",
   "sellInsufficientBalance": "Недостатній баланс гаманця",
-  "mempoolCustomServerDeleteMessage": "Ви впевнені, що ви хочете видалити цей користувальницький сервер? Сервер за замовчуванням буде використаний замість.",
   "coldcardStep6": "   - Збільшення яскравості екрану на вашому пристрої",
   "sellCashPickup": "Готівковий пікап",
   "swapValidationInsufficientBalance": "Недостатній баланс",
@@ -1405,7 +1374,6 @@
   "networkFeeLabel": "Партнерство",
   "fundExchangeETransferLabelSecretQuestion": "Таємне питання",
   "payActualFee": "Актуальна Fee",
-  "electrumValidateDomain": "Діє домен",
   "importQrDeviceJadeFirmwareWarning": "Переконайтеся, що ваш пристрій оновлено до останньої прошивки",
   "importQrDeviceJadeStep3": "Дотримуйтесь інструкцій пристрою, щоб розблокувати Jade",
   "sendSigningFailed": "Не вдалося",
@@ -1430,38 +1398,16 @@
   "coreScreensAmountLabel": "Сума",
   "swapTransferRefundInProgressTitle": "Триває повернення коштів за обміном",
   "swapYouReceive": "Ви отримуєте",
-  "electrumInvalidRetryError": "Інвалідна птиця Кількість: {value}",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "informationWillNotLeave": "Інформація ",
   "backupWalletInstructionSecurityRisk": "Будь-який з доступом до вашого 12 резервного копіювання може вкрасти ваші біткоїни. Приховати його добре.",
-  "torSettingsPortNumber": "Номер порту",
   "pleaseWaitFetching": "Будь ласка, почекайте, коли ми фіксуємо файл резервного копіювання.",
   "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
-  "electrumReset": "Зареєструватися",
-  "electrumStopGapNegativeError": "Стоп Gap не може бути негативним",
   "importColdcardInstructionsStep9": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації",
   "backupSettingsExportVault": "Експорт Vault",
   "autoswapRecipientRequired": "Ім'я *",
   "exchangeLandingFeature4": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "buyVerifyIdentity": "Перевірити ідентичність",
   "exchangeDcaCancelDialogConfirmButton": "Так, деактивація",
-  "electrumServerUrlHint": "{network} {environment} URL сервера",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletGoogleDrivePermissionWarning": "Google попросить Вас поділитися персональною інформацією з цією програмою.",
   "importQrDeviceSeedsignerStep9": "Введіть етикетку для свого гаманця SeedSigner та натисніть Імпорт",
   "importWatchOnlyScanQR": "Сканування QR",
@@ -1473,14 +1419,6 @@
   "autoswapLoadSettingsError": "Переміщення для завантаження параметрів автоматичного затискання",
   "broadcastSignedTxReviewTransaction": "Огляд транзакцій",
   "importQrDeviceKeystoneStep5": "Виберіть \"BULL\" зі списку гаманців",
-  "electrumLoadFailedError": "Переміщені на серверах навантаження",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsTested": "Тестування",
   "exchangeAuthOk": "ЗАРЕЄСТРУВАТИСЯ",
   "importQrDeviceJadeStep9": "Скануйте QR-код, який ви бачите на вашому пристрої.",
@@ -1488,10 +1426,8 @@
   "exchangeAmountInputValidationEmpty": "Введіть суму",
   "fundExchangeLabelBeneficiaryAddress": "Адреса отримувача",
   "testBackupVerify": "Видання",
-  "electrumAdvancedOptions": "Додаткові параметри",
   "autoswapWarningCardSubtitle": "Запуск буде тривати, якщо ваш баланс миттєвих платежів перевищує 0.02 BTC.",
   "payFilterPayments": "Фільтр платежів",
-  "electrumCancel": "Зареєструватися",
   "broadcastSignedTxPushTxButton": "Кошик",
   "importWatchOnlyFingerprint": "Друк",
   "withdrawAmountContinue": "Продовжити",
@@ -1541,7 +1477,6 @@
       }
     }
   },
-  "mempoolCustomServerDeleteTitle": "Видалити користувальницький сервер?",
   "confirmSendTitle": "Підтвердження",
   "buyKYCLevel1": "Рівень 1 - Базовий",
   "sendErrorAmountAboveMaximum": "Кількість вище максимальна кількість ковпачок: {maxLimit} сати",
@@ -1571,12 +1506,10 @@
   "testBackupTranscribe": "Тран",
   "sendUnconfirmed": "Підтвердити",
   "testBackupRetrieveVaultDescription": "Перевірте, щоб переконатися, що ви можете отримати зашифрований за замовчуванням.",
-  "electrumStopGap": "Зупинити Gap",
   "payBroadcastingTransaction": "Трансляція транзакцій...",
   "withdrawConfirmAmount": "Сума",
   "copyDialogButton": "Партнерство",
   "swapConfirmTransferTitle": "Підтвердьте обмін",
-  "electrumServerOffline": "Оффлайн",
   "sendTransferFee": "Комісія обміну",
   "testBackupPhysicalBackupDescription": "Написати 12 слів на аркуші паперу. Збережіть їх безпечно і переконайтеся, що не втратити їх.",
   "sendInitiatingSwap": "Ініціюється ковпа ...",
@@ -1594,29 +1527,12 @@
   },
   "payDecodingInvoice": "Випадковий рахунок ...",
   "importColdcardInstructionsStep5": "Виберіть \"Експорт Гаманець\"",
-  "electrumStopGapTooHighError": "Stop Gap здається занадто високою. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Час видається занадто високим. {maxTimeout} секунди)",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "priceChartFetchingHistory": "Історія ціни.",
   "payFromWallet": "Від Wallet",
   "sellBankDetails": "Банк Детальніше",
   "pinStatusCheckingDescription": "Перевірка стану PIN",
   "coreScreensConfirmButton": "Підтвердження",
   "importQrDeviceSpecterStep8": "На мобільному пристрої натисніть Open Camera",
-  "electrumDragToReorder": "(Довговий прес для перетягування та зміни пріоритету)",
   "autoswapTriggerAtBalanceInfoText": "Автообмін ініціюватиметься, коли ваш баланс перевищить цей максимальний баланс.",
   "exchangeLandingDisclaimerNotAvailable": "Послуги обміну криптовалют не доступні в додатку Bull Bitcoin.",
   "sendCustomFeeRate": "Спеціальна ціна",
@@ -1648,14 +1564,6 @@
   "importQrDeviceSpecterStep9": "Сканування QR-коду, що відображається на вашому Specter",
   "importWatchOnlySelectDerivation": "Виберіть заборгованість",
   "hwPassport": "Паспорт Фундації",
-  "electrumInvalidStopGapError": "Інвалідний стоп {value}",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €30,000",
   "exchangeLandingDisclaimerLegal": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
@@ -1672,14 +1580,6 @@
   "autoswapWarningExplanation": "Коли ваш баланс перевищить максимальний баланс, буде ініційовано обмін. Цільовий баланс залишиться у вашому гаманці миттєвих платежів, а залишок буде обміняний у ваш безпечний гаманець Bitcoin.",
   "sendSwapDetails": "Обмін подробиці",
   "pinStatusLoading": "Завантаження",
-  "electrumInvalidTimeoutError": "Нормативне визначення часу: {value}",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeKycLevelLimited": "Об'єм",
   "withdrawConfirmEmail": "Веб-сайт",
   "coldcardStep7": "   - Перемістити червоному лазеру вгору і вниз по QR-коду",
@@ -1722,7 +1622,6 @@
   "testBackupGoogleDrivePrivacyPart1": "Інформація ",
   "connectHardwareWalletKeystone": "Головна",
   "importWalletTitle": "Додати новий гаманець",
-  "mempoolSettingsDefaultServer": "Статус на сервери",
   "swapToLabel": "До",
   "sendSignatureReceived": "Отримали підпис",
   "exchangeKycLevelLight": "Світло",
@@ -1733,7 +1632,6 @@
   "testBackupVaultSuccessMessage": "Ви успішно імпортували",
   "exchangeSupportChatInputHint": "Тип повідомлення...",
   "electrumTestnet": "Тестування",
-  "mempoolCustomServerAdd": "Додати користувальницький сервер",
   "sendHighFeeWarningDescription": "Сумарний збір {feePercent}% від суми, яку ви відправили",
   "@sendHighFeeWarningDescription": {
     "placeholders": {
@@ -1783,9 +1681,7 @@
   "swapGoHomeButton": "Головна",
   "sendFeeRateTooHigh": "Витрата здається дуже високою",
   "dcaEnterLightningAddressLabel": "Вхід Lightning Адреса",
-  "statusCheckOnline": "Інтернет",
   "exchangeAmountInputTitle": "Вхід",
-  "electrumCloseTooltip": "Закрити",
   "sendCoinConfirmations": "{count} підтвердження",
   "@sendCoinConfirmations": {
     "placeholders": {
@@ -1805,7 +1701,6 @@
   "autoswapAlwaysBlockInfoEnabled": "Якщо ввімкнено, автообміни з комісією понад встановлений ліміт завжди блокуватимуться",
   "importMnemonicSelectScriptType": "Імпортний мнемічний",
   "importMnemonicEmpty": "Зручність",
-  "electrumBitcoinServerInfo": "Адреса сервера в форматі: host:port (наприклад, приклад.com:50001)",
   "sendErrorInsufficientBalanceForSwap": "Чи не достатньо балансу для оплати за допомогою Рідини і не в межах обмежених обмежень для оплати через Біткойн.",
   "importQrDeviceKeystoneStep8": "У гаманці BULL виберіть бажаний тип деривації. Якщо ви не впевнені, виберіть \"Segwit (BIP84)\"",
   "buyStandardWithdrawalDesc": "Отримуйте Біткойн після сплати очистки (1-3 днів)",
@@ -1827,14 +1722,11 @@
   },
   "fundExchangeETransferLabelBeneficiaryName": "Використовуйте це як доменне ім'я E-transfer",
   "backupWalletErrorFileSystemPath": "Не вдалося вибрати шлях файлової системи",
-  "electrumServerNotUsed": "Не використовується",
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Фізична резервна копія: ",
   "receiveRequestInboundLiquidity": "Запит Отримання ємності",
   "backupWalletHowToDecideBackupMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
   "exchangeSupportChatEmptyState": "Немає повідомлень. Почати розмову!",
-  "electrumRetryCountEmptyError": "Рятівний граф не може бути порожнім",
   "swapExternalAddressHint": "Введіть адресу зовнішнього гаманця",
-  "torSettingsDescConnecting": "Створення Тор підключення",
   "appleICloudProvider": "Яблуко iCloud",
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Зашифрована сорочка: ",
   "logoutButton": "Зареєструватися",
@@ -1850,7 +1742,6 @@
       }
     }
   },
-  "torSettingsPortValidationInvalid": "Введіть дійсний номер",
   "sellBankTransfer": "Банківський переказ",
   "importQrDeviceSeedsignerStep3": "Скануйте SeedQR або введіть фразу 12- або 24- фразу",
   "replaceByFeeFastestTitle": "Швидке",
@@ -1936,14 +1827,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Видаліть користувальницький сервер",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "swapInfoBanner": "Обмінюйте Bitcoin між своїми гаманцями без зайвих зусиль. Тримайте кошти на гаманці миттєвих платежів лише для щоденних витрат.",
   "payRBFEnabled": "РБФ включено",
   "takeYourTimeTag": "Зробіть свій час",
@@ -1952,7 +1835,6 @@
   "networkFeesLabel": "Мережеві збори",
   "backupWalletPhysicalBackupDescription": "Написати 12 слів на аркуші паперу. Збережіть їх безпечно і переконайтеся, що не втратити їх.",
   "sendSwapInProgressBitcoin": "Ведуться ковпа. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
-  "electrumDeleteServerTitle": "Видалити користувальницький сервер",
   "buySelfie": "Селфі з ID",
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
   "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
@@ -1974,7 +1856,6 @@
       }
     }
   },
-  "torSettingsSaveButton": "Зберегти",
   "allSeedViewShowSeedsButton": "Показати насіння",
   "importQrDeviceSpecterInstructionsTitle": "Інструкція Specter",
   "testBackupScreenshot": "Скріншоти",
@@ -1983,7 +1864,6 @@
   "receiveQRCode": "QR-код",
   "payDecodeFailed": "Заборонено декодувати рахунок",
   "rbfErrorFeeTooLow": "Ви повинні збільшити плату за принаймні 1 sat/vbyte порівняно з оригінальною угодою",
-  "electrumPrivacyNoticeTitle": "Повідомлення про конфіденційність",
   "payOpenChannelRequired": "Відкриття телеканалу необхідно для оплати",
   "coldcardStep1": "Ввійти до пристрою Coldcard Q",
   "testBackupGoogleDriveSignIn": "Ви повинні зареєструватися на Google Диску",
@@ -2042,14 +1922,6 @@
   "sellKycPendingDescription": "Ви повинні завершити перевірку ID першим",
   "fundExchangeETransferDescription": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.",
   "sendClearSelection": "Очистити вибір",
-  "statusCheckLastChecked": "Останнє повідомлення: {time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "Швидкий і простий",
   "dcaConfirmFrequencyDaily": "Щодня",
   "importQrDeviceKeystoneStep9": "Введіть назву для вашого гаманця Keystone та натисніть \"Імпорт\"",
@@ -2074,14 +1946,6 @@
   "buyPhotoID": "Фото ID",
   "appStartupErrorTitle": "Помилка старту",
   "importQrDeviceSeedsignerStep4": "Виберіть \"Експорт Xpub\"",
-  "torSettingsPortDisplay": "Порт: {port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "importQrDeviceSpecterStep5": "Виберіть \"Майстерські публічні ключі\"",
   "allSeedViewDeleteWarningTitle": "УВАГА!",
   "backupSettingsBackupKey": "Зворотній зв'язок",
@@ -2096,20 +1960,11 @@
   "sendSwapCancelled": "Заміна",
   "backupWalletGoogleDrivePrivacyMessage4": "ні ",
   "swapTransferCompletedTitle": "Обмін завершено",
-  "torSettingsStatusDisconnected": "Відключені",
   "exchangeDcaCancelDialogTitle": "Скасувати Bitcoin Recurring Купити?",
   "hwLedger": "Клей",
   "dcaBackToHomeButton": "Головна",
   "importQrDeviceKruxInstructionsTitle": "Krux Інструкції",
   "importQrDeviceKeystoneInstructionsTitle": "Інструкція Keystone",
-  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера ",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "sendTypeSwap": "Обмін",
   "sendErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "fundExchangeMethodInstantSepa": "Миттєвий і стандартний SEPA-переказ",
@@ -2153,7 +2008,6 @@
   "exchangeFeatureSellBitcoin": "• Продати Bitcoin, оплачується з Bitcoin",
   "hwSeedSigner": "НасінняСинер",
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
-  "electrumUnknownError": "Помилки",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
   "buyUpgradeKYC": "Оновлення KYC Рівень",
   "autoswapEnableToggleLabel": "Увімкнути автообмін",
@@ -2206,7 +2060,6 @@
     }
   },
   "coldcardInstructionsTitle": "Coldcard Q Інструкції",
-  "electrumDefaultServers": "Статус на сервери",
   "scanningProgressLabel": "Сканер: {percent}%",
   "@scanningProgressLabel": {
     "placeholders": {
@@ -2216,7 +2069,6 @@
     }
   },
   "backupWalletHowToDecide": "Як вирішити?",
-  "mempoolCustomServerUrlEmpty": "Введіть URL-адресу сервера",
   "importQrDeviceKeystoneName": "Головна",
   "payBitcoinAddress": "Bitcoin адреса",
   "swapProgressPending": "Обмін у черзі",
@@ -2226,7 +2078,6 @@
   "backupSettingsKeyServer": "Статус на сервери ",
   "connectHardwareWalletColdcardQ": "Холодна картка Q",
   "dcaSetupContinue": "Продовжити",
-  "electrumFormatError": "Використовуйте хост:порт формат (наприклад, приклад.com:50001)",
   "importWatchOnlyTitle": "Імпорт годинник",
   "cancel": "Зареєструватися",
   "testBackupCreatedAt": "Створено:",
@@ -2256,8 +2107,6 @@
   },
   "replaceByFeeActivatedLabel": "Замініть активоване",
   "sendPaymentProcessing": "Опрацьовується платіж. До хвилини",
-  "electrumDefaultServersInfo": "Щоб захистити конфіденційність, сервери за замовчуванням не використовуються при налаштуванні користувацьких серверів.",
-  "electrumProtocolError": "Не містить протоколу (ssl:// або tcp://).",
   "importQrDeviceSeedsignerStep1": "Потужність на пристрої SeedSigner",
   "importWatchOnlyDerivationPath": "Деприація шлях",
   "sendErrorBroadcastFailed": "Ввімкнути трансляцію. Перевірити підключення мережі і спробувати знову.",
@@ -2265,9 +2114,7 @@
   "backupWalletHowToDecideVaultModalTitle": "Як вирішити",
   "importQrDeviceJadeStep1": "Увімкніть пристрій Jade",
   "testBackupEncryptedVaultTag": "Легкий і простий (1 хвилину)",
-  "torSettingsProxyPort": "Тор Проксі Порт",
   "fundExchangeSpeiTransfer": "Трансфер SPEI",
-  "electrumAddServer": "Додати сервер",
   "addressViewCopyAddress": "Статус на сервери",
   "pinAuthenticationTitle": "Аутентифікація",
   "sellErrorNoWalletSelected": "Немає гаманця, обраного для відправки оплати",
@@ -2284,7 +2131,6 @@
   "autoswapWarningDescription": "Автообмін запобігає випадковому збереженню занадто великої суми в гаманці миттєвих платежів, що не є безпечним для довготривалого зберігання.",
   "autoswapRecipientWalletPlaceholderRequired": "Виберіть гаманець Bitcoin *",
   "coreScreensConfirmSend": "Підтвердження",
-  "electrumStopGapEmptyError": "Стоп Gap не може бути порожнім",
   "typeLabel": "Тип: ",
   "withdrawConfirmClabe": "КЛАБ",
   "amountLabel": "Сума",
@@ -2334,7 +2180,6 @@
     }
   },
   "sendSwapRefundCompleted": "Повернення коштів завершено",
-  "torSettingsStatusUnknown": "Статус Невідомий",
   "sendConfirmSwap": "Підтвердити обмін",
   "sendSending": "Відправити",
   "withdrawConfirmAccount": "Облік",
@@ -2343,19 +2188,10 @@
   "bitboxCubitDeviceNotFound": "Не знайдено пристрій BitBox. Будь ласка, підключіть пристрій і спробуйте знову.",
   "buyStandardWithdrawal": "Стандартний знімок",
   "swapContinue": "Продовжити",
-  "electrumAddFailedError": "Заборонено додавати користувацький сервер",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "importWalletSectionGeneric": "Генетичні гаманці",
   "backupSettingsNotTested": "Не тестувати",
   "googleDrivePrivacyMessage": "Google попросить Вас поділитися персональною інформацією з цією програмою.",
   "errorGenericTitle": "Опери Хтось пішов неправильно",
-  "torSettingsStatusConnecting": "З'єднання.",
   "backupWalletHowToDecideBackupModalTitle": "Як вирішити",
   "sellInteracEmail": "Email для переказу",
   "autoswapMaximumFeeError": "Максимальний термін оплати {threshold}%",
@@ -2411,7 +2247,6 @@
   "testBackupGoogleDrivePrivacyPart3": "залишити свій телефон і ",
   "swapMaxButton": "МАКС",
   "importQrDeviceSeedsignerStep8": "Сканування QR-коду, що відображається на вашому SeedSigner",
-  "electrumDeletePrivacyNotice": "Повідомлення про конфіденційність:\n\nВикористання власного вузла забезпечує, що жодна третя сторона може зв'язатися з вашим IP-адресою з вашими операціями. Після видалення останнього користувацького сервера ви будете підключені до сервера BullBitcoin.\n.\n",
   "dcaConfirmFrequencyWeekly": "Щодня",
   "quickAndEasyTag": "Швидкий і простий",
   "settingsThemeTitle": "Головна",
@@ -2440,7 +2275,6 @@
   "addressViewChangeType": "Зареєструватися",
   "confirmLogoutTitle": "Підтвердити запис",
   "swapTransferCompletedMessage": "Ого, ви дочекалися! Обмін успішно завершено.",
-  "electrumDelete": "Видалення",
   "testBackupGoogleDrivePrivacyPart4": "ні ",
   "sendCoinControl": "Монета управління",
   "withdrawSuccessOrderDetails": "Деталі замовлення",
@@ -2449,7 +2283,6 @@
   "exchangeDcaFrequencyMonth": "місяць",
   "paySuccessfulPayments": "Успішний",
   "navigationTabWallet": "Гаманець",
-  "statusCheckTitle": "Статус на сервери",
   "savingToDevice": "Збереження вашого пристрою.",
   "fundExchangeLabelSwiftCode": "SWIFT код",
   "importQrDeviceSpecterStep6": "Виберіть \"Single key\"",
@@ -2529,7 +2362,6 @@
   "allSeedViewNoSeedsFound": "Не знайдено насіння.",
   "dcaSetupScheduleMessage": "Біткіні покупки будуть розміщені автоматично за цей графік.",
   "swapProgressRefundMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
-  "electrumNetworkBitcoin": "Bitcoin у USD",
   "importColdcardInstructionsStep7": "На мобільному пристрої натисніть \"відкрита камера\"",
   "testBackupStoreItSafe": "Зберігайте його кудись безпечно.",
   "never": "ні ",
@@ -2562,7 +2394,6 @@
     }
   },
   "sendBuildingTransaction": "Будівельна угода...",
-  "electrumConfirm": "Підтвердження",
   "coreScreensSendNetworkFeeLabel": "Закупи хостинг »",
   "sellOrderFailed": "Продати замовлення",
   "payInvalidAmount": "Сума недійсна",
@@ -2641,9 +2472,7 @@
   "swapProgressTitle": "Внутрішній обмін",
   "pinButtonConfirm": "Підтвердження",
   "coldcardStep2": "Якщо у вас є одна (необов'язково)",
-  "electrumInvalidNumberError": "Введіть дійсний номер",
   "importQrDevicePassportStep12": "Настроювання завершено.",
-  "electrumRetryCount": "Птиця графа",
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Інструкції",
   "importMnemonicImporting": "Імпорт.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Ви не впевнені, що вам потрібно більше часу, щоб дізнатися про методи резервної копії.",
@@ -2653,7 +2482,6 @@
   "rbfBroadcast": "Радіоканал",
   "dcaConfirmFrequencyMonthly": "Місяць",
   "importWatchOnlyScriptType": "Тип сценарію",
-  "electrumCustomServers": "Статус на сервери",
   "payBatchPayment": "Пакетний платіж",
   "payRecipientCount": "{count} одержувачів",
   "@payRecipientCount": {
@@ -2670,8 +2498,6 @@
   "mempoolCustomServerSaveSuccess": "Користувальницький сервер успішно збережений",
   "sendErrorBalanceTooLowForMinimum": "Баланс занадто низький для мінімальної кількості клаптів",
   "testBackupSuccessMessage": "Ви можете відновити доступ до втраченого біткойн-гаманця",
-  "electrumTimeout": "Розклад (секунди)",
-  "electrumSaveFailedError": "Не вдалося зберегти розширені параметри",
   "importQrDeviceKruxStep6": "Що це!",
   "mempoolCustomServerDelete": "Видалення",
   "optionalPassphraseHint": "Додатковий Пасфрас",
@@ -2712,7 +2538,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "Не потрібно вказати протокол, SSL буде автоматично використовуватися.",
   "sendDeviceConnected": "Пристрій підключений",
   "swapErrorAmountAboveMaximum": "Сума перевищила максимальну кількість ковпачок: {max} сати",
   "@swapErrorAmountAboveMaximum": {
@@ -2739,7 +2564,6 @@
     }
   },
   "sendSwapInProgressInvoice": "Ведуться ковпа. Оплатити рахунок за кілька секунд.",
-  "electrumRetryCountNegativeError": "Рівний граф не може бути негативним",
   "importQrDeviceJadeStep4": "Виберіть \"Оптіони\" з основного меню",
   "backupWalletSavingToDeviceTitle": "Збереження вашого пристрою.",
   "paySwapInProgress": "Обмін в прогрес ...",
@@ -2750,14 +2574,6 @@
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Інструкції",
   "paySendMax": "Макс",
   "googleDriveSignInMessage": "Ви повинні зареєструватися на Google Диску",
-  "electrumDeleteConfirmation": "Ви впевнені, що ви хочете видалити цей сервер?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Виберіть тип гаманця для імпорту",
   "importQrDeviceKeystoneStep1": "Увімкніть ваш Keystone",
   "swapTransferAmount": "Сума обміну",
@@ -2775,7 +2591,6 @@
   },
   "hwKeystone": "Головна",
   "payShareInvoice": "Надіслати запит",
-  "electrumPrivacyNoticeContent1": "Повідомлення про конфіденційність: Використання власного вузла забезпечує, що жодна сторона не може зв'язатися з вашим IP-адресою, з вашими операціями.",
   "testBackupEnterKeyManually": "Введіть ключ Backup вручну >>",
   "payCoinjoinFailed": "CoinJoin не вдалося",
   "buyKYCLevel2": "Рівень 2 - Покращений",
@@ -2846,7 +2661,6 @@
   "exchangeDcaAddressLabelLightning": "Адреса блискавки",
   "addressViewTitle": "Адреса Подробиці",
   "sellKYCPending": "Перевірка KYC",
-  "electrumEnableSsl": "Увімкнути SSL",
   "payCustomFee": "Спеціальний Fee",
   "fundExchangeBankTransferWireTimeframe": "Будь-які кошти, які ви надішлемо, будуть додані до Біткойн протягом 1-2 робочих днів.",
   "sendDeviceDisconnected": "Відключення пристроїв",
@@ -2879,11 +2693,7 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Порт повинен бути між 1 і 65535",
-  "electrumTimeoutEmptyError": "Час не може бути порожнім",
-  "electrumPrivacyNoticeContent2": "Однак Якщо ви переглядаєте транзакції за допомогою мемупу, натиснувши кнопку \"Вхід або одержувача\", ця інформація буде відома BullBitcoin.",
   "importColdcardScanPrompt": "Сканування QR-коду з вашої холодної картки Q",
-  "torSettingsDescConnected": "Tor proxy працює і готовий",
   "backupSettingsEncryptedVault": "Зашифрований Vault",
   "autoswapAlwaysBlockInfoDisabled": "Якщо вимкнено, вам буде запропоновано дозволити автообмін, заблокований через високі комісії",
   "dcaSetupTitle": "Встановити Recurring Купити",
@@ -2898,7 +2708,6 @@
   "willNot": "не буде ",
   "pinManageDescription": "Управління безпекою PIN",
   "mempoolNetworkLiquidTestnet": "Рідкий Testnet",
-  "torSettingsDescDisconnected": "Тор проксі не працює",
   "autoswapMaxBalanceLabel": "Max Миттєвий баланс гаманця",
   "exchangeDcaViewSettings": "Перегляд налаштувань",
   "payRetryPayment": "Плата за лікування",
@@ -3144,27 +2953,7 @@
   "autoswapWarningExplanationBold": "автоматично",
   "sendSelfTransfer": "Переказ собі",
   "autoswapInfoConsentMessage": "Autoswap наразі увімкнено, але він не спрацює, поки ви не дасте згоду. Бажаєте залишити його увімкненим?",
-  "mempoolServerStatusOnline": "В мережі",
-  "mempoolServerStatusOffline": "Не в мережі",
-  "mempoolServerStatusChecking": "Перевірка...",
   "mempoolServerStatusUnknown": "Невідомо",
-  "mempoolCustomServerSaveFailed": "Не вдалося зберегти сервер",
-  "mempoolCustomServerInfoDescription": "Сервери mempool використовуються для оцінки комісій та відкриття оглядача блоків при перегляді деталей транзакції.",
-  "mempoolCustomServerUseSsl": "Використовувати SSL",
-  "mempoolCustomServerSslAutoDetected": "(Визначено автоматично)",
-  "mempoolCustomServerSslHelpText": "Для локальних (.local, приватні IP) та Tor (.onion) серверів SSL зазвичай вимкнено. Публічні IP та домени повинні використовувати SSL.",
-  "mempoolErrorSameAsDefault": "Ця URL-адреса така ж, як сервер за замовчуванням. Будь ласка, використовуйте іншу URL-адресу.",
-  "mempoolErrorConnectionTimeout": "Час з'єднання вичерпано. Сервер може бути повільним або недоступним.",
-  "mempoolErrorHostNotFound": "Сервер не знайдено. Перевірте URL та спробуйте знову.",
-  "mempoolErrorConnectionFailed": "Не вдалося підключитися до сервера. Перевірте мережеве з'єднання та спробуйте знову.",
-  "mempoolErrorNotMempoolServer": "Ця URL-адреса не є сервером mempool. Перевірте адресу.",
-  "mempoolErrorServerUnavailable": "Сервер недоступний. Спробуйте пізніше.",
-  "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
-  "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
-  "mempoolErrorInvalidUrl": "Недійсна URL-адреса сервера. Введіть дійсний домен або IP-адресу.",
-  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
-  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
-  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",
   "settingsErrorReportingTitle": "Звіт про помилки",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -3321,7 +3110,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Високі значення stop gap значно збільшують час синхронізації. Тримайте додаток відкритим на передньому плані до завершення синхронізації — переведення у фоновий режим може її перервати.",
   "wizardSkipButton": "Пропустити",
   "wizardPageIndicator": "СТОРІНКА {current} / {total}",
   "wizardNextButton": "Далі",
@@ -3934,19 +3722,6 @@
   "coreSwapsStatusUnknown": "Невідомо",
   "sendSwapExpiredTitle": "Термін заявки минув",
   "sendSwapExpiredMessage": "Термін дії цієї заявки минув до відправлення коштів. З вашого гаманця нічого не відправлено.",
-  "torSettingsStatusCensored": "Схоже, з'єднання фільтрується",
-  "torSettingsDescCensored": "Tor не зміг дістатися до мережі. Зазвичай це означає, що з'єднання фільтрують.",
-  "torSettingsBootstrapProgress": "Підключення… {percent}%",
-  "torSettingsEmbeddedTitle": "Вбудований Tor",
-  "torSettingsEmbeddedDescription": "Вбудований Tor використовують RecoverBull і сервери Bitcoin Electrum з адресою .onion. Решта трафіку застосунку лишається прямою.",
-  "torSettingsTransportMode": "Спосіб підключення",
-  "torSettingsModeAutomatic": "Автоматично",
-  "torSettingsModeDirect": "Пряме",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Спершу пробує пряме підключення до Tor, а якщо мережа, схоже, блокує Tor, використовує Snowflake.",
-  "torSettingsModeDirectDescription": "Підключається до мережі Tor напряму, без підключуваного транспорту.",
-  "torSettingsModeSnowflakeDescription": "Використовує волонтерські проксі Snowflake, щоб дістатися Tor із фільтрованої мережі.",
-  "torSettingsActiveTransport": "Активний транспорт: {transport}",
   "settingsScreenPrivacyTitle": "Конфіденційність екрана",
   "settingsScreenPrivacyDisabledMessage": "Знімки екрана тепер дозволені на конфіденційних екранах",
   "settingsSearchHint": "Пошук у налаштуваннях",
@@ -3981,8 +3756,6 @@
   "exchangeSupportChatLoadMessagesError": "Не вдалося завантажити повідомлення. Спробуйте ще раз.",
   "exchangeSupportChatSendMessageError": "Не вдалося надіслати повідомлення. Спробуйте ще раз.",
   "exchangeSupportChatLoadAttachmentError": "Не вдалося відкрити вкладення. Спробуйте ще раз.",
-  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
-  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими",
   "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз.",
   "sendErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
   "sendErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
@@ -4192,11 +3965,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях.",
   "settingsDarkModeTitle": "Темний режим",
   "settingsSourceCodeTitle": "Вихідний код",
-  "torSettingsStatusNoInternetOrBlocked": "Немає інтернету або мережа під цензурою",
-  "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5.",
-  "serverEncrypted": "Зашифровано",
-  "serverUnencrypted": "Не зашифровано",
   "backgroundTasksTitle": "Фонові завдання",
   "blockedInSystemSettings": "Заблоковано в налаштуваннях системи",
   "notificationsBlockedMessage": "Сповіщення заблоковано в налаштуваннях системи.",

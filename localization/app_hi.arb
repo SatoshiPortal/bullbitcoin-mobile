@@ -47,14 +47,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "टाइमआउट सकारात्मक होना चाहिए",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "आप इस वॉलेट के साथ बेचे जा सकते हैं कि अधिकतम राशि से ऊपर बेचने की कोशिश कर रहे हैं।।",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -107,10 +99,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "कस्टम सर्वर",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "नियमित SEPA",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -134,10 +122,6 @@
   "exchangeFileUploadSuccess": "फ़ाइल सफलतापूर्वक अपलोड हो गई",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "सहेजें",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "यह किसी और का खाता है",
   "@withdrawOwnershipOtherAccount": {
@@ -180,11 +164,6 @@
   "autoswapAlwaysBlockEnabledInfo": "सक्षम होने पर, निर्धारित सीमा से अधिक शुल्क वाले ऑटो-स्वैप हमेशा रोक दिए जाएंगे",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "यह सर्वर पहले से ही मौजूद है",
-  "electrumServerUnreachable": "सर्वर तक नहीं पहुँचा जा सका। पता जाँचें और पुनः प्रयास करें।",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "भुगतान विधि",
   "@sellPaymentMethod": {
@@ -374,10 +353,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "बिल्कुल",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "Electrum सर्वर सेटिंग्स",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "यदि आवश्यक हो, तो पता प्रकार बदलने के लिए \"विकल्प\" का चयन करें",
   "@importQrDeviceJadeStep7": {
@@ -612,18 +587,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "आपका टाइमआउट ({timeoutValue} सेकंड) इस स्टॉप गैप के लिए अनुशंसित मान ({recommended} सेकंड) से कम है।।",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -747,10 +710,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "तरल",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "आप न्यूनतम राशि के नीचे खरीदने की कोशिश कर रहे हैं।।",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -766,10 +725,6 @@
   "pinCodeSecurityPinTitle": "सुरक्षा PIN",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "electrumEmptyFieldError": "यह क्षेत्र खाली नहीं हो सकता है",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "भुगतान प्रगति में",
   "@transactionStatusPaymentInProgress": {
@@ -1100,10 +1055,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "ऑनलाइन",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "अपना खाता फंड करें",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1184,10 +1135,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "तैयार",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "नोट",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1215,10 +1162,6 @@
   "sellAccountName": "खाता नाम",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "अज्ञात",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "howToDecideVaultLocationText2": "एक कस्टम स्थान बहुत सुरक्षित हो सकता है, जिस स्थान पर आप चुन सकते हैं। आपको यह भी सुनिश्चित करना चाहिए कि बैकअप फ़ाइल को खोने या उस डिवाइस को खोने के लिए नहीं, जिस पर आपकी बैकअप फ़ाइल संग्रहीत की जाती है।।",
   "@howToDecideVaultLocationText2": {
@@ -1291,10 +1234,6 @@
   "totalFeeLabel": "कुल शुल्क",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "अपने कस्टम mempool सर्वर का URL दर्ज करें। सर्वर को सहेजने से पहले सत्यापित किया जाएगा।",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "आप इस वॉलेट से बेची जा सकने वाली न्यूनतम राशि से कम बेचने की कोशिश कर रहे हैं।",
   "@sellBelowMinAmountError": {
@@ -1498,10 +1437,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "कस्टम सर्वर जोड़ें",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "sats/vb",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1543,10 +1478,6 @@
   "backupWalletBackupButton": "बैकअप",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Mempool सर्वर",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "शुल्क प्राथमिकता",
   "@sellSendPaymentFeePriority": {
@@ -1775,10 +1706,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "सम्पर्क करने का विवरण",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "यदि आप अपने 12 शब्द बैकअप को खो देते हैं, तो आप बिटकॉइन वॉलेट तक पहुंच प्राप्त करने में सक्षम नहीं होंगे।।",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1940,10 +1867,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "कृपया एक पोर्ट नंबर दर्ज करें",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "उपलब्ध शेष",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1951,10 +1874,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "भुगतान विवरण",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "रद्द करना",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "Swap अभी आरंभ नहीं हुआ है।",
   "@coreSwapsLnSendPending": {
@@ -2042,10 +1961,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "ऑफलाइन",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "। आपके खाते की शेष राशि में फंड जोड़े जाएंगे।।",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2093,10 +2008,6 @@
   "recoverWalletButton": "वॉलेट को पुनर्प्राप्त करें",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "क्या आप वाकई इस कस्टम mempool सर्वर को हटाना चाहते हैं? इसके बजाय डिफ़ॉल्ट सर्वर का उपयोग किया जाएगा।",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
   "@coldcardStep6": {
@@ -2173,10 +2084,6 @@
   "payActualFee": "वास्तविक शुल्क",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "मान्य डोमेन",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "सुनिश्चित करें कि आपका डिवाइस नवीनतम फर्मवेयर पर अपडेट किया गया है",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2362,15 +2269,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Invalid Retry गणना मान: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "नेटवर्क चुनें",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2391,10 +2289,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "पोर्ट नंबर",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "प्राप्तकर्ता का नाम दर्ज करें",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2407,10 +2301,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "electrumReset": "रीसेट करें",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "payInsufficientBalanceError": "इस भुगतान आदेश को पूरा करने के लिए चयनित वॉलेट में पर्याप्त शेष राशि नहीं है।",
   "@payInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
@@ -2422,10 +2312,6 @@
   "sendHighFeeWarning": "उच्च शुल्क चेतावनी",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "स्टॉप गैप नकारात्मक नहीं हो सकता",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "भेजें",
   "@walletButtonSend": {
@@ -2474,18 +2360,6 @@
   "exchangeDcaCancelDialogConfirmButton": "हाँ, निष्क्रिय",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} सर्वर यूआरएल",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "ईमेल पता दर्ज करें",
   "@payEmailHint": {
@@ -2577,10 +2451,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "सर्वर लोड करने में विफल ",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "ईमेल सूचनाएं",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2649,10 +2519,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "उन्नत विकल्प",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "autoswapWarningCardSubtitle": "यदि आपका तत्काल भुगतान शेष 0.02 BTC से अधिक है तो एक स्वैप ट्रिगर हो जाएगा।।",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
@@ -2676,10 +2542,6 @@
   "payFilterPayments": "फिल्टर भुगतान",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "रद्द करना",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "अपलोड करें",
   "@exchangeFileUploadButton": {
@@ -3006,10 +2868,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "कस्टम सर्वर हटाएं?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "पुष्टि करें",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -3190,10 +3048,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "स्टॉप गैप",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "प्रसारण लेनदेन..।",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -3250,10 +3104,6 @@
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "electrumServerOffline": "ऑफलाइन",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "sendTransferFee": "स्वैप शुल्क",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
@@ -3308,24 +3158,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "स्टॉप गैप बहुत अधिक लगता है। मैक्स। {maxStopGap}",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "टाइमआउट बहुत अधिक लगता है। (Max. {maxTimeout} सेकंड)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "तत्काल भुगतान",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -3369,10 +3201,6 @@
   "coreSwapsStatusPending": "लंबित",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(प्राथमिकता को खींचने और बदलने के लिए लंबे प्रेस)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "autoswapTriggerAtBalanceInfoText": "जब आपका शेष राशि इस अधिकतम शेष राशि से ऊपर हो जाता है तो ऑटोस्वैप ट्रिगर होगा।।",
   "@autoswapTriggerAtBalanceInfoText": {
@@ -3540,15 +3368,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "अवैध रोक अंतर मान: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "केवल €30,000 से अधिक बड़े लेनदेन के लिए उपयोग करें",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3699,15 +3518,6 @@
   "sendSats": "sats",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "अमान्य टाइमआउट मान: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "लिमिटेड",
   "@exchangeKycLevelLimited": {
@@ -3943,10 +3753,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "डिफ़ॉल्ट सर्वर",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "भुगतान पता या invoice पेस्ट करें",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -4018,10 +3824,6 @@
   "sellSelectWallet": "वॉलेट चुनें",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "कस्टम सर्वर जोड़ें",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "कुल शुल्क है {feePercent}% राशि का आप भेज रहे हैं",
   "@sendHighFeeWarningDescription": {
@@ -4155,10 +3957,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "ऑनलाइन",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "भुगतान विधि",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4166,10 +3964,6 @@
   "exchangeAmountInputTitle": "राशि दर्ज करें",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "बंद",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "IBAN दर्ज करें",
   "@payIbanHint": {
@@ -4249,10 +4043,6 @@
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
   },
-  "electrumBitcoinServerInfo": "प्रारूप में सर्वर पता दर्ज करें: होस्ट:पोर्ट (उदाहरण के लिए, उदाहरण.कॉम:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "sendErrorInsufficientBalanceForSwap": "लिक्विड के माध्यम से इस स्वैप का भुगतान करने के लिए पर्याप्त संतुलन नहीं है और बिटकॉइन के माध्यम से भुगतान करने के लिए स्वैप सीमा के भीतर नहीं है।।",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4329,10 +4119,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "प्रयुक्त नहीं",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "भौतिक बैकअप: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4357,10 +4143,6 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "electrumRetryCountEmptyError": "Retry गिनती खाली नहीं हो सकता",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
   "physicalBackupTag": "ट्रस्ट रहित (आपका समय ले लो)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
@@ -4376,10 +4158,6 @@
   "swapExternalAddressHint": "बाहरी वॉलेट पता दर्ज करें",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "स्थापना टोर कनेक्शन",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "appleICloudProvider": "सेब iCloud",
   "@appleICloudProvider": {
@@ -4449,10 +4227,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "कृपया मान्य नंबर दर्ज करें",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "बैंक ट्रान्सफर",
   "@sellBankTransfer": {
@@ -4850,10 +4624,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "कस्टम सर्वर  को हटाने में विफल",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap शुल्क",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4889,10 +4659,6 @@
   "sendSwapInProgressBitcoin": "स्वैप प्रगति पर है। बिटकॉइन लेनदेन की पुष्टि करने में कुछ समय लग सकता है। आप घर लौट सकते हैं और इंतजार कर सकते हैं।।",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "कस्टम सर्वर हटाएं",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "आईडी के साथ सेल्फी",
   "@buySelfie": {
@@ -5035,10 +4801,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "सहेजें",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "बीज दिखाएँ",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -5112,10 +4874,6 @@
   "backupWalletTitle": "अपने वॉलेट को बैकअप करें",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "गोपनीयता नोटिस",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "Liquid",
   "@receiveLiquid": {
@@ -5378,15 +5136,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "अंतिम जाँच: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "त्वरित और आसान",
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
@@ -5533,15 +5282,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "पोर्ट: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "ट्रांज़िट संख्या",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5638,10 +5378,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "डिस्कनेक्ट",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "बिटकॉइन रीकरिंग खरीद रद्द करें?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5677,10 +5413,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "कीस्टोन निर्देश",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "सर्वर प्राथमिकता को बचाने में विफल ",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "तत्काल भुगतान",
   "@globalDefaultLiquidWalletLabel": {
@@ -5771,10 +5503,6 @@
   "payNetworkError": "नेटवर्क त्रुटि। फिर से प्रयास करें",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "त्रुटि हुई",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "आप किस वॉलेट से भुगतान करना चाहते हैं?",
   "@payWhichWallet": {
@@ -5941,10 +5669,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "डिफ़ॉल्ट सर्वर",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "वॉलेट पुनर्प्राप्त करें",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5981,10 +5705,6 @@
   "sendRecipientAddressOrInvoice": "प्राप्तकर्ता का पता या invoice",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "कृपया एक सर्वर URL दर्ज करें",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "कीस्टोन",
   "@importQrDeviceKeystoneName": {
@@ -6037,10 +5757,6 @@
   "dcaSetupContinue": "जारी",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "मेजबान का उपयोग करें:पोर्ट प्रारूप (उदाहरण के लिए, उदाहरण.कॉम: 50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "यह शुल्क भेजी गई राशि से काटा जाएगा",
   "@transactionFeesDeductedFrom": {
@@ -6188,10 +5904,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "अपनी गोपनीयता की रक्षा के लिए, डिफ़ॉल्ट सर्वर का उपयोग तब नहीं किया जाता जब कस्टम सर्वर को कॉन्फ़िगर किया जाता है।।",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Payout विधि",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6199,10 +5911,6 @@
   "payPriceRefreshIn": "कीमत इस समय में ताज़ा होगी ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "प्रोटोकॉल (sssl:// या tcp://)।",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "प्रतीक्षा का समय नहीं है या प्रेषक की तरफ से payjoin विफल हो गया?",
   "@receivePayjoinFailQuestion": {
@@ -6248,10 +5956,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "torSettingsProxyPort": "Tor Proxy पोर्ट",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
   "fundExchangeErrorLoadingDetails": "इस समय भुगतान विवरण लोड नहीं किया जा सकता है। कृपया वापस जाएं और फिर से कोशिश करें, एक अन्य भुगतान विधि चुनें या बाद में वापस आ जाएं।।",
   "fundExchangeErrorTitleOrdPo404": "भुगतान विकल्प अनुपलब्ध",
   "fundExchangeErrorTitleRcpPo404": "भुगतान विकल्प उपलब्ध नहीं",
@@ -6295,10 +5999,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " भुगतान विवरण में \"बिटकॉइन\" या \"क्रिप्टो\" शब्द। यह आपके भुगतान को अवरुद्ध करेगा।।",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "सर्वर जोड़ें",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "पता कॉपी करें",
   "@addressViewCopyAddress": {
@@ -6435,10 +6135,6 @@
   "transactionDetailLabelAmountSent": "भेजी गई राशि",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "स्टॉप गैप खाली नहीं हो सकता",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "प्रकार: ",
   "@typeLabel": {
@@ -6665,10 +6361,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "Unknown",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "की पुष्टि करें स्वैप",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -6729,10 +6421,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "कस्टम सर्वर  जोड़ने में विफल",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "स्वैप शुल्क",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6752,10 +6440,6 @@
   "errorGenericTitle": "ओप! कुछ गलत हो गया",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "कनेक्ट ..।",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
@@ -6949,10 +6633,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "गोपनीयता सूचना:\n\nअपने खुद के नोड का उपयोग यह सुनिश्चित करता है कि कोई तृतीय पक्ष आपके लेनदेन के साथ अपने आईपी पते को लिंक नहीं कर सकता है। अपने अंतिम कस्टम सर्वर को हटाकर, आप एक BullBitcoin सर्वर से जुड़ जायेंगे।\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "हर सप्ताह",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -7067,10 +6747,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "डिलीट",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "कभी नहीं ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -7106,10 +6782,6 @@
   "howToDecideBackupTitle": "कैसे तय करें",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "सेवा की स्थिति",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "savingToDevice": "अपने डिवाइस पर बचत।।",
   "@savingToDevice": {
@@ -7509,10 +7181,6 @@
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
   },
-  "electrumNetworkBitcoin": "बिटकॉइन",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "paySecureBitcoinWallet": "सुरक्षित Bitcoin वॉलेट",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -7654,10 +7322,6 @@
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
-  },
-  "electrumConfirm": "पुष्टि",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ऑर्डर संख्या",
   "transactionDetailLabelPaymentDescription": "भुगतान विवरण",
@@ -7994,10 +7658,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "मान्य संख्या दर्ज करें",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "पुष्टि हो गई",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -8015,10 +7675,6 @@
   "fundExchangeWarningTitle": "धोखेबाजों से सावधान रहें",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "Retry गिनती",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "डिस्क्रिप्टर",
   "@walletDetailsDescriptorLabel": {
@@ -8067,10 +7723,6 @@
   "importWatchOnlyScriptType": "स्क्रिप्ट प्रकार",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "कस्टम सर्वर",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Swap विफल",
   "@transactionStatusSwapFailed": {
@@ -8149,17 +7801,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "टाइमआउट (सेकेंड)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "ऑर्डर स्थिति",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "उन्नत विकल्पों को बचाने में विफल",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "यही है!",
   "@importQrDeviceKruxStep6": {
@@ -8279,10 +7923,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "कोई प्रोटोकॉल निर्दिष्ट नहीं किया जाना चाहिए, SSL स्वचालित रूप से इस्तेमाल किया जाएगा।।",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "उपकरण जुड़े",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -8357,10 +7997,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "Retry गिनती नकारात्मक नहीं हो सकती",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "इसे खाता संख्या के रूप में जोड़ें",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
@@ -8433,15 +8069,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "electrumDeleteConfirmation": "क्या आप इस सर्वर को हटाना चाहते हैं?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "आयात करने के लिए एक वॉलेट प्रकार का चयन करें",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8510,10 +8137,6 @@
   "walletDetailsSignerDeviceLabel": "हस्ताक्षरकर्ता डिवाइस",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "गोपनीयता नोटिस: अपनी खुद की नोड का उपयोग यह सुनिश्चित करता है कि आपकी लेनदेन के साथ कोई तृतीय पक्ष आपके आईपी पते को लिंक नहीं कर सकता है।।",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "मैन्युअल रूप से बैकअप कुंजी दर्ज करें >>",
   "@testBackupEnterKeyManually": {
@@ -8764,10 +8387,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "कस्टम शुल्क",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -8880,18 +8499,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "पोर्ट 1 और 65535 के बीच होना चाहिए",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "टाइमआउट खाली नहीं हो सकता",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "हालांकि, यदि आप अपने लेनदेन आईडी या प्राप्तकर्ता विवरण पृष्ठ पर क्लिक करके मेम्पूल के माध्यम से लेनदेन को देखते हैं, तो इस जानकारी को बुलबिटकॉइन से जाना जाता है।।",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "पहचान सत्यापित",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8899,10 +8506,6 @@
   "importColdcardScanPrompt": "अपने कोल्डकार्ड Q से QR कोड स्कैन करें",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor प्रॉक्सी चल रहा है और तैयार है",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "एन्क्रिप्टेड वॉल्ट",
   "@backupSettingsEncryptedVault": {
@@ -8991,10 +8594,6 @@
   "payBitcoinOnChain": "Bitcoin ऑन-चेन",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor प्रॉक्सी नहीं चल रहा है",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "तत्काल भुगतान वॉलेट",
   "@buyInstantPaymentWallet": {
@@ -9197,7 +8796,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "उच्च स्टॉप गैप मान सिंक समय को काफी बढ़ा देते हैं। सिंक पूरा होने तक ऐप को फ़ोरग्राउंड में खुला रखें — बैकग्राउंड में डालने से यह बाधित हो सकता है।",
   "wizardSkipButton": "छोड़ें",
   "wizardPageIndicator": "पृष्ठ {current} / {total}",
   "wizardNextButton": "अगला",
@@ -9279,36 +8877,7 @@
   "@recoverbullErrorDecryptedVaultNotSet": {
     "description": "Error when attempting operation without decrypted vault"
   },
-  "mempoolServerStatusOnline": "ऑनलाइन",
-  "mempoolServerStatusOffline": "ऑफलाइन",
-  "mempoolServerStatusChecking": "जाँच हो रही है...",
   "mempoolServerStatusUnknown": "अज्ञात",
-  "mempoolCustomServerSaveFailed": "सर्वर सहेजने में विफल",
-  "mempoolCustomServerInfoDescription": "Mempool सर्वर शुल्क अनुमान और लेनदेन विवरण देखते समय ब्लॉक एक्सप्लोरर खोलने के लिए उपयोग किए जाते हैं।",
-  "mempoolCustomServerUseSsl": "SSL का उपयोग करें",
-  "mempoolCustomServerSslAutoDetected": "(स्वतः पहचाना गया)",
-  "mempoolCustomServerSslHelpText": "स्थानीय (.local, निजी IP) और Tor (.onion) सर्वर के लिए, SSL आमतौर पर अक्षम होता है। सार्वजनिक IP और डोमेन को SSL का उपयोग करना चाहिए।",
-  "mempoolErrorSameAsDefault": "यह URL डिफ़ॉल्ट सर्वर के समान है। कृपया एक अलग URL का उपयोग करें।",
-  "mempoolErrorConnectionTimeout": "कनेक्शन समय समाप्त हो गया। सर्वर धीमा या अनुपलब्ध हो सकता है।",
-  "mempoolErrorHostNotFound": "यह सर्वर नहीं मिल सका। कृपया URL जाँचें और पुनः प्रयास करें।",
-  "mempoolErrorConnectionFailed": "सर्वर से कनेक्ट नहीं हो सका। अपना नेटवर्क कनेक्शन जाँचें और पुनः प्रयास करें।",
-  "mempoolErrorNotMempoolServer": "यह URL mempool सर्वर नहीं लगता। कृपया पता सत्यापित करें।",
-  "mempoolErrorServerUnavailable": "सर्वर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
-  "mempoolErrorServerError": "सर्वर में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
-  "mempoolErrorInvalidResponse": "सर्वर ने अमान्य प्रतिक्रिया दी।",
-  "mempoolErrorInvalidUrl": "अमान्य सर्वर URL। एक मान्य डोमेन या IP पता दर्ज करें।",
-  "mempoolErrorSaveServerFailed": "सर्वर सहेजने में विफल",
-  "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails"
-  },
-  "mempoolErrorLoadFailed": "Mempool सर्वर डेटा लोड करने में विफल",
-  "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails"
-  },
-  "mempoolErrorDeleteFailed": "कस्टम सर्वर हटाने में विफल",
-  "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails"
-  },
   "exchangeStatisticsBuySellRatioDesc": "खरीदने बनाम बेचने से कुल वॉल्यूम का प्रतिशत",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin खरीदने में खर्च की गई कुल राशि",
   "exchangeStatisticsSellVolumeDesc": "Bitcoin बेचने से प्राप्त कुल राशि",
@@ -10038,19 +9607,6 @@
   "coreSwapsStatusUnknown": "अज्ञात",
   "sendSwapExpiredTitle": "ऑर्डर समाप्त हो गया",
   "sendSwapExpiredMessage": "कोई भी राशि भेजे जाने से पहले ही यह ऑर्डर समाप्त हो गया। आपके वॉलेट से कुछ भी नहीं भेजा गया।",
-  "torSettingsStatusCensored": "कनेक्शन फ़िल्टर किया हुआ लगता है",
-  "torSettingsDescCensored": "Tor नेटवर्क तक नहीं पहुँच सका। आमतौर पर इसका मतलब है कि कनेक्शन फ़िल्टर किया जा रहा है।",
-  "torSettingsBootstrapProgress": "कनेक्ट हो रहा है… {percent}%",
-  "torSettingsEmbeddedTitle": "अंतर्निहित Tor",
-  "torSettingsEmbeddedDescription": "अंतर्निहित Tor का उपयोग RecoverBull और Bitcoin Electrum के .onion सर्वर करते हैं। ऐप का बाकी ट्रैफ़िक सीधा रहता है।",
-  "torSettingsTransportMode": "कनेक्शन विधि",
-  "torSettingsModeAutomatic": "स्वचालित",
-  "torSettingsModeDirect": "सीधा",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "पहले सीधा Tor कनेक्शन आज़माता है और यदि नेटवर्क Tor को रोकता प्रतीत हो तो Snowflake का उपयोग करता है।",
-  "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
-  "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
-  "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
   "settingsScreenPrivacyTitle": "स्क्रीन गोपनीयता",
   "settingsScreenPrivacyDisabledMessage": "अब संवेदनशील स्क्रीन पर स्क्रीनशॉट लेने की अनुमति है",
   "settingsSearchHint": "सेटिंग खोजें",
@@ -10085,8 +9641,6 @@
   "exchangeSupportChatLoadMessagesError": "संदेश लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
   "exchangeSupportChatSendMessageError": "आपका संदेश नहीं भेजा जा सका। कृपया पुनः प्रयास करें।",
   "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
-  "statusCheckNoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
-  "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं",
   "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
   "sendErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
   "sendErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
@@ -10296,11 +9850,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।",
   "settingsDarkModeTitle": "डार्क मोड",
   "settingsSourceCodeTitle": "सोर्स कोड",
-  "torSettingsStatusNoInternetOrBlocked": "इंटरनेट नहीं है या नेटवर्क सेंसर है",
-  "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
   "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।",
-  "serverEncrypted": "एन्क्रिप्टेड",
-  "serverUnencrypted": "एन्क्रिप्टेड नहीं",
   "backgroundTasksTitle": "बैकग्राउंड कार्य",
   "blockedInSystemSettings": "सिस्टम सेटिंग्स में अवरुद्ध",
   "notificationsBlockedMessage": "सूचनाएँ सिस्टम सेटिंग्स में अवरुद्ध हैं।",

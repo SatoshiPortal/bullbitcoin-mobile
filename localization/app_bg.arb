@@ -220,10 +220,6 @@
   "@payPendingPayments": {
     "description": "Filter for pending payments"
   },
-  "electrumCloseTooltip": "Затвори",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
   "payTransactionBroadcast": "Изпращане на транзакцията",
   "@payTransactionBroadcast": {
     "description": "Success message after broadcasting"
@@ -283,10 +279,6 @@
   "sellInstitutionNumber": "Код на банката",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
-  },
-  "mempoolSettingsCustomServer": "Персонализиран сървър",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "fundExchangeMethodRegularSepa": "Стандартен SEPA",
   "@fundExchangeMethodRegularSepa": {
@@ -1165,10 +1157,6 @@
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
   },
-  "mempoolCustomServerBottomSheetDescription": "Въведете URL адреса на вашия персонализиран мемпул сървър. Сървърът ще бъде валидиран преди запазване.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
-  },
   "sellBelowMinAmountError": "Опитвате се да продадете под минималната сума, която може да се продаде с този портфейл.",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
@@ -1367,10 +1355,6 @@
   "backupWalletBackupButton": "Резервно копие",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Мемпул сървър",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellWalletBalance": "Баланс: {amount}",
   "@sellWalletBalance": {
@@ -1773,10 +1757,6 @@
   "recoverWalletButton": "Възстанови портфейла.",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "Сигурни ли сте, че искате да изтриете този персонализиран мемпул сървър? Вместо него ще бъде използван стандартният сървър.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Увеличете яркостта на екрана на вашето устройство",
   "@coldcardStep6": {
@@ -2423,10 +2403,6 @@
   "fundExchangeWarningConfirmation": "Потвърждавам, че не ме молят да купувам Bitcoin от друг човек.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "mempoolCustomServerDeleteTitle": "Изтрий персонализирания сървър?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
   },
   "confirmSendTitle": "Потвърди изпращане\n==WEBLATE_PART==",
   "@confirmSendTitle": {
@@ -3088,10 +3064,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Сървър по подразбиране",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Поставете адрес за плащане или фактура",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3143,10 +3115,6 @@
   "sellSelectWallet": "Изберете портфейл",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "Добави персонализиран сървър",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "Общата такса е {feePercent}% от сумата, която изпращате",
   "@sendHighFeeWarningDescription": {
@@ -4575,10 +4543,6 @@
   "sendRecipientAddressOrInvoice": "Адрес на получателя или фактура",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Моля, въведете URL адрес на сървъра",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "payBitcoinAddress": "Адрес на Bitcoin",
   "@payBitcoinAddress": {
@@ -7018,7 +6982,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Високите стойности на Stop Gap значително увеличават времето за синхронизация. Дръжте приложението отворено на преден план, докато синхронизацията завърши — преместването му във фонов режим може да я прекъсне.",
   "wizardSkipButton": "Пропусни",
   "wizardPageIndicator": "СТРАНИЦА {current} / {total}",
   "wizardNextButton": "Напред",
@@ -7221,8 +7184,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
   "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
-  "electrumServerUnreachable": "Сървърът е недостъпен. Проверете адреса и опитайте отново.",
-  "mempoolErrorInvalidUrl": "Невалиден URL адрес на сървъра. Въведете валиден домейн или IP адрес.",
   "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -7517,26 +7478,7 @@
   "swapRescueWalletHint": "Изберете портфейл",
   "swapRescueButton": "Възстанови",
   "swapRescueSuccess": "Обменът е възстановен — сега ще продължи",
-  "mempoolServerStatusOnline": "Онлайн",
-  "mempoolServerStatusOffline": "Офлайн",
-  "mempoolServerStatusChecking": "Проверка...",
   "mempoolServerStatusUnknown": "Неизвестен",
-  "mempoolCustomServerSaveFailed": "Неуспешно запазване на сървъра",
-  "mempoolCustomServerInfoDescription": "Mempool сървърите се използват за оценка на таксите и за отваряне на блок изследователя при преглед на детайли за транзакция.",
-  "mempoolCustomServerUseSsl": "Използвай SSL",
-  "mempoolCustomServerSslAutoDetected": "(Автоматично открито)",
-  "mempoolCustomServerSslHelpText": "За локални (.local, частни IP адреси) и Tor (.onion) сървъри SSL обикновено е изключен. Публичните IP адреси и домейни трябва да използват SSL.",
-  "mempoolErrorSameAsDefault": "Този URL адрес е същият като този на сървъра по подразбиране. Моля, използвайте друг URL адрес.",
-  "mempoolErrorConnectionTimeout": "Времето за свързване изтече. Сървърът може да е бавен или недостъпен.",
-  "mempoolErrorHostNotFound": "Този сървър не може да бъде намерен. Моля, проверете URL адреса и опитайте отново.",
-  "mempoolErrorConnectionFailed": "Не може да се установи връзка със сървъра. Проверете мрежовата си връзка и опитайте отново.",
-  "mempoolErrorNotMempoolServer": "Този URL адрес не изглежда да е mempool сървър. Моля, проверете адреса.",
-  "mempoolErrorServerUnavailable": "Сървърът не е достъпен. Моля, опитайте отново по-късно.",
-  "mempoolErrorServerError": "Възникна грешка в сървъра. Моля, опитайте отново по-късно.",
-  "mempoolErrorInvalidResponse": "Сървърът върна невалиден отговор.",
-  "mempoolErrorSaveServerFailed": "Неуспешно запазване на сървъра",
-  "mempoolErrorLoadFailed": "Неуспешно зареждане на данните на mempool сървъра",
-  "mempoolErrorDeleteFailed": "Неуспешно изтриване на персонализирания сървър",
   "receivePayjoinNoUtxos": "Първо получете средства, за да го активирате.\nЗа използване на payjoin са необходими UTXO.",
   "payViewReceipt": "Виж разписката",
   "paySinpeReceipt": "SINPE разписка",
@@ -7886,64 +7828,8 @@
   "autoswapRecipientWalletInfo": "Изберете кой биткойн портфейл ще получи прехвърлените средства (задължително)",
   "autoswapDefaultWalletLabel": "Биткойн портфейл",
   "autoswapSave": "Запази",
-  "electrumTitle": "Настройки на Electrum сървър",
-  "electrumNetworkBitcoin": "Bitcoin",
-  "electrumNetworkLiquid": "Liquid",
-  "electrumAdvancedOptions": "Разширени опции",
-  "electrumAddCustomServer": "Добави персонализиран сървър",
-  "electrumServerUrlHint": "URL адрес на {network} {environment} сървър",
   "electrumMainnet": "Основна мрежа",
   "electrumTestnet": "Тестова мрежа",
-  "electrumEmptyFieldError": "Това поле не може да бъде празно",
-  "electrumLiquidSslInfo": "Не трябва да се задава протокол, SSL ще се използва автоматично.",
-  "electrumAddServer": "Добави сървър",
-  "electrumEnableSsl": "Активирай SSL",
-  "electrumProtocolError": "Не включвайте протокол (ssl:// или tcp://).",
-  "electrumFormatError": "Използвайте формат хост:порт (напр. example.com:50001)",
-  "electrumBitcoinServerInfo": "Въведете адреса на сървъра във формат: хост:порт (напр. example.com:50001)",
-  "electrumStopGap": "Stop Gap",
-  "electrumTimeout": "Изчакване (секунди)",
-  "electrumRetryCount": "Брой опити",
-  "electrumValidateDomain": "Валидирай домейна",
-  "electrumStopGapEmptyError": "Stop Gap не може да бъде празно",
-  "electrumInvalidNumberError": "Въведете валидно число",
-  "electrumStopGapNegativeError": "Stop Gap не може да бъде отрицателно",
-  "electrumStopGapTooHighError": "Stop Gap изглежда твърде високо. (Макс. {maxStopGap})",
-  "electrumTimeoutEmptyError": "Времето за изчакване не може да бъде празно",
-  "electrumTimeoutPositiveError": "Времето за изчакване трябва да бъде положително",
-  "electrumTimeoutTooHighError": "Времето за изчакване изглежда твърде високо. (Макс. {maxTimeout} секунди)",
-  "electrumRetryCountEmptyError": "Броят опити не може да бъде празен",
-  "electrumRetryCountNegativeError": "Броят опити не може да бъде отрицателен",
-  "electrumTimeoutWarning": "Вашето време за изчакване ({timeoutValue} секунди) е по-ниско от препоръчителната стойност ({recommended} секунди) за този Stop Gap.",
-  "electrumInvalidStopGapError": "Невалидна стойност за Stop Gap: {value}",
-  "electrumInvalidTimeoutError": "Невалидна стойност за времето за изчакване: {value}",
-  "electrumInvalidRetryError": "Невалидна стойност за броя опити: {value}",
-  "electrumSaveFailedError": "Неуспешно запазване на разширените опции",
-  "electrumUnknownError": "Възникна грешка",
-  "electrumReset": "Нулирай",
-  "electrumConfirm": "Потвърди",
-  "electrumDeleteServerTitle": "Изтрий персонализирания сървър",
-  "electrumDeletePrivacyNotice": "Известие за поверителност:\n\nИзползването на собствен възел гарантира, че никоя трета страна не може да свърже вашия IP адрес с транзакциите ви. Като изтриете последния си персонализиран сървър, ще се свържете със сървър на BullBitcoin.\n",
-  "electrumDeleteConfirmation": "Сигурни ли сте, че искате да изтриете този сървър?\n\n{serverUrl}",
-  "electrumCancel": "Отказ",
-  "electrumDelete": "Изтрий",
-  "electrumDefaultServers": "Сървъри по подразбиране",
-  "electrumDefaultServersInfo": "За да защитим поверителността ви, сървърите по подразбиране не се използват, когато са конфигурирани персонализирани сървъри.",
-  "electrumCustomServers": "Персонализирани сървъри",
-  "electrumDragToReorder": "(Задръжте натиснато, за да плъзнете и промените приоритета)",
-  "electrumLoadFailedError": "Неуспешно зареждане на сървърите",
-  "electrumSavePriorityFailedError": "Неуспешно запазване на приоритета на сървъра",
-  "electrumAddFailedError": "Неуспешно добавяне на персонализиран сървър",
-  "electrumDeleteFailedError": "Неуспешно изтриване на персонализирания сървър",
-  "electrumServerAlreadyExists": "Този сървър вече съществува",
-  "electrumPrivacyNoticeTitle": "Известие за поверителност",
-  "electrumPrivacyNoticeContent1": "Известие за поверителност: Използването на собствен възел гарантира, че никоя трета страна не може да свърже вашия IP адрес с транзакциите ви.",
-  "electrumPrivacyNoticeContent2": "Ако обаче преглеждате транзакции чрез mempool, като кликнете върху ID на транзакцията или страницата с данни за получателя, тази информация ще бъде известна на BullBitcoin.",
-  "electrumPrivacyNoticeCancel": "Отказ",
-  "electrumPrivacyNoticeSave": "Запази",
-  "electrumServerNotUsed": "Не се използва",
-  "electrumServerOnline": "Онлайн",
-  "electrumServerOffline": "Офлайн",
   "addressViewNoAddressesFound": "Не са намерени адреси",
   "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
   "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",
@@ -8038,29 +7924,8 @@
   "cancel": "Отказ",
   "delete": "Изтрий",
   "save": "Запази",
-  "statusCheckTitle": "Статус на услугите",
-  "statusCheckLastChecked": "Последна проверка: {time}",
-  "statusCheckOnline": "Онлайн",
-  "statusCheckOffline": "Офлайн",
-  "statusCheckUnknown": "Неизвестен",
   "torSettingsTitle": "Настройки на Tor",
   "torSettingsEnableProxy": "Активирай Tor прокси",
-  "torSettingsProxyPort": "Порт на Tor прокси",
-  "torSettingsPortDisplay": "Порт: {port}",
-  "torSettingsPortNumber": "Номер на порт",
-  "torSettingsPortHint": "9050",
-  "torSettingsPortValidationEmpty": "Моля, въведете номер на порт",
-  "torSettingsPortValidationInvalid": "Моля, въведете валидно число",
-  "torSettingsPortValidationRange": "Портът трябва да бъде между 1 и 65535",
-  "torSettingsSaveButton": "Запази",
-  "torSettingsConnectionStatus": "Статус на връзката",
-  "torSettingsStatusConnected": "Готово",
-  "torSettingsStatusConnecting": "Свързване...",
-  "torSettingsStatusDisconnected": "Изключен",
-  "torSettingsStatusUnknown": "Неизвестен статус",
-  "torSettingsDescConnected": "Tor прокси работи и е готов",
-  "torSettingsDescConnecting": "Установяване на връзка с Tor",
-  "torSettingsDescDisconnected": "Tor прокси не работи",
   "withdrawSuccessTitle": "Тегленето е инициирано",
   "withdrawSuccessOrderDetails": "Детайли за поръчката",
   "withdrawConfirmBankAccount": "Банкова сметка",
@@ -8165,19 +8030,6 @@
   "coreSwapsStatusUnknown": "Неизвестно",
   "sendSwapExpiredTitle": "Поръчката изтече",
   "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо.",
-  "torSettingsStatusCensored": "Връзката изглежда филтрирана",
-  "torSettingsDescCensored": "Tor не успя да достигне мрежата. Това обикновено означава, че връзката се филтрира.",
-  "torSettingsBootstrapProgress": "Свързване… {percent}%",
-  "torSettingsEmbeddedTitle": "Вграден Tor",
-  "torSettingsEmbeddedDescription": "Вграденият Tor се използва от RecoverBull и от сървърите Bitcoin Electrum с адрес .onion. Останалият трафик на приложението остава пряк.",
-  "torSettingsTransportMode": "Начин на свързване",
-  "torSettingsModeAutomatic": "Автоматично",
-  "torSettingsModeDirect": "Пряко",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Първо опитва пряка връзка с Tor и използва Snowflake, ако мрежата изглежда блокира Tor.",
-  "torSettingsModeDirectDescription": "Свързва се пряко с мрежата Tor, без сменяем транспорт.",
-  "torSettingsModeSnowflakeDescription": "Използва доброволчески Snowflake прокси сървъри, за да достигне Tor от филтрирана мрежа.",
-  "torSettingsActiveTransport": "Активен транспорт: {transport}",
   "settingsScreenPrivacyTitle": "Поверителност на екрана",
   "settingsScreenPrivacyDisabledMessage": "Екранните снимки вече са разрешени на чувствителните екрани",
   "settingsSearchHint": "Търсене в настройките",
@@ -8212,8 +8064,6 @@
   "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
   "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
   "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново.",
-  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново.",
-  "statusCheckResultsMayBeOutdated": "Резултатите може да са остарели",
   "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
   "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
@@ -8423,11 +8273,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
   "settingsDarkModeTitle": "Тъмен режим",
   "settingsSourceCodeTitle": "Изходен код",
-  "torSettingsStatusNoInternetOrBlocked": "Няма интернет или мрежата е цензурирана",
-  "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси.",
-  "serverEncrypted": "Криптирано",
-  "serverUnencrypted": "Некриптирано",
   "backgroundTasksTitle": "Фонови задачи",
   "blockedInSystemSettings": "Блокирано в системните настройки",
   "notificationsBlockedMessage": "Известията са блокирани в системните настройки.",

@@ -1,11 +1,11 @@
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
-import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
+import 'package:network/network.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 
 import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
+import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';

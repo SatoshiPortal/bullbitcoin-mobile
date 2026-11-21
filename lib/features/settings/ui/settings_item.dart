@@ -9,19 +9,16 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:network/network.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:label_editor/label_editor.dart';
-import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
@@ -689,8 +686,7 @@ List<SettingsItem> buildSettingsItems({
       title: localization.torSettingsTitle,
       path: path(SettingsItemSection.app, localization.torSettingsTitle),
       icon: Icons.vpn_lock,
-      open: (context) =>
-          context.pushNamed(const TorSettingsFacade().settingsRouteName),
+      open: (context) => context.pushNamed(TorSettingsRoute.torSettings.name),
       keywords: _keywords(
         localization.settingsSearchTorKeywords,
         english.settingsSearchTorKeywords,

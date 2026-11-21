@@ -287,14 +287,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050 Kč",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "Časová doba musí být pozitivní",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "S touto peněženkou se snažíte prodat nad maximální částku, která může být prodána.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -347,10 +339,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Vlastní server",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "Pravidelná platba",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -374,10 +362,6 @@
   "exchangeFileUploadSuccess": "Soubory úspěšně nahrané",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "Čeština",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "To je někdo jiný účet",
   "@withdrawOwnershipOtherAccount": {
@@ -420,11 +404,6 @@
   "autoswapAlwaysBlockEnabledInfo": "Když je zapnuto, automatické swapy s poplatky nad nastaveným limitem budou vždy zablokovány",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "Tento server již existuje",
-  "electrumServerUnreachable": "Server je nedostupný. Zkontrolujte adresu a zkuste to znovu.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "Způsob platby",
   "@sellPaymentMethod": {
@@ -614,10 +593,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "přesně",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "Nastavení serveru Electrum",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "V případě potřeby vyberte možnost \"Volby\" pro změnu typu adresy",
   "@importQrDeviceJadeStep7": {
@@ -849,18 +824,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "Váš časout ({timeoutValue} sekundy) je nižší než doporučená hodnota ({recommended} sekundy) pro tento Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "Zobrazit PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -972,10 +935,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "Čeština",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "Pokuste se koupit pod minimálním množstvím.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -987,10 +946,6 @@
   "transactionStatusPaymentRefunded": "Platba vracení peněz",
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
-  },
-  "electrumEmptyFieldError": "Toto pole nelze vyprázdnit",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "Platba v průběhu",
   "@transactionStatusPaymentInProgress": {
@@ -1313,10 +1268,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "Přihlášení",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "Fond vašeho účtu",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1389,10 +1340,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Připraveno",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "Poznámka",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1420,10 +1367,6 @@
   "sellAccountName": "Název účtu",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "Čeština",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "howToDecideVaultLocationText2": "Vlastní umístění může být mnohem bezpečnější, v závislosti na tom, kde si vyberete místo. Musíte se také ujistit, že neztrácejí záložní soubor nebo ztratíte zařízení, na kterém je uložen váš záložní soubor.",
   "@howToDecideVaultLocationText2": {
@@ -1496,10 +1439,6 @@
   "totalFeeLabel": "Celkový poplatek",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Zadejte adresu URL vašeho vlastního serveru mempool. Server bude validován před uložením.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "S touto peněženkou se snažíte prodat minimální částku, která může být prodána.",
   "@sellBelowMinAmountError": {
@@ -1699,10 +1638,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "Přidat vlastní server",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1744,10 +1679,6 @@
   "backupWalletBackupButton": "Zálohy",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "Prioritní priority",
   "@sellSendPaymentFeePriority": {
@@ -1964,10 +1895,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "Stav připojení",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "Pokud ztratíte zálohu 12 slov, nebudete moci obnovit přístup k Bitcoin peněženku.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -2121,10 +2048,6 @@
   "@payShowQrCode": {
     "description": "Button to show QR code"
   },
-  "torSettingsPortValidationEmpty": "Zadejte číslo portu",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "Dostupné vyvážení",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -2132,10 +2055,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Popis platby",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "Hledat",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "Swap není dosud iniciován.",
   "@coreSwapsLnSendPending": {
@@ -2223,10 +2142,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Čeština",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": "Čeština Fondy budou přidány do zůstatku na účtu.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2274,10 +2189,6 @@
   "recoverWalletButton": "Obnovit peněženku",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "Přejete si skutečně odstranit tento vlastní server mempool? Výchozí server bude používán místo.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Zvýšení jasu obrazovky ve vašem zařízení",
   "@coldcardStep6": {
@@ -2346,10 +2257,6 @@
   "payActualFee": "Aktuální poplatek",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Registrace domény",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "Ujistěte se, že vaše zařízení je aktualizována na nejnovější firmware",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2523,15 +2430,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Neplatný Retry Počet hodnot: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Vyberte síť",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2552,10 +2450,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "Číslo portu",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "Zadejte jméno příjemce",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2568,10 +2462,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "electrumReset": "Čeština",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "payInsufficientBalanceError": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
   "@payInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
@@ -2583,10 +2473,6 @@
   "sendHighFeeWarning": "Upozornění na vysoké poplatky",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "Stop Gap nemůže být negativní",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "Odeslat",
   "@walletButtonSend": {
@@ -2635,18 +2521,6 @@
   "exchangeDcaCancelDialogConfirmButton": "Ano, deaktivovat",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} URL serveru",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "Zadejte emailovou adresu",
   "@payEmailHint": {
@@ -2725,10 +2599,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Vypnuto načíst servery",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Emailová upozornění",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2789,10 +2659,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "Pokročilé možnosti",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "autoswapWarningCardSubtitle": "Swap bude spuštěn, pokud vaše Instant Payments zůstatek přesahuje 0,02 BTC.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
@@ -2816,10 +2682,6 @@
   "payFilterPayments": "Platby filtru",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "Hledat",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "Čeština",
   "@exchangeFileUploadButton": {
@@ -3118,10 +2980,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "Odstranit vlastní server?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "Odeslat",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -3294,10 +3152,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "Stop Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "Vysílání transakcí...",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -3349,10 +3203,6 @@
   "transactionDetailLabelExchangeRate": "Směnný kurz",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "electrumServerOffline": "Čeština",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "sendTransferFee": "Poplatek za swap",
   "@sendTransferFee": {
@@ -3408,24 +3258,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "Stop Gap se zdá být příliš vysoká. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Časová délka se zdá být příliš vysoká. (Max. {maxTimeout} sekundy)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "Okamžité platby",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -3457,10 +3289,6 @@
   "coreSwapsStatusPending": "Čeká na zpracování",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(Dlouhý stisk přetažení a změny priority)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "autoswapTriggerAtBalanceInfoText": "Autoswap spustí, když vaše zůstatek přesahuje tuto maximální rovnováhu.",
   "@autoswapTriggerAtBalanceInfoText": {
@@ -3620,15 +3448,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "Neplatný stop Hodnota Gap: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3767,15 +3586,6 @@
   "sendSats": "čeština",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "Neplatný časout hodnota: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Čeština",
   "@exchangeKycLevelLimited": {
@@ -3987,10 +3797,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Výchozí server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Vložte platební adresu nebo fakturu",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -4058,10 +3864,6 @@
   "sellSelectWallet": "Vybrat Peněženka",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "Přidat vlastní server",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "Celkový poplatek je {feePercent}% částky, kterou odesíláte",
   "@sendHighFeeWarningDescription": {
@@ -4195,10 +3997,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "Přihlášení",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "Metoda výplaty",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4285,10 +4083,6 @@
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
   },
-  "electrumBitcoinServerInfo": "Zadejte adresu serveru ve formátu: hostitel:port (např.:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento swap pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4365,10 +4159,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "Není používáno",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Fyzická záloha: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4393,10 +4183,6 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "electrumRetryCountEmptyError": "Retry Počet nemůže být prázdný",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
   "physicalBackupTag": "Bezpovědné (přihlášení času)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
@@ -4412,10 +4198,6 @@
   "swapExternalAddressHint": "Zadejte externí peněženku adresu",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "Vytváření Tor připojení",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
@@ -4481,10 +4263,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "Zadejte platný číslo",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "Bankovní převod",
   "@sellBankTransfer": {
@@ -4862,10 +4640,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Vymazat vlastní server",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap poplatek",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4901,10 +4675,6 @@
   "sendSwapInProgressBitcoin": "Swap je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "Odstranit vlastní server",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "Selfie s ID",
   "@buySelfie": {
@@ -5034,10 +4804,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "Čeština",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "Zobrazit Seeds",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -5111,10 +4877,6 @@
   "backupWalletTitle": "Zálohování vaší peněženky",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "Ochrana osobních údajů",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "Čeština",
   "@receiveLiquid": {
@@ -5365,15 +5127,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "Poslední kontrola: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "Rychlé a jednoduché",
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
@@ -5516,15 +5269,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Číslo přechodu",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5613,10 +5357,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "Odpojení",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "Zrušit nákup Bitcoinu?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5652,10 +5392,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "Keystone Pokyny",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "Neúspěšné uložení priority serveru",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Okamžité platby",
   "@globalDefaultLiquidWalletLabel": {
@@ -5742,10 +5478,6 @@
   "payNetworkError": "Chyba sítě. Prosím, zkuste to znovu",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "Došlo k chybě",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "Která peněženka chcete platit?",
   "@payWhichWallet": {
@@ -5908,10 +5640,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "Výchozí servery",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Obnovit peněženku",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5948,10 +5676,6 @@
   "sendRecipientAddressOrInvoice": "Adresa příjemce nebo faktura",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Zadejte adresu URL serveru",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Čeština",
   "@importQrDeviceKeystoneName": {
@@ -6000,10 +5724,6 @@
   "addressCardIndexLabel": "Úvod: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
-  },
-  "electrumFormatError": "Použijte hostitel:port formát (např.:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "Tyto poplatky budou odečteny z výše uvedené částky",
   "@transactionFeesDeductedFrom": {
@@ -6139,10 +5859,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "Chcete-li chránit vaše soukromí, výchozí servery se nepoužívají při konfiguraci vlastních serverů.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Metoda výplaty",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6150,10 +5866,6 @@
   "payPriceRefreshIn": "Cena bude obnovena v ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "Nezahrnuje protokol (ssl:// nebo tcp://).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "Počkejte, nebo jste se na straně odesílatele nestihne?",
   "@receivePayjoinFailQuestion": {
@@ -6199,10 +5911,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
   "fundExchangeErrorLoadingDetails": "Údaje o platbě nelze načíst v tomto okamžiku. Prosím, přejděte zpět a zkuste to znovu, vyzvednout další způsob platby nebo vrátit později.",
   "fundExchangeErrorTitleOrdPo404": "Platební možnost není k dispozici",
   "fundExchangeErrorTitleRcpPo404": "Platební možnost není dostupná",
@@ -6242,10 +5950,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " slovo \"Bitcoin\" nebo \"Crypto\" v popisu platby. Vaše platba zablokuje.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "Přidat server",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "Kopírovat adresu",
   "@addressViewCopyAddress": {
@@ -6370,10 +6074,6 @@
   "transactionDetailLabelAmountSent": "Částka odeslána",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "Stop Gap nemůže být prázdný",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "Typ: ",
   "@typeLabel": {
@@ -6600,10 +6300,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "Stav Neznámý",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Potvrzení Swapu",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -6660,10 +6356,6 @@
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "electrumAddFailedError": "Přešel přidat vlastní server",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "Poplatky za swap",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6683,10 +6375,6 @@
   "errorGenericTitle": "Oops! Něco šlo špatně",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "Připojení...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "Změna ID",
   "@receiveSwapID": {
@@ -6864,10 +6552,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "Ochrana osobních údajů:\n\nPomocí vlastního uzlu zajistí, že třetí strana může propojit vaši IP adresu s vašimi transakcemi. Smazáním posledního vlastního serveru se připojíte k serveru BullBitcoin.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "Každý týden",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -6978,10 +6662,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "Čeština",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "nikdy ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -7017,10 +6697,6 @@
   "howToDecideBackupTitle": "Jak se rozhodnout",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "Stav služby",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "savingToDevice": "Ukládání do zařízení.",
   "@savingToDevice": {
@@ -7375,10 +7051,6 @@
   "decryptVaultButton": "Decrypt klenba",
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
-  },
-  "electrumNetworkBitcoin": "Čeština",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
   },
   "paySecureBitcoinWallet": "Secure Bitcoin peněženku",
   "@paySecureBitcoinWallet": {
@@ -7833,10 +7505,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "Zadejte platný číslo",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "autoswapInfoDismissButton": "Já to, ne ukázat znovu",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -7850,10 +7518,6 @@
   "fundExchangeWarningTitle": "Podívejte se na podvodníky",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "Retry Počet",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "Čeština",
   "@walletDetailsDescriptorLabel": {
@@ -7902,10 +7566,6 @@
   "importWatchOnlyScriptType": "Typ skriptu",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "Vlastní servery",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -7976,17 +7636,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "Čas (sekundy)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "Stav zakázky",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "Vypnuto uložit pokročilé možnosti",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "To je to!",
   "@importQrDeviceKruxStep6": {
@@ -8106,10 +7758,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "Žádný protokol by měl být zadán, SSL bude použit automaticky.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "Zařízení připojeno",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -8184,10 +7832,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "Retry Počet nemůže být negativní",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Přidejte to jako číslo účtu",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
@@ -8260,15 +7904,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "electrumDeleteConfirmation": "Přejete-li si tento server odstranit?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Vyberte typ peněženky pro import",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8333,10 +7968,6 @@
   "walletDetailsSignerDeviceLabel": "Signer zařízení",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "Oznámení o ochraně osobních údajů: Používání vlastního uzlu zajišťuje, že žádná třetí strana může odkazovat na vaši IP adresu s vašimi transakcemi.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "Zadejte klávesu Backup ručně >>",
   "@testBackupEnterKeyManually": {
@@ -8579,10 +8210,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "Povolit SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "Vlastní poplatek",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -8691,18 +8318,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Port musí být mezi 1 a 65535",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "Časout nelze vyprázdnit",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "Nicméně, Pokud si otevřete transakce prostřednictvím mempoolu kliknutím na stránku Transakčního ID nebo příjemce, budou tyto informace známy BullBitcoin.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "Ověření totožnosti",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8710,10 +8325,6 @@
   "importColdcardScanPrompt": "Skenujte QR kód z vaší studené karty Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor proxy je spuštěn a připraven",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "Šifrovaný Vault",
   "@backupSettingsEncryptedVault": {
@@ -8798,10 +8409,6 @@
   "payBitcoinOnChain": "Bitcoin on-chain",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor proxy není spuštěn",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "Rychlá platební peněženka",
   "@buyInstantPaymentWallet": {
@@ -8988,10 +8595,6 @@
   "@transactionSwapProgressConfirmed": {
     "description": "Swap progress step: confirmed"
   },
-  "electrumCloseTooltip": "Zavřít",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
   "pinButtonCreate": "Vytvořit PIN",
   "@pinButtonCreate": {
     "description": "Button label when no PIN exists"
@@ -9060,10 +8663,6 @@
   "dcaConfirmContinue": "Pokračovat",
   "@dcaConfirmContinue": {
     "description": "Continue button on DCA confirmation"
-  },
-  "electrumConfirm": "Potvrdit",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "appUnlockScreenTitle": "Ověření",
   "@appUnlockScreenTitle": {
@@ -9197,7 +8796,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Vysoké hodnoty stop gap výrazně prodlužují dobu synchronizace. Nechte aplikaci otevřenou v popředí, dokud se synchronizace nedokončí — přesun aplikace do pozadí ji může přerušit.",
   "wizardSkipButton": "Přeskočit",
   "wizardPageIndicator": "STRÁNKA {current} / {total}",
   "wizardNextButton": "Další",
@@ -9399,7 +8997,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
   "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu.",
-  "mempoolErrorInvalidUrl": "Neplatná adresa serveru. Zadejte platnou doménu nebo IP adresu.",
   "importMnemonicEmptyLabelError": "Pro import mnemoniky je nutný štítek",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9686,26 +9283,7 @@
   "swapRescueWalletHint": "Vyberte peněženku",
   "swapRescueButton": "Obnovit",
   "swapRescueSuccess": "Swap obnoven — nyní bude pokračovat",
-  "mempoolServerStatusOnline": "Online",
-  "mempoolServerStatusOffline": "Offline",
-  "mempoolServerStatusChecking": "Kontrola...",
   "mempoolServerStatusUnknown": "Neznámý",
-  "mempoolCustomServerSaveFailed": "Nepodařilo se uložit server",
-  "mempoolCustomServerInfoDescription": "Mempool servery se používají k odhadu poplatků a k otevření prohlížeče bloků při zobrazení podrobností transakce.",
-  "mempoolCustomServerUseSsl": "Použít SSL",
-  "mempoolCustomServerSslAutoDetected": "(Automaticky zjištěno)",
-  "mempoolCustomServerSslHelpText": "U lokálních serverů (.local, privátní IP adresy) a Tor serverů (.onion) bývá SSL obvykle vypnuté. U veřejných IP adres a domén byste měli SSL používat.",
-  "mempoolErrorSameAsDefault": "Tato adresa URL je stejná jako výchozí server. Použijte prosím jinou adresu URL.",
-  "mempoolErrorConnectionTimeout": "Časový limit připojení vypršel. Server může být pomalý nebo nedostupný.",
-  "mempoolErrorHostNotFound": "Tento server se nepodařilo najít. Zkontrolujte adresu URL a zkuste to znovu.",
-  "mempoolErrorConnectionFailed": "Nelze se připojit k serveru. Zkontrolujte své síťové připojení a zkuste to znovu.",
-  "mempoolErrorNotMempoolServer": "Tato adresa URL nevypadá jako mempool server. Ověřte prosím adresu.",
-  "mempoolErrorServerUnavailable": "Server je nedostupný. Zkuste to prosím později.",
-  "mempoolErrorServerError": "Na serveru došlo k chybě. Zkuste to prosím později.",
-  "mempoolErrorInvalidResponse": "Server vrátil neplatnou odpověď.",
-  "mempoolErrorSaveServerFailed": "Nepodařilo se uložit server",
-  "mempoolErrorLoadFailed": "Nepodařilo se načíst data mempool serveru",
-  "mempoolErrorDeleteFailed": "Nepodařilo se odstranit vlastní server",
   "receivePayjoinNoUtxos": "Nejprve přijměte prostředky, abyste to mohli povolit.\nK použití payjoin jsou potřeba UTXO.",
   "payViewReceipt": "Zobrazit účtenku",
   "paySinpeReceipt": "Účtenka SINPE",
@@ -9851,19 +9429,6 @@
   "coreSwapsStatusUnknown": "Neznámé",
   "sendSwapExpiredTitle": "Objednávka vypršela",
   "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno.",
-  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
-  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
-  "torSettingsBootstrapProgress": "Připojování… {percent} %",
-  "torSettingsEmbeddedTitle": "Vestavěný Tor",
-  "torSettingsEmbeddedDescription": "Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion. Ostatní provoz aplikace zůstává přímý.",
-  "torSettingsTransportMode": "Způsob připojení",
-  "torSettingsModeAutomatic": "Automaticky",
-  "torSettingsModeDirect": "Přímé",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
-  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
-  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
-  "torSettingsActiveTransport": "Aktivní transport: {transport}",
   "settingsScreenPrivacyTitle": "Soukromí obrazovky",
   "settingsScreenPrivacyDisabledMessage": "Snímky obrazovky jsou nyní na citlivých obrazovkách povoleny",
   "settingsSearchHint": "Hledat v nastavení",
@@ -9898,8 +9463,6 @@
   "exchangeSupportChatLoadMessagesError": "Nepodařilo se načíst zprávy. Zkuste to prosím znovu.",
   "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
   "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
-  "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
-  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé",
   "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
   "sendErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sendErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
@@ -10109,11 +9672,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno.",
   "settingsDarkModeTitle": "Tmavý režim",
   "settingsSourceCodeTitle": "Zdrojový kód",
-  "torSettingsStatusNoInternetOrBlocked": "Bez internetu nebo cenzurovaná síť",
-  "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
-  "serverEncrypted": "Šifrováno",
-  "serverUnencrypted": "Nešifrováno",
   "backgroundTasksTitle": "Úlohy na pozadí",
   "blockedInSystemSettings": "Zablokováno v nastavení systému",
   "notificationsBlockedMessage": "Oznámení jsou v nastavení systému zablokována.",

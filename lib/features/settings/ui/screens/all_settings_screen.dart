@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:network/network.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';

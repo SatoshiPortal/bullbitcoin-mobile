@@ -50,14 +50,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "التوقيت يجب أن يكون إيجابيا",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "أنت تحاول بيع أعلى من المبلغ الأقصى الذي يمكن بيعه بهذه المحفظة.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -98,10 +90,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "خادم مخصص",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "SEPA",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -125,10 +113,6 @@
   "exchangeFileUploadSuccess": "تم تحميل الملف بنجاح",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "أنقذ",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "هذا حساب شخص آخر",
   "@withdrawOwnershipOtherAccount": {
@@ -171,11 +155,6 @@
   "autoswapAlwaysBlockEnabledInfo": "عند التفعيل، سيتم دائماً حظر المبادلات التلقائية التي تتجاوز رسومها الحد المحدد",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "هذا الخادم موجود بالفعل",
-  "electrumServerUnreachable": "تعذّر الوصول إلى الخادم. تحقّق من العنوان وحاول مرة أخرى.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "طريقة الدفع",
   "@sellPaymentMethod": {
@@ -345,10 +324,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "بالضبط",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "Electrum Server Settings",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "إذا لزم الأمر، اختيار \"خيارات\" لتغيير نوع العنوان",
   "@importQrDeviceJadeStep7": {
@@ -580,18 +555,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "Show PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -701,10 +664,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "سائل",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "أنت تحاول شراء أقل من المبلغ الأدنى.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -720,10 +679,6 @@
   "pinCodeSecurityPinTitle": "Security PIN",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "electrumEmptyFieldError": "هذا الحقل لا يمكن أن يكون فارغا",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "الدفع في التقدم",
   "@transactionStatusPaymentInProgress": {
@@ -1018,10 +973,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "على الإنترنت",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "صندوق حسابك",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1086,10 +1037,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "جاهز",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "ملاحظة",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1113,10 +1060,6 @@
   "sellAccountName": "الاسم",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "غير معروف",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "logSettingsLogsTitle": "اللوز",
   "@logSettingsLogsTitle": {
@@ -1177,10 +1120,6 @@
   "totalFeeLabel": "المجموع",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "إدخلْ URL خادمَكَ المنصّفِ العادمِ. الخادم سيتحقق قبل الادخار.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "أنت تحاول بيع أقل من المبلغ الأدنى الذي يمكن بيعه بهذه المحفظة.",
   "@sellBelowMinAmountError": {
@@ -1380,10 +1319,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "مضافا إليه",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "الجلستان/المكتب",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1425,10 +1360,6 @@
   "backupWalletBackupButton": "الدعم",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "الأولوية",
   "@sellSendPaymentFeePriority": {
@@ -1629,10 +1560,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "الحالة",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "إذا فقدت الـ 12 كلمة احتياطية، لن تتمكن من استعادة الوصول إلى وولت بيتكوين.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1794,10 +1721,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "من فضلك أدخل رقم الميناء",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "الرصيد المتاح",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1805,10 +1728,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "الوصف",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "إلغاء",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "لم يتم بعد البدء في التبديل.",
   "@coreSwapsLnSendPending": {
@@ -1896,10 +1815,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -1943,10 +1858,6 @@
   "recoverWalletButton": "Recover Wallet",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "هل أنت متأكد من أنك تريد حذف هذا الخادم المعلق؟ الخادم الافتراضي سيستخدم بدلاً من ذلك.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - زيادة السطوع على جهازك",
   "@coldcardStep6": {
@@ -2019,10 +1930,6 @@
   "payActualFee": "الرسوم الفعلية",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate Domain",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "تأكد من تحديث جهازك إلى آخر شركة",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2200,15 +2107,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Invalid Retry القيمة الكونية: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "شبكة مختارة",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2225,10 +2123,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "الميناء",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "اسم المستفيدين",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2236,10 +2130,6 @@
   "backupWalletPhysicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },
-  "electrumReset": "إعادة التوطين",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
   },
   "payInsufficientBalanceError": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
   "@payInsufficientBalanceError": {
@@ -2252,10 +2142,6 @@
   "sendHighFeeWarning": "إنذار برسوم عالية",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "توقف عن القفز لا يمكن أن يكون سلبيا",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "إرسال",
   "@walletButtonSend": {
@@ -2296,18 +2182,6 @@
   "exchangeDcaCancelDialogConfirmButton": "نعم، إبطال مفعوله",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "عنوان البريد الإلكتروني",
   "@payEmailHint": {
@@ -2387,10 +2261,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "electrumLoadFailedError": "Failed to load servers",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "الإخطارات بالبريد الإلكتروني",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2455,10 +2325,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "الخيارات المتقدمة",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "transactionLabelSendAmount": "إرسال",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -2478,10 +2344,6 @@
   "payFilterPayments": "مدفوعات الملفات",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "إلغاء",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "تحميل",
   "@exchangeFileUploadButton": {
@@ -2788,10 +2650,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "تُحذفُ خادمَ العهود؟?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "إرسال",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -2956,10 +2814,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "توقف عن الثرثرة",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "عملية بث.",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -3016,10 +2870,6 @@
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "sendTransferFee": "رسوم المبادلة",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
@@ -3074,24 +2924,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "توقف (غاب) يبدو عالياً (ماكس. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "الوقت يبدو مرتفع جداً (Max. {maxTimeout} seconds)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "المدفوعات الثابتة",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -3135,10 +2967,6 @@
   "coreSwapsStatusPending": "معلقة",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(Long press to drag and change priority)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "exchangeLandingDisclaimerNotAvailable": "ولا تتوافر خدمات تبادل العملات في تطبيقات بول بيتكوين المتنقلة.",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -3297,15 +3125,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "توقف غير مستقر القيمة السوقية: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3448,15 +3267,6 @@
   "sendSats": "الجلسات",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "القيمة غير المستقرة للتوقيت: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Limited",
   "@exchangeKycLevelLimited": {
@@ -3666,10 +3476,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "خادم",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "تقديم عنوان دفع أو فاتورة",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3741,10 +3547,6 @@
   "sellSelectWallet": "Select Wallet",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "مضافا إليه",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "مجموع الرسوم هو {feePercent}٪ من المبلغ الذي ترسله",
   "@sendHighFeeWarningDescription": {
@@ -3866,10 +3668,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "على الإنترنت",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "طريقة الدفع",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -3877,10 +3675,6 @@
   "exchangeAmountInputTitle": "المبلغ",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "اقترب",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "Enter IBAN",
   "@payIbanHint": {
@@ -3952,10 +3746,6 @@
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
   },
-  "electrumBitcoinServerInfo": "عنوان حاسوب خدمة الدخول في الشكل: الجهة المضيفة (مثلاً:com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "sendErrorInsufficientBalanceForSwap": "ليس هناك رصيد كافي لدفع هذا التبديل عن طريق السائل وليس ضمن حدود التبديل للدفع عبر بيتكوين.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4020,10 +3810,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "غير مستخدمة",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "الدعم المادي: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4044,10 +3830,6 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "electrumRetryCountEmptyError": "لا يمكن أن يكون الكونت فارغا",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
   "physicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
@@ -4063,10 +3845,6 @@
   "swapExternalAddressHint": "إدخال عنوان المحفظة الخارجية",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "Establishing الاتصال بالهاتف",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "exchangeAccountInfoVerificationNotVerified": "لم يتم التحقق منها",
   "@exchangeAccountInfoVerificationNotVerified": {
@@ -4124,10 +3902,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "يرجى الدخول إلى رقم صحيح",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "التحويل المصرفي",
   "@sellBankTransfer": {
@@ -4491,10 +4265,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Failed to delete custom server",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4526,10 +4296,6 @@
   "sendSwapInProgressBitcoin": "المبادلة جارية صفقات (بيتكوين) قد تستغرق وقتاً لتأكيدها يمكنك العودة للمنزل والانتظار.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "يحذف الرمز",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "ذاتي مع الهوية",
   "@buySelfie": {
@@ -4660,10 +4426,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "أنقذ",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "بذور العرض",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -4729,10 +4491,6 @@
   "backupWalletTitle": "دعم محفظتك",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "الإشعار بالخصوصية",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "سائل",
   "@receiveLiquid": {
@@ -4987,15 +4745,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "آخر فحص: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "sellPayoutAmount": "المبلغ المدفوع",
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
@@ -5108,15 +4857,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "النقل العابر",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5209,10 +4949,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "منفصلة",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "(ألغى (بيتكوين) المُتكرر؟?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5248,10 +4984,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "Keystone Instructions",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "Failed to save server priority",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
   "@globalDefaultLiquidWalletLabel": {
@@ -5338,10 +5070,6 @@
   "payNetworkError": "خطأ الشبكة حاول مرة أخرى",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "وقع خطأ",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "أي محفظة تريد أن تدفعها؟?",
   "@payWhichWallet": {
@@ -5492,10 +5220,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "الخادمات",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Recover Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5532,10 +5256,6 @@
   "sendRecipientAddressOrInvoice": "عنوان المستقبل أو فاتورة",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "من فضلك أدخل الخادم",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Keystone",
   "@importQrDeviceKeystoneName": {
@@ -5584,10 +5304,6 @@
   "dcaSetupContinue": "استمر",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "Use host:port format (e.g.,com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "وستخصم هذه الرسوم من المبلغ المرسل",
   "@transactionFeesDeductedFrom": {
@@ -5731,10 +5447,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "لحماية خصوصيتك، الخواديم الغير مقصودة لا تُستخدم عندما يتم تشكيل الخواديم.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "طريقة الدفع",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -5742,10 +5454,6 @@
   "payPriceRefreshIn": "ستنعش الأسعار ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "لا تشمل البروتوكول (sl:// or tcp://).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "لا وقت للانتظار أو لم يفشل الراتب في جانب المرسل؟?",
   "@receivePayjoinFailQuestion": {
@@ -5786,10 +5494,6 @@
   "testBackupEncryptedVaultTag": "سهلة وبسيطة (دقيقة واحدة)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "ولا يمكن تحميل تفاصيل الدفع في هذه اللحظة. الرجاء العودة ومحاولة مرة أخرى، اختيار طريقة أخرى للدفع أو العودة في وقت لاحق.",
   "fundExchangeErrorTitleOrdPo404": "خيار الدفع غير متاح",
@@ -5834,10 +5538,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " كلمة \"بيتكوين\" أو \"كريبتو\" في وصف الدفع هذا سيمنع دفعك.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "مضافا إليه",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "العنوان",
   "@addressViewCopyAddress": {
@@ -5966,10 +5666,6 @@
   "transactionDetailLabelAmountSent": "المبلغ المرسل",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "لا يمكن أن تكون فارغة",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "النوع: ",
   "@typeLabel": {
@@ -6175,10 +5871,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "الوضع غير معروف",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Confirm Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -6235,10 +5927,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Failed to add custom server",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "رسوم المبادلة",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6254,10 +5942,6 @@
   "errorGenericTitle": "! شيء ما حدث",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "التواصل...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "بطاقة الهوية",
   "@receiveSwapID": {
@@ -6434,10 +6118,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "الإشعار الخاص:\n\nاستخدام عقدك الخاص يضمن أنه لا يمكن لأي طرف ثالث أن يربط عنوان IP الخاص بك مع معاملاتك. عن طريق حذف آخر خادم خاص بك، سوف تكون على اتصال مع خادم بولبيتكوين.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "كل أسبوع",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -6534,10 +6214,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "تحذف",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "أبداً ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -6573,10 +6249,6 @@
   "howToDecideBackupTitle": "كيفية تقرير",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "الخدمة",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "fundExchangeLabelSwiftCode": "SWIFT code",
   "@fundExchangeLabelSwiftCode": {
@@ -6934,10 +6606,6 @@
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
   },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "paySecureBitcoinWallet": "محفظة بيتكين آمنة",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -7071,10 +6739,6 @@
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
-  },
-  "electrumConfirm": "Confirm",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "العدد",
   "transactionDetailLabelPaymentDescription": "وصف الدفعة",
@@ -7391,10 +7055,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "أدخل رقماً صالحاً",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "تم تأكيدها",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -7408,10 +7068,6 @@
   "fundExchangeWarningTitle": "احترس من المسامير",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "الكونت",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "الوصف",
   "@walletDetailsDescriptorLabel": {
@@ -7452,10 +7108,6 @@
   "importWatchOnlyScriptType": "نوع الشر",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "الخوادم العرفية",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Swap Failed",
   "@transactionStatusSwapFailed": {
@@ -7530,17 +7182,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "التوقيت (الثانيات)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "النظام",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "فشل في إنقاذ الخيارات المتقدمة",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "هذا هو!",
   "@importQrDeviceKruxStep6": {
@@ -7652,10 +7296,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "No protocol should be specified, SSL will be used automatically.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "جهاز متصل",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -7730,10 +7370,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "لا يمكن أن تكون النتيجة سلبية",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "importQrDeviceJadeStep4": "اختيار \"خيار\" من القائمة الرئيسية",
   "@importQrDeviceJadeStep4": {
     "description": "Jade instruction step 4"
@@ -7793,15 +7429,6 @@
   "transactionDetailLabelCompletedAt": "مكتملة",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
-  },
-  "electrumDeleteConfirmation": "هل أنت متأكد أنك تريد حذف هذا الخادم؟\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
   },
   "importMnemonicSelectType": "اختيار نوع المحفظة للاستيراد",
   "@importMnemonicSelectType": {
@@ -7871,10 +7498,6 @@
   "walletDetailsSignerDeviceLabel": "جهاز تسجيل",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "إشعار الخصوصية: استخدام رمزك الخاص يضمن أنه لا يمكن لأي طرف ثالث أن يربط عنوان IP الخاص بك، مع معاملاتك.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "أدخل مفتاح الدعم يدوياً",
   "@testBackupEnterKeyManually": {
@@ -8116,10 +7739,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "Enable SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "الرسوم الجمركية",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -8220,18 +7839,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "يجب أن يكون الميناء بين 1 و 65535",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "الوقت لا يمكن أن يكون فارغا",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "ومع ذلك، إذا رأيتم المعاملات عبر المنصّة عن طريق فتح صفحة تعريف المعاملات الخاصة بكم أو صفحة التحصيل، هذه المعلومات ستكون معروفة لـ(بولبيتكوين).",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "التحقق من الهوية",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8239,10 +7846,6 @@
   "importColdcardScanPrompt": "امسح شفرة الرباعي من بطاقة الذكاء",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "(تور بروسي) يركض ويستعد",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "الخزنة المشفرة",
   "@backupSettingsEncryptedVault": {
@@ -8323,10 +7926,6 @@
   "payBitcoinOnChain": "بيتكوين على شاين",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "(تور بروسي) لا يهرب",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "محفظة الدفع الثابتة",
   "@buyInstantPaymentWallet": {
@@ -9200,7 +8799,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "تؤدي قيم Stop Gap العالية إلى زيادة وقت المزامنة بشكل كبير. أبقِ التطبيق مفتوحًا في المقدمة حتى تكتمل المزامنة — قد يؤدي تشغيل التطبيق في الخلفية إلى مقاطعتها.",
   "wizardSkipButton": "تخطي",
   "wizardPageIndicator": "صفحة {current} / {total}",
   "wizardNextButton": "التالي",
@@ -9287,7 +8885,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
   "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
-  "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا.",
   "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9574,26 +9171,7 @@
   "swapRescueWalletHint": "اختر محفظة",
   "swapRescueButton": "استعادة",
   "swapRescueSuccess": "تمت استعادة المبادلة — ستُستأنف الآن",
-  "mempoolServerStatusOnline": "متصل",
-  "mempoolServerStatusOffline": "غير متصل",
-  "mempoolServerStatusChecking": "جارٍ التحقق...",
   "mempoolServerStatusUnknown": "غير معروف",
-  "mempoolCustomServerSaveFailed": "فشل حفظ الخادم",
-  "mempoolCustomServerInfoDescription": "تُستخدم خوادم Mempool لتقدير الرسوم ولفتح مستكشف الكتل عند عرض تفاصيل المعاملات.",
-  "mempoolCustomServerUseSsl": "استخدام SSL",
-  "mempoolCustomServerSslAutoDetected": "(تم الاكتشاف تلقائيًا)",
-  "mempoolCustomServerSslHelpText": "بالنسبة للخوادم المحلية (.local، عناوين IP الخاصة) وخوادم Tor (.onion)، عادةً ما يكون SSL معطّلاً. يجب استخدام SSL مع عناوين IP والنطاقات العامة.",
-  "mempoolErrorSameAsDefault": "هذا الرابط مطابق للخادم الافتراضي. يرجى استخدام رابط مختلف.",
-  "mempoolErrorConnectionTimeout": "انتهت مهلة الاتصال. قد يكون الخادم بطيئًا أو غير متاح.",
-  "mempoolErrorHostNotFound": "تعذّر العثور على هذا الخادم. يرجى التحقق من الرابط والمحاولة مجددًا.",
-  "mempoolErrorConnectionFailed": "تعذّر الاتصال بالخادم. تحقق من اتصال الشبكة وحاول مجددًا.",
-  "mempoolErrorNotMempoolServer": "لا يبدو أن هذا الرابط خادم Mempool. يرجى التحقق من العنوان.",
-  "mempoolErrorServerUnavailable": "الخادم غير متاح حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
-  "mempoolErrorServerError": "واجه الخادم خطأً. يرجى المحاولة مرة أخرى لاحقًا.",
-  "mempoolErrorInvalidResponse": "أرسل الخادم استجابة غير صالحة.",
-  "mempoolErrorSaveServerFailed": "فشل حفظ الخادم",
-  "mempoolErrorLoadFailed": "فشل تحميل بيانات خادم Mempool",
-  "mempoolErrorDeleteFailed": "فشل حذف الخادم المخصص",
   "exchangeStatisticsBuySellRatioDesc": "نسبة إجمالي الحجم بين الشراء والبيع",
   "exchangeStatisticsBuyVolumeDesc": "المبلغ الإجمالي المُنفَق في شراء البيتكوين",
   "exchangeStatisticsSellVolumeDesc": "المبلغ الإجمالي المُستلَم من بيع البيتكوين",
@@ -9854,19 +9432,6 @@
   "coreSwapsStatusUnknown": "غير معروف",
   "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
   "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك.",
-  "torSettingsStatusCensored": "يبدو أن الاتصال مُرشَّح",
-  "torSettingsDescCensored": "تعذّر على Tor الوصول إلى الشبكة. غالبًا ما يعني هذا أن الاتصال يخضع للترشيح.",
-  "torSettingsBootstrapProgress": "جارٍ الاتصال… {percent}%",
-  "torSettingsEmbeddedTitle": "Tor المدمج",
-  "torSettingsEmbeddedDescription": "يُستخدم Tor المدمج من قِبل RecoverBull وخوادم Bitcoin Electrum التي تنتهي بـ .onion. تبقى بقية حركة التطبيق مباشرة.",
-  "torSettingsTransportMode": "طريقة الاتصال",
-  "torSettingsModeAutomatic": "تلقائي",
-  "torSettingsModeDirect": "مباشر",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "يجرّب اتصالًا مباشرًا بـ Tor أولًا، ويستخدم Snowflake إذا بدا أن الشبكة تحجب Tor.",
-  "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
-  "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
-  "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
   "settingsScreenPrivacyTitle": "خصوصية الشاشة",
   "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة",
   "settingsSearchHint": "البحث في الإعدادات",
@@ -9901,8 +9466,6 @@
   "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
   "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
   "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
-  "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
-  "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة",
   "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
@@ -10112,11 +9675,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
   "settingsDarkModeTitle": "الوضع الداكن",
   "settingsSourceCodeTitle": "الشيفرة المصدرية",
-  "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
-  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
-  "serverEncrypted": "مشفّر",
-  "serverUnencrypted": "غير مشفّر",
   "backgroundTasksTitle": "المهام في الخلفية",
   "blockedInSystemSettings": "محظور في إعدادات النظام",
   "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",

@@ -1,0 +1,269 @@
+{
+  "@@locale": "es",
+  "mempoolSettingsTitle": "Servidor Mempool",
+  "mempoolSettingsDefaultServer": "Servidor predeterminado",
+  "mempoolSettingsCustomServer": "Servidor Personalizado",
+  "mempoolCustomServerAdd": "Agregar Servidor Personalizado",
+  "mempoolCustomServerDeleteTitle": "¿Borrar Servidor Personalizado?",
+  "mempoolCustomServerDeleteMessage": "¿Seguro que desea borrar este servidor mempool personalizado? El servidor por defecto será utilizado en su lugar.",
+  "mempoolCustomServerUrlEmpty": "Introduzca un URL de servidor",
+  "mempoolCustomServerBottomSheetDescription": "Introduzca la URL de su servidor mempool personalizado. El servidor será validado antes de guardar.",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "doneButton": "Hecho",
+  "electrumTitle": "Configuración del servidor Electrum",
+  "electrumNetworkBitcoin": "Bitcoin",
+  "electrumNetworkLiquid": "Liquid",
+  "electrumAdvancedOptions": "Opciones avanzadas",
+  "electrumAddCustomServer": "Agregar servidor personalizado",
+  "electrumCloseTooltip": "Cerrar",
+  "electrumServerUrlHint": "URL del servidor {network} {environment}",
+  "@electrumServerUrlHint": {
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "electrumEmptyFieldError": "Este campo no puede estar vacío",
+  "electrumLiquidSslInfo": "No se debe especificar ningún protocolo, SSL se usará automáticamente.",
+  "electrumAddServer": "Agregar servidor",
+  "electrumEnableSsl": "Activar SSL",
+  "electrumProtocolError": "No incluya el protocolo (ssl:// o tcp://).",
+  "electrumFormatError": "Use el formato host:puerto (p. ej., ejemplo.com:50001)",
+  "electrumBitcoinServerInfo": "Ingrese la dirección del servidor en el formato: host:puerto (p. ej., ejemplo.com:50001)",
+  "electrumStopGap": "Intervalo de parada",
+  "electrumTimeout": "Tiempo de espera (segundos)",
+  "electrumRetryCount": "Número de reintentos",
+  "electrumValidateDomain": "Validar dominio",
+  "electrumStopGapEmptyError": "El intervalo de parada no puede estar vacío",
+  "electrumInvalidNumberError": "Ingrese un número válido",
+  "electrumStopGapNegativeError": "El intervalo de parada no puede ser negativo",
+  "electrumStopGapTooHighError": "El intervalo de parada parece demasiado alto. (Máx. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutEmptyError": "El tiempo de espera no puede estar vacío",
+  "electrumTimeoutPositiveError": "El tiempo de espera debe ser positivo",
+  "electrumTimeoutTooHighError": "El tiempo de espera parece demasiado alto. (Máx. {maxTimeout} segundos)",
+  "@electrumTimeoutTooHighError": {
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumRetryCountEmptyError": "El número de reintentos no puede estar vacío",
+  "electrumRetryCountNegativeError": "El número de reintentos no puede ser negativo",
+  "electrumTimeoutWarning": "Su tiempo de espera ({timeoutValue} segundos) es menor que el valor recomendado ({recommended} segundos) para este intervalo de parada.",
+  "@electrumTimeoutWarning": {
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidStopGapError": "Valor de intervalo de parada inválido: {value}",
+  "@electrumInvalidStopGapError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Valor de tiempo de espera inválido: {value}",
+  "@electrumInvalidTimeoutError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidRetryError": "Valor de número de reintentos inválido: {value}",
+  "@electrumInvalidRetryError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSaveFailedError": "Error al guardar las opciones avanzadas",
+  "electrumUnknownError": "Ocurrió un error",
+  "electrumReset": "Restablecer",
+  "electrumConfirm": "Confirmar",
+  "electrumDeleteServerTitle": "Eliminar servidor personalizado",
+  "electrumDeletePrivacyNotice": "Aviso de privacidad:\n\nUsar su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones. Al eliminar su último servidor personalizado, se conectará a un servidor BullBitcoin.\n",
+  "electrumDeleteConfirmation": "¿Está seguro de que desea eliminar este servidor?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumCancel": "Cancelar",
+  "electrumDelete": "Eliminar",
+  "electrumDefaultServers": "Servidores predeterminados",
+  "electrumDefaultServersInfo": "Para proteger su privacidad, los servidores predeterminados no se utilizan cuando se configuran servidores personalizados.",
+  "electrumCustomServers": "Servidores personalizados",
+  "electrumDragToReorder": "(Mantenga presionado para arrastrar y cambiar la prioridad)",
+  "electrumLoadFailedError": "Error al cargar los servidores",
+  "@electrumLoadFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSavePriorityFailedError": "Error al guardar la prioridad del servidor",
+  "@electrumSavePriorityFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAddFailedError": "Error al agregar el servidor personalizado",
+  "@electrumAddFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteFailedError": "Error al eliminar el servidor personalizado",
+  "@electrumDeleteFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumServerAlreadyExists": "Este servidor ya existe",
+  "electrumServerUnreachable": "El servidor no está disponible. Comprueba la dirección e inténtalo de nuevo.",
+  "electrumPrivacyNoticeTitle": "Aviso de privacidad",
+  "electrumPrivacyNoticeContent1": "Aviso de privacidad: El uso de su propio nodo garantiza que ningún tercero pueda vincular su dirección IP con sus transacciones.",
+  "electrumPrivacyNoticeContent2": "Sin embargo, si visualiza transacciones a través de mempool haciendo clic en su ID de transacción o en la página de Detalles del destinatario, esta información será conocida por BullBitcoin.",
+  "electrumPrivacyNoticeCancel": "Cancelar",
+  "electrumPrivacyNoticeSave": "Guardar",
+  "electrumServerNotUsed": "No utilizado",
+  "electrumServerOnline": "En línea",
+  "electrumServerOffline": "Fuera de línea",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "statusCheckTitle": "Estado de Servicio",
+  "statusCheckLastChecked": "Última verificación: {time}",
+  "@statusCheckLastChecked": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCheckOnline": "En línea",
+  "statusCheckOffline": "Fuera de línea",
+  "statusCheckUnknown": "Desconocido",
+  "torSettingsTitle": "Configuración de Tor",
+  "torSettingsProxyPort": "Puerto del proxy Tor",
+  "torSettingsPortDisplay": "Puerto: {port}",
+  "@torSettingsPortDisplay": {
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Número de puerto",
+  "torSettingsPortHint": "9050",
+  "torSettingsPortValidationEmpty": "Por favor ingrese un número de puerto",
+  "torSettingsPortValidationInvalid": "Por favor ingrese un número válido",
+  "torSettingsPortValidationRange": "El puerto debe estar entre 1 y 65535",
+  "torSettingsSaveButton": "Guardar",
+  "torSettingsConnectionStatus": "Estado de conexión",
+  "torSettingsStatusConnected": "Listo",
+  "torSettingsStatusConnecting": "Conectando...",
+  "torSettingsStatusDisconnected": "Desconectado",
+  "torSettingsStatusUnknown": "Estado desconocido",
+  "torSettingsDescConnected": "El proxy Tor está activo y listo",
+  "torSettingsDescConnecting": "Estableciendo conexión Tor",
+  "torSettingsDescDisconnected": "El proxy Tor no está activo",
+  "save": "Guardar",
+  "mempoolServerStatusOnline": "En línea",
+  "mempoolServerStatusOffline": "Sin conexión",
+  "mempoolServerStatusChecking": "Verificando...",
+  "mempoolServerStatusUnknown": "Desconocido",
+  "mempoolCustomServerSaveFailed": "Error al guardar el servidor",
+  "mempoolCustomServerInfoDescription": "Los servidores mempool se utilizan para la estimación de comisiones y para abrir el explorador de bloques al ver los detalles de la transacción.",
+  "mempoolCustomServerUseSsl": "Usar SSL",
+  "mempoolCustomServerSslAutoDetected": "(Detectado automáticamente)",
+  "mempoolCustomServerSslHelpText": "Para servidores locales (.local, IPs privadas) y Tor (.onion), SSL generalmente está deshabilitado. Las IPs públicas y dominios deberían usar SSL.",
+  "mempoolErrorSameAsDefault": "Esta URL es la misma que el servidor predeterminado. Por favor, usa una URL diferente.",
+  "mempoolErrorConnectionTimeout": "Tiempo de conexión agotado. El servidor puede estar lento o inaccesible.",
+  "mempoolErrorHostNotFound": "No se puede encontrar este servidor. Por favor, verifica la URL e intenta de nuevo.",
+  "mempoolErrorConnectionFailed": "No se puede conectar al servidor. Verifica tu conexión de red e intenta de nuevo.",
+  "mempoolErrorNotMempoolServer": "Esta URL no parece ser un servidor mempool. Por favor, verifica la dirección.",
+  "mempoolErrorServerUnavailable": "Servidor no disponible. Por favor, intenta más tarde.",
+  "mempoolErrorServerError": "El servidor encontró un error. Por favor, intenta más tarde.",
+  "mempoolErrorInvalidResponse": "El servidor devolvió una respuesta inválida.",
+  "mempoolErrorInvalidUrl": "URL del servidor no válida. Introduce un dominio o dirección IP válidos.",
+  "mempoolErrorSaveServerFailed": "Error al guardar el servidor",
+  "mempoolErrorLoadFailed": "Error al cargar los datos del servidor mempool",
+  "mempoolErrorDeleteFailed": "Error al eliminar el servidor personalizado",
+  "electrumStopGapHighWarning": "Los valores altos de stop gap aumentan significativamente el tiempo de sincronización. Mantén la aplicación abierta en primer plano hasta que se complete la sincronización — pasarla a segundo plano puede interrumpirla.",
+  "statusCheckDisabled": "Desactivado",
+  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente.",
+  "torSettingsStatusCensored": "La conexión parece filtrada",
+  "torSettingsDescCensored": "Tor no pudo alcanzar la red. A menudo significa que la conexión está filtrada.",
+  "torSettingsBootstrapProgress": "Conectando… {percent}%",
+  "torSettingsEmbeddedTitle": "Tor integrado",
+  "torSettingsEmbeddedDescription": "El Tor integrado lo usan RecoverBull y los servidores Bitcoin Electrum .onion. El resto del tráfico de la app sigue siendo directo.",
+  "torSettingsTransportMode": "Método de conexión",
+  "torSettingsModeAutomatic": "Automático",
+  "torSettingsModeDirect": "Directa",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Prueba primero una conexión directa a Tor y usa Snowflake si la red parece bloquear Tor.",
+  "torSettingsModeDirectDescription": "Se conecta directamente a la red Tor, sin transporte conectable.",
+  "torSettingsModeSnowflakeDescription": "Usa proxies voluntarios de Snowflake para alcanzar Tor desde una red filtrada.",
+  "torSettingsActiveTransport": "Transporte activo: {transport}",
+  "torSettingsExternalProxyReachable": "Proxy accesible",
+  "torSettingsExternalProxyReachableDescription": "El proxy SOCKS5 configurado ha aceptado una conexión.",
+  "torSettingsExternalProxyChecking": "Comprobando el proxy",
+  "torSettingsExternalProxyCheckingDescription": "Bull está comprobando el proxy SOCKS5 configurado.",
+  "torSettingsExternalProxyUnavailable": "Proxy SOCKS5 no disponible",
+  "torTitle": "Tor",
+  "statusCheckNoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
+  "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados",
+  "electrumRegtest": "Regtest",
+  "electrumOnionUsesTorDescription": "Este servidor .onion se enruta a través de Tor.",
+  "torSettingsStatusNoInternetOrBlocked": "Sin internet o red censurada",
+  "torSettingsDescNoInternetOrBlocked": "Esta red no tiene acceso a internet o bloquea Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
+  "torSettingsExternalProxyNotChecked": "Proxy sin comprobar",
+  "torSettingsExternalProxyNotCheckedDescription": "Bull aún no ha comprobado el proxy SOCKS5 configurado.",
+  "torSettingsRetry": "Reintentar",
+  "torSettingsLearnAboutOrbot": "Más información sobre Orbot",
+  "torSettingsOrbotLinkFailed": "No se pudo abrir el sitio web de Orbot.",
+  "torSettingsLocalProxyTitle": "Proxy SOCKS5 local (avanzado)",
+  "torSettingsLocalProxyDescription": "Puedes usar Orbot en modo VPN para enrutar el tráfico de red de Bull a través de Tor. Configurar abajo el puerto SOCKS de Orbot solo enruta a través de Tor el tráfico de RecoverBull y de los servidores Bitcoin Electrum .onion.",
+  "torSettingsLocalProxyPortHelper": "Puerto SOCKS5 local habitual: 9050",
+  "torSettingsEmbeddedStatusUnknownDescription": "Tor integrado aún no ha informado de un estado de conexión.",
+  "torSettingsLocalProxyStatus": "Estado del proxy SOCKS5 local",
+  "mempoolErrorOnionRouteUnavailable": "No se puede acceder al servidor onion. Comprueba que tu ruta de Tor esté disponible e inténtalo de nuevo.",
+  "electrumConfiguredExternalTorUnavailable": "El proxy Tor que configuraste no está disponible. Abre la configuración de Tor para volver a conectarlo.",
+  "electrumOpenTorSettings": "Abrir configuración de Tor",
+  "torSettingsProxyAttemptPort": "Puerto intentado: {port}",
+  "torSettingsProxyAttemptWithActivePort": "Puerto intentado: {attemptedPort} · Puerto activo: {activePort}",
+  "serverEncrypted": "Cifrado",
+  "serverUnencrypted": "Sin cifrar"
+}

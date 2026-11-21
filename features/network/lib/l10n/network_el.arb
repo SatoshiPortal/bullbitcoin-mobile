@@ -1,0 +1,477 @@
+{
+  "torSettingsPortHint": "905050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "electrumTimeoutPositiveError": "Ο χρόνος πρέπει να είναι θετικός",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "mempoolSettingsCustomServer": "Προσαρμοσμένος διακομιστής",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "electrumPrivacyNoticeSave": "Εξοικονομήστε",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerAlreadyExists": "Αυτός ο server υπάρχει ήδη",
+  "electrumServerUnreachable": "Ο διακομιστής δεν είναι προσβάσιμος. Ελέγξτε τη διεύθυνση και δοκιμάστε ξανά.",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumTitle": "Electrum Server Guidelines",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "save": "Εξοικονομήστε",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "electrumTimeoutWarning": "Τα χρονικά σας ({timeoutValue} δευτερόλεπτα) είναι χαμηλότερα από τη συνιστώμενη αξία ({recommended} δευτερόλεπτα) για αυτό το Stop Gap.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "Υγρό",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumEmptyFieldError": "Αυτό το πεδίο δεν μπορεί να είναι άδειο",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumServerOnline": "Online",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "torSettingsStatusConnected": "Έτοιμο",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "statusCheckUnknown": "Άγνωστο",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Εισάγετε το URL του προσαρμοσμένου διακομιστή mempool σας. Ο διακομιστής θα επικυρωθεί πριν από την αποταμίευση.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "electrumAddCustomServer": "Προσθήκη Custom Server",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "torSettingsConnectionStatus": "Κατάσταση σύνδεσης",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsPortValidationEmpty": "Παρακαλώ εισάγετε έναν αριθμό λιμένα",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "electrumPrivacyNoticeCancel": "Ακύρωση",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "statusCheckOffline": "Offline",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "mempoolCustomServerDeleteMessage": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτόν τον προσαρμοσμένο διακομιστή mempool; Ο προεπιλεγμένος server θα χρησιμοποιηθεί αντ 'αυτού.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "electrumValidateDomain": "Validate Domain",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumInvalidRetryError": "Invalid Retry Κόμη αξία: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Αριθμός λιμένων",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "electrumReset": "Επαναφορά",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumStopGapNegativeError": "Το Stop Gap δεν μπορεί να είναι αρνητικό",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumServerUrlHint": "Διεύθυνση URL διακομιστή {network} {environment}",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές ",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails"
+  },
+  "electrumAdvancedOptions": "Προχωρημένες επιλογές",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumCancel": "Ακύρωση",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "mempoolCustomServerDeleteTitle": "Διαγράψτε Custom Server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "electrumStopGap": "Σταματήστε το χάσμα",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumServerOffline": "Offline",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
+  "electrumStopGapTooHighError": "Το Stop Gap φαίνεται πολύ υψηλό. (Max. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "Το Timeout φαίνεται πολύ υψηλό. (Max. {maxTimeout} δευτερόλεπτα)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(Long Press to drag and Change Prior)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumInvalidStopGapError": "Invalid Stop Τιμή του χάσματος: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Ακυρωμένη αξία Timeout: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Διαγράψτε",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "mempoolSettingsDefaultServer": "Default Server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "mempoolCustomServerAdd": "Προσθήκη Custom Server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "statusCheckOnline": "Online",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "electrumCloseTooltip": "Κλείστε κοντά",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumBitcoinServerInfo": "Διεύθυνση διακομιστή σε μορφή: host:port (π.χ., παράδειγμα.com:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumServerNotUsed": "Δεν χρησιμοποιείται",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumRetryCountEmptyError": "Το Retry Count δεν μπορεί να είναι άδειο",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "torSettingsDescConnecting": "Δημιουργία σύνδεση Tor",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsPortValidationInvalid": "Παρακαλώ εισάγετε έναν έγκυρο αριθμό",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "electrumDeleteFailedError": "Επιθυμήθηκε να διαγράψει το προσαρμοσμένο διακομιστή[X30XX]",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails"
+  },
+  "electrumDeleteServerTitle": "Διαγράψτε Custom Server",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "torSettingsSaveButton": "Εξοικονομήστε",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "electrumPrivacyNoticeTitle": "Δήλωση απορρήτου",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "statusCheckLastChecked": "Τελευταία έλεγχος: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "Λιμάνι: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "Αποσυνδεδεδεμένοι",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή ",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails"
+  },
+  "electrumUnknownError": "Ένα λάθος συνέβη",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumDefaultServers": "Default Servers",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "mempoolCustomServerUrlEmpty": "Παρακαλώ εισάγετε ένα URL server",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "electrumFormatError": "Χρησιμοποιήστε το host: τη μορφή τουport (π.χ., παράδειγμα.com:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "cancel": "Ακύρωση",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "electrumDefaultServersInfo": "Για την προστασία της ιδιωτικής ζωής σας, οι προεπιλεγμένοι διακομιστές δεν χρησιμοποιούνται όταν διαμορφώνονται προσαρμοσμένες διακομιστές.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumProtocolError": "Μην συμπεριλάβετε πρωτόκολλο (ssl Reef ή tcIU).",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "torSettingsProxyPort": "Tor Proxy Port",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "electrumAddServer": "Add Server",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "electrumStopGapEmptyError": "Το Stop Gap δεν μπορεί να είναι άδειο",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "torSettingsStatusUnknown": "Άγνωστη κατάσταση",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή ",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails"
+  },
+  "torSettingsStatusConnecting": "Συνδέοντας...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "electrumDeletePrivacyNotice": "Δήλωση απορρήτου:\n\nΧρησιμοποιώντας το δικό σας κόμβο διασφαλίζει ότι κανένα τρίτο μέρος δεν μπορεί να συνδέσει τη διεύθυνση IP σας με τις συναλλαγές σας. Με την διαγραφή του τελευταίου προσαρμοσμένου server σας, θα συνδεθείτε με έναν server BullBitcoin.\n.\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDelete": "Διαγράψτε",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "statusCheckTitle": "Service status",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "doneButton": "Έγινε",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "electrumNetworkBitcoin": "Bitcoin",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumConfirm": "Επιβεβαίωση",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumInvalidNumberError": "Εισάγετε έναν έγκυρο αριθμό",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumRetryCount": "Retry Count",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumCustomServers": "Custom Servers",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumTimeout": "Timeout (δεύτεροι)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumSaveFailedError": "Απέτυχε να σώσει προηγμένες επιλογές",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumLiquidSslInfo": "Κανένα πρωτόκολλο δεν πρέπει να καθορίζεται, το SSL θα χρησιμοποιείται αυτόματα.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumRetryCountNegativeError": "Το Retry Count δεν μπορεί να είναι αρνητικό",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον server;\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "Δήλωση απορρήτου: Χρησιμοποιώντας το δικό σας κόμβο διασφαλίζει ότι κανένα τρίτο μέρος δεν μπορεί να συνδέσει τη διεύθυνση IP σας, με τις συναλλαγές σας.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "torSettingsTitle": "Οι ρυθμίσεις Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "electrumEnableSsl": "Enable SSL SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "torSettingsPortValidationRange": "Το λιμάνι πρέπει να είναι μεταξύ 1 και 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "electrumTimeoutEmptyError": "Το Timeout δεν μπορεί να είναι άδειο",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumPrivacyNoticeContent2": "Ωστόσο, Εάν βλέπετε συναλλαγές μέσω mempool κάνοντας κλικ στην σελίδα ID ή αναληπτικών λεπτομερειών, αυτές οι πληροφορίες θα είναι γνωστές στο BullBitcoin.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "torSettingsDescConnected": "Tor proxy τρέχει και είναι έτοιμο",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescDisconnected": "Tor proxy δεν τρέχει",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "electrumStopGapHighWarning": "Οι υψηλές τιμές stop gap αυξάνουν σημαντικά τον χρόνο συγχρονισμού. Διατηρήστε την εφαρμογή ανοιχτή στο προσκήνιο μέχρι να ολοκληρωθεί ο συγχρονισμός — η μετακίνηση στο παρασκήνιο μπορεί να τον διακόψει.",
+  "mempoolErrorInvalidUrl": "Μη έγκυρη διεύθυνση URL διακομιστή. Εισαγάγετε έγκυρο domain ή διεύθυνση IP.",
+  "mempoolServerStatusOnline": "Σε λειτουργία",
+  "mempoolServerStatusOffline": "Εκτός λειτουργίας",
+  "mempoolServerStatusChecking": "Έλεγχος...",
+  "mempoolServerStatusUnknown": "Άγνωστο",
+  "mempoolCustomServerSaveFailed": "Αποτυχία αποθήκευσης διακομιστή",
+  "mempoolCustomServerInfoDescription": "Οι διακομιστές mempool χρησιμοποιούνται για την εκτίμηση τελών και το άνοιγμα του block explorer κατά την προβολή λεπτομερειών συναλλαγής.",
+  "mempoolCustomServerUseSsl": "Χρήση SSL",
+  "mempoolCustomServerSslAutoDetected": "(Αυτόματος εντοπισμός)",
+  "mempoolCustomServerSslHelpText": "Για τοπικούς διακομιστές (.local, ιδιωτικές IP) και διακομιστές Tor (.onion), το SSL είναι συνήθως απενεργοποιημένο. Οι δημόσιες IP και τα domains θα πρέπει να χρησιμοποιούν SSL.",
+  "mempoolErrorSameAsDefault": "Αυτό το URL είναι ίδιο με τον προεπιλεγμένο διακομιστή. Χρησιμοποιήστε διαφορετικό URL.",
+  "mempoolErrorConnectionTimeout": "Η σύνδεση έληξε. Ο διακομιστής μπορεί να είναι αργός ή μη προσβάσιμος.",
+  "mempoolErrorHostNotFound": "Δεν είναι δυνατή η εύρεση αυτού του διακομιστή. Ελέγξτε το URL και δοκιμάστε ξανά.",
+  "mempoolErrorConnectionFailed": "Αδυναμία σύνδεσης με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο δίκτυο και δοκιμάστε ξανά.",
+  "mempoolErrorNotMempoolServer": "Αυτό το URL δεν φαίνεται να είναι διακομιστής mempool. Επαληθεύστε τη διεύθυνση.",
+  "mempoolErrorServerUnavailable": "Ο διακομιστής δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
+  "mempoolErrorServerError": "Ο διακομιστής αντιμετώπισε σφάλμα. Δοκιμάστε ξανά αργότερα.",
+  "mempoolErrorInvalidResponse": "Ο διακομιστής επέστρεψε μη έγκυρη απόκριση.",
+  "mempoolErrorSaveServerFailed": "Αποτυχία αποθήκευσης διακομιστή",
+  "mempoolErrorLoadFailed": "Αποτυχία φόρτωσης δεδομένων διακομιστή mempool",
+  "mempoolErrorDeleteFailed": "Αποτυχία διαγραφής προσαρμοσμένου διακομιστή",
+  "torSettingsStatusCensored": "Η σύνδεση φαίνεται φιλτραρισμένη",
+  "torSettingsDescCensored": "Το Tor δεν μπόρεσε να φτάσει στο δίκτυο. Αυτό συνήθως σημαίνει ότι η σύνδεση φιλτράρεται.",
+  "torSettingsBootstrapProgress": "Σύνδεση… {percent}%",
+  "torSettingsEmbeddedTitle": "Ενσωματωμένο Tor",
+  "torSettingsEmbeddedDescription": "Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion. Η υπόλοιπη κίνηση της εφαρμογής παραμένει άμεση.",
+  "torSettingsTransportMode": "Μέθοδος σύνδεσης",
+  "torSettingsModeAutomatic": "Αυτόματα",
+  "torSettingsModeDirect": "Άμεση",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Δοκιμάζει πρώτα άμεση σύνδεση Tor και χρησιμοποιεί το Snowflake αν το δίκτυο φαίνεται να μπλοκάρει το Tor.",
+  "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
+  "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
+  "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
+  "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
+  "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα",
+  "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
+  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
+  "serverEncrypted": "Κρυπτογραφημένο",
+  "serverUnencrypted": "Μη κρυπτογραφημένο"
+}

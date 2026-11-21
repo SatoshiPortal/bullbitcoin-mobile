@@ -1,0 +1,353 @@
+import 'package:mempool/mempool.dart';
+
+import '../../../network_l10n.dart';
+import '../../presentation/mempool_settings_cubit.dart';
+import '../../presentation/mempool_settings_failure_l10n.dart';
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullThemeX,
+        BullBottomSheet,
+        BullButton,
+        BullLowerCaseTextFormatter,
+        BullShapesX,
+        Gap,
+        BullTypographyX;
+
+class SetCustomServerBottomSheet extends StatefulWidget {
+  const SetCustomServerBottomSheet({super.key});
+
+  static Future<bool?> show(BuildContext context) {
+    final cubit = context.read<MempoolSettingsCubit>();
+
+    return BullBottomSheet.show<bool>(
+      context: context,
+      child: BlocProvider.value(
+        value: cubit,
+        child: const SetCustomServerBottomSheet(),
+      ),
+    );
+  }
+
+  @override
+  State<SetCustomServerBottomSheet> createState() =>
+      _SetCustomServerBottomSheetState();
+}
+
+class _SetCustomServerBottomSheetState
+    extends State<SetCustomServerBottomSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _urlController;
+  final _focusNode = FocusNode();
+  bool _isValidating = false;
+  String? _errorMessage;
+  bool _enableSsl = true;
+  bool _sslAutoDetected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _urlController = TextEditingController();
+    _urlController.addListener(_onUrlChanged);
+  }
+
+  void _onUrlChanged() {
+    final input = _urlController.text.trim();
+    if (input.isEmpty) return;
+
+    final result = MempoolUrlParser.tryParse(input);
+    if (result != null) {
+      setState(() {
+        _enableSsl = result.enableSsl;
+        _sslAutoDetected = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _urlController.removeListener(_onUrlChanged);
+    _urlController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveServer() async {
+    setState(() => _errorMessage = null);
+
+    if (_formKey.currentState?.validate() != true) {
+      return;
+    }
+
+    final url = _urlController.text.trim();
+
+    setState(() => _isValidating = true);
+
+    final success = await context.read<MempoolSettingsCubit>().setCustomServer(
+      url,
+      enableSsl: _enableSsl,
+    );
+
+    if (!mounted) return;
+
+    setState(() => _isValidating = false);
+
+    if (success) {
+      Navigator.of(context).pop(true);
+    } else {
+      final failure = context.read<MempoolSettingsCubit>().state.failure;
+      setState(() {
+        _errorMessage =
+            failure?.toTranslated(context) ??
+            context.loc.mempoolCustomServerSaveFailed;
+      });
+      context.read<MempoolSettingsCubit>().clearError();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return GestureDetector(
+      excludeFromSemantics: true,
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomInset),
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          context.loc.mempoolCustomServerAdd,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: context.loc.cancel,
+                        onPressed: _isValidating
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  const Gap(8),
+                  Text(
+                    context.loc.mempoolCustomServerBottomSheetDescription,
+                    style: context.bullType.body.copyWith(
+                      color: context.bull.textMuted,
+                    ),
+                  ),
+                  const Gap(12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: context.bull.surface,
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
+                      border: Border.all(color: context.bull.border),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: context.bull.secondary,
+                          size: 20,
+                        ),
+                        const Gap(8),
+                        Expanded(
+                          child: Text(
+                            context.loc.mempoolCustomServerInfoDescription,
+                            style: context.bullType.label
+                                .copyWith(fontWeight: FontWeight.w400)
+                                .copyWith(
+                                  color: context.bull.onSurface.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(16),
+                  TextFormField(
+                    controller: _urlController,
+                    focusNode: _focusNode,
+                    autofocus: true,
+                    textInputAction: TextInputAction.done,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                      BullLowerCaseTextFormatter(),
+                    ],
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      fillColor: context.bull.surface,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
+                        borderSide: BorderSide(color: context.bull.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
+                        borderSide: BorderSide(color: context.bull.border),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
+                        borderSide: BorderSide(
+                          color: context.bull.border.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                      ),
+                      labelText: context.loc.networkServerUrl,
+                      hintText: 'https://mempool.space',
+                      hintStyle: context.bullType.body.copyWith(
+                        color: context.bull.textMuted,
+                      ),
+                      errorMaxLines: 3,
+                    ),
+                    onFieldSubmitted: (_) => _saveServer(),
+                    validator: (v) {
+                      final input = v?.trim() ?? '';
+                      if (input.isEmpty) {
+                        return context.loc.mempoolCustomServerUrlEmpty;
+                      }
+                      return null;
+                    },
+                  ),
+                  const Gap(8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.loc.mempoolCustomServerUseSsl,
+                              style: context.bullType.body,
+                            ),
+                            if (_sslAutoDetected) ...[
+                              const Gap(2),
+                              Text(
+                                context.loc.mempoolCustomServerSslAutoDetected,
+                                style: context.bullType.label
+                                    .copyWith(fontWeight: FontWeight.w400)
+                                    .copyWith(
+                                      color: context.bull.onSurface.withValues(
+                                        alpha: 0.6,
+                                      ),
+                                    ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Semantics(
+                        label: context.loc.mempoolCustomServerUseSsl,
+                        child: Switch(
+                          value: _enableSsl,
+                          onChanged: (value) {
+                            setState(() {
+                              _enableSsl = value;
+                              _sslAutoDetected = false; // user override
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Gap(8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: Text(
+                      context.loc.mempoolCustomServerSslHelpText,
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(
+                            color: context.bull.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                  if (_errorMessage case final errorMessage?) ...[
+                    const Gap(16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: context.bull.errorContainer,
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.card,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: context.bull.error,
+                            size: 20,
+                          ),
+                          const Gap(8),
+                          Expanded(
+                            child: Text(
+                              errorMessage,
+                              style: context.bullType.label
+                                  .copyWith(fontWeight: FontWeight.w400)
+                                  .copyWith(color: context.bull.error),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const Gap(24),
+                  if (_isValidating)
+                    const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  else
+                    BullButton.primary(
+                      label: context.loc.save,
+                      onPressed: _saveServer,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

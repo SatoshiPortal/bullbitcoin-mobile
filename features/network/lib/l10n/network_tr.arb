@@ -1,0 +1,477 @@
+{
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "electrumTimeoutPositiveError": "Zamanout pozitif olmalıdır",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "mempoolSettingsCustomServer": "Özel Sunucu",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "electrumPrivacyNoticeSave": "Kaydet",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerAlreadyExists": "Bu sunucu zaten var",
+  "electrumServerUnreachable": "Sunucuya ulaşılamıyor. Adresi kontrol edip tekrar deneyin.",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumTitle": "Electrum Server Ayarları",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "save": "Kaydet",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "electrumTimeoutWarning": "Saatiniz ({timeoutValue} saniye) bu Dur Gap için önerilen değerden ({recommended} saniye) daha düşük.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "Sıvı",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumEmptyFieldError": "Bu alan boş olamaz",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumServerOnline": "Online",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "torSettingsStatusConnected": "Hazır",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "statusCheckUnknown": "Bilinmeyen",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Özel mempool sunucunuzun URL'sini girin. Sunucu tasarruf etmeden önce onaylanacaktır.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "electrumAddCustomServer": "Add private Server",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "torSettingsConnectionStatus": "Bağlantı Durumu",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsPortValidationEmpty": "Lütfen bir port numarası girin",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "electrumPrivacyNoticeCancel": "Cancel",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "statusCheckOffline": "Offline",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "mempoolCustomServerDeleteMessage": "Bu özel mempool sunucuyu silmek istediğinizden emin misiniz? Varsayılan sunucu bunun yerine kullanılacaktır.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "electrumValidateDomain": "Validate Domain",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumInvalidRetryError": "Invalid Retry Sayı değeri: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Port Number",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "electrumReset": "Reset",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumStopGapNegativeError": "Dur Gap negatif olamaz",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumServerUrlHint": "{network} {environment} Sunucu URL'si",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu ",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails"
+  },
+  "electrumAdvancedOptions": "Gelişmiş Seçenekler",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumCancel": "Cancel",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "electrumStopGap": "Dur Gap",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumServerOffline": "Offline",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
+  "electrumStopGapTooHighError": "Dur Gap çok yüksek görünüyor. (Max. {maxStopGap}",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "Zamanout çok yüksek görünüyor. (Max. {maxTimeout} saniyeler)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(Danışman ve değişim önceliği değiştirmek için uzun basın)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumInvalidStopGapError": "Invalid Stop Gap değeri: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Invalid Timeout değeri: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "mempoolSettingsDefaultServer": "Varsayılan Server Server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "mempoolCustomServerAdd": "Add private Server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "statusCheckOnline": "Online",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "electrumCloseTooltip": "Close",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumBitcoinServerInfo": "Formda sunucu adresi girin: host:port (e.g., example.com:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumServerNotUsed": "Kullanılmıyor",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumRetryCountEmptyError": "Retry Count boş olamaz",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "torSettingsDescConnecting": "Kurmak Tor bağlantısı",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsPortValidationInvalid": "Lütfen geçerli bir sayı girin",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu ",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails"
+  },
+  "electrumDeleteServerTitle": "Delete Custom Server",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "torSettingsSaveButton": "Kaydet",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "electrumPrivacyNoticeTitle": "Gizlilik Bildirimi",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "statusCheckLastChecked": "Son kontrol: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "Port: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "Ayrıştırma",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu ",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails"
+  },
+  "electrumUnknownError": "Bir hata oluştu",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumDefaultServers": "Varsayılan Servers",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "mempoolCustomServerUrlEmpty": "Lütfen bir sunucu URL girin",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "electrumFormatError": "Host:port format (e.g., örneğin.com:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "electrumDefaultServersInfo": "Gizliliğinizi korumak için, varsayılan sunucular özel sunucular yapılandırıldığında kullanılmaz.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumProtocolError": "Protokol dahil etmeyin (ssl http veya tcp http).",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "torSettingsProxyPort": "Tor Proxy Port",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "electrumAddServer": "Add Server",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "electrumStopGapEmptyError": "Dur Gap boş olamaz",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "torSettingsStatusUnknown": "Durum Bilinmeyen",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu ",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails"
+  },
+  "torSettingsStatusConnecting": "Connecting...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "electrumDeletePrivacyNotice": "Gizlilik Bildirimi:\n\nKendi düğümünü kullanarak, üçüncü tarafın IP adresinizi işlemlerinizle bağlayabileceğini garanti eder. Son özel sunucunuzu silerek, bir BullBitcoin sunucusuna bağlanacaksınız.\n.\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDelete": "Delete",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "statusCheckTitle": "Hizmet Durumu",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "electrumNetworkBitcoin": "Bitcoin",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumConfirm": "Onay Onay Onay Onaylandı",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumInvalidNumberError": "Geçerli bir sayı girin",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumRetryCount": "Retry Count",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumCustomServers": "Özel Servers",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumTimeout": "Timeout (saniyeler)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumSaveFailedError": "Gelişmiş seçenekleri kurtarmak için başarısız oldu",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumLiquidSslInfo": "Hiçbir protokol belirtilmemelidir, SSL otomatik olarak kullanılacaktır.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumRetryCountNegativeError": "Retry Count olumsuz olamaz",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumDeleteConfirmation": "Bu sunucuyu silmek istediğinizden emin misiniz?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "Gizlilik Bildirimi: Kendi düğümünü kullanarak, üçüncü tarafın IP adresinizi, işlemlerinizle bağlantı kurabileceğini garanti eder.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "torSettingsTitle": "Tor Ayarları",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "electrumEnableSsl": "Enable SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "torSettingsPortValidationRange": "Port 1 ile 65535 arasında olmalıdır",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "electrumTimeoutEmptyError": "Zamanout boş olamaz",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumPrivacyNoticeContent2": "Ancak, İşlem ID veya Recipient Details sayfanıza tıklayarak mempool üzerinden işlemleri görürseniz, bu bilgiler BullBitcoin tarafından bilinecektir.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "torSettingsDescConnected": "Tor proxy sürüyor ve hazır",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescDisconnected": "Tor proxy çalışmıyor",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir.",
+  "mempoolErrorInvalidUrl": "Geçersiz sunucu URL'si. Geçerli bir alan adı veya IP adresi girin.",
+  "mempoolServerStatusOnline": "Çevrimiçi",
+  "mempoolServerStatusOffline": "Çevrimdışı",
+  "mempoolServerStatusChecking": "Kontrol ediliyor...",
+  "mempoolServerStatusUnknown": "Bilinmiyor",
+  "mempoolCustomServerSaveFailed": "Sunucu kaydedilemedi",
+  "mempoolCustomServerInfoDescription": "Mempool sunucuları, ücret tahmini yapmak ve işlem detaylarını görüntülerken blok gezginini açmak için kullanılır.",
+  "mempoolCustomServerUseSsl": "SSL kullan",
+  "mempoolCustomServerSslAutoDetected": "(Otomatik algılandı)",
+  "mempoolCustomServerSslHelpText": "Yerel (.local, özel IP'ler) ve Tor (.onion) sunucularında SSL genellikle devre dışıdır. Genel IP'ler ve alan adları SSL kullanmalıdır.",
+  "mempoolErrorSameAsDefault": "Bu URL varsayılan sunucuyla aynı. Lütfen farklı bir URL kullanın.",
+  "mempoolErrorConnectionTimeout": "Bağlantı zaman aşımına uğradı. Sunucu yavaş olabilir veya ulaşılamıyor olabilir.",
+  "mempoolErrorHostNotFound": "Bu sunucu bulunamıyor. Lütfen URL'yi kontrol edip tekrar deneyin.",
+  "mempoolErrorConnectionFailed": "Sunucuya bağlanılamıyor. Ağ bağlantınızı kontrol edip tekrar deneyin.",
+  "mempoolErrorNotMempoolServer": "Bu URL bir mempool sunucusu gibi görünmüyor. Lütfen adresi doğrulayın.",
+  "mempoolErrorServerUnavailable": "Sunucu kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "mempoolErrorServerError": "Sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+  "mempoolErrorInvalidResponse": "Sunucu geçersiz bir yanıt döndürdü.",
+  "mempoolErrorSaveServerFailed": "Sunucu kaydedilemedi",
+  "mempoolErrorLoadFailed": "Mempool sunucu verileri yüklenemedi",
+  "mempoolErrorDeleteFailed": "Özel sunucu silinemedi",
+  "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
+  "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
+  "torSettingsBootstrapProgress": "Bağlanıyor… %{percent}",
+  "torSettingsEmbeddedTitle": "Gömülü Tor",
+  "torSettingsEmbeddedDescription": "Gömülü Tor, RecoverBull ve Bitcoin Electrum .onion sunucuları tarafından kullanılır. Uygulamanın diğer trafiği doğrudan kalır.",
+  "torSettingsTransportMode": "Bağlantı yöntemi",
+  "torSettingsModeAutomatic": "Otomatik",
+  "torSettingsModeDirect": "Doğrudan",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Önce doğrudan Tor bağlantısını dener; ağ Tor'u engelliyor görünüyorsa Snowflake kullanır.",
+  "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
+  "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
+  "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
+  "statusCheckNoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
+  "statusCheckResultsMayBeOutdated": "Sonuçlar güncel olmayabilir",
+  "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
+  "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
+  "serverEncrypted": "Şifreli",
+  "serverUnencrypted": "Şifresiz"
+}

@@ -3,11 +3,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show TranslationWarningBottomSheet;
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/mempool_settings/router.dart';
+import 'package:network/network.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -80,7 +78,7 @@ class AdvancedOptions extends StatelessWidget {
                         icon: Icons.vpn_lock,
                         title: context.loc.torSettingsTitle,
                         onTap: () => context.pushNamed(
-                          const TorSettingsFacade().settingsRouteName,
+                          TorSettingsRoute.torSettings.name,
                         ),
                       ),
                       BullSettingsEntryItem(

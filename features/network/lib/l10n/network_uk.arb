@@ -1,0 +1,243 @@
+{
+  "torSettingsPortHint": "9050 р",
+  "electrumTimeoutPositiveError": "Потрібні бути позитивними",
+  "mempoolSettingsCustomServer": "Власний сервер",
+  "electrumPrivacyNoticeSave": "Зберегти",
+  "electrumServerAlreadyExists": "Цей сервер вже існує",
+  "electrumServerUnreachable": "Сервер недоступний. Перевірте адресу та спробуйте ще раз.",
+  "electrumTitle": "Налаштування серверів Electrum",
+  "save": "Зберегти",
+  "electrumTimeoutWarning": "Ваш час ({timeoutValue} секунди) нижче рекомендованого значення ({recommended} секунд) для цього Stop Gap.",
+  "@electrumTimeoutWarning": {
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "Рідина",
+  "electrumEmptyFieldError": "Це поле не може бути порожнім",
+  "electrumServerOnline": "Інтернет",
+  "torSettingsStatusConnected": "Готово",
+  "statusCheckUnknown": "Невідомо",
+  "mempoolCustomServerBottomSheetDescription": "Введіть URL-адресу вашого користувацького сервера mempool. Сервер буде дійсний до економії.",
+  "electrumAddCustomServer": "Додати користувальницький сервер",
+  "mempoolSettingsTitle": "Статус на сервери",
+  "torSettingsConnectionStatus": "Статус на сервери",
+  "torSettingsPortValidationEmpty": "Будь ласка, введіть номер порту",
+  "electrumPrivacyNoticeCancel": "Зареєструватися",
+  "statusCheckOffline": "Оффлайн",
+  "mempoolCustomServerDeleteMessage": "Ви впевнені, що ви хочете видалити цей користувальницький сервер? Сервер за замовчуванням буде використаний замість.",
+  "electrumValidateDomain": "Діє домен",
+  "electrumInvalidRetryError": "Інвалідна птиця Кількість: {value}",
+  "@electrumInvalidRetryError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Номер порту",
+  "electrumReset": "Зареєструватися",
+  "electrumStopGapNegativeError": "Стоп Gap не може бути негативним",
+  "electrumServerUrlHint": "{network} {environment} URL сервера",
+  "@electrumServerUrlHint": {
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "Переміщені на серверах навантаження",
+  "@electrumLoadFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumAdvancedOptions": "Додаткові параметри",
+  "electrumCancel": "Зареєструватися",
+  "mempoolCustomServerDeleteTitle": "Видалити користувальницький сервер?",
+  "electrumStopGap": "Зупинити Gap",
+  "electrumServerOffline": "Оффлайн",
+  "electrumStopGapTooHighError": "Stop Gap здається занадто високою. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "Час видається занадто високим. {maxTimeout} секунди)",
+  "@electrumTimeoutTooHighError": {
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(Довговий прес для перетягування та зміни пріоритету)",
+  "electrumInvalidStopGapError": "Інвалідний стоп {value}",
+  "@electrumInvalidStopGapError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Нормативне визначення часу: {value}",
+  "@electrumInvalidTimeoutError": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Видалення",
+  "mempoolSettingsDefaultServer": "Статус на сервери",
+  "electrumTestnet": "Тестування",
+  "mempoolCustomServerAdd": "Додати користувальницький сервер",
+  "statusCheckOnline": "Інтернет",
+  "electrumCloseTooltip": "Закрити",
+  "electrumBitcoinServerInfo": "Адреса сервера в форматі: host:port (наприклад, приклад.com:50001)",
+  "electrumServerNotUsed": "Не використовується",
+  "electrumRetryCountEmptyError": "Рятівний граф не може бути порожнім",
+  "torSettingsDescConnecting": "Створення Тор підключення",
+  "torSettingsPortValidationInvalid": "Введіть дійсний номер",
+  "electrumDeleteFailedError": "Видаліть користувальницький сервер",
+  "@electrumDeleteFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDeleteServerTitle": "Видалити користувальницький сервер",
+  "torSettingsSaveButton": "Зберегти",
+  "electrumPrivacyNoticeTitle": "Повідомлення про конфіденційність",
+  "electrumMainnet": "Головна",
+  "statusCheckLastChecked": "Останнє повідомлення: {time}",
+  "@statusCheckLastChecked": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "Порт: {port}",
+  "@torSettingsPortDisplay": {
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "Відключені",
+  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера ",
+  "@electrumSavePriorityFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumUnknownError": "Помилки",
+  "electrumDefaultServers": "Статус на сервери",
+  "mempoolCustomServerUrlEmpty": "Введіть URL-адресу сервера",
+  "electrumFormatError": "Використовуйте хост:порт формат (наприклад, приклад.com:50001)",
+  "cancel": "Зареєструватися",
+  "electrumDefaultServersInfo": "Щоб захистити конфіденційність, сервери за замовчуванням не використовуються при налаштуванні користувацьких серверів.",
+  "electrumProtocolError": "Не містить протоколу (ssl:// або tcp://).",
+  "torSettingsProxyPort": "Тор Проксі Порт",
+  "electrumAddServer": "Додати сервер",
+  "electrumStopGapEmptyError": "Стоп Gap не може бути порожнім",
+  "torSettingsStatusUnknown": "Статус Невідомий",
+  "electrumAddFailedError": "Заборонено додавати користувацький сервер",
+  "@electrumAddFailedError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsStatusConnecting": "З'єднання.",
+  "electrumDeletePrivacyNotice": "Повідомлення про конфіденційність:\n\nВикористання власного вузла забезпечує, що жодна третя сторона може зв'язатися з вашим IP-адресою з вашими операціями. Після видалення останнього користувацького сервера ви будете підключені до сервера BullBitcoin.\n.\n",
+  "electrumDelete": "Видалення",
+  "statusCheckTitle": "Статус на сервери",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "doneButton": "Сонце",
+  "electrumNetworkBitcoin": "Bitcoin у USD",
+  "electrumConfirm": "Підтвердження",
+  "electrumInvalidNumberError": "Введіть дійсний номер",
+  "electrumRetryCount": "Птиця графа",
+  "electrumCustomServers": "Статус на сервери",
+  "electrumTimeout": "Розклад (секунди)",
+  "electrumSaveFailedError": "Не вдалося зберегти розширені параметри",
+  "electrumLiquidSslInfo": "Не потрібно вказати протокол, SSL буде автоматично використовуватися.",
+  "electrumRetryCountNegativeError": "Рівний граф не може бути негативним",
+  "electrumDeleteConfirmation": "Ви впевнені, що ви хочете видалити цей сервер?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "Повідомлення про конфіденційність: Використання власного вузла забезпечує, що жодна сторона не може зв'язатися з вашим IP-адресою, з вашими операціями.",
+  "torSettingsTitle": "Налаштування Tor",
+  "electrumEnableSsl": "Увімкнути SSL",
+  "torSettingsPortValidationRange": "Порт повинен бути між 1 і 65535",
+  "electrumTimeoutEmptyError": "Час не може бути порожнім",
+  "electrumPrivacyNoticeContent2": "Однак Якщо ви переглядаєте транзакції за допомогою мемупу, натиснувши кнопку \"Вхід або одержувача\", ця інформація буде відома BullBitcoin.",
+  "torSettingsDescConnected": "Tor proxy працює і готовий",
+  "torSettingsDescDisconnected": "Тор проксі не працює",
+  "mempoolServerStatusOnline": "В мережі",
+  "mempoolServerStatusOffline": "Не в мережі",
+  "mempoolServerStatusChecking": "Перевірка...",
+  "mempoolServerStatusUnknown": "Невідомо",
+  "mempoolCustomServerSaveFailed": "Не вдалося зберегти сервер",
+  "mempoolCustomServerInfoDescription": "Сервери mempool використовуються для оцінки комісій та відкриття оглядача блоків при перегляді деталей транзакції.",
+  "mempoolCustomServerUseSsl": "Використовувати SSL",
+  "mempoolCustomServerSslAutoDetected": "(Визначено автоматично)",
+  "mempoolCustomServerSslHelpText": "Для локальних (.local, приватні IP) та Tor (.onion) серверів SSL зазвичай вимкнено. Публічні IP та домени повинні використовувати SSL.",
+  "mempoolErrorSameAsDefault": "Ця URL-адреса така ж, як сервер за замовчуванням. Будь ласка, використовуйте іншу URL-адресу.",
+  "mempoolErrorConnectionTimeout": "Час з'єднання вичерпано. Сервер може бути повільним або недоступним.",
+  "mempoolErrorHostNotFound": "Сервер не знайдено. Перевірте URL та спробуйте знову.",
+  "mempoolErrorConnectionFailed": "Не вдалося підключитися до сервера. Перевірте мережеве з'єднання та спробуйте знову.",
+  "mempoolErrorNotMempoolServer": "Ця URL-адреса не є сервером mempool. Перевірте адресу.",
+  "mempoolErrorServerUnavailable": "Сервер недоступний. Спробуйте пізніше.",
+  "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
+  "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
+  "mempoolErrorInvalidUrl": "Недійсна URL-адреса сервера. Введіть дійсний домен або IP-адресу.",
+  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
+  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
+  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",
+  "electrumStopGapHighWarning": "Високі значення stop gap значно збільшують час синхронізації. Тримайте додаток відкритим на передньому плані до завершення синхронізації — переведення у фоновий режим може її перервати.",
+  "torSettingsStatusCensored": "Схоже, з'єднання фільтрується",
+  "torSettingsDescCensored": "Tor не зміг дістатися до мережі. Зазвичай це означає, що з'єднання фільтрують.",
+  "torSettingsBootstrapProgress": "Підключення… {percent}%",
+  "torSettingsEmbeddedTitle": "Вбудований Tor",
+  "torSettingsEmbeddedDescription": "Вбудований Tor використовують RecoverBull і сервери Bitcoin Electrum з адресою .onion. Решта трафіку застосунку лишається прямою.",
+  "torSettingsTransportMode": "Спосіб підключення",
+  "torSettingsModeAutomatic": "Автоматично",
+  "torSettingsModeDirect": "Пряме",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Спершу пробує пряме підключення до Tor, а якщо мережа, схоже, блокує Tor, використовує Snowflake.",
+  "torSettingsModeDirectDescription": "Підключається до мережі Tor напряму, без підключуваного транспорту.",
+  "torSettingsModeSnowflakeDescription": "Використовує волонтерські проксі Snowflake, щоб дістатися Tor із фільтрованої мережі.",
+  "torSettingsActiveTransport": "Активний транспорт: {transport}",
+  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
+  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими",
+  "torSettingsStatusNoInternetOrBlocked": "Немає інтернету або мережа під цензурою",
+  "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5.",
+  "serverEncrypted": "Зашифровано",
+  "serverUnencrypted": "Не зашифровано"
+}

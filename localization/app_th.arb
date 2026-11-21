@@ -46,14 +46,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "เวลาต้องเป็นบวก",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
   "sellSendPaymentAboveMax": "คุณพยายามที่จะขายข้างต้นจํานวนสูงสุดที่สามารถขายกับกระเป๋าสตางค์นี้.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -106,10 +98,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "เซิร์ฟเวอร์ที่กําหนดเอง",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
-  },
   "fundExchangeMethodRegularSepa": "ราคาปกติ",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -133,10 +121,6 @@
   "exchangeFileUploadSuccess": "อัพโหลดไฟล์ที่ประสบความสําเร็จ",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "บันทึก",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "นี่คือบัญชีอื่น ๆ",
   "@withdrawOwnershipOtherAccount": {
@@ -179,11 +163,6 @@
   "autoswapAlwaysBlockEnabledInfo": "เมื่อเปิดใช้งาน Auto Swap ที่มีค่าธรรมเนียมสูงกว่าขีดจำกัดที่ตั้งไว้จะถูกบล็อกเสมอ",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
-  },
-  "electrumServerAlreadyExists": "เซิร์ฟเวอร์นี้พร้อมใช้งาน",
-  "electrumServerUnreachable": "ไม่สามารถเข้าถึงเซิร์ฟเวอร์ได้ ตรวจสอบที่อยู่แล้วลองอีกครั้ง",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
   },
   "sellPaymentMethod": "วิธีการชําระเงิน",
   "@sellPaymentMethod": {
@@ -373,10 +352,6 @@
   "fundExchangeCrIbanCrcDescriptionBold": "ทั้งหมด",
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
-  },
-  "electrumTitle": "การตั้งค่าเซิร์ฟเวอร์",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "importQrDeviceJadeStep7": "ถ้าคุณต้องการ \"ตัวเลือก\" เพื่อเปลี่ยนที่อยู่",
   "@importQrDeviceJadeStep7": {
@@ -612,18 +587,6 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "ระยะหมดเวลาของคุณ ({timeoutValue} วินาที) ต่ำกว่าค่าที่แนะนำ ({recommended} วินาที) สำหรับ Stop Gap นี้",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "แสดง PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -747,10 +710,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "ของเหลว",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "คุณพยายามที่จะซื้อขั้นต่ํา.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -766,10 +725,6 @@
   "pinCodeSecurityPinTitle": "ความปลอดภัย",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "electrumEmptyFieldError": "ฟิลด์นี้สามารถว่างเปล่า",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "การชําระเงินในความคืบหน้า",
   "@transactionStatusPaymentInProgress": {
@@ -1100,10 +1055,6 @@
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
   },
-  "electrumServerOnline": "ออนไลน์",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "fundExchangeAccountTitle": "บัญชีบัญชีของคุณ",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
@@ -1184,10 +1135,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "พร้อม",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "หมายเหตุ",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1215,10 +1162,6 @@
   "sellAccountName": "ชื่อบัญชี",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
-  },
-  "statusCheckUnknown": "เป็นที่รู้จัก",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
   },
   "howToDecideVaultLocationText2": "สถานที่ที่กําหนดเองสามารถรักษาความปลอดภัยมากขึ้นขึ้นอยู่กับสถานที่ที่คุณเลือก คุณต้องแน่ใจว่าไม่จําเป็นต้องสูญเสียไฟล์สํารองหรือสูญเสียอุปกรณ์ในแฟ้มสํารองข้อมูลของคุณ.",
   "@howToDecideVaultLocationText2": {
@@ -1291,10 +1234,6 @@
   "totalFeeLabel": "ค่าธรรมเนียม",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "ป้อน URL ของเซิร์ฟเวอร์ของคุณ เซิร์ฟเวอร์จะถูกตรวจสอบก่อนที่จะประหยัด.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "คุณพยายามที่จะขายด้านล่างขั้นต่ําที่สามารถขายกับกระเป๋าสตางค์นี้.",
   "@sellBelowMinAmountError": {
@@ -1498,10 +1437,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "เพิ่มเซิร์ฟเวอร์ที่กําหนดเอง",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "เบาะ / VB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1543,10 +1478,6 @@
   "backupWalletBackupButton": "การสํารองข้อมูล",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "เซิร์ฟเวอร์",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "sellSendPaymentFeePriority": "ค่าธรรมเนียม",
   "@sellSendPaymentFeePriority": {
@@ -1775,10 +1706,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "สถานะ",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "หากคุณสูญเสีย 12 คําสํารองข้อมูลของคุณ, คุณจะไม่สามารถกู้คืนการเข้าถึง Bitcoin.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1940,10 +1867,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "กรุณาใส่พอร์ต",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "สมดุล",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1951,10 +1874,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "รายละเอียดการชําระเงิน",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "electrumPrivacyNoticeCancel": "ยกเลิก",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "แคชไม่ได้เริ่มต้น.",
   "@coreSwapsLnSendPending": {
@@ -2042,10 +1961,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "ปิด",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". เงินทุนจะเพิ่มยอดเงินในบัญชีของคุณ.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2093,10 +2008,6 @@
   "recoverWalletButton": "การกู้คืนกระเป๋าสตางค์",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "คุณแน่ใจว่าคุณต้องลบเซิร์ฟเวอร์นี้? เซิร์ฟเวอร์เริ่มต้นจะใช้แทน.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - เพิ่มความสว่างบนหน้าจอของคุณ",
   "@coldcardStep6": {
@@ -2173,10 +2084,6 @@
   "payActualFee": "ค่าธรรมเนียม",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "โดเมน",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "ให้แน่ใจว่าอุปกรณ์ของคุณอัปเดตเฟิร์มแวร์ล่าสุด",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2362,15 +2269,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "เมนู จํานวนค่า: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "เลือกเครือข่าย",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2391,10 +2289,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "หมายเลขพอร์ต",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "ใส่ชื่อ",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2407,10 +2301,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "electrumReset": "รีเซ็ต",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "payInsufficientBalanceError": "ยอดคงเหลือไม่เพียงพอในกระเป๋าเงินที่เลือก.",
   "@payInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
@@ -2422,10 +2312,6 @@
   "sendHighFeeWarning": "ค่าแจ้งเตือนสูง",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "หยุดช่องว่างสามารถลบ",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "ส่ง",
   "@walletButtonSend": {
@@ -2474,18 +2360,6 @@
   "exchangeDcaCancelDialogConfirmButton": "ใช่",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "URL เซิร์ฟเวอร์ {network} {environment}",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "ใส่อีเมล",
   "@payEmailHint": {
@@ -2577,10 +2451,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "เก็บเซิร์ฟเวอร์ ",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "อีเมล",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2649,10 +2519,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "ตัวเลือกขั้นสูง",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "autoswapWarningCardSubtitle": "ยอดเงินจะถูกระงับหากชําระเงินทันที.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
@@ -2676,10 +2542,6 @@
   "payFilterPayments": "ตัวกรองการชําระเงิน",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "electrumCancel": "ยกเลิก",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "exchangeFileUploadButton": "อัพโหลด",
   "@exchangeFileUploadButton": {
@@ -3006,10 +2868,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "ลบเซิร์ฟเวอร์ที่กําหนดเอง?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "ยืนยัน",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -3190,10 +3048,6 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "หยุด",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "การทําธุรกรรม.",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
@@ -3250,10 +3104,6 @@
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "electrumServerOffline": "ปิด",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "sendTransferFee": "ค่าธรรมเนียม Swap",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
@@ -3308,24 +3158,6 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "หยดเล็กน้อยเกินไป (สูงสุด {maxStopGap}",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "เวลาดูเหมือนมากเกินไป (สูงสุด {maxTimeout} วินาที)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "การชําระเงินทันที",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
@@ -3369,10 +3201,6 @@
   "coreSwapsStatusPending": "สิ้นสุด",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(เปลี่ยนและการเปลี่ยนแปลงที่สําคัญ)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "autoswapTriggerAtBalanceInfoText": "Autoswap จะกระตุ้นเมื่อสมดุลของคุณข้างต้น.",
   "@autoswapTriggerAtBalanceInfoText": {
@@ -3540,15 +3368,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "หยุดหยุด ค่าค่า: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "การใช้การทําธุรกรรมขนาดใหญ่ด้านบน€ 30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3699,15 +3518,6 @@
   "sendSats": "นอน",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "ค่าระยะหมดเวลาไม่ถูกต้อง: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Limited",
   "@exchangeKycLevelLimited": {
@@ -3943,10 +3753,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "เพิ่มเซิร์ฟเวอร์",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "วางการชําระเงินหรือใบแจ้งหนี้",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -4018,10 +3824,6 @@
   "sellSelectWallet": "เลือกกระเป๋าสตางค์",
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
-  },
-  "mempoolCustomServerAdd": "เพิ่มเซิร์ฟเวอร์ที่กําหนดเอง",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "sendHighFeeWarningDescription": "ค่าธรรมเนียมรวม {feePercent}",
   "@sendHighFeeWarningDescription": {
@@ -4155,10 +3957,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "ออนไลน์",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "วิธีการชําระเงิน",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4166,10 +3964,6 @@
   "exchangeAmountInputTitle": "กรอก",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "ปิด",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "กด",
   "@payIbanHint": {
@@ -4249,10 +4043,6 @@
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
   },
-  "electrumBitcoinServerInfo": "ใส่เซิร์ฟเวอร์ในรูปแบบ: โฮสต์: (เช่นเช่น.g.com: 50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "sendErrorInsufficientBalanceForSwap": "จํานวนเงินเพียงพอที่จะจ่ายสัญญาณนี้ผ่านของเหลวและไม่สามารถชําระเงินผ่านทาง Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4329,10 +4119,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "ไม่ใช้",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "การสํารองข้อมูลทางกายภาพ: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4357,10 +4143,6 @@
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
   },
-  "electrumRetryCountEmptyError": "จํานวนใบว่าง",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
   "physicalBackupTag": "ความเชื่อมั่น (เวลาของคุณ)",
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
@@ -4376,10 +4158,6 @@
   "swapExternalAddressHint": "ใส่ข้อความภายนอก",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "ระบบ การเชื่อมต่อ",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
   },
   "appleICloudProvider": "แอปเปิ้ล iCloud",
   "@appleICloudProvider": {
@@ -4449,10 +4227,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "กรุณาใส่หมายเลขที่ถูกต้อง",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "โอนธนาคาร",
   "@sellBankTransfer": {
@@ -4850,10 +4624,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "ลบเซิร์ฟเวอร์ที่กำหนดเองไม่สำเร็จ",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "กลอง",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4889,10 +4659,6 @@
   "sendSwapInProgressBitcoin": "บันทึกในความคืบหน้า การทําธุรกรรม Bitcoin สามารถฝากเงินได้ คุณสามารถคืนบ้านและรอ.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "ลบเซิร์ฟเวอร์ที่กําหนดเอง",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "วิดีโอ",
   "@buySelfie": {
@@ -5035,10 +4801,6 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "torSettingsSaveButton": "บันทึก",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
   "allSeedViewShowSeedsButton": "แสดงเมล็ดพันธุ์",
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
@@ -5112,10 +4874,6 @@
   "backupWalletTitle": "การสํารองข้อมูลกระเป๋าสตางค์ของคุณ",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "electrumPrivacyNoticeTitle": "นโยบายความเป็นส่วนตัว",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "ของเหลว",
   "@receiveLiquid": {
@@ -5382,15 +5140,6 @@
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
   },
-  "statusCheckLastChecked": "ตรวจสอบ: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "ง่ายและรวดเร็ว",
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
@@ -5537,15 +5286,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "torSettingsPortDisplay": "พอร์ต: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "จํานวน",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5642,10 +5382,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "เชื่อมต่อ",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "ยกเลิก Bitcoin ซ้ํา?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5681,10 +5417,6 @@
   "importQrDeviceKeystoneInstructionsTitle": "คําแนะนํา",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
-  },
-  "electrumSavePriorityFailedError": "บันทึกลำดับความสำคัญของเซิร์ฟเวอร์ไม่สำเร็จ",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
   "@globalDefaultLiquidWalletLabel": {
@@ -5775,10 +5507,6 @@
   "payNetworkError": "สัญญาณเครือข่าย กรุณาลองอีกครั้ง",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "ข้อผิดพลาดเกิดขึ้น",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "กระเป๋าเงินที่คุณต้องการจ่ายจาก?",
   "@payWhichWallet": {
@@ -5945,10 +5673,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "เพิ่มเซิร์ฟเวอร์",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5985,10 +5709,6 @@
   "sendRecipientAddressOrInvoice": "ที่อยู่อีเมล",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "กรุณาป้อนเซิร์ฟเวอร์",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "แจ็ค",
   "@importQrDeviceKeystoneName": {
@@ -6041,10 +5761,6 @@
   "dcaSetupContinue": "อ่านต่อ",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "ใช้โฮสต์: รูปแบบ (เช่น ตัวอย่างเช่น: 50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "ค่าธรรมเนียมนี้จะถูกหักจากจํานวนเงิน",
   "@transactionFeesDeductedFrom": {
@@ -6188,10 +5904,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "เพื่อปกป้องความเป็นส่วนตัวของคุณเซิร์ฟเวอร์เริ่มต้นไม่ได้ใช้เมื่อเซิร์ฟเวอร์ที่กําหนดเอง.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "วิธีการชําระเงิน",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6199,10 +5911,6 @@
   "payPriceRefreshIn": "ราคาจะผ่อนคลาย ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "electrumProtocolError": "ไม่รวมถึงโปรโตคอล (sl:// หรือ t2).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "ไม่มีเวลาที่จะรอหรือไม่ชําระเงินในผู้รับ?",
   "@receivePayjoinFailQuestion": {
@@ -6248,10 +5956,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "torSettingsProxyPort": "พอร์ต",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
   "fundExchangeErrorLoadingDetails": "รายละเอียดการชําระเงินไม่สามารถโหลดได้ โปรดกลับไปและลองอีกครั้งเลือกวิธีการชําระเงินอื่น ๆ หรือกลับมา.",
   "fundExchangeErrorTitleOrdPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleRcpPo404": "ตัวเลือกการชำระเงินไม่พร้อมใช้งาน",
@@ -6295,10 +5999,6 @@
   "fundExchangeSinpeWarningNoBitcoinDescription": " คําว่า \"Bitcoin\" หรือ \"Crypto\" ในคําอธิบายการชําระเงิน นี่คือบล็อกการชําระเงินของคุณ.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
-  },
-  "electrumAddServer": "เพิ่มเซิร์ฟเวอร์",
-  "@electrumAddServer": {
-    "description": "Add server button label"
   },
   "addressViewCopyAddress": "สําเนา",
   "@addressViewCopyAddress": {
@@ -6435,10 +6135,6 @@
   "transactionDetailLabelAmountSent": "จํานวน",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "หยุดช่องว่าง",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "ประเภท: ",
   "@typeLabel": {
@@ -6665,10 +6361,6 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "สถานะที่รู้จักกันดี",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "ยืนยัน",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
@@ -6729,10 +6421,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "เพิ่มเซิร์ฟเวอร์ที่กำหนดเองไม่สำเร็จ",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "ค่าธรรมเนียม Swap",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6752,10 +6440,6 @@
   "errorGenericTitle": "Oops! สิ่งที่ไม่ผิด",
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
-  },
-  "torSettingsStatusConnecting": "เชื่อมต่อกับ ...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "receiveSwapID": "รหัส",
   "@receiveSwapID": {
@@ -6949,10 +6633,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "ข้อมูลความเป็นส่วนตัว:\n\nการใช้บุคคลที่สามของคุณเพื่อให้แน่ใจว่าไม่มีลิงก์ที่อยู่ IP ของคุณกับการทําธุรกรรมของคุณ โดยการลบเซิร์ฟเวอร์ที่กําหนดเองของคุณคุณจะต้องเชื่อมต่อกับเซิร์ฟเวอร์ของ BullBitcoin\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "สัปดาห์",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -7067,10 +6747,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "ลบ",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "ไม่ต้องกังวล ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -7106,10 +6782,6 @@
   "howToDecideBackupTitle": "วิธีการตัดสินใจ",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "บริการ",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
   },
   "savingToDevice": "ประหยัดพลังงานของคุณ.",
   "@savingToDevice": {
@@ -7509,10 +7181,6 @@
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
   },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "paySecureBitcoinWallet": "ลายนิ้วมือ Bitcoin",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -7654,10 +7322,6 @@
   "fundExchangeMethodEmailETransfer": "อีเมล",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
-  },
-  "electrumConfirm": "ยืนยัน",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ราคา",
   "transactionDetailLabelPaymentDescription": "รายละเอียดการชำระเงิน",
@@ -7994,10 +7658,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "ใส่หมายเลขที่ถูกต้อง",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "ยืนยัน",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -8015,10 +7675,6 @@
   "fundExchangeWarningTitle": "ดูวิดีโอ",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "electrumRetryCount": "ระยะเวลา",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
   },
   "walletDetailsDescriptorLabel": "ข้อความ",
   "@walletDetailsDescriptorLabel": {
@@ -8067,10 +7723,6 @@
   "importWatchOnlyScriptType": "ประเภท",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "เซิร์ฟเวอร์ที่กําหนดเอง",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "ปฏิทิน",
   "@transactionStatusSwapFailed": {
@@ -8149,17 +7801,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "เวลา (วินาที)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "ข้อมูล",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "เก็บตัวเลือกขั้นสูง",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
   },
   "importQrDeviceKruxStep6": "นั่นคือ!",
   "@importQrDeviceKruxStep6": {
@@ -8279,10 +7923,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "ไม่มีโปรโตคอลควรระบุ SSL โดยอัตโนมัติ.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "อุปกรณ์เชื่อมต่อ",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -8357,10 +7997,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "electrumRetryCountNegativeError": "ผู้สมัครสามารถลบ",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "เพิ่มจํานวนบัญชี",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
@@ -8433,15 +8069,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "electrumDeleteConfirmation": "คุณต้องลบเซิร์ฟเวอร์นี้?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "เลือกกระเป๋าสําหรับนําเข้า",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8510,10 +8137,6 @@
   "walletDetailsSignerDeviceLabel": "อุปกรณ์",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "electrumPrivacyNoticeContent1": "ข้อมูลความเป็นส่วนตัว: ใช้ของคุณเองไม่มั่นใจในบุคคลที่สามสามารถเชื่อมโยงที่อยู่ IP ของคุณด้วยการทําธุรกรรมของคุณ.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "ใส่การสํารองข้อมูลด้วยตนเอง >>",
   "@testBackupEnterKeyManually": {
@@ -8764,10 +8387,6 @@
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
-  "electrumEnableSsl": "เปิดใช้งาน SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
   "payCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
@@ -8880,18 +8499,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "พอร์ตจะต้องอยู่ระหว่าง 1 และ 65",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "เวลาในการว่าง",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "อย่างไรก็ตาม หากคุณดูการทําธุรกรรมผ่าน Impool โดยคลิกที่รหัสธุรกรรมหรือรหัสข้อมูลข้อมูลนี้จะเป็นที่รู้จักกับ BullBitcoin.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "การตรวจสอบ",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8899,10 +8506,6 @@
   "importColdcardScanPrompt": "การสแกนรหัส QR จากโทรศัพท์ของคุณเย็น",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "TorDB เป็นการทํางานและพร้อม",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "การเข้ารหัส",
   "@backupSettingsEncryptedVault": {
@@ -8991,10 +8594,6 @@
   "payBitcoinOnChain": "Bitcoin บนโซ่",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "TorSP ไม่ได้ทํางาน",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "buyInstantPaymentWallet": "ชําระเงินทันที",
   "@buyInstantPaymentWallet": {
@@ -9201,7 +8800,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "ค่า stop gap ที่สูงจะเพิ่มเวลาในการซิงค์อย่างมาก เปิดแอปไว้ด้านหน้าจนกว่าการซิงค์จะเสร็จสิ้น — การส่งแอปไปทำงานเบื้องหลังอาจทำให้การซิงค์ถูกขัดจังหวะ",
   "wizardSkipButton": "ข้าม",
   "wizardPageIndicator": "หน้า {current} / {total}",
   "wizardNextButton": "ถัดไป",
@@ -9287,7 +8885,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
   "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
-  "mempoolErrorInvalidUrl": "URL ของเซิร์ฟเวอร์ไม่ถูกต้อง โปรดป้อนโดเมนหรือที่อยู่ IP ที่ถูกต้อง",
   "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9574,26 +9171,7 @@
   "swapRescueWalletHint": "เลือกกระเป๋าสตางค์",
   "swapRescueButton": "กู้คืน",
   "swapRescueSuccess": "กู้คืน Swap สำเร็จแล้ว — ระบบจะดำเนินการต่อ",
-  "mempoolServerStatusOnline": "ออนไลน์",
-  "mempoolServerStatusOffline": "ออฟไลน์",
-  "mempoolServerStatusChecking": "กำลังตรวจสอบ...",
   "mempoolServerStatusUnknown": "ไม่ทราบ",
-  "mempoolCustomServerSaveFailed": "บันทึกเซิร์ฟเวอร์ไม่สำเร็จ",
-  "mempoolCustomServerInfoDescription": "เซิร์ฟเวอร์ Mempool ใช้สำหรับประมาณค่าธรรมเนียมและเปิด block explorer เมื่อดูรายละเอียดธุรกรรม",
-  "mempoolCustomServerUseSsl": "ใช้ SSL",
-  "mempoolCustomServerSslAutoDetected": "(ตรวจพบอัตโนมัติ)",
-  "mempoolCustomServerSslHelpText": "สำหรับเซิร์ฟเวอร์ภายใน (.local, IP ส่วนตัว) และเซิร์ฟเวอร์ Tor (.onion) มักจะปิดใช้งาน SSL ส่วน IP สาธารณะและโดเมนควรใช้ SSL",
-  "mempoolErrorSameAsDefault": "URL นี้เหมือนกับเซิร์ฟเวอร์เริ่มต้น กรุณาใช้ URL อื่น",
-  "mempoolErrorConnectionTimeout": "การเชื่อมต่อหมดเวลา เซิร์ฟเวอร์อาจทำงานช้าหรือไม่สามารถเข้าถึงได้",
-  "mempoolErrorHostNotFound": "ไม่พบเซิร์ฟเวอร์นี้ กรุณาตรวจสอบ URL แล้วลองใหม่อีกครั้ง",
-  "mempoolErrorConnectionFailed": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่อีกครั้ง",
-  "mempoolErrorNotMempoolServer": "URL นี้ดูเหมือนจะไม่ใช่เซิร์ฟเวอร์ mempool กรุณาตรวจสอบที่อยู่อีกครั้ง",
-  "mempoolErrorServerUnavailable": "เซิร์ฟเวอร์ไม่พร้อมใช้งาน กรุณาลองใหม่อีกครั้งในภายหลัง",
-  "mempoolErrorServerError": "เซิร์ฟเวอร์เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้งในภายหลัง",
-  "mempoolErrorInvalidResponse": "เซิร์ฟเวอร์ส่งคืนการตอบกลับที่ไม่ถูกต้อง",
-  "mempoolErrorSaveServerFailed": "บันทึกเซิร์ฟเวอร์ไม่สำเร็จ",
-  "mempoolErrorLoadFailed": "โหลดข้อมูลเซิร์ฟเวอร์ mempool ไม่สำเร็จ",
-  "mempoolErrorDeleteFailed": "ลบเซิร์ฟเวอร์ที่กำหนดเองไม่สำเร็จ",
   "exchangeStatisticsBuySellRatioDesc": "เปอร์เซ็นต์ของปริมาณรวมจากการซื้อเทียบกับการขาย",
   "exchangeStatisticsBuyVolumeDesc": "จำนวนเงินรวมที่ใช้ซื้อ Bitcoin",
   "exchangeStatisticsSellVolumeDesc": "จำนวนเงินรวมที่ได้รับจากการขาย Bitcoin",
@@ -9855,19 +9433,6 @@
   "coreSwapsStatusUnknown": "ไม่ทราบ",
   "sendSwapExpiredTitle": "คำสั่งหมดอายุ",
   "sendSwapExpiredMessage": "คำสั่งนี้หมดอายุก่อนที่จะมีการส่งเงิน ไม่มีการส่งเงินออกจากกระเป๋าสตางค์ของคุณ",
-  "torSettingsStatusCensored": "การเชื่อมต่อดูเหมือนถูกกรอง",
-  "torSettingsDescCensored": "Tor ไม่สามารถเข้าถึงเครือข่ายได้ ซึ่งมักหมายความว่าการเชื่อมต่อกำลังถูกกรอง",
-  "torSettingsBootstrapProgress": "กำลังเชื่อมต่อ… {percent}%",
-  "torSettingsEmbeddedTitle": "Tor ในตัว",
-  "torSettingsEmbeddedDescription": "Tor ในตัวใช้โดย RecoverBull และเซิร์ฟเวอร์ Bitcoin Electrum ที่เป็น .onion ส่วนการรับส่งข้อมูลอื่นของแอปยังคงเชื่อมต่อโดยตรง",
-  "torSettingsTransportMode": "วิธีการเชื่อมต่อ",
-  "torSettingsModeAutomatic": "อัตโนมัติ",
-  "torSettingsModeDirect": "โดยตรง",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "ลองเชื่อมต่อ Tor โดยตรงก่อน และใช้ Snowflake หากเครือข่ายดูเหมือนจะบล็อก Tor",
-  "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
-  "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
-  "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
   "settingsScreenPrivacyTitle": "ความเป็นส่วนตัวของหน้าจอ",
   "settingsScreenPrivacyDisabledMessage": "ตอนนี้อนุญาตให้จับภาพหน้าจอในหน้าจอที่ละเอียดอ่อนได้แล้ว",
   "settingsSearchHint": "ค้นหาการตั้งค่า",
@@ -9902,8 +9467,6 @@
   "exchangeSupportChatLoadMessagesError": "ไม่สามารถโหลดข้อความได้ โปรดลองอีกครั้ง",
   "exchangeSupportChatSendMessageError": "ไม่สามารถส่งข้อความของคุณได้ โปรดลองอีกครั้ง",
   "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง",
-  "statusCheckNoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
-  "statusCheckResultsMayBeOutdated": "ผลลัพธ์อาจล้าสมัย",
   "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
   "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
   "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
@@ -10113,11 +9676,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
   "settingsDarkModeTitle": "โหมดมืด",
   "settingsSourceCodeTitle": "ซอร์สโค้ด",
-  "torSettingsStatusNoInternetOrBlocked": "ไม่มีอินเทอร์เน็ตหรือเครือข่ายถูกเซ็นเซอร์",
-  "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor",
   "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
-  "serverEncrypted": "เข้ารหัสแล้ว",
-  "serverUnencrypted": "ไม่ได้เข้ารหัส",
   "backgroundTasksTitle": "งานเบื้องหลัง",
   "blockedInSystemSettings": "ถูกบล็อกในการตั้งค่าระบบ",
   "notificationsBlockedMessage": "การแจ้งเตือนถูกบล็อกในการตั้งค่าระบบ",

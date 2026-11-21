@@ -1,3 +1,5 @@
+import 'domain/usecases/get_default_wallet_network_usecase.dart';
+
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -93,6 +95,9 @@ class WalletLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetWalletUsecase>(
       () => GetWalletUsecase(walletRepository: locator<WalletRepository>()),
+    );
+    locator.registerFactory<GetDefaultWalletNetworkUsecase>(
+      () => GetDefaultWalletNetworkUsecase(locator<GetWalletsUsecase>()),
     );
     locator.registerFactory<GetWalletsUsecase>(
       () => GetWalletsUsecase(
