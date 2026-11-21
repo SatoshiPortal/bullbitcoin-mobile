@@ -8,11 +8,9 @@ import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dar
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_server_storage_datasource.dart';
-import 'package:bb_mobile/features/mempool_settings/data/settings_environment_adapter.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/repositories/drift_mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempool_server_validator.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/mempool_tor_session_adapter.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
@@ -41,12 +39,6 @@ class MempoolLocator {
       () => HttpMempoolServerValidator(
         torSessionPort: locator<MempoolTorSessionPort>(),
         torHttpClientFactory: locator<TorHttpClientFactory>(),
-      ),
-    );
-
-    locator.registerLazySingleton<MempoolEnvironmentPort>(
-      () => SettingsEnvironmentAdapter(
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

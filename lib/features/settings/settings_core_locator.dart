@@ -1,16 +1,26 @@
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
+import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
+import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<SettingsDatasource>(
       () => SettingsDatasource(sqlite: locator<SqliteDatabase>()),
+    );
+  }
+
+  static void registerPorts(GetIt locator) {
+    locator.registerLazySingleton<MempoolEnvironmentPort>(
+      () => SettingsEnvironmentAdapter(
+        settingsRepository: locator<domain.SettingsRepository>(),
+      ),
     );
   }
 

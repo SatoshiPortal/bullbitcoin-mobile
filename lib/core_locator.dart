@@ -44,6 +44,7 @@ class CoreLocator {
 
   static void registerPorts(GetIt locator) {
     MempoolLocator.registerPorts(locator);
+    SettingsLocator.registerPorts(locator);
     LabelsLocator.registerPorts(locator);
   }
 
