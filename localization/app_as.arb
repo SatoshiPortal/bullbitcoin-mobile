@@ -8440,7 +8440,7 @@
   "@coinsTitle": {
     "description": "Title of the Coins (UTXO) screen"
   },
-  "coinsSummaryCoinsCount": "{count, plural, one{১ টা কইন} other{{count} টা কইন}}",
+  "coinsSummaryCoinsCount": "{count, plural, one{{count} টা কইন} other{{count} টা কইন}}",
   "@coinsSummaryCoinsCount": {
     "description": "Coin count in the summary bar",
     "placeholders": {
@@ -8477,7 +8477,7 @@
       }
     }
   },
-  "coinsUnspentOutputsCount": "{count, plural, one{১ টা খৰচ নকৰা আউটপুট} other{{count} টা খৰচ নকৰা আউটপুট}}",
+  "coinsUnspentOutputsCount": "{count, plural, one{{count} টা খৰচ নকৰা আউটপুট} other{{count} টা খৰচ নকৰা আউটপুট}}",
   "@coinsUnspentOutputsCount": {
     "description": "Result count shown when the list is unfiltered",
     "placeholders": {
@@ -8554,7 +8554,7 @@
   "@coinsApply": {
     "description": "Apply filters button in the sort & filter sheet"
   },
-  "coinsSelectedCount": "{count, plural, one{১ টা বাছনি কৰা হৈছে} other{{count} টা বাছনি কৰা হৈছে}}",
+  "coinsSelectedCount": "{count, plural, one{{count} টা বাছনি কৰা হৈছে} other{{count} টা বাছনি কৰা হৈছে}}",
   "@coinsSelectedCount": {
     "description": "Selection count in the selection app bar / action bar",
     "placeholders": {
@@ -8579,7 +8579,7 @@
   "@coinsUndo": {
     "description": "Undo action on the unfreeze toast"
   },
-  "coinsFreezeConfirmTitle": "{count, plural, one{১ টা কইন ফ্ৰীজ কৰিবনে?} other{{count} টা কইন ফ্ৰীজ কৰিবনে?}}",
+  "coinsFreezeConfirmTitle": "{count, plural, one{{count} টা কইন ফ্ৰীজ কৰিবনে?} other{{count} টা কইন ফ্ৰীজ কৰিবনে?}}",
   "@coinsFreezeConfirmTitle": {
     "description": "Title of the freeze confirmation dialog",
     "placeholders": {
@@ -8596,7 +8596,7 @@
   "@coinsFreezeZeroWarning": {
     "description": "Warning shown when freezing would drop spendable balance to zero"
   },
-  "coinsFrozenToast": "{count, plural, one{১ টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে} other{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে}}",
+  "coinsFrozenToast": "{count, plural, one{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে} other{{count} টা কইন ফ্ৰীজ কৰা হৈছে · খৰচৰ পৰা বাদ দিয়া হৈছে}}",
   "@coinsFrozenToast": {
     "description": "Toast shown after freezing coins",
     "placeholders": {
@@ -8605,7 +8605,7 @@
       }
     }
   },
-  "coinsUnfrozenToast": "{count, plural, one{১ টা কইন আনফ্ৰীজ কৰা হৈছে} other{{count} টা কইন আনফ্ৰীজ কৰা হৈছে}}",
+  "coinsUnfrozenToast": "{count, plural, one{{count} টা কইন আনফ্ৰীজ কৰা হৈছে} other{{count} টা কইন আনফ্ৰীজ কৰা হৈছে}}",
   "@coinsUnfrozenToast": {
     "description": "Toast shown after unfreezing coins",
     "placeholders": {
@@ -8614,7 +8614,7 @@
       }
     }
   },
-  "coinsConfsCount": "{count, plural, one{১ টা নিশ্চিতি} other{{count} টা নিশ্চিতি}}",
+  "coinsConfsCount": "{count, plural, one{{count} টা নিশ্চিতি} other{{count} টা নিশ্চিতি}}",
   "@coinsConfsCount": {
     "description": "Confirmation count pill",
     "placeholders": {
@@ -8690,7 +8690,7 @@
   "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
   "coreSwapsStatusRefunded": "ঘূৰাই দিয়া হৈছে",
   "swapRestoreTitle": "Swap পুনৰুদ্ধাৰ",
-  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি 1টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
+  "swapRestoreActionable": "{count, plural, =0{পুনৰুদ্ধাৰ কৰিবলগীয়া কোনো swap নাই} =1{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। ই ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।} other{আপুনি {count}টা swap পুনৰুদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে। মন কৰিব, সেইবোৰৰ কিছুমান ইতিমধ্যে এটা টাৰ্মিনেল স্থিতিত থাকিব পাৰে।}}",
   "swapRestoreNoSwaps": "পুনৰুদ্ধাৰ কৰিবলৈ কোনো swap পোৱা নগ'ল",
   "swapRestoreRecoverableSection": "পুনৰুদ্ধাৰযোগ্য",
   "swapRestoreAllSection": "সকলো swap",
