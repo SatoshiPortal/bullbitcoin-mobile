@@ -28,7 +28,7 @@ graph TB
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER
     ELECTRUM[Electrum package<br/>Server selection, settings and transaction lookup]
-    SYNC[Sync Package<br/>Electrum sync, BitcoinTx, chain access,<br/>contracts and owner ports]
+    SYNC[Sync Package<br/>Electrum sync, BitcoinTx, review values, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
     BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS
@@ -654,3 +654,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 ## Network settings and service status
 
 The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The app supplies a default wallet environment, existing Bitcoin fee probe and Tor preference access. Background Electrum composition remains independent of the network UI.
+
+## Wallet-independent transaction values
+
+`packages/sync` owns the Bitcoin and Liquid transaction values formerly in `lib/core/transactions`. Transaction review consumes `package:sync/transactions.dart`; wallet-history projections remain in `package:sync/sync.dart`. The separate entry libraries distinguish transaction review values from wallet-relative history without compatibility exports in the app.

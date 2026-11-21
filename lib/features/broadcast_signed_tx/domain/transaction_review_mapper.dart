@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/transactions/domain/entities/bitcoin_transaction.dart';
+import 'package:sync/transactions.dart';
 import 'package:sync/sync.dart' as btc_utils show BitcoinTx, TxVin, TxVout;
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 import 'package:sync/sync.dart' show bitcoinScriptAddress;

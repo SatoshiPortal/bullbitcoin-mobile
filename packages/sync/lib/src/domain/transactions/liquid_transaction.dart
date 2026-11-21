@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
+import 'transaction.dart';
 
 /// Concrete Liquid transaction implementing the abstract [Transaction].
 ///

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/transactions/domain/entities/bitcoin_transaction.dart';
+import 'package:sync/transactions.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 
 /// A Bitcoin review with one resolved input of [inputSat] and one output of
