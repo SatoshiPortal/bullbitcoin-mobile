@@ -186,7 +186,7 @@ The `export` block is the feature's whole public surface — its published types
 - **Entity as the published type** (lighter default): a clean, stable entity can be exported and returned directly — no extra type, no mapper. Don't add ceremony you don't need.
 - **Dedicated published type + mapper** (what `labels` does): when the internal entity carries internal-only fields (DB ids, internal flags) or churns often, expose a separate public type and map to it, so consumers are insulated from internal change.
 
-Either way: the return type is exported, carries no internal-only fields, and the **consuming feature wraps the facade call in its own use-case** — a bloc never calls another feature's facade directly (see "Business Logic in Presentation Layer" below). Under the melos target the facade graduates into the package's exported API (`lib/<name>.dart`, `export 'src/…' show …`) — the same contract, then enforced by package privacy.
+Either way: the return type is exported and carries no internal-only fields. The published API is a simple capability surface (the model is `secrets` and `sync`): a consumer's BLoC calls its own use case, which calls that API directly, with no forwarding repository, adapter or facade in between (see "Business Logic in Presentation Layer" below). Under the melos target the facade graduates into the package's exported API (`lib/<name>.dart`, `export 'src/…' show …`) — the same contract, then enforced by package privacy.
 
 ### Convergence (the ≈6 hexagonal modules)
 
