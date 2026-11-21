@@ -2,7 +2,7 @@
 // Finding: userinfo can make a trusted-looking prefix hide the actual host.
 // Regression test for the fix.
 
-import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

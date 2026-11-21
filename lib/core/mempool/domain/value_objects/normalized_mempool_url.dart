@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_parser.dart';
 
 /// Value object for normalized Mempool URL
 ///
