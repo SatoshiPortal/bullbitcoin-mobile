@@ -284,6 +284,7 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
+    SEND -->|public coin management route| COINS
     SEND -->|public spend admission and revisions| WALLETS
     SETTINGS -->|public wallet discovery| WALLETS
     SETTINGS --> CORE
