@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
@@ -11,7 +12,8 @@ import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/key_server_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/key_server_session_repository.dart';
-import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
+import 'package:file_system/file_system.dart';
+import 'package:bull_recoverbull/src/data/mappers/encrypted_vault_mapper.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_and_store_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_vault_usecase.dart';
@@ -104,10 +106,10 @@ void main() {
   test('pending provider save rejects a replacement password', () async {
     final first = save();
     await files.started.future;
-    files.pending.complete(const Err(VaultCancelledFailure()));
+    files.pending.complete(const Ok(false));
     expect(await first, isA<Err<VaultCompletion, RecoverBullFailure>>());
-    files.pending = Completer<Result<void, RecoverBullFailure>>()
-      ..complete(const Ok(null));
+    files.pending = Completer<Result<bool, FileSystemFailure>>()
+      ..complete(const Ok(true));
     final retried = await create.execute(
       settings: settings,
       server: server,
@@ -125,7 +127,8 @@ void main() {
       await create.retryProviderSave(VaultProvider.customLocation),
     );
     expect(create.hasPendingProviderSave, isFalse);
-    expect(files.savedVaults, [saved.vault, saved.vault]);
+    final content = EncryptedVaultMapper.fromEntity(saved.vault).toFile();
+    expect(files.savedContents, [content, content]);
     expect(server.storedPassword, 'public test password');
     expect(server.stores, 1);
     expect(server.trashed, 0);
@@ -134,10 +137,10 @@ void main() {
   test('a retry saves where the user first chose', () async {
     final first = save();
     await files.started.future;
-    files.pending.complete(const Err(VaultCancelledFailure()));
+    files.pending.complete(const Ok(false));
     await first;
-    files.pending = Completer<Result<void, RecoverBullFailure>>()
-      ..complete(const Ok(null));
+    files.pending = Completer<Result<bool, FileSystemFailure>>()
+      ..complete(const Ok(true));
 
     ok(await create.retryProviderSave());
     expect(files.calls, 2);
@@ -149,13 +152,13 @@ void main() {
     () async {
       final first = save();
       await files.started.future;
-      files.pending.complete(const Err(VaultCancelledFailure()));
+      files.pending.complete(const Ok(false));
       await first;
 
       expect(create.abandonPendingProviderSave(), isTrue);
       expect(create.hasPendingProviderSave, isFalse);
-      files.pending = Completer<Result<void, RecoverBullFailure>>()
-        ..complete(const Ok(null));
+      files.pending = Completer<Result<bool, FileSystemFailure>>()
+        ..complete(const Ok(true));
       ok(
         await create.execute(
           settings: settings,
@@ -169,11 +172,15 @@ void main() {
     },
   );
 
-  for (final failure in [
-    const VaultCancelledFailure(),
-    const VaultStorageFailure(),
+  for (final result in [
+    const Ok<bool, FileSystemFailure>(false),
+    const Err<bool, FileSystemFailure>(
+      FileSystemFailure(FileSystemFailureKind.save),
+    ),
   ]) {
-    testWidgets('provider $failure offers save-only retry', (tester) async {
+    testWidgets('provider ${result.runtimeType} offers save-only retry', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 2.75;
       addTearDown(tester.view.reset);
@@ -239,7 +246,7 @@ void main() {
       await tester.runAsync(() async {
         await tester.tap(find.text('Custom location'));
         await files.started.future;
-        files.pending.complete(Err(failure));
+        files.pending.complete(result);
         // Wait for the real flow result, not a fabricated cubit state.
         await cubit.stream.firstWhere((state) => !state.busy);
       });
@@ -270,8 +277,8 @@ void main() {
       await tester.ensureVisible(find.text('Retry saving backup'));
       await tester.runAsync(() async {
         // Complete the simulated picker in the async zone that awaits it.
-        files.pending = Completer<Result<void, RecoverBullFailure>>()
-          ..complete(const Ok(null));
+        files.pending = Completer<Result<bool, FileSystemFailure>>()
+          ..complete(const Ok(true));
         final completed = cubit.stream.firstWhere(
           (state) => state.completion != null,
         );
@@ -281,9 +288,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(cubit.state.hasPendingProviderSave, isFalse);
       expect(cubit.state.completion, isNotNull);
-      expect(files.savedVaults, [
-        files.savedVaults.first,
-        files.savedVaults.first,
+      expect(files.savedContents, [
+        files.savedContents.first,
+        files.savedContents.first,
       ]);
       expect(server.storedPassword, 'public test password');
       expect(server.stores, 1);
@@ -328,9 +335,7 @@ void main() {
         final saving = save();
         await files.started.future;
         create.close();
-        files.pending.complete(
-          succeeds ? const Ok(null) : const Err(VaultCancelledFailure()),
-        );
+        files.pending.complete(Ok(succeeds));
         final result = await saving;
         expect(result is Ok, succeeds);
         expect(server.trashed, 0);
@@ -461,15 +466,19 @@ final class _Wallets implements RecoverBullWalletPort {
   }
 }
 
-final class _Files extends Fake implements VaultFileRepository {
+final class _Files extends Fake implements FileSystem {
   int calls = 0;
-  final savedVaults = <EncryptedVault>[];
+  final savedContents = <String>[];
   final started = Completer<void>();
-  var pending = Completer<Result<void, RecoverBullFailure>>();
+  var pending = Completer<Result<bool, FileSystemFailure>>();
   @override
-  Future<Result<void, RecoverBullFailure>> save(EncryptedVault vault) {
+  Future<Result<bool, FileSystemFailure>> save({
+    required String filename,
+    required Uint8List bytes,
+    String mimeType = 'application/octet-stream',
+  }) {
     calls++;
-    savedVaults.add(vault);
+    savedContents.add(utf8.decode(bytes));
     if (!started.isCompleted) started.complete();
     return pending.future;
   }

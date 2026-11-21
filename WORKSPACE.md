@@ -38,6 +38,8 @@ graph TD
   style bull_ui stroke:#ca6ae4
   bull_ui_catalogue["bull_ui_catalogue"]
   style bull_ui_catalogue stroke:#7d8de8
+  file_system["file_system"]
+  style file_system stroke:#2571b0
   google_drive["google_drive"]
   style google_drive stroke:#a640f1
   notifications["notifications"]
@@ -86,6 +88,7 @@ graph TD
   bull_quick_actions --> bull_ui
   bull_quick_actions --> primitives
   bull_recoverbull --> primitives
+  bull_recoverbull --> file_system
   bull_recoverbull --> google_drive
   bull_recoverbull --> secrets
   bull_recoverbull --> bull_logger
@@ -98,6 +101,7 @@ graph TD
   bull_ui --> primitives
   bull_ui_catalogue --> primitives
   bull_ui_catalogue --> bull_ui
+  file_system --> primitives
   google_drive --> bull_logger
   google_drive --> primitives
   notifications --> bull_logger
@@ -126,6 +130,7 @@ graph TD
     bull_tor
     bull_ui
     bull_ui_catalogue
+    file_system
     google_drive
     notifications
     novlang

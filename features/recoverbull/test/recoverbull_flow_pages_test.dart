@@ -5,7 +5,7 @@ import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/backup_metadata_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/attempt_monitoring_repository.dart';
-import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/manage_backup_settings_usecase.dart';
@@ -386,7 +386,7 @@ void main() {
   }
 }
 
-final class _Files extends Fake implements VaultFileRepository {}
+final class _Files extends Fake implements FileSystem {}
 
 final class _Drive extends Fake implements GoogleDriveRepository {}
 

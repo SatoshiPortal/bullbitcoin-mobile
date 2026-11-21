@@ -12,9 +12,7 @@ void main() {
       String read(String path) => File(path).readAsStringSync();
 
       final page = read('lib/features/labels/ui/page.dart');
-      final datasource = read(
-        'lib/features/labels/data/io_labels_file_datasource.dart',
-      );
+      final datasource = read('packages/file_system/lib/file_system.dart');
       final fromFile = read(
         'lib/features/labels/application/usecases/import_labels_from_file_usecase.dart',
       );
@@ -28,18 +26,25 @@ void main() {
       // The page no longer touches the file; reading moved behind a use-case.
       expect(page, isNot(contains('readAsString')));
 
-      // The size is checked on disk before the content is read.
-      final sizeCheck = datasource.indexOf('length > maxBytes');
-      final contentRead = datasource.indexOf('file.readAsString()');
-      expect(sizeCheck, isNonNegative);
-      expect(contentRead, isNonNegative);
-      expect(sizeCheck, lessThan(contentRead));
+      // Bound every chunk before it is added to the accumulated bytes.
+      final chunkRead = datasource.indexOf('readAsByteStream()');
+      final sizeCheck = datasource.indexOf(
+        'chunk.length > maxBytes - data.length',
+      );
+      final append = datasource.indexOf('data.add(chunk)');
+      expect(chunkRead, isNonNegative);
+      expect(sizeCheck, greaterThan(chunkRead));
+      expect(append, greaterThan(sizeCheck));
+      expect(datasource, isNot(contains('readAsBytes()')));
 
-      // The bound is the format's import limit, which for BIP-329 is the
-      // codec's own limit.
+      // The bound is the codec's limit for the requested format.
       expect(
         fromFile,
-        contains('maxBytes: _labelConverter.maxImportBytes(format)'),
+        contains('maxBytes = _labelConverter.maxImportBytes(format)'),
+      );
+      expect(
+        fromFile,
+        contains('_fileSystem.read(document, maxBytes: maxBytes)'),
       );
       expect(
         converter,

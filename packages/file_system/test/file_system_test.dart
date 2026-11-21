@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/exchange_settings/data/file_picker_document_adapter.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_system/file_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -20,9 +18,9 @@ final class _Document extends PlatformFile {
   String get name => 'document.PDF';
 
   @override
-  Future<Uint8List> readAsBytes() async {
+  Stream<Uint8List> readAsByteStream() async* {
     if (!readable) throw const FileSystemException('unreadable test document');
-    return Uint8List.fromList([1, 2, 3]);
+    yield Uint8List.fromList([1, 2, 3]);
   }
 
   @override
@@ -31,11 +29,11 @@ final class _Document extends PlatformFile {
 
 void main() {
   late _Picker picker;
-  late FilePickerDocumentAdapter adapter;
+  late FileSystem fileSystem;
 
   setUp(() {
     picker = _Picker();
-    adapter = FilePickerDocumentAdapter(filePicker: picker);
+    fileSystem = FileSystem(picker: picker);
     registerFallbackValue(FileType.any);
   });
 
@@ -50,13 +48,14 @@ void main() {
 
   test('returns the selected document bytes and their actual size', () async {
     selects(_Document());
-    final result = await adapter.pick(allowedExtensions: ['pdf']);
+    final result = await fileSystem.pick(allowedExtensions: ['pdf']);
     switch (result) {
       case Ok(:final value):
         expect(value?.name, 'document.PDF');
-        expect(value?.extension, 'pdf');
-        expect(value?.bytes, [1, 2, 3]);
-        expect(value?.sizeBytes, 3);
+        expect(value?.extension, 'PDF');
+        if (value == null) fail('a document was selected');
+        final read = await fileSystem.read(value, maxBytes: 3);
+        expect((read as Ok<Uint8List, FileSystemFailure>).value, [1, 2, 3]);
       case Err():
         fail('the selected readable document should be returned');
     }
@@ -65,20 +64,22 @@ void main() {
   test('cancelled selection returns no document', () async {
     selects(null);
     expect(
-      await adapter.pick(allowedExtensions: ['pdf']),
-      const Ok<PickedDocument?, ExchangeSettingsFailure>(null),
+      await fileSystem.pick(allowedExtensions: ['pdf']),
+      const Ok<PickedDocument?, FileSystemFailure>(null),
     );
   });
 
   test('a selected unreadable file retains the document failure', () async {
     selects(_Document(readable: false));
-    final result = await adapter.pick(allowedExtensions: ['pdf']);
+    final picked = await fileSystem.pick(allowedExtensions: ['pdf']);
+    final document = (picked as Ok<PickedDocument?, FileSystemFailure>).value;
+    if (document == null) fail('a document was selected');
     expect(
-      result,
-      isA<Err<PickedDocument?, ExchangeSettingsFailure>>().having(
-        (r) => r.failure,
-        'failure',
-        isA<ExchangeSettingsDocumentUnreadableFailure>(),
+      await fileSystem.read(document, maxBytes: 3),
+      isA<Err<Uint8List, FileSystemFailure>>().having(
+        (r) => r.failure.kind,
+        'failure kind',
+        FileSystemFailureKind.read,
       ),
     );
   });
