@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:mempool/mempool.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
@@ -13,13 +12,13 @@ class FeesRepositoryImpl implements FeesRepository {
   final ElectrumServersPort _electrumServers;
   final RegtestFeesDatasource _regtestFeesDatasource;
   final FeesDatasource _feesDatasource;
-  final MempoolServerRepository _mempoolServerRepository;
+  final Mempool _mempool;
 
   const FeesRepositoryImpl({
     required this._feesDatasource,
     required this._electrumServers,
     this._regtestFeesDatasource = const RegtestFeesDatasource(),
-    required this._mempoolServerRepository,
+    required this._mempool,
   });
 
   @override
@@ -60,9 +59,7 @@ class FeesRepositoryImpl implements FeesRepository {
       isTestnet: isTestnet,
       isLiquid: false,
     );
-    final customResult = await _mempoolServerRepository.fetchCustomServer(
-      network,
-    );
+    final customResult = await _mempool.customServer(network);
     final customServer = switch (customResult) {
       Ok(:final value) => value,
       Err() => throw MempoolFeesException(
@@ -71,9 +68,7 @@ class FeesRepositoryImpl implements FeesRepository {
     };
     if (customServer != null) return customServer.fullUrl;
 
-    final defaultResult = await _mempoolServerRepository.fetchDefaultServer(
-      network,
-    );
+    final defaultResult = await _mempool.defaultServer(network);
     final defaultServer = switch (defaultResult) {
       Ok(:final value) => value,
       Err() => throw MempoolFeesException(

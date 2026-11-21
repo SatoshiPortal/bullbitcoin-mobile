@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:mempool/mempool.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';

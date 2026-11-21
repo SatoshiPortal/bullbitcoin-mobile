@@ -14,7 +14,7 @@ class FeesLocator {
     locator.registerLazySingleton<FeesRepository>(
       () => FeesRepositoryImpl(
         feesDatasource: locator<FeesDatasource>(),
-        mempoolServerRepository: locator(),
+        mempool: locator(),
         electrumServers: locator(),
       ),
     );

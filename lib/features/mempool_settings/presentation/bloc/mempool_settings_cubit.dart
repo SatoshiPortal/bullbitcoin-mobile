@@ -1,16 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/requests/delete_custom_mempool_server_request.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/requests/load_mempool_server_data_request.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/requests/set_custom_mempool_server_request.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/delete_custom_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/load_mempool_server_data_usecase.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/set_custom_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
-import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_status.dart';
+import 'package:mempool/mempool.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/delete_custom_mempool_server_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/load_mempool_server_data_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/set_custom_mempool_server_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/check_mempool_server_status_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -22,7 +16,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   final LoadMempoolServerDataUsecase _loadDataUsecase;
   final SetCustomMempoolServerUsecase _setCustomServerUsecase;
   final DeleteCustomMempoolServerUsecase _deleteCustomServerUsecase;
-  final MempoolServerValidatorPort _validator;
+  final CheckMempoolServerStatusUsecase _checkStatusUsecase;
   // Latest probe per row (custom or default); an older probe never writes.
   final _latestProbe = <bool, int>{};
 
@@ -30,7 +24,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     required this._loadDataUsecase,
     required this._setCustomServerUsecase,
     required this._deleteCustomServerUsecase,
-    required this._validator,
+    required this._checkStatusUsecase,
   }) : super(const MempoolSettingsState());
 
   Future<void> loadData({bool? isLiquid}) async {
@@ -131,11 +125,6 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     final probe = (_latestProbe[server.isCustom] ?? 0) + 1;
     _latestProbe[server.isCustom] = probe;
 
-    final network = MempoolServerNetwork.fromEnvironment(
-      isTestnet: server.isTestnet,
-      isLiquid: server.isLiquid,
-    );
-
     final updatedServer = server.copyWith(status: MempoolServerStatus.checking);
 
     if (server.isCustom) {
@@ -146,11 +135,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
 
     // A validation Err here just means the server is offline — not a
     // user-facing error, so it's never surfaced as a failure.
-    final isValid = (await _validator.validateServer(
-      url: server.url,
-      network: network,
-      enableSsl: server.enableSsl,
-    )).fold((_) => true, (_) => false);
+    final isValid = await _checkStatusUsecase.execute(server);
     // The screen may have closed, started a newer probe, switched network or
     // deleted this server while the probe ran; never write a stale answer.
     if (isClosed || _latestProbe[server.isCustom] != probe) return;

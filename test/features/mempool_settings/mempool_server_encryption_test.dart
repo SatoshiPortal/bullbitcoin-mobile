@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/mempool_server_encryption.dart';
 import 'package:flutter_test/flutter_test.dart';
 

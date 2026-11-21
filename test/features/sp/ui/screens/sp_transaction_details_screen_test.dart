@@ -1,8 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
-import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:mempool/mempool.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
@@ -17,8 +14,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/localizations.dart';
 
 import '../../sp_cubit_harness.dart';
-
-class _ActiveExplorer extends Mock implements GetActiveMempoolServerUsecase {}
 
 SpPayment _payment({
   BitcoinNetwork? network = BitcoinNetwork.mainnet,
@@ -206,21 +201,7 @@ void main() {
           null,
         ),
       );
-      final active = _ActiveExplorer();
-      for (final testnet in [false, true]) {
-        when(() => active.execute(isTestnet: testnet, isLiquid: false))
-            .thenAnswer(
-              (_) async => Ok(
-                MempoolServer.existing(
-                  url: testnet ? 'testnet.example' : 'mainnet.example',
-                  network: testnet
-                      ? MempoolServerNetwork.bitcoinTestnet
-                      : MempoolServerNetwork.bitcoinMainnet,
-                  isCustom: true,
-                ),
-              ),
-            );
-      }
+      final explorerRequests = <(bool, bool)>[];
       final txid = 'abcd' * 16;
       final payment = _payment(
         network: network,
@@ -231,7 +212,21 @@ void main() {
       );
       await tester.pumpWidget(
         RepositoryProvider<MempoolUrlBuilder>.value(
-          value: MempoolUrlBuilder(getActiveMempoolServerUsecase: active),
+          value: MempoolUrlBuilder(
+            getActiveServer: ({required isTestnet, required isLiquid}) async {
+              explorerRequests.add((isTestnet, isLiquid));
+              return Ok(
+                MempoolServer.existing(
+                  url: isTestnet ? 'testnet.example' : 'mainnet.example',
+                  network: MempoolServerNetwork.fromEnvironment(
+                    isTestnet: isTestnet,
+                    isLiquid: isLiquid,
+                  ),
+                  isCustom: true,
+                ),
+              );
+            },
+          ),
           child: _buildPage(cubit, payment),
         ),
       );
@@ -246,12 +241,7 @@ void main() {
         copied,
         'https://${network == BitcoinNetwork.mainnet ? 'mainnet' : 'testnet'}.example/tx/$txid',
       );
-      verify(
-        () => active.execute(
-          isTestnet: network == BitcoinNetwork.testnet,
-          isLiquid: false,
-        ),
-      ).called(1);
+      expect(explorerRequests, [(network == BitcoinNetwork.testnet, false)]);
     });
   }
 }

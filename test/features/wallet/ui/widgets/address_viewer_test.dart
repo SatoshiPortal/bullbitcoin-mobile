@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/localizations.dart';

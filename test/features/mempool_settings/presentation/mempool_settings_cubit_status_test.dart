@@ -1,16 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/requests/delete_custom_mempool_server_request.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/requests/load_mempool_server_data_request.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/responses/load_mempool_server_data_response.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/delete_custom_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/load_mempool_server_data_usecase.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/set_custom_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
-import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_status.dart';
+import 'package:mempool/mempool.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/delete_custom_mempool_server_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/load_mempool_server_data_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/set_custom_mempool_server_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/check_mempool_server_status_usecase.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,17 +17,13 @@ class _SetCustom extends Mock implements SetCustomMempoolServerUsecase {}
 class _DeleteCustom extends Mock implements DeleteCustomMempoolServerUsecase {}
 
 /// Answers each probe only when the test completes the matching completer.
-class _Validator implements MempoolServerValidatorPort {
-  final probes = <String, List<Completer<Result<void, MempoolFailure>>>>{};
+class _CheckStatus implements CheckMempoolServerStatusUsecase {
+  final probes = <String, List<Completer<bool>>>{};
 
   @override
-  Future<Result<void, MempoolFailure>> validateServer({
-    required String url,
-    required MempoolServerNetwork network,
-    bool enableSsl = true,
-  }) {
-    final probe = Completer<Result<void, MempoolFailure>>();
-    (probes[url] ??= []).add(probe);
+  Future<bool> execute(MempoolServerDto server) {
+    final probe = Completer<bool>();
+    (probes[server.url] ??= []).add(probe);
     return probe.future;
   }
 
@@ -41,11 +31,7 @@ class _Validator implements MempoolServerValidatorPort {
   void answer(String url, {int? index, bool online = true}) {
     final sent = probes[url];
     if (sent == null || sent.isEmpty) return;
-    sent[index ?? sent.length - 1].complete(
-      online
-          ? const Ok(null)
-          : const Err(MempoolValidationConnectionErrorFailure()),
-    );
+    sent[index ?? sent.length - 1].complete(online);
   }
 }
 
@@ -63,7 +49,7 @@ MempoolServerDto _server(
 void main() {
   late _LoadData loadData;
   late _DeleteCustom deleteCustom;
-  late _Validator validator;
+  late _CheckStatus validator;
   late MempoolSettingsCubit cubit;
 
   setUpAll(() {
@@ -74,7 +60,7 @@ void main() {
   setUp(() {
     loadData = _LoadData();
     deleteCustom = _DeleteCustom();
-    validator = _Validator();
+    validator = _CheckStatus();
     when(() => loadData.execute(any())).thenAnswer((invocation) async {
       final request =
           invocation.positionalArguments.first as LoadMempoolServerDataRequest;
@@ -93,7 +79,7 @@ void main() {
       loadDataUsecase: loadData,
       setCustomServerUsecase: _SetCustom(),
       deleteCustomServerUsecase: deleteCustom,
-      validator: validator,
+      checkStatusUsecase: validator,
     );
   });
 
