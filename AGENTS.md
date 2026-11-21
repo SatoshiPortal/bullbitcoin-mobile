@@ -33,9 +33,9 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 ## Database ownership and schema migration support
 
-**Target for extracted storage.** A module that owns persistent SQLite data owns one encrypted SQLite database and absorbs its tables and migrations. Sharing one database file across modules couples concurrent writers, migration execution, and schema versions. Import all legacy data once into the owning modules and remove the old file after the import succeeds. A package cannot import a feature to compose its tables.
+**Target for extracted storage.** A module that owns persistent SQLite data owns one encrypted SQLite database and absorbs its tables and migrations. Sharing one database file across modules couples concurrent writers, migration execution, and schema versions. Import all legacy data once into the owning modules. Retain `bullbitcoin_sqlite.sqlite`, its WAL/SHM files, and legacy PIN entries until the entire migration has succeeded and been verified; retain them on any failure, including a partial failure. A package cannot import a feature to compose its tables.
 
-**Secure storage.** Reserve OS secure storage for seed material and database encryption keys. The encrypted Drift database owned by `secrets` holds wallet properties (including label and birthday), usages, and public-only wallet entries such as watch-only descriptors. Existing owner-scoped keychain entries are legacy pending migration (see "Owner-scoped keychain capabilities").
+**Secure storage.** Reserve OS secure storage for seed material and database encryption keys. The encrypted Drift database owned by `secrets` holds wallet properties (including label and birthday), usages, and public-only wallet entries such as watch-only descriptors. Existing owner-scoped keychain entries are legacy pending migration (see [Legacy owner-scoped keychain capabilities](#legacy-owner-scoped-keychain-capabilities)).
 
 **Legacy app database.** Preserve the published upgrade path while its data moves to module-owned storage.
 
