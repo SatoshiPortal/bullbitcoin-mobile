@@ -39,10 +39,14 @@ class FundExchangeLocator {
     locator.registerLazySingleton<FundingRepository>(
       () => FundingRepositoryImpl(
         bullbitcoinFundingRepository: BbxApiFundingRepository(
-          api: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
+          api: locator<BbxApiClient>(
+            instanceName: 'mainnetBbxApiClientWithoutTimeout',
+          ),
         ),
         bullBitcoinTestnetFundingRepository: BbxApiFundingRepository(
-          api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+          api: locator<BbxApiClient>(
+            instanceName: 'testnetBbxApiClientWithoutTimeout',
+          ),
         ),
         exchangeEnvironment: locator<ExchangeEnvironmentPort>(),
       ),

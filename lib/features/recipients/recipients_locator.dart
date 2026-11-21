@@ -41,23 +41,35 @@ class RecipientsLocator {
     locator.registerLazySingleton<RecipientsRepository>(
       () => RecipientsRepositoryImpl(
         bullbitcoinApiClient: BbxApiRecipientsRepository(
-          api: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
+          api: locator<BbxApiClient>(
+            instanceName: 'mainnetBbxApiClientWithoutTimeout',
+          ),
         ),
         bullBitcoinTestnetApiClient: BbxApiRecipientsRepository(
-          api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+          api: locator<BbxApiClient>(
+            instanceName: 'testnetBbxApiClientWithoutTimeout',
+          ),
         ),
       ),
     );
     locator.registerLazySingleton<VirtualIbanRepository>(
       () => BbxApiVirtualIbanRepository(
-        mainnet: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
-        testnet: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+        mainnet: locator<BbxApiClient>(
+          instanceName: 'mainnetBbxApiClientWithoutTimeout',
+        ),
+        testnet: locator<BbxApiClient>(
+          instanceName: 'testnetBbxApiClientWithoutTimeout',
+        ),
       ),
     );
     locator.registerLazySingleton<SepaVirtualPayeeRepository>(
       () => BbxApiSepaVirtualPayeeRepository(
-        mainnet: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
-        testnet: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+        mainnet: locator<BbxApiClient>(
+          instanceName: 'mainnetBbxApiClientWithoutTimeout',
+        ),
+        testnet: locator<BbxApiClient>(
+          instanceName: 'testnetBbxApiClientWithoutTimeout',
+        ),
       ),
     );
   }
