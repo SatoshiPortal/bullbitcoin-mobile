@@ -31,25 +31,38 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<MempoolSettingsCubit>();
+    final isBusy = context.select(
+      (MempoolSettingsCubit cubit) =>
+          cubit.state.isLoading ||
+          cubit.state.isSavingServer ||
+          cubit.state.isDeletingServer,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.loc.mempoolSettingsTitle),
+        actions: [
+          IconButton(
+            tooltip: context.loc.networkRefreshServers,
+            icon: const Icon(Icons.refresh),
+            style: IconButton.styleFrom(
+              fixedSize: const Size.square(48),
+              visualDensity: VisualDensity.standard,
+            ),
+            onPressed: isBusy ? null : cubit.refresh,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child: BlocBuilder<MempoolSettingsCubit, MempoolSettingsState>(
-            builder: (context, state) {
-              return state.isLoading ||
-                      state.isSavingServer ||
-                      state.isDeletingServer
-                  ? BullFadingLinearProgress(
-                      height: 3,
-                      trigger: true,
-                      backgroundColor: context.bull.surface,
-                      foregroundColor: context.bull.primary,
-                    )
-                  : const SizedBox(height: 3);
-            },
-          ),
+          child: isBusy
+              ? BullFadingLinearProgress(
+                  height: 3,
+                  trigger: true,
+                  backgroundColor: context.bull.surface,
+                  foregroundColor: context.bull.primary,
+                )
+              : const SizedBox(height: 3),
         ),
       ),
       bottomNavigationBar:
@@ -66,8 +79,7 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
           ),
       body: SafeArea(
         child: BullPullableBody(
-          onRefresh: () async =>
-              await context.read<MempoolSettingsCubit>().refresh(),
+          onRefresh: cubit.refresh,
           slivers: [
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

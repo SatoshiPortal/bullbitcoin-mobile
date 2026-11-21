@@ -25,9 +25,25 @@ class ElectrumSettingsScreen extends StatelessWidget {
       (ElectrumSettingsBloc bloc) => bloc.state.isLoading,
     );
 
+    final bloc = context.read<ElectrumSettingsBloc>();
+    void reload() {
+      bloc.add(ElectrumSettingsLoaded(isLiquid: bloc.state.isLiquid));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.loc.electrumTitle),
+        actions: [
+          IconButton(
+            tooltip: context.loc.networkRefreshServers,
+            icon: const Icon(Icons.refresh),
+            style: IconButton.styleFrom(
+              fixedSize: const Size.square(48),
+              visualDensity: VisualDensity.standard,
+            ),
+            onPressed: isLoading ? null : reload,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: isLoading
@@ -49,8 +65,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
       body: SafeArea(
         child: BullPullableBody(
           onRefresh: () async {
-            final bloc = context.read<ElectrumSettingsBloc>();
-            bloc.add(ElectrumSettingsLoaded(isLiquid: bloc.state.isLiquid));
+            reload();
             await bloc.stream.firstWhere((state) => !state.isLoadingData);
           },
           slivers: [

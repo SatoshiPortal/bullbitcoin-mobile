@@ -58,17 +58,20 @@ class TorProxyWidget extends StatelessWidget {
           title: context.loc.torSettingsLocalProxyTitle,
           trailing: Semantics(
             label: context.loc.torSettingsLocalProxyTitle,
-            child: Switch(
-              value: useTorProxy,
-              onChanged: (value) {
-                context
-                    .read<TorSettingsCubit>()
-                    .updateTorSettings(
-                      useTorProxy: value,
-                      torProxyPort: torProxyPort,
-                    )
-                    .ignore();
-              },
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              child: Switch(
+                value: useTorProxy,
+                onChanged: (value) {
+                  context
+                      .read<TorSettingsCubit>()
+                      .updateTorSettings(
+                        useTorProxy: value,
+                        torProxyPort: torProxyPort,
+                      )
+                      .ignore();
+                },
+              ),
             ),
           ),
         ),
