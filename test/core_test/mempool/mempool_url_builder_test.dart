@@ -35,4 +35,38 @@ void main() {
       );
     },
   );
+
+  test(
+    'Liquid testnet links use the configured server and TLS setting',
+    () async {
+      final activeServer = _MockActiveServerUsecase();
+      when(() => activeServer.execute(isTestnet: true, isLiquid: true))
+          .thenAnswer(
+            (_) async => Ok(
+              MempoolServer.existing(
+                url: 'liquid.example.com:8080',
+                network: MempoolServerNetwork.liquidTestnet,
+                isCustom: true,
+                enableSsl: false,
+              ),
+            ),
+          );
+      final builder = MempoolUrlBuilder(
+        getActiveMempoolServerUsecase: activeServer,
+      );
+
+      expect(
+        await builder.liquidAddress('address', isTestnet: true),
+        'http://liquid.example.com:8080/address/address',
+      );
+      expect(
+        await builder.liquidTxid(
+          'txid',
+          isTestnet: true,
+          unblindedUrl: 'tx/txid#blinded=details',
+        ),
+        'http://liquid.example.com:8080/tx/txid#blinded=details',
+      );
+    },
+  );
 }
