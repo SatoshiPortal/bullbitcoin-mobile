@@ -150,7 +150,7 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
       final description = _describe(e);
       log.severe(
         message: 'Failed to $operation',
-        error: e is bbx.BbxApiRpcException ? description : e,
+        error: description,
         trace: st,
       );
       return Err(_mapFailure(e, description, fallback));
@@ -179,6 +179,8 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
   static String _describe(Object e) => switch (e) {
     bbx.BbxApiRpcException(:final code, :final apiCode) =>
       'BbxApiRpcException(code: $code, apiCode: $apiCode)',
-    _ => '$e',
+    DioException(:final type, :final response) =>
+      'DioException(${type.name}, status: ${response?.statusCode})',
+    _ => e.runtimeType.toString(),
   };
 }
