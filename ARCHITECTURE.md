@@ -8,7 +8,7 @@ This document describes a **target we move toward, not a finished state.** The c
 >
 > **Repo doc map:** [README.md](README.md) = the product · **ARCHITECTURE.md** (this file) = the layer model & design rules · [AGENTS.md](AGENTS.md) = toolchain, commits, naming, the day-to-day contract · [FEATURES.md](FEATURES.md) = the cross-feature dependency graph.
 
-**Contents:** Feature-Based Architecture · How the codebase actually looks today · Entry points & code tour · The architecture we tend toward (logic homes · use-cases · repositories · datasources · entity/model · vertical slice · errors · facade · convergence) · Layer glossary · Feature & package templates (incl. *Adding a feature* checklist) · Monorepo Migration · Rules for AI.
+**Contents:** Feature-Based Architecture · How the codebase actually looks today · Entry points & code tour · The architecture we tend toward (logic homes · use-cases · repositories · datasources · entity/model · vertical slice · errors · capability API · convergence) · Layer glossary · Feature & package templates (incl. *Adding a feature* checklist) · Monorepo Migration · Rules for AI.
 
 ## 📦 Feature-Based Architecture
 
@@ -16,7 +16,7 @@ Features are self-contained modules that encapsulate all code related to a speci
 
 A feature is the single owner of its domain, meaning it is solely responsible for enforcing all business rules and domain logic related to that domain. No other feature may directly access or modify a feature’s internal domain models, state, or persistence details.
 
-When other features need to interact with a domain, the feature should expose a well-defined public API (facade) that serves as the only entry point for cross-feature interaction. This facade defines the feature’s stable contract and ensures that business rules cannot be bypassed. And as long as the facade remains unchanged, the feature’s internal implementation can evolve freely without impacting dependent features.
+Other members interact with the feature through its published capability API. The API defines the stable contract, keeps business rules with their owner, and lets the implementation evolve independently of callers.
 
 This approach enables clear ownership, strong encapsulation, and independent development and testing of features. It also helps in maintaining a well-defined, acyclic dependency graph between features, preventing circular dependencies as visualized in the [Features Dependency Diagram](FEATURES.md), this diagram should be updated as the application evolve.
 
@@ -30,7 +30,7 @@ The codebase has **two coexisting patterns**, which is expected mid-migration:
 
 **2. A minority drifted to a heavier hexagonal split (≈6 modules: `labels`, `electrum_settings`, `fund_exchange`, `recipients`, `transactions`, `broadcast_signed_tx`).** Extra rings — `application/` (use-cases + ports), `adapters/`, `frameworks/`, `interface_adapters/` — plus per-layer error types and several model+mapper hops. More files, more vocabulary, no extra capability. **We converge these back** onto pattern 1 (see "Convergence" below).
 
-**The `public/` facade exists but is still a minority pattern (9 `*_facade.dart` files under `lib/features/`, 2026-08-25 count) and `watchers/` barely exists (0 found).** So "facade-only cross-feature" is progressing but not complete — features still reach into each other directly in places, which we are fixing.
+**Legacy feature facades** predate the workspace capability APIs (9 `*_facade.dart` files under `lib/features/` in the 2026-08-25 census). Direct cross-feature imports and separate locator and router entry points also remain in parts of the legacy app.
 
 **Documentation-only PRs still produce the final `CI` status.** The `Analyze and Test` workflow ([analyze_and_test.yml](.github/workflows/analyze_and_test.yml)) runs changed-file classification and the action-pin gate for every PR; docs-only changes skip the heavy application checks and integration job, then the final `CI` job reports success. The repository ruleset is not yet updated to require this status, so it is not mandatory until an administrator activates that requirement.
 
@@ -44,14 +44,14 @@ New to the code? Start at these files — together they are the app's **composit
 - **`lib/bootstrap.dart`** — Flutter binding, startup wizard, application rendering and startup/global error handling. `lib/features/wizard/startup_wizard.dart` owns the pre-locator wizard flow and pending consent read.
 - **`lib/init.dart`** — ordered service initialization. `Bull.init()` runs before the wallet app's `runApp()`: logging → error reporting (Sentry, consent-gated through the first-run wizard) → Flutter-Rust-Bridge / `bull_sdk` init → `AppLocator.setup()` → wizard flush. `bull_logger.initializeLogging()` owns log setup; `packages/bull_reporting/lib/src/report_logger_adapter.dart` connects its reporting contract to the app's consent-gated `Report`. Native-library initialization lives in `lib/native_libraries.dart`, Tor diagnostic collection in `features/network`, and background-task scheduling in `lib/background_setup.dart`. The foreground and background composition roots share these helpers without importing one another.
 - **`lib/app.dart`** — root widget, lifecycle handling and always-on top-level blocs (app-startup, wallet, settings, bitcoin-price, exchange).
-- **`lib/locator.dart`** — dependency injection (`get_it`). `AppLocator.setup()` registers **core first** (`CoreLocator` — datasources, ports, repositories, services, use-cases, facades), then calls **every feature's `<Feature>Locator.setup(locator)`**. This file is the single list of what's wired into the app.
-- **`lib/router.dart`** — navigation (`GoRouter`). `AppRouter.router` starts at `WalletRoute.walletHome`, wraps the app in a root `ShellRoute`, and **spreads each feature's routes** (`...ExchangeRouter.routes`, `...BuyRouter.routes`, …) into the tree.
+- **`lib/locator.dart`** — dependency injection (`get_it`). `AppLocator.setup()` opens capabilities and mounts features alongside legacy core and feature registrations.
+- **`lib/router.dart`** — navigation (`GoRouter`). `AppRouter.router` starts at `WalletRoute.walletHome`, wraps the app in a root `ShellRoute`, and assembles route contributions from mounted features and legacy routers.
 
-Each feature mirrors that with three plug-in points: **`<feature>_locator.dart`** (a `<Feature>Locator.setup(locator)` registering the feature's deps), **`<feature>_router.dart`** (a `<Feature>Router` exposing `route`/`routes` + a `<Feature>Route` enum of paths), and — only when consumed by other features — **`<feature>_facade.dart`**. To understand any feature, trace it top-down: **route → screen (`ui/`) → bloc (`presentation/`) → use-case (`domain/usecases/`) → repository → datasource.** The "vertical slice" below walks one real example end to end.
+Open a package through its published capability and mount a feature through its composition library. To understand a feature, trace it top-down: **route → screen (`ui/`) → bloc (`presentation/`) → use case (`domain/usecases/`) → repository → datasource.** The vertical slice below walks one real example end to end.
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
 
-Mnemonic entry is shared through `lib/features/import_mnemonic/public/import_mnemonic_facade.dart`, which exports the entry widget used by onboarding and app-startup recovery. The import feature currently reaches into Wallets internals; replacing that import with the public Wallets facade is a scoped follow-up recorded in FEATURES.md.
+Legacy mnemonic entry is shared through `lib/features/import_mnemonic/public/import_mnemonic_facade.dart`, which exports the entry widget used by onboarding and app-startup recovery. The import feature currently reaches into Wallets internals; replacing that import with a published capability is a scoped follow-up recorded in FEATURES.md.
 
 ## 🎯 The architecture we tend toward
 
@@ -165,30 +165,22 @@ Calls flow **down**; data flows **up**, transformed once per boundary: **wire mo
 
 Three words, three jobs, kept strictly apart: **`Exception`** = thrown, low-level, recoverable (data layer, caught at the boundary); **`Error`** = a `dart:core` programmer bug, never caught (crashes → Sentry); **`Failure`** = a modeled, recoverable **value** that lives in `domain/` and is the only error kind the UI ever sees. `Error` is **never** a domain type — name domain failures `<Feature>Failure`, never `<Feature>Error`.
 
-- **One sealed `Failure` family per feature** in `domain/<feature>_failure.dart` (`sealed class <Feature>Failure extends Failure`), **Flutter-free**. Most features aren't deep enough to justify a family per layer. Cross-cutting modes (network, storage-locked, not-found, timeout, auth, device, insufficient-funds) come from the shared `sealed CoreFailure` in `lib/core/failures/` (alongside the `Failure` base; the legacy `lib/core/errors/` is the graveyard until emptied), composed rather than redefined per feature. Map foreign errors at the boundary; never leak another layer's or feature's type.
+- **One sealed public `Failure` family per member.** In a feature, define it in `domain/<feature>_failure.dart` (`sealed class <Feature>Failure extends Failure`), **Flutter-free**. Most features aren't deep enough to justify a family per layer. Cross-cutting modes (network, storage-locked, not-found, timeout, auth, device, insufficient-funds) come from the shared `sealed CoreFailure` in `lib/core/failures/` (alongside the `Failure` base; the legacy `lib/core/errors/` is the graveyard until emptied), composed rather than redefined per feature. Map foreign errors at the boundary; never leak another layer's or feature's type.
 - **Translation lives in presentation, not on the failure.** Because the repository (data layer) constructs the failure, the failure type must stay Flutter-free — so `toTranslated(BuildContext)` is a **presentation-layer extension** (`presentation/<feature>_failure_l10n.dart`), the only place that imports `flutter` / `context.loc`. The `sealed` switch in the extension still makes a missing user message a compile error. **The end user never sees a dev string:** the catch-all variant returns a **generic** localized message (`context.loc.oopsSomethingWentWrong`), never the raw `logMessage` — that text is logged at the boundary and is for us only. (`unexpected: (message) => message` leaks dev detail; the anti-pattern to avoid.)
 - **`Result<T, F extends Failure>` at the boundary** for expected, recoverable failures (variants `Ok` / `Err`; `throw` only for `dart:core`-style programmer bugs). Dart exceptions are unchecked — callers aren't forced to handle them ([dart.dev](https://dart.dev/language/error-handling)) — so a `Result` makes failure explicit in the signature ([Flutter Result](https://docs.flutter.dev/app-architecture/design-patterns/result)). Generic over `F` so consumers never cast; annotate returning methods `@useResult`; helpers `fold` / `map` / `mapErr`.
 - **The flow, end to end.** The **repository** is the one `try/catch`: it catches the foreign `Exception`, logs the raw reason, maps it to the feature's `<Feature>Failure`, and returns `Result<T, F>`. *(When a feature wraps a shared **core** repo that still throws, this mapping moves up to the feature's **use-case** — the first layer the feature owns.)* The **use-case** forwards or composes `Result`s (no `try/catch`). The **bloc** consumes with an exhaustive `switch`, storing the typed `<Feature>Failure` in state — no cast, no `BuildContext`. The **UI** renders `failure.toTranslated(context)`. A domain `Failure` in the bloc is correct (presentation → domain), not a leak; the leak prevented is a *data* exception crossing the boundary.
 
 > **Migration (#1895).** Sanitizing user-facing errors to this standard is a **sanctioned, staged migration** (issue #1895), not opportunistic. Existing features still using `BullException`, `<Feature>Error` naming, `toTranslated` *on* the error, or `throw`-based propagation are **legacy-to-converge** — don't replicate them; bring a feature fully in line when you touch it, one feature per PR.
 
-### The facade: a feature's public contract
+### The capability API: a member's public contract
 
-A feature never reaches into another feature's `domain/`, `data/`, or `presentation/`. Its single cross-feature surface is the **facade**, and the facade *is* the interface between features — a **concrete class**, not an `abstract interface class`. There is nothing to define on top of it: its public method surface plus its `export` block **are** the contract. (Reach for an `abstract interface class` in front of a facade only to break a dependency cycle via DIP, or to mock the feature in another feature's tests — not by default.)
+A member owns its capability, domain types, and failure family. Consumers import its entry library and call the capability directly from their own use cases. The API carries domain values belonging to that contract and keeps persistence models, wire formats, internal state management and orchestration private.
 
-The `export` block is the feature's whole public surface — its published types, any widgets meant for cross-feature reuse, its router and locator. `Labels` publishes its label values and failures through `package:labels/labels.dart`; label UI lives in the separate Label Editor feature.
+- **Package.** A stateful package opens through one `X.open(...)` entry point. [`GoogleDrive.open`](packages/google_drive/lib/src/google_drive.dart) and [`Electrum.open`](packages/electrum/lib/src/electrum.dart) show synchronous construction. [`Labels`](packages/labels/lib/labels.dart) opens with `Labels.open` and exposes a single typed query, `fetch({reference})`, for all labels or a reference-scoped read. An empty match is `Ok([])` and a storage failure is `Err`.
+- **Feature.** One `XFeature.mount(...)` constructs the feature and contributes its routes to the shell. [`SignersFeature.mount`](features/signers/lib/src/signers_feature.dart) exposes its routes via the [composition library](features/signers/lib/routes.dart), while [`signers.dart`](features/signers/lib/signers.dart) gives callers typed navigation. A feature may also publish reusable widgets. Its blocs and cubits stay private.
+- **Operations.** Public fallible commands and queries return `Future<Result<T, XFailure>>` with one sealed public failure root per member. Map internal and cross-member failures at the boundary. Fallible observations use `Stream<Result<T, XFailure>>` or an owned state that already models failure. Preserve natural return types for pure helpers, domain values and typed navigation, including existing navigation cancellation and in-flow error handling. Construction and cleanup keep their natural sync or async signatures and return typed failures when they can fail recoverably.
 
-**What its methods may return — the repository boundary rule, one level up:**
-
-- Only the feature's **published contract types**, which must be in the `export` block so callers can name them.
-- **Never** a deeper internal type: an `application/`/use-case type, a `data/models/` model, or another feature's entity. `Labels` maps its internal application label to the exported `Label` before returning.
-
-**Is the published type the entity itself or a dedicated DTO? A stability call, not a rule:**
-
-- **Entity as the published type** (lighter default): a clean, stable entity can be exported and returned directly — no extra type, no mapper. Don't add ceremony you don't need.
-- **Dedicated published type + mapper** (what `labels` does): when the internal entity carries internal-only fields (DB ids, internal flags) or churns often, expose a separate public type and map to it, so consumers are insulated from internal change.
-
-Either way: the return type is exported and carries no internal-only fields. The published API is a simple capability surface (the model is `secrets` and `sync`): a consumer's BLoC calls its own use case, which calls that API directly, with no forwarding repository, adapter or facade in between (see "Business Logic in Presentation Layer" below). Under the melos target the facade graduates into the package's exported API (`lib/<name>.dart`, `export 'src/…' show …`) — the same contract, then enforced by package privacy.
+The narrower capability surfaces of [`secrets`](packages/secrets/lib/secrets.dart) and [`sync`](packages/sync/lib/sync.dart) illustrate operation ownership: a `Secret` handle groups derivation and signing, and a `Wallet` handle observes wallet state. Their existing lifecycle entry points predate the `open` convention.
 
 ### Convergence (the ≈6 hexagonal modules)
 
@@ -220,7 +212,7 @@ The repository's own interface is the canonical port (the Ports-&-Adapters analo
 - `data/models/` — the wire/persistence model, one per entity, always separate from the domain entity (serialization only). `data/mappers/` — model ↔ entity; a file only once it earns one (rule #14), inline/extension when trivial.
 - `presentation/` — bloc/cubit + state + event. The ViewModel: holds UI state, exposes intents, calls use-cases. Thin — no business decisions.
 - `ui/` — screens + widgets; depend on the bloc only.
-- `public/` — the feature's facade: the only entry point other features may import.
+- `lib/<member>.dart` — the member's consumer entry library. Capability implementations live under `lib/src/` and can use an internal `public/` directory.
 - `watchers/` — optional event listeners that drive use-cases (never repositories directly).
 
 ## 🧩 Feature & package templates
@@ -228,23 +220,25 @@ The repository's own interface is the canonical port (the Ports-&-Adapters analo
 **Canonical feature (self-contained, owns its data):**
 
 ```
-<feature>/
-  domain/
-    entities/         # (+ value objects) — rich models
-    repositories/     # abstract interfaces (the contracts)
-    usecases/         # one per intent, thin orchestration
-    <feature>_failure.dart   # sealed Failure family, Flutter-free
-  data/
-    datasources/      # one external system each, private to the repo
-    models/           # wire/persistence model, always separate from the entity
-    mappers/          # model ↔ entity (a file only once it earns one)
-    <noun>_repository_impl.dart
-  presentation/       # <feature>_bloc.dart + state + event + <feature>_failure_l10n.dart (toTranslated)
-  ui/
-    screens/
-    widgets/
-  public/             # <feature>_facade.dart — only if consumed cross-feature
-  <feature>_locator.dart
+features/<feature>/lib/
+  <feature>.dart      # consumer entry library
+  setup.dart          # mount and route contribution
+  src/
+    domain/
+      entities/       # (+ value objects) — rich models
+      repositories/   # abstract interfaces (the contracts)
+      usecases/       # one per intent, thin orchestration
+      <feature>_failure.dart
+    data/
+      datasources/    # one external system each, private to the repo
+      models/         # wire/persistence model, separate from the entity
+      mappers/        # model ↔ entity (a file only once it earns one)
+      <noun>_repository_impl.dart
+    presentation/     # bloc/cubit, state, events and failure translation
+    ui/
+      screens/
+      widgets/
+    <feature>_feature.dart
 ```
 
 The canonical flow, end to end:
@@ -252,9 +246,11 @@ The canonical flow, end to end:
 ```mermaid
 graph LR
     UI[ui · screens/widgets] --> P[presentation · bloc/cubit]
-    OF[other features] --> F[public · facade]
+    S[app shell] --> M[setup · mount and routes]
+    OF[other features] --> API[consumer API · typed navigation and widgets]
+    M --> UI
+    API --> UI
     P --> UC[domain · usecase]
-    F --> UC
     W[watchers] --> UC
     UC --> R[domain · repository interface]
     UC --> E[domain · entities / value objects]
@@ -266,19 +262,17 @@ A feature whose data is **shared** does not hold `domain/` + `data/` itself — 
 
 ### Adding a feature: the checklist
 
-For a new user-facing flow in `lib/features/<feature>/`, working **outside-in is fine but design domain-first**:
+For a new user-facing flow in `features/<feature>/`, working **outside-in is fine but design domain-first**:
 
 1. **Domain.** Rich entity + value objects (`domain/entities/`), the `abstract interface class <Noun>Repository` (`domain/repositories/`), the sealed `<feature>_failure.dart` (`<Feature>Failure extends Failure`, Flutter-free — translation comes later as a presentation extension), and one `<Verb><Noun>Usecase` per intent (entry method `execute(...)`).
 2. **Data.** Datasource(s) (`data/datasources/`, one external system each), wire model + mapper (`data/models/`, `data/mappers/`), and `<noun>_repository_impl.dart`. The repository returns entities only — never a model (see "boundary rule").
 3. **Presentation.** `<Feature>Bloc`/`Cubit` + sealed state/event, plus the `<feature>_failure_l10n.dart` extension exposing `toTranslated(BuildContext)` (`presentation/`). The bloc stores the `<Feature>Failure` in state; it calls use-cases only — never a repository or datasource.
 4. **UI.** Place screens and widgets in `ui/`. Reuse the `bull_ui` public components, localize strings via `context.loc.<key>` and take colors from the theme (see AGENTS.md "UI Kit").
-5. **Wire it in** (the two composition-root files from "Entry points & code tour"): add `<feature>_locator.dart` and register `<Feature>Locator.setup(locator)` in **`lib/locator.dart`**; add `<feature>_router.dart` (`<Feature>Router` + `<Feature>Route`) and spread `...<Feature>Router.routes` into **`lib/router.dart`**.
-6. **Expose only if cross-feature.** Add `public/<feature>_facade.dart` returning published types only (see "The facade"), and update the graph in [FEATURES.md](FEATURES.md).
+5. **Wire it in.** Call `<Feature>Feature.mount(...)` from the shell and add the returned routes in `lib/router.dart`. The mount owns construction and registration of feature internals.
+6. **Publish the consumer contract.** Export typed navigation, any reusable widgets and the owned domain types those APIs use through `lib/<feature>.dart`. Update the graph in [FEATURES.md](FEATURES.md) when cross-feature dependencies change.
 7. **Generate & test.** `make build-runner` (freezed/drift/json codegen); unit-test every use-case and entity-with-rules (`make unit-test`); add l10n keys and run `make translations`.
 
-**Package (shared foundation — `packages/<name>`):** the `domain/` + `data/` half of the *same* shape, **with no `presentation/` and no `ui/`**. It exposes its repository interfaces, domain types, and shared use-cases through its public API (`lib/<name>.dart`); everything else stays under `lib/src/`. The single Flutter exception is a package that owns a sealed UI widget (see the "Sealed UI" note under Monorepo Migration).
-
-> The one hard line between the two shapes: **a package never exports a bloc or a full screen** (the sole exception is the sealed-UI widget — e.g. `MnemonicView` — described under Monorepo Migration). Everything else — datasource, repository, domain, shared use-case — can live in either.
+**Package (shared foundation — `packages/<name>`):** the `domain/` + `data/` half of the same shape. Its entry library (`lib/<name>.dart`) exports the capability, owned domain values and typed failures. Implementations stay under `lib/src/`. A package that owns a sealed UI component can publish it where the capability requires it (see "Sealed UI" under Monorepo Migration).
 
 ### Enforcing the rules (turn conventions into compile/lint errors)
 
@@ -287,7 +281,7 @@ For a new user-facing flow in `lib/features/<feature>/`, working **outside-in is
 | Repository is a contract | `abstract interface class <Noun>Repository` (Dart class modifiers) — the compiler forbids `extends`, forces `implements` |
 | Exhaustive failure/state handling | `sealed class <Feature>Failure` / sealed states — a missing `switch` case is a compile error |
 | A returned `Result` must be handled | `@useResult` (`package:meta`) on repo methods — the analyzer warns if the result is discarded |
-| Cross-feature facade-only | melos package boundaries + the `implementation_imports` lint (a package's `src/` is unreachable from outside); an analyzer-plugin or `custom_lint` rule for in-`lib/` features |
+| Published entry libraries | melos package boundaries + the `implementation_imports` lint (a package's `src/` is unreachable from outside); an analyzer-plugin or `custom_lint` rule for in-`lib/` features |
 | Bloc never imports `data/` | an analyzer-plugin or `custom_lint` rule banning `data/` imports from `presentation/` + `ui/` |
 | Lock a contract's capabilities | `@Deprecated.implement()` / `.instantiate()` / `.extend()` on a base class (Dart 3.10+) — analyzer warns on the forbidden capability |
 | Whole-project gate | `analysis_options.yaml` + `flutter analyze --fatal-infos` in CI and the pre-commit hook |
@@ -306,7 +300,7 @@ While the architecture described above represents our current standards, the cod
 
 - **Problem**: Features directly import usecases, domain models, repositories, or services from other features
 - **Impact**: Creates tight coupling, bypasses business rules, and leads to circular dependencies
-- **Solution**: Always define and use a public facade for cross-feature communication
+- **Solution**: Call the owning member through its published capability API
 
 **Business Logic in Presentation Layer**
 
@@ -350,7 +344,7 @@ While the architecture described above represents our current standards, the cod
 
 The codebase is migrating, incrementally, from a single Flutter package to a [melos](https://melos.invertase.dev/) pub-workspace. This is an organizational change layered on top of the architecture above — it does not alter the feature-based / layered rules, it gives them a stronger, compile-time boundary.
 
-**Current state.** The app remains at the repo root and is declared as a workspace package through `useRootAsPackage: true`. The root `pubspec.yaml` `workspace:` key lists 39 members (checked 2026-11-21): `features/ark` owns the Ark journeys, `packages/ark` owns the Ark protocol and native lifecycle, `packages/secrets` owns custody of secret material, `packages/bull_ui` owns the design system, `packages/bull_ui_catalogue` is its dev-only Widgetbook, `packages/primitives` owns shared pure-Dart value types and results, `packages/bull_payjoin` owns the pure-Dart Payjoin contract, engine, and persistence, the Flutter-dependent `packages/bull_tor` owns embedded Tor, `packages/mempool` owns explorer links, server configuration and validation, `packages/screen_privacy` owns screenshot/recording-capture blocking, `packages/bull_logger` owns logging and diagnostic infrastructure, `packages/bull_reporting` owns consent-gated reporting and its logger bridge, `packages/sync` owns native-store writes, Electrum sync and wallet-independent transaction review values (`package:sync/transactions.dart`), `packages/background_tasks` owns headless task scheduling and dispatch, `packages/notifications` owns notification delivery and its outbox, `packages/bull_pricer` owns the public Bitcoin index price and its history in its own SQLite database, `features/btc_map` owns the BTC Map feature (`btc_map`): merchant sync, disposable cache, domain, MapLibre view, screen, list, search, cubit and translations, `packages/screen_awake` owns screen wake-lock control, `packages/novlang` owns the store-constrained vocabulary (the platform/superuser policy and the override catalogues for the words a store forces; the root catalogue keeps the real words), `features/logs` owns the user-facing diagnostic log viewer, `features/quick_actions` owns the wallet quick action selection and presentation, `features/recoverbull` owns the RecoverBull backup and recovery UI, `features/signers` owns hardware discovery, public account reading, signing, address verification, URQR and PSBT handoff with its own translations and setup API; the root composes its typed screen inputs/results and supplies NFC presentation, `packages/rust_bindings` owns the app's Rust bindings (Boltz, LWK, BWK, BBQR, BitBox, verify_tx) behind one flutter_rust_bridge library, `packages/onion` owns the embedded Arti client and its Snowflake transport, `packages/boltz_stream` owns the Boltz swap status socket, `packages/bitbox_transport` owns the BitBox02 USB and Bluetooth transport, and `packages/satoshifier` owns payment-request and address parsing. Those five native and transport members came from the bull_sdk repository on 2026-11-17. The pure-Dart `packages/bbx_api` owns the Bull Bitcoin exchange API transport and wire models. Exchange HTTP calls and the notification socket go through this package. App-side adapters configure authentication and map wire types to domain types. The `features/network` member owns the Electrum, Mempool and Tor settings screens and service status, including translations. Its single foreground entry point, `NetworkFeature.mount`, contributes root routes and the Tor route nested under app settings. It calls the protocol owners directly and receives app settings, wallet-network and Bitcoin fee readers through host bindings. Status consumers own independent Result-returning sessions, and startup Tor diagnostics are exposed through `package:network/setup.dart`.
+**Current state.** The app remains at the repo root and is declared as a workspace package through `useRootAsPackage: true`. The root `pubspec.yaml` `workspace:` key lists 39 members (checked 2026-11-21): `features/ark` owns the Ark journeys, `packages/ark` owns the Ark protocol and native lifecycle, `packages/secrets` owns custody of secret material, `packages/bull_ui` owns the design system, `packages/bull_ui_catalogue` is its dev-only Widgetbook, `packages/primitives` owns shared pure-Dart value types and results, `packages/bull_payjoin` owns the pure-Dart Payjoin contract, engine, and persistence, the Flutter-dependent `packages/bull_tor` owns embedded Tor, `packages/mempool` owns explorer links, server configuration and validation, `packages/screen_privacy` owns screenshot/recording-capture blocking, `packages/bull_logger` owns logging and diagnostic infrastructure, `packages/bull_reporting` owns consent-gated reporting and its logger bridge, `packages/sync` owns native-store writes, Electrum sync and wallet-independent transaction review values (`package:sync/transactions.dart`), `packages/background_tasks` owns headless task scheduling and dispatch, `packages/notifications` owns notification delivery and its outbox, `packages/bull_pricer` owns the public Bitcoin index price and its history in its own SQLite database, `features/btc_map` owns the BTC Map feature (`btc_map`): merchant sync, disposable cache, domain, MapLibre view, screen, list, search, cubit and translations, `packages/screen_awake` owns screen wake-lock control, `packages/novlang` owns the store-constrained vocabulary (the platform/superuser policy and the override catalogues for the words a store forces; the root catalogue keeps the real words), `features/logs` owns the user-facing diagnostic log viewer, `features/quick_actions` owns the wallet quick action selection and presentation, `features/recoverbull` owns the RecoverBull backup and recovery UI, `features/signers` owns hardware discovery, public account reading, signing, address verification, URQR and PSBT handoff with its own translations and `SignersFeature.mount`. The root supplies the NFC writer and assembles the contributed routes, `packages/rust_bindings` owns the app's Rust bindings (Boltz, LWK, BWK, BBQR, BitBox, verify_tx) behind one flutter_rust_bridge library, `packages/onion` owns the embedded Arti client and its Snowflake transport, `packages/boltz_stream` owns the Boltz swap status socket, `packages/bitbox_transport` owns the BitBox02 USB and Bluetooth transport, and `packages/satoshifier` owns payment-request and address parsing. Those five native and transport members came from the bull_sdk repository on 2026-11-17. The pure-Dart `packages/bbx_api` owns the Bull Bitcoin exchange API transport and wire models. Exchange HTTP calls and the notification socket go through this package. App-side adapters configure authentication and map wire types to domain types. The `features/network` member owns the Electrum, Mempool and Tor settings screens and service status, including translations. Its single foreground entry point, `NetworkFeature.mount`, contributes root routes and the Tor route nested under app settings. It calls the protocol owners directly and receives app settings, wallet-network and Bitcoin fee readers through host bindings. Status consumers own independent Result-returning sessions, and startup Tor diagnostics are exposed through `package:network/setup.dart`.
 
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. `const FileSystem.open()` exposes these operations as typed results. Picker cancellation yields `Ok(null)` for selection and `Ok(false)` for saving. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 
@@ -360,27 +354,34 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 **Target layout.** As modules are extracted (one at a time, never a big-bang), they become pub-workspace members:
 
-- **root = the app shell** — composition only: entry points, ordered bootstrap and lifecycle, app-level navigation, capability selection and calls to each module's published setup API. It ships no domain, data or UI of its own.
-- **`features/`** — Flutter packages, one per user-facing flow (`send`, `receive`, `buy`, `sell`, `recoverbull`, …). Each owns its domain behind its `public/` facade and is mounted into the shell (routes + DI). A feature may carry an `example/` mini-app to run it in isolation during development; the shipped artifact is the shell embedding the feature, not a standalone app.
+- **root = the app shell** — composition only: entry points, ordered bootstrap and lifecycle, app-level navigation, capability selection and calls to each module's published entry point. It ships no domain, data or UI of its own.
+- **`features/`** — Flutter packages, one per user-facing flow (`send`, `receive`, `buy`, `sell`, `recoverbull`, …). Each owns its domain and mounts into the shell with its route contribution. A feature may carry an `example/` mini-app to run it in isolation during development; the shipped artifact is the shell embedding the feature, not a standalone app.
 - **`packages/`** — app-internal foundation and infrastructure consumed by features. Packages stay pure Dart by default (`storage`, `electrum`, `blockchain`, …), but may depend on Flutter when encapsulating an inherently Flutter/platform capability (`bull_tor`), when owning a sealed UI component (see "Sealed UI" below), or when implementing the shared **design-system package** (`bull_ui`, see "Design-system package" below). A Flutter dependency must serve the package's encapsulated capability; it is not permission to add feature presentation or screens.
 
-**End state: the shell, `features/` and `packages/`, nothing else.** No member is named `wallet`: the wallet is the composition of the members, each owning one concept. `lib/core` moves into `packages/` and `lib/features` into `features/`; the migration ends when both are empty and deleted, leaving `lib/` with the shell only (routing, DI wiring, composition).
+**End state: the shell, `features/` and `packages/`.** The wallet is the composition of members, each owning one concept, so no member is named `wallet`. Omit `bull_` from new member names. The exchange feature is `bull_exchange`, alongside the `exchange` domain package. `lib/core` moves into `packages/` and `lib/features` into `features/`; the migration ends when both are empty and deleted, leaving `lib/` with the shell only (routing, DI wiring, composition).
 
 **Why: a real dependency graph.** While code lives in `lib/core` and `lib/features`, it is all one package: any file can import any other and the dependency graph exists only on paper. As workspace members, every dependency is declared in a `pubspec.yaml`, so an undeclared import does not resolve, pub rejects cycles, `implementation_imports` closes every `src/`, and the graph is generated rather than hand-drawn: `fvm dart run melos list --mermaid` prints it, `make workspace-graph` writes it to [WORKSPACE.md](WORKSPACE.md) (checked by `make checks`), and `fvm dart run melos list --cycles` checks it. Each migration commit regenerates that file, so the graph change is visible next to the moved files.
 
-**`lib/core` disappears.** It is the legacy home of what becomes `packages/`. No change adds code to `lib/core`, neither logic nor wiring: a change that needs to touch a `lib/core` domain extracts the part it touches into its package (or feature), so its `lib/core` diff is net negative. Wiring lives in the package's own setup API, called from the shell (`lib/locator.dart`, `lib/bootstrap.dart`), never in `lib/core/core_locator.dart`.
+**`lib/core` disappears.** It is the legacy home of what becomes `packages/`. No change adds code to `lib/core`, neither logic nor wiring: a change that needs to touch a `lib/core` domain extracts the part it touches into its package (or feature), so its `lib/core` diff is net negative. The shell calls the package's entry point from composition (`lib/locator.dart`, `lib/bootstrap.dart`), and the package wires its own internals.
 
 **Dated migration exception (2026-11): wallet readers.** The wallet readers (catalog, addresses, UTXOs, balances, history, PSBT/PSET construction) stay in `lib/core/wallet` until the wallet is split by capability, rather than being moved twice. While native-store writes are cut over to their single writer, the `packages/sync` package that the wallet sync PRs introduce, the only changes allowed there are deletions and delegation to that package: no new logic, no new wiring. The exception ends with the capability split.
 
 **Dated security exception (2026-11): frozen-input broadcast guard.** The guard introduced on develop now lives in the send feature and protects imported and airgap Bitcoin broadcasts as well as wallet sends. The rule #7 exception for adding it to lib/core has ended. Its legacy exception-based contract (rule #11) remains until the shared broadcast API returns the feature's failure family; typed broadcast categories do not by themselves complete that migration. Payjoin broadcasts through its own adapter and is not covered.
 
-**The shell composes, modules construct.** Each package or feature publishes a small setup API and owns the construction of its internals: DI registrations, persistence mapping, native resources, error policy, disposal and the unwinding of a partial start. The shell never registers a module's private datasources or rebuilds its repository graph; it passes configuration, callbacks and lifecycle facts. Storage queries, mapping, grouping, wallet/signing/sync policy, recoverable error translation, presentation and strings belong to their owning module, never to a root file. A port does not imply a shell adapter: the implementation lives in the module that may depend on both sides (`bull_payjoin`'s `PayjoinTransactionPort` belongs in the transactions feature, which already consumes `bull_payjoin`; a package never imports the app). A root adapter is exceptional: it names the concrete cycle it breaks and its removal condition, and only forwards public capabilities. Payjoin setup and host bridges now belong to transactions and labels; recoverable lifecycle and storage identity belong to `bull_payjoin`; consent-gated reporting and its logger bridge belong to `bull_reporting`. Wizard startup, Tor diagnostic mapping, the app BLoC observer, foreground sync outcome translation and headless wallet assembly are published by their respective feature owners.
+**The shell composes, modules construct.** Each stateful package opens and each feature mounts through one entry point. The member owns the construction of its internals: DI registrations, persistence mapping, native resources, error policy, disposal and the unwinding of a partial start. The shell never registers a module's private datasources or rebuilds its repository graph; it passes configuration, callbacks and lifecycle facts. Storage queries, mapping, grouping, wallet/signing/sync policy, recoverable error translation, presentation and strings belong to their owning module, never to a root file. A port does not imply a shell adapter: the implementation lives in the module that may depend on both sides (`bull_payjoin`'s `PayjoinTransactionPort` belongs in the transactions feature, which already consumes `bull_payjoin`; a package never imports the app). A root adapter is exceptional: it names the concrete cycle it breaks and its removal condition, and only forwards public capabilities. Payjoin setup and host bridges now belong to transactions and labels; recoverable lifecycle and storage identity belong to `bull_payjoin`; consent-gated reporting and its logger bridge belong to `bull_reporting`. Wizard startup, Tor diagnostic mapping, the app BLoC observer, foreground sync outcome translation and headless wallet assembly are published by their respective feature owners.
 
 **Remaining shell import debt.** Legacy feature imports of root `locator.dart` and `router.dart` remain enumerated by `test/architecture/shell_imports_test.dart`; no new exceptions are allowed. The background callback is `backgroundTasksHandler` in `lib/background_entrypoint.dart`; it does not construct a module graph. The relocated wallet address viewer receives its share capability from its caller.
 
-**Foreground and headless are two explicit compositions.** A headless composition (a background task) registers only what that task needs, selected before the graph is built, rather than building the full app graph and switching side effects off. The shell selects the task in `lib/background_bootstrap.dart`; wallet and Electrum settings construct the headless graph through their public setup APIs. WorkManager calls `backgroundTasksHandler` in `lib/background_entrypoint.dart`, which delegates to that bootstrap. The rollout remains disabled by `backgroundSyncAvailable` pending device validation.
+**Foreground and headless are two explicit compositions.** A headless composition (a background task) registers only what that task needs, selected before the graph is built, rather than building the full app graph and switching side effects off. The shell selects the task in `lib/background_bootstrap.dart`; the existing wallet and Electrum settings wiring constructs the headless graph. WorkManager calls `backgroundTasksHandler` in `lib/background_entrypoint.dart`, which delegates to that bootstrap. The rollout remains disabled by `backgroundSyncAvailable` pending device validation.
 
 Each extracted package gets `resolution: workspace` and is listed under a `workspace:` key in the root `pubspec.yaml`; the root app keeps `useRootAsPackage: true` and consumes the members. Dependencies point one way and stay acyclic: **shell → features → packages**. `packages/` never import `features/`; a feature touches a package only through its published API.
+
+### Member API checklist
+
+- **Entry point.** One `X.open(...)` for a stateful package or one `XFeature.mount(...)` with routes for a feature. Keep registration phases internal and omit the `Facade` suffix from capability names.
+- **Results.** Use `Future<Result<T, XFailure>>` for fallible commands and queries, and `Stream<Result<T, XFailure>>` or a state that models failure for fallible observation. Publish one sealed failure family per member and map foreign failures at the boundary.
+- **Consumer library.** `lib/<member>.dart` exports the capability, its owned domain types and failure cases, plus typed navigation and intentionally reusable widgets where applicable. Keep cubits, blocs, use cases, DTOs, request/response wrappers, ports and repositories out of this surface.
+- **Audience-specific libraries.** Use `setup.dart` for composition contracts, `storage.dart` for storage integration and `testing.dart` for test seams. Export only the contracts each audience needs.
 
 **Tor package (`packages/bull_tor`).** Tor is a Bull Mobile-specific Flutter infrastructure package. The Bull-prefixed package name lets it coexist with the Foundation `tor` dependency while consumers migrate in independently testable slices, and keeps its ownership explicit after that dependency is removed. The feature-facing `tor.dart` library publishes validated routes, sealed connection states, typed failures, and the operations consumers need. The narrower shell-facing `tor_adapter.dart` publishes composition, lifecycle, logging, and test seams. Internally the package owns Onion/Arti initialization, state/cache paths, mobile dormancy, the embedded SOCKS listener adapter, and provider-agnostic verification of a user-managed local SOCKS5 proxy.
 
@@ -388,9 +389,9 @@ Each extracted package gets `resolution: workspace` and is listed under a `works
 
 - The **Dependency Rule** and **acyclic feature graph** become compile errors when violated — a `packages/` infrastructure package physically cannot import a `features/` module, and a feature cannot reach into another feature's internals (only its published API is importable).
 - **Core-as-infrastructure-only** (AGENTS.md rule #7) is enforced by construction: `packages/` members declare no dependency on `features/`.
-- The **facade-only cross-feature** rule (AGENTS.md rule #1) is backed by Dart's package privacy — only what a feature package exports is reachable.
+- The **capability API** rule (AGENTS.md rule #1) keeps cross-member imports on published entry libraries. The analyzer rejects imports from another member’s `src/`.
 
-**Encapsulation is enforced, not conventional.** Each package exposes a curated public API in `lib/<name>.dart` (`export 'src/…' show …`); everything under `lib/src/` is package-internal. Importing another package's `src/` trips the `implementation_imports` lint, which CI (`flutter analyze --fatal-infos`) and the pre-commit hook turn into a failure — and CI forbids bypassing it with `// ignore`. The most sensitive internals stay library-private (`_`) so they are not in any importable library at all.
+**Encapsulation is enforced, not conventional.** Each member exposes its consumer API in `lib/<member>.dart` (`export 'src/…' show …`). Consumers use the exported names through that entry library. Importing another package's `src/` trips the `implementation_imports` lint, which CI (`flutter analyze --fatal-infos`) and the pre-commit hook turn into a failure — and CI forbids bypassing it with `// ignore`. The most sensitive internals stay library-private (`_`) so they are not in any importable library at all.
 
 **Shared display helpers.** The app and `swaps` use `StringFormatting` and `calculatePercentage` from `primitives`.
 
@@ -400,7 +401,7 @@ Each extracted package gets `resolution: workspace` and is listed under a `works
 
 **Invoice amounts.** The app and `satoshifier` use the round-up millisatoshi conversion from `primitives`. Satoshifier owns invoice amount validation.
 
-**Labels package (`packages/labels`) and Label Editor feature (`features/label_editor`).** Labels owns BIP-329, label persistence and the persisted user freeze port. Its accessor queries use owner-generated rows and attach to any Drift database composing the tables. Sync exposes raw wallet state and remains the single writer of freezes through its port. Consumers enrich wallet values with labels as needed. Label Editor handles private labels, counterparty-visible notes and BIP-329 document selection and saving. The feature owns its translations and uses the labels and file-system capabilities directly from its use cases. Consumers construct `Labels` with `Labels.open` and use the same typed `fetch` for full and reference-scoped reads. `package:labels/setup.dart` wires the reserved-address and Payjoin ports. `LabelEditorFeature.mount` supplies the route from `package:label_editor/setup.dart`, while callers use `LabelEditor` for typed navigation and localized inline note validation.
+**Labels package (`packages/labels`) and Label Editor feature (`features/label_editor`).** Labels owns BIP-329, label persistence and the persisted user freeze port. During the legacy database migration its accessors use owner-generated rows from the shared Drift database. The storage target is one encrypted database owned by Labels (see [database ownership](AGENTS.md#database-ownership-and-schema-migration-support)). Sync exposes raw wallet state and remains the single writer of freezes through its port. Consumers enrich wallet values with labels as needed. Label Editor handles private labels, counterparty-visible notes and BIP-329 document selection and saving. The feature owns its translations and uses the labels and file-system capabilities directly from its use cases. Consumers construct `Labels` with `Labels.open` and use the same typed `fetch` for full and reference-scoped reads. `package:labels/setup.dart` wires the reserved-address and Payjoin ports. `LabelEditorFeature.mount` supplies the route from `package:label_editor/setup.dart`, while callers use `LabelEditor` for typed navigation and localized inline note validation.
 
 **Preferences package (`packages/preferences`).** Preferences owns the active environment and the `Settings`, `Recoverbull` and `DismissedAnnouncements` Drift tables. The generic accessor and generated rows live with their declarations, and the app composes them into the existing schema 16 database. Feature use cases consume narrow capabilities for display, environment, RecoverBull configuration, announcement dismissals and exchange testnet credentials. `Preferences.open(database:)` constructs the capability without I/O and borrows the database. Fallible reads and writes return `Result` with one `PreferencesFailure` family; observations use `Stream<Result<…>>`. Missing or unreadable display preferences keep amounts hidden while the subscription waits for a valid row. The ordinary library exports no use cases or repositories.
 
@@ -428,7 +429,7 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 `signers` receives the captured `NetworkEnv` from Send/Receive wallets or the import request. Unsupported networks are refused before discovery and again in device use cases. Hardware import returns a `SignerAccount`; import owns descriptor construction and confirmation. PSBT handoff returns a confirmation, and Send retains the original wallet and unsigned PSBT while the shell opens signed-transaction acquisition. The member never imports root app code. `SignersFeature.mount` registers the foreground services and contributes its routes. The shell provides the NFC writer and callers use typed navigation with `SignerDevice`. URQR and BBQR encoding live in the member; the legacy BBQR transaction decoder in the app consumes `BitcoinTx` from `sync`.
 
-## Owner-scoped keychain capabilities
+## Legacy owner-scoped keychain capabilities
 
 `packages/secrets` owns the legacy OS keychain through closed access, exchange, Silent Payments and swap capabilities. Access compares the PIN internally; no stored PIN leaves the package. Consumers select a capability rather than a key or arbitrary prefix. The generic `lib/core/storage` secure key-value datasource and its custody exception are removed. Existing keys and Android/iOS plugin options are preserved, with no data migration. Silent Payments configuration remains in its existing keychain entries even though it is not secret.
 
