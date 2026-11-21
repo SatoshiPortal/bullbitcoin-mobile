@@ -29,16 +29,17 @@ const _onion = ElectrumEndpoint(
 typedef _Refresh = Result<ElectrumServerChecks, ElectrumFailure>;
 
 ElectrumServerChecks _checks(
-  ElectrumEndpoint endpoint, [
+  ElectrumEndpoint endpoint, {
   ElectrumServerStatus status = ElectrumServerStatus.unknown,
-]) => ElectrumServerChecks(
+  bool validateDomain = true,
+}) => ElectrumServerChecks(
   servers: [endpoint],
   serverStatuses: {endpoint.url: status},
   settings: ElectrumOptions(
     stopGap: 20,
     timeout: 10,
     retry: 3,
-    validateDomain: true,
+    validateDomain: validateDomain,
     network: endpoint.network,
   ),
 );
@@ -98,6 +99,48 @@ void main() {
   });
 
   test(
+    'displays the stored endpoint URL after adding a Liquid server',
+    () async {
+      const address = 'custom-liquid.example:50002';
+      const stored = ElectrumEndpoint(
+        url: address,
+        network: _liquid,
+        isCustom: true,
+        priority: 0,
+      );
+      const defaultServer = ElectrumEndpoint(
+        url: 'default-liquid.example:50002',
+        network: _liquid,
+        isCustom: false,
+        priority: 0,
+      );
+      when(() => servers.watchChecks(network: _liquid)).thenAnswer(
+        (_) => Stream.value(Ok(_checks(defaultServer, validateDomain: false))),
+      );
+      when(
+        () => servers.store(
+          address,
+          network: _liquid,
+          priority: 0,
+          enableSsl: true,
+        ),
+      ).thenAnswer((_) async => const Ok(stored));
+
+      final loaded = bloc.stream.firstWhere(
+        (state) => !state.isLoadingData && state.defaultServers.isNotEmpty,
+      );
+      bloc.add(const ElectrumSettingsLoaded(isLiquid: true));
+      await loaded;
+
+      final added = bloc.stream.firstWhere(
+        (state) => state.customServers.isNotEmpty,
+      );
+      bloc.add(const ElectrumCustomServerAdded(url: address));
+      expect((await added).customServers.last.url, stored.url);
+    },
+  );
+
+  test(
     'publishes servers before probes finish and then their final status',
     () async {
       final refresh = StreamController<_Refresh>();
@@ -116,7 +159,7 @@ void main() {
       expect(probing.customServers.single.status, ElectrumServerStatus.unknown);
 
       final done = bloc.stream.firstWhere((state) => !state.isLoadingData);
-      refresh.add(Ok(_checks(_onion, ElectrumServerStatus.online)));
+      refresh.add(Ok(_checks(_onion, status: ElectrumServerStatus.online)));
       await refresh.close();
       final loaded = await done;
       expect(loaded.customServers.single.status, ElectrumServerStatus.online);
@@ -162,7 +205,7 @@ void main() {
     );
     await deleted;
 
-    refresh.add(Ok(_checks(_onion, ElectrumServerStatus.online)));
+    refresh.add(Ok(_checks(_onion, status: ElectrumServerStatus.online)));
     await refresh.close();
     expect(bloc.state.customServers, isEmpty);
   });

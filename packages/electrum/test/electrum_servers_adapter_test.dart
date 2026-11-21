@@ -1,4 +1,9 @@
-import 'package:electrum/testing.dart';
+import 'package:electrum/src/data/electrum_servers_adapter.dart';
+import 'package:electrum/src/domain/electrum_server.dart';
+import 'package:electrum/src/domain/entities/electrum_settings.dart';
+import 'package:electrum/src/domain/ports/electrum_tor_session_port.dart';
+import 'package:electrum/src/domain/repositories/electrum_server_repository.dart';
+import 'package:electrum/src/domain/repositories/electrum_settings_repository.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:primitives/primitives.dart';

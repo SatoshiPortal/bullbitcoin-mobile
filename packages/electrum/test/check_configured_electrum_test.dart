@@ -1,6 +1,8 @@
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:electrum/testing.dart';
+import 'package:electrum/src/domain/electrum_fallback_runner.dart';
+import 'package:electrum/src/domain/ports/server_status_port.dart';
+import 'package:electrum/src/domain/usecases/check_configured_electrum_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_tor/tor.dart';

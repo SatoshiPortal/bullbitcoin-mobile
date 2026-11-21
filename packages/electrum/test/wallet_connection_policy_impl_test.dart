@@ -1,4 +1,5 @@
-import 'package:electrum/testing.dart';
+import 'package:electrum/src/data/wallet_connection_policy_impl.dart';
+import 'package:electrum/src/domain/electrum_network_unauthorized_exception.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
