@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_parser.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';

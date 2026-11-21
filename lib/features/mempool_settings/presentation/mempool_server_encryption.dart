@@ -1,5 +1,5 @@
 import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
+import 'package:mempool/mempool.dart';
 
 extension MempoolServerEncryption on MempoolServerDto {
   /// Whether the connection is encrypted end to end: HTTPS, or an onion

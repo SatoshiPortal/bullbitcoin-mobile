@@ -9,12 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2621 custom server replacement', () {
     test('storage path atomically replaces the old URL row', () {
-      final table = File('lib/core/storage/tables/mempool_servers_table.dart')
-          .readAsStringSync();
-      final datasource = File(
-        'lib/core/mempool/frameworks/drift/datasources/'
-        'mempool_server_storage_datasource.dart',
+      final table = File(
+        'packages/mempool/lib/src/data/tables/mempool_servers_table.dart',
       ).readAsStringSync();
+      final datasource = File('packages/mempool/lib/src/data/mempool_dao.dart')
+          .readAsStringSync();
 
       expect(table, contains('primaryKey => {url, isTestnet, isLiquid}'));
       expect(datasource, contains('transaction'));

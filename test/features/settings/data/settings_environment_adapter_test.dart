@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';

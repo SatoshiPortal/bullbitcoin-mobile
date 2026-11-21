@@ -46,6 +46,8 @@ graph TD
   style file_system stroke:#2571b0
   google_drive["google_drive"]
   style google_drive stroke:#a640f1
+  mempool["mempool"]
+  style mempool stroke:#26e46e
   notifications["notifications"]
   style notifications stroke:#8f25de
   novlang["novlang"]
@@ -114,6 +116,9 @@ graph TD
   file_system --> primitives
   google_drive --> bull_logger
   google_drive --> primitives
+  mempool --> bull_logger
+  mempool --> bull_tor
+  mempool --> primitives
   notifications --> bull_logger
   notifications --> primitives
   rust_bindings --> onion
@@ -154,6 +159,7 @@ graph TD
     electrum
     file_system
     google_drive
+    mempool
     notifications
     novlang
     onion

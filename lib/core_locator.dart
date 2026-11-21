@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart'
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/mempool_settings/mempool_core_locator.dart';
+import 'package:bull_tor/tor.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings;
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
@@ -35,7 +36,6 @@ class CoreLocator {
     setupElectrum(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
-    await MempoolLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);
@@ -43,7 +43,6 @@ class CoreLocator {
   }
 
   static void registerPorts(GetIt locator) {
-    MempoolLocator.registerPorts(locator);
     SettingsLocator.registerPorts(locator);
     LabelsLocator.registerPorts(locator);
   }
@@ -82,7 +81,6 @@ class CoreLocator {
     BlockchainLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
-    MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
     await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
@@ -92,7 +90,14 @@ class CoreLocator {
 
   static void registerServices(GetIt locator) {
     ExchangeLocator.registerServices(locator);
-    MempoolLocator.registerServices(locator);
+    locator.registerLazySingleton<Mempool>(
+      () => Mempool(
+        database: locator<SqliteDatabase>(),
+        environment: locator<MempoolEnvironmentPort>(),
+        tor: () => locator<Tor>(),
+        torHttpClientFactory: locator<TorHttpClientFactory>(),
+      ),
+    );
   }
 
   static void registerUsecases(GetIt locator) {
@@ -101,7 +106,6 @@ class CoreLocator {
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
-    MempoolLocator.registerUsecases(locator);
     SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);

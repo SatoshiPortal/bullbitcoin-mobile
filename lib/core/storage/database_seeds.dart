@@ -2,11 +2,10 @@ import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:electrum/storage.dart';
-import 'package:bb_mobile/core/storage/tables/mempool_servers_table.drift.dart';
-import 'package:bb_mobile/core/storage/tables/mempool_settings_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/recoverbull_table.drift.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:mempool/storage.dart';
 
 class DatabaseSeeds {
   static Future<void> seedDefaultElectrumServers(SqliteDatabase db) async {
@@ -112,42 +111,15 @@ class DatabaseSeeds {
         );
   }
 
-  static Future<void> seedDefaultMempoolServers(SqliteDatabase db) async {
-    final serversData = [
-      (ApiServiceConstants.bbMempoolUrlPath, false, false),
-      (ApiServiceConstants.testnetMempoolUrlPath, true, false),
-      (ApiServiceConstants.bbLiquidMempoolUrlPath, false, true),
-      (ApiServiceConstants.bbLiquidMempoolTestnetUrlPath, true, true),
-    ];
-
-    for (final (url, isTestnet, isLiquid) in serversData) {
-      final server = MempoolServerRow(
-        url: url,
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
-        isCustom: false,
-        enableSsl: true,
+  static Future<void> seedDefaultMempoolServers(SqliteDatabase db) =>
+      MempoolSeeds.seedDefaultServers(
+        db,
+        bitcoinMainnet: ApiServiceConstants.bbMempoolUrlPath,
+        bitcoinTestnet: ApiServiceConstants.testnetMempoolUrlPath,
+        liquidMainnet: ApiServiceConstants.bbLiquidMempoolUrlPath,
+        liquidTestnet: ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
       );
 
-      await db.into(db.mempoolServers).insertOnConflictUpdate(server);
-    }
-  }
-
-  static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) async {
-    final networks = [
-      'bitcoinMainnet',
-      'bitcoinTestnet',
-      'liquidMainnet',
-      'liquidTestnet',
-    ];
-
-    for (final network in networks) {
-      final settings = MempoolSettingsRow(
-        network: network,
-        useForFeeEstimation: true,
-      );
-
-      await db.into(db.mempoolSettings).insertOnConflictUpdate(settings);
-    }
-  }
+  static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) =>
+      MempoolSeeds.seedDefaultSettings(db);
 }

@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/features/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
-import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:mempool/mempool.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -49,7 +47,7 @@ class _MockElectrum extends Mock implements ElectrumServersPort {}
 
 class _MockDatasource extends Mock implements FeesDatasource {}
 
-class _MockServerRepository extends Mock implements MempoolServerRepository {}
+class _MockServerRepository extends Mock implements Mempool {}
 
 const _fees = MempoolFeesModel(
   fastestFee: 5,
@@ -77,7 +75,7 @@ void main() {
     repository = FeesRepositoryImpl(
       feesDatasource: datasource,
       electrumServers: _MockElectrum(),
-      mempoolServerRepository: serverRepository,
+      mempool: serverRepository,
     );
     network = MempoolServerNetwork.fromEnvironment(
       isTestnet: false,
@@ -92,7 +90,7 @@ void main() {
     final electrum = _RegtestPort();
     final regtestRepository = FeesRepositoryImpl(
       feesDatasource: datasource,
-      mempoolServerRepository: serverRepository,
+      mempool: serverRepository,
       electrumServers: electrum,
       regtestFeesDatasource: _UnavailableRegtest(),
     );
@@ -111,7 +109,7 @@ void main() {
       network: network,
       isCustom: true,
     );
-    when(() => serverRepository.fetchCustomServer(network))
+    when(() => serverRepository.customServer(network))
         .thenAnswer((_) async => Ok(custom));
 
     await repository.getNetworkFees(network: Network.bitcoinMainnet);
@@ -120,7 +118,7 @@ void main() {
       () =>
           datasource.fetchBitcoinNetworkFees(baseUrl: 'https://custom.example'),
     ).called(1);
-    verifyNever(() => serverRepository.fetchDefaultServer(any()));
+    verifyNever(() => serverRepository.defaultServer(any()));
   });
 
   test('uses the default server when no custom server exists', () async {
@@ -129,9 +127,9 @@ void main() {
       network: network,
       isCustom: false,
     );
-    when(() => serverRepository.fetchCustomServer(network))
+    when(() => serverRepository.customServer(network))
         .thenAnswer((_) async => const Ok(null));
-    when(() => serverRepository.fetchDefaultServer(network))
+    when(() => serverRepository.defaultServer(network))
         .thenAnswer((_) async => Ok(defaultServer));
 
     await repository.getNetworkFees(network: Network.bitcoinMainnet);

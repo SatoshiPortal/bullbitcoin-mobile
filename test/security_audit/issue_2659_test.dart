@@ -10,8 +10,7 @@ void main() {
   group('Security audit #2659 onion validation transport', () {
     test('validator configures the Tor transport for onion servers', () {
       final source = File(
-        'lib/core/mempool/interface_adapters/validators/'
-        'http_mempool_server_validator.dart',
+        'packages/mempool/lib/src/data/http_mempool_server_validator.dart',
       ).readAsStringSync();
 
       expect(source, contains('httpClientAdapter'));

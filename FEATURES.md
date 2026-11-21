@@ -384,6 +384,17 @@ graph TB
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     MEMPOOL_SETTINGS[Mempool Settings]
+    MEMPOOL[Mempool Package<br/>Servers, validation and explorer links]
+    MEMPOOL --> PRIMITIVES
+    MEMPOOL --> TOR
+    MEMPOOL --> BULL_LOGGER
+    CORE -->|composes schema 16 tables| MEMPOOL
+    MEMPOOL_SETTINGS --> MEMPOOL
+    SETTINGS -->|environment port| MEMPOOL
+    FEES --> MEMPOOL
+    SP --> MEMPOOL
+    TX_HISTORY --> MEMPOOL
+    WALLETS --> MEMPOOL
     WIZARD[Wizard]
     APP_STARTUP --> SETTINGS
     AUTOBUY --> EXCHANGE

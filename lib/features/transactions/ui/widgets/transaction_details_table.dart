@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart' show ConvertAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:mempool/mempool.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';

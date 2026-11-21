@@ -4,9 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
@@ -16,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MempoolServers extends Mock implements MempoolServerRepository {}
+class _MempoolServers extends Mock implements Mempool {}
 
 class _ElectrumServers extends Mock implements ElectrumServersPort {}
 
@@ -92,11 +90,11 @@ void main() {
 
     when(() => globalSettings.fetch())
         .thenAnswer((_) async => _torSettings(socks.port));
-    when(() => mempoolServers.fetchCustomServer(network))
+    when(() => mempoolServers.customServer(network))
         .thenAnswer((_) async => Ok(server));
 
     locator.registerSingleton<SettingsRepository>(globalSettings);
-    locator.registerSingleton<MempoolServerRepository>(mempoolServers);
+    locator.registerSingleton<Mempool>(mempoolServers);
     locator.registerSingleton<ElectrumServersPort>(electrumServers);
     FeesLocator.registerDatasources(locator);
     FeesLocator.registerRepositories(locator);

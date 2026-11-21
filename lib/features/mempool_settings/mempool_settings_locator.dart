@@ -1,9 +1,10 @@
-import 'package:bb_mobile/core/mempool/application/usecases/delete_custom_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/load_mempool_server_data_usecase.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/set_custom_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/delete_custom_mempool_server_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/load_mempool_server_data_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/set_custom_mempool_server_usecase.dart';
+import 'package:bb_mobile/features/mempool_settings/domain/usecases/check_mempool_server_status_usecase.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mempool/mempool.dart';
 
 class MempoolSettingsLocator {
   static void setup(GetIt locator) {
@@ -11,13 +12,14 @@ class MempoolSettingsLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactory<MempoolSettingsCubit>(
-      () => MempoolSettingsCubit(
-        loadDataUsecase: locator<LoadMempoolServerDataUsecase>(),
-        setCustomServerUsecase: locator<SetCustomMempoolServerUsecase>(),
-        deleteCustomServerUsecase: locator<DeleteCustomMempoolServerUsecase>(),
-        validator: locator<MempoolServerValidatorPort>(),
-      ),
-    );
+    locator.registerFactory<MempoolSettingsCubit>(() {
+      final mempool = locator<Mempool>();
+      return MempoolSettingsCubit(
+        loadDataUsecase: LoadMempoolServerDataUsecase(mempool),
+        setCustomServerUsecase: SetCustomMempoolServerUsecase(mempool),
+        deleteCustomServerUsecase: DeleteCustomMempoolServerUsecase(mempool),
+        checkStatusUsecase: CheckMempoolServerStatusUsecase(mempool),
+      );
+    });
   }
 }
