@@ -37,7 +37,6 @@ const _legacyImports = {
   'lib/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart -> locator.dart',
   'lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> locator.dart',
   'lib/features/autoswap/ui/widgets/autoswap_settings.dart -> locator.dart',
-  'lib/features/bitbox/presentation/cubit/bitbox_operation_cubit.dart -> locator.dart',
   'lib/features/bitbox/ui/screens/bitbox_action_screen.dart -> locator.dart',
   'lib/features/test_wallet_backup/ui/test_wallet_backup_router.dart -> locator.dart',
   'lib/features/onboarding/ui/onboarding_router.dart -> locator.dart',

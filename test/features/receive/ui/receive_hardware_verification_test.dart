@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -102,12 +102,14 @@ void main() {
         if (ledger) {
           expect(parameters, isA<LedgerRouteParams>());
           final value = parameters as LedgerRouteParams;
+          expect(value.network, NetworkEnv.mainnet);
           expect(value.address, 'bc1qpublic');
           expect(value.derivationPath, '${wallet.derivationPath}/0/7');
           expect(value.requestedDeviceType, device);
         } else {
           expect(parameters, isA<BitBoxRouteParams>());
           final value = parameters as BitBoxRouteParams;
+          expect(value.network, NetworkEnv.mainnet);
           expect(value.address, 'bc1qpublic');
           expect(value.derivationPath, '${wallet.derivationPath}/0/7');
           expect(value.requestedDeviceType, device);
