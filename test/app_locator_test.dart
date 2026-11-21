@@ -12,7 +12,7 @@ import 'features/wallet/data/ark_funding_test_fixture.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+import 'package:electrum/electrum.dart'
     show ElectrumFailure, ElectrumSaveFailure, RegtestElectrumProfile;
 
 import 'dart:io';

@@ -40,6 +40,8 @@ graph TD
   style bull_ui stroke:#ca6ae4
   bull_ui_catalogue["bull_ui_catalogue"]
   style bull_ui_catalogue stroke:#7d8de8
+  electrum["electrum"]
+  style electrum stroke:#87e1d5
   file_system["file_system"]
   style file_system stroke:#2571b0
   google_drive["google_drive"]
@@ -105,6 +107,10 @@ graph TD
   bull_ui --> primitives
   bull_ui_catalogue --> primitives
   bull_ui_catalogue --> bull_ui
+  electrum --> bull_logger
+  electrum --> bull_tor
+  electrum --> primitives
+  electrum --> sync
   file_system --> primitives
   google_drive --> bull_logger
   google_drive --> primitives
@@ -145,6 +151,7 @@ graph TD
     bull_tor
     bull_ui
     bull_ui_catalogue
+    electrum
     file_system
     google_drive
     notifications

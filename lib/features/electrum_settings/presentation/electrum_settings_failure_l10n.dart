@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
+import 'package:electrum/electrum.dart';
 import 'package:flutter/widgets.dart';
 
 /// User-facing, localized message for each Electrum settings failure. The

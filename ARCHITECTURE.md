@@ -435,3 +435,9 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 Ordinary `.drift.dart` files are ignored build outputs. Historical schema JSON, migration steps and already tracked migration-test helpers remain versioned. Only the monolithic Drift builder is disabled; the shared-part combining builder remains available to other generators. Migration options belong to the enabled modular builder.
 
 When extracting a table owner, add its package path to `DRIFT_OWNER_PACKAGES` in the makefile in dependency order. Both `make build-runner` and `make build-runner-watch` finish those owner builds before starting the app composer; watch then starts owner watchers as well. Listed owners are excluded from the ordinary member passes, so an existing member such as `packages/swaps` builds once before the composer and starts only one watcher. Owner DAOs use `DatabaseAccessor<GeneratedDatabase>` without importing the composer, so they can later attach to an owner database. CI restores and saves modular outputs alongside its build graph. The future encrypted database split requires separate schema and data validation.
+
+## Electrum storage ownership
+
+`packages/electrum` owns server configuration, fallback and scoped Tor connections, and implements the wallet connection contract published by `sync`. Its transaction lookup returns `BitcoinTx` from `sync` with typed Electrum failures. Signed-transaction review maps the result to its own review model.
+
+Electrum also owns the declarations, generated rows and queries for `ElectrumServers`, `ElectrumSettings` and `Transactions`. The app's Drift composer attaches these tables to its existing SQLite file. The Electrum accessor uses the composed connection. The physical schema remains at version 16. Generate Electrum's Drift libraries before the app composer with `make build-runner`.

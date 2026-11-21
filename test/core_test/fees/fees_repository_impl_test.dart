@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/features/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';

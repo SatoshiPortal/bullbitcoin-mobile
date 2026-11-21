@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure;
+import 'package:electrum/electrum.dart' show ElectrumFailure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';

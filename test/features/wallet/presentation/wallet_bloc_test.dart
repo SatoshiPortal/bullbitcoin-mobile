@@ -23,7 +23,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';

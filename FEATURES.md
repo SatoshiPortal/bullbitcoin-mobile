@@ -27,6 +27,7 @@ graph TB
     ARK_PROTOCOL --> PRIMITIVES
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER
+    ELECTRUM[Electrum package<br/>Server selection, settings and transaction lookup]
     SYNC[Sync Package<br/>Electrum sync, BitcoinTx, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
     BG_TASKS --> SYNC
@@ -41,7 +42,14 @@ graph TB
     WIZARD --> NOTIFICATIONS
     SYNC --> PRIMITIVES
     SYNC --> BULL_LOGGER
-    ELECTRUM_SETTINGS --> SYNC
+    ELECTRUM --> SYNC
+    ELECTRUM --> PRIMITIVES
+    ELECTRUM --> BULL_LOGGER
+    ELECTRUM_SETTINGS --> ELECTRUM
+    BROADCAST_SIGNED_TX --> ELECTRUM
+    CORE --> ELECTRUM
+    FEES --> ELECTRUM
+    WALLETS --> ELECTRUM
     LABELS --> SYNC
     WALLETS --> SYNC
     CORE -->|public custom fee input| FEES
@@ -338,14 +346,14 @@ graph TB
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
-    SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM_SETTINGS
+    SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
     SP -->|wallet balance view and legacy repository| WALLETS
     SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
-    ELECTRUM_SETTINGS --> TOR
+    ELECTRUM --> TOR
     WALLETS --> TOR
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
@@ -388,10 +396,8 @@ graph TB
     DCA --> SETTINGS
     DEFAULT_WALLETS --> EXCHANGE
     DEFAULT_WALLETS -->|public destination validation and input| WALLETS
-    ELECTRUM_SETTINGS --> WALLETS
     EXCHANGE --> SETTINGS
     EXCHANGE_SUPPORT_CHAT --> EXCHANGE
-    FEES --> ELECTRUM_SETTINGS
     FEES --> WALLETS
     LABELS --> WALLETS
     IMPORT_WATCH_ONLY --> SIGNERS
@@ -406,15 +412,15 @@ graph TB
     SELL --> FEES
     SELL --> SETTINGS
     SEND --> SETTINGS
-    STATUS --> ELECTRUM_SETTINGS
+    STATUS --> ELECTRUM
     STATUS --> WALLETS
     SWAPS --> AUTOSWAP
     SWAPS --> FEES
     SWAPS --> SETTINGS
-    TX_HISTORY --> ELECTRUM_SETTINGS
+    TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
 
-    IMPORT_MNEMONIC --> ELECTRUM_SETTINGS
+    IMPORT_MNEMONIC --> ELECTRUM
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff

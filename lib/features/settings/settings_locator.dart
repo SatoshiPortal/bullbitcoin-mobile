@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
 
 import 'dart:io';
 
@@ -104,7 +104,7 @@ class SettingsLocator {
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
         settingsRepository: locator<SettingsRepository>(),
-        electrumSettings: locator<ElectrumSettingsFacade>(),
+        electrumSettings: locator<ElectrumDefaultsProvisioner>(),
       ),
     );
     locator.registerLazySingleton<AmountInputPreferenceRepository>(

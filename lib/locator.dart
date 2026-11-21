@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+import 'package:electrum/electrum.dart'
     show ElectrumFailure, RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';

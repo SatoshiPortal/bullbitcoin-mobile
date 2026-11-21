@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';

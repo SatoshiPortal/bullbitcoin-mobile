@@ -1,31 +1,14 @@
+import 'package:bb_mobile/features/electrum_settings/data/environment_adapter.dart';
+import 'package:electrum/testing.dart';
 import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
-import 'package:bb_mobile/features/electrum_settings/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumSettingsFacade, RegtestElectrumProfile;
+import 'package:electrum/electrum.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/adapters/drift_electrum_settings_repository.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/electrum_servers_table.drift.dart';
-import 'package:bb_mobile/core/storage/tables/electrum_settings_table.drift.dart';
-import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_repository.dart';
-import 'package:bb_mobile/features/electrum_settings/data/electrum_defaults_provisioner.dart';
-import 'package:bb_mobile/features/electrum_settings/data/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/features/electrum_settings/data/electrum_servers_adapter.dart';
-import 'package:bb_mobile/features/electrum_settings/data/electrum_settings_storage_datasource.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/usecases/load_electrum_server_data_usecase.dart';
+import 'package:electrum/storage.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,8 +36,8 @@ Future<Result<void, ElectrumFailure>> _prepare(
 
 /// These database tests explicitly select their local fixture, independently
 /// of whether the application build offers a regtest runtime.
-class _FixtureElectrumFacade extends ElectrumSettingsFacade {
-  _FixtureElectrumFacade(super.provisioner);
+class _FixtureElectrumFacade extends ElectrumDefaultsProvisioner {
+  _FixtureElectrumFacade(super.database);
 
   @override
   Future<Result<void, ElectrumFailure>> prepareForegroundStorage(
@@ -136,10 +119,13 @@ void main() {
   });
   tearDown(() => database.close());
 
+  Future<ElectrumPreferences> readPreferences() =>
+      EnvironmentAdapter(settingsRepository: () => app).readPreferences();
+
   ElectrumServersAdapter adapter() => ElectrumServersAdapter(
     serverRepository: servers,
     settingsRepository: settings,
-    appSettingsRepository: app,
+    readPreferences: readPreferences,
     torSessionPort: tor,
   );
   LoadElectrumServerDataUsecase loader() => LoadElectrumServerDataUsecase(
@@ -148,7 +134,7 @@ void main() {
     environmentPort: environment,
     serverStatusPort: status,
     torSessionPort: tor,
-    settingsRepository: app,
+    readPreferences: readPreferences,
   );
 
   Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> loadNetwork(
@@ -163,7 +149,7 @@ void main() {
 
   SetActiveNetworkUsecase selector() => SetActiveNetworkUsecase(
     settingsRepository: app,
-    electrumSettings: _FixtureElectrumFacade(provisioner),
+    electrumSettings: _FixtureElectrumFacade(database),
   );
 
   Future<void> seedProductionCatalogs() async {
@@ -360,7 +346,7 @@ void main() {
             isCustom: true,
           ),
         );
-    final facade = _FixtureElectrumFacade(provisioner);
+    final facade = _FixtureElectrumFacade(database);
     expect(
       await facade.prepareForegroundStorage(
         NetworkEnv.regtest,

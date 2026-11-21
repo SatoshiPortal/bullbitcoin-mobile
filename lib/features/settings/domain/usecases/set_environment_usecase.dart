@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_u
 
 class SetEnvironmentUsecase {
   final SettingsRepository _settingsRepository;
-  final ElectrumSettingsFacade _electrumSettings;
+  final ElectrumDefaultsProvisioner _electrumSettings;
 
   const SetEnvironmentUsecase({
     required this._settingsRepository,

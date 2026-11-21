@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:electrum/electrum.dart';
 
 import 'dart:convert';
 import 'dart:io';

@@ -12,16 +12,9 @@ void main() {
       final source = File(
         'lib/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart',
       ).readAsStringSync();
-      expect(
-        source,
-        contains(
-          'final parentTx = await _transactionPort.fetch(txid: input.previousTxId);',
-        ),
-      );
-      expect(
-        source,
-        contains('final parentOutput = parentTx.outputs[input.previousVout];'),
-      );
+      expect(source, contains('_electrum.fetchBitcoinTransaction('));
+      expect(source, contains('txid: input.previousTxId'));
+      expect(source, contains('parentTx.outputs[input.previousVout]'));
       expect(source, contains('parentTx.txid != input.previousTxId'));
     });
   });

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 /// The developer-network selector uses this authorization and persistence boundary.
 class SetActiveNetworkUsecase {
   final SettingsRepository _settingsRepository;
-  final ElectrumSettingsFacade _electrumSettings;
+  final ElectrumDefaultsProvisioner _electrumSettings;
 
   const SetActiveNetworkUsecase({
     required this._settingsRepository,

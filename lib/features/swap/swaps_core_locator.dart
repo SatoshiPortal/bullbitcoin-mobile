@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/swap/domain/regtest_boltz_profile.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:secrets/secrets.dart';
