@@ -19,17 +19,31 @@ import 'package:ledger_bitcoin/src/utils/buffer_reader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sync/sync.dart' show decodeBitcoinPsbt;
 
+typedef _ConnectionLease = ({String key, Object token});
+
 class LedgerDeviceDatasource {
   LedgerInterface? _ledgerBle;
   LedgerInterface? _ledgerUsb;
   LedgerDevice? _cachedDevice;
   LedgerConnection? _cachedConnection;
+  int _generation = 0;
+  _ConnectionLease? _connectionLease;
+  Future<void> Function()? _cancelScan;
+
+  // USB owns a process-wide handle; BLE owns one handle per device ID.
+  // Keep leases until outstanding opens and late disconnects complete.
+  static final _connectionLeases = <String, Object>{};
 
   Future<List<LedgerDeviceModel>> scanDevices({
     Duration scanDuration = const Duration(seconds: 60),
     SignerDeviceEntity? deviceType,
   }) async {
-    await dispose();
+    final cleanup = dispose();
+    final generation = _generation;
+    await cleanup;
+    if (generation != _generation) {
+      throw const DeviceNotFoundLedgerException();
+    }
 
     final ledgerDeviceType = deviceType != null
         ? convertToLedgerDeviceType(deviceType)
@@ -56,6 +70,9 @@ class LedgerDeviceDatasource {
       }
     }
 
+    if (generation != _generation) {
+      throw const DeviceNotFoundLedgerException();
+    }
     if (needsBluetooth) {
       _ledgerBle = LedgerInterface.ble(
         onPermissionRequest: (_) async {
@@ -122,66 +139,134 @@ class LedgerDeviceDatasource {
       );
     }
 
+    final scanClosed = Completer<void>();
+    Future<void> cancelScan() async {
+      if (!completer.isCompleted) completer.complete();
+      await scanClosed.future;
+    }
+
+    _cancelScan = cancelScan;
     try {
       await completer.future.timeout(scanDuration);
     } on TimeoutException {
       // Timeout is expected if no device found
     } finally {
-      await bleScanSubscription?.cancel();
-      await usbScanSubscription?.cancel();
+      try {
+        await bleScanSubscription?.cancel();
+        await usbScanSubscription?.cancel();
+      } finally {
+        if (identical(_cancelScan, cancelScan)) _cancelScan = null;
+        scanClosed.complete();
+      }
     }
 
     final deviceModels = devices.map((device) {
       return LedgerDeviceModel.fromLedgerDevice(device);
     }).toList();
 
+    if (generation != _generation) {
+      throw const DeviceNotFoundLedgerException();
+    }
     if (devices.length == 1) {
       _cachedDevice = devices.first;
     }
     return deviceModels;
   }
 
-  Future<LedgerDeviceModel> connectDevice(LedgerDeviceModel device) async {
-    if (_cachedConnection != null) {
-      await _disconnectCurrentConnection();
-    }
+  LedgerInterface? _transport(LedgerConnectionType type) => switch (type) {
+    LedgerConnectionType.ble => _ledgerBle,
+    LedgerConnectionType.usb => _ledgerUsb,
+  };
 
+  Future<LedgerDeviceModel> connectDevice(LedgerDeviceModel device) async {
+    final generation = ++_generation;
+    await _disconnectCurrentConnection();
     final cachedDevice = _cachedDevice;
-    if (cachedDevice == null || cachedDevice.id != device.id) {
+    if (generation != _generation ||
+        cachedDevice == null ||
+        cachedDevice.id != device.id) {
       throw const DeviceNotFoundLedgerException();
     }
-
-    LedgerInterface? ledgerInterface;
-    if (device.connectionType == LedgerConnectionType.ble) {
-      ledgerInterface = _ledgerBle;
-    } else if (device.connectionType == LedgerConnectionType.usb) {
-      ledgerInterface = _ledgerUsb;
-    }
-
-    if (ledgerInterface == null) {
+    final transport = _transport(device.connectionType);
+    if (transport == null) {
       throw const ConnectionTypeNotInitializedLedgerException();
     }
+    bool isCurrent() =>
+        generation == _generation &&
+        identical(_cachedDevice, cachedDevice) &&
+        identical(_transport(device.connectionType), transport);
 
-    // Adding retry logic due to permission dialog not returning
-    if (device.connectionType == LedgerConnectionType.usb) {
-      for (int attempt = 0; attempt < 5; attempt++) {
+    final usb = device.connectionType == LedgerConnectionType.usb;
+    final attempts = usb ? 5 : 1;
+    for (var attempt = 0; attempt < attempts; attempt++) {
+      // Recheck after every retry delay; neither a disposed transport nor a
+      // replacement scan may lend its device to this operation.
+      if (!isCurrent()) throw const DeviceNotFoundLedgerException();
+      final leaseKey = usb ? 'usb' : 'ble:${device.id}';
+      if (_connectionLeases.containsKey(leaseKey)) {
+        throw const NoActiveConnectionLedgerException();
+      }
+      final lease = (key: leaseKey, token: Object());
+      _connectionLeases[lease.key] = lease.token;
+      var active = true;
+      Future<LedgerConnection> open() async {
         try {
-          _cachedConnection = await ledgerInterface
-              .connect(cachedDevice)
-              .timeout(const Duration(seconds: 10));
-          break;
-        } catch (e) {
-          if (attempt == 4) {
-            rethrow;
+          final connection = await transport.connect(cachedDevice);
+          if (!active || !isCurrent()) {
+            await _closeConnection(connection, lease);
+            throw const DeviceNotFoundLedgerException();
           }
-          await Future.delayed(const Duration(seconds: 2));
+          return connection;
+        } catch (_) {
+          _releaseLease(lease);
+          rethrow;
         }
       }
-    } else {
-      _cachedConnection = await ledgerInterface.connect(cachedDevice);
-    }
 
-    return device;
+      try {
+        final pending = open();
+        final connection = await (usb
+            ? pending.timeout(const Duration(seconds: 10))
+            : pending);
+        if (!isCurrent()) {
+          await _closeConnection(connection, lease);
+          throw const DeviceNotFoundLedgerException();
+        }
+        _cachedConnection = connection;
+        _connectionLease = lease;
+        return device;
+      } catch (_) {
+        active = false;
+        if (!isCurrent()) throw const DeviceNotFoundLedgerException();
+        // A timed-out native open is not cancelled by Future.timeout. Refuse
+        // overlapping opens until its late completion has been cleaned up.
+        if (attempt == attempts - 1 ||
+            identical(_connectionLeases[lease.key], lease.token)) {
+          rethrow;
+        }
+        await Future<void>.delayed(const Duration(seconds: 2));
+      } finally {
+        active = false;
+      }
+    }
+    throw const NoActiveConnectionLedgerException();
+  }
+
+  static void _releaseLease(_ConnectionLease? lease) {
+    if (lease != null && identical(_connectionLeases[lease.key], lease.token)) {
+      _connectionLeases.remove(lease.key);
+    }
+  }
+
+  Future<void> _closeConnection(
+    LedgerConnection connection,
+    _ConnectionLease? lease,
+  ) async {
+    try {
+      await connection.disconnect();
+    } finally {
+      _releaseLease(lease);
+    }
   }
 
   LedgerConnection _getSdkConnection(LedgerDeviceModel device) {
@@ -292,26 +377,31 @@ class LedgerDeviceDatasource {
   }
 
   Future<void> disconnectConnection(LedgerDeviceModel device) async {
+    _generation++;
     await _disconnectCurrentConnection();
   }
 
   Future<void> _disconnectCurrentConnection() async {
     final connection = _cachedConnection;
+    final lease = _connectionLease;
+    _cachedConnection = null;
+    _connectionLease = null;
     if (connection != null) {
       try {
-        await connection.disconnect();
+        await _closeConnection(connection, lease);
       } catch (e) {
         log.warning('Error disconnecting Ledger device', error: e);
       }
-      _cachedConnection = null;
     }
   }
 
   Future<void> dispose() async {
-    await _disconnectCurrentConnection();
+    _generation++;
     _cachedDevice = null;
     _ledgerBle = null;
     _ledgerUsb = null;
+    await _cancelScan?.call();
+    await _disconnectCurrentConnection();
   }
 }
 
