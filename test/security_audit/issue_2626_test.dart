@@ -2,7 +2,7 @@
 // Finding: a fiat amount with a missing (zero) exchange rate crashes conversion.
 // Regression test for the fix.
 
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

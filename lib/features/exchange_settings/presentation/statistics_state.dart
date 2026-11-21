@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'statistics_state.freezed.dart';

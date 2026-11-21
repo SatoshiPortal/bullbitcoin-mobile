@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_cubit.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';

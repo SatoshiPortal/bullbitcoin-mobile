@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:flutter/widgets.dart';
