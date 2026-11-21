@@ -267,10 +267,11 @@ void main() {
       });
       expect(sessions.opens, 1);
       expect(files.calls, 1);
-      files.pending = Completer<Result<void, RecoverBullFailure>>()
-        ..complete(const Ok(null));
       await tester.ensureVisible(find.text('Retry saving backup'));
       await tester.runAsync(() async {
+        // Complete the simulated picker in the async zone that awaits it.
+        files.pending = Completer<Result<void, RecoverBullFailure>>()
+          ..complete(const Ok(null));
         final completed = cubit.stream.firstWhere(
           (state) => state.completion != null,
         );
