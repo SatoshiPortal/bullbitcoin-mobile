@@ -191,6 +191,26 @@ void main() {
       );
     },
   );
+
+  test('cancelled saving returns Ok(false)', () async {
+    final bytes = Uint8List.fromList([1, 2]);
+    when(
+      () => picker.saveFile(
+        fileName: 'example.txt',
+        bytes: bytes,
+        mimeType: 'application/octet-stream',
+      ),
+    ).thenAnswer((_) async => null);
+
+    expect(
+      await fileSystem.save(filename: 'example.txt', bytes: bytes),
+      isA<Ok<bool, FileSystemFailure>>().having(
+        (result) => result.value,
+        'value',
+        isFalse,
+      ),
+    );
+  });
 }
 
 final class _ChunkedDocument extends PlatformFile {
