@@ -1,25 +1,29 @@
+import 'package:bb_mobile/features/bitbox/domain/disconnect_bitbox_device_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/dispose_bitbox_connections_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
-import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
+  final NetworkEnv _network;
   final ScanBitBoxDevicesUsecase _scanBitBoxDevicesUsecase;
   final ConnectBitBoxDeviceUsecase _connectBitBoxDeviceUsecase;
-  final BitBoxDeviceRepository _repository;
+  final DisconnectBitBoxDeviceUsecase _disconnect;
+  final DisposeBitBoxConnectionsUsecase _dispose;
   bool _isDisposed = false;
   bool _isExecuting = false;
 
   BitBoxOperationCubit({
+    required this._network,
+    required this._disconnect,
+    required this._dispose,
     required this._scanBitBoxDevicesUsecase,
     required this._connectBitBoxDeviceUsecase,
-  }) : _repository = locator<BitBoxDeviceRepository>(),
-       super(const BitBoxOperationState());
+  }) : super(const BitBoxOperationState());
 
   BitBoxDeviceEntity? get connectedDevice => state.connectedDevice;
 
@@ -60,13 +64,22 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   Future<void> close() async {
     _isDisposed = true;
 
-    await _repository.dispose();
+    await _dispose.execute();
     await super.close();
   }
 
   Future<void> executeOperation(
     Future<Result<Object?, BitBoxFailure>> Function() operation,
   ) async {
+    if (_network != NetworkEnv.mainnet && _network != NetworkEnv.testnet) {
+      _emitIfActive(
+        state.copyWith(
+          status: BitBoxOperationStatus.error,
+          failure: const InvalidParametersBitBoxFailure('unsupported network'),
+        ),
+      );
+      return;
+    }
     if (_isDisposed || _isExecuting) return;
     _isExecuting = true;
 
@@ -143,7 +156,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   }
 
   Future<void> _disconnectDevice(BitBoxDeviceEntity device) async {
-    await _repository.disconnectConnection(device);
+    await _disconnect.execute(device);
   }
 
   void reset() {

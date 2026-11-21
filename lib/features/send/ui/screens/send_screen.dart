@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
+import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart'
+    show PsbtHandoffResult;
+
 import '../../../coins/public/coins_facade.dart' show CoinsRoute;
 import '../widgets/send_leave_payment_dialog.dart';
 import '../widgets/send_grouped_address.dart';
@@ -3079,26 +3083,26 @@ class ShowPsbtButton extends StatelessWidget {
     );
 
     final signerDevice = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
+      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
     );
 
     return BullButton.primary(
       label: context.loc.sendShowPsbt,
-      onPressed: () {
-        // The PSBT route and the broadcast after signing take the wallet
-        // itself, not the send screen's view of it.
+      onPressed: () async {
+        // Retain the original wallet and unsigned transaction through handoff.
         final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
           SendWalletBitcoin(:final wallet) => wallet,
           _ => null,
         };
-        context.pushNamed(
+        final result = await context.pushNamed<PsbtHandoffResult>(
           PsbtFlowRoutes.show.name,
-          extra: (
-            psbt: unsignedPsbt,
-            signerDevice: signerDevice,
-            wallet: wallet,
-          ),
+          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
         );
+        if (result == PsbtHandoffResult.readyToReadSignedTransaction &&
+            context.mounted) {
+          if (unsignedPsbt == null) return;
+          await SendPsbtHandoff.of(context)(context, unsignedPsbt, wallet);
+        }
       },
     );
   }
@@ -3128,11 +3132,13 @@ class SignLedgerButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
-        if (unsignedPsbt == null) return;
+        final wallet = context.read<SendCubit>().state.selectedWallet;
+        if (unsignedPsbt == null || wallet == null) return;
 
         final result = await context.pushNamed<String>(
           LedgerRoute.ledgerSignTransaction.name,
           extra: LedgerRouteParams(
+            network: wallet.network.environment,
             psbt: unsignedPsbt,
             derivationPath: derivationPath,
             requestedDeviceType: deviceType,
@@ -3180,11 +3186,13 @@ class SignBitBoxButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
-        if (unsignedPsbt == null) return;
+        final wallet = context.read<SendCubit>().state.selectedWallet;
+        if (unsignedPsbt == null || wallet == null) return;
 
         final result = await context.pushNamed<String>(
           BitBoxRoute.bitboxSignTransaction.name,
           extra: BitBoxRouteParams(
+            network: wallet.network.environment,
             psbt: unsignedPsbt,
             derivationPath: derivationPath,
             requestedDeviceType: deviceType,

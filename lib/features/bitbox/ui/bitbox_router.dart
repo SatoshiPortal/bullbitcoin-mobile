@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_action.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -14,38 +16,23 @@ enum BitBoxRoute {
 
 class BitBoxRouter {
   static final routes = [
-    GoRoute(
-      name: BitBoxRoute.importBitBox.name,
-      path: BitBoxRoute.importBitBox.path,
-      builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
-        return BitBoxActionScreen(
-          action: const BitBoxAction.importWallet(),
-          parameters: extra,
-        );
-      },
-    ),
-    GoRoute(
-      name: BitBoxRoute.bitboxSignTransaction.name,
-      path: BitBoxRoute.bitboxSignTransaction.path,
-      builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
-        return BitBoxActionScreen(
-          action: const BitBoxAction.signTransaction(),
-          parameters: extra,
-        );
-      },
-    ),
-    GoRoute(
-      name: BitBoxRoute.bitboxVerifyAddress.name,
-      path: BitBoxRoute.bitboxVerifyAddress.path,
-      builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
-        return BitBoxActionScreen(
-          action: const BitBoxAction.verifyAddress(),
-          parameters: extra,
-        );
-      },
-    ),
+    for (final (route, action) in [
+      (BitBoxRoute.importBitBox, const BitBoxAction.importWallet()),
+      (BitBoxRoute.bitboxSignTransaction, const BitBoxAction.signTransaction()),
+      (BitBoxRoute.bitboxVerifyAddress, const BitBoxAction.verifyAddress()),
+    ])
+      GoRoute(
+        name: route.name,
+        path: route.path,
+        builder: (context, state) {
+          if (state.extra case final BitBoxRouteParams parameters) {
+            return BitBoxActionScreen(action: action, parameters: parameters);
+          }
+          return Scaffold(
+            appBar: AppBar(),
+            body: Center(child: Text(context.loc.oopsSomethingWentWrong)),
+          );
+        },
+      ),
   ];
 }

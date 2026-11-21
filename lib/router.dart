@@ -220,7 +220,13 @@ class AppRouter {
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
-      SendRouter.route,
+      SendRouter.route(
+        openSignedTransactionReader: (context, psbt, wallet) =>
+            context.pushNamed<void>(
+              BroadcastSignedTxRoute.broadcastHome.name,
+              extra: (psbt: psbt, wallet: wallet),
+            ),
+      ),
       CoinsRouter.route(
         missingWalletRedirect: WalletRoute.walletHome.path,
         onSend: (context, wallet, outpoints) => context.pushNamed<void>(

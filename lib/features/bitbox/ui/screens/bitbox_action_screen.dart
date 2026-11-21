@@ -1,9 +1,12 @@
+import 'package:bb_mobile/features/bitbox/domain/disconnect_bitbox_device_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/dispose_bitbox_connections_usecase.dart';
+
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
-import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/read_bitbox_account_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/sign_psbt_bitbox_usecase.dart';
@@ -13,13 +16,13 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
+import 'package:primitives/primitives.dart'
+    show NetworkEnv, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/bitbox/bitbox_action.dart';
 import 'package:bb_mobile/features/bitbox/presentation/bitbox_failure_l10n.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_cubit.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/features/ledger/domain/signer_account.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:screen_awake/screen_awake.dart';
 import 'package:material_ui/material_ui.dart';
@@ -44,6 +47,7 @@ import 'package:permission_handler/permission_handler.dart';
 bool get _usesBluetoothTransport => !Platform.isAndroid;
 
 class BitBoxRouteParams {
+  final NetworkEnv network;
   final String? psbt;
   final String? derivationPath;
   final String? address;
@@ -51,6 +55,7 @@ class BitBoxRouteParams {
   final ScriptType? scriptType;
 
   const BitBoxRouteParams({
+    required this.network,
     this.psbt,
     this.derivationPath,
     this.address,
@@ -61,14 +66,21 @@ class BitBoxRouteParams {
 
 class BitBoxActionScreen extends StatelessWidget {
   final BitBoxAction action;
-  final BitBoxRouteParams? parameters;
+  final BitBoxRouteParams parameters;
 
-  const BitBoxActionScreen({super.key, required this.action, this.parameters});
+  const BitBoxActionScreen({
+    super.key,
+    required this.action,
+    required this.parameters,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => BitBoxOperationCubit(
+        disconnect: locator<DisconnectBitBoxDeviceUsecase>(),
+        dispose: locator<DisposeBitBoxConnectionsUsecase>(),
+        network: parameters.network,
         scanBitBoxDevicesUsecase: locator<ScanBitBoxDevicesUsecase>(),
         connectBitBoxDeviceUsecase: locator<ConnectBitBoxDeviceUsecase>(),
       ),
@@ -79,9 +91,9 @@ class BitBoxActionScreen extends StatelessWidget {
 
 class _BitBoxActionView extends StatefulWidget {
   final BitBoxAction action;
-  final BitBoxRouteParams? parameters;
+  final BitBoxRouteParams parameters;
 
-  const _BitBoxActionView({required this.action, this.parameters});
+  const _BitBoxActionView({required this.action, required this.parameters});
 
   @override
   State<_BitBoxActionView> createState() => _BitBoxActionViewState();
@@ -111,12 +123,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               message: widget.action.toSuccessText(context),
             );
             if (widget.action == const BitBoxAction.importWallet()) {
-              if (state.result is WatchOnlyWalletEntity &&
+              if (state.result is SignerAccount &&
                   state.connectedDevice != null) {
-                _navigateToImportPage(
-                  context,
-                  state.result as WatchOnlyWalletEntity,
-                );
+                _returnAccount(context, state.result as SignerAccount);
               }
             } else if (widget.action == const BitBoxAction.verifyAddress()) {
               Navigator.of(context).pop();
@@ -270,20 +279,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     }
   }
 
-  void _navigateToImportPage(
-    BuildContext context,
-    WatchOnlyWalletEntity wallet,
-  ) {
+  void _returnAccount(BuildContext context, SignerAccount account) {
     if (context.mounted) {
-      context.replaceNamed(
-        ImportWatchOnlyWalletRoutes.import.name,
-        extra: wallet,
-      );
+      context.pop(account);
     }
   }
 
   Widget _buildAddressDisplay(BuildContext context) {
-    String? address = widget.parameters?.address;
+    String? address = widget.parameters.address;
 
     if (widget.action == const BitBoxAction.verifyAddress() &&
         context
@@ -356,10 +359,11 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         return Err(failure);
       }
 
-      final device = cubit.state.connectedDevice!;
-      final address = widget.parameters?.address;
-      final derivationPath = widget.parameters?.derivationPath;
-      final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
+      final device = cubit.state.connectedDevice;
+      if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
+      final address = widget.parameters.address;
+      final derivationPath = widget.parameters.derivationPath;
+      final scriptType = widget.parameters.scriptType ?? ScriptType.bip84;
 
       if (address == null || derivationPath == null) {
         return const Err(
@@ -372,6 +376,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       cubit.showAddressVerification(address);
 
       return locator<VerifyAddressBitBoxUsecase>().execute(
+        network: widget.parameters.network,
         device: device,
         address: address,
         derivationPath: derivationPath,
@@ -389,10 +394,11 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         return Err(failure);
       }
 
-      final device = cubit.state.connectedDevice!;
-      final psbt = widget.parameters?.psbt;
-      final derivationPath = widget.parameters?.derivationPath;
-      final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
+      final device = cubit.state.connectedDevice;
+      if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
+      final psbt = widget.parameters.psbt;
+      final derivationPath = widget.parameters.derivationPath;
+      final scriptType = widget.parameters.scriptType ?? ScriptType.bip84;
 
       if (psbt == null || derivationPath == null) {
         return const Err(
@@ -404,6 +410,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
       return locator<SignPsbtBitBoxUsecase>().execute(
         device,
+        network: widget.parameters.network,
         psbt: psbt,
         derivationPath: derivationPath,
         scriptType: scriptType,
@@ -414,7 +421,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   Future<Result<void, BitBoxFailure>> _ensureDeviceReady(
     BitBoxOperationCubit cubit,
   ) async {
-    final device = cubit.state.connectedDevice!;
+    final device = cubit.state.connectedDevice;
+    if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
     final repository = locator<BitBoxDeviceRepository>();
 
     if (await repository.getMasterFingerprint(device) case Err()) {
@@ -451,12 +459,12 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         return Err(failure);
       }
 
-      final device = cubit.state.connectedDevice!;
+      final device = cubit.state.connectedDevice;
+      if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
 
-      return locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
+      return locator<ReadBitBoxAccountUsecase>().execute(
+        network: widget.parameters.network,
         device: device,
-        deviceType: widget.parameters?.requestedDeviceType,
-        label: context.loc.bitboxScreenDefaultWalletLabel,
         scriptType: _selectedScriptType,
       );
     });

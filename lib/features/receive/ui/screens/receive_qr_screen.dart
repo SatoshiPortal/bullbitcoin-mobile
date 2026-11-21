@@ -475,6 +475,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
       context.pushNamed(
         LedgerRoute.ledgerVerifyAddress.name,
         extra: LedgerRouteParams(
+          network: wallet.network.environment,
           address: state.address,
           derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
           requestedDeviceType: wallet.signerDevice,
@@ -508,6 +509,7 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
       context.pushNamed(
         BitBoxRoute.bitboxVerifyAddress.name,
         extra: BitBoxRouteParams(
+          network: wallet.network.environment,
           address: state.address,
           derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
           requestedDeviceType: wallet.signerDevice,

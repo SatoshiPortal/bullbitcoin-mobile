@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
@@ -11,8 +12,9 @@ class LedgerLocator {
   }
 
   static void registerCubits(GetIt locator) {
-    locator.registerFactory<LedgerOperationCubit>(
-      () => LedgerOperationCubit(
+    locator.registerFactoryParam<LedgerOperationCubit, NetworkEnv, void>(
+      (network, _) => LedgerOperationCubit(
+        network: network,
         scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
         connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
         disconnectLedgerDeviceUsecase: locator<DisconnectLedgerDeviceUsecase>(),

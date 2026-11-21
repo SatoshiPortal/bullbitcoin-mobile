@@ -26,6 +26,11 @@ part '../ui/amount_preferences_binder.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {
+  /// Captures the active environment when a new account journey starts.
+  static NetworkEnv? networkOf(BuildContext context) => context.select(
+    (SettingsCubit cubit) => cubit.state.environment?.networkEnv,
+  );
+
   static Future<void> toggleAmountVisibility(BuildContext context) async {
     final cubit = context.read<SettingsCubit>();
     final settings = cubit.state.storedSettings;
