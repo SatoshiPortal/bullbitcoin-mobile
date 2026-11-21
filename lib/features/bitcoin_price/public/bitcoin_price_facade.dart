@@ -4,6 +4,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+export 'fiat_amount_text.dart';
 export 'home_fiat_balance.dart';
 
 /// Public entry point for the standalone price history.

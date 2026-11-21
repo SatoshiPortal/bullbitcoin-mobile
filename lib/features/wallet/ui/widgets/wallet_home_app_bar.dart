@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons;
-import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, BullSpacing;
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show SuperuserTapUnlocker;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
@@ -22,7 +24,14 @@ class WalletHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       systemOverlayStyle: SystemUiOverlayStyle.light,
       automaticallyImplyLeading: false,
       centerTitle: true,
-      title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),
+      title: SuperuserTapUnlocker(
+        child: SizedBox.square(
+          dimension: BullSpacing.xxl,
+          child: Center(
+            child: Assets.logos.bbLogoSmall.image(width: 40, height: 40),
+          ),
+        ),
+      ),
       actions: [
         IconButton(
           tooltip: context.loc.settingsScreenTitle,

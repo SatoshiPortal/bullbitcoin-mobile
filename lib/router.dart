@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubi
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
+    show RouteErrorScreen;
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
@@ -108,6 +109,11 @@ class AppRouter {
     }
   }
 
+  static void _onBackupTestSucceeded(BuildContext context) {
+    WalletRecoverBullBindings.tested(context);
+    router.goNamed(WalletRoute.walletHome.name);
+  }
+
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
@@ -203,6 +209,7 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        onBackupTestSucceeded: _onBackupTestSucceeded,
         buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
             .buildHistory(onBack: () => context.pop()),
       ),
@@ -261,10 +268,7 @@ class AppRouter {
           WalletRecoverBullBindings.recovered(context);
           router.goNamed(WalletRoute.walletHome.name);
         },
-        onTested: (context) {
-          WalletRecoverBullBindings.tested(context);
-          router.goNamed(WalletRoute.walletHome.name);
-        },
+        onTested: _onBackupTestSucceeded,
         onOpenTorSettings: (context) =>
             context.pushNamed(const TorSettingsFacade().settingsRouteName),
       ),

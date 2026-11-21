@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullText, Gap, BullTypographyX;
+    show BullQrCode, BullBottomSheet, BullText, Gap, BullTypographyX;
 
 class PayQrBottomSheet extends StatelessWidget {
   const PayQrBottomSheet({super.key, required this.bip21InvoiceData});
@@ -51,13 +50,20 @@ class PayQrBottomSheet extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
               IconButton(
+                tooltip: context.loc.closeDialogButton,
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.close),
               ),
             ],
           ),
           const Gap(24),
-          Center(child: QrDisplayWidget(data: bip21InvoiceData, size: 280)),
+          Center(
+            child: BullQrCode(
+              data: bip21InvoiceData,
+              size: 280,
+              semanticsLabel: context.loc.payQrCode,
+            ),
+          ),
           const Gap(16),
         ],
       ),

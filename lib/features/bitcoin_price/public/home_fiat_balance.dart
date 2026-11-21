@@ -2,12 +2,13 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+
+import 'fiat_amount_text.dart';
 
 class HomeFiatBalance extends StatelessWidget {
   const HomeFiatBalance({
@@ -62,9 +63,11 @@ class HomeFiatBalance extends StatelessWidget {
 
     final amount = showSkeleton
         ? const _HomeFiatBalanceSkeleton()
-        : CurrencyText(
-            balanceSat,
-            showFiat: true,
+        : FiatAmountText(
+            formattedAmount: priceState.calculateFiatPrice(balanceSat),
+            hideAmounts: context.select(
+              (SettingsCubit cubit) => cubit.state.hideAmounts ?? true,
+            ),
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.onPrimary,
           );

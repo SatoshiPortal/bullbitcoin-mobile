@@ -3,12 +3,11 @@ import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_s
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTransactionViewer;
 import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:material_ui/material_ui.dart';
@@ -169,7 +168,7 @@ void main() {
   testWidgets('shows the txid in a transaction viewer', (tester) async {
     await tester.pumpWidget(_buildPage(cubit, incomingPayment));
 
-    expect(find.byType(TransactionViewer), findsOneWidget);
+    expect(find.byType(BullTransactionViewer), findsOneWidget);
   });
   for (final network in [null, BitcoinNetwork.regtest, BitcoinNetwork.signet]) {
     testWidgets('unknown or unsupported $network has no explorer', (
@@ -183,7 +182,7 @@ void main() {
         amountSat: Sats.fromInt(5),
       );
       await tester.pumpWidget(_buildPage(cubit, payment));
-      expect(find.byType(TransactionViewer), findsNothing);
+      expect(find.byType(BullTransactionViewer), findsNothing);
       expect(find.byType(SelectableText), findsOneWidget);
     });
   }
@@ -222,10 +221,6 @@ void main() {
               ),
             );
       }
-      locator.registerSingleton<MempoolUrlBuilder>(
-        MempoolUrlBuilder(getActiveMempoolServerUsecase: active),
-      );
-      addTearDown(() => locator.unregister<MempoolUrlBuilder>());
       final txid = 'abcd' * 16;
       final payment = _payment(
         network: network,
@@ -234,10 +229,15 @@ void main() {
         status: SpPaymentStatus.verified,
         amountSat: Sats.fromInt(3),
       );
-      await tester.pumpWidget(_buildPage(cubit, payment));
-      await tester.tap(find.byType(TransactionViewer));
+      await tester.pumpWidget(
+        RepositoryProvider<MempoolUrlBuilder>.value(
+          value: MempoolUrlBuilder(getActiveMempoolServerUsecase: active),
+          child: _buildPage(cubit, payment),
+        ),
+      );
+      await tester.tap(find.byType(BullTransactionViewer));
       await tester.pumpAndSettle();
-      final context = tester.element(find.byType(TransactionViewer));
+      final context = tester.element(find.byType(BullTransactionViewer));
       await tester.tap(find.text(context.loc.viewerCopyLink));
       await tester.pumpAndSettle();
       // Let the copy-confirmation snack bar's auto-dismiss timer expire.

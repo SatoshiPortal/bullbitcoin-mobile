@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -11,7 +10,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
+    show BullAmount, BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -158,9 +157,8 @@ class _BtcTotalAmt extends StatelessWidget {
 
     return _HomeBalanceFrame(
       tint: context.appColors.bitcoinOrange,
-      child: CurrencyText(
+      child: BullAmount.signedSats(
         btcTotal,
-        showFiat: false,
         interactive: true,
         style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         color: context.appColors.onPrimary,
@@ -288,9 +286,8 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.arrow_downward, color: color, size: 20),
-                CurrencyText(
+                BullAmount.signedSats(
                   unconfirmed,
-                  showFiat: false,
                   interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,

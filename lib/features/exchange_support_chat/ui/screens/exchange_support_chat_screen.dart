@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_mes
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
@@ -19,6 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullText,
         BullInlineIconButton,
         BullInputText,
         BullShapesX,
@@ -70,7 +70,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
               }
             },
           ),
-          title: BBText(
+          title: BullText(
             context.loc.exchangeSupportChatTitle,
             style: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w500,
@@ -149,7 +149,7 @@ class _ChatBodyState extends State<_ChatBody> {
 
                   if (state.messages.isEmpty && !state.loadingMessages) {
                     return Center(
-                      child: BBText(
+                      child: BullText(
                         context.loc.exchangeSupportChatEmptyState,
                         style: context.bullType.body
                             .copyWith(fontWeight: FontWeight.w500)
@@ -242,7 +242,7 @@ class _MessageBubble extends StatelessWidget {
                   : CrossAxisAlignment.start,
               children: [
                 if (message.text != null && message.text!.isNotEmpty)
-                  BBText(
+                  BullText(
                     message.text!,
                     style: context.bullType.body.copyWith(
                       color: isUserMessage
@@ -263,7 +263,7 @@ class _MessageBubble extends StatelessWidget {
                 ],
                 if (message.createdAt != null) ...[
                   const Gap(4),
-                  BBText(
+                  BullText(
                     _formatTime(message.createdAt!, context),
                     style: context.bullType.caption.copyWith(
                       color: isUserMessage
@@ -338,7 +338,7 @@ class _MessageInputState extends State<_MessageInput> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (state.sendMessageFailure case final sendFailure?) ...[
-              BBText(
+              BullText(
                 sendFailure.toTranslated(context),
                 style: context.bullType.caption.copyWith(
                   color: context.appColors.error,
@@ -513,7 +513,7 @@ class _AttachmentWidget extends StatelessWidget {
                 ),
                 const Gap(8),
                 Flexible(
-                  child: BBText(
+                  child: BullText(
                     attachment.fileName != null
                         ? _shortenFileName(attachment.fileName!)
                         : context.loc.exchangeSupportChatAttachmentImage,
@@ -607,7 +607,7 @@ class _AttachmentWidget extends StatelessWidget {
                 ),
               const Gap(8),
               Flexible(
-                child: BBText(
+                child: BullText(
                   attachment.fileName != null
                       ? _shortenFileName(attachment.fileName!)
                       : context.loc.exchangeSupportChatAttachmentUnknownFile,

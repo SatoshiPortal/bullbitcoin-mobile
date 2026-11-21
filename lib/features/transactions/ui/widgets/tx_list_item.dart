@@ -1,19 +1,25 @@
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_order_fiat_amount.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart' as core;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show bullTimeAgo, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAmount,
+        BullTransactionListItem,
+        BullTransactionListItemData,
+        BullTransactionStatusRow,
+        bullTimeAgo,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
-/// Feature-side entry point of the core row: maps a [Transaction] to a
-/// [core.TxListItemData] and delegates the rendering.
+/// Feature-side entry point of the shared row: maps a [Transaction] to a
+/// [BullTransactionListItemData] and delegates the rendering.
 class TransactionListItem extends StatelessWidget {
   const TransactionListItem.transaction(
     Transaction tx, {
@@ -31,7 +37,7 @@ class TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return core.TxListItem(
+    return BullTransactionListItem(
       _transactionData(context, _tx),
       key: ValueKey((
         _tx.walletTransaction?.walletId,
@@ -44,7 +50,7 @@ class TransactionListItem extends StatelessWidget {
     );
   }
 
-  core.TxListItemData _transactionData(
+  BullTransactionListItemData _transactionData(
     BuildContext context,
     Transaction transaction,
   ) {
@@ -59,7 +65,7 @@ class TransactionListItem extends StatelessWidget {
         ? transaction.walletTransaction!.labels
         : <Label>[];
 
-    return core.TxListItemData(
+    return BullTransactionListItemData(
       icon: isOrderType
           ? Icons.payments
           : isChainSwap
@@ -76,20 +82,17 @@ class TransactionListItem extends StatelessWidget {
           ? context.appColors.border.withValues(alpha: 0.5)
           : context.appColors.border,
       amount: showOrderInFiat && orderAmountAndCurrency != null
-          ? CurrencyText(
-              transaction.swapListAmountSat,
-              showFiat: false,
-              fiatAmount: orderAmountAndCurrency.$1.toDouble(),
-              fiatCurrency: orderAmountAndCurrency.$2,
+          ? ExchangeOrderFiatAmount(
+              amount: orderAmountAndCurrency.$1.toDouble(),
+              currency: orderAmountAndCurrency.$2,
               style: context.bullType.body.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             )
-          : CurrencyText(
+          : BullAmount.signedSats(
               isOrderType && orderAmountAndCurrency != null
                   ? orderAmountAndCurrency.$1.toInt()
                   : transaction.swapListAmountSat,
-              showFiat: false,
               interactive: true,
               style: context.bullType.body.copyWith(
                 fontWeight: FontWeight.w500,
@@ -183,28 +186,36 @@ class _TransactionStatus extends StatelessWidget {
         : null;
 
     if (isOrderType && tx.order!.isCompleted() && date != null) {
-      return core.StatusRow(label: date, icon: Icons.check_circle);
+      return BullTransactionStatusRow(label: date, icon: Icons.check_circle);
     } else if (isOrderType) {
-      return core.StatusRow(label: tx.order!.orderStatus.toTranslated(context));
+      return BullTransactionStatusRow(
+        label: tx.order!.orderStatus.toTranslated(context),
+      );
     } else if (tx.isSwap &&
         (tx.swap?.completionTime != null ||
             tx.swap?.status == SwapStatus.completed ||
             tx.orderSwap?.localStatus == OrderSwapLocalStatus.completed ||
             tx.orderSwap?.localStatus == OrderSwapLocalStatus.refunded)) {
-      return core.StatusRow(label: date ?? '', icon: Icons.check_circle);
+      return BullTransactionStatusRow(
+        label: date ?? '',
+        icon: Icons.check_circle,
+      );
     } else if (!tx.isSwap && (tx.walletTransaction?.isConfirmed ?? false)) {
-      return core.StatusRow(label: date ?? '', icon: Icons.check_circle);
+      return BullTransactionStatusRow(
+        label: date ?? '',
+        icon: Icons.check_circle,
+      );
     } else if (date != null && isOrderType) {
-      return core.StatusRow(label: date, icon: Icons.check_circle);
+      return BullTransactionStatusRow(label: date, icon: Icons.check_circle);
     } else if (date != null && tx.isOngoingSwap) {
-      return core.StatusRow(
+      return BullTransactionStatusRow(
         label: date,
         icon: Icons.sync,
         iconColor: context.appColors.textMuted,
       );
     }
 
-    return core.StatusRow(
+    return BullTransactionStatusRow(
       label: tx.isOngoingSwap
           ? context.loc.transactionStatusInProgress
           : context.loc.transactionStatusPending,

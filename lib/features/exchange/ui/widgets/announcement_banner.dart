@@ -1,11 +1,17 @@
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullText,
+        BullBottomSheet,
+        BullInlineIconButton,
+        BullShapesX,
+        BullSpacing,
+        Gap,
+        BullTypographyX;
 
 class AnnouncementBanner extends StatelessWidget {
   const AnnouncementBanner({super.key});
@@ -69,7 +75,7 @@ class _AnnouncementItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(
+                  BullText(
                     announcement.title,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.bold,
@@ -81,7 +87,7 @@ class _AnnouncementItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     announcement.description,
                     style: context.bullType.label.copyWith(
                       fontWeight: FontWeight.w400,
@@ -108,7 +114,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
   final Announcement announcement;
 
   static Future<void> show(BuildContext context, Announcement announcement) {
-    return BlurredBottomSheet.show(
+    return BullBottomSheet.show<void>(
       context: context,
       child: _AnnouncementBottomSheet(announcement: announcement),
     );
@@ -116,15 +122,9 @@ class _AnnouncementBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(context.bullShapes.sheet),
-        ),
       ),
       child: SafeArea(
         child: Column(
@@ -145,7 +145,11 @@ class _AnnouncementBottomSheet extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              padding: const EdgeInsets.only(
+                left: BullSpacing.lg,
+                top: BullSpacing.lg,
+                right: BullSpacing.sm,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -156,17 +160,21 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                   ),
                   const Gap(12),
                   Expanded(
-                    child: BBText(
-                      announcement.title,
-                      style: context.bullType.title.copyWith(
-                        fontWeight: FontWeight.bold,
+                    child: Semantics(
+                      header: true,
+                      child: BullText(
+                        announcement.title,
+                        style: context.bullType.title.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                  const Gap(12),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Icon(
+                  BullInlineIconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: MaterialLocalizations.of(context)
+                        .closeButtonTooltip,
+                    icon: Icon(
                       Icons.close,
                       color: context.appColors.onSurface,
                       size: 24,
@@ -179,7 +187,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: BBText(
+                child: BullText(
                   announcement.description,
                   style: context.bullType.body.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.8),

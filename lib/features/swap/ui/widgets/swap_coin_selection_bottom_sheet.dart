@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/widgets/coin_selection_bottom_sheet.dart';
+import 'package:bb_mobile/features/wallet/public/coin_selection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -36,7 +36,7 @@ class SwapCoinSelectionBottomSheet extends StatelessWidget {
       (TransferBloc bloc) => bloc.state.confirmedAmountSat,
     );
 
-    return CommonCoinSelectionBottomSheet(
+    return WalletCoinSelectionBottomSheet(
       bitcoinUnit: bitcoinUnit,
       exchangeRate: exchangeRate,
       fiatCurrency: fiatCurrency,

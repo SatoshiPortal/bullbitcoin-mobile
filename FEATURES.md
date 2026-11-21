@@ -9,7 +9,7 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     ARK[Ark]
     ARK_PROTOCOL[Ark Protocol Package]
@@ -118,6 +118,16 @@ graph TB
     STATUS[Status]
     SEND[Send]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
+    SCANNING[QR and NFC Scanning]
+    IMPORT_COLDCARD[Coldcard Import]
+    PSBT_FLOW[PSBT Flow]
+    BROADCAST_SIGNED_TX -->|public QR and NFC scanning| SCANNING
+    IMPORT_COLDCARD -->|public NFC scanning| SCANNING
+    PSBT_FLOW -->|public NFC scanning| SCANNING
+    IMPORT_WATCH_ONLY[Watch-Only Wallet Import]
+    IMPORT_WATCH_ONLY -->|public QR scanning| SCANNING
+    WALLETS -->|public QR scanning| SCANNING
+    SCANNING --> BULL_UI
     RECEIVE[Receive]
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
@@ -190,6 +200,7 @@ graph TB
     QUICK_ACTIONS --> PRIMITIVES
     IMPORT_MNEMONIC --> WALLETS
     ONBOARDING --> IMPORT_MNEMONIC
+    ONBOARDING --> SETTINGS
     ONBOARDING --> WALLETS
     APP_STARTUP --> IMPORT_MNEMONIC
 
@@ -251,7 +262,7 @@ graph TB
     PAY -->|public spend admission and routine sync| WALLETS
     PAY -->|public protected broadcast| SEND
     PAY --> EXCHANGE
-    TX_HISTORY --> EXCHANGE
+    TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS --> DEFAULT_WALLETS
     LIMIT_ORDERS --> FUNDING
@@ -284,6 +295,7 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
+    SEND -->|public coin management route| COINS
     SEND -->|public spend admission and revisions| WALLETS
     SETTINGS -->|public wallet discovery| WALLETS
     SETTINGS --> CORE
@@ -301,7 +313,7 @@ graph TB
     SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM_SETTINGS
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
-    SP -->|legacy: wallet repository via core barrel| WALLETS
+    SP -->|wallet balance view and legacy repository| WALLETS
     SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
@@ -386,7 +398,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL packageStyle
-    class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -433,7 +445,6 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
    - API Clients (REST/GraphQL clients)
    - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
    - Explicit local SOCKS5 override for Bitcoin Electrum and encrypted backups
-   - UI Kit (shared widgets, theme)
    - DI setup and interfaces (Service Locator pattern)
    - Router setup and interfaces (Navigation)
    - PIN encrypted storage
@@ -445,6 +456,8 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
    - Immutable, validated value objects that ensure domain integrity
 
 > Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+Shared widgets are published by `bull_ui`. App-specific screens, adapters and localized content belong to their respective features. The late-2026 UI migration removed the shared Core widget and screen directories.
 
 ## Key Dependency Patterns
 

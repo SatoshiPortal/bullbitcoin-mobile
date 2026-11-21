@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/amount_input_mode_setting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dark_mode_switch.dart';

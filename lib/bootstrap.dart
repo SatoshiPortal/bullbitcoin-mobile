@@ -3,7 +3,8 @@ import 'package:primitives/primitives.dart' show Err;
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
-import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
+import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
+    show AppInitErrorScreen;
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'

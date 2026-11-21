@@ -1,16 +1,27 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
+import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
+import 'package:bb_mobile/features/swap/ui/widgets/swap_confirmation_details.dart';
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
+    show AddressViewer;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
+import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
+import 'package:bb_mobile/features/fees/public/fee_selection_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullFadingLinearProgress, BullTypographyX, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullConfirmationHeader,
+        BullFadingLinearProgress,
+        BullText,
+        BullTypographyX,
+        Gap;
 
 class SwapConfirmPage extends StatelessWidget {
   const SwapConfirmPage({super.key});
@@ -36,14 +47,15 @@ class SwapConfirmPage extends StatelessWidget {
     final absoluteFeesFormatted = context.select(
       (TransferBloc bloc) => bloc.state.absoluteFeesFormatted,
     );
-    final absoluteFees = context.select(
-      (TransferBloc bloc) => bloc.state.absoluteFees,
-    );
     final isConfirming = context.select(
       (TransferBloc bloc) => bloc.state.isConfirming,
     );
     final sendToExternal = context.select(
       (TransferBloc bloc) => bloc.state.sendToExternal,
+    );
+    final transferReady = context.select(
+      (TransferBloc bloc) =>
+          bloc.state.isSameChainTransfer || bloc.state.swap != null,
     );
     return Scaffold(
       appBar: AppBar(
@@ -66,11 +78,16 @@ class SwapConfirmPage extends StatelessWidget {
               crossAxisAlignment: .stretch,
               children: [
                 const Gap(8),
-                CommonSendConfirmTopArea(
-                  formattedConfirmedAmountBitcoin:
-                      formattedConfirmedAmountBitcoin,
-                  sendType: SendType.swap,
-                  sendToExternal: sendToExternal,
+                BullConfirmationHeader(
+                  amount: formattedConfirmedAmountBitcoin,
+                  title: sendToExternal
+                      ? context.loc.coreScreensExternalTransfer
+                      : context.loc.coreScreensInternalTransfer,
+                  icon: Image.asset(
+                    Assets.icons.swap.path,
+                    height: 24,
+                    width: 24,
+                  ),
                 ),
                 if (context.select(
                       (TransferBloc bloc) => bloc.state.confirmedConversion,
@@ -94,6 +111,7 @@ class SwapConfirmPage extends StatelessWidget {
                 BlocSelector<TransferBloc, TransferState, bool>(
                   selector: (state) => state.isSameChainTransfer,
                   builder: (context, isSameChainTransfer) {
+                    if (fromWallet == null) return const SizedBox.shrink();
                     if (isSameChainTransfer) {
                       final formattedFiatEquivalent = context.select((
                         TransferBloc bloc,
@@ -121,9 +139,13 @@ class SwapConfirmPage extends StatelessWidget {
                         (TransferBloc bloc) =>
                             bloc.state.toWallet?.displayLabel(context) ?? '',
                       );
-                      return CommonOnchainSendInfoSection(
-                        sendWalletLabel: fromWallet!.displayLabel(context),
-                        receiveWalletLabel: toWalletLabel,
+                      return OnchainSendInfoSection(
+                        sendWalletLabel: fromWallet.displayLabel(context),
+                        addressBuilder: (style, color) => AddressViewer(
+                          toWalletLabel,
+                          style: style,
+                          color: color,
+                        ),
                         formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
                         formattedFiatEquivalent: formattedFiatEquivalent,
                         absoluteFees: absoluteFeesFormatted,
@@ -170,22 +192,21 @@ class SwapConfirmPage extends StatelessWidget {
                         },
                       );
                     } else {
+                      if (swap == null) return const SizedBox.shrink();
                       final receiveWalletLabel = sendToExternal
                           ? null
                           : toWallet?.displayLabel(context);
-                      return CommonChainSwapSendInfoSection(
-                        sendWalletLabel: fromWallet!.displayLabel(context),
+                      return SwapConfirmationDetails(
+                        sendWalletLabel: fromWallet.displayLabel(context),
                         receiveWalletLabel: receiveWalletLabel,
                         formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
-                        swap: swap!,
-                        absoluteFeesFormatted: absoluteFeesFormatted,
-                        absoluteFees: absoluteFees,
+                        swap: swap,
                       );
                     }
                   },
                 ),
                 const Gap(24),
-                CommonConfirmSendErrorSection(
+                _SwapConfirmationError(
                   errorMessage: transferConfirmErrorMessage(
                     buildTransactionException: buildTransactionException,
                     swapFailureMessage: swapFailure?.toTranslated(context),
@@ -206,14 +227,54 @@ class SwapConfirmPage extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: CommonConfirmSendButton(
-            disableSendButton: isConfirming,
-            onPressed: () {
-              context.read<TransferBloc>().add(const TransferEvent.confirmed());
-            },
+          child: BullButton.primary(
+            label: context.loc.coreScreensConfirmButton,
+            onPressed: isConfirming || fromWallet == null || !transferReady
+                ? null
+                : () => context.read<TransferBloc>().add(
+                    const TransferEvent.confirmed(),
+                  ),
           ),
         ),
       ),
     );
+  }
+}
+
+class _SwapConfirmationError extends StatelessWidget {
+  const _SwapConfirmationError({required this.errorMessage});
+
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    if (errorMessage case final message?) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            BullText(
+              context.loc.sendErrorBuildFailed,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              color: context.appColors.error,
+              maxLines: 5,
+              textAlign: .center,
+            ),
+            const Gap(8),
+            BullText(
+              message,
+              style: context.bullType.body,
+              color: context.appColors.error,
+              maxLines: 5,
+              textAlign: .center,
+            ),
+            const Gap(8),
+          ],
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }

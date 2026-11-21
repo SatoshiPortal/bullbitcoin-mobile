@@ -37,7 +37,7 @@ sealed class SellEvent with _$SellEvent {
       SellUtxosSelected;
   const factory SellEvent.loadUtxos() = SellLoadUtxos;
 
-  // ────── shared fee modal (FeeModalActions) ──────
+  // ────── shared fee modal (FeeModalActionsPort) ──────
   /// A preset tile was picked. Commits the tier and rebuilds the fee estimate.
   const factory SellEvent.feeOptionSelected(FeeSelection feeSelection) =
       SellFeeOptionSelected;

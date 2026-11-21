@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/recipients/domain/value_objects/account_owner
 import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
@@ -18,7 +17,7 @@ import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSegmented;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -110,7 +109,7 @@ void main() {
   ) async {
     await tester.tap(
       find.descendant(
-        of: find.byType(BBSegmentedButton),
+        of: find.byType(BullSegmented),
         matching: find.text(loc.recipientsTypeConfidentialSepa),
       ),
     );
@@ -205,7 +204,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.widget<BBSegmentedButton>(find.byType(BBSegmentedButton)).selected,
+      tester.widget<BullSegmented>(find.byType(BullSegmented)).initialValue,
       RecipientType.sepaEur.name,
     );
     expect(

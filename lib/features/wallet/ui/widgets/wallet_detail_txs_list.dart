@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTransactionsByDayList;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -34,13 +34,16 @@ class WalletDetailTxsList extends StatelessWidget {
         final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
         final ongoingSwaps = selected.ongoingSwaps;
 
-        return TransactionsByDayList<Transaction>(
+        return BullTransactionsByDayList<Transaction>(
           itemsByDay: selected.txsByDay,
           itemBuilder: (context, tx) => TransactionListItem.transaction(
             tx,
             onDetailsClosed: refreshLabels,
           ),
           loadingMessage: context.loc.transactionListLoadingTransactions,
+          pendingLabel: context.loc.transactionListPending,
+          todayLabel: context.loc.transactionListToday,
+          yesterdayLabel: context.loc.transactionListYesterday,
           emptyMessage: context.loc.transactionListNoTransactions,
           header: ongoingSwaps != null && ongoingSwaps.isNotEmpty
               ? OngoingSwapsWidget(

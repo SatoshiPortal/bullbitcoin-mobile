@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTransactionsByDayList;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
@@ -30,7 +30,7 @@ class TxList extends StatelessWidget {
     final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
 
     if (failure != null) {
-      return TransactionsByDayList<Transaction>(
+      return BullTransactionsByDayList<Transaction>(
         itemsByDay: const {},
         itemBuilder: (context, tx) => TransactionListItem.transaction(
           tx,
@@ -45,6 +45,9 @@ class TxList extends StatelessWidget {
           onDetailsClosed: refreshLabels,
         ),
         loadingMessage: context.loc.transactionListLoadingTransactions,
+        pendingLabel: context.loc.transactionListPending,
+        todayLabel: context.loc.transactionListToday,
+        yesterdayLabel: context.loc.transactionListYesterday,
         emptyMessage: context.loc.transactionListNoTransactions,
         errorMessage: failure.toTranslated(context),
         sliver: sliver,
@@ -61,7 +64,7 @@ class TxList extends StatelessWidget {
     final showOngoingSwaps =
         filter == TransactionsFilter.all || filter == TransactionsFilter.swap;
 
-    return TransactionsByDayList<Transaction>(
+    return BullTransactionsByDayList<Transaction>(
       itemsByDay: txsByDay,
       itemBuilder: (context, tx) => TransactionListItem.transaction(
         tx,
@@ -76,6 +79,9 @@ class TxList extends StatelessWidget {
         onDetailsClosed: refreshLabels,
       ),
       loadingMessage: context.loc.transactionListLoadingTransactions,
+      pendingLabel: context.loc.transactionListPending,
+      todayLabel: context.loc.transactionListToday,
+      yesterdayLabel: context.loc.transactionListYesterday,
       emptyMessage: context.loc.transactionListNoTransactions,
       header:
           showOngoingSwaps && ongoingSwaps != null && ongoingSwaps.isNotEmpty

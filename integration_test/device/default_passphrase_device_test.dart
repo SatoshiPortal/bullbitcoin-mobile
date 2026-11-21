@@ -563,7 +563,7 @@ void registerPhysicalRecoveryTests() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: selectedBloc,
-            child: const VerifyMnemonicScreen(),
+            child: VerifyMnemonicScreen(onTestSucceeded: (_) {}),
           ),
         ),
       );
@@ -626,8 +626,9 @@ void registerReturnNavigationTest() {
           path: '/',
           builder: (_, _) => BlocProvider.value(
             value: bloc,
-            child: const ShowMnemonicScreen(
-              appUnlockFacade: _DeviceCancelUnlock(),
+            child: ShowMnemonicScreen(
+              onTestSucceeded: (_) {},
+              appUnlockFacade: const _DeviceCancelUnlock(),
             ),
           ),
         ),

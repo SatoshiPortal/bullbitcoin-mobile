@@ -2,12 +2,12 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullText,
         BullInlineIconButton,
         BullButton,
         BullInputText,
@@ -54,7 +54,7 @@ class _ExchangeSupportLoginScreenState
     return Scaffold(
       backgroundColor: context.appColors.background,
       appBar: AppBar(
-        title: BBText(
+        title: BullText(
           context.loc.exchangeSupportChatTitle,
           style: context.bullType.subtitle.copyWith(
             fontWeight: FontWeight.w500,
@@ -144,7 +144,7 @@ class _ExchangeSupportLoginScreenState
                               color: context.appColors.primary,
                             ),
                             const Gap(16),
-                            BBText(
+                            BullText(
                               context.loc.exchangeSupportLoginChatRequired,
                               style: context.bullType.body
                                   .copyWith(fontWeight: FontWeight.w500)

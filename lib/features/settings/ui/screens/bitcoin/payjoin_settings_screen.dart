@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
@@ -10,7 +9,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullSwitch, Gap, BullSnackBar, BullTypographyX;
+    show
+        BullText,
+        BullBorderedTile,
+        BullSwitch,
+        Gap,
+        BullSnackBar,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings: one switch per action, payments with other users
@@ -65,7 +70,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     return Row(
       children: [
         Expanded(
-          child: BBText(
+          child: BullText(
             label,
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
@@ -80,7 +85,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     );
   }
 
-  Widget _sectionTitle(String title) => BBText(
+  Widget _sectionTitle(String title) => BullText(
     title,
     style: context.bullType.label,
     color: context.appColors.secondary,
@@ -129,7 +134,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: BBText(
+                      child: BullText(
                         context.loc.settingsPayjoinDisclaimerRowLabel,
                         style: context.bullType.body.copyWith(
                           fontWeight: FontWeight.w500,
@@ -149,7 +154,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: BBText(
+                        child: BullText(
                           context.loc.settingsPayjoinAdvancedTitle,
                           style: context.bullType.body.copyWith(
                             fontWeight: FontWeight.w500,

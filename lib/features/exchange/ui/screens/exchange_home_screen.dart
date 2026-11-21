@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -189,7 +188,9 @@ class ExchangeHomeScreen extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 centerTitle: true,
-                title: showChart ? null : const TopBarBullLogo(),
+                title: showChart
+                    ? null
+                    : Assets.logos.bbLogoSmall.image(width: 40, height: 40),
                 leading: Padding(
                   // 48 dp targets keep the back arrow where it was at 16.
                   padding: EdgeInsets.only(left: showChart ? 16.0 : 4.0),

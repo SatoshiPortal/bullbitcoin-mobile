@@ -4,8 +4,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Swipe-to-reveal-one-action row. **New (key gap)** — no equivalent exists in
-/// `lib/core/widgets`.
+/// A row with one action revealed by swiping.
 ///
 /// Dragging [child] to the left reveals a single coloured action panel
 /// ([actionColor] with [actionIcon] + [actionLabel] in [actionForeground]). The

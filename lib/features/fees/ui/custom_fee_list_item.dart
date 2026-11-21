@@ -160,7 +160,7 @@ class CustomFeeListItem extends StatefulWidget {
   final bool previewLoading;
 
   /// Optional externally-owned focus node for the input field. Passed by
-  /// callers that wrap the field in [BBKeyboardActions] so the keyboard's
+  /// callers that wrap the field in [BullKeyboardActions] so the keyboard's
   /// "Done" toolbar can target it (e.g. the RBF screen). When null the
   /// widget owns and disposes an internal node.
   final FocusNode? focusNode;

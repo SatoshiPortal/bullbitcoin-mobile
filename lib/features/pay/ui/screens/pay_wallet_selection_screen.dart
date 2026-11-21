@@ -40,8 +40,6 @@ class _PayWalletSelectionScreenState extends State<PayWalletSelectionScreen> {
       (PayBloc bloc) => bloc.state is PayPreparingPaymentState,
     );
 
-    final currency = context.select((PayBloc bloc) => bloc.state.currency);
-
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.paySelectWallet)),
       body: SafeArea(
@@ -66,7 +64,6 @@ class _PayWalletSelectionScreenState extends State<PayWalletSelectionScreen> {
                             PayEvent.walletSelected(wallet: wallet),
                           ),
                     localSignersOnly: true,
-                    fiatCurrency: currency.code,
                   ),
                   const Gap(24.0),
                   ListTile(

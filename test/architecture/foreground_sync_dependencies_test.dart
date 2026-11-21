@@ -16,6 +16,8 @@ import 'package:path/path.dart' as p;
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
 // These four edges are documented in FEATURES.md.
+// QR and NFC consumers use the scanning feature's public capabilities; its
+// implementation has no dependencies on those consumers (see FEATURES.md).
 const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'app_unlock wallet',
@@ -28,7 +30,7 @@ const _allowedTargets = <String, String>{
   'bip85_entropy': 'wallet',
   'bitbox': 'import_watch_only_wallet wallet',
   'bitcoin_price': 'settings',
-  'broadcast_signed_tx': 'send wallet',
+  'broadcast_signed_tx': 'scanning send wallet',
   'buy': 'exchange fees fund_exchange labels settings transactions wallet',
   'coins': 'bitcoin_price labels settings wallet',
   'consolidation': 'send wallet',
@@ -40,11 +42,11 @@ const _allowedTargets = <String, String>{
   'exchange_support_chat': 'exchange',
   'fees': 'electrum_settings wallet',
   'fund_exchange': 'exchange recipients',
-  'import_coldcard': 'import_watch_only_wallet',
+  'import_coldcard': 'import_watch_only_wallet scanning',
   'import_mnemonic': 'electrum_settings wallet',
   'import_qr_device': 'import_watch_only_wallet',
   'import_wallet': 'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
-  'import_watch_only_wallet': 'wallet',
+  'import_watch_only_wallet': 'scanning wallet',
   'labels': 'wallet',
   'ledger': 'import_watch_only_wallet wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',
@@ -52,12 +54,12 @@ const _allowedTargets = <String, String>{
   'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
   'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
   'pin_code': 'app_unlock settings test_wallet_backup',
-  'psbt_flow': 'broadcast_signed_tx wallet',
+  'psbt_flow': 'broadcast_signed_tx scanning wallet',
   'receive': 'bitbox labels ledger settings swap transactions wallet',
   'recipients': 'exchange settings',
   'replace_by_fee': 'fees send wallet',
   'sell': 'bitcoin_price exchange fees labels recipients send settings transactions wallet',
-  'send': 'ark bitbox consolidation fees labels ledger psbt_flow settings sp swap transactions wallet',
+  'send': 'ark bitbox coins consolidation fees labels ledger psbt_flow settings sp swap transactions wallet',
   'settings': 'ark address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code quick_actions recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
   'status_check': 'electrum_settings recoverbull wallet',
@@ -66,7 +68,7 @@ const _allowedTargets = <String, String>{
   'test_wallet_backup': 'app_unlock onboarding recoverbull wallet',
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
-  'wallet': 'ark announcements backup_settings bitcoin_price consolidation electrum_settings import_watch_only_wallet labels onboarding quick_actions receive recoverbull send settings sp swap tor_settings transactions',
+  'wallet': 'ark announcements backup_settings bitcoin_price consolidation electrum_settings import_watch_only_wallet labels onboarding quick_actions receive recoverbull scanning send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

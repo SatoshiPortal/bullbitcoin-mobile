@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
@@ -11,6 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullButton,
         BullShapesX,
         BullSupportButton,
@@ -57,7 +57,8 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
           icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: BBKeyboardActions(
+      body: BullKeyboardActions(
+        doneText: context.loc.doneButton,
         disableScroll: true,
         child: BlocBuilder<ReplaceByFeeCubit, ReplaceByFeeState>(
           builder: (context, state) {

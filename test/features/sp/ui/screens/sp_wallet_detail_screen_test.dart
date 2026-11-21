@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullTransactionListItem;
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
@@ -10,8 +12,8 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletDetailBalanceCard;
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
@@ -138,12 +140,20 @@ void main() {
     expect(find.text('Scan'), findsNothing);
   });
 
-  testWidgets('uses wallet detail balance card', (tester) async {
+  testWidgets('uses the local Bitcoin balance card palette', (tester) async {
     await cubit.load();
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.byType(WalletDetailBalanceCard), findsOneWidget);
+    final card = find.byType(WalletDetailBalanceCard);
+    expect(card, findsOneWidget);
+    final container = tester.widget<Container>(
+      find.descendant(of: card, matching: find.byType(Container)).first,
+    );
+    final decoration = container.decoration! as BoxDecoration;
+    expect(decoration.image?.colorFilter, isNull);
+    final colors = tester.element(card).appColors;
+    expect((decoration.border! as Border).bottom.color, colors.onTertiary);
   });
 
   testWidgets('the nudge Scan button scans in place, without routing away', (
@@ -213,7 +223,7 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.byType(TxListItem), findsOneWidget);
+    expect(find.byType(BullTransactionListItem), findsOneWidget);
   });
 
   // The flag itself is computed by LoadSpWalletDataUsecase (see its test); the
@@ -332,7 +342,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Verification failed'), findsOneWidget);
-    expect(find.byType(TxListItem), findsOneWidget);
+    expect(find.byType(BullTransactionListItem), findsOneWidget);
   });
 
   testWidgets('a confirmed payment with no time sits under Verifying', (
