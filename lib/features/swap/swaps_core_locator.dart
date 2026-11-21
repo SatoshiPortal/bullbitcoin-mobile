@@ -4,7 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
 import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
@@ -21,7 +21,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_us
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
@@ -30,7 +29,6 @@ import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sync/sync.dart' show WalletConnectionPort;
-import 'package:secrets/secrets.dart';
 
 /// Wires the self-contained `swaps` engine package to the app: storage
 /// backends, wallet/fee/electrum callbacks, the watcher, and the usecases
@@ -45,14 +43,8 @@ class SwapsLocator {
     );
     final rowStore = DriftSwapRowStore(locator<BoltzSwapsDatabase>());
     locator.registerLazySingleton<SwapStorage>(
-      () => SwapStorage(
-        rows: rowStore,
-        secrets: SecureSecretStore(
-          locator<KeyValueStorageDatasource<String>>(
-            instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-          ),
-        ),
-      ),
+      () =>
+          SwapStorage(rows: rowStore, secrets: locator<Secrets>().swapKeychain),
     );
     locator.registerLazySingleton<SwapStorage>(
       () => locator<SwapStorage>().regtestView(

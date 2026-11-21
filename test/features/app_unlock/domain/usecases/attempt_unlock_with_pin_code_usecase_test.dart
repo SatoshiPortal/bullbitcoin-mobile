@@ -1,15 +1,28 @@
+import 'dart:io';
+
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
+import 'package:bb_mobile/features/pin_code/domain/entities/unlock_attempt.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/unlock_cooldown.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
-import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockPinCodeRepository extends Mock implements PinCodeRepository {}
+class RecordingStorage extends FakeSecureStoragePlatform {
+  final keysRead = <String>[];
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) {
+    keysRead.add(key);
+    return super.read(key: key, options: options);
+  }
+}
 
 class MockFailedUnlockAttemptsRepository extends Mock
     implements FailedUnlockAttemptsRepository {}
@@ -17,7 +30,8 @@ class MockFailedUnlockAttemptsRepository extends Mock
 class MockTimeoutCalculator extends Mock implements TimeoutCalculator {}
 
 void main() {
-  late MockPinCodeRepository pinCodeRepository;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late RecordingStorage storage;
   late MockFailedUnlockAttemptsRepository attemptsRepository;
   late MockTimeoutCalculator timeoutCalculator;
   late UnlockCooldown unlockCooldown;
@@ -28,12 +42,14 @@ void main() {
   });
 
   setUp(() {
-    pinCodeRepository = MockPinCodeRepository();
+    storage = RecordingStorage()..install();
     attemptsRepository = MockFailedUnlockAttemptsRepository();
     timeoutCalculator = MockTimeoutCalculator();
     unlockCooldown = UnlockCooldown();
     usecase = AttemptUnlockWithPinCodeUsecase(
-      pinCodeRepository: pinCodeRepository,
+      accessKeychain: Secrets(
+        scratchDirectory: () async => Directory.systemTemp.path,
+      ).accessKeychain,
       failedUnlockAttemptsRepository: attemptsRepository,
       timeoutCalculator: timeoutCalculator,
       unlockCooldown: unlockCooldown,
@@ -53,8 +69,7 @@ void main() {
     test(
       'returns Ok(UnlockAttempt(success: true)) and resets counter',
       () async {
-        when(() => pinCodeRepository.verifyPinCode(any()))
-            .thenAnswer((_) async => const Ok(true));
+        storage.entries['securityKey'] = '1234';
         when(() => attemptsRepository.setFailedUnlockAttempts(0))
             .thenAnswer((_) async => const Ok(null));
 
@@ -68,8 +83,7 @@ void main() {
     );
 
     test('clears any persisted lockout', () async {
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(true));
+      storage.entries['securityKey'] = '1234';
       when(() => attemptsRepository.setFailedUnlockAttempts(0))
           .thenAnswer((_) async => const Ok(null));
 
@@ -79,12 +93,58 @@ void main() {
     });
   });
 
+  group('PIN access failures', () {
+    test('an absent PIN fails without recording a wrong attempt', () async {
+      final result = await usecase.execute('0000');
+
+      expect(
+        result,
+        isA<Err<UnlockAttempt, AppUnlockFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<AppUnlockPinVerifyFailure>(),
+        ),
+      );
+      expect(storage.keysRead, ['securityKey']);
+      expect(storage.entries, isEmpty);
+      verifyNever(() => attemptsRepository.setFailedUnlockAttempts(any()));
+      verifyNever(() => attemptsRepository.setLockedUntil(any()));
+    });
+
+    test(
+      'a locked PIN read preserves its failure and changes nothing',
+      () async {
+        storage.entries['securityKey'] = '1234';
+        storage.locked = true;
+        final before = Map<String, String>.of(storage.entries);
+
+        final result = await usecase.execute('0000');
+
+        expect(
+          result,
+          isA<Err<UnlockAttempt, AppUnlockFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<AppUnlockPinVerifyFailure>().having(
+              (failure) => failure.logMessage,
+              'message',
+              'Keychain locked',
+            ),
+          ),
+        );
+        expect(storage.keysRead, ['securityKey']);
+        expect(storage.entries, before);
+        verifyNever(() => attemptsRepository.setFailedUnlockAttempts(any()));
+        verifyNever(() => attemptsRepository.setLockedUntil(any()));
+      },
+    );
+  });
+
   group('wrong PIN', () {
     test(
       'increments counter and returns Ok(UnlockAttempt(success: false))',
       () async {
-        when(() => pinCodeRepository.verifyPinCode(any()))
-            .thenAnswer((_) async => const Ok(false));
+        storage.entries['securityKey'] = '1234';
         when(() => attemptsRepository.getFailedUnlockAttempts())
             .thenAnswer((_) async => const Ok(2));
         when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
@@ -102,8 +162,7 @@ void main() {
     );
 
     test('persists a wall-clock lockout for the computed timeout', () async {
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(false));
+      storage.entries['securityKey'] = '1234';
       when(() => attemptsRepository.getFailedUnlockAttempts())
           .thenAnswer((_) async => const Ok(2));
       when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
@@ -143,7 +202,7 @@ void main() {
 
         final result = await usecase.execute('1234');
 
-        verifyNever(() => pinCodeRepository.verifyPinCode(any()));
+        expect(storage.keysRead, isNot(contains('securityKey')));
         final attempt = (result as Ok).value;
         expect(attempt.success, false);
         expect(attempt.failedAttempts, 4);
@@ -164,7 +223,7 @@ void main() {
 
         final result = await usecase.execute('1234');
 
-        verifyNever(() => pinCodeRepository.verifyPinCode(any()));
+        expect(storage.keysRead, isNot(contains('securityKey')));
         expect((result as Ok).value.timeout, 30);
       },
     );
@@ -173,14 +232,13 @@ void main() {
       unlockCooldown.start(0);
       when(() => attemptsRepository.getFailedUnlockAttempts())
           .thenAnswer((_) async => const Ok(4));
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(true));
+      storage.entries['securityKey'] = '1234';
       when(() => attemptsRepository.setFailedUnlockAttempts(0))
           .thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute('1234');
 
-      verify(() => pinCodeRepository.verifyPinCode('1234')).called(1);
+      expect(storage.keysRead.where((key) => key == 'securityKey').length, 1);
       expect((result as Ok).value.success, true);
     });
   });
@@ -189,10 +247,7 @@ void main() {
     test(
       'returns Err(AppUnlockPinVerifyFailure) when verifyPinCode fails',
       () async {
-        when(() => pinCodeRepository.verifyPinCode(any())).thenAnswer(
-          (_) async =>
-              const Err(PinCodeUnexpectedFailure('raw keychain error')),
-        );
+        storage.scripted.add(Exception('raw keychain error'));
 
         final result = await usecase.execute('1234');
 
@@ -202,8 +257,7 @@ void main() {
     );
 
     test('returns Err(AppUnlockUnexpectedFailure) when getFailedUnlockAttempts fails', () async {
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(false));
+      storage.entries['securityKey'] = '1234';
       when(() => attemptsRepository.getFailedUnlockAttempts()).thenAnswer(
         (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
       );
@@ -215,8 +269,7 @@ void main() {
     });
 
     test('returns Err(AppUnlockUnexpectedFailure) when setFailedUnlockAttempts fails', () async {
-      when(() => pinCodeRepository.verifyPinCode(any()))
-          .thenAnswer((_) async => const Ok(true));
+      storage.entries['securityKey'] = '1234';
       when(() => attemptsRepository.setFailedUnlockAttempts(0)).thenAnswer(
         (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
       );
@@ -232,8 +285,7 @@ void main() {
       () async {
         when(() => attemptsRepository.getFailedUnlockAttempts())
             .thenAnswer((_) async => const Ok(2));
-        when(() => pinCodeRepository.verifyPinCode(any()))
-            .thenAnswer((_) async => const Ok(false));
+        storage.entries['securityKey'] = '1234';
         when(() => timeoutCalculator.calculateTimeout(2)).thenReturn(0);
         when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
         when(() => attemptsRepository.setFailedUnlockAttempts(3))
@@ -247,7 +299,7 @@ void main() {
 
         expect(failedPersistence, isA<Err>());
         expect((blockedRetry as Ok).value.timeout, 30);
-        verify(() => pinCodeRepository.verifyPinCode('0000')).called(1);
+        expect(storage.keysRead.where((key) => key == 'securityKey').length, 1);
       },
     );
 
@@ -262,7 +314,7 @@ void main() {
 
         expect(result, isA<Err>());
         expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
-        verifyNever(() => pinCodeRepository.verifyPinCode(any()));
+        expect(storage.keysRead, isNot(contains('securityKey')));
       },
     );
   });

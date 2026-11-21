@@ -16,6 +16,7 @@ import 'package:swaps/swaps.dart';
 import 'support/real_swap_backends.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   for (final rapid in [false, true]) {
     test(
       'R1 real settings and engine agree after ${rapid ? 'rapid round trip' : 'single switch control'}',
@@ -31,7 +32,7 @@ void main() {
         final swapDb = BoltzSwapsDatabase(NativeDatabase.memory());
         final storage = SwapStorage(
           rows: DriftSwapRowStore(swapDb),
-          secrets: ReproKeychainBackend(),
+          secrets: ReproKeychainBackend().capability,
         );
         SwapEngineParts parts(NetworkEnv environment) => (
           store: SwapStoreImpl(storage: storage, environment: environment),

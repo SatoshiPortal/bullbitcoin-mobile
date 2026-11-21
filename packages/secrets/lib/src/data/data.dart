@@ -5,6 +5,7 @@
 /// the on-disk models — those stay behind this file.
 library;
 
+export 'owner_keychain.dart' show OwnerKeychain, OwnerKey;
 export 'boundary.dart' show boundary;
 export 'database_key_repository.dart' show DatabaseKeyRepository;
 export 'exceptions.dart';

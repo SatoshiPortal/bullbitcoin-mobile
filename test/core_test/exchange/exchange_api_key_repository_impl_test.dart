@@ -4,37 +4,20 @@ import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _Storage extends Fake implements KeyValueStorageDatasource<String> {
-  final values = <String, String>{};
-  final reads = <String>[];
-  Exception? readFailure;
-  Exception? writeFailure;
-  Exception? deleteFailure;
-
+class _Storage extends FakeSecureStoragePlatform {
+  final readKeys = <String>[];
   @override
-  Future<String?> getValue(String key) async {
-    reads.add(key);
-    final failure = readFailure;
-    if (failure != null) throw failure;
-    return values[key];
-  }
-
-  @override
-  Future<void> saveValue({required String key, required String value}) async {
-    final failure = writeFailure;
-    if (failure != null) throw failure;
-    values[key] = value;
-  }
-
-  @override
-  Future<void> deleteValue(String key) async {
-    final failure = deleteFailure;
-    if (failure != null) throw failure;
-    values.remove(key);
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) {
+    readKeys.add(key);
+    return super.read(key: key, options: options);
   }
 }
 
@@ -67,13 +50,16 @@ void main() {
   late ExchangeApiKeyRepositoryImpl repository;
 
   setUp(() {
-    storage = _Storage();
-    repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+    storage = _Storage()..install();
+    repository = ExchangeApiKeyRepositoryImpl(
+      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
+          .exchangeKeychain,
+    );
   });
 
   test('reads selected environment at point of use without caching', () async {
-    storage.values['exchange_api_key'] = jsonEncode(_fields);
-    storage.values['exchange_api_key_testnet'] = jsonEncode({
+    storage.entries['exchange_api_key'] = jsonEncode(_fields);
+    storage.entries['exchange_api_key_testnet'] = jsonEncode({
       ..._fields,
       'key': 'test-only',
     });
@@ -93,7 +79,7 @@ void main() {
         'test-only',
       ),
     );
-    storage.values['exchange_api_key'] = jsonEncode({
+    storage.entries['exchange_api_key'] = jsonEncode({
       ..._fields,
       'key': 'replacement',
     });
@@ -105,7 +91,7 @@ void main() {
         'replacement',
       ),
     );
-    storage.values.remove('exchange_api_key');
+    storage.entries.remove('exchange_api_key');
     expect(
       await repository.readActiveApiKey(isTestnet: false),
       isA<Ok<String?, ExchangeApiKeyFailure>>().having(
@@ -114,7 +100,7 @@ void main() {
         isNull,
       ),
     );
-    expect(storage.reads, [
+    expect(storage.readKeys, [
       'exchange_api_key',
       'exchange_api_key_testnet',
       'exchange_api_key',
@@ -129,9 +115,9 @@ void main() {
       jsonEncode({..._fields, 'isActive': false}),
     ]) {
       if (stored == null) {
-        storage.values.clear();
+        storage.entries.clear();
       } else {
-        storage.values['exchange_api_key'] = stored;
+        storage.entries['exchange_api_key'] = stored;
       }
       expect(
         await repository.readActiveApiKey(isTestnet: false),
@@ -147,7 +133,7 @@ void main() {
   test(
     'authentication ignores metadata and does not add expiry policy',
     () async {
-      storage.values['exchange_api_key'] = jsonEncode({
+      storage.entries['exchange_api_key'] = jsonEncode({
         'key': _key,
         'isActive': true,
         'createdAt': 'invalid',
@@ -174,7 +160,7 @@ void main() {
         jsonEncode({'key': 4, 'isActive': true}),
         jsonEncode({'key': _key, 'isActive': 'true'}),
       ]) {
-        storage.values['exchange_api_key'] = record;
+        storage.entries['exchange_api_key'] = record;
         final result = await repository.readActiveApiKey(isTestnet: false);
         expect(
           result,
@@ -184,7 +170,7 @@ void main() {
             isA<ExchangeApiKeyInvalidFailure>(),
           ),
         );
-        expect(storage.values['exchange_api_key'], record);
+        expect(storage.entries['exchange_api_key'], record);
       }
     },
   );
@@ -192,8 +178,8 @@ void main() {
   test(
     'storage refusal stays distinct from logout and never echoes its message',
     () async {
-      storage.values['exchange_api_key'] = jsonEncode(_fields);
-      storage.readFailure = Exception('keychain refused $_key');
+      storage.entries['exchange_api_key'] = jsonEncode(_fields);
+      storage.scripted.add(Exception('keychain refused $_key'));
       final result = await repository.readActiveApiKey(isTestnet: false);
       expect(
         result,
@@ -206,7 +192,7 @@ void main() {
       if (result case Err(:final failure)) {
         expect(failure.logMessage, isNot(contains(_key)));
       }
-      expect(storage.values, contains('exchange_api_key'));
+      expect(storage.entries, contains('exchange_api_key'));
     },
   );
 
@@ -217,7 +203,7 @@ void main() {
       'synthetic\u0000',
       'synthetic\u{1f600}',
     ]) {
-      storage.values['exchange_api_key_testnet'] = jsonEncode({
+      storage.entries['exchange_api_key_testnet'] = jsonEncode({
         'key': key,
         'isActive': true,
       });
@@ -235,8 +221,8 @@ void main() {
       await repository.saveApiKey(_credential(), isTestnet: true),
       isA<Ok<void, ExchangeApiKeyFailure>>(),
     );
-    expect(storage.values.keys, ['exchange_api_key_testnet']);
-    expect(jsonDecode(storage.values['exchange_api_key_testnet'] ?? ''), {
+    expect(storage.entries.keys, ['exchange_api_key_testnet']);
+    expect(jsonDecode(storage.entries['exchange_api_key_testnet'] ?? ''), {
       ..._fields,
       'lastUsedAt': null,
       'expiresAt': null,
@@ -244,7 +230,7 @@ void main() {
   });
 
   test('save and delete failures are sanitized', () async {
-    storage.writeFailure = Exception(_key);
+    storage.scriptedWrites.add(Exception(_key));
     final saved = await repository.saveApiKey(_credential(), isTestnet: false);
     expect(
       saved,
@@ -257,7 +243,7 @@ void main() {
     if (saved case Err(:final failure)) {
       expect(failure.logMessage, isNot(contains(_key)));
     }
-    storage.deleteFailure = Exception(_key);
+    storage.scriptedWrites.add(Exception(_key));
     expect(
       await repository.deleteApiKey(isTestnet: false),
       isA<Err<void, ExchangeApiKeyFailure>>().having(
@@ -269,12 +255,12 @@ void main() {
   });
 
   test('delete affects only the selected environment', () async {
-    storage.values['exchange_api_key'] = jsonEncode(_fields);
-    storage.values['exchange_api_key_testnet'] = jsonEncode(_fields);
+    storage.entries['exchange_api_key'] = jsonEncode(_fields);
+    storage.entries['exchange_api_key_testnet'] = jsonEncode(_fields);
     expect(
       await repository.deleteApiKey(isTestnet: true),
       isA<Ok<void, ExchangeApiKeyFailure>>(),
     );
-    expect(storage.values.keys, ['exchange_api_key']);
+    expect(storage.entries.keys, ['exchange_api_key']);
   });
 }

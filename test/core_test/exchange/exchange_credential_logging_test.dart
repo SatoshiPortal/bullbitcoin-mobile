@@ -20,7 +20,8 @@ import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:dio/dio.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,29 +80,6 @@ class _Reporter implements LoggerReporter {
   }
 }
 
-class _Storage extends Fake implements KeyValueStorageDatasource<String> {
-  String? value;
-  Exception? readFailure;
-  Exception? writeFailure;
-  @override
-  Future<String?> getValue(String key) async {
-    if (readFailure case final Exception error) throw error;
-    return value;
-  }
-
-  @override
-  Future<void> saveValue({required String key, required String value}) async {
-    if (writeFailure case final Exception error) throw error;
-    this.value = value;
-  }
-
-  @override
-  Future<void> deleteValue(String key) async {
-    if (writeFailure case final Exception error) throw error;
-    value = null;
-  }
-}
-
 ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
   id: 'id',
   key: _sensitive,
@@ -118,7 +96,7 @@ ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
 void main() {
   late Directory directory;
   late _Reporter reporter;
-  late _Storage storage;
+  late FakeSecureStoragePlatform storage;
   late ExchangeApiKeyRepositoryImpl repository;
   setUp(() async {
     directory = await Directory.systemTemp.createTemp(
@@ -126,8 +104,11 @@ void main() {
     );
     reporter = _Reporter();
     log = Logger.replace(directory: directory, reporter: reporter);
-    storage = _Storage();
-    repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+    storage = FakeSecureStoragePlatform().install();
+    repository = ExchangeApiKeyRepositoryImpl(
+      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
+          .exchangeKeychain,
+    );
   });
   tearDown(() async {
     await log.flush();
@@ -137,7 +118,7 @@ void main() {
   test(
     'a legacy action refuses unavailable credentials without reporting',
     () async {
-      storage.readFailure = Exception(_sensitive);
+      storage.scripted.add(Exception(_sensitive));
       final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
       addTearDown(() => dio.close(force: true));
       addExchangeAuthentication(
@@ -169,7 +150,7 @@ void main() {
   );
 
   test('statistics credential refusal never invokes the reporter', () async {
-    storage.readFailure = Exception(_sensitive);
+    storage.scripted.add(Exception(_sensitive));
     final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
     addTearDown(() => dio.close(force: true));
     addExchangeAuthentication(
@@ -196,7 +177,7 @@ void main() {
   });
 
   test('document credential refusal never invokes the reporter', () async {
-    storage.readFailure = Exception(_sensitive);
+    storage.scripted.add(Exception(_sensitive));
     final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
     addTearDown(() => dio.close(force: true));
     addExchangeAuthentication(
@@ -228,9 +209,10 @@ void main() {
       '${invalidJson ? 'corrupt' : 'inaccessible'} storage logs one failure and one recovery',
       () async {
         if (invalidJson) {
-          storage.value = '{"key":"$_sensitive", malformed';
+          storage.entries['exchange_api_key_testnet'] =
+              '{"key":"$_sensitive", malformed';
         } else {
-          storage.readFailure = Exception(_sensitive);
+          storage.scripted.addAll(List.filled(3, Exception(_sensitive)));
         }
         for (var attempt = 0; attempt < 3; attempt++) {
           expect(
@@ -238,8 +220,10 @@ void main() {
             isTrue,
           );
         }
-        storage.readFailure = null;
-        storage.value = jsonEncode({'key': _sensitive, 'isActive': true});
+        storage.entries['exchange_api_key_testnet'] = jsonEncode({
+          'key': _sensitive,
+          'isActive': true,
+        });
         for (var attempt = 0; attempt < 2; attempt++) {
           expect(
             await repository.readActiveApiKey(isTestnet: true) is Ok,
@@ -258,7 +242,7 @@ void main() {
   }
 
   test('read diagnostics remain independent for both environments', () async {
-    storage.readFailure = Exception(_sensitive);
+    storage.scripted.addAll(List.filled(4, Exception(_sensitive)));
     for (final environment in [false, true, false, true]) {
       expect(
         await repository.readActiveApiKey(isTestnet: environment) is Err,
@@ -273,7 +257,7 @@ void main() {
   });
 
   test('recoverable write and delete failures persist without invoking the reporter', () async {
-    storage.writeFailure = Exception(_sensitive);
+    storage.scriptedWrites.addAll(List.filled(2, Exception(_sensitive)));
     expect(
       await repository.saveApiKey(_credential(), isTestnet: true) is Err,
       isTrue,

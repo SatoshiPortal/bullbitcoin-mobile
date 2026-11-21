@@ -24,8 +24,11 @@ class _ReadBarrierKeychain extends ReproKeychainBackend {
   final firstRead = Completer<void>();
 
   @override
-  Future<String?> read(String key) async {
-    final snapshot = await super.read(key);
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    final snapshot = await super.read(key: key, options: options);
     if (enabled && key.startsWith('swap_master_key_index_')) {
       counterReads++;
       if (!firstRead.isCompleted) firstRead.complete();
@@ -39,6 +42,7 @@ class _ReadBarrierKeychain extends ReproKeychainBackend {
 }
 
 void main() {
+  SwapNetworkTestBinding();
   setUpAll(BullSdk.init);
   for (final variant in [
     'same-engine',
@@ -68,7 +72,7 @@ void main() {
         final keychain = _ReadBarrierKeychain();
         final storage = SwapStorage(
           rows: DriftSwapRowStore(db),
-          secrets: keychain,
+          secrets: keychain.capability,
         );
         final regtestStorage = storage.regtestView(
           rows: DriftSwapRowStore(regtestDb),

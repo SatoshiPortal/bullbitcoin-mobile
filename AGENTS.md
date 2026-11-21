@@ -270,7 +270,7 @@ Sources of truth: [`logger.dart`](packages/bull_logger/lib/src/logger.dart), ini
 
 This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold these as hard as the architecture rules:
 
-- **Only `packages/secrets` touches the keystore that holds the seeds.** No new import of `flutter_secure_storage` outside it (the app's own secure store in `lib/core/storage` is the one allowlisted exception), no import of `package:secrets/src/`, and never an `// ignore:` of `invalid_use_of_internal_member`. `make custody-ci-check` fails on any of them in CI; local `make custody-check` runs the Dart key-material gate, and the `PR custody review` workflow asks the contributor why in a PR comment. Rules: `tools/pr_governance/custody.js`.
+- **Only `packages/secrets` touches the keystore that holds the seeds.** No import of `flutter_secure_storage` outside it; owner-scoped capabilities replace the former app-store exception. No import of `package:secrets/src/`, and never an `// ignore:` of `invalid_use_of_internal_member`. `make custody-ci-check` fails on any of them in CI; local `make custody-check` runs the Dart key-material gate, and the `PR custody review` workflow asks the contributor why in a PR comment. Rules: `tools/pr_governance/custody.js`.
 - **Never log secrets.** Mnemonics, seeds, xprivs, PINs, raw key material never reach logs, Sentry, or analytics. Scrub before reporting; assume anything logged is exfiltrated.
 - **Secrets are ephemeral.** Read from `flutter_secure_storage` at point of use; don't cache key material in long-lived bloc/singleton state. Treat a revealed value as short-lived.
 - **Sealed UI for display.** Show a secret through a widget that reads it internally and never returns it (the `MnemonicView` pattern — see ARCHITECTURE.md "Sealed UI as a security tool"); never add a getter that hands the raw value to a caller.
@@ -300,3 +300,9 @@ This app holds users' keys. A leak is not a bug, it's a loss of funds. Hold thes
 ## When in doubt
 
 Plan first, code second. Read the existing facade of the feature you're touching. If the architecture file says one thing and the code says another, the file wins — flag the legacy code as a follow-up rather than copying it.
+
+## Owner-scoped keychain capabilities
+
+`packages/secrets` owns the legacy OS keychain through closed access, exchange, Silent Payments and swap capabilities. Access compares the PIN internally; no stored PIN leaves the package. Consumers select a capability rather than a key or arbitrary prefix. The generic `lib/core/storage` secure key-value datasource and its custody exception are removed. Existing keys and Android/iOS plugin options are preserved, with no data migration. Silent Payments configuration remains in its existing keychain entries even though it is not secret.
+
+`packages/swaps` depends directly on `secrets`: `SwapStorage` owns the legacy `swap_` key composition and maps `SwapKeychain` failures inside the engine. Composition injects the closed capability directly, with no feature-owned secret-store bridge. Its regtest view shares the canonical capability and fingerprint allocation locks; only swap blobs use the separate `swap_regtest_` namespace.

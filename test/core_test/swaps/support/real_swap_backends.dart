@@ -1,19 +1,19 @@
+import 'package:flutter_test/flutter_test.dart'
+    show AutomatedTestWidgetsFlutterBinding;
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:swaps/swaps.dart';
 
 // The only substitutes are persistence/keychain and remote-chain backends.
 // The database, row mapping, store, provider repository and driver are real.
-class ReproKeychainBackend implements SecretStore {
-  final values = <String, String>{};
+class ReproKeychainBackend extends FakeSecureStoragePlatform {
+  Map<String, String> get values => entries;
 
-  @override
-  Future<String?> read(String key) async => values[key];
-
-  @override
-  Future<void> write(String key, String value) async => values[key] = value;
-
-  @override
-  Future<void> delete(String key) async => values.remove(key);
+  SwapKeychain get capability {
+    install();
+    return Secrets(scratchDirectory: () async => '/unused').swapKeychain;
+  }
 }
 
 class ReproChainBackend implements LockupChain {
@@ -67,4 +67,11 @@ class ReproElectrumBackend implements ElectrumRunner {
     required bool isLiquid,
     required NetworkEnv environment,
   }) async => true;
+}
+
+// These integration-style unit tests talk to their own loopback HTTP server.
+// Keep plugin bindings without replacing the real transport with HTTP 400.
+class SwapNetworkTestBinding extends AutomatedTestWidgetsFlutterBinding {
+  @override
+  bool get overrideHttpClient => false;
 }

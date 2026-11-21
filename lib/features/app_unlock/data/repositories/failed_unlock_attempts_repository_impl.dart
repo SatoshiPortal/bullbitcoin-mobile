@@ -1,13 +1,10 @@
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 
 class FailedUnlockAttemptsRepository {
-  final KeyValueStorageDatasource<String> _storage;
-
-  static const _failedUnlockAttemptsKey = 'failedUnlockAttemptsKey';
-  static const _lockedUntilKey = 'unlockLockedUntilKey';
+  final AccessKeychain _storage;
 
   FailedUnlockAttemptsRepository(this._storage);
 
@@ -15,10 +12,10 @@ class FailedUnlockAttemptsRepository {
     int attempts,
   ) async {
     try {
-      await _storage.saveValue(
-        key: _failedUnlockAttemptsKey,
-        value: attempts.toString(),
-      );
+      final result = await _storage.writeAttempts(attempts.toString());
+      if (result case Err(:final failure)) {
+        return Err(AppUnlockUnexpectedFailure(failure.logMessage));
+      }
       return const Ok(null);
     } catch (e, st) {
       log.severe(
@@ -32,7 +29,11 @@ class FailedUnlockAttemptsRepository {
 
   Future<Result<int, AppUnlockFailure>> getFailedUnlockAttempts() async {
     try {
-      final timeout = await _storage.getValue(_failedUnlockAttemptsKey);
+      final result = await _storage.readAttempts();
+      if (result case Err(:final failure)) {
+        return Err(AppUnlockUnexpectedFailure(failure.logMessage));
+      }
+      final timeout = (result as Ok<String?, SecretFailure>).value;
       return Ok(int.tryParse(timeout ?? '0') ?? 0);
     } catch (e, st) {
       log.severe(message: 'Failed to get unlock attempts', error: e, trace: st);
@@ -50,12 +51,17 @@ class FailedUnlockAttemptsRepository {
   ) async {
     try {
       if (lockedUntil == null) {
-        await _storage.deleteValue(_lockedUntilKey);
+        final result = await _storage.deleteLockedUntil();
+        if (result case Err(:final failure)) {
+          return Err(AppUnlockUnexpectedFailure(failure.logMessage));
+        }
       } else {
-        await _storage.saveValue(
-          key: _lockedUntilKey,
-          value: lockedUntil.millisecondsSinceEpoch.toString(),
+        final result = await _storage.writeLockedUntil(
+          lockedUntil.millisecondsSinceEpoch.toString(),
         );
+        if (result case Err(:final failure)) {
+          return Err(AppUnlockUnexpectedFailure(failure.logMessage));
+        }
       }
       return const Ok(null);
     } catch (e, st) {
@@ -70,7 +76,11 @@ class FailedUnlockAttemptsRepository {
 
   Future<Result<DateTime?, AppUnlockFailure>> getLockedUntil() async {
     try {
-      final raw = await _storage.getValue(_lockedUntilKey);
+      final result = await _storage.readLockedUntil();
+      if (result case Err(:final failure)) {
+        return Err(AppUnlockUnexpectedFailure(failure.logMessage));
+      }
+      final raw = (result as Ok<String?, SecretFailure>).value;
       final epoch = raw == null ? null : int.tryParse(raw);
       return Ok(
         epoch == null ? null : DateTime.fromMillisecondsSinceEpoch(epoch),

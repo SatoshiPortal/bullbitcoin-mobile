@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -33,8 +32,6 @@ class CheckForExistingDefaultWalletsUsecase {
   Future<Result<bool, AppStartupFailure>> execute() async {
     try {
       return await _check();
-    } on KeychainLockedException {
-      return const Err(AppStartupKeychainLockedFailure());
     } on Object catch (e, st) {
       log.severe(
         message: 'Default wallet check failed at startup',
