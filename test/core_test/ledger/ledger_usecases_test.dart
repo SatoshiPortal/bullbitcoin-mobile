@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/features/ledger/domain/read_ledger_account_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv, Err, ScriptType;
+import 'package:primitives/primitives.dart'
+    show NetworkEnv, Err, Ok, ScriptType;
+import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/features/ledger/domain/signer_account.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -53,6 +55,26 @@ void main() {
 
       expect((result as Err).failure, isA<LedgerRejectedByUserFailure>());
     });
+  });
+
+  test('address mismatch is a failure, never verification success', () async {
+    when(
+      () => repository.verifyAddress(
+        device,
+        address: 'requested-address',
+        derivationPath: "m/84'/0'/0'/0/0",
+        scriptType: ScriptType.bip84,
+      ),
+    ).thenAnswer((_) async => const Ok(false));
+    final result = await VerifyAddressLedgerUsecase(repository: repository)
+        .execute(
+          device: device,
+          address: 'requested-address',
+          network: NetworkEnv.mainnet,
+          derivationPath: "m/84'/0'/0'/0/0",
+          scriptType: ScriptType.bip84,
+        );
+    expect(result, isA<Err<bool, LedgerFailure>>());
   });
 
   group('ReadLedgerAccountUsecase', () {
