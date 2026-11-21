@@ -24,8 +24,12 @@ final class LimitOrdersLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<LimitOrderRepository>(
       () => BbxApiLimitOrderRepository(
-        mainnet: locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
-        testnet: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+        mainnet: locator<BbxApiClient>(
+          instanceName: 'mainnetBbxApiClientWithoutTimeout',
+        ),
+        testnet: locator<BbxApiClient>(
+          instanceName: 'testnetBbxApiClientWithoutTimeout',
+        ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
