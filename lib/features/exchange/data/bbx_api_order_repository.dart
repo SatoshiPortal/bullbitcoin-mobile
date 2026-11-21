@@ -12,6 +12,15 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
+class _OrderRequestException implements Exception {
+  final String message;
+
+  const _OrderRequestException(this.message);
+
+  @override
+  String toString() => 'Exception: $message';
+}
+
 /// [ExchangeOrderRepository] on the `bbx_api` package.
 class BbxApiOrderRepository implements ExchangeOrderRepository {
   final bbx.BbxApiClient _api;
@@ -76,8 +85,8 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
               return _toOrder(summary);
             } catch (e, stackTrace) {
               log.severe(
-                message: 'Error mapping order ${summary.orderId}',
-                error: e,
+                message: 'Error mapping exchange order',
+                error: e.runtimeType.toString(),
                 trace: stackTrace,
               );
               return null;
@@ -162,7 +171,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     try {
       final order = await _refresh(orderId);
       if (order is! SellOrder) {
-        throw Exception(
+        throw const _OrderRequestException(
           'Expected SellOrder but received a different order type',
         );
       }
@@ -457,13 +466,13 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
       'DAILY' => DcaBuyFrequency.daily,
       'WEEKLY' => DcaBuyFrequency.weekly,
       'MONTHLY' => DcaBuyFrequency.monthly,
-      _ => throw Exception('Unknown frequency: ${dca.recurringFrequency}'),
+      _ => throw const _OrderRequestException('Unknown DCA frequency'),
     },
     network: switch (dca.recipientType) {
       'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,
       'OUT_LIGHTNING_ADDRESS' => DcaNetwork.lightning,
       'OUT_LIQUID_ADDRESS' => DcaNetwork.liquid,
-      _ => throw Exception('Unknown network: ${dca.recipientType}'),
+      _ => throw const _OrderRequestException('Unknown DCA network'),
     },
     address: dca.address,
     nextPurchaseDate: DateTime.parse(dca.nextRunAt),
@@ -506,7 +515,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
           rpcCode: e.code,
         ),
         // The server's message can quote the request, so it is not kept.
-        _ => Exception(contextMessage),
+        _ => _OrderRequestException(contextMessage),
       };
     }
   }
@@ -529,7 +538,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
     for (final rejected in list.rejected) {
       log.severe(
         message: 'Error parsing order element',
-        error: rejected,
+        error: rejected.runtimeType.toString(),
         trace: StackTrace.current,
       );
     }
@@ -541,8 +550,10 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
 
   /// A JSON-RPC error message can quote the request, so only its code is
   /// kept in exception messages.
-  static Object _describe(Object e) => switch (e) {
+  static String _describe(Object e) => switch (e) {
     bbx.BbxApiRpcException(:final code) => 'BbxApiRpcException(code: $code)',
-    _ => e,
+    UnexpectedOrderTypeException() || _OrderRequestException() => e.toString(),
+    DioException(:final type) => 'DioException(${type.name})',
+    _ => e.runtimeType.toString(),
   };
 }

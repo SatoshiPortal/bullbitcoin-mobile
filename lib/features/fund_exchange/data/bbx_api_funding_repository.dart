@@ -211,8 +211,11 @@ class BbxApiFundingRepository implements FundingRepository {
               'Exchange credential unavailable',
             );
     }
-    log.severe(message: '$method failed', error: e, trace: st);
-    return failure(e.toString());
+    final description = e is DioException
+        ? 'DioException(${e.type.name})'
+        : e.runtimeType.toString();
+    log.severe(message: '$method failed', error: description, trace: st);
+    return failure(description);
   }
 
   FundExchangeFailure _mapException(
