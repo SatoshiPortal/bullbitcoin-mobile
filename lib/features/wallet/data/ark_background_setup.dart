@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
+
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,7 +9,6 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';

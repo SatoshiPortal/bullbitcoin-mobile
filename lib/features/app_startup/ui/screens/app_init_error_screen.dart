@@ -1,8 +1,12 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show Language, LanguageExtension, TranslationWarningBottomSheet;
+    show Language, TranslationWarningBottomSheet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,7 +35,16 @@ class AppInitErrorScreen extends StatefulWidget {
 }
 
 class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
-  Language _language = Language.fromKeyboard();
+  Language _language = _platformLanguage();
+
+  static Language _platformLanguage() {
+    final locale = PlatformDispatcher.instance.locale;
+    return Language.fromLocaleTags(
+      languageCode: locale.languageCode,
+      countryCode: locale.countryCode,
+      scriptCode: locale.scriptCode,
+    );
+  }
 
   Future<void> _shareLogs(BuildContext context, AppLocalizations loc) async {
     try {

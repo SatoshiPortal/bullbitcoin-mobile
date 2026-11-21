@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/settings/data/quick_actions_storage.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -65,7 +64,6 @@ class SettingsLocator {
     );
     locator.registerLazySingleton<QuickActionsCubit>(
       () => createQuickActionsCubit(
-        storage: SettingsQuickActionsStorage(),
         warning: log.warning,
         defaults: Platform.isIOS
             ? QuickActionsLayout.iosDefaults

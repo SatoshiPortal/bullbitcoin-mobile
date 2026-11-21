@@ -1,8 +1,12 @@
-import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Settings owns the adapter between local app preferences and the UI feature.
-final class SettingsQuickActionsStorage implements QuickActionsStorage {
+import '../domain/quick_actions_repository.dart';
+
+/// Persists the layout using the existing quick-actions preference key.
+final class SharedPreferencesQuickActionsStorage
+    implements QuickActionsStorage {
+  const SharedPreferencesQuickActionsStorage();
+
   @override
   Future<String?> read(String key) async {
     final preferences = await SharedPreferences.getInstance();

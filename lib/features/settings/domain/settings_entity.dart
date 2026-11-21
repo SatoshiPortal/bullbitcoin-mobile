@@ -1,9 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit, NetworkEnv;
 
-import 'dart:ui';
-
 import 'package:bull_logger/bull_logger.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -96,17 +93,20 @@ enum Language {
     }
   }
 
-  static Language fromKeyboard() {
-    final locale = PlatformDispatcher.instance.locale;
+  static Language fromLocaleTags({
+    required String languageCode,
+    String? countryCode,
+    String? scriptCode,
+  }) {
     final exact = Language.values.where(
       (l) =>
-          l.languageCode == locale.languageCode &&
-          l.countryCode == locale.countryCode &&
-          l.scriptCode == locale.scriptCode,
+          l.languageCode == languageCode &&
+          l.countryCode == countryCode &&
+          l.scriptCode == scriptCode,
     );
     if (exact.isNotEmpty) return exact.first;
     final langOnly = Language.values.where(
-      (l) => l.languageCode == locale.languageCode,
+      (l) => l.languageCode == languageCode,
     );
     if (langOnly.isNotEmpty) return langOnly.first;
     return Language.unitedStatesEnglish;
@@ -124,18 +124,6 @@ enum AppThemeMode {
       orElse: () => AppThemeMode.system,
     );
   }
-}
-
-extension LanguageExtension on Language {
-  Locale get locale => Locale.fromSubtags(
-    languageCode: languageCode,
-    scriptCode: scriptCode,
-    countryCode: countryCode,
-  );
-  bool isLocale(Locale locale) =>
-      locale.languageCode == languageCode &&
-      locale.scriptCode == scriptCode &&
-      locale.countryCode == countryCode;
 }
 
 @freezed
