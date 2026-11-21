@@ -398,6 +398,8 @@ Each extracted package gets `resolution: workspace` and is listed under a `works
 
 **Invoice amounts.** The app and `satoshifier` use the round-up millisatoshi conversion from `primitives`. Satoshifier owns invoice amount validation.
 
+**Quick Actions feature (`features/quick_actions`).** The feature composes the layout editor, its action catalogue and its existing SharedPreferences store. Callers provide action availability and navigation at composition.
+
 **Design-system package (`bull_ui`).** [`packages/bull_ui`](packages/bull_ui/README.md) owns shared Flutter components and reads the app's tokens through a `ThemeExtension`. It depends on Flutter, shared pure-Dart primitives and leaf UI libraries. Features own their screens, localized content, navigation and state. The November 2026 UI migration retired `lib/core/widgets` and `lib/core/screens` together in one change. `test/architecture/legacy_ui_boundary_test.dart` enforces the resulting directory and import boundary. The dev-only `bull_ui_catalogue` renders the design system in isolation.
 
 **Generic extensions.** Import `package:primitives/generic_extensions.dart` to opt in to its iterable and date extensions.

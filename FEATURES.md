@@ -91,7 +91,7 @@ graph TB
     SEND --> ARK
     SETTINGS --> ARK
     APP_STARTUP --> ARK
-    QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
+    QUICK_ACTIONS[Quick Actions<br/>Workspace Feature<br/>Catalogue and layout storage]
     WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]
     ONBOARDING[Onboarding]
