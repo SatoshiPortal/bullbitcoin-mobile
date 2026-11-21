@@ -31,6 +31,7 @@ void main() {
         );
         expect(lines(encoded).single['origin'], bip329Origin);
         expect(encoded, isNot(contains(':regtest')));
+        expect(codec.decode(encoded).frozen.single.walletId, walletId);
       },
     );
 
@@ -115,6 +116,44 @@ void main() {
   });
 
   group('decode — freeze travels as a separate channel', () {
+    String freezeWithOrigin(String origin) => jsonEncode({
+      'type': 'output',
+      'ref': ref,
+      'label': '',
+      'spendable': false,
+      'origin': origin,
+    });
+
+    test(
+      'canonicalizes supported origins to the historical default account',
+      () {
+        for (final (origin, expected) in [
+          ('[AbCd/44h/0h/0h]', 'pkh([AbCd/44h/0h/0h])'),
+          ("[AbCd/49'/1776'/7']", 'elsh(wpkh([AbCd/49h/1776h/0h]))'),
+          (bip329Origin, walletId),
+        ]) {
+          final decoded = codec.decode(freezeWithOrigin(origin));
+          expect(decoded.frozen.single.walletId, expected, reason: origin);
+        }
+      },
+    );
+
+    test('keeps freezes with unsupported origins unattributed', () {
+      for (final origin in [
+        '[aabbccdd/84h/2h/0h]',
+        '[aabbccdd/84h/60h/0h]',
+        '[aabbccdd/84h/501h/0h]',
+        '[aabbccdd/84h/1777h/0h]',
+        '[aabbccdd/84h/x/0h]',
+        '[aabbccdd/86h/0h/0h]',
+      ]) {
+        final decoded = codec.decode(freezeWithOrigin(origin));
+        expect(decoded.frozen, [
+          (walletId: null, txId: txId, vout: 0),
+        ], reason: origin);
+      }
+    });
+
     test('round-trips a wallet-attributed freeze (origin reconstructed)', () {
       final jsonl = codec.encode(
         const [],
