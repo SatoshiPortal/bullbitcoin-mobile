@@ -406,7 +406,7 @@ graph TB
     MEMPOOL --> BULL_LOGGER
     CORE -->|composes schema 16 tables| MEMPOOL
     MEMPOOL_SETTINGS --> MEMPOOL
-    SETTINGS -->|environment port| MEMPOOL
+    SETTINGS -->|typed settings failures| MEMPOOL
     FEES --> MEMPOOL
     SP --> MEMPOOL
     TX_HISTORY --> MEMPOOL
@@ -428,7 +428,7 @@ graph TB
     FEES --> WALLETS
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
-    SETTINGS --> MEMPOOL_SETTINGS
+    SETTINGS -->|active environment reader| MEMPOOL_SETTINGS
     PAY --> FEES
     PAY --> SETTINGS
     SEND --> SIGNERS

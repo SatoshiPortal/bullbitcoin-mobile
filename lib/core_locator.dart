@@ -43,7 +43,6 @@ class CoreLocator {
   }
 
   static void registerPorts(GetIt locator) {
-    SettingsLocator.registerPorts(locator);
     final walletSync = WalletLocator.syncAccess(locator);
     setupLabels(
       locator,
@@ -97,11 +96,10 @@ class CoreLocator {
   static void registerServices(GetIt locator) {
     ExchangeLocator.registerServices(locator);
     locator.registerLazySingleton<Mempool>(
-      () => Mempool(
+      () => Mempool.open(
         database: locator<SqliteDatabase>(),
-        environment: locator<MempoolEnvironmentPort>(),
         tor: () => locator<Tor>(),
-        torHttpClientFactory: locator<TorHttpClientFactory>(),
+        torHttp: locator<TorHttpClientFactory>(),
       ),
     );
   }

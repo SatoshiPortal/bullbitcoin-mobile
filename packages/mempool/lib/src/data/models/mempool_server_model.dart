@@ -1,6 +1,7 @@
 import 'package:mempool/src/domain/entities/mempool_server.dart';
 import 'package:mempool/src/domain/value_objects/mempool_server_network.dart';
 import 'package:mempool/src/data/tables/mempool_servers_table.drift.dart';
+import 'package:primitives/primitives.dart';
 
 class MempoolServerModel {
   final String url;
@@ -40,8 +41,8 @@ class MempoolServerModel {
   factory MempoolServerModel.fromEntity(MempoolServer entity) {
     return MempoolServerModel(
       url: entity.url,
-      isTestnet: entity.isTestnet,
-      isLiquid: entity.isLiquid,
+      isTestnet: entity.network.env == NetworkEnv.testnet,
+      isLiquid: entity.network is LiquidNetwork,
       isCustom: entity.isCustom,
       enableSsl: entity.enableSsl,
     );
@@ -55,7 +56,7 @@ class MempoolServerModel {
 
     return MempoolServer.existing(
       url: url,
-      network: network,
+      network: network.network,
       isCustom: isCustom,
       enableSsl: enableSsl,
     );

@@ -1,11 +1,11 @@
 import 'package:mempool/src/domain/mempool_failure.dart';
 import 'package:mempool/src/domain/services/mempool_url_parser.dart';
-import 'package:mempool/src/domain/value_objects/mempool_server_network.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class MempoolServer {
   final String _url;
-  final MempoolServerNetwork _network;
+  final Network _network;
   final bool _isCustom;
   final bool _enableSsl;
 
@@ -18,11 +18,18 @@ class MempoolServer {
 
   /// Validates [url] and builds a custom server, returning a typed failure
   /// (never throwing) when the URL is malformed.
+  @useResult
   static Result<MempoolServer, MempoolFailure> tryCreateCustom({
     required String url,
-    required MempoolServerNetwork network,
+    required Network network,
     bool enableSsl = true,
   }) {
+    if (!NetworkCapabilities.supports(
+      network,
+      NetworkCapability.publicExplorer,
+    )) {
+      return Err(MempoolUnsupportedNetworkFailure(network));
+    }
     final parsed = MempoolUrlParser.tryParse(url);
     if (parsed == null) {
       return const Err(MempoolInvalidUrlFailure());
@@ -37,9 +44,10 @@ class MempoolServer {
     );
   }
 
+  @internal
   factory MempoolServer.existing({
     required String url,
-    required MempoolServerNetwork network,
+    required Network network,
     required bool isCustom,
     bool enableSsl = true,
   }) {
@@ -52,14 +60,15 @@ class MempoolServer {
   }
 
   String get url => _url;
-  MempoolServerNetwork get network => _network;
+  Network get network => _network;
   bool get isCustom => _isCustom;
   bool get enableSsl => _enableSsl;
   bool get canUseForFeeEstimation => _enableSsl;
   String get fullUrl => _enableSsl ? 'https://$_url' : 'http://$_url';
 
-  bool get isTestnet => _network.isTestnet;
-  bool get isLiquid => _network.isLiquid;
+  /// Suggests the TLS setting encoded by a valid custom server URL.
+  static bool? suggestedSsl(String input) =>
+      MempoolUrlParser.tryParse(input)?.enableSsl;
 
   @override
   bool operator ==(Object other) =>

@@ -4,8 +4,8 @@ part of 'mempool_settings_cubit.dart';
 sealed class MempoolSettingsState with _$MempoolSettingsState {
   const factory MempoolSettingsState({
     @Default(false) bool isLiquid,
-    MempoolServerDto? defaultServer,
-    MempoolServerDto? customServer,
+    MempoolServerRow? defaultServer,
+    MempoolServerRow? customServer,
     @Default(false) bool isLoading,
     @Default(false) bool isSavingServer,
     @Default(false) bool isDeletingServer,

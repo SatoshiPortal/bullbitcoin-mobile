@@ -11,16 +11,13 @@ class GetActiveMempoolServerUsecase {
   GetActiveMempoolServerUsecase({required this._serverRepository});
 
   @useResult
-  Future<Result<MempoolServer, MempoolFailure>> execute({
-    required bool isTestnet,
-    required bool isLiquid,
-  }) async {
-    final network = MempoolServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
-      isLiquid: isLiquid,
-    );
+  Future<Result<MempoolServer, MempoolFailure>> execute(Network network) async {
+    final supported = MempoolServerNetwork.fromNetwork(network);
+    if (supported == null) {
+      return Err(MempoolUnsupportedNetworkFailure(network));
+    }
 
-    final customResult = await _serverRepository.fetchCustomServer(network);
+    final customResult = await _serverRepository.fetchCustomServer(supported);
     if (customResult case Ok(:final value) when value != null) {
       return Ok(value);
     }
@@ -28,6 +25,6 @@ class GetActiveMempoolServerUsecase {
       return Err(failure);
     }
 
-    return _serverRepository.fetchDefaultServer(network);
+    return _serverRepository.fetchDefaultServer(supported);
   }
 }

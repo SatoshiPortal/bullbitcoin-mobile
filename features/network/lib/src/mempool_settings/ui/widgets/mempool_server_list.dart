@@ -28,7 +28,7 @@ class MempoolServerList extends StatelessWidget {
             const SizedBox(height: 8),
             if (defaultServer != null)
               MempoolServerItem(
-                server: defaultServer,
+                row: defaultServer,
                 disabled: customServer != null,
               ),
             if (customServer != null) ...[
@@ -41,7 +41,7 @@ class MempoolServerList extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               MempoolServerItem(
-                server: customServer,
+                row: customServer,
                 onDelete: state.isProcessing
                     ? null
                     : () => _showDeleteConfirmation(context),

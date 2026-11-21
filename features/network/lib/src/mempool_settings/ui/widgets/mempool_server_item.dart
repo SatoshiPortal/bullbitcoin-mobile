@@ -1,4 +1,4 @@
-import 'package:mempool/mempool.dart';
+import '../../presentation/mempool_server_row.dart';
 
 import '../../../network_l10n.dart';
 import '../../presentation/mempool_server_encryption.dart';
@@ -9,18 +9,18 @@ import 'package:material_ui/material_ui.dart';
 class MempoolServerItem extends StatelessWidget {
   const MempoolServerItem({
     super.key,
-    required this.server,
+    required this.row,
     this.disabled = false,
     this.onDelete,
   });
 
-  final MempoolServerDto server;
+  final MempoolServerRow row;
   final bool disabled;
   final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final (color, label) = switch (server.status) {
+    final (color, label) = switch (row.status) {
       MempoolServerStatus.online => (
         context.bull.success,
         context.loc.mempoolServerStatusOnline,
@@ -40,13 +40,13 @@ class MempoolServerItem extends StatelessWidget {
     };
 
     return BullServerTile(
-      title: server.url,
+      title: row.server.url,
       statusColor: color,
       statusLabel: label,
-      badgeLabel: server.isEncrypted
+      badgeLabel: row.server.isEncrypted
           ? context.loc.serverEncrypted
           : context.loc.serverUnencrypted,
-      badgeIsWarning: !server.isEncrypted,
+      badgeIsWarning: !row.server.isEncrypted,
       disabled: disabled,
       disabledLabel: context.loc.electrumServerNotUsed,
       onDelete: onDelete,

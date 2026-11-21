@@ -1,8 +1,8 @@
-import 'package:primitives/primitives.dart' show Failure;
+import 'package:primitives/primitives.dart' show Failure, Network;
 
 /// Closed set of every failure the Mempool core layer surfaces across its
 /// boundary (the repositories and the server validator). Foreign errors —
-/// Drift/storage, HTTP (Dio), environment — are caught at the boundary, logged
+/// Drift/storage, HTTP (Dio) — are caught at the boundary, logged
 /// raw, and mapped to one of these variants; the raw reason stays in
 /// [Failure.logMessage] (logs only).
 ///
@@ -13,9 +13,19 @@ sealed class MempoolFailure extends Failure {
   const MempoolFailure([super.logMessage]);
 }
 
-/// Could not load the server(s)/settings from storage.
+enum MempoolServerKind { custom, defaultServer }
+
+/// Could not load a server from storage.
 final class MempoolLoadFailure extends MempoolFailure {
-  const MempoolLoadFailure([super.logMessage]);
+  final MempoolServerKind serverKind;
+
+  const MempoolLoadFailure(this.serverKind, [super.logMessage]);
+}
+
+final class MempoolUnsupportedNetworkFailure extends MempoolFailure {
+  final Network network;
+
+  const MempoolUnsupportedNetworkFailure(this.network);
 }
 
 /// Persisting a server or settings failed.

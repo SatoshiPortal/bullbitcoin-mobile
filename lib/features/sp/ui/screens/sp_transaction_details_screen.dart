@@ -103,27 +103,33 @@ class SpTransactionDetailsScreen extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: switch (network) {
-              BitcoinNetwork.mainnet ||
-              BitcoinNetwork.testnet => BullTransactionViewer(
-                payment.txid,
-                title: context.loc.transactionViewerTitle,
-                copiedMessage: context.loc.copiedToClipboard,
-                copyLabel: context.loc.viewerTapToCopy,
-                explorerActions: [
-                  (
-                    copyLabel: context.loc.viewerCopyLink,
-                    openLabel: context.loc.viewerViewInExplorer,
-                    resolveUrl: () =>
-                        context.read<MempoolUrlBuilder>().bitcoinTxid(
-                          payment.txid,
-                          isTestnet: network == BitcoinNetwork.testnet,
-                        ),
-                  ),
-                ],
-                openUrl: (url) async {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                },
-              ),
+              final BitcoinNetwork explorerNetwork
+                  when explorerNetwork == BitcoinNetwork.mainnet ||
+                      explorerNetwork == BitcoinNetwork.testnet =>
+                BullTransactionViewer(
+                  payment.txid,
+                  title: context.loc.transactionViewerTitle,
+                  copiedMessage: context.loc.copiedToClipboard,
+                  copyLabel: context.loc.viewerTapToCopy,
+                  explorerActions: [
+                    (
+                      copyLabel: context.loc.viewerCopyLink,
+                      openLabel: context.loc.viewerViewInExplorer,
+                      resolveUrl: () async {
+                        final link = await context
+                            .read<MempoolLinks>()
+                            .transaction(
+                              payment.txid,
+                              network: explorerNetwork,
+                            );
+                        return link.fold((uri) => uri.toString(), (_) => null);
+                      },
+                    ),
+                  ],
+                  openUrl: (url) async {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  },
+                ),
               _ => SelectableText(payment.txid),
             },
           ),

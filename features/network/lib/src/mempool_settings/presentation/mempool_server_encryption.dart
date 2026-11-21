@@ -1,7 +1,7 @@
 import 'package:electrum/electrum.dart';
 import 'package:mempool/mempool.dart';
 
-extension MempoolServerEncryption on MempoolServerDto {
+extension MempoolServerEncryption on MempoolServer {
   /// Whether the connection is encrypted end to end: HTTPS, or an onion
   /// service (Tor encrypts it even over plain HTTP).
   bool get isEncrypted {

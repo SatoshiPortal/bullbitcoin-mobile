@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
-import 'package:network/network.dart'
-    show MempoolSettingsLocator, StatusCheckLocator;
+import 'package:network/network.dart' show StatusCheckLocator;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:electrum/electrum.dart'
     show ElectrumFailure, RegtestElectrumProfile;
@@ -51,6 +50,8 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
+import 'package:bb_mobile/features/settings/settings_core_locator.dart'
+    show setupMempoolSettings;
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
@@ -180,7 +181,7 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    MempoolSettingsLocator.setup(locator);
+    setupMempoolSettings(locator);
     PinCodeLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);

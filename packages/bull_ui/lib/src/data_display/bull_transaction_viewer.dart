@@ -28,9 +28,14 @@ class BullTransactionViewer extends StatelessWidget {
   /// Text copied in place of the displayed transaction ID.
   final String? clipboardText;
 
-  /// Each action resolves its URL only after the user selects it.
+  /// Each action resolves its URL only after the user selects it. A null URL
+  /// leaves the dialog open.
   final List<
-    ({String copyLabel, String openLabel, Future<String> Function() resolveUrl})
+    ({
+      String copyLabel,
+      String openLabel,
+      Future<String?> Function() resolveUrl,
+    })
   >
   explorerActions;
 
@@ -54,6 +59,7 @@ class BullTransactionViewer extends StatelessWidget {
             label: action.copyLabel,
             onTap: () async {
               final url = await action.resolveUrl();
+              if (url == null) return;
               BullValueViewer.copyFromDialog(context, url, copiedMessage);
             },
           ),
@@ -63,6 +69,7 @@ class BullTransactionViewer extends StatelessWidget {
             label: action.openLabel,
             onTap: () async {
               final url = await action.resolveUrl();
+              if (url == null) return;
               if (context.mounted) Navigator.of(context).pop();
               await openUrl(Uri.parse(url));
             },

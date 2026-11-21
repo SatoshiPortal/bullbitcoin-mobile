@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
+import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/transactions/presentation/swap_l10n_x.dart';
@@ -35,8 +37,7 @@ class TransactionDetailsTable extends StatelessWidget {
   Widget _transactionViewer(
     BuildContext context,
     String txId, {
-    required bool isLiquid,
-    required bool isTestnet,
+    required primitives.Network network,
     required String? unblindedUrl,
     required String? payjoinFragment,
   }) {
@@ -50,26 +51,28 @@ class TransactionDetailsTable extends StatelessWidget {
         (
           copyLabel: context.loc.viewerCopyLink,
           openLabel: context.loc.viewerViewInExplorer,
-          resolveUrl: () {
-            final builder = context.read<MempoolUrlBuilder>();
-            return isLiquid
-                ? builder.liquidTxid(
-                    txId,
-                    isTestnet: isTestnet,
-                    unblindedUrl: unblindedUrl,
-                  )
-                : builder.bitcoinTxid(txId, isTestnet: isTestnet);
+          resolveUrl: () async {
+            final links = context.read<MempoolLinks>();
+            final link = await switch ((network, unblindedUrl)) {
+              (final LiquidNetwork liquid, final String path) =>
+                links.unblindedTransaction(path, network: liquid),
+              _ => links.transaction(txId, network: network),
+            };
+            return link.fold((uri) => uri.toString(), (_) => null);
           },
         ),
-        if (!isLiquid && payjoinFragment != null)
+        if (network is BitcoinNetwork && payjoinFragment != null)
           (
             copyLabel: context.loc.viewerCopyLinkDisclosePayjoin,
             openLabel: context.loc.viewerViewInExplorerDisclosePayjoin,
-            resolveUrl: () => context.read<MempoolUrlBuilder>().bitcoinTxid(
-              txId,
-              isTestnet: isTestnet,
-              fragment: payjoinFragment,
-            ),
+            resolveUrl: () async {
+              final link = await context.read<MempoolLinks>().transaction(
+                txId,
+                network: network,
+                fragment: payjoinFragment,
+              );
+              return link.fold((uri) => uri.toString(), (_) => null);
+            },
           ),
       ],
       openUrl: (url) async {
@@ -88,9 +91,9 @@ class TransactionDetailsTable extends StatelessWidget {
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
     final txId = transaction?.txId;
-    final canExplore = transaction?.supportsPublicExplorer ?? false;
-    final isTestnet = canExplore ? transaction?.isTestnet ?? false : false;
-    final isLiquid = transaction?.isLiquid ?? false;
+    final explorerNetwork = transaction?.supportsPublicExplorer == true
+        ? transaction?.explorerNetwork
+        : null;
     final labels = transaction?.labels ?? [];
     final wallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.wallet,
@@ -153,12 +156,11 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue: StringFormatting.truncateMiddle(txId),
             copyValue: txId,
             onCopied: showCopied,
-            displayWidget: canExplore
+            displayWidget: explorerNetwork != null
                 ? _transactionViewer(
                     context,
                     txId,
-                    isLiquid: isLiquid,
-                    isTestnet: isTestnet,
+                    network: explorerNetwork,
                     unblindedUrl: walletTransaction?.unblindedUrl,
                     payjoinFragment: transaction?.payjoinOwnershipFragment,
                   )

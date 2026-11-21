@@ -39,7 +39,7 @@ class DriftMempoolServerRepository implements MempoolServerRepository {
         error: e,
         trace: st,
       );
-      return Err(MempoolLoadFailure(e.toString()));
+      return Err(MempoolLoadFailure(MempoolServerKind.custom, e.toString()));
     }
   }
 
@@ -50,7 +50,12 @@ class DriftMempoolServerRepository implements MempoolServerRepository {
     try {
       final model = await _datasource.fetchDefaultServerByNetwork(network);
       if (model == null) {
-        return const Err(MempoolLoadFailure('No default mempool server found'));
+        return const Err(
+          MempoolLoadFailure(
+            MempoolServerKind.defaultServer,
+            'No default mempool server found',
+          ),
+        );
       }
       return Ok(model.toEntity());
     } catch (e, st) {
@@ -59,7 +64,9 @@ class DriftMempoolServerRepository implements MempoolServerRepository {
         error: e,
         trace: st,
       );
-      return Err(MempoolLoadFailure(e.toString()));
+      return Err(
+        MempoolLoadFailure(MempoolServerKind.defaultServer, e.toString()),
+      );
     }
   }
 

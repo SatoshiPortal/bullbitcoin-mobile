@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:mempool/mempool.dart';
 
+import 'mempool_server_row.dart';
+
 import '../domain/usecases/delete_custom_mempool_server_usecase.dart';
 import '../domain/usecases/load_mempool_server_data_usecase.dart';
 import '../domain/usecases/set_custom_mempool_server_usecase.dart';
@@ -74,13 +76,13 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   }
 
   Future<void> _fetchAndApplyData() async {
-    final request = LoadMempoolServerDataRequest(isLiquid: state.isLiquid);
-    switch (await _loadDataUsecase.execute(request)) {
+    switch (await _loadDataUsecase.execute(isLiquid: state.isLiquid)) {
       case Ok(:final value):
+        final custom = value.customServer;
         emit(
           state.copyWith(
-            defaultServer: value.defaultServer,
-            customServer: value.customServer,
+            defaultServer: MempoolServerRow(value.defaultServer),
+            customServer: custom == null ? null : MempoolServerRow(custom),
           ),
         );
       case Err(:final failure):
@@ -91,13 +93,11 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   Future<bool> setCustomServer(String url, {bool enableSsl = true}) async {
     emit(state.copyWith(isSavingServer: true, failure: null));
 
-    final request = SetCustomMempoolServerRequest(
-      url: url,
+    switch (await _setCustomServerUsecase.execute(
+      url,
       isLiquid: state.isLiquid,
       enableSsl: enableSsl,
-    );
-
-    switch (await _setCustomServerUsecase.execute(request)) {
+    )) {
       case Ok():
         await loadData();
         emit(state.copyWith(isSavingServer: false));
@@ -111,8 +111,9 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   Future<void> deleteCustomServer() async {
     emit(state.copyWith(isDeletingServer: true, failure: null));
 
-    final request = DeleteCustomMempoolServerRequest(isLiquid: state.isLiquid);
-    switch (await _deleteCustomServerUsecase.execute(request)) {
+    switch (await _deleteCustomServerUsecase.execute(
+      isLiquid: state.isLiquid,
+    )) {
       case Ok():
         emit(state.copyWith(customServer: null, isDeletingServer: false));
       case Err(:final failure):
@@ -120,14 +121,18 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     }
   }
 
-  Future<void> checkServerStatus(MempoolServerDto server) async {
-    if (server.status.isChecking) {
+  Future<void> checkServerStatus(MempoolServerRow row) async {
+    final server = row.server;
+    if (row.status == MempoolServerStatus.checking) {
       return;
     }
     final probe = (_latestProbe[server.isCustom] ?? 0) + 1;
     _latestProbe[server.isCustom] = probe;
 
-    final updatedServer = server.copyWith(status: MempoolServerStatus.checking);
+    final updatedServer = MempoolServerRow(
+      server,
+      status: MempoolServerStatus.checking,
+    );
 
     if (server.isCustom) {
       emit(state.copyWith(customServer: updatedServer));
@@ -143,7 +148,8 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     if (isClosed || _latestProbe[server.isCustom] != probe) return;
     if (!_shows(server)) return;
 
-    final finalServer = server.copyWith(
+    final finalServer = MempoolServerRow(
+      server,
       status: isValid
           ? MempoolServerStatus.online
           : MempoolServerStatus.offline,
@@ -155,12 +161,9 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     }
   }
 
-  bool _shows(MempoolServerDto server) {
+  bool _shows(MempoolServer server) {
     final shown = server.isCustom ? state.customServer : state.defaultServer;
-    return shown != null &&
-        shown.url == server.url &&
-        shown.isLiquid == server.isLiquid &&
-        shown.isTestnet == server.isTestnet;
+    return shown?.server == server;
   }
 
   void clearError() {

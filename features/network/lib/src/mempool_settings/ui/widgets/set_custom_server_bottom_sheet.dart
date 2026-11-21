@@ -58,10 +58,10 @@ class _SetCustomServerBottomSheetState
     final input = _urlController.text.trim();
     if (input.isEmpty) return;
 
-    final result = MempoolUrlParser.tryParse(input);
-    if (result != null) {
+    final suggestedSsl = MempoolServer.suggestedSsl(input);
+    if (suggestedSsl != null) {
       setState(() {
-        _enableSsl = result.enableSsl;
+        _enableSsl = suggestedSsl;
         _sslAutoDetected = true;
       });
     }

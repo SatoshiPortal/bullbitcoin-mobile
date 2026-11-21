@@ -120,14 +120,14 @@ class AddressViewer extends StatelessWidget {
 
   static Future<String?> _getExplorerUrlFor(
     String data,
-    MempoolUrlBuilder builder,
+    MempoolLinks links,
   ) async {
     final parsed = await Satoshifier.tryParse(data);
-    final network = switch (parsed) {
-      BitcoinAddress(:final network) ||
-      LiquidAddress(:final network) ||
-      Bip21(:final network) => network,
-      _ => null,
+    final (address, network) = switch (parsed) {
+      BitcoinAddress(:final address, :final network) ||
+      LiquidAddress(:final address, :final network) ||
+      Bip21(:final address, :final network) => (address, network),
+      _ => (null, null),
     };
     final primitives.Network? concrete = switch (network) {
       Network.bitcoinMainnet => BitcoinNetwork.mainnet,
@@ -139,29 +139,16 @@ class AddressViewer extends StatelessWidget {
       Network.liquidRegtest => LiquidNetwork.regtest,
       null => null,
     };
-    if (concrete == null ||
+    if (address == null ||
+        concrete == null ||
         !NetworkCapabilities.supports(
           concrete,
           NetworkCapability.publicExplorer,
         )) {
       return null;
     }
-    return switch (parsed) {
-      BitcoinAddress(:final address, :final network) => builder.bitcoinAddress(
-        address,
-        isTestnet: network.isTestnet,
-      ),
-      LiquidAddress(:final address, :final network) => builder.liquidAddress(
-        address,
-        isTestnet: network.isTestnet,
-      ),
-      // BIP21 URI: route by inner network, use the embedded bare address.
-      Bip21(:final address, :final network) =>
-        network.isLiquid
-            ? builder.liquidAddress(address, isTestnet: network.isTestnet)
-            : builder.bitcoinAddress(address, isTestnet: network.isTestnet),
-      _ => null,
-    };
+    final link = await links.address(address, network: concrete);
+    return link.fold((uri) => uri.toString(), (_) => null);
   }
 
   /// Opens the address detail dialog without needing a rendered
@@ -172,7 +159,7 @@ class AddressViewer extends StatelessWidget {
     required String data,
     String? clipboardText,
   }) {
-    final builder = context.read<MempoolUrlBuilder>();
+    final links = context.read<MempoolLinks>();
     return BullDialog.show<void>(
       context: context,
       padding: EdgeInsets.zero,
@@ -180,7 +167,7 @@ class AddressViewer extends StatelessWidget {
         data: data,
         clipboardText: clipboardText ?? data,
         dialogContext: dialogContext,
-        getExplorerUrl: () => _getExplorerUrlFor(data, builder),
+        getExplorerUrl: () => _getExplorerUrlFor(data, links),
       ),
     );
   }

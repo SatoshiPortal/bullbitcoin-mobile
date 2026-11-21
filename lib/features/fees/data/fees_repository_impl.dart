@@ -5,8 +5,9 @@ import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:mempool/mempool.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show Network, NetworkX;
 
 class FeesRepositoryImpl implements FeesRepository {
   final ElectrumServersPort _electrumServers;
@@ -35,9 +36,7 @@ class FeesRepositoryImpl implements FeesRepository {
     }
     if (network.isBitcoin) {
       final fees = await _feesDatasource.fetchBitcoinNetworkFees(
-        baseUrl: await _resolveBitcoinMempoolUrl(
-          isTestnet: network.requireHistoricalTestnet(),
-        ),
+        baseUrl: await _resolveBitcoinMempoolUrl(network.bitcoin),
       );
       return MempoolFeesMapper.toFeeOptions(fees);
     }
@@ -54,27 +53,18 @@ class FeesRepositoryImpl implements FeesRepository {
     );
   }
 
-  Future<String> _resolveBitcoinMempoolUrl({required bool isTestnet}) async {
-    final network = MempoolServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
-      isLiquid: false,
-    );
-    final customResult = await _mempool.customServer(network);
-    final customServer = switch (customResult) {
-      Ok(:final value) => value,
+  Future<String> _resolveBitcoinMempoolUrl(BitcoinNetwork network) async {
+    return switch (await _mempool.servers.activeBase(network: network)) {
+      Ok(:final value) => value.toString(),
+      Err(failure: MempoolLoadFailure(:final serverKind)) =>
+        throw MempoolFeesException(switch (serverKind) {
+          MempoolServerKind.custom => 'Failed to fetch custom mempool server',
+          MempoolServerKind.defaultServer =>
+            'Failed to fetch default mempool server',
+        }),
       Err() => throw MempoolFeesException(
-        'Failed to fetch custom mempool server',
+        'Failed to resolve active mempool server',
       ),
     };
-    if (customServer != null) return customServer.fullUrl;
-
-    final defaultResult = await _mempool.defaultServer(network);
-    final defaultServer = switch (defaultResult) {
-      Ok(:final value) => value,
-      Err() => throw MempoolFeesException(
-        'Failed to fetch default mempool server',
-      ),
-    };
-    return defaultServer.fullUrl;
   }
 }

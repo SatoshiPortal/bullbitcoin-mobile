@@ -27,7 +27,7 @@ sealed class Transaction with _$Transaction {
       orderSwap?.canonicalWalletTransactionId ??
       payjoin?.txId ??
       order?.transactionId;
-  primitives.Network? get _explorerNetwork {
+  primitives.Network? get explorerNetwork {
     final walletNetwork = walletTransaction?.network;
     if (walletNetwork != null) return walletNetwork.shared;
     final origin = swap;
@@ -70,7 +70,7 @@ sealed class Transaction with _$Transaction {
   }
 
   bool get supportsPublicExplorer {
-    final network = _explorerNetwork;
+    final network = explorerNetwork;
     return network != null &&
         primitives.NetworkCapabilities.supports(
           network,
@@ -78,7 +78,7 @@ sealed class Transaction with _$Transaction {
         );
   }
 
-  bool get isTestnet => switch (_explorerNetwork?.env) {
+  bool get isTestnet => switch (explorerNetwork?.env) {
     primitives.NetworkEnv.mainnet => false,
     primitives.NetworkEnv.testnet => true,
     _ => throw StateError('Transaction has no historical explorer network'),

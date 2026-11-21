@@ -9,7 +9,8 @@ import 'package:flutter/widgets.dart';
 /// returns the raw [Failure.logMessage].
 extension MempoolFailureL10n on MempoolFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    MempoolLoadFailure() => context.loc.mempoolErrorLoadFailed,
+    MempoolLoadFailure() ||
+    MempoolUnsupportedNetworkFailure() => context.loc.mempoolErrorLoadFailed,
     MempoolSaveFailure() => context.loc.mempoolErrorSaveServerFailed,
     MempoolDeleteFailure() => context.loc.mempoolErrorDeleteFailed,
     MempoolInvalidUrlFailure() => context.loc.mempoolErrorInvalidUrl,

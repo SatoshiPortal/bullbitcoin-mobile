@@ -187,8 +187,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           : AppThemeType.light;
                   }
 
-                  return RepositoryProvider<MempoolUrlBuilder>.value(
-                    value: locator<Mempool>().urls,
+                  return RepositoryProvider<MempoolLinks>.value(
+                    value: locator<Mempool>().links,
                     child: MaterialApp.router(
                       title: 'BullBitcoin Wallet',
                       debugShowCheckedModeBanner: kDebugMode,

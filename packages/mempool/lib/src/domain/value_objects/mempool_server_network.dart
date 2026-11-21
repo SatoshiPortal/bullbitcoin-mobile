@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+
 enum MempoolServerNetwork {
   bitcoinMainnet,
   bitcoinTestnet,
@@ -24,31 +26,21 @@ enum MempoolServerNetwork {
         this == MempoolServerNetwork.liquidTestnet;
   }
 
-  String get networkString {
-    switch (this) {
-      case MempoolServerNetwork.bitcoinMainnet:
-        return 'bitcoinMainnet';
-      case MempoolServerNetwork.bitcoinTestnet:
-        return 'bitcoinTestnet';
-      case MempoolServerNetwork.liquidMainnet:
-        return 'liquidMainnet';
-      case MempoolServerNetwork.liquidTestnet:
-        return 'liquidTestnet';
-    }
-  }
+  Network get network => switch (this) {
+    bitcoinMainnet => BitcoinNetwork.mainnet,
+    bitcoinTestnet => BitcoinNetwork.testnet,
+    liquidMainnet => LiquidNetwork.mainnet,
+    liquidTestnet => LiquidNetwork.testnet,
+  };
 
-  static MempoolServerNetwork fromString(String network) {
-    switch (network) {
-      case 'bitcoinMainnet':
-        return MempoolServerNetwork.bitcoinMainnet;
-      case 'bitcoinTestnet':
-        return MempoolServerNetwork.bitcoinTestnet;
-      case 'liquidMainnet':
-        return MempoolServerNetwork.liquidMainnet;
-      case 'liquidTestnet':
-        return MempoolServerNetwork.liquidTestnet;
-      default:
-        throw ArgumentError('Invalid network string: $network');
-    }
-  }
+  static MempoolServerNetwork? fromNetwork(Network network) =>
+      switch (network) {
+        BitcoinNetwork.mainnet => bitcoinMainnet,
+        BitcoinNetwork.testnet => bitcoinTestnet,
+        LiquidNetwork.mainnet => liquidMainnet,
+        LiquidNetwork.testnet => liquidTestnet,
+        BitcoinNetwork.regtest ||
+        BitcoinNetwork.signet ||
+        LiquidNetwork.regtest => null,
+      };
 }

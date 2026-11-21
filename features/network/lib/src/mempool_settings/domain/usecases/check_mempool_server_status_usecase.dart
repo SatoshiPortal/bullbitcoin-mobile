@@ -5,6 +5,6 @@ class CheckMempoolServerStatusUsecase {
 
   const CheckMempoolServerStatusUsecase(this._mempool);
 
-  Future<bool> execute(MempoolServerDto server) async =>
-      (await _mempool.validateServer(server)).fold((_) => true, (_) => false);
+  Future<bool> execute(MempoolServer server) async =>
+      (await _mempool.servers.validate(server)).fold((_) => true, (_) => false);
 }

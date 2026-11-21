@@ -3,12 +3,11 @@ import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
+class SettingsEnvironmentAdapter {
   final SettingsRepository _settingsRepository;
 
   SettingsEnvironmentAdapter({required this._settingsRepository});
 
-  @override
   Future<Result<BitcoinNetwork, MempoolFailure>> getEnvironment() async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -17,7 +16,7 @@ class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
         network,
         NetworkCapability.publicExplorer,
       )) {
-        return const Err(MempoolLoadFailure('network unsupported'));
+        return Err(MempoolUnsupportedNetworkFailure(network));
       }
       return Ok(network);
     } catch (e, st) {
