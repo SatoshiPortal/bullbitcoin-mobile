@@ -75,6 +75,7 @@ class BwkSpAccountRepository
   dom.SpHeaderProgressStarted? _latestHeaderStarted;
   int? _latestHeaderTip;
   bool _notifTornDown = false;
+  Future<Result<void, SpFailure>>? _pendingOpen;
   Future<void>? _pendingDispose;
 
   // Always-on stream of pure cross-feature update signals (balance changes,
@@ -86,6 +87,13 @@ class BwkSpAccountRepository
   // Scanning flag tracked from notifications (no FFI), so reads/dispose can be
   // skipped while a scan holds the inner lock and would block the UI isolate.
   bool _scanning = false;
+  // A queued automatic decision belongs to the session and scan state it read.
+  int _scanRevision = 0;
+  String? _sessionDataDir;
+  ({int? startHeight, bool isPaused})? _pendingScan;
+  Future<Result<void, SpFailure>>? _scanLaunch;
+  Future<Result<void, SpFailure>>? _scanControl;
+  Future<void> _pendingScanWrite = Future.value();
   // Set around an electrum restart, which holds the same lock across a
   // blocking connect.
   bool _restarting = false;
@@ -173,18 +181,44 @@ class BwkSpAccountRepository
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) async {
     // Single-owner guard: the adapter holds exactly one live SpAccount, so a
     // create over an existing session would leak the old Rust notif thread,
     // electrum socket and sqlite handle. Callers dispose first; hitting this
     // means a teardown+create race slipped past EnsureSpSessionUsecase.
-    if (hasSession) {
+    if (hasSession || _pendingOpen != null || _pendingDispose != null) {
       return const Err(
-        SpSessionBusy(
-          'createFromSecret called while a session is live; dispose first',
-        ),
+        SpSessionBusy('SP account is already open, opening, or closing'),
       );
     }
+    _scanRevision++;
+    final opening = _openAccount(
+      network: network,
+      secret: secret,
+      blindbitUrl: blindbitUrl,
+      electrumUrl: electrumUrl,
+      fetchConcurrencyFactor: fetchConcurrencyFactor,
+      matchConcurrencyFactor: matchConcurrencyFactor,
+      minScanAmountSat: minScanAmountSat,
+    );
+    _pendingOpen = opening;
+    try {
+      return await opening;
+    } finally {
+      _pendingOpen = null;
+    }
+  }
+
+  Future<Result<void, SpFailure>> _openAccount({
+    required BitcoinNetwork network,
+    required Secret secret,
+    required String blindbitUrl,
+    required String electrumUrl,
+    required int fetchConcurrencyFactor,
+    required int matchConcurrencyFactor,
+    required int minScanAmountSat,
+  }) async {
     // The account is opened inside package:secrets, which hands the words to
     // bwk; this layer never holds them. Failures still return fixed text.
     final String dataDir;
@@ -192,6 +226,12 @@ class BwkSpAccountRepository
       dataDir = await _files.dataDir();
     } catch (_) {
       return const Err(SpUnexpected('SP data dir lookup failed'));
+    }
+    try {
+      _pendingScan = await _files.readPendingScan(dataDir);
+    } on Exception catch (_) {
+      _pendingScan = null;
+      log.warning('SP could not read pending scan');
     }
     _resetNotificationState();
     _scanning = false;
@@ -202,9 +242,9 @@ class BwkSpAccountRepository
     // (EnsureSpSessionUsecase) keeps two live sessions from ever racing. The
     // header store locks its own sentinel, so missing it fails the create with
     // "already opened by another instance".
-    await _files.clearStaleLocks();
     final checkpoint = SpConfig.headerCheckpoint(network);
     try {
+      await _files.clearStaleLocks();
       await _ffi.createFromSecret(
         network: SpNetworkMapper.toFfi(network),
         secret: secret,
@@ -213,6 +253,7 @@ class BwkSpAccountRepository
         dataDir: dataDir,
         fetchConcurrencyFactor: fetchConcurrencyFactor,
         matchConcurrencyFactor: matchConcurrencyFactor,
+        minScanAmountSat: minScanAmountSat,
         headerCheckpoint: checkpoint == null
             ? null
             : SpHeaderCheckpointMapper.toFfi(checkpoint),
@@ -221,6 +262,7 @@ class BwkSpAccountRepository
       // Fixed text on purpose: see the note above.
       return const Err(SpUnexpected('SP account create failed'));
     }
+    _sessionDataDir = dataDir;
     // Start the always-on taproot sub-account electrum listener so incoming txs
     // are pushed without a manual scan. createFromSecret does not propagate the
     // electrum URL into the sub-account, so set it first (mirrors the silent
@@ -248,14 +290,18 @@ class BwkSpAccountRepository
   }
 
   @override
-  Result<SpWallet, SpFailure> snapshot() => _guard(
-    () => SpWallet(
+  Result<SpWallet, SpFailure> snapshot() => _guard(() {
+    final balance = _ffi.unifiedBalance();
+    return SpWallet(
       spAddress: _ffi.spAddress(),
-      balance: SpBalanceMapper.toDomain(_ffi.unifiedBalance()),
-      isScanning: _ffi.isScanning(),
-      lastScannedHeight: _ffi.lastScannedHeight(),
-    ),
-  );
+      balance: SpBalanceMapper.toDomain(balance),
+      isScanning: _scanning,
+      hasPendingScan: _pendingScan != null,
+      isPendingScanPaused: _pendingScan?.isPaused ?? false,
+      lastScannedHeight: balance.lastScannedHeight,
+      scanRevision: _scanRevision,
+    );
+  });
 
   @override
   Future<Result<String, SpFailure>> generateTaprootAddress() =>
@@ -297,35 +343,121 @@ class BwkSpAccountRepository
   // reached only via `ScanSpWalletUsecase`. Do not add other callers; the
   // audited scan policy depends on it.
   @override
-  Future<Result<void, SpFailure>> scanOnce({int? startHeight}) async {
-    // Set scanning synchronously, before the first await, so the WalletBloc's
-    // isSpScanning gate has no blind window between scan_once returning (it
-    // spawns a background thread) and the first ScanStarted notification.
-    // Cleared on the terminal notification in _recordNotification.
-    _scanning = true;
+  Future<Result<void, SpFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  }) async {
+    if (teardownInProgress || _pendingDispose != null) {
+      return const Err(SpSessionBusy());
+    }
+    if (!_canLaunchAutomatic(automatic)) return const Ok(null);
+    if (_scanning || _scanLaunch != null || _scanControl != null) {
+      return const Err(SpScanBusy());
+    }
+    final launch = _launchScan(startHeight, automatic);
+    _scanLaunch = launch;
     try {
-      await _ffi.scanOnce(startHeight: startHeight);
+      return await launch;
+    } finally {
+      _scanLaunch = null;
+    }
+  }
+
+  bool _canLaunchAutomatic(SpAutomaticScanAdmission? automatic) =>
+      automatic == null ||
+      (automatic.revision == _scanRevision &&
+          _pendingScan?.isPaused != true &&
+          automatic.isAllowed());
+
+  Future<Result<void, SpFailure>> _launchScan(
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  ) async {
+    try {
+      await _pendingScanWrite;
+      if (!_canLaunchAutomatic(automatic)) return const Ok(null);
+      if (teardownInProgress || _pendingDispose != null) {
+        return const Err(SpSessionBusy());
+      }
+      final previous = _pendingScan;
+      final selectedHeight = startHeight ?? previous?.startHeight;
+      final last = previous == null || startHeight != null
+          ? null
+          : _ffi.lastScannedHeight();
+      final effectiveStart =
+          selectedHeight != null && (last == null || last < selectedHeight)
+          ? selectedHeight
+          : null;
+      final pending = (startHeight: selectedHeight, isPaused: false);
+      if (pending != previous) await _setPendingScan(pending);
+      // Saving the marker yields to lifecycle changes, Stop, and teardown.
+      final isClosing = teardownInProgress || _pendingDispose != null;
+      if (isClosing || !_canLaunchAutomatic(automatic)) {
+        if (pending != previous) await _setPendingScan(previous);
+        return isClosing ? const Err(SpSessionBusy()) : const Ok(null);
+      }
+      _scanning = true;
+      await _ffi.scanOnce(startHeight: effectiveStart);
       return const Ok(null);
     } catch (e) {
-      final failure = _mapFfiError(e);
-      // SpScanBusy means another scan is already running and owns the flag, so
-      // the loser of that race must leave it set. Every other failure means no
-      // scan started, so the flag this call set has to come back down.
-      if (failure is! SpScanBusy) _scanning = false;
-      return Err(failure);
+      _scanning = false;
+      return Err(_mapFfiError(e));
+    }
+  }
+
+  Future<Result<void, SpFailure>> _controlScan(
+    Future<void> Function() action,
+  ) async {
+    if (teardownInProgress || _pendingDispose != null) {
+      return const Err(SpSessionBusy());
+    }
+    if (_scanControl != null) return const Err(SpScanBusy());
+    _scanRevision++;
+    final control = _guardAsync(action);
+    _scanControl = control;
+    try {
+      return await control;
+    } finally {
+      _scanControl = null;
     }
   }
 
   @override
-  Future<Result<void, SpFailure>> stopScan() => _guardAsync(_ffi.stopScan);
+  Future<Result<void, SpFailure>> stopScan() => _controlScan(() async {
+    await _scanLaunch;
+    await _pendingScanWrite;
+    if (_pendingScan case final pending? when !pending.isPaused) {
+      await _setPendingScan((startHeight: pending.startHeight, isPaused: true));
+    }
+    await _ffi.stopScan();
+  });
 
   @override
-  Future<Result<void, SpFailure>> clearScanState() async =>
-      _guard(_ffi.clearScanState);
+  Future<Result<void, SpFailure>> clearScanState() {
+    if (_scanning || _scanLaunch != null) {
+      return Future.value(const Err(SpScanBusy()));
+    }
+    return _controlScan(() async {
+      await _setPendingScan(null);
+      await _ffi.clearScanState();
+    });
+  }
+
+  Future<void> _setPendingScan(({int? startHeight, bool isPaused})? pending) {
+    final dataDir = _sessionDataDir;
+    final write = _pendingScanWrite.then((_) async {
+      if (dataDir != null) await _files.writePendingScan(dataDir, pending);
+      _pendingScan = pending;
+    });
+    _pendingScanWrite = write.catchError((Object _) {
+      log.warning('SP could not save pending scan');
+    });
+    return write;
+  }
 
   @override
   Future<Result<void, SpFailure>> restartElectrum() async {
-    if (!_ffi.hasSession) return const Ok(null);
+    if (teardownInProgress || !_ffi.hasSession) return const Ok(null);
     _restarting = true;
     try {
       return await _guardAsync(_ffi.restartElectrum);
@@ -464,19 +596,30 @@ class BwkSpAccountRepository
   }
 
   @override
-  Result<int, SpFailure> currentBlockHeight() => _guard(_ffi.blockHeight);
+  Future<Result<int, SpFailure>> currentBlockHeight() =>
+      _guardAsync(_ffi.blockHeight);
 
   @override
   Stream<dom.SpNotification> get notifications =>
-      _notificationsWithHeaderReplay();
-
-  Stream<dom.SpNotification> _notificationsWithHeaderReplay() async* {
-    final started = _latestHeaderStarted;
-    final latestHeader = _latestHeaderNotification;
-    if (started != null && !identical(started, latestHeader)) yield started;
-    if (latestHeader != null) yield latestHeader;
-    yield* _ensureNotifications();
-  }
+      Stream<dom.SpNotification>.multi((controller) {
+        final started = _latestHeaderStarted;
+        final latestHeader = _latestHeaderNotification;
+        if (started != null && !identical(started, latestHeader)) {
+          controller.add(started);
+        }
+        if (latestHeader != null) controller.add(latestHeader);
+        try {
+          final subscription = _ensureNotifications().listen(
+            controller.add,
+            onError: controller.addError,
+            onDone: controller.close,
+          );
+          controller.onCancel = subscription.cancel;
+        } catch (error, stackTrace) {
+          controller.addError(error, stackTrace);
+          unawaited(controller.close());
+        }
+      });
 
   // Set up the Rust notification forwarding (init) + source listener exactly
   // once per session. Called from createFromSecret so recording (and electrum
@@ -559,6 +702,10 @@ class BwkSpAccountRepository
       }
     }
     _scanning = n.scanRunningAfter ?? _scanning;
+    if (n is dom.SpScanCompleted && _pendingScan != null) {
+      _pendingScan = null;
+      unawaited(_setPendingScan(null).catchError((Object _) {}));
+    }
     final line = SpNotifLogLine(time: DateTime.now(), notification: n);
     _notifLog.add(line);
     if (_notifLog.length > spNotifLogCap) _notifLog.removeAt(0);
@@ -585,6 +732,8 @@ class BwkSpAccountRepository
 
   @override
   Future<Result<void, SpFailure>> dispose() async {
+    final opening = _pendingOpen;
+    if (opening != null) await opening;
     if (!hasSession) return const Ok(null);
     final pending = _pendingDispose;
     if (pending != null) {
@@ -615,6 +764,9 @@ class BwkSpAccountRepository
   bool get notifStreamTornDown => _notifTornDown;
 
   Future<void> _runDispose() async {
+    _scanRevision++;
+    await _scanLaunch;
+    await _scanControl;
     // Tear down the Rust session FIRST. This flips the notif-thread shutdown
     // flag, stops the electrum listener, and releases the sqlite handle/.lock.
     // It MUST happen before cancelling the Dart notification subscription:
@@ -628,6 +780,9 @@ class BwkSpAccountRepository
       await _ffi.dispose();
       _notifications = null;
     }
+    await _pendingScanWrite;
+    _sessionDataDir = null;
+    _pendingScan = null;
     // Only reached on a clean dispose: a timed-out dispose throws above, so a
     // session that stays live keeps its state.
     _scanning = false;

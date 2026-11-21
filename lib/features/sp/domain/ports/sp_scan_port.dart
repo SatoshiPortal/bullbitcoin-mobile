@@ -2,6 +2,9 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 
+/// The wallet snapshot revision and final policy check for an automatic scan.
+typedef SpAutomaticScanAdmission = ({int revision, bool Function() isAllowed});
+
 /// The single Dart entry point to the Rust chain scan.
 ///
 /// This port exists to hold exactly one method. `ScanSpWalletUsecase` is the
@@ -17,5 +20,8 @@ abstract interface class SpScanPort {
   /// resumes from the last scanned position). Returns as soon as the scan is
   /// spawned; progress arrives on the notification stream.
   @useResult
-  Future<Result<void, SpFailure>> scanOnce({int? startHeight});
+  Future<Result<void, SpFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  });
 }

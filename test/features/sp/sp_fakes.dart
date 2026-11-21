@@ -61,10 +61,12 @@ SpBackendConfig spBackendConfig({
   BitcoinNetwork network = BitcoinNetwork.regtest,
   String blindbitUrl = 'http://blindbit.example',
   String electrumUrl = 'tcp://electrum.example:50001',
+  int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
 }) => SpBackendConfig(
   network: network,
   blindbitUrl: blindbitUrl,
   electrumUrl: electrumUrl,
+  minScanAmountSat: minScanAmountSat,
 );
 
 SpWallet spWallet({
@@ -175,6 +177,7 @@ class FakeSpAccountRepository
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     int matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) async {
     if (createShouldFail) {
       return const Err(SpUnexpected('SP account create failed'));
@@ -212,15 +215,6 @@ class FakeSpAccountRepository
     sentinel = true;
     return const Ok(null);
   }
-
-  @override
-  Future<Result<bool, SpFailure>> backupAccountDir() async => const Ok(false);
-
-  @override
-  Future<Result<bool, SpFailure>> restoreAccountDir() async => const Ok(false);
-
-  @override
-  Future<Result<void, SpFailure>> discardBackup() async => const Ok(null);
 
   @override
   Future<Result<bool, SpFailure>> adoptNewestBackup() async => const Ok(false);
@@ -272,7 +266,10 @@ class FakeSpAccountRepository
   }
 
   @override
-  Future<Result<void, SpFailure>> scanOnce({int? startHeight}) async {
+  Future<Result<void, SpFailure>> scanOnce({
+    int? startHeight,
+    SpAutomaticScanAdmission? automatic,
+  }) async {
     scanOnceCount++;
     lastScanStartHeight = startHeight;
     return const Ok<void, SpFailure>(null);
@@ -339,7 +336,7 @@ class FakeSpAccountRepository
   int? chainTip() => chainTipValue;
 
   @override
-  Result<int, SpFailure> currentBlockHeight() {
+  Future<Result<int, SpFailure>> currentBlockHeight() async {
     if (currentBlockHeightShouldFail) {
       return const Err(SpUnexpected('no live session'));
     }

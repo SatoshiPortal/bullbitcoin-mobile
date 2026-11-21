@@ -1,14 +1,17 @@
 import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 import 'dart:async';
 
+import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
+
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
+import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
@@ -23,7 +26,7 @@ class _Settings extends Mock implements SettingsRepository {}
 
 class _Account extends FakeSpAccountRepository {
   void Function()? onSnapshot;
-  int disposals = 0, backups = 0, restores = 0;
+  int disposals = 0;
   void Function()? onCreated;
   bool nativeFailure = false;
 
@@ -35,6 +38,7 @@ class _Account extends FakeSpAccountRepository {
     required String electrumUrl,
     int fetchConcurrencyFactor = 12,
     int matchConcurrencyFactor = 1,
+    int minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   }) async {
     final result = await super.createFromSecret(
       network: network,
@@ -43,23 +47,12 @@ class _Account extends FakeSpAccountRepository {
       electrumUrl: electrumUrl,
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
+      minScanAmountSat: minScanAmountSat,
     );
     onCreated?.call();
     return nativeFailure
         ? const Err(SpUnexpected('native create failed'))
         : result;
-  }
-
-  @override
-  Future<Result<bool, SpFailure>> backupAccountDir() async {
-    backups++;
-    return const Ok(true);
-  }
-
-  @override
-  Future<Result<bool, SpFailure>> restoreAccountDir() async {
-    restores++;
-    return const Ok(true);
   }
 
   _Account({required super.networkValue, super.hasSessionValue});
@@ -166,13 +159,14 @@ void main() {
         await config.save(captured);
         final account = _Account(networkValue: stored);
         addTearDown(account.disposeStreams);
-        final usecase = RecreateSpWalletUsecase(
+        final usecase = UpdateSpBackendConfigUsecase(
           getSpFeatureGateUsecase: gate,
           getSpSecretUsecase: secret,
           repository: account,
           files: account,
           configRepository: config,
           ensureSpSessionUsecase: ensure(account),
+          isSpScanningUsecase: IsSpScanningUsecase(repository: account),
           guard: SpSessionGuard(),
         );
         final requested = stored == BitcoinNetwork.mainnet
@@ -186,7 +180,6 @@ void main() {
         expect((result as Err).failure, isA<SpUnsupportedNetwork>());
         verifyZeroInteractions(secret);
         expect(account.disposals, 0);
-        expect(account.backups, 0);
         expect((await config.fetch() as Ok).value, captured);
       },
     );
@@ -367,13 +360,14 @@ void main() {
           active = Environment.testnet;
         };
       addTearDown(account.disposeStreams);
-      final recreate = RecreateSpWalletUsecase(
+      final recreate = UpdateSpBackendConfigUsecase(
         getSpFeatureGateUsecase: gate,
         getSpSecretUsecase: secret,
         repository: account,
         files: account,
         configRepository: config,
         ensureSpSessionUsecase: ensure(account),
+        isSpScanningUsecase: IsSpScanningUsecase(repository: account),
         guard: SpSessionGuard(),
       );
       final result = await recreate.execute(
@@ -382,8 +376,6 @@ void main() {
         electrumUrl: 'ssl://new.example:50002',
       );
       expect((result as Err).failure, isA<SpUnexpected>());
-      expect(account.backups, 1);
-      expect(account.restores, 1);
       expect(account.disposals, 2);
       expect((await config.fetch() as Ok).value, previous);
     },

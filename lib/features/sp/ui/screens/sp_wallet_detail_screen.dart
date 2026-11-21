@@ -63,6 +63,7 @@ class SpWalletDetailScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            tooltip: context.loc.settingsScreenTitle,
             icon: Image.asset(
               Assets.icons.settingsLine.path,
               width: 24,
@@ -103,13 +104,28 @@ class SpWalletDetailScreen extends StatelessWidget {
               ),
             if (state.isScanning)
               SliverToBoxAdapter(child: _SpScanStatusStrip(state: state))
-            // Only when the user has to act. With auto scanning keeping up
-            // there is nothing to say, so no row at all.
-            else if (state.needsScanNudge)
+            else if (!state.isLoading && state.minBirthdayHeight != null)
+              SliverToBoxAdapter(child: _SpScanStatusRow(state: state)),
+            if (state.needsScanNudge)
               SliverToBoxAdapter(
                 child: _SpScanNudgeCard(
                   height: state.lastScannedHeight!,
                   chainTip: state.chainTip!,
+                ),
+              )
+            else if (!state.isScanning &&
+                !state.isLoading &&
+                (!state.hasScannedBefore || state.hasPendingScan))
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: BullButton.secondary(
+                    label: context.loc.spScan,
+                    onPressed: () => context.pushNamed(SpRoute.spScan.name),
+                  ),
                 ),
               ),
             if (state.isBlindbitBehind)
@@ -304,15 +320,84 @@ class _SpScanStatusStrip extends StatelessWidget {
             ),
             const Gap(4),
             Text(
-              context.loc.spScanBlockProgress(
-                '${state.scanCurrent ?? state.scanFrom}',
-                '${state.scanTo}',
-              ),
+              switch ((state.scanCurrent ?? state.scanFrom, state.scanTo)) {
+                (final current?, final total?) =>
+                  context.loc.spScanBlockProgress('$current', '$total'),
+                _ => context.loc.spScanScanning,
+              },
               style: context.bullType.label
                   .copyWith(fontWeight: FontWeight.w400)
                   .copyWith(color: context.appColors.textMuted),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SpScanStatusRow extends StatelessWidget {
+  const _SpScanStatusRow({required this.state});
+
+  final SpState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = context.loc;
+    final colors = context.appColors;
+    final (label, icon, iconColor) = switch (state) {
+      SpState(hasPendingScan: true) => (
+        loc.spScanResumeInterrupted,
+        Icons.history,
+        colors.textMuted,
+      ),
+      SpState(hasScannedBefore: false) => (
+        loc.spWalletScanRequired,
+        Icons.schedule,
+        colors.textMuted,
+      ),
+      SpState(isBlindbitBehind: true) => (
+        loc.spWalletScanBehind,
+        Icons.schedule,
+        colors.textMuted,
+      ),
+      _ when !state.isChainTipReliable => (
+        loc.spWalletScanUnknown,
+        Icons.info_outline,
+        colors.textMuted,
+      ),
+      SpState(isCaughtUp: true) => (
+        loc.spWalletScanUpToDate,
+        Icons.check_circle_outline,
+        colors.success,
+      ),
+      _ => (loc.spWalletScanBehind, Icons.schedule, colors.textMuted),
+    };
+    return Material(
+      color: colors.surface,
+      child: InkWell(
+        onTap: () => context.pushNamed(SpRoute.spScan.name),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Icon(icon, size: 16, color: iconColor),
+                const Gap(8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: context.bullType.label.copyWith(
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ),
+                const Gap(8),
+                Icon(Icons.chevron_right, size: 16, color: colors.textMuted),
+              ],
+            ),
+          ),
         ),
       ),
     );

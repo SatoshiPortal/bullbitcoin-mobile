@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_scan_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:material_ui/material_ui.dart';
@@ -42,6 +43,7 @@ void main() {
 
     when(() => loadUsecase.execute())
         .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
+    when(loadUsecase.scanServerTip).thenAnswer((_) async => const Ok(900000));
     when(() => stopUsecase.execute()).thenAnswer((_) async => const Ok(null));
     when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
         .thenAnswer((_) async => const Ok<void, SpFailure>(null));
@@ -56,6 +58,8 @@ void main() {
   Future<void> loadWith(WidgetTester tester, SpWalletData data) async {
     when(() => loadUsecase.execute())
         .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(data));
+    when(() => harness.scanControl.isScanningCached)
+        .thenReturn(data.wallet.isScanning);
     await cubit.load();
     await tester.pumpWidget(_buildPage(cubit));
     await tester.pump();
@@ -113,17 +117,63 @@ void main() {
     verify(() => stopUsecase.execute()).called(1);
   });
 
+  testWidgets('a failed Stop shows its error and keeps the Stop action', (
+    tester,
+  ) async {
+    const failure = SpUnexpected('pause could not be saved');
+    when(stopUsecase.execute).thenAnswer((_) async => const Err(failure));
+    await loadWith(tester, spWalletData(isScanning: true));
+
+    await tester.tap(find.text('Stop'));
+    await tester.pump();
+    await tester.pump();
+
+    final context = tester.element(find.byType(SpScanScreen));
+    expect(find.text(failure.toTranslated(context)), findsOneWidget);
+    expect(find.text('Stop'), findsOneWidget);
+  });
+
   testWidgets('never scanned with bounds shows the start-height chooser', (
     tester,
   ) async {
     await loadWith(
       tester,
-      spWalletData(chainTip: 900000, minBirthdayHeight: 709632),
+      spWalletData(chainTip: 900000, minBirthdayHeight: 709656),
     );
 
     expect(find.byType(Slider), findsOneWidget);
     expect(find.text('Earliest'), findsOneWidget);
-    expect(find.text('Start scan from 709632'), findsOneWidget);
+    expect(find.text('Start scan from 709656'), findsOneWidget);
+  });
+
+  testWidgets('clearing scan state restores the picker without a header tip', (
+    tester,
+  ) async {
+    final tip = Completer<Result<int, SpFailure>>();
+    when(loadUsecase.scanServerTip).thenAnswer((_) => tip.future);
+    when(harness.clearScanStateUsecase.execute)
+        .thenAnswer((_) async => const Ok(null));
+    await loadWith(
+      tester,
+      spWalletData(lastScannedHeight: 890000, minBirthdayHeight: 709656),
+    );
+    expect(find.byType(Slider), findsNothing);
+    expect(await cubit.clearScanState(), isTrue);
+    await tester.pump();
+    await tester.pump();
+
+    expect(
+      find.textContaining('Getting the latest block from the scan server'),
+      findsOneWidget,
+    );
+    expect(find.byType(Slider), findsNothing);
+    expect(find.text('Start scan from 709656'), findsNothing);
+
+    tip.complete(const Ok(900000));
+    await tester.pumpAndSettle();
+    expect(find.byType(Slider), findsOneWidget);
+    expect(find.text('Earliest'), findsOneWidget);
+    expect(find.text('Start scan from 709656'), findsOneWidget);
   });
 
   testWidgets('tapping Start from chosen height scans from that height', (
@@ -131,16 +181,74 @@ void main() {
   ) async {
     await loadWith(
       tester,
-      spWalletData(chainTip: 900000, minBirthdayHeight: 709632),
+      spWalletData(chainTip: 900000, minBirthdayHeight: 709656),
     );
 
-    await tester.tap(find.text('Start scan from 709632'));
+    await tester.tap(find.text('Start scan from 709656'));
     await tester.pump();
 
-    verify(() => scanUsecase.execute(startHeight: 709632)).called(1);
+    verify(() => scanUsecase.execute(startHeight: 709656)).called(1);
   });
 
-  testWidgets('already scanned shows the next start read-only and resumes', (
+  testWidgets('retry keeps the selected height if the scan could not start', (
+    tester,
+  ) async {
+    await loadWith(
+      tester,
+      spWalletData(chainTip: 900000, minBirthdayHeight: 709656),
+    );
+    when(() => scanUsecase.execute(startHeight: 899000))
+        .thenAnswer((_) async => const Err(SpUnexpected()));
+    final heightInput = find.byType(TextField);
+    await tester.ensureVisible(heightInput);
+    await tester.enterText(heightInput, '899000');
+    await tester.pump();
+    await tester.tap(find.text('Start scan from 899000'));
+    await tester.pumpAndSettle();
+    verify(() => scanUsecase.execute(startHeight: 899000)).called(1);
+
+    when(() => scanUsecase.execute(startHeight: 899000))
+        .thenAnswer((_) async => const Ok(null));
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+    verify(() => scanUsecase.execute(startHeight: 899000)).called(1);
+  });
+
+  testWidgets('a failed header check no longer reports synced at the old tip', (
+    tester,
+  ) async {
+    final notifications = StreamController<SpNotification>.broadcast();
+    addTearDown(notifications.close);
+    when(watchUsecase.execute).thenAnswer((_) => notifications.stream);
+    await loadWith(
+      tester,
+      spWalletData(
+        chainTip: 900000,
+        lastScannedHeight: 900000,
+        minBirthdayHeight: 709656,
+      ),
+    );
+    expect(find.text('Auto scan enabled, synced'), findsOneWidget);
+
+    notifications.add(
+      const SpHeaderProgressFailed(SpHeaderValidationPhase.replay),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Auto scan enabled, synced'), findsNothing);
+    expect(find.text('Scan status unknown'), findsOneWidget);
+    expect(find.text('Check for new payments'), findsOneWidget);
+
+    notifications.add(
+      const SpHeaderProgressCompleted(SpHeaderValidationPhase.replay),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Auto scan enabled, synced'), findsOneWidget);
+    expect(find.text('Scan status unknown'), findsNothing);
+  });
+
+  testWidgets('a checkpoint shows where the wallet scanned through', (
     tester,
   ) async {
     await loadWith(
@@ -148,15 +256,56 @@ void main() {
       spWalletData(lastScannedHeight: 800000, chainTip: 900000),
     );
 
+    expect(find.text('Scanned through block 800000'), findsOneWidget);
     expect(find.text('100000 blocks behind'), findsOneWidget);
-    expect(find.text('~1 year 10 months'), findsOneWidget);
     expect(find.byType(Slider), findsNothing);
 
-    await tester.tap(find.text('Start scan'));
+    await tester.tap(find.text('Check for new payments'));
     await tester.pump();
 
-    // Resume: no start height (null) is forwarded.
+    // Continue scanning from the saved checkpoint.
     verify(() => scanUsecase.execute(startHeight: null)).called(1);
+  });
+
+  testWidgets('a checkpoint without a chain tip offers to check for payments', (
+    tester,
+  ) async {
+    await loadWith(tester, spWalletData(lastScannedHeight: 976754));
+
+    expect(find.text('Scanned through block 976754'), findsOneWidget);
+    expect(find.text('Check for new payments'), findsOneWidget);
+    expect(find.text('Resume scan'), findsNothing);
+  });
+
+  testWidgets('an interrupted first scan keeps the Resume action', (
+    tester,
+  ) async {
+    await loadWith(
+      tester,
+      spWalletData(minBirthdayHeight: 709656, hasPendingScan: true),
+    );
+
+    expect(find.text('Scan unfinished'), findsOneWidget);
+    expect(find.text('Resume scan'), findsOneWidget);
+    verifyNever(loadUsecase.scanServerTip);
+  });
+
+  testWidgets('retry fetches the scan server tip after a connection failure', (
+    tester,
+  ) async {
+    when(loadUsecase.scanServerTip)
+        .thenAnswer((_) async => const Err(SpBackendUnreachable()));
+    await loadWith(tester, spWalletData(minBirthdayHeight: 709656));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Couldn’t get the latest block from the scan server.'),
+      findsOneWidget,
+    );
+
+    when(loadUsecase.scanServerTip).thenAnswer((_) async => const Ok(900000));
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(find.byType(Slider), findsOneWidget);
   });
 
   testWidgets('caught up with auto scanning off says so and offers a scan', (

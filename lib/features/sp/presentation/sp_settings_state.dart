@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
+import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
@@ -14,6 +15,7 @@ sealed class SpSettingsState
     @Default(false) bool initialized,
     @Default(false) bool isSaving,
     @Default(false) bool saved,
+    @Default(SpConfig.defaultMinScanAmountSat) int minScanAmountSat,
     @Default([]) List<SpNotifLogLine> console,
   }) = _SpSettingsState;
 

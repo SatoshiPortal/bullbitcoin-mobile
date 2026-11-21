@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// Serializes the operations that tear the SP session down and rebuild it:
-/// the backend-config save (recreate) and the wallet delete (revoke).
+/// updating backend settings and deleting the wallet.
 ///
 /// The two are reachable at the same time from different screens (the SP
 /// settings screen drives both, and turning developer mode off revokes from the

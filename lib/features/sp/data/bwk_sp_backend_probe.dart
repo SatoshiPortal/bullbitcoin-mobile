@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
@@ -19,7 +17,10 @@ class BwkSpBackendProbe implements SpBackendProbePort {
   BwkSpBackendProbe({
     Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
-  }) : _testBlindbit = testBlindbit ?? testBlindbitUrl,
+  }) : _testBlindbit =
+           testBlindbit ??
+           (({required url}) =>
+               testBlindbitUrl(url: url, requireScanData: true)),
        _testElectrum = testElectrum ?? testElectrumUrl;
 
   @override
@@ -35,10 +36,9 @@ class BwkSpBackendProbe implements SpBackendProbePort {
           await _testElectrum(url: url);
       }
       return const Ok(null);
-    } catch (e) {
-      developer.log('SP backend test failed ($kind, $url): $e', name: 'SP');
-      log.warning('SP backend test failed ($kind, $url)', error: e);
-      return Err(SpBackendUnreachable('SP backend test failed ($url): $e'));
+    } catch (_) {
+      log.warning('SP backend probe failed ($kind)');
+      return Err(SpBackendUnreachable('SP backend probe failed ($kind)'));
     }
   }
 

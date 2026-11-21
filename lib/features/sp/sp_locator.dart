@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/sp/domain/ports/sp_recipient_address_validato
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/check_sp_server_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/create_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
@@ -42,7 +43,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/is_sp_set_up_now_usecase.d
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/prepare_sp_payment_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/restamp_sp_payment_times_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/resync_sp_listener_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -205,7 +206,10 @@ class SpLocator {
       () => GetSpAutoScanUsecase(repository: locator<SpAutoScanRepository>()),
     );
     locator.registerFactory<SetSpAutoScanUsecase>(
-      () => SetSpAutoScanUsecase(repository: locator<SpAutoScanRepository>()),
+      () => SetSpAutoScanUsecase(
+        repository: locator<SpAutoScanRepository>(),
+        syncWallet: locator<SyncSpWalletUsecase>(),
+      ),
     );
     locator.registerFactory<CheckSpWalletSetupUsecase>(
       () => CheckSpWalletSetupUsecase(
@@ -239,6 +243,14 @@ class SpLocator {
       () => SpTipWatcher(
         watchSpUpdatesUsecase: locator<WatchSpUpdatesUsecase>(),
         syncSpWalletUsecase: locator<SyncSpWalletUsecase>(),
+        watchSpNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
+        lifecycleStates: _appLifecycleStates(),
+        initiallyForeground: switch (WidgetsBinding.instance.lifecycleState) {
+          null ||
+          AppLifecycleState.resumed ||
+          AppLifecycleState.inactive => true,
+          _ => false,
+        },
       ),
     );
     locator.registerLazySingleton<SpElectrumReconnectWatcher>(
@@ -261,6 +273,10 @@ class SpLocator {
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
         getSpAutoScanUsecase: locator<GetSpAutoScanUsecase>(),
+        isForeground: () => switch (WidgetsBinding.instance.lifecycleState) {
+          null || AppLifecycleState.resumed => true,
+          _ => false,
+        },
       ),
     );
     locator.registerFactory<ScanSpWalletUsecase>(
@@ -359,14 +375,15 @@ class SpLocator {
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
       ),
     );
-    locator.registerFactory<RecreateSpWalletUsecase>(
-      () => RecreateSpWalletUsecase(
+    locator.registerFactory<UpdateSpBackendConfigUsecase>(
+      () => UpdateSpBackendConfigUsecase(
         getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
         getSpSecretUsecase: locator<GetSpSecretUsecase>(),
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
         ensureSpSessionUsecase: locator<EnsureSpSessionUsecase>(),
+        isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         guard: locator<SpSessionGuard>(),
       ),
     );
@@ -387,6 +404,13 @@ class SpLocator {
         scanControl: locator<SpScanControlPort>(),
       ),
     );
+    locator.registerFactory<CheckSpServerUsecase>(
+      () => CheckSpServerUsecase(
+        loadConfig: locator<LoadSpBackendConfigUsecase>(),
+        getDefaults: locator<GetSpBackendDefaultsUsecase>(),
+        testBackend: locator<TestSpBackendUsecase>(),
+      ),
+    );
     locator.registerFactory<TestSpBackendUsecase>(
       () => TestSpBackendUsecase(probe: locator<SpBackendProbePort>()),
     );
@@ -395,6 +419,7 @@ class SpLocator {
   static void _registerFacade(GetIt locator) {
     locator.registerLazySingleton<SpFacade>(
       () => SpFacade(
+        checkSpServerUsecase: locator<CheckSpServerUsecase>(),
         getSpWalletUsecase: locator<GetSpWalletUsecase>(),
         isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         checkSpWalletSetupUsecase: locator<CheckSpWalletSetupUsecase>(),
@@ -419,6 +444,7 @@ class SpLocator {
         restampSpPaymentTimesUsecase: locator<RestampSpPaymentTimesUsecase>(),
         spNotificationsWatcher: locator<SpNotificationsWatcher>(),
         scanSpWalletUsecase: locator<ScanSpWalletUsecase>(),
+        isSpScanningUsecase: locator<IsSpScanningUsecase>(),
         stopSpScanUsecase: locator<StopSpScanUsecase>(),
         clearSpScanStateUsecase: locator<ClearSpScanStateUsecase>(),
         revokeSpWalletUsecase: locator<RevokeSpWalletUsecase>(),
@@ -440,7 +466,7 @@ class SpLocator {
     );
     locator.registerFactory<SpSettingsCubit>(
       () => SpSettingsCubit(
-        recreateSpWalletUsecase: locator<RecreateSpWalletUsecase>(),
+        updateSpBackendConfigUsecase: locator<UpdateSpBackendConfigUsecase>(),
         watchNotificationLogUsecase: locator<WatchSpNotificationLogUsecase>(),
         testSpBackendUsecase: locator<TestSpBackendUsecase>(),
         loadSpBackendConfigUsecase: locator<LoadSpBackendConfigUsecase>(),

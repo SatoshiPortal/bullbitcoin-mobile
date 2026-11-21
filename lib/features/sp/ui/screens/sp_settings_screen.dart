@@ -15,6 +15,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullButtonSize,
         BullButton,
         BullConfirmDialog,
+        BullInputText,
         BullSettingsEntryItem,
         BullShapesX,
         Gap,
@@ -31,8 +32,7 @@ const double _consoleHeight = 240;
 class SpSettingsScreen extends StatefulWidget {
   const SpSettingsScreen({super.key, required this.exitRedirectPath});
 
-  /// Where deleting the wallet leaves SP for; supplied by the composition root
-  /// so this screen never imports another feature's router.
+  /// Where to go after wallet deletion or when settings has no back stack.
   final String exitRedirectPath;
 
   @override
@@ -63,13 +63,30 @@ class _SpSettingsScreenState extends State<SpSettingsScreen> {
         );
       },
       child: BlocConsumer<SpSettingsCubit, SpSettingsState>(
-        listenWhen: (previous, current) => !previous.saved && current.saved,
+        listenWhen: (previous, current) =>
+            previous.isSaving && !current.isSaving,
         listener: (context, state) {
-          unawaited(context.read<SpCubit>().reloadAfterBackendChange());
+          final wallet = context.read<SpCubit>();
+          if (state.saved) {
+            unawaited(wallet.reloadAfterBackendChange());
+          } else if (state.form.error != null) {
+            unawaited(wallet.load());
+          }
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(title: Text(context.loc.spSettingsTitle)),
+            appBar: AppBar(
+              leading: BackButton(
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(widget.exitRedirectPath);
+                  }
+                },
+              ),
+              title: Text(context.loc.spSettingsTitle),
+            ),
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -108,10 +125,8 @@ class _BackendConfigSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<SpSettingsCubit>().state;
     final cubit = context.read<SpSettingsCubit>();
-    // A save recreates the session, so it must not start while a revoke is
-    // tearing that same session down. The two live on this one screen.
-    final isRevoking = context.select(
-      (SpCubit cubit) => cubit.state.isRevoking,
+    final isWalletBusy = context.select(
+      (SpCubit cubit) => cubit.state.isRevoking || cubit.state.isScanning,
     );
 
     return Column(
@@ -142,7 +157,7 @@ class _BackendConfigSection extends StatelessWidget {
             ),
           ),
           submit: BullButton.primary(
-            onPressed: (!state.canSave || isRevoking)
+            onPressed: (!state.canSave || isWalletBusy)
                 ? null
                 : () async {
                     final confirmed = await _confirm(
@@ -175,8 +190,12 @@ class _WalletManagementSection extends StatelessWidget {
     );
     // A revoke tears down the session a save is recreating, so the delete entry
     // is blocked while a save runs, not only while the SP cubit is busy.
-    final isSaving = context.select(
-      (SpSettingsCubit cubit) => cubit.state.isSaving,
+    final (isSaving, initialized, amount) = context.select(
+      (SpSettingsCubit cubit) => (
+        cubit.state.isSaving,
+        cubit.state.initialized,
+        cubit.state.minScanAmountSat,
+      ),
     );
     final disabled = isLoading || isScanning || isSaving;
 
@@ -208,22 +227,16 @@ class _WalletManagementSection extends StatelessWidget {
           title: context.loc.spHeaderValidationTitle,
           onTap: () => context.pushNamed(SpRoute.spHeaderValidation.name),
         ),
+        const _AutoScanSetting(),
         BullSettingsEntryItem(
-          icon: Icons.autorenew,
-          title: context.loc.spAutoScanEntry,
-          subtitle: context.select((SpCubit c) => c.state.isAutoScanEnabled)
-              ? context.loc.spAutoScanOnSubtitle
-              : context.loc.spAutoScanOffSubtitle,
-          trailing: Switch(
-            value: context.select((SpCubit c) => c.state.isAutoScanEnabled),
-            onChanged: disabled
-                ? null
-                : (value) => unawaited(
-                    context.read<SpCubit>().setAutoScanEnabled(
-                      isEnabled: value,
-                    ),
-                  ),
+          icon: Icons.filter_alt_outlined,
+          title: context.loc.spMinScanAmount,
+          subtitle: context.loc.spMinScanAmountValue(
+            NumberFormat.decimalPattern(context.loc.localeName).format(amount),
           ),
+          onTap: disabled || !initialized
+              ? null
+              : () => unawaited(_editMinScanAmount(context, amount)),
         ),
         BullSettingsEntryItem(
           icon: Icons.restart_alt,
@@ -280,6 +293,109 @@ class _WalletManagementSection extends StatelessWidget {
                 },
         ),
       ],
+    );
+  }
+}
+
+Future<void> _editMinScanAmount(BuildContext context, int currentAmount) async {
+  var input = '$currentAmount';
+  final selected = await showDialog<int>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setDialogState) {
+        final loc = context.loc;
+        final amount = int.tryParse(input);
+        final canSave =
+            amount != null && amount >= 0 && amount != currentAmount;
+        return AlertDialog(
+          scrollable: true,
+          title: Text(loc.spMinScanAmount),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(loc.spMinScanAmountTradeoff),
+              const Gap(12),
+              Text(loc.spMinScanAmountRescan),
+              const Gap(16),
+              BullInputText(
+                value: input,
+                hint: loc.spMinScanAmount,
+                suffixText: loc.satsSuffix.trim(),
+                digitsOnly: true,
+                maxLines: 1,
+                onChanged: (value) {
+                  setDialogState(() {
+                    input = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          actions: [
+            BullButton.secondary(
+              label: loc.cancel,
+              size: BullButtonSize.small,
+              compact: true,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            BullButton.primary(
+              label: loc.save,
+              size: BullButtonSize.small,
+              compact: true,
+              onPressed: canSave
+                  ? () => Navigator.of(context).pop(amount)
+                  : null,
+            ),
+          ],
+        );
+      },
+    ),
+  );
+  if (selected == null || !context.mounted) return;
+  final failure = await context.read<SpSettingsCubit>().saveMinScanAmount(
+    selected,
+  );
+  if (failure != null && context.mounted) {
+    unawaited(context.read<SpCubit>().load());
+    BullSnackBar.show(context, message: failure.toTranslated(context));
+  }
+}
+
+class _AutoScanSetting extends StatefulWidget {
+  const _AutoScanSetting();
+
+  @override
+  State<_AutoScanSetting> createState() => _AutoScanSettingState();
+}
+
+class _AutoScanSettingState extends State<_AutoScanSetting> {
+  bool _saving = false;
+
+  Future<void> _setEnabled(bool isEnabled) async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    final failure = await context.read<SpCubit>().setAutoScanEnabled(
+      isEnabled: isEnabled,
+    );
+    if (!mounted) return;
+    setState(() => _saving = false);
+    if (failure != null) {
+      BullSnackBar.show(context, message: failure.toTranslated(context));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = context.select((SpCubit c) => c.state.isAutoScanEnabled);
+    return BullSettingsEntryItem(
+      icon: Icons.autorenew,
+      title: context.loc.spAutoScanEntry,
+      subtitle: enabled
+          ? context.loc.spAutoScanOnSubtitle
+          : context.loc.spAutoScanOffSubtitle,
+      onTap: _saving ? null : () => unawaited(_setEnabled(!enabled)),
+      trailing: Switch(value: enabled, onChanged: _saving ? null : _setEnabled),
     );
   }
 }

@@ -7,6 +7,11 @@ import 'package:primitives/primitives.dart';
 void main() {
   const tip = 900000;
 
+  test('a legacy cursor shows the lowest supported resume height', () {
+    const state = SpState(lastScannedHeight: 709635, minBirthdayHeight: 709656);
+    expect(state.nextScanStart, 709656);
+  });
+
   SpState stateWith({
     int? lastScannedHeight = tip - 1,
     int? chainTip = tip,

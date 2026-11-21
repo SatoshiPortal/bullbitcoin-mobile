@@ -16,13 +16,19 @@ class SpWallet {
   final String spAddress;
   final SpBalance balance;
   final bool isScanning;
+  final bool hasPendingScan;
+  final bool isPendingScanPaused;
   final int? lastScannedHeight;
+  final int scanRevision;
 
   const SpWallet({
     this.network,
     required this.spAddress,
     required this.balance,
     required this.isScanning,
+    this.hasPendingScan = false,
+    this.isPendingScanPaused = false,
     this.lastScannedHeight,
+    this.scanRevision = 0,
   });
 }

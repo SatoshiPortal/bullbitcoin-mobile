@@ -9518,8 +9518,13 @@ class BullSdkWire implements BaseWire {
   void wire__dart_bwk__api__sp_account__test_blindbit_url(
     int port_,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> url,
+    bool require_scan_data,
   ) {
-    return _wire__dart_bwk__api__sp_account__test_blindbit_url(port_, url);
+    return _wire__dart_bwk__api__sp_account__test_blindbit_url(
+      port_,
+      url,
+      require_scan_data,
+    );
   }
 
   late final _wire__dart_bwk__api__sp_account__test_blindbit_urlPtr =
@@ -9528,6 +9533,7 @@ class BullSdkWire implements BaseWire {
           ffi.Void Function(
             ffi.Int64,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Bool,
           )
         >
       >(
@@ -9536,7 +9542,7 @@ class BullSdkWire implements BaseWire {
   late final _wire__dart_bwk__api__sp_account__test_blindbit_url =
       _wire__dart_bwk__api__sp_account__test_blindbit_urlPtr
           .asFunction<
-            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>)
+            void Function(int, ffi.Pointer<wire_cst_list_prim_u_8_strict>, bool)
           >();
 
   void wire__dart_bwk__api__sp_account__test_electrum_url(

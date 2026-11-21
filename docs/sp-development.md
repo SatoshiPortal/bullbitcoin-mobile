@@ -40,9 +40,9 @@ There is no SP-specific make target. `make checks` is the local entry point: it 
 
 ## 4. Tests and the Scan Policy
 
-The SP suite needs no native libraries. `make unit-test` picks up the SP tests under `test/features/sp/` along with the rest of the project.
+`make unit-test` picks up the SP tests under `test/features/sp/` along with the rest of the project. The suite includes tests that initialize the native BWK bindings.
 
-Scanning resumes on its own during a sync tick, but only through `SyncSpWalletUsecase`, and only when `spScanTrigger` says so: a wallet with no cursor yet, or one more than about a month behind the tip, stays on the manual path until the user acts.
+Foreground sync goes through `SyncSpWalletUsecase`. With automatic scanning enabled, it resumes a previously authorized, unpaused scan from its saved starting height or its last persisted checkpoint. For other scans, `SpScanPolicy` requires user action when the wallet has no cursor or is more than about a month behind the tip. The scheduled background task currently syncs descriptor wallets.
 
 That confinement is enforced by the type system rather than by a grep. `scanOnce` lives alone on `SpScanPort`, and the locator hands that port to `ScanSpWalletUsecase` and nothing else, so no other class can reach the Rust scan without a visible change to the composition root. `sp_locator_scan_policy_test.dart` covers the behaviour on top of that: it boots the real locator graph with only the outbound ports faked and counts every `scanOnce` that reaches the boundary.
 

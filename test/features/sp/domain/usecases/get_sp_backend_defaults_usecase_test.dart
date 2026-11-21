@@ -24,8 +24,8 @@ void main() {
     test('mainnet resolves to the mainnet endpoints', () async {
       final defaults = await defaultsFor(BitcoinNetwork.mainnet);
 
-      expect(defaults.blindbitUrl, 'https://blindbit.pythcoiner.dev');
-      expect(defaults.electrumUrl, 'ssl://electrum.pythcoiner.dev:50002');
+      expect(defaults.blindbitUrl, 'https://blindbit.bullbitcoin.com');
+      expect(defaults.electrumUrl, 'ssl://electrum.bullbitcoin.com:50002');
       expect(probe.fetchRegtestDefaultsCalls, 0);
     });
 

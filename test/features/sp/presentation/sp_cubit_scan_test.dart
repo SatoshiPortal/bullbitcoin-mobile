@@ -66,6 +66,37 @@ void main() {
   });
 
   test(
+    'loading after an unobserved completion refreshes scan status',
+    () async {
+      final snapshot = Completer<Result<SpWalletData, SpFailure>>();
+      var loadCount = 0;
+      when(loadUsecase.execute).thenAnswer((_) async {
+        if (loadCount++ == 0) return snapshot.future;
+        return Ok(spWalletData(lastScannedHeight: 975010));
+      });
+
+      final loading = cubit.load();
+      expect(notifController.hasListener, isFalse);
+      notifController.add(const SpScanCompleted());
+      snapshot.complete(
+        Ok(
+          spWalletData(
+            isScanning: true,
+            hasPendingScan: true,
+            lastScannedHeight: 975000,
+          ),
+        ),
+      );
+      await loading;
+
+      expect(cubit.state.isScanning, isFalse);
+      expect(cubit.state.hasPendingScan, isFalse);
+      expect(cubit.state.lastScannedHeight, 975010);
+      expect(loadCount, 2);
+    },
+  );
+
+  test(
     'ScanStarted notification sets isScanning=true and scan bounds',
     () async {
       await cubit.load();
@@ -391,6 +422,7 @@ void main() {
       // flip isScanning off and wedge the Stop button.
       when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
           .thenAnswer((_) async {
+            when(() => harness.scanControl.isScanningCached).thenReturn(true);
             notifController.add(const SpScanStarted(1, 10));
             await Future.delayed(Duration.zero);
             return const Err<void, SpFailure>(
@@ -405,6 +437,20 @@ void main() {
       expect(cubit.state.isScanning, true);
       expect(cubit.state.error, isNotNull);
     });
+
+    test(
+      'a busy scanner that has already stopped leaves Retry enabled',
+      () async {
+        when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+            .thenAnswer((_) async => const Err(SpScanBusy()));
+        await cubit.load();
+
+        await cubit.scan();
+
+        expect(cubit.state.isScanning, isFalse);
+        expect(cubit.state.error, isA<SpScanBusy>());
+      },
+    );
 
     test('a non-busy scan error still clears isScanning', () async {
       when(
@@ -434,21 +480,16 @@ void main() {
       expect(cubit.state.error, isNull);
     });
 
-    test(
-      'stopScan() logs an Err without surfacing it as an error state',
-      () async {
-        when(() => stopUsecase.execute()).thenAnswer(
-          (_) async => const Err<void, SpFailure>(SpUnexpected('stop failed')),
-        );
-        await cubit.load();
+    test('stopScan() surfaces a failure to persist the stop', () async {
+      const failure = SpUnexpected('stop failed');
+      when(() => stopUsecase.execute())
+          .thenAnswer((_) async => const Err<void, SpFailure>(failure));
+      await cubit.load();
 
-        // Best-effort: the scan tears down async, so a failed stop is not the
-        // user's problem.
-        await cubit.stopScan();
+      await cubit.stopScan();
 
-        expect(cubit.state.error, isNull);
-      },
-    );
+      expect(cubit.state.error, failure);
+    });
 
     test(
       'stopScan() lets a thrown bug propagate instead of hiding it',

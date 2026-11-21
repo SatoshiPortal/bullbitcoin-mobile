@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/features/status_check/domain/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/features/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -17,7 +17,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Ok;
 
-import '../../fake_index_price_reader.dart';
+import '../../../fake_index_price_reader.dart';
 
 class _MockElectrumConnectivityPort extends Mock
     implements ElectrumConnectivityPort {}
@@ -75,7 +75,12 @@ void main() {
     when(() => settingsRepository.fetch())
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
+    final checkedNetworks = <BitcoinNetwork>[];
     final usecase = CheckAllServiceStatusUsecase(
+      checkSpServer: (network) async {
+        checkedNetworks.add(network);
+        return const Ok(null);
+      },
       electrumConnectivityPort: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -88,8 +93,11 @@ void main() {
       tor: tor,
     );
 
-    final status = await usecase.execute(network: Network.bitcoinMainnet);
+    final status = await usecase.execute(network: Network.liquidMainnet);
 
+    expect(checkedNetworks, [BitcoinNetwork.mainnet]);
+    expect(status.silentPayments.status, ServiceStatus.online);
+    expect(status.silentPayments.name, 'Silent Payments');
     expect(status.pricer.status, ServiceStatus.online);
     expect(status.pricer.lastChecked, fetchedAt.toLocal());
     expect(getIndexPrice.requests.single, (
@@ -119,6 +127,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
+      checkSpServer: (_) async => const Ok(null),
       electrumConnectivityPort: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -166,6 +175,7 @@ void main() {
           .thenAnswer((_) async => _settings(useTorProxy: false));
       when(() => tor.external).thenReturn(external);
       final usecase = CheckAllServiceStatusUsecase(
+        checkSpServer: (_) async => const Ok(null),
         electrumConnectivityPort: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -218,6 +228,7 @@ void main() {
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
+        checkSpServer: (_) async => const Ok(null),
         electrumConnectivityPort: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -266,6 +277,7 @@ void main() {
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
+        checkSpServer: (_) async => const Ok(null),
         electrumConnectivityPort: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -316,6 +328,7 @@ void main() {
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
       final usecase = CheckAllServiceStatusUsecase(
+        checkSpServer: (_) async => const Ok(null),
         electrumConnectivityPort: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
@@ -378,6 +391,7 @@ void main() {
 
     final updates = <AllServicesStatus>[];
     final usecase = CheckAllServiceStatusUsecase(
+      checkSpServer: (_) async => const Ok(null),
       electrumConnectivityPort: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -425,6 +439,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
+      checkSpServer: (_) async => const Ok(null),
       electrumConnectivityPort: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
@@ -464,6 +479,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
+      checkSpServer: (_) async => const Ok(null),
       electrumConnectivityPort: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,

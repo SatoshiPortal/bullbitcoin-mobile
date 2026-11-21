@@ -54,6 +54,7 @@ sealed class SpState with _$SpState {
 
     // Scan progress
     @Default(false) bool isScanning,
+    @Default(false) bool hasPendingScan,
     // Which phase the current scan is in (receive then spend); null when idle.
     SpScanPhase? scanPhase,
     // Start of the current scan (for the live elapsed timer); null when idle.
@@ -93,10 +94,12 @@ sealed class SpState with _$SpState {
   /// the first scan.
   bool get hasScannedBefore => lastScannedHeight != null;
 
-  /// Height the next resume scan would begin at (last scanned + 1).
+  /// Height the next resume scan would begin at, within the supported range.
   int? get nextScanStart {
     final last = lastScannedHeight;
-    return last == null ? null : last + 1;
+    if (last == null) return null;
+    final floor = minBirthdayHeight;
+    return floor != null && last < floor ? floor : last + 1;
   }
 
   /// True when the wallet is behind and nothing will catch it up without the
@@ -113,11 +116,22 @@ sealed class SpState with _$SpState {
   /// Blindbit server is behind.
   bool get isBlindbitBehind => blindbitLag?.isBehind ?? false;
 
-  /// True when the next scan would start past the tip (nothing left to scan).
+  bool get isChainTipReliable =>
+      chainTip != null &&
+      headerValidationStatus != SpHeaderValidationStatus.reconnecting &&
+      headerValidationStatus != SpHeaderValidationStatus.failed &&
+      headerValidationStatus != SpHeaderValidationStatus.invalidChain;
+
+  /// The scan cursor has reached the known tip with no pending scan.
   bool get isCaughtUp {
     final next = nextScanStart;
     final tip = chainTip;
-    return next != null && tip != null && next > tip;
+    return !hasPendingScan &&
+        !isBlindbitBehind &&
+        isChainTipReliable &&
+        next != null &&
+        tip != null &&
+        next > tip;
   }
 
   /// History grouped by day, newest day first and newest payment first inside

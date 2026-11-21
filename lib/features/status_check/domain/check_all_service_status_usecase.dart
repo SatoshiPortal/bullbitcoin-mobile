@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:io';
+
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 
 import 'package:clock/clock.dart';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
-import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/features/status_check/domain/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -13,7 +16,8 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result;
 
 class CheckAllServiceStatusUsecase {
   /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
@@ -22,6 +26,10 @@ class CheckAllServiceStatusUsecase {
   /// network reports `offline` instead of hanging.
   static const _torStatusTimeout = Duration(seconds: 20);
 
+  static const _silentPaymentsName = 'Silent Payments';
+  static const _silentPaymentsTimeout = Duration(seconds: 10);
+
+  final Future<Result<void, SpFailure>> Function(BitcoinNetwork) _checkSpServer;
   final ElectrumConnectivityPort _electrumConnectivityPort;
   final IndexPriceReader _getIndexPrice;
   final PayjoinPolicyAccess _payjoinPolicy;
@@ -35,6 +43,7 @@ class CheckAllServiceStatusUsecase {
   final Tor _tor;
 
   CheckAllServiceStatusUsecase({
+    required this._checkSpServer,
     required this._electrumConnectivityPort,
     required this._getIndexPrice,
     required this._payjoinPolicy,
@@ -115,6 +124,15 @@ class CheckAllServiceStatusUsecase {
           _checkMempoolService(network),
           (status, result) => status.copyWith(mempool: result),
           serviceName: 'Mempool',
+        ),
+        publish(
+          _checkSilentPayments(
+            BitcoinNetwork.values.singleWhere(
+              (n) => n.env == network.environment,
+            ),
+          ),
+          (status, result) => status.copyWith(silentPayments: result),
+          serviceName: _silentPaymentsName,
         ),
         publish(
           _checkTorConnection(),
@@ -259,6 +277,27 @@ class CheckAllServiceStatusUsecase {
     return ServiceStatusInfo(
       status: ServiceStatus.online,
       name: 'Mempool',
+      lastChecked: DateTime.now(),
+    );
+  }
+
+  Future<ServiceStatusInfo> _checkSilentPayments(BitcoinNetwork network) async {
+    ServiceStatus status;
+    try {
+      final result = await _checkSpServer(network)
+          .timeout(_silentPaymentsTimeout);
+      status = switch (result) {
+        Ok() => ServiceStatus.online,
+        Err(failure: SpBackendUnreachable()) => ServiceStatus.offline,
+        Err(failure: SpUnsupportedNetwork()) => ServiceStatus.disabled,
+        Err() => ServiceStatus.unknown,
+      };
+    } on TimeoutException {
+      status = ServiceStatus.offline;
+    }
+    return ServiceStatusInfo(
+      status: status,
+      name: _silentPaymentsName,
       lastChecked: DateTime.now(),
     );
   }

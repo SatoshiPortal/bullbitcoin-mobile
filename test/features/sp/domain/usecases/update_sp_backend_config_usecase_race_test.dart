@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/sp/watchers/sp_header_retry_watcher.dart';
 
 import 'dart:async';
-import 'dart:io';
+
+import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
 
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:primitives/primitives.dart';
@@ -12,12 +13,11 @@ import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';
-import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/update_sp_backend_config_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart' show Secret;
@@ -27,9 +27,9 @@ import '../../sp_fakes.dart';
 
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
-// RecreateSpWalletUsecase with a live cubit subscribed to the session it
+// UpdateSpBackendConfigUsecase with a live cubit subscribed to the session it
 // tears down. The plain orchestration cases live in
-// recreate_sp_wallet_usecase_test.dart.
+// update_sp_backend_config_usecase_test.dart.
 class _MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
 
@@ -40,7 +40,7 @@ void main() {
   late Secret secret;
   late EnsureSpSessionUsecase ensureSpSessionUsecase;
   late LoadSpWalletDataUsecase loadSpWalletDataUsecase;
-  late RecreateSpWalletUsecase recreateSpWalletUsecase;
+  late UpdateSpBackendConfigUsecase updateSpBackendConfigUsecase;
   late RevokeSpWalletUsecase revokeSpWalletUsecase;
   late SpSessionGuard guard;
   late SpCubitHarness harness;
@@ -68,21 +68,12 @@ void main() {
     // a revoke off the same session.
     guard = SpSessionGuard();
 
-    // No account dir on disk, so no sentinel: ensure never treats the live
-    // session as revoked.
-    const channel = MethodChannel('plugins.flutter.io/path_provider');
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall call) async {
-          return Directory.systemTemp.path;
-        });
-
     hasSession = true;
     teardown = false;
     createCount = 0;
     notif = StreamController<SpNotification>.broadcast();
-
-    when(() => repository.teardownInProgress).thenAnswer((_) => teardown);
     when(() => repository.hasSession).thenAnswer((_) => hasSession);
+    when(() => repository.teardownInProgress).thenAnswer((_) => teardown);
     when(() => repository.beginTeardown()).thenAnswer((_) {
       teardown = true;
     });
@@ -94,17 +85,13 @@ void main() {
       if (!notif.isClosed) await notif.close();
       return const Ok(null);
     });
-    // No account dir on disk in this race harness, so backup/restore/discard
-    // are no-ops; the session orchestration is what this test exercises.
-    when(() => repository.backupAccountDir())
+    when(() => repository.adoptNewestBackup())
         .thenAnswer((_) async => const Ok(false));
-    when(() => repository.restoreAccountDir())
+    when(() => repository.hasRevokedSentinel())
         .thenAnswer((_) async => const Ok(false));
-    when(() => repository.discardBackup())
-        .thenAnswer((_) async => const Ok(null));
-    // Revoke side, so a revoke can be raced against a recreate below.
+    when(() => repository.isScanningCached).thenReturn(false);
     when(() => repository.accountDirExists())
-        .thenAnswer((_) async => const Ok(false));
+        .thenAnswer((_) async => const Ok(true));
     when(
       () => repository.writeRevokedSentinel(
         skipIfPresent: any(named: 'skipIfPresent'),
@@ -167,13 +154,14 @@ void main() {
       repository: repository,
       ensureSpSessionUsecase: ensureSpSessionUsecase,
     );
-    recreateSpWalletUsecase = RecreateSpWalletUsecase(
+    updateSpBackendConfigUsecase = UpdateSpBackendConfigUsecase(
       getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
       configRepository: configRepository,
       ensureSpSessionUsecase: ensureSpSessionUsecase,
+      isSpScanningUsecase: IsSpScanningUsecase(repository: repository),
       guard: guard,
     );
     revokeSpWalletUsecase = RevokeSpWalletUsecase(
@@ -194,6 +182,7 @@ void main() {
         ensureSpSessionUsecase: ensureSpSessionUsecase,
       ),
       scanSpWalletUsecase: harness.scanUsecase,
+      isSpScanningUsecase: IsSpScanningUsecase(repository: repository),
       stopSpScanUsecase: harness.stopUsecase,
       clearSpScanStateUsecase: ClearSpScanStateUsecase(repository: repository),
       revokeSpWalletUsecase: harness.revokeUsecase,
@@ -209,11 +198,6 @@ void main() {
   tearDown(() async {
     await cubit.close();
     if (!notif.isClosed) await notif.close();
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-          const MethodChannel('plugins.flutter.io/path_provider'),
-          null,
-        );
   });
 
   test('recreate with a subscribed cubit reaches createFromSecret once, no '
@@ -226,12 +210,12 @@ void main() {
     // Recreate disposes (closing the notif stream, which triggers the cubit
     // self-heal) then creates the new session. The self-heal must not slip a
     // second createFromSecret through while teardown is in progress.
-    final result = await recreateSpWalletUsecase.execute(
+    final result = await updateSpBackendConfigUsecase.execute(
       network: BitcoinNetwork.testnet,
       blindbitUrl: 'http://blindbit.new',
       electrumUrl: 'tcp://electrum.new:50001',
     );
-    expect(result, isA<Ok<void, SpFailure>>());
+    expect(result, const Ok<bool, SpFailure>(true));
     await pumpEventQueue(times: 50);
 
     expect(
@@ -250,7 +234,7 @@ void main() {
       return const Ok(null);
     });
 
-    final recreate = recreateSpWalletUsecase.execute(
+    final recreate = updateSpBackendConfigUsecase.execute(
       network: BitcoinNetwork.testnet,
       blindbitUrl: 'http://blindbit.new',
       electrumUrl: 'tcp://electrum.new:50001',
@@ -258,7 +242,7 @@ void main() {
     // Started while the recreate is mid-flight, not queued behind its future.
     final revoke = revokeSpWalletUsecase.execute();
 
-    expect(await recreate, isA<Ok<void, SpFailure>>());
+    expect(await recreate, const Ok<bool, SpFailure>(true));
     order.add('recreate done');
     expect(await revoke, isA<Ok<void, SpFailure>>());
     await pumpEventQueue(times: 50);

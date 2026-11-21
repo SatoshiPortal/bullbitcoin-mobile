@@ -144,6 +144,7 @@ class CreateSpWalletUsecase {
         electrumUrl: config.electrumUrl,
         fetchConcurrencyFactor: config.fetchConcurrencyFactor,
         matchConcurrencyFactor: config.matchConcurrencyFactor,
+        minScanAmountSat: config.minScanAmountSat,
       );
       if (created case Err(:final failure)) {
         // Roll the config back so a failed first-time setup leaves no persisted
@@ -201,7 +202,7 @@ class CreateSpWalletUsecase {
   Future<void> _seedScanCursor() async {
     try {
       final int tip;
-      switch (_repository.currentBlockHeight()) {
+      switch (await _repository.currentBlockHeight()) {
         case Err(:final failure):
           log.warning('SP scan cursor seed failed: ${failure.logMessage}');
           return;

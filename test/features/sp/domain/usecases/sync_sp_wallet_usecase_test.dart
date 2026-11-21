@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_auto_scan_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/sp_scan_policy.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/is_sp_scanning_usecase.dart';
@@ -15,6 +17,9 @@ import '../../sp_fakes.dart';
 
 class _MockGetSpWalletUsecase extends Mock implements GetSpWalletUsecase {}
 
+class _MockGetSpFeatureGateUsecase extends Mock
+    implements GetSpFeatureGateUsecase {}
+
 void main() {
   const tip = 900000;
 
@@ -22,17 +27,20 @@ void main() {
   late _MockGetSpWalletUsecase getWallet;
   late SyncSpWalletUsecase usecase;
   late FakeSpAutoScanRepository autoScanRepo;
+  late bool isForeground;
 
-  SyncSpWalletUsecase build() => SyncSpWalletUsecase(
-    repository: repo,
-    getSpWalletUsecase: getWallet,
-    isSpScanningUsecase: IsSpScanningUsecase(repository: repo),
-    scanSpWalletUsecase: ScanSpWalletUsecase(
-      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
-      repository: repo,
-    ),
-    getSpAutoScanUsecase: GetSpAutoScanUsecase(repository: autoScanRepo),
-  );
+  SyncSpWalletUsecase build({GetSpFeatureGateUsecase? featureGate}) =>
+      SyncSpWalletUsecase(
+        repository: repo,
+        getSpWalletUsecase: getWallet,
+        isSpScanningUsecase: IsSpScanningUsecase(repository: repo),
+        scanSpWalletUsecase: ScanSpWalletUsecase(
+          getSpFeatureGateUsecase: featureGate ?? FakeSpFeatureGateUsecase(),
+          repository: repo,
+        ),
+        getSpAutoScanUsecase: GetSpAutoScanUsecase(repository: autoScanRepo),
+        isForeground: () => isForeground,
+      );
 
   void walletAt(int? lastScannedHeight) {
     when(() => getWallet.execute()).thenAnswer(
@@ -45,12 +53,69 @@ void main() {
     repo.chainTipValue = tip;
     getWallet = _MockGetSpWalletUsecase();
     autoScanRepo = FakeSpAutoScanRepository();
+    isForeground = true;
     // Default: a wallet a few blocks behind, i.e. one a tick would scan.
     walletAt(tip - 10);
     usecase = build();
   });
 
   group('SyncSpWalletUsecase resumes the scan', () {
+    for (final cursor in [null, tip - spAutoScanMaxBlocksBehind - 1, tip]) {
+      test('recovers an authorized scan with receive cursor $cursor', () async {
+        final wallet = SpWallet(
+          spAddress: 'sp1qexample',
+          balance: spWallet().balance,
+          isScanning: false,
+          hasPendingScan: true,
+          lastScannedHeight: cursor,
+        );
+        when(getWallet.execute).thenAnswer((_) async => Ok(wallet));
+
+        await usecase.execute(resumeOnly: true);
+
+        expect(repo.scanOnceCount, 1);
+        expect(repo.lastScanStartHeight, isNull);
+      });
+    }
+
+    test(
+      'an explicit stop survives both a retry and a normal tip tick',
+      () async {
+        final wallet = SpWallet(
+          spAddress: 'sp1qexample',
+          balance: spWallet().balance,
+          isScanning: false,
+          hasPendingScan: true,
+          isPendingScanPaused: true,
+          lastScannedHeight: tip - 1,
+        );
+        when(getWallet.execute).thenAnswer((_) async => Ok(wallet));
+
+        await usecase.execute(resumeOnly: true);
+        await usecase.execute();
+
+        expect(repo.scanOnceCount, 0);
+      },
+    );
+
+    test(
+      'reads a saved off preference before recovering a pending scan',
+      () async {
+        autoScanRepo.stored = false;
+        final wallet = SpWallet(
+          spAddress: 'sp1qexample',
+          balance: spWallet().balance,
+          isScanning: false,
+          hasPendingScan: true,
+        );
+        when(getWallet.execute).thenAnswer((_) async => Ok(wallet));
+
+        await usecase.execute(resumeOnly: true);
+
+        expect(repo.scanOnceCount, 0);
+      },
+    );
+
     test('scans when the cursor is close enough to the tip', () async {
       walletAt(tip - 10);
 
@@ -150,6 +215,32 @@ void main() {
       expect(repo.scanOnceCount, 0);
     });
   });
+
+  for (final disablePreference in [true, false]) {
+    test(
+      'drops a queued tick when ${disablePreference ? 'auto scan is turned off' : 'the app leaves the foreground'}',
+      () async {
+        final featureGate = _MockGetSpFeatureGateUsecase();
+        final entered = Completer<void>();
+        final allowed = Completer<bool>();
+        when(featureGate.execute).thenAnswer((_) {
+          entered.complete();
+          return allowed.future;
+        });
+        final syncing = build(featureGate: featureGate).execute();
+        await entered.future;
+        if (disablePreference) {
+          await autoScanRepo.save(isEnabled: false);
+        } else {
+          isForeground = false;
+        }
+        allowed.complete(true);
+
+        expect(await syncing, const Ok<void, SpFailure>(null));
+        expect(repo.scanOnceCount, 0);
+      },
+    );
+  }
 
   group('SyncSpWalletUsecase serializes ticks', () {
     test('a tick arriving mid-flight joins the one already running', () async {

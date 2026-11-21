@@ -10,6 +10,7 @@ abstract final class SpBackendConfigMapper {
         electrumUrl: model.electrumUrl,
         fetchConcurrencyFactor: model.fetchConcurrencyFactor,
         matchConcurrencyFactor: model.matchConcurrencyFactor,
+        minScanAmountSat: model.minScanAmountSat,
       );
 
   static SpBackendConfigModel toModel(SpBackendConfig config) =>
@@ -19,5 +20,6 @@ abstract final class SpBackendConfigMapper {
         electrumUrl: config.electrumUrl,
         fetchConcurrencyFactor: config.fetchConcurrencyFactor,
         matchConcurrencyFactor: config.matchConcurrencyFactor,
+        minScanAmountSat: config.minScanAmountSat,
       );
 }

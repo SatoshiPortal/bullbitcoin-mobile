@@ -122,7 +122,10 @@ class EnsureSpSessionUsecase {
           spAddress: wallet.spAddress,
           balance: wallet.balance,
           isScanning: wallet.isScanning,
+          hasPendingScan: wallet.hasPendingScan,
+          isPendingScanPaused: wallet.isPendingScanPaused,
           lastScannedHeight: wallet.lastScannedHeight,
+          scanRevision: wallet.scanRevision,
         ),
       ),
     };
@@ -166,14 +169,12 @@ class EnsureSpSessionUsecase {
       return const Err(SpUnexpected('SP session establish failed'));
     }
 
-    // Re-check right before creating: a revoke/recreate may have begun teardown
-    // during the awaits above, and creating now would race a live session.
-    if (!allowDuringTeardown && _repository.teardownInProgress) {
-      return const Ok(null);
-    }
-
     if (!await _getSpFeatureGateUsecase.execute(config: config)) {
       return const Err(SpUnsupportedNetwork());
+    }
+    // Recheck after the last await, before entering the native open.
+    if (!allowDuringTeardown && _repository.teardownInProgress) {
+      return const Ok(null);
     }
     final created = await _repository.createFromSecret(
       network: config.network,
@@ -182,6 +183,7 @@ class EnsureSpSessionUsecase {
       electrumUrl: config.electrumUrl,
       fetchConcurrencyFactor: config.fetchConcurrencyFactor,
       matchConcurrencyFactor: config.matchConcurrencyFactor,
+      minScanAmountSat: config.minScanAmountSat,
     );
     if (created case Err(:final failure)) return Err(failure);
     return _snapshot(config);

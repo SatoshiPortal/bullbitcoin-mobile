@@ -23,6 +23,7 @@ class SyncSpWalletUsecase {
   final IsSpScanningUsecase _isSpScanningUsecase;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
   final GetSpAutoScanUsecase _getSpAutoScanUsecase;
+  final bool Function() _isForeground;
 
   SyncSpWalletUsecase({
     required this._repository,
@@ -30,15 +31,28 @@ class SyncSpWalletUsecase {
     required this._isSpScanningUsecase,
     required this._scanSpWalletUsecase,
     required this._getSpAutoScanUsecase,
+    required this._isForeground,
   });
 
   Future<Result<void, SpFailure>>? _inFlight;
+  bool _inFlightResumeOnly = false;
 
-  Future<Result<void, SpFailure>> execute() =>
-      _inFlight ??= _run().whenComplete(() => _inFlight = null);
+  Future<Result<void, SpFailure>> execute({bool resumeOnly = false}) {
+    if (_inFlight case final active?) {
+      if (_inFlightResumeOnly && !resumeOnly) {
+        return active.then((_) => execute());
+      }
+      return active;
+    }
+    _inFlightResumeOnly = resumeOnly;
+    return _inFlight = _run(resumeOnly: resumeOnly)
+        .whenComplete(() => _inFlight = null);
+  }
 
-  Future<Result<void, SpFailure>> _run() async {
-    if (_isSpScanningUsecase.execute()) return const Ok(null);
+  Future<Result<void, SpFailure>> _run({required bool resumeOnly}) async {
+    if (!_isForeground() || _isSpScanningUsecase.execute()) {
+      return const Ok(null);
+    }
 
     // Ok(null) when the feature gate is closed or the wallet is not set up.
     final SpWallet wallet;
@@ -50,13 +64,24 @@ class SyncSpWalletUsecase {
         wallet = w;
     }
 
+    final autoScanEnabled = await _getSpAutoScanUsecase.read();
+    if (!autoScanEnabled) return const Ok(null);
+    final admission = (
+      revision: wallet.scanRevision,
+      isAllowed: () => _isForeground() && _getSpAutoScanUsecase.execute(),
+    );
+    if (wallet.hasPendingScan) {
+      if (wallet.isPendingScanPaused) return const Ok(null);
+      return _scanSpWalletUsecase.execute(automatic: admission);
+    }
+    if (resumeOnly) return const Ok(null);
+
     final policy = SpScanPolicy(
       lastScannedHeight: wallet.lastScannedHeight,
       chainTip: _repository.chainTip(),
-      isAutoScanEnabled: _getSpAutoScanUsecase.execute(),
     );
     if (policy.trigger != SpScanTrigger.automatic) return const Ok(null);
 
-    return _scanSpWalletUsecase.execute();
+    return _scanSpWalletUsecase.execute(automatic: admission);
   }
 }

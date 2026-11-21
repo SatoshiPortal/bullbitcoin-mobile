@@ -9,6 +9,7 @@ class SpBackendConfigModel {
   final String electrumUrl;
   final int fetchConcurrencyFactor;
   final int matchConcurrencyFactor;
+  final int minScanAmountSat;
 
   const SpBackendConfigModel({
     required this.network,
@@ -16,6 +17,7 @@ class SpBackendConfigModel {
     required this.electrumUrl,
     this.fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
     this.matchConcurrencyFactor = SpConfig.defaultMatchConcurrencyFactor,
+    this.minScanAmountSat = SpConfig.defaultMinScanAmountSat,
   });
 
   factory SpBackendConfigModel.fromJson(Map<String, dynamic> json) =>
@@ -29,6 +31,9 @@ class SpBackendConfigModel {
         matchConcurrencyFactor:
             json['matchConcurrencyFactor'] as int? ??
             SpConfig.defaultMatchConcurrencyFactor,
+        minScanAmountSat:
+            json['minScanAmountSat'] as int? ??
+            SpConfig.defaultMinScanAmountSat,
       );
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +42,7 @@ class SpBackendConfigModel {
     'electrumUrl': electrumUrl,
     'fetchConcurrencyFactor': fetchConcurrencyFactor,
     'matchConcurrencyFactor': matchConcurrencyFactor,
+    'minScanAmountSat': minScanAmountSat,
   };
 
   /// Reads the persisted network name.

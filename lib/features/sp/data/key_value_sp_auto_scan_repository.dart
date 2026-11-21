@@ -9,6 +9,7 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
   // Enabled until storage or the user says otherwise, so a read before warmUp
   // never has to guess.
   bool _isEnabled = true;
+  Future<void>? _warmingUp;
 
   KeyValueSpAutoScanRepository({required this._storage});
 
@@ -16,14 +17,29 @@ class KeyValueSpAutoScanRepository implements SpAutoScanRepository {
   bool get isEnabledNow => _isEnabled;
 
   @override
-  Future<void> warmUp() async {
-    _isEnabled = await _read() ?? true;
+  Future<void> warmUp() => _warmingUp ??= _load();
+
+  Future<void> _load() async {
+    try {
+      _isEnabled = await _read() ?? true;
+    } catch (_) {
+      // A keystore read can fail until the device is unlocked.
+      _warmingUp = null;
+      rethrow;
+    }
   }
 
   @override
   Future<void> save({required bool isEnabled}) async {
-    _isEnabled = isEnabled;
+    // A pending startup read must finish before it can overwrite the update.
+    try {
+      await warmUp();
+    } on Exception catch (_) {
+      // A fresh write can still succeed after a failed read.
+    }
     await _storage.saveValue(key: _storageKey, value: '$isEnabled');
+    _isEnabled = isEnabled;
+    _warmingUp = Future.value();
   }
 
   Future<bool?> _read() async {

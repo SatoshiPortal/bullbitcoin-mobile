@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
@@ -12,6 +13,7 @@ import 'package:bull_ui/bull_ui.dart'
     show BullButtonSize, BullButton, BullInputText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart';
 
 class SpScanScreen extends StatelessWidget {
   const SpScanScreen({super.key});
@@ -29,24 +31,22 @@ class SpScanScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: BlocConsumer<SpCubit, SpState>(
-          listenWhen: (previous, current) =>
-              previous.isScanning &&
-              !current.isScanning &&
-              current.scanLastDurationSecs != null &&
-              current.error == null,
-          listener: (context, state) =>
-              unawaited(Navigator.of(context).maybePop()),
+        child: BlocBuilder<SpCubit, SpState>(
           builder: (context, state) {
-            if (state.isScanning) return const _ScanningView();
-            if (state.error != null) {
-              return _ErrorView(message: state.error!.toTranslated(context));
+            if (state.isScanning) return _ScanningView(state: state);
+            if (state.error case final error?) {
+              return _ErrorView(
+                message: error.toTranslated(context),
+                retry: state.minBirthdayHeight == null
+                    ? context.read<SpCubit>().load
+                    : context.read<SpCubit>().retryScan,
+              );
             }
             // Caught up states both facts in its own message, so it needs no
             // strip above it. The other views say nothing about whether
             // scanning continues on its own, so they do. A server behind the
             // chain means the wallet is not synced, whatever the cursor says.
-            if (state.isCaughtUp && !state.isBlindbitBehind) {
+            if (state.isCaughtUp) {
               return _CaughtUpView(
                 lastDurationSecs: state.scanLastDurationSecs,
                 isAutoScanEnabled: state.isAutoScanEnabled,
@@ -63,8 +63,8 @@ class SpScanScreen extends StatelessWidget {
                     ),
                   ),
                 Expanded(
-                  child: state.hasScannedBefore
-                      ? _ResumeView(state: state)
+                  child: state.hasPendingScan || state.hasScannedBefore
+                      ? _ScanCheckpointView(state: state)
                       : _FirstScanView(state: state),
                 ),
               ],
@@ -77,19 +77,27 @@ class SpScanScreen extends StatelessWidget {
 }
 
 class _ScanningView extends StatelessWidget {
-  const _ScanningView();
+  const _ScanningView({required this.state});
+  final SpState state;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: BlocBuilder<SpCubit, SpState>(
-              builder: (context, state) => _ScanProgressCard(state: state),
+          child: Center(child: _ScanProgressCard(state: state)),
+        ),
+        if (state.error case final error?)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              error.toTranslated(context),
+              style: context.bullType.body.copyWith(
+                color: context.appColors.error,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
-        ),
         _BottomAction(
           label: context.loc.spScanStopButton,
           onPressed: () => unawaited(context.read<SpCubit>().stopScan()),
@@ -100,8 +108,9 @@ class _ScanningView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message});
+  const _ErrorView({required this.message, required this.retry});
   final String message;
+  final VoidCallback retry;
 
   @override
   Widget build(BuildContext context) {
@@ -128,10 +137,7 @@ class _ErrorView extends StatelessWidget {
             ),
           ),
         ),
-        _BottomAction(
-          label: context.loc.retry,
-          onPressed: () => context.read<SpCubit>().scan(),
-        ),
+        _BottomAction(label: context.loc.retry, onPressed: retry),
       ],
     );
   }
@@ -153,40 +159,36 @@ class _CaughtUpView extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: Listener(
-            behavior: HitTestBehavior.opaque,
-            onPointerDown: (_) => context.read<SpCubit>().dismissScanCaughtUp(),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: context.appColors.success,
-                    size: 72,
-                  ),
-                  const Gap(24),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  color: context.appColors.success,
+                  size: 72,
+                ),
+                const Gap(24),
+                Text(
+                  isAutoScanEnabled
+                      ? context.loc.spScanSyncedAutoOn
+                      : context.loc.spScanSyncedManual,
+                  style: context.bullType.body
+                      .copyWith(fontWeight: FontWeight.w500)
+                      .copyWith(color: context.appColors.success),
+                ),
+                if (duration != null) ...[
+                  const Gap(8),
                   Text(
-                    isAutoScanEnabled
-                        ? context.loc.spScanSyncedAutoOn
-                        : context.loc.spScanSyncedManual,
-                    style: context.bullType.body
-                        .copyWith(fontWeight: FontWeight.w500)
-                        .copyWith(color: context.appColors.success),
-                  ),
-                  if (duration != null) ...[
-                    const Gap(8),
-                    Text(
-                      context.loc.spScanScannedIn(
-                        formatDuration(context.loc, duration),
-                      ),
-                      style: context.bullType.label
-                          .copyWith(fontWeight: FontWeight.w400)
-                          .copyWith(color: context.appColors.textMuted),
+                    context.loc.spScanScannedIn(
+                      formatDuration(context.loc, duration),
                     ),
-                  ],
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.textMuted),
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         ),
@@ -202,15 +204,15 @@ class _CaughtUpView extends StatelessWidget {
   }
 }
 
-class _ResumeView extends StatelessWidget {
-  const _ResumeView({required this.state});
+class _ScanCheckpointView extends StatelessWidget {
+  const _ScanCheckpointView({required this.state});
   final SpState state;
 
   @override
   Widget build(BuildContext context) {
     final last = state.lastScannedHeight;
     final tip = state.chainTip;
-    final gap = (last != null && tip != null && tip > last) ? tip - last : 0;
+    final isUnfinished = state.hasPendingScan;
     return Column(
       children: [
         Expanded(
@@ -221,26 +223,34 @@ class _ResumeView extends StatelessWidget {
                 Icon(Icons.search, color: context.appColors.primary, size: 72),
                 const Gap(24),
                 Text(
-                  context.loc.spScanBlocksBehind(gap),
+                  isUnfinished || last == null
+                      ? context.loc.spScanResumeInterrupted
+                      : context.loc.spScanScannedThrough('$last'),
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const Gap(4),
-                Text(
-                  context.loc.spScanApproxDuration(
-                    blocksToApproxDuration(
-                      context.loc,
-                      gap,
-                      blocksPerDay: SpConfig.blocksPerDay,
+                if (!isUnfinished && !state.isChainTipReliable)
+                  Text(
+                    context.loc.spWalletScanUnknown,
+                    style: context.bullType.label.copyWith(
+                      color: context.appColors.textMuted,
                     ),
+                    textAlign: TextAlign.center,
+                  )
+                else if (!isUnfinished &&
+                    last != null &&
+                    tip != null &&
+                    tip > last)
+                  Text(
+                    context.loc.spScanBlocksBehind(tip - last),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.textMuted),
+                    textAlign: TextAlign.center,
                   ),
-                  style: context.bullType.label
-                      .copyWith(fontWeight: FontWeight.w400)
-                      .copyWith(color: context.appColors.textMuted),
-                  textAlign: TextAlign.center,
-                ),
                 if (state.scanLastDurationSecs != null) ...[
                   const Gap(8),
                   Text(
@@ -257,7 +267,9 @@ class _ResumeView extends StatelessWidget {
           ),
         ),
         _BottomAction(
-          label: context.loc.spScanStartButton,
+          label: isUnfinished
+              ? context.loc.spScanResumeButton
+              : context.loc.spScanCheckForPayments,
           onPressed: () => context.read<SpCubit>().scan(),
         ),
       ],
@@ -265,42 +277,64 @@ class _ResumeView extends StatelessWidget {
   }
 }
 
-/// First-ever scan. When the chain bounds are known, offer the start-height
-/// chooser; otherwise fall back to a plain start from the birthday height.
-class _FirstScanView extends StatelessWidget {
+class _FirstScanView extends StatefulWidget {
   const _FirstScanView({required this.state});
   final SpState state;
 
   @override
+  State<_FirstScanView> createState() => _FirstScanViewState();
+}
+
+class _FirstScanViewState extends State<_FirstScanView> {
+  late Future<Result<int, SpFailure>> _serverTip = _fetchServerTip();
+
+  Future<Result<int, SpFailure>> _fetchServerTip() =>
+      context.read<SpCubit>().scanServerTip();
+
+  @override
   Widget build(BuildContext context) {
-    final min = state.minBirthdayHeight;
-    final tip = state.chainTip;
-    if (min != null && tip != null && tip > min) {
-      return _ScanStartChooser(
-        minBirthday: min,
-        tip: tip,
-        onStart: (h) => context.read<SpCubit>().scan(startHeight: h),
-      );
-    }
-    return Column(
-      children: [
-        Expanded(
-          child: Center(
+    final min = widget.state.minBirthdayHeight;
+    if (min == null) return const Center(child: CircularProgressIndicator());
+    final chainTip = widget.state.chainTip;
+    final knownTip = chainTip != null && chainTip >= min ? chainTip : null;
+    return FutureBuilder<Result<int, SpFailure>>(
+      future: knownTip == null ? _serverTip : null,
+      builder: (context, snapshot) {
+        final tip =
+            knownTip ??
+            switch (snapshot.data) {
+              Ok(:final value) when value >= min => value,
+              _ => null,
+            };
+        if (tip != null) {
+          return _ScanStartChooser(
+            minBirthday: min,
+            tip: tip,
+            onStart: (h) => context.read<SpCubit>().scan(startHeight: h),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                context.loc.spScanReadyMessage,
+                context.loc.spScanWaitingForTip,
                 style: context.bullType.body,
                 textAlign: TextAlign.center,
               ),
             ),
-          ),
-        ),
-        _BottomAction(
-          label: context.loc.spScanStartButton,
-          onPressed: () => context.read<SpCubit>().scan(),
-        ),
-      ],
+          );
+        }
+        return _ErrorView(
+          message: context.loc.spScanTipUnavailable,
+          retry: () {
+            final retry = _fetchServerTip();
+            setState(() {
+              _serverTip = retry;
+            });
+          },
+        );
+      },
     );
   }
 }
@@ -373,7 +407,9 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   max: widget.tip.toDouble(),
                   activeColor: context.appColors.secondary,
                   inactiveColor: context.appColors.surfaceContainer,
-                  onChanged: (v) => _setHeight(v.round()),
+                  onChanged: widget.minBirthday == widget.tip
+                      ? null
+                      : (v) => _setHeight(v.round()),
                 ),
                 Wrap(
                   spacing: 8,
@@ -395,22 +431,25 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   style: context.bullType.body,
                 ),
                 const Gap(8),
-                BullInputText(
-                  controller: _controller,
-                  value: _controller.text,
-                  digitsOnly: true,
-                  onChanged: (v) {
-                    final parsed = int.tryParse(v);
-                    if (parsed != null) _setHeight(parsed, syncField: false);
-                  },
+                Semantics(
+                  label: context.loc.spScanBlockHeightLabel,
+                  child: BullInputText(
+                    controller: _controller,
+                    value: _controller.text,
+                    digitsOnly: true,
+                    onChanged: (v) {
+                      final parsed = int.tryParse(v);
+                      if (parsed != null) _setHeight(parsed, syncField: false);
+                    },
+                  ),
                 ),
               ],
             ),
           ),
         ),
         _BottomAction(
-          label: context.loc.spScanStartFromButton('$_height'),
-          onPressed: () => widget.onStart(_height),
+          label: context.loc.spScanStartFromButton('${_clamp(_height)}'),
+          onPressed: () => widget.onStart(_clamp(_height)),
         ),
       ],
     );

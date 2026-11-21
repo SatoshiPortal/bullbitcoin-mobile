@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/features/status_check/domain/service_status.dart';
 import 'package:bb_mobile/features/status_check/domain/status_check_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart';
 
 void main() {
   group('SpBackendConfigModel', () {
-    test('toJson emits the network name and the urls', () {
+    test('toJson emits the backend and scan settings', () {
       const config = SpBackendConfigModel(
         network: BitcoinNetwork.regtest,
         blindbitUrl: 'http://blindbit.example',
@@ -17,6 +17,7 @@ void main() {
         'electrumUrl': 'tcp://electrum.example:50001',
         'fetchConcurrencyFactor': 12,
         'matchConcurrencyFactor': 1,
+        'minScanAmountSat': 1000,
       });
     });
 
