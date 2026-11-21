@@ -103,36 +103,6 @@ class LoadElectrumServerDataUsecase {
     }
   }
 
-  Future<Result<ElectrumServerStatus, ElectrumFailure>> checkEndpoint(
-    ElectrumEndpoint endpoint,
-  ) async {
-    final settings = await _electrumSettingsRepository.fetchByNetwork(
-      endpoint.network,
-    );
-    switch (settings) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        try {
-          return Ok(
-            await _probe(
-              url: endpoint.url,
-              network: endpoint.network,
-              isCustom: endpoint.isCustom,
-              settings: value,
-              preferences: await _readPreferences(),
-            ),
-          );
-        } on OnionServerWithoutTorException {
-          return const Err(ElectrumExternalTorProxyUnavailableFailure());
-        } on ClearnetServerWithoutConfiguredTorException {
-          return const Err(ElectrumExternalTorProxyUnavailableFailure());
-        } on Exception {
-          return const Err(ElectrumServerUnreachableFailure());
-        }
-    }
-  }
-
   Future<ElectrumServerStatus> _probe({
     required String url,
     required ElectrumServerNetwork network,

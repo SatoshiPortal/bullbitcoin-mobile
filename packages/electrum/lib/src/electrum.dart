@@ -267,12 +267,6 @@ class ElectrumServers {
     required ElectrumServerNetwork network,
   }) => checkConfiguredElectrum(_runner, _status, network);
 
-  /// Probes only this endpoint with network options and the applicable Tor route.
-  @useResult
-  Future<Result<ElectrumServerStatus, ElectrumFailure>> checkEndpoint(
-    ElectrumEndpoint endpoint,
-  ) => _loader().checkEndpoint(endpoint);
-
   LoadElectrumServerDataUsecase _loader() => LoadElectrumServerDataUsecase(
     electrumServerRepository: _repository,
     electrumSettingsRepository: options._repository,
