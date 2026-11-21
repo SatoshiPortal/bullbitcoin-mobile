@@ -102,6 +102,12 @@ void main() {
         router.namedLocation('torSettings'),
         '/settings/app-settings/tor-settings',
       );
+      expect(
+        router.configuration
+            .findMatch(Uri.parse('/bitcoin-fee-source'))
+            .isError,
+        false,
+      );
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(
