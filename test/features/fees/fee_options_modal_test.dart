@@ -16,7 +16,67 @@ class _Actions extends Mock implements FeeModalActionsPort {}
 
 class _State extends Mock implements FeeModalStatePort {}
 
+const _feePresets = FeeOptions(
+  fastest: NetworkFee.relativeSatPerKwu(1000),
+  economic: NetworkFee.relativeSatPerKwu(500),
+  slow: NetworkFee.relativeSatPerKwu(250),
+  minRelay: RelativeFee(25),
+);
+
 void main() {
+  testWidgets('formats preset previews through the host FeeUi', (tester) async {
+    final state = _State();
+    when(() => state.snapshot).thenReturn(
+      const FeeModalSnapshot(
+        feePresets: _feePresets,
+        customFee: null,
+        selectedFeeOption: FeeSelection.fastest,
+        feePreviewCache: BitcoinFeePreviewCache(
+          fastest: BitcoinFeePreviewSlot(feeSat: 863),
+        ),
+        exchangeRate: 3,
+        fiatCurrencyCode: 'CAD',
+        txSize: 200,
+      ),
+    );
+    when(() => state.snapshots).thenAnswer((_) => const Stream.empty());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => FeeOptionsModal(
+              ui: FeeUi(
+                label: appFeeUi.label,
+                formatSats: appFeeUi.formatSats,
+                formatApproximateSats: (sats) => 'custom format [$sats]',
+                satsToFiat: (sats, rate) => sats + rate,
+              ),
+              viewState: state,
+              actions: _Actions(),
+              defaultAbsoluteCustomFee: false,
+              customFeeColors: FeeModalCustomFeeColors(
+                tile: context.appColors.surface,
+                shadow: context.appColors.border,
+                unselectedIcon: context.appColors.textMuted,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final list = tester.widget<BullSelectableList>(
+      find.byType(BullSelectableList),
+    );
+    expect(
+      list.items.first.subtitle2,
+      allOf(contains('custom format [863]'), contains('866.0 CAD')),
+    );
+  });
+
   for (final height in [844.0, 430.0]) {
     testWidgets('requests previews and selects a preset at height $height', (
       tester,
@@ -30,12 +90,7 @@ void main() {
       final snapshots = StreamController<FeeModalSnapshot>();
       addTearDown(snapshots.close);
       const initial = FeeModalSnapshot(
-        feePresets: FeeOptions(
-          fastest: NetworkFee.relativeSatPerKwu(1000),
-          economic: NetworkFee.relativeSatPerKwu(500),
-          slow: NetworkFee.relativeSatPerKwu(250),
-          minRelay: RelativeFee(25),
-        ),
+        feePresets: _feePresets,
         customFee: null,
         selectedFeeOption: FeeSelection.economic,
         feePreviewCache: BitcoinFeePreviewCache(),

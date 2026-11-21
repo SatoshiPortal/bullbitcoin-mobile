@@ -92,6 +92,28 @@ void main() {
     );
     expect(FeesNavigation.settingsTitle('de'), 'Bitcoin fee source');
   });
+
+  for (final (locale, retryLabel) in const [
+    (Locale('de'), 'Erneut versuchen'),
+    (
+      Locale.fromSubtags(languageCode: 'hi', scriptCode: 'Latn'),
+      'Dobara Try Karo',
+    ),
+  ]) {
+    testWidgets('offers a localized retry for $locale', (tester) async {
+      final fees = _Fees(failRead: true);
+      await tester.pumpWidget(_settings(fees, locale: locale));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open settings'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(retryLabel), findsOneWidget);
+      await tester.tap(find.text(retryLabel));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Electrum'), findsOneWidget);
+    });
+  }
 }
 
 Tristate _selected(WidgetTester tester, String label) => tester
@@ -99,7 +121,7 @@ Tristate _selected(WidgetTester tester, String label) => tester
     .flagsCollection
     .isSelected;
 
-Widget _settings(Fees fees) {
+Widget _settings(Fees fees, {Locale locale = const Locale('en')}) {
   final feature = FeesFeature.mount(fees: () => fees);
   final router = GoRouter(
     routes: [
@@ -118,6 +140,9 @@ Widget _settings(Fees fees) {
   addTearDown(router.dispose);
   return MaterialApp.router(
     theme: ThemeData(extensions: testBullExtensions),
+    locale: locale,
+    supportedLocales: [locale],
+    localizationsDelegates: GlobalMaterialLocalizations.delegates,
     routerConfig: router,
   );
 }
