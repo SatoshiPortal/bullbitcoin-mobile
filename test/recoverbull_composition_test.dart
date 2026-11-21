@@ -66,7 +66,12 @@ void main() {
       await WalletLocator.registerDatasources(services);
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);
-      LabelsLocator.registerPorts(services);
+      final walletSync = WalletLocator.syncAccess(services);
+      LabelsLocator.registerPorts(
+        services,
+        sync: walletSync.foreground,
+        openWallet: walletSync.openWallet,
+      );
       // Wallet's native runtime requires the Payjoin owner's reservation port.
       PayjoinSetup.setup(
         services,

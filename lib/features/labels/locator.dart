@@ -1,7 +1,5 @@
 import 'package:bb_mobile/features/labels/data/reserved_address_port_impl.dart';
 import 'package:sync/sync.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_converter_apadater.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
 import 'package:bb_mobile/features/labels/adapters/wallet_freeze_adapter.dart';
@@ -24,7 +22,11 @@ import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
-  static void registerPorts(GetIt locator) {
+  static void registerPorts(
+    GetIt locator, {
+    required Future<Sync> Function() sync,
+    required Future<Wallet> Function(String walletId) openWallet,
+  }) {
     locator.registerLazySingleton<ReservedAddressPort>(
       () => ReservedAddressPortImpl(locator<LabelsRepositoryPort>()),
     );
@@ -40,10 +42,7 @@ class LabelsLocator {
       }),
     );
     locator.registerLazySingleton<WalletFreezePort>(
-      () => WalletFreezeAdapter(
-        sync: () => locator<WalletNativeRuntime>().foreground(),
-        walletUtxoRepository: locator<WalletUtxoRepository>(),
-      ),
+      () => WalletFreezeAdapter(sync: sync, openWallet: openWallet),
     );
   }
 
