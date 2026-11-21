@@ -1,4 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/configured_electrum_connection.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
@@ -80,15 +81,10 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     }
     final connections = servers
         .map(
-          (server) => ElectrumConnection(
-            url: server.url,
-            retry: settings.retry,
-            timeout: settings.timeout,
-            stopGap: settings.stopGap,
-            validateDomain: !server.isCustom || settings.validateDomain,
-            isCustom: server.isCustom,
-            // ⚠️ Liquid never goes through Tor: LWK has no SOCKS option.
-            socks5: network.isLiquid ? null : settings.socks5,
+          (server) => configuredElectrumConnection(
+            server: server,
+            settings: settings,
+            network: network,
           ),
         )
         .toList();
