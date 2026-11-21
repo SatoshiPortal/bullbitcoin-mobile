@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/receive/domain/receive_advanced_options.dart'
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
