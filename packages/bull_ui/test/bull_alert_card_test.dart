@@ -53,7 +53,13 @@ void main() {
   });
 
   testWidgets('the alert action has a name and a 48 dp target', (tester) async {
-    await pumpCard(tester, title: 'Consolidate the wallet', onTap: () {});
+    final semantics = tester.ensureSemantics();
+    await pumpCard(
+      tester,
+      title: 'Consolidate the wallet',
+      body: 'Lower your future fees',
+      onTap: () {},
+    );
 
     expect(
       tester.getSize(find.byType(InkWell)).shortestSide,
@@ -61,8 +67,13 @@ void main() {
     );
     expect(
       find.bySemanticsLabel(RegExp('Consolidate the wallet')),
-      findsWidgets,
+      findsOneWidget,
     );
+    expect(
+      find.bySemanticsLabel('Consolidate the wallet\nLower your future fees'),
+      findsOneWidget,
+    );
+    semantics.dispose();
   });
 
   testWidgets('a card without a callback is static', (tester) async {
