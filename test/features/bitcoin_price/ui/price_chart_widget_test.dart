@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_price_cur
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
 
 import 'dart:async';
+import 'dart:ui' show SemanticsAction;
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
@@ -97,6 +98,26 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('semantics selects the previous and next points', (tester) async {
+    final cubit = await pumpChart(tester, [
+      _point(100, 1),
+      _point(120, 2),
+      _point(110, 3),
+    ]);
+    final chart = find.bySemanticsLabel('Price history');
+    final node = tester.getSemantics(chart);
+    final owner = node.owner;
+    if (owner == null) fail('Chart semantics has no owner');
+
+    owner.performAction(node.id, SemanticsAction.decrease);
+    await tester.pump();
+    expect(cubit.state.selectedDataPointIndex, 1);
+
+    owner.performAction(node.id, SemanticsAction.increase);
+    await tester.pump();
+    expect(cubit.state.selectedDataPointIndex, 2);
   });
 
   testWidgets('settles after the chart animations finish', (tester) async {
