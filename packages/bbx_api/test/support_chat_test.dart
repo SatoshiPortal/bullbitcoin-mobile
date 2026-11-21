@@ -83,7 +83,9 @@ void main() {
       expect(first.toGroupCode, 'support');
       expect(first.createdAt, DateTime.utc(2026, 11, 20, 10));
       expect(first.updatedAt, isNull);
-      final [a1, a2, a3, a4] = first.attachments!;
+      final attachments =
+          first.attachments ?? fail('Expected message attachments');
+      final [a1, a2, a3, a4] = attachments;
       expect(a1.attachmentId, 'a-1');
       expect(a1.fileName, 'a.png');
       expect(a1.fileType, 'image/png');

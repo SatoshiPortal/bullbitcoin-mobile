@@ -183,7 +183,11 @@ Future<(List<Object?>, List<(String, String, Object?)>)> _bothSend(
 ) async {
   final http = FakeBbxHttp(body: body);
   await call(_repository(http));
-  return (oldRepository[id]! as List<Object?>, _sent(http));
+  final old = oldRepository[id];
+  if (old is! List<Object?>) {
+    fail('Expected legacy recipient requests for $id');
+  }
+  return (old, _sent(http));
 }
 
 /// The flat wire details the old repository's model gave for [d].
@@ -716,7 +720,9 @@ void main() {
     };
 
     for (final MapEntry(key: name, value: call) in operations.entries) {
-      final apiFailure = apiFailures[name]!;
+      final apiFailure =
+          apiFailures[name] ??
+          fail('Missing recipient failure matcher for $name');
 
       test('$name: a JSON-RPC error is the operation failure', () async {
         final failure = _failureOf(

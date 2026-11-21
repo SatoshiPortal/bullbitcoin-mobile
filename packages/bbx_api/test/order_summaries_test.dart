@@ -60,14 +60,19 @@ void main() {
       expect(order.exchangeRateAmount, 100000.0);
       expect(order.payoutAmount, 0.001);
       expect(order.createdAt, '2026-11-20T10:00:00Z');
-      expect(order.message!.code, '42');
-      expect(order.message!.message, 'note');
+      final message = order.message ?? fail('Expected an order message');
+      expect(message.code, '42');
+      expect(message.message, 'note');
       expect(order.isPPBitcoinOutUpdatable, isTrue);
-      expect(order.payinAmountChanged!.requestedAmount, 100.0);
-      expect(order.payinAmountChanged!.receivedAmount, 90.5);
+      final payinAmountChanged =
+          order.payinAmountChanged ?? fail('Expected a payin amount change');
+      expect(payinAmountChanged.requestedAmount, 100.0);
+      expect(payinAmountChanged.receivedAmount, 90.5);
       expect(order.unbatchedBuyOnchainFees, 125.0);
       expect(order.bip21URI, 'bitcoin:bc1q?pj=x');
-      expect(order.payjoinDetails!.txid, 'pj-tx');
+      final payjoinDetails =
+          order.payjoinDetails ?? fail('Expected Payjoin details');
+      expect(payjoinDetails.txid, 'pj-tx');
     });
 
     test('reads an unwrapped result', () async {

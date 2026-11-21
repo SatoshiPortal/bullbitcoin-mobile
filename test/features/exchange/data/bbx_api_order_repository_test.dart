@@ -1190,7 +1190,11 @@ void main() {
           },
         );
         await create(http, frequency: frequency);
-        expect((_params(http)['element']! as Map)['recurringFrequency'], wire);
+        final element = _params(http)['element'];
+        if (element is! Map<String, Object?>) {
+          fail('Expected a DCA request element');
+        }
+        expect(element['recurringFrequency'], wire);
       }
       for (final (network, wire) in [
         (DcaNetwork.bitcoin, 'OUT_BITCOIN_ADDRESS'),
@@ -1203,7 +1207,11 @@ void main() {
           },
         );
         await create(http, network: network);
-        expect((_params(http)['element']! as Map)['recipientType'], wire);
+        final element = _params(http)['element'];
+        if (element is! Map<String, Object?>) {
+          fail('Expected a DCA request element');
+        }
+        expect(element['recipientType'], wire);
       }
     });
 

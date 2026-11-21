@@ -45,7 +45,10 @@ void main() {
       expect((request.data as Map)['method'], 'getUserSummary');
       expect((request.data as Map)['params'], isEmpty);
 
-      expect(summary!.userNumber, 42);
+      if (summary == null) {
+        fail('Expected a user summary');
+      }
+      expect(summary.userNumber, 42);
       expect(summary.userId, 'u-1');
       expect(summary.groups, ['KYC_IDENTITY_VERIFIED', 'JURI_EU']);
       expect(summary.profile.lastName, 'Nakamoto');
@@ -59,7 +62,8 @@ void main() {
       expect(summary.autoBuy.addresses.lightning, isNull);
       expect(summary.emailNotificationsEnabled, isFalse);
       expect(summary.payjoinReceiveEnabled, isTrue);
-      final kyc = summary.kycDocumentStatus!;
+      final kyc =
+          summary.kycDocumentStatus ?? fail('Expected KYC document status');
       expect(kyc.secureFileUpload, 'UNDER_REVIEW');
       expect(kyc.documents.id, 'ACCEPTED');
       expect(kyc.documents.selfie, 'NOT_UPLOADED');
@@ -74,7 +78,10 @@ void main() {
           .users
           .getUserSummary();
 
-      expect(summary!.emailNotificationsEnabled, isTrue);
+      if (summary == null) {
+        fail('Expected a user summary with optional fields omitted');
+      }
+      expect(summary.emailNotificationsEnabled, isTrue);
       expect(summary.payjoinReceiveEnabled, isFalse);
       expect(summary.kycDocumentStatus, isNull);
     });

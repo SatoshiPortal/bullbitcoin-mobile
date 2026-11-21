@@ -161,13 +161,22 @@ Future<((List<Object?>, Object?), (List<(String, String)>, Object?))> _both(
 }) async {
   final http = _ChatHttp(bodies, error: error);
   final outcome = _outcome(await call(_new(http, key: key)));
-  return (oldRepository[id]! as (List<Object?>, Object?), (http.sent, outcome));
+  final old = oldRepository[id];
+  if (old is! (List<Object?>, Object?)) {
+    fail('Expected a legacy chat fixture for $id');
+  }
+  return (old, (http.sent, outcome));
 }
 
 final _calls = <String, _Call>{
   'getMessages': (r) => r.getMessages(),
   'sendMessage': (r) => r.sendMessage(text: 'Hi'),
   'getMessageAttachment': (r) => r.getMessageAttachment('a-1'),
+};
+
+(String, String) _firstRequest(List<Object?> requests) => switch (requests) {
+  [final (String, String) first, ...] => first,
+  _ => fail('Expected a recorded support request'),
 };
 
 void main() {
@@ -248,7 +257,7 @@ void main() {
 
           expect(outcome, oldOutcome);
           expect(sent.length, oldSent.length);
-          expect(sent.first.$1, (oldSent.first! as (String, String)).$1);
+          expect(sent.first.$1, _firstRequest(oldSent).$1);
           expect(sent.skip(1), oldSent.skip(1));
         });
       }
@@ -258,18 +267,32 @@ void main() {
       final ((_, oldOutcome), (sent, outcome)) = await _both(
         'a page, page 3 of 25',
         (r) => r.getMessages(page: 3, pageSize: 25),
-        cases['a page']!,
+        cases['a page'] ?? fail('Missing support message page fixture'),
       );
 
       expect(outcome, oldOutcome);
-      final messages = (outcome! as List<Object?>)[1]! as List<Object?>;
-      final first = messages[0]! as Map<String, Object?>;
-      final second = messages[1]! as Map<String, Object?>;
+      final (first, second) = switch (outcome) {
+        [
+          _,
+          [
+            final Map<String, Object?> first,
+            final Map<String, Object?> second,
+            ...,
+          ],
+          ...,
+        ] =>
+          (first, second),
+        _ => fail('Expected two support messages in the outcome'),
+      };
+      final attachments = first['attachments'];
+      if (attachments is! List<Map<String, Object?>>) {
+        fail('Expected attachments on the first support message');
+      }
       expect(first['isAdmin'], isFalse);
       expect(second['isAdmin'], isTrue);
       expect(
         [
-          for (final a in first['attachments']! as List<Map<String, Object?>>)
+          for (final a in attachments)
             [a['attachmentId'], a['messageId'], a['fileData']],
         ],
         [
@@ -298,11 +321,11 @@ void main() {
       final ((oldSent, _), (sent, _)) = await _both(
         'a page, page null of null',
         (r) => r.getMessages(),
-        cases['a page']!,
+        cases['a page'] ?? fail('Missing support message page fixture'),
       );
 
       expect(
-        (oldSent.first! as (String, String)).$2,
+        _firstRequest(oldSent).$2,
         '{"id":1,"jsonrpc":"2.0","method":"getUserSummary","params":{}}',
       );
       expect(
