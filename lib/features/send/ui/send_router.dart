@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
+
 import '../presentation/send_ark_cubit.dart';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -11,7 +13,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SendRouter {
-  static final route = GoRoute(
+  static GoRoute route({
+    required OpenSignedTransactionReader openSignedTransactionReader,
+  }) => GoRoute(
     name: SendRoute.send.name,
     path: SendRoute.send.path,
     builder: (context, state) {
@@ -37,7 +41,10 @@ class SendRouter {
             )..loadWalletWithRatesAndFees(),
           ),
         ],
-        child: const SendScreen(),
+        child: SendPsbtHandoff(
+          openReader: openSignedTransactionReader,
+          child: const SendScreen(),
+        ),
       );
     },
   );

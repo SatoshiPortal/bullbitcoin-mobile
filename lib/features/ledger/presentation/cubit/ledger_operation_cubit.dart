@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_st
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LedgerOperationCubit extends Cubit<LedgerOperationState> {
+  final NetworkEnv _network;
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
   final DisconnectLedgerDeviceUsecase _disconnectLedgerDeviceUsecase;
@@ -18,6 +19,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final SignerDeviceEntity? _requestedDeviceType;
 
   LedgerOperationCubit({
+    required this._network,
     required this._scanLedgerDevicesUsecase,
     required this._connectLedgerDeviceUsecase,
     required this._disconnectLedgerDeviceUsecase,
@@ -46,9 +48,13 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   Future<void> executeOperation<T>(
     Future<Result<T, LedgerFailure>> Function() operation,
   ) async {
-    if (state.connectedDevice != null) {
+    if (_network != NetworkEnv.mainnet && _network != NetworkEnv.testnet) {
+      _emitFailure(const LedgerUnexpectedFailure('unsupported network'));
+      return;
+    }
+    if (state.connectedDevice case final device?) {
       _logTeardown(
-        await _disconnectLedgerDeviceUsecase.execute(state.connectedDevice!),
+        await _disconnectLedgerDeviceUsecase.execute(device),
         'disconnect',
       );
     }

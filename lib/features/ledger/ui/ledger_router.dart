@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -14,33 +16,23 @@ enum LedgerRoute {
 
 class LedgerRouter {
   static final routes = [
-    GoRoute(
-      name: LedgerRoute.importLedger.name,
-      path: LedgerRoute.importLedger.path,
-      builder: (context, state) =>
-          const LedgerActionScreen(action: LedgerAction.importWallet()),
-    ),
-    GoRoute(
-      name: LedgerRoute.ledgerSignTransaction.name,
-      path: LedgerRoute.ledgerSignTransaction.path,
-      builder: (context, state) {
-        final extra = state.extra as LedgerRouteParams?;
-        return LedgerActionScreen(
-          action: const LedgerAction.signTransaction(),
-          parameters: extra,
-        );
-      },
-    ),
-    GoRoute(
-      name: LedgerRoute.ledgerVerifyAddress.name,
-      path: LedgerRoute.ledgerVerifyAddress.path,
-      builder: (context, state) {
-        final extra = state.extra as LedgerRouteParams?;
-        return LedgerActionScreen(
-          action: const LedgerAction.verifyAddress(),
-          parameters: extra,
-        );
-      },
-    ),
+    for (final (route, action) in [
+      (LedgerRoute.importLedger, const LedgerAction.importWallet()),
+      (LedgerRoute.ledgerSignTransaction, const LedgerAction.signTransaction()),
+      (LedgerRoute.ledgerVerifyAddress, const LedgerAction.verifyAddress()),
+    ])
+      GoRoute(
+        name: route.name,
+        path: route.path,
+        builder: (context, state) {
+          if (state.extra case final LedgerRouteParams parameters) {
+            return LedgerActionScreen(action: action, parameters: parameters);
+          }
+          return Scaffold(
+            appBar: AppBar(),
+            body: Center(child: Text(context.loc.oopsSomethingWentWrong)),
+          );
+        },
+      ),
   ];
 }

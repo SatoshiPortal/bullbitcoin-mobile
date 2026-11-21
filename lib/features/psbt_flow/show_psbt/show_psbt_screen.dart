@@ -1,28 +1,23 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/device_instructions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButtonSize, BullButton, Gap;
 import 'package:go_router/go_router.dart';
 
+enum PsbtHandoffResult { readyToReadSignedTransaction }
+
 class ShowPsbtScreen extends StatelessWidget {
   final String psbt;
-  final Wallet? wallet;
   final SignerDeviceEntity? signerDevice;
 
-  const ShowPsbtScreen({
-    super.key,
-    required this.psbt,
-    this.signerDevice,
-    this.wallet,
-  });
+  const ShowPsbtScreen({super.key, required this.psbt, this.signerDevice});
 
   @override
   Widget build(BuildContext context) {
+    final device = signerDevice;
     final canSignViaNfc =
         signerDevice == SignerDeviceEntity.coldcardQ ||
         signerDevice == SignerDeviceEntity.coldcardMk4;
@@ -36,34 +31,31 @@ class ShowPsbtScreen extends StatelessWidget {
           children: [
             Column(
               children: [
-                if (signerDevice != null &&
-                    signerDevice!.supportedQrType != QrType.none) ...[
+                if (device != null &&
+                    device.supportedQrType != QrType.none) ...[
                   ShowAnimatedQrWidget(
-                    key: ValueKey(
-                      '${psbt.hashCode}_${signerDevice!.supportedQrType}',
-                    ),
+                    key: ValueKey('${psbt.hashCode}_${device.supportedQrType}'),
                     psbt: psbt,
-                    qrType: signerDevice!.supportedQrType,
-                    showSlider: signerDevice!.supportedQrType == QrType.urqr,
+                    qrType: device.supportedQrType,
+                    showSlider: device.supportedQrType == QrType.urqr,
                   ),
                   const Gap(16),
                 ],
 
-                if (canSignViaNfc) ...[
+                if (canSignViaNfc && device != null) ...[
                   BullButton.secondary(
                     size: BullButtonSize.small,
                     label: context.loc.psbtFlowSignViaNfc,
                     onPressed: () => NfcBottomSheet.showWriteNfc(
                       context: context,
                       title: context.loc.psbtFlowSignViaNfcSheetTitle(
-                        signerDevice!.displayName,
+                        device.displayName,
                       ),
                       data: psbt,
                       onSuccess: () async {
                         if (!context.mounted) return;
-                        await context.pushNamed(
-                          BroadcastSignedTxRoute.broadcastHome.name,
-                          extra: (psbt: psbt, wallet: wallet),
+                        context.pop(
+                          PsbtHandoffResult.readyToReadSignedTransaction,
                         );
                       },
                     ),
@@ -123,10 +115,7 @@ class ShowPsbtScreen extends StatelessWidget {
             BullButton.primary(
               label: context.loc.psbtFlowDone,
               onPressed: () {
-                context.pushNamed(
-                  BroadcastSignedTxRoute.broadcastHome.name,
-                  extra: (psbt: psbt, wallet: wallet),
-                );
+                context.pop(PsbtHandoffResult.readyToReadSignedTransaction);
               },
             ),
           ],
