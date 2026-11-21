@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/msats.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show msatsToSats;
+import 'package:test/test.dart';
 
 /// BOLT11 denominates in millisatoshis and the pico-BTC multiplier makes
 /// sub-satoshi amounts expressible, so converting to satoshis is lossy by

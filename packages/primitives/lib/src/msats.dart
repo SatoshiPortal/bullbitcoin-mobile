@@ -9,10 +9,6 @@
 ///
 /// A negative amount is clamped to zero: it cannot come from a valid invoice,
 /// and returning it would propagate a negative balance into the send flow.
-///
-/// The same rule lives in `satoshifier`'s `Utils.msatsToSats`. The duplication
-/// exists because this file's caller re-implements bolt11 parsing instead of
-/// using `Bolt11Parser`; the two should converge when that is unified.
 int msatsToSats(int msats) {
   if (msats <= 0) return 0;
   return (msats + 999) ~/ 1000;
