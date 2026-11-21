@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
 import 'package:bb_mobile/features/fees/public/fee_selection_label.dart';

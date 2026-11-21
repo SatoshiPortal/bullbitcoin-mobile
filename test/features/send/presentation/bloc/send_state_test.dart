@@ -1,14 +1,14 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Sats, ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, FormatAmount, Sats, ScriptType;
 
 import '../../../coins/wallet_utxo_fixture.dart';
 

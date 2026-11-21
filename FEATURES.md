@@ -472,6 +472,7 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
 2. **Core Primitives**:
    - Canonical location: `packages/primitives`; compatibility exports remain in `lib/core` during migration.
    - Extracted examples: `Failure`, `Result`, `Fingerprint`, network types, `Outpoint`, `Sats`, `FeeRate`, and `XpubType`. Security-domain types such as `Secret` now live in `packages/secrets`, which owns them rather than exposing them as primitives.
+   - The app uses `ConvertAmount` and `FormatAmount` from `primitives` for BTC, satoshi and fiat conversions and display.
    - Shared types used across multiple features, avoiding redundant definitions
    - Immutable, validated value objects that ensure domain integrity
 

@@ -1,6 +1,5 @@
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
+import 'package:test/test.dart';
 
 void main() {
   group('AmountConversion', () {

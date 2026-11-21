@@ -13,11 +13,10 @@ import '../../domain/send_custom_fee_policy.dart';
 
 import '../widgets/send_ark_routing_actions.dart';
 
-import 'package:primitives/primitives.dart' show BitcoinUnit, Sats;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, FormatAmount, Sats;
 
 import 'dart:math' as math;
-
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';

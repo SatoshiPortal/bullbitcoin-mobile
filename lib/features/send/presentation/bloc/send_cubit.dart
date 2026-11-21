@@ -15,6 +15,7 @@ import 'package:primitives/primitives.dart'
     show
         BitcoinTransactionRecipient,
         BitcoinUnit,
+        ConvertAmount,
         Err,
         Ok,
         Outpoint,
@@ -36,7 +37,6 @@ import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

@@ -1,10 +1,9 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 

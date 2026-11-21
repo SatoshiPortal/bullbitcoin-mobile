@@ -129,7 +129,9 @@ wallet/
     wallet_utxo_repository_impl.dart     # (legacy lives under data/repositories/ — converge)
 ```
 
-**An entity that cannot hold a bad value** (illustrative — shared value objects belong in `lib/core/primitives/`):
+The app imports `ConvertAmount` and `FormatAmount` from `primitives`. Amount formatting uses Intl without a Flutter dependency.
+
+**An entity that cannot hold a bad value** (illustrative — shared value objects belong in `packages/primitives`):
 
 ```dart
 class Amount {
