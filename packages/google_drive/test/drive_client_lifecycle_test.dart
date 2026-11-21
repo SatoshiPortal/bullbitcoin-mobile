@@ -33,6 +33,114 @@ void main() {
     await google.events.close();
   });
 
+  test('a Drive page arriving after an account change is discarded', () async {
+    final requested = Completer<void>();
+    final response = Completer<http.StreamedResponse>();
+    client.respond = (_) {
+      requested.complete();
+      return response.future;
+    };
+
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
+    final listing = drive.listFiles();
+    await requested.future;
+
+    google.account = _Account('second@example.invalid');
+    response.complete(
+      _jsonResponse({
+        'nextPageToken': 'more-files',
+        'files': [
+          {
+            'id': 'first-account-file',
+            'name': 'example.txt',
+            'createdTime': '2026-11-09T00:00:00Z',
+          },
+        ],
+      }),
+    );
+
+    expect(
+      await listing,
+      isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>(),
+    );
+  });
+
+  test('lists arbitrary MIME types with an escaped app-folder query', () async {
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
+    client.respond = (request) async {
+      expect(request.url.queryParameters['spaces'], 'appDataFolder');
+      expect(
+        request.url.queryParameters['q'],
+        r"mimeType='text/plain;key=\'value' and trashed=false",
+      );
+      return _jsonResponse({'files': []});
+    };
+
+    expect(
+      await drive.listFiles(mimeType: "text/plain;key='value"),
+      isA<Ok<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>(),
+    );
+  });
+
+  test('writes arbitrary app-folder bytes and deletes by file id', () async {
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
+    final requests = <http.BaseRequest>[];
+    client.respond = (request) async {
+      requests.add(request);
+      if (request.method == 'POST') {
+        final body = utf8.decode(await request.finalize().toBytes());
+        expect(body, contains('"parents":["appDataFolder"]'));
+        expect(body, contains('"mimeType":"text/plain"'));
+        expect(body, contains('"name":"example.txt"'));
+        expect(
+          body,
+          contains(base64.encode(utf8.encode('test document bytes'))),
+        );
+        return _jsonResponse({'id': 'test-file'});
+      }
+      return http.StreamedResponse(const Stream.empty(), 204);
+    };
+
+    expect(
+      await drive.writeFile(
+        filename: 'example.txt',
+        bytes: utf8.encode('test document bytes'),
+        mimeType: 'text/plain',
+      ),
+      isA<Ok<void, GoogleDriveFailure>>(),
+    );
+    expect(
+      await drive.deleteFile('test-file'),
+      isA<Ok<void, GoogleDriveFailure>>(),
+    );
+    expect(requests.map((request) => request.method), ['POST', 'DELETE']);
+    expect(requests.last.url.pathSegments.last, 'test-file');
+  });
+
+  test('rejects a download exceeding its caller-supplied limit', () async {
+    expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
+    client.respond = (request) async {
+      expect(request.url.queryParameters['alt'], 'media');
+      return http.StreamedResponse(
+        Stream.fromIterable([
+          [1, 2],
+          [3, 4],
+        ]),
+        200,
+        headers: {'content-type': 'application/octet-stream'},
+      );
+    };
+
+    expect(
+      await drive.readFile(fileId: 'file-id', maxBytes: 3),
+      isA<Err<List<int>, GoogleDriveFailure>>().having(
+        (result) => result.failure.kind,
+        'failure kind',
+        GoogleDriveFailureKind.tooLarge,
+      ),
+    );
+  });
+
   test('a sign-out invalidates the foreground client', () async {
     expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
     await google.signOut();
@@ -264,17 +372,24 @@ final class _Tokens extends GoogleSignInPlatform {
   }
 }
 
-final class _Client extends http.BaseClient {
-  int closes = 0;
-  int writes = 0;
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    if (request.method != 'GET') writes++;
-    return http.StreamedResponse(
-      Stream.value(utf8.encode('{"files":[]}')),
+http.StreamedResponse _jsonResponse(Map<String, Object> body) =>
+    http.StreamedResponse(
+      Stream.value(utf8.encode(jsonEncode(body))),
       200,
       headers: {'content-type': 'application/json'},
     );
+
+final class _Client extends http.BaseClient {
+  int closes = 0;
+  int writes = 0;
+  Future<http.StreamedResponse> Function(http.BaseRequest)? respond;
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    if (request.method != 'GET') writes++;
+    final handler = respond;
+    return handler == null
+        ? _jsonResponse({'files': []})
+        : await handler(request);
   }
 
   @override
