@@ -44,7 +44,12 @@ class CoreLocator {
 
   static void registerPorts(GetIt locator) {
     SettingsLocator.registerPorts(locator);
-    LabelsLocator.registerPorts(locator);
+    final walletSync = WalletLocator.syncAccess(locator);
+    LabelsLocator.registerPorts(
+      locator,
+      sync: walletSync.foreground,
+      openWallet: walletSync.openWallet,
+    );
   }
 
   static Future<Result<void, ElectrumFailure>> registerRepositories(

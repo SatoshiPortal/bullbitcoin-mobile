@@ -1,19 +1,14 @@
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart';
 
 /// Implements [WalletFreezePort] over the freezes sync owns. Every call
-/// throws [WalletSnapshotException] when the freeze store cannot answer.
+/// throws [WalletSnapshotException] when sync cannot answer.
 class WalletFreezeAdapter implements WalletFreezePort {
   final Future<Sync> Function() _sync;
-  final WalletUtxoRepository _walletUtxoRepository;
+  final Future<Wallet> Function(String walletId) _openWallet;
 
-  WalletFreezeAdapter({
-    required this._sync,
-    required this._walletUtxoRepository,
-  });
+  WalletFreezeAdapter({required this._sync, required this._openWallet});
 
   @override
   Future<List<({String walletId, String txId, int vout})>>
@@ -34,9 +29,8 @@ class WalletFreezeAdapter implements WalletFreezePort {
     List<({String? walletId, String txId, int vout})> outputs,
   ) async {
     // The origin is kept as given: a null one stores empty, inert until a
-    // wallet holds the coin, matched by outpoint either way. The wallet id
-    // IS its origin, so a known wallet's freeze is attributed as
-    // `wallet.coins.freeze` would.
+    // wallet holds the coin, matched by outpoint either way. A known wallet's
+    // freeze uses the same attribution as `wallet.coins.freeze`.
     final coins = (await _sync()).coins;
     for (final o in outputs) {
       final result = await coins.freeze((
@@ -50,24 +44,18 @@ class WalletFreezeAdapter implements WalletFreezePort {
   }
 
   @override
-  Future<List<({String txId, int vout})>> getOwnedOutpoints({
-    required String walletId,
-  }) async {
-    final utxos = await _walletUtxoRepository.getWalletUtxos(
-      walletId: walletId,
-    );
-    return [
-      for (final u in utxos)
-        switch (u) {
-          BitcoinWalletUtxo(:final txId, :final vout) => (
-            txId: txId,
-            vout: vout,
-          ),
-          LiquidWalletUtxo(:final txId, :final vout) => (
-            txId: txId,
-            vout: vout,
-          ),
-        },
-    ];
+  Future<List<Outpoint>> getOwnedOutpoints({required String walletId}) async {
+    final wallet = await _openWallet(walletId);
+    if (await wallet.load() case Err(:final failure)) {
+      throw WalletSnapshotException(failure);
+    }
+    final snapshot = wallet.coins.now;
+    final coins = snapshot.data;
+    if (coins == null) {
+      throw WalletSnapshotException(
+        snapshot.failure ?? const SyncBusyFailure(),
+      );
+    }
+    return [for (final coin in coins) coin.outpoint];
   }
 }

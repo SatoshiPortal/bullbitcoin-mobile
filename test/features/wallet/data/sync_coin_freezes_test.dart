@@ -123,17 +123,16 @@ void main() {
 
   group('BIP329 adapter', () {
     test('keeps every origin, empty ones included', () async {
-      final wallet = await testWallet(key: key);
-      WalletFreezeAdapter adapter() => WalletFreezeAdapter(
+      final adapter = WalletFreezeAdapter(
         sync: () async => owner,
-        walletUtxoRepository: repository(wallet),
+        openWallet: (_) => throw StateError('Freeze does not load a wallet'),
       );
-      await adapter().freeze([
+      await adapter.freeze([
         (walletId: walletId, txId: kept.txId, vout: kept.vout),
         (walletId: null, txId: frozen.txId, vout: frozen.vout),
       ]);
 
-      expect((await adapter().getAllFrozen()).toSet(), {
+      expect((await adapter.getAllFrozen()).toSet(), {
         (walletId: walletId, txId: kept.txId, vout: kept.vout),
         (walletId: '', txId: frozen.txId, vout: frozen.vout),
       });
