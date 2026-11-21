@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:fake_async/fake_async.dart';
@@ -23,7 +23,7 @@ void main() {
         unawaited(request.response.close());
       });
       final credential = Completer<Result<String?, ExchangeApiKeyFailure>>();
-      final datasource = ExchangeNotificationDatasource(
+      final datasource = BbxApiNotificationDatasource(
         baseUrl: 'http://127.0.0.1:${server.port}',
         readApiKey: () => credential.future,
       );
@@ -52,7 +52,7 @@ void main() {
       socket.listen((_) {});
     });
     String? key = 'first';
-    final datasource = ExchangeNotificationDatasource(
+    final datasource = BbxApiNotificationDatasource(
       baseUrl: 'http://127.0.0.1:${server.port}',
       readApiKey: () async => Ok(key),
     );
@@ -92,7 +92,7 @@ void main() {
       socket.add('{"type":{"label":"SYNTHETIC_PRIVATE_FRAME"}}');
       socket.listen((_) {});
     });
-    final datasource = ExchangeNotificationDatasource(
+    final datasource = BbxApiNotificationDatasource(
       baseUrl: 'http://127.0.0.1:${server.port}',
       readApiKey: () async => const Ok('synthetic-header'),
     );
@@ -119,7 +119,7 @@ void main() {
     fakeAsync((time) {
       var reads = 0;
       var available = false;
-      final datasource = ExchangeNotificationDatasource(
+      final datasource = BbxApiNotificationDatasource(
         baseUrl: 'https://example.invalid',
         readApiKey: () async {
           reads++;

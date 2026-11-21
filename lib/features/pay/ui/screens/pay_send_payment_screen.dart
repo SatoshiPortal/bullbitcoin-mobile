@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/recipients/public/recipient_type_label.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
@@ -204,9 +203,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                         ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientType,
-                        displayValue: recipient == null
-                            ? null
-                            : recipientTypeLabel(context, recipient.type),
+                        displayValue: recipient?.type.label(context),
                       ),
                       BullDetailsTableItem(
                         label: context.loc.payRecipientName,

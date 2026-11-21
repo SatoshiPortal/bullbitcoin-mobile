@@ -1,27 +1,36 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/interac_security_details.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/update_interac_security_details_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
 import 'package:meta/meta.dart';
 
-export '../domain/value_objects/confidential_sepa_availability.dart';
-export '../domain/value_objects/recipient_type.dart' show RecipientType;
+export '../ui/screens/virtual_iban_onboarding_screen.dart'
+    show VirtualIbanOnboardingScreen;
+export '../domain/entities/confidential_sepa_availability.dart';
+export '../domain/entities/recipient_type.dart' show RecipientType;
 
-export 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
+export '../presentation/recipient_type_l10n.dart';
+export '../recipients_locator.dart' show RecipientsLocator;
+export '../ui/screens/recipients_screen.dart' show RecipientsScreen;
+export '../ui/screens/sepa_virtual_payee_activation_screen.dart'
+    show SepaVirtualPayeeActivationScreen;
+export '../ui/screens/virtual_iban_funding_screen.dart'
+    show VirtualIbanFundingScreen;
+
+export 'package:bb_mobile/features/recipients/domain/entities/interac_security_details.dart';
 export 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 
 export 'recipient_filter_criteria.dart' show RecipientFilterCriteria;
 export 'recipient_selection.dart' show RecipientSelection;
+export 'recipient_selection_screen.dart' show RecipientSelectionScreen;
 export 'recipient_view_model.dart';
 
 /// Public contract of the Recipients feature.
 ///
-/// Other features must import Recipients-owned types through this file instead
-/// of depending on its internal layers directly. This surface is Flutter-free
-/// so domain-layer consumers can depend on it; the feature's UI is published
-/// separately through `recipients_ui.dart`.
+/// Other features must import Recipients-owned types, routes and screens
+/// through this file instead of depending on its internal layers directly.
 class RecipientsFacade {
   final UpdateInteracSecurityDetailsUsecase
   _updateInteracSecurityDetailsUsecase;

@@ -1,6 +1,3 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -8,6 +5,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usec
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
+import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_account_info_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
@@ -15,6 +14,7 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 
@@ -27,41 +27,27 @@ class ExchangeSettingsLocator {
   }
 
   static void _registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<ExchangeKycRepository>(
-      () => ExchangeKycRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+    for (final environment in ['mainnet', 'testnet']) {
+      locator.registerLazySingleton<ExchangeKycRepository>(
+        () => BbxApiKycRepository(
+          api: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClient',
+          ),
         ),
-      ),
-      instanceName: 'mainnet',
-    );
+        instanceName: environment,
+      );
+    }
 
-    locator.registerLazySingleton<ExchangeKycRepository>(
-      () => ExchangeKycRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
+    for (final environment in ['mainnet', 'testnet']) {
+      locator.registerLazySingleton<ExchangeOrderStatsRepository>(
+        () => BbxApiOrderStatsRepository(
+          api: locator<BbxApiClient>(
+            instanceName: '${environment}BbxApiClient',
+          ),
         ),
-      ),
-      instanceName: 'testnet',
-    );
-
-    locator.registerLazySingleton<ExchangeOrderStatsRepository>(
-      () => ExchangeOrderStatsRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'mainnet',
-    );
-
-    locator.registerLazySingleton<ExchangeOrderStatsRepository>(
-      () => ExchangeOrderStatsRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'testnet',
-    );
+        instanceName: environment,
+      );
+    }
   }
 
   static void _registerUsecases(GetIt locator) {

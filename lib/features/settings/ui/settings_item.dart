@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -359,8 +360,7 @@ List<SettingsItem> buildSettingsItems({
           localization.settingsAccountSettingsTitle,
         ),
         icon: Icons.account_circle_outlined,
-        open: (context) =>
-            context.pushNamed(SettingsRoute.exchangeSettings.name),
+        open: (context) => context.pushNamed(ExchangeSettingsRoute.home.name),
         keywords: [
           localization.settingsAccountSettingsTitle,
           english.settingsAccountSettingsTitle,

@@ -1,0 +1,163 @@
+import 'package:bb_mobile/features/exchange_settings/ui/screens/security_navigation.dart';
+import 'package:bull_ui/bull_ui.dart';
+
+import 'dart:io';
+
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:go_router/go_router.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+
+class ExchangeSecurityScreen extends StatelessWidget {
+  const ExchangeSecurityScreen({required this.isTestnet, super.key});
+
+  /// Null when the exchange has no backend for the current environment.
+  final bool? isTestnet;
+
+  void _openSecurityWebView(BuildContext context) {
+    final isTestnet = this.isTestnet;
+    if (isTestnet == null) return;
+    final baseUrl = isTestnet
+        ? ApiServiceConstants.bbAuthTestUrl
+        : ApiServiceConstants.bbAuthUrl;
+    final securityUrl = '$baseUrl/settings';
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => _SecurityWebViewScreen(url: securityUrl),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.appColors.background,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: BullTopBar(
+          title: context.loc.exchangeSettingsSecuritySettingsTitle,
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: context.appColors.surface,
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
+                  boxShadow: [
+                    BoxShadow(
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
+                  children: [
+                    BullText(
+                      context.loc.exchangeSecurityManage2FAPasswordLabel,
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(color: context.appColors.textMuted),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: BullButton.secondary(
+                        label: context.loc.exchangeSecurityAccessSettingsButton,
+                        onPressed: () {
+                          _openSecurityWebView(context);
+                        },
+                        iconData: Icons.arrow_forward,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SecurityWebViewScreen extends StatefulWidget {
+  final String url;
+
+  const _SecurityWebViewScreen({required this.url});
+
+  @override
+  State<_SecurityWebViewScreen> createState() => _SecurityWebViewScreenState();
+}
+
+class _SecurityWebViewScreenState extends State<_SecurityWebViewScreen> {
+  late final WebViewController _controller = WebViewController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            // Allow navigation within the same domain
+            if (allowsSecurityNavigation(widget.url, request.url)) {
+              return NavigationDecision.navigate;
+            }
+            // Block external navigation
+            return NavigationDecision.prevent;
+          },
+        ),
+      )
+      ..setUserAgent(
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15.0 Safari/604.1',
+      )
+      ..loadRequest(Uri.parse(widget.url));
+
+    if (Platform.isAndroid) {
+      AndroidWebViewController.enableDebugging(false);
+      final platformController = _controller.platform;
+      if (platformController is AndroidWebViewController) {
+        platformController.setMediaPlaybackRequiresUserGesture(false);
+      }
+    } else if (Platform.isIOS) {
+      final platformController = _controller.platform;
+      if (platformController is WebKitWebViewController) {
+        platformController.setAllowsBackForwardNavigationGestures(true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(context.loc.exchangeSettingsSecuritySettingsTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SafeArea(child: WebViewWidget(controller: _controller)),
+    );
+  }
+}

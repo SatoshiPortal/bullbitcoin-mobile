@@ -1,86 +1,80 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_preferred_jurisdiction_usecase.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_virtual_iban_datasource.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/add_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/check_sinpe_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_preferred_jurisdiction_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/interac_security_details_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_confidential_sepa_availability_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual_payee_activation_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
-import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/update_interac_security_details_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/recipients_repository_impl.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/sepa_virtual_payee_activation_cubit.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:dio/dio.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
   static void setup(GetIt locator) {
-    registerDrivenInterfaceAdapters(locator);
-    registerApplicationServicesAndUseCases(locator);
-    registerDrivingInterfaceAdapters(locator);
+    registerRepositories(locator);
+    registerUsecases(locator);
+    registerBlocs(locator);
   }
 
-  static void registerDrivenInterfaceAdapters(GetIt locator) {
-    // Only register the DelegatingRecipientsGateway here, since it
-    // encapsulates both the mainnet and testnet gateways, which shouldn't be
+  static void registerRepositories(GetIt locator) {
+    // Only register the RecipientsRepositoryImpl here, since it
+    // encapsulates both the mainnet and testnet repositories, which shouldn't be
     // used directly/independently for now.
-    locator.registerLazySingleton<RecipientsGatewayPort>(
-      () => DelegatingRecipientsGateway(
-        bullbitcoinApiClient: BullbitcoinApiRecipientsGateway(
-          authenticatedApiClient: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiClient',
+    locator.registerLazySingleton<RecipientsRepository>(
+      () => RecipientsRepositoryImpl(
+        bullbitcoinApiClient: BbxApiRecipientsRepository(
+          api: locator<BbxApiClient>(
+            instanceName: 'mainnetBbxApiClientWithoutTimeout',
           ),
         ),
-        bullBitcoinTestnetApiClient: BullbitcoinApiRecipientsGateway(
-          authenticatedApiClient: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
+        bullBitcoinTestnetApiClient: BbxApiRecipientsRepository(
+          api: locator<BbxApiClient>(
+            instanceName: 'testnetBbxApiClientWithoutTimeout',
           ),
         ),
       ),
     );
     locator.registerLazySingleton<VirtualIbanRepository>(
-      () => VirtualIbanRepositoryImpl(
-        mainnetDatasource: BullbitcoinApiVirtualIbanDatasource(
-          http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
+      () => BbxApiVirtualIbanRepository(
+        mainnet: locator<BbxApiClient>(
+          instanceName: 'mainnetBbxApiClientWithoutTimeout',
         ),
-        testnetDatasource: BullbitcoinApiVirtualIbanDatasource(
-          http: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
-          ),
+        testnet: locator<BbxApiClient>(
+          instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
       ),
     );
     locator.registerLazySingleton<SepaVirtualPayeeRepository>(
-      () => SepaVirtualPayeeRepositoryImpl(
-        mainnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
-          http: locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
+      () => BbxApiSepaVirtualPayeeRepository(
+        mainnet: locator<BbxApiClient>(
+          instanceName: 'mainnetBbxApiClientWithoutTimeout',
         ),
-        testnetDatasource: BullbitcoinApiSepaVirtualPayeeDatasource(
-          http: locator<Dio>(
-            instanceName: 'authenticatedBullBitcoinApiTestClient',
-          ),
+        testnet: locator<BbxApiClient>(
+          instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
       ),
     );
   }
 
-  static void registerApplicationServicesAndUseCases(GetIt locator) {
+  static void registerUsecases(GetIt locator) {
     // Register application services and use cases here
     // One boundary for the throwing core settings read, shared by the four
     // recipient use-cases.
@@ -89,7 +83,7 @@ class RecipientsLocator {
     );
     locator.registerFactory<AddRecipientUsecase>(
       () => AddRecipientUsecase(
-        recipientsGateway: locator<RecipientsGatewayPort>(),
+        recipientsRepository: locator<RecipientsRepository>(),
         sepaVirtualPayeeRepository: locator<SepaVirtualPayeeRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
@@ -97,14 +91,14 @@ class RecipientsLocator {
     );
     locator.registerFactory<GetRecipientsUsecase>(
       () => GetRecipientsUsecase(
-        recipientsGateway: locator<RecipientsGatewayPort>(),
+        recipientsRepository: locator<RecipientsRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),
     );
     locator.registerFactory<CheckSinpeUsecase>(
       () => CheckSinpeUsecase(
-        recipientsGateway: locator<RecipientsGatewayPort>(),
+        recipientsRepository: locator<RecipientsRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),
@@ -128,7 +122,7 @@ class RecipientsLocator {
     );
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(
-        recipientsGateway: locator<RecipientsGatewayPort>(),
+        recipientsRepository: locator<RecipientsRepository>(),
         getRecipientsEnvironmentUsecase:
             locator<GetRecipientsEnvironmentUsecase>(),
       ),
@@ -156,7 +150,7 @@ class RecipientsLocator {
     );
     locator.registerLazySingleton<InteracSecurityDetailsRepository>(
       () => InteracSecurityDetailsRepositoryImpl(
-        locator<RecipientsGatewayPort>(),
+        locator<RecipientsRepository>(),
         locator<SettingsRepository>(),
       ),
     );
@@ -168,7 +162,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerDrivingInterfaceAdapters(GetIt locator) {
+  static void registerBlocs(GetIt locator) {
     locator.registerFactoryParam<SepaVirtualPayeeActivationCubit, String, void>(
       (recipientId, _) => SepaVirtualPayeeActivationCubit(
         watchSepaVirtualPayeeActivationUsecase:

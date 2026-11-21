@@ -79,8 +79,6 @@ entries:
   - {catalogue: app, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeTestnetBasicAuthDescription, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeAccountTitle, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeAccountSettingsTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: sendSlowPaymentWarningDescription, store: apple, word: swap, euphemism: transfer}

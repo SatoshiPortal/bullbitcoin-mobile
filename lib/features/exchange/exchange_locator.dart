@@ -11,8 +11,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_acco
 import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_account_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_account_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
@@ -30,6 +29,7 @@ import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.da
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:get_it/get_it.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -105,15 +105,11 @@ class ExchangeLocator {
         settingsRepository: locator<SettingsRepository>(),
         access: locator<ExchangeAccessRepository>(),
         expire: locator<ExpireExchangeSessionUsecase>(),
-        mainnetAccountRepository: ExchangeAccountRepositoryImpl(
-          locator<BullbitcoinApiDatasource>(
-            instanceName: 'mainnetExchangeApiDatasource',
-          ),
+        mainnetAccountRepository: BbxApiAccountRepository(
+          locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
         ),
-        testnetAccountRepository: ExchangeAccountRepositoryImpl(
-          locator<BullbitcoinApiDatasource>(
-            instanceName: 'testnetExchangeApiDatasource',
-          ),
+        testnetAccountRepository: BbxApiAccountRepository(
+          locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
         ),
       ),
     );

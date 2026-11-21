@@ -67,6 +67,8 @@ graph TB
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
+    BBX_API[BBX API Package<br/>Exchange transport and wire models]
+    EXCHANGE_SETTINGS -->|order statistics| BBX_API
 
     %% Feature modules
     ARK[Ark Journeys<br/>Workspace Feature]
@@ -211,6 +213,9 @@ graph TB
     ONBOARDING --> WALLETS
     APP_STARTUP --> IMPORT_MNEMONIC
 
+    %% Legacy Core-to-feature dependencies, pending extraction
+    CORE --> DCA
+
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ADDRESS_MGMT -->|public revision stream| WALLETS
@@ -244,6 +249,9 @@ graph TB
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
     BUY --> TX_HISTORY
+    BUY --> FUNDING
+    BUY --> LABELS
+    BUY --> SETTINGS
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS -->|public revision stream| WALLETS
@@ -255,6 +263,8 @@ graph TB
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
     SETTINGS --> EXCHANGE_SETTINGS
+    SETTINGS --> PAY
+    SETTINGS --> TX_HISTORY
     EXCHANGE_SETTINGS --> EXCHANGE
     EXCHANGE --> AUTOBUY
     LIMIT_ORDERS --> EXCHANGE
@@ -280,6 +290,8 @@ graph TB
     LABELS --> CORE
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
+    PAY --> BTC_PRICE
+    PAY --> TX_HISTORY
     PIN_CODE --> CORE
     RECEIVE --> BULL_PAYJOIN
     RECEIVE -->|public targeted routine sync| WALLETS
@@ -350,6 +362,7 @@ graph TB
     WALLETS --> SETTINGS
     WALLETS -->|public orders + swap scheduling port| SWAPS
     WITHDRAWAL --> RECIPIENTS
+    WITHDRAWAL --> TX_HISTORY
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
     BITBOX[BitBox]
@@ -488,6 +501,8 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 ### Exchange-Related Features
 
+- **Exchange, Exchange Settings, Default Wallets, Funding, Limit Orders and Recipients** use the `packages/bbx_api` workspace member for exchange operations. The pure-Dart SDK owns the JSON-RPC transport, wire models and notification socket and has no workspace dependencies.
+
 - **Buy, Sell, Funding**: All depend on Exchange
 - **Recipients**: Depends on Exchange
 
@@ -552,7 +567,7 @@ The architecture test records source dependencies, including internal imports an
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `psbt_flow → wallet` | Network behavior: Transaction review retains the captured wallet/network when routing to signing and broadcast. | `lib/features/psbt_flow/show_psbt/show_psbt_screen.dart -> lib/features/wallet/domain/wallet.dart` |
 | `recipients → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/recipients/recipients_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
-| `recipients → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/recipients/application/usecases/get_recipients_environment_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
+| `recipients → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/recipients/domain/usecases/get_recipients_environment_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `replace_by_fee → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `replace_by_fee → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `sell → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/sell/sell_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |

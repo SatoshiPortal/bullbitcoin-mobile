@@ -40,6 +40,7 @@ workspace:
   - packages/boltz_stream
   - packages/bitbox_transport
   - packages/satoshifier
+  - packages/bbx_api
 
 dependencies:
   ark:
@@ -51,6 +52,7 @@ dependencies:
   secrets:
   bull_payjoin:
   bull_pricer:
+  bbx_api:
   novlang:
   btc_map:
   bull_ui:

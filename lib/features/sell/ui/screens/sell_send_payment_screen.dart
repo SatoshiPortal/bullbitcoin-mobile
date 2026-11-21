@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
-import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/fees/public/fee_options_modal.dart';
 import 'package:bb_mobile/features/fees/public/fee_selection_label.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -174,7 +174,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                         },
                       ),
                       if (recipient != null)
-                        SellPayoutDetailsV2(recipient: recipient)
+                        SellPayoutDetails(recipient: recipient)
                       else
                         BullDetailsTableItem(
                           label: context.loc.sellPayoutRecipient,

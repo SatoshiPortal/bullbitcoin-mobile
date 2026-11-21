@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
@@ -18,8 +18,9 @@ import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
 import 'package:bb_mobile/features/exchange/exchange_locator.dart'
     as feature_exchange;
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:flutter/widgets.dart';
+import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:dio/dio.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:primitives/primitives.dart';
@@ -232,7 +233,7 @@ void main() {
           client,
           () => repository.readActiveApiKey(isTestnet: true),
         );
-        final socket = ExchangeNotificationDatasource(
+        final socket = BbxApiNotificationDatasource(
           baseUrl: baseUrl,
           readApiKey: () => repository.readActiveApiKey(isTestnet: true),
         );
@@ -380,10 +381,8 @@ void main() {
               isTrue,
               reason: 'preprod history read must succeed',
             );
-            final recipients = await BullbitcoinApiRecipientsGateway(
-              authenticatedApiClient: locator<Dio>(
-                instanceName: 'authenticatedBullBitcoinApiTestClient',
-              ),
+            final recipients = await BbxApiRecipientsRepository(
+              api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
             ).listRecipients(isTestnet: true);
             expect(
               recipients is Ok,
