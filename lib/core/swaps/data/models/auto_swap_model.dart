@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

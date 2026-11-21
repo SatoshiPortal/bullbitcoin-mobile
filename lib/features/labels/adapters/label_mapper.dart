@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/storage.dart';
+import 'package:bb_mobile/core/storage/tables/labels_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';

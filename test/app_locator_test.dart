@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_fa
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/settings/data/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';

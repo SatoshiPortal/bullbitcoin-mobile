@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_settings_table.drift.dart';
 import 'package:drift/drift.dart';
 
 class ElectrumSettingsModel {

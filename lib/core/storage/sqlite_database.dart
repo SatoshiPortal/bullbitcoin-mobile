@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -32,7 +31,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
-part 'sqlite_database.g.dart';
+import 'sqlite_database.drift.dart';
 
 @DriftDatabase(
   tables: [
@@ -55,7 +54,7 @@ part 'sqlite_database.g.dart';
     OrderSwaps,
   ],
 )
-class SqliteDatabase extends _$SqliteDatabase {
+class SqliteDatabase extends $SqliteDatabase {
   static const name = 'bullbitcoin_sqlite';
 
   /// The file `driftDatabase(name: name)` opens in the foreground.
