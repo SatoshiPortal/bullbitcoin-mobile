@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
 import 'package:background_tasks/background_tasks.dart'
     show
         SharedPreferencesBackgroundSyncIntervalRepository,

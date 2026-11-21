@@ -15,6 +15,8 @@ import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
