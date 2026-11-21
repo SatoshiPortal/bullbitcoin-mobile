@@ -593,3 +593,7 @@ Mnemonic scanning preserves the wallet owner's typed unsupported-script refusal.
 ## Shared payment destination input
 
 Wallet publishes destination validation and input through `public/payment_destination.dart`. Buy, DCA, limit orders, default wallets and Swap consume this public surface. The adapter retains the complete scanned request, applies each consumer’s accepted payment types and displays the existing AddressViewer. The visual component remains pure UI in bull_ui. The legacy core scanner file, unreachable Send request-identifier route and duplicate Swap scanner are removed; consumers import the published Wallet capability directly.
+
+## Owner-scoped keychain capabilities
+
+`packages/secrets` owns the legacy OS keychain through closed access, exchange, Silent Payments and swap capabilities. Access compares the PIN internally; no stored PIN leaves the package. Consumers select a capability rather than a key or arbitrary prefix. The generic `lib/core/storage` secure key-value datasource and its custody exception are removed. Existing keys and Android/iOS plugin options are preserved, with no data migration. Silent Payments configuration remains in its existing keychain entries even though it is not secret.

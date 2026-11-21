@@ -5,22 +5,11 @@ import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interc
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-class _Storage extends Fake implements KeyValueStorageDatasource<String> {
-  final values = <String, String>{};
-  Exception? failure;
-
-  @override
-  Future<String?> getValue(String key) async {
-    final error = failure;
-    if (error != null) throw error;
-    return values[key];
-  }
-}
 
 class _Adapter implements HttpClientAdapter {
   final keys = <Object?>[];
@@ -52,8 +41,11 @@ void main() {
   test(
     'preserves client options and rereads rotation, environment and logout',
     () async {
-      final storage = _Storage();
-      final repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+      final storage = FakeSecureStoragePlatform().install();
+      final repository = ExchangeApiKeyRepositoryImpl(
+        secureStorage: Secrets(scratchDirectory: () async => '/tmp')
+            .exchangeKeychain,
+      );
       final adapter = _Adapter();
       final mainnet = Dio(
         BaseOptions(
@@ -75,13 +67,13 @@ void main() {
         testnet,
         () => repository.readActiveApiKey(isTestnet: true),
       );
-      storage.values['exchange_api_key'] = _record('main');
-      storage.values['exchange_api_key_testnet'] = _record('test');
+      storage.entries['exchange_api_key'] = _record('main');
+      storage.entries['exchange_api_key_testnet'] = _record('test');
       await mainnet.get<dynamic>('/probe');
       await testnet.get<dynamic>('/probe');
-      storage.values['exchange_api_key'] = _record('rotated');
+      storage.entries['exchange_api_key'] = _record('rotated');
       await mainnet.get<dynamic>('/probe');
-      storage.values.remove('exchange_api_key');
+      storage.entries.remove('exchange_api_key');
       await expectLater(
         mainnet.get<dynamic>('/probe'),
         throwsA(
@@ -102,8 +94,11 @@ void main() {
   test(
     'inactive, corrupt and inaccessible credentials never reach the adapter',
     () async {
-      final storage = _Storage();
-      final repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+      final storage = FakeSecureStoragePlatform().install();
+      final repository = ExchangeApiKeyRepositoryImpl(
+        secureStorage: Secrets(scratchDirectory: () async => '/tmp')
+            .exchangeKeychain,
+      );
       final adapter = _Adapter();
       final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
         ..httpClientAdapter = adapter;
@@ -112,7 +107,7 @@ void main() {
         dio,
         () => repository.readActiveApiKey(isTestnet: true),
       );
-      storage.values['exchange_api_key_testnet'] = _record(
+      storage.entries['exchange_api_key_testnet'] = _record(
         'inactive',
         active: false,
       );
@@ -126,7 +121,7 @@ void main() {
           ),
         ),
       );
-      storage.values['exchange_api_key_testnet'] =
+      storage.entries['exchange_api_key_testnet'] =
           '{"key":"SYNTHETIC-PRIVATE", broken';
       await expectLater(
         dio.get<dynamic>('/probe'),
@@ -144,7 +139,7 @@ void main() {
               ),
         ),
       );
-      storage.failure = Exception('SYNTHETIC-PRIVATE');
+      storage.scripted.add(Exception('SYNTHETIC-PRIVATE'));
       await expectLater(
         dio.get<dynamic>('/probe'),
         throwsA(

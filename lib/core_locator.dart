@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
     as settings;
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/features/swap/swaps_core_locator.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -39,7 +38,6 @@ class CoreLocator {
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
-    await StorageLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);

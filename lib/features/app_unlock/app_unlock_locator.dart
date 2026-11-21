@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/data/services/exponential_timeout_calculator.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
@@ -8,18 +7,13 @@ import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_wit
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:get_it/get_it.dart';
 
 class AppUnlockLocator {
   static void setup(GetIt locator) {
     // Repositories
     locator.registerLazySingleton<FailedUnlockAttemptsRepository>(
-      () => FailedUnlockAttemptsRepository(
-        locator<KeyValueStorageDatasource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-        ),
-      ),
+      () => FailedUnlockAttemptsRepository(locator<Secrets>().accessKeychain),
     );
 
     // Services
@@ -39,14 +33,14 @@ class AppUnlockLocator {
     );
     locator.registerFactory<CheckPinCodeExistsUsecase>(
       () => CheckPinCodeExistsUsecase(
-        pinCodeRepository: locator<PinCodeRepository>(),
+        accessKeychain: locator<Secrets>().accessKeychain,
       ),
     );
     locator.registerFactory<AttemptUnlockWithPinCodeUsecase>(
       () => AttemptUnlockWithPinCodeUsecase(
         failedUnlockAttemptsRepository:
             locator<FailedUnlockAttemptsRepository>(),
-        pinCodeRepository: locator<PinCodeRepository>(),
+        accessKeychain: locator<Secrets>().accessKeychain,
         timeoutCalculator: locator<TimeoutCalculator>(),
         unlockCooldown: locator<UnlockCooldown>(),
       ),

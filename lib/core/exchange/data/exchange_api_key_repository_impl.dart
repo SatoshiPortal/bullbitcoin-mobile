@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/exchange/data/mappers/exchange_api_key_mapper.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -11,15 +11,12 @@ import 'package:synchronized/synchronized.dart';
 
 /// Owns credential persistence and maps storage exceptions without logging their payload.
 class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
-  final KeyValueStorageDatasource<String> _secureStorage;
+  final ExchangeKeychain _secureStorage;
   final _mainnetMutationLock = Lock();
   final _testnetMutationLock = Lock();
   final _readFailureTypes = <bool, Type>{};
 
   ExchangeApiKeyRepositoryImpl({required this._secureStorage});
-
-  static String _storageKey(bool isTestnet) =>
-      isTestnet ? 'exchange_api_key_testnet' : 'exchange_api_key';
 
   Lock _mutationLock(bool isTestnet) =>
       isTestnet ? _testnetMutationLock : _mainnetMutationLock;
@@ -49,7 +46,12 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   }) async {
     final String? stored;
     try {
-      stored = await _secureStorage.getValue(_storageKey(isTestnet));
+      switch (await _secureStorage.read(isTestnet: isTestnet)) {
+        case Ok(:final value):
+          stored = value;
+        case Err():
+          return const Err(ExchangeApiKeyReadFailure());
+      }
     } on Exception {
       return const Err(ExchangeApiKeyReadFailure());
     }
@@ -76,10 +78,19 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     try {
       final apiKeyModel = ExchangeApiKeyMapper.toModel(apiKey);
 
-      await _secureStorage.saveValue(
-        key: _storageKey(isTestnet),
-        value: jsonEncode(apiKeyModel.toJson()),
+      final stored = await _secureStorage.write(
+        jsonEncode(apiKeyModel.toJson()),
+        isTestnet: isTestnet,
       );
+      if (stored case Err(:final failure)) {
+        log.warning(
+          'Exchange credential write failed: env=${isTestnet ? 'testnet' : 'mainnet'}',
+          error: failure.runtimeType,
+        );
+        return Err(
+          ExchangeApiKeySaveFailure('store failed: ${failure.runtimeType}'),
+        );
+      }
       log.fine(
         'Exchange credential stored: env=${isTestnet ? 'testnet' : 'mainnet'}',
       );
@@ -99,7 +110,16 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     required bool isTestnet,
   }) => _mutationLock(isTestnet).synchronized(() async {
     try {
-      await _secureStorage.deleteValue(_storageKey(isTestnet));
+      final deleted = await _secureStorage.delete(isTestnet: isTestnet);
+      if (deleted case Err(:final failure)) {
+        log.warning(
+          'Exchange credential deletion failed: env=${isTestnet ? 'testnet' : 'mainnet'}',
+          error: failure.runtimeType,
+        );
+        return Err(
+          ExchangeApiKeyDeleteFailure('delete failed: ${failure.runtimeType}'),
+        );
+      }
       log.fine(
         'Exchange credential removed: env=${isTestnet ? 'testnet' : 'mainnet'}',
       );

@@ -3,17 +3,17 @@ import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_at
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/unlock_cooldown.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/pin_code/domain/entities/unlock_attempt.dart';
 
 class AttemptUnlockWithPinCodeUsecase {
-  final PinCodeRepository _pinCodeRepository;
+  final AccessKeychain _accessKeychain;
   final FailedUnlockAttemptsRepository _failedUnlockAttemptsRepository;
   final TimeoutCalculator _timeoutCalculator;
   final UnlockCooldown _unlockCooldown;
 
   AttemptUnlockWithPinCodeUsecase({
-    required this._pinCodeRepository,
+    required this._accessKeychain,
     required this._failedUnlockAttemptsRepository,
     required this._timeoutCalculator,
     required this._unlockCooldown,
@@ -58,9 +58,13 @@ class AttemptUnlockWithPinCodeUsecase {
     }
 
     final bool isCorrectPinCode;
-    switch (await _pinCodeRepository.verifyPinCode(pinCode)) {
-      case Ok(:final value):
+    switch (await _accessKeychain.verifyPin(pinCode)) {
+      case Ok(value: null):
+        return const Err(AppUnlockPinVerifyFailure());
+      case Ok(value: final bool value):
         isCorrectPinCode = value;
+      case Err(failure: KeystoreLockedFailure()):
+        return const Err(AppUnlockPinVerifyFailure('Keychain locked'));
       case Err(:final failure):
         return Err(AppUnlockPinVerifyFailure(failure.logMessage));
     }
