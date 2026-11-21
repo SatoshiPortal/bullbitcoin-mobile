@@ -1,0 +1,124 @@
+import '../../../network_l10n.dart';
+import 'electrum_servers_error_card.dart';
+import 'server_list_item.dart';
+import '../../presentation/electrum_settings_bloc.dart';
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullThemeX, BullConfirmDialog, BullInfoCard, Gap, BullTypographyX;
+
+class DraggableServerList extends StatelessWidget {
+  const DraggableServerList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final defaultServers = context.select(
+      (ElectrumSettingsBloc bloc) =>
+          bloc.state.getServersSortedByPriority(isCustom: false),
+    );
+    final customServers = context.select(
+      (ElectrumSettingsBloc bloc) =>
+          bloc.state.getServersSortedByPriority(isCustom: true),
+    );
+    final electrumServersError = context.select(
+      (ElectrumSettingsBloc bloc) => bloc.state.electrumServersError,
+    );
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Text(
+          context.loc.electrumDefaultServers,
+          style: context.bullType.label.copyWith(
+            color: context.bull.onSurface.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (customServers.isNotEmpty) ...[
+          BullInfoCard(
+            description: context.loc.electrumDefaultServersInfo,
+            tagColor: context.bull.tertiary,
+            bgColor: context.bull.tertiaryContainer,
+          ),
+          const SizedBox(height: 8),
+        ],
+        ...defaultServers.map(
+          (server) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: ServerListItem(
+              server: server,
+              disabled: customServers.isNotEmpty,
+            ),
+          ),
+        ),
+        if (customServers.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            context.loc.electrumCustomServers,
+            style: context.bullType.label.copyWith(
+              color: context.bull.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            context.loc.electrumDragToReorder,
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.bull.onSurface.withValues(alpha: 0.5)),
+          ),
+          const SizedBox(height: 8),
+          ReorderableListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            // TODO: migrate to onReorderItem (newIndex is pre-adjusted for the
+            // removed item) and drop the index adjustment in ElectrumSettingsBloc.
+            // ignore: deprecated_member_use
+            onReorder: (oldIndex, newIndex) {
+              context.read<ElectrumSettingsBloc>().add(
+                ElectrumCustomServersPrioritized(
+                  movedFromListIndex: oldIndex,
+                  movedToListIndex: newIndex,
+                ),
+              );
+            },
+            children: [
+              for (final server in customServers)
+                Padding(
+                  key: ValueKey(server.url),
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: ServerListItem(
+                    server: server,
+                    isDraggable: true,
+                    onDelete: () async {
+                      final isConfirmed = await BullConfirmDialog.show(
+                        context,
+                        title: context.loc.electrumDeleteServerTitle,
+                        message: [
+                          if (customServers.length == 1)
+                            context.loc.electrumDeletePrivacyNotice,
+                          context.loc.electrumDeleteConfirmation(server.url),
+                        ].join('\n\n'),
+                        confirmLabel: context.loc.electrumDelete,
+                        cancelLabel: context.loc.electrumCancel,
+                        destructive: true,
+                      );
+                      if (isConfirmed && context.mounted) {
+                        context.read<ElectrumSettingsBloc>().add(
+                          ElectrumCustomServerDeleted(server: server),
+                        );
+                      }
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ],
+        const Gap(16),
+        if (electrumServersError != null) ...[
+          ElectrumServersErrorCard(failure: electrumServersError),
+          const Gap(16),
+        ],
+      ],
+    );
+  }
+}

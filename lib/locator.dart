@@ -1,9 +1,14 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/fees/fees_locator.dart';
+import 'package:network/network.dart'
+    show MempoolSettingsLocator, StatusCheckLocator;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:electrum/electrum.dart'
     show ElectrumFailure, RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/status_check/status_core_locator.dart';
+import 'package:bb_mobile/features/settings/public/network_bindings.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -32,11 +37,9 @@ import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
-import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
-import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
@@ -50,12 +53,10 @@ import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
-import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
-import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
@@ -157,7 +158,6 @@ class AppLocator {
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
     // Lazy registrations only; storage is prepared before network repositories.
-    ElectrumSettingsLocator.setup(locator);
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
@@ -181,7 +181,6 @@ class AppLocator {
 
     // Register feature-specific dependencies
     MempoolSettingsLocator.setup(locator);
-    TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
@@ -240,8 +239,18 @@ class AppLocator {
     SellLocator.setup(locator);
     WithdrawLocator.setup(locator);
     PayLocator.setup(locator);
-    StatusLocator.setup(locator);
-    StatusCheckLocator.setup(locator);
+    SettingsNetworkBindings.setup(locator);
+    StatusCheckLocator.setup(
+      locator,
+      readDefaultNetwork: () =>
+          locator<GetDefaultWalletNetworkUsecase>().execute(),
+      checkBitcoinFees: (network) =>
+          FeesLocator.checkBitcoinFees(locator, network),
+      isTorRequired: () => locator<WalletRepository>().isTorRequired(),
+      readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
+        locator<SettingsRepository>(),
+      ),
+    );
 
     FundExchangeLocator.setup(locator);
     AddressViewLocator.setup(locator);

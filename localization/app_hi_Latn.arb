@@ -396,21 +396,9 @@
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
   },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
-  },
   "mempoolSettingsDescription": "Alag-alag networks ke liye custom mempool servers set karo. Har network apna server block explorer aur fee estimation ke liye use kar sakta hai.",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
-  },
-  "mempoolSettingsDefaultServer": "Default Server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
-  "mempoolSettingsCustomServer": "Custom Server",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "@mempoolNetworkBitcoinMainnet": {
@@ -428,118 +416,21 @@
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
   },
-  "mempoolCustomServerAdd": "Custom Server Jodo",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
-  },
   "mempoolCustomServerDelete": "Delete Karo",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "mempoolCustomServerDeleteTitle": "Custom Server Delete Karen?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
-  "mempoolCustomServerDeleteMessage": "Kya aap sach mein is custom mempool server ko delete karna chahte hain? Iske badle default server use hoga.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "mempoolCustomServerUrl": "Server URL",
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
-  "mempoolCustomServerUrlEmpty": "Kripaya ek server URL darj karo",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
-  },
   "mempoolCustomServerSaveSuccess": "Custom server safaltapurvak save ho gaya",
   "@mempoolCustomServerSaveSuccess": {
     "description": "Success message when custom server is saved"
   },
-  "mempoolCustomServerBottomSheetDescription": "Apne custom mempool server ka URL darj karo. Save karne se pehle server verify kiya jaayega.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
-  },
-  "mempoolServerStatusOnline": "Online",
-  "@mempoolServerStatusOnline": {
-    "description": "Status label when mempool server is online"
-  },
-  "mempoolServerStatusOffline": "Offline",
-  "@mempoolServerStatusOffline": {
-    "description": "Status label when mempool server is offline"
-  },
-  "mempoolServerStatusChecking": "Check ho raha hai...",
-  "@mempoolServerStatusChecking": {
-    "description": "Status label when checking mempool server status"
-  },
   "mempoolServerStatusUnknown": "Pata Nahi",
   "@mempoolServerStatusUnknown": {
     "description": "Status label when mempool server status is unknown"
-  },
-  "mempoolCustomServerSaveFailed": "Server save karna fail ho gaya",
-  "@mempoolCustomServerSaveFailed": {
-    "description": "Error message when saving custom mempool server fails"
-  },
-  "mempoolCustomServerInfoDescription": "Mempool servers fee estimation aur transaction details dekhte waqt block explorer kholne ke liye upyog hote hain.",
-  "@mempoolCustomServerInfoDescription": {
-    "description": "Info text explaining what mempool servers are used for"
-  },
-  "mempoolCustomServerUseSsl": "SSL Upyog Karo",
-  "@mempoolCustomServerUseSsl": {
-    "description": "Label for SSL toggle in custom server settings"
-  },
-  "mempoolCustomServerSslAutoDetected": "(Auto-detect hua)",
-  "@mempoolCustomServerSslAutoDetected": {
-    "description": "Label shown when SSL setting was auto-detected"
-  },
-  "mempoolCustomServerSslHelpText": "Local (.local, private IPs) aur Tor (.onion) servers ke liye, SSL aam taur par band hota hai. Public IPs aur domains ke liye SSL chahiye.",
-  "@mempoolCustomServerSslHelpText": {
-    "description": "Help text explaining when to use SSL for mempool servers"
-  },
-  "mempoolErrorSameAsDefault": "Yeh URL default server jaisa hi hai. Kripaya alag URL use karo.",
-  "@mempoolErrorSameAsDefault": {
-    "description": "Error when user tries to set a custom server URL that matches the default"
-  },
-  "mempoolErrorConnectionTimeout": "Connection ka waqt khatam ho gaya. Server dheema ya pahunch se bahar ho sakta hai.",
-  "@mempoolErrorConnectionTimeout": {
-    "description": "Error when connection to mempool server times out"
-  },
-  "mempoolErrorHostNotFound": "Yeh server nahi mil raha. Kripaya URL check karo aur phir try karo.",
-  "@mempoolErrorHostNotFound": {
-    "description": "Error when mempool server hostname cannot be resolved"
-  },
-  "mempoolErrorConnectionFailed": "Server se connect nahi ho pa raha. Apna network connection check karo aur phir try karo.",
-  "@mempoolErrorConnectionFailed": {
-    "description": "Error when connection to mempool server fails"
-  },
-  "mempoolErrorNotMempoolServer": "Yeh URL mempool server lagta nahi. Kripaya address verify karo.",
-  "@mempoolErrorNotMempoolServer": {
-    "description": "Error when URL is not a valid mempool server"
-  },
-  "mempoolErrorServerUnavailable": "Server abhi available nahi hai. Baad mein phir try karo.",
-  "@mempoolErrorServerUnavailable": {
-    "description": "Error when mempool server is unavailable (502/503)"
-  },
-  "mempoolErrorServerError": "Server mein error aayi. Baad mein phir try karo.",
-  "@mempoolErrorServerError": {
-    "description": "Error when mempool server returns 500 error"
-  },
-  "mempoolErrorInvalidResponse": "Server ne galat response diya.",
-  "mempoolErrorInvalidUrl": "Amanya server URL. Ek manya domain ya IP pata darj karein.",
-  "@mempoolErrorInvalidResponse": {
-    "description": "Error when mempool server returns an invalid response"
-  },
-  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya",
-  "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails"
-  },
-  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya",
-  "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails"
-  },
-  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya",
-  "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails"
   },
   "walletSettingsImportWalletTitle": "Wallet Import Karo",
   "@walletSettingsImportWalletTitle": {
@@ -7491,42 +7382,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "electrumTitle": "Electrum Server Settings",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
-  "electrumNetworkLiquid": "Liquid",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
-  "electrumAdvancedOptions": "Advanced Options",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
-  "electrumAddCustomServer": "Custom Server Add Karo",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
-  "electrumCloseTooltip": "Band karo",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
@@ -7534,245 +7389,6 @@
   "electrumTestnet": "Testnet",
   "@electrumTestnet": {
     "description": "Testnet environment label"
-  },
-  "electrumEmptyFieldError": "Ye field khali nahi reh sakta",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
-  "electrumLiquidSslInfo": "Koi protocol specify nahi karna chahiye, SSL automatically use hoga.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
-  "electrumAddServer": "Server Add Karo",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
-  "electrumEnableSsl": "SSL Enable Karo",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
-  "electrumProtocolError": "Protocol mat include karo (ssl:// ya tcp://).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
-  },
-  "electrumFormatError": "host:port format use karo (jaise, example.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
-  },
-  "electrumBitcoinServerInfo": "Server address is format mein enter karo: host:port (jaise, example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
-  "electrumStopGap": "Stop Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
-  "electrumTimeout": "Timeout (seconds)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
-  "electrumRetryCount": "Retry Count",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
-  "electrumValidateDomain": "Domain Validate Karo",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
-  },
-  "electrumStopGapEmptyError": "Stop Gap khali nahi reh sakta",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
-  },
-  "electrumInvalidNumberError": "Valid number enter karo",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
-  "electrumStopGapNegativeError": "Stop Gap negative nahi ho sakta",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
-  },
-  "electrumStopGapTooHighError": "Stop Gap bahut zyada lag raha hai. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "Timeout khali nahi reh sakta",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumTimeoutPositiveError": "Timeout positive hona chahiye",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "electrumTimeoutTooHighError": "Timeout bahut zyada lag raha hai. (Max. {maxTimeout} seconds)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumRetryCountEmptyError": "Retry Count khali nahi reh sakta",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "electrumRetryCountNegativeError": "Retry Count negative nahi ho sakta",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
-  "electrumTimeoutWarning": "Aapka timeout ({timeoutValue} seconds) is Stop Gap ke liye recommended value ({recommended} seconds) se kam hai.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidStopGapError": "Stop Gap ki value galat hai: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidTimeoutError": "Timeout ki value galat hai: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidRetryError": "Retry Count ki value galat hai: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSaveFailedError": "Advanced options save karne mein fail",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "electrumUnknownError": "Koi error aaya",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
-  },
-  "electrumReset": "Reset",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
-  "electrumConfirm": "Confirm",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
-  "electrumDeleteServerTitle": "Custom Server Delete Karo",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
-  },
-  "electrumDeletePrivacyNotice": "Privacy Notice:\n\nApna node use karna ensure karta hai ki koi third party aapke IP address ko aapke transactions se link nahi kar sakta. Apna aakhiri custom server delete karne par, aap BullBitcoin server se connect ho jayenge.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
-  "electrumDeleteConfirmation": "Kya aap sach mein is server ko delete karna chahte hain?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumCancel": "Cancel",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
-  "electrumDelete": "Delete",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
-  "electrumDefaultServers": "Default Servers",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
-  "electrumDefaultServersInfo": "Aapki privacy protect karne ke liye, default servers tab use nahi hote jab custom servers configure hain.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
-  "electrumCustomServers": "Custom Servers",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
-  },
-  "electrumDragToReorder": "(Priority badalne ke liye long press karke drag karo)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "electrumLoadFailedError": "Servers load karne mein fail",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "electrumSavePriorityFailedError": "Server priority save karne mein fail",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
-  "electrumAddFailedError": "Custom server add karne mein fail",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
-  "electrumDeleteFailedError": "Custom server delete karne mein fail",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
-  "electrumServerAlreadyExists": "Ye server pehle se exist karta hai",
-  "electrumServerUnreachable": "Server tak nahi pahuncha ja saka. Pata jaanchein aur punah prayas karein.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
-  "electrumPrivacyNoticeTitle": "Privacy Notice",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
-  "electrumPrivacyNoticeContent1": "Privacy Notice: Apna node use karna ensure karta hai ki koi third party aapke IP address ko aapke transactions se link nahi kar sakta.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeContent2": "Lekin, agar aap apne Transaction ID ya Recipient Details page par click karke mempool se transactions dekhte hain, toh ye information BullBitcoin ko pata chalegi.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeCancel": "Cancel",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
-  },
-  "electrumPrivacyNoticeSave": "Save",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
-  },
-  "electrumServerNotUsed": "Use Nahi Ho Raha",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "addressViewNoAddressesFound": "Koi address nahi mila",
   "@addressViewNoAddressesFound": {
@@ -8214,31 +7830,6 @@
   "@save": {
     "description": "Generic save button label"
   },
-  "statusCheckTitle": "Service Status",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "statusCheckLastChecked": "Aakhiri baar check hua: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
-  "statusCheckUnknown": "Unknown",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "torSettingsTitle": "Tor Settings",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -8246,75 +7837,6 @@
   "torSettingsEnableProxy": "Tor Proxy Enable Karo",
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "torSettingsPortNumber": "Port Number",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "torSettingsPortValidationEmpty": "Kripya ek port number enter karo",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
-  "torSettingsPortValidationInvalid": "Kripya ek valid number enter karo",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
-  },
-  "torSettingsPortValidationRange": "Port 1 aur 65535 ke beech hona chahiye",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "torSettingsSaveButton": "Save",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
-  "torSettingsConnectionStatus": "Connection Status",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
-  "torSettingsStatusConnected": "Taiyaar",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
-  "torSettingsStatusConnecting": "Connect ho raha hai...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
-  "torSettingsStatusDisconnected": "Disconnected",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
-  "torSettingsStatusUnknown": "Status Unknown",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
-  "torSettingsDescConnected": "Tor proxy chal raha hai aur ready hai",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
-  },
-  "torSettingsDescConnecting": "Tor connection establish ho raha hai",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
-  "torSettingsDescDisconnected": "Tor proxy nahi chal raha",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "withdrawSuccessTitle": "Withdrawal Shuru Hua",
   "@withdrawSuccessTitle": {
@@ -9417,10 +8939,6 @@
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
   },
-  "electrumStopGapHighWarning": "High stop gap values sync time ko kaafi badha deti hain. Sync poora hone tak app ko foreground mein khula rakhein — app ko background mein daalne se yeh ruk sakta hai.",
-  "@electrumStopGapHighWarning": {
-    "description": "Warning shown when the user enters a Stop Gap larger than 1000"
-  },
   "errorReportingProgramDescriptionP1": "Hamare error reporting program mein contribute karke Bull ko behtar banane mein hamari madad karein.",
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
@@ -10158,19 +9676,6 @@
   "coreSwapsStatusUnknown": "Agyaat",
   "sendSwapExpiredTitle": "Order Khatam Ho Gaya",
   "sendSwapExpiredMessage": "Koi bhi rashi bheje jaane se pehle hi yeh order khatam ho gaya. Aapke wallet se kuch bhi nahi bheja gaya.",
-  "torSettingsStatusCensored": "Connection filtered lag raha hai",
-  "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
-  "torSettingsBootstrapProgress": "Connect ho raha hai… {percent}%",
-  "torSettingsEmbeddedTitle": "Embedded Tor",
-  "torSettingsEmbeddedDescription": "Embedded Tor ka istemal RecoverBull aur Bitcoin Electrum ke .onion servers karte hain. App ka baaki traffic seedha rehta hai.",
-  "torSettingsTransportMode": "Connection ka tarika",
-  "torSettingsModeAutomatic": "Automatic",
-  "torSettingsModeDirect": "Direct",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Pehle seedha Tor connection try karta hai, aur agar network Tor ko block karta lage to Snowflake istemal karta hai.",
-  "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
-  "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
-  "torSettingsActiveTransport": "Active transport: {transport}",
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "settingsScreenPrivacyDisabledMessage": "Ab sanvedansheel screen par screenshot lene ki anumati hai",
   "settingsSearchHint": "Settings khojein",
@@ -10205,8 +9710,6 @@
   "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
   "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
   "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
-  "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
-  "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain",
   "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
@@ -10416,11 +9919,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai.",
   "settingsDarkModeTitle": "Dark mode",
   "settingsSourceCodeTitle": "Source code",
-  "torSettingsStatusNoInternetOrBlocked": "Internet nahin hai ya network censored hai",
-  "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai.",
   "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka.",
-  "serverEncrypted": "Encrypted",
-  "serverUnencrypted": "Encrypted nahi",
   "backgroundTasksTitle": "Background kaam",
   "blockedInSystemSettings": "System settings mein blocked",
   "notificationsBlockedMessage": "Notifications system settings mein blocked hain.",

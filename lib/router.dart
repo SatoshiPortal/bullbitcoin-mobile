@@ -22,9 +22,8 @@ import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:network/network.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
@@ -45,9 +44,7 @@ import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -278,7 +275,7 @@ class AppRouter {
         },
         onTested: _onBackupTestSucceeded,
         onOpenTorSettings: (context) =>
-            context.pushNamed(const TorSettingsFacade().settingsRouteName),
+            context.pushNamed(TorSettingsRoute.torSettings.name),
       ),
       LabelsRouter.route(() => locator<LabelsFacade>()),
       StatusCheckRouter.route,

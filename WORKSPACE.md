@@ -52,6 +52,8 @@ graph TD
   style labels stroke:#a4c2d7
   mempool["mempool"]
   style mempool stroke:#26e46e
+  network["network"]
+  style network stroke:#56b0f0
   notifications["notifications"]
   style notifications stroke:#8f25de
   novlang["novlang"]
@@ -132,6 +134,15 @@ graph TD
   mempool --> bull_logger
   mempool --> bull_tor
   mempool --> primitives
+  network --> bull_logger
+  network --> bull_payjoin
+  network --> bull_pricer
+  network --> bull_recoverbull
+  network --> bull_tor
+  network --> bull_ui
+  network --> electrum
+  network --> mempool
+  network --> primitives
   notifications --> bull_logger
   notifications --> primitives
   rust_bindings --> onion
@@ -193,6 +204,7 @@ graph TD
     bull_quick_actions
     bull_recoverbull
     label_editor
+    network
     signers
   end
 ```

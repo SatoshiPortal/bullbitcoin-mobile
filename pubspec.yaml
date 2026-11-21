@@ -10,6 +10,7 @@ environment:
 workspace:
   - packages/labels
   - features/label_editor
+  - features/network
   - features/signers
   - features/ark
   - packages/ark
@@ -50,6 +51,7 @@ workspace:
 dependencies:
   labels:
   label_editor:
+  network:
   signers:
   ark:
   bull_ark:
