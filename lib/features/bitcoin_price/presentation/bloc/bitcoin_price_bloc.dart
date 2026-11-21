@@ -1,14 +1,12 @@
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_price_currency_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_bitcoin_price_amount_display_usecase.dart';
 
 import 'dart:async';
 
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
-import 'package:preferences/preferences.dart'
-    show
-        AmountDisplayPreferences,
-        GetSettingsUsecase,
-        WatchCurrencyChangesUsecase;
+import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
@@ -25,9 +23,9 @@ part 'bitcoin_price_state.dart';
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
     WatchBitcoinPriceAmountDisplayUsecase? watchAmountDisplayUsecase,
-    required this._getSettingsUsecase,
+    required this._readPriceCurrencyUsecase,
     required this._getBitcoinPriceUsecase,
-    required this._watchCurrencyChangesUsecase,
+    required this._watchPriceCurrencyUsecase,
   }) : super(const BitcoinPriceState()) {
     on<_BitcoinPriceAmountDisplayChanged>((event, emit) {
       emit(state.copyWith(amountDisplay: event.preferences));
@@ -42,19 +40,19 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
 
     // Watch for currency changes and emit a new state when the currency changes
-    _currencyChangeSubscription = _watchCurrencyChangesUsecase.execute().listen(
-      (currencyCode) {
-        log.info('Currency changed to $currencyCode');
-        add(BitcoinPriceCurrencyChanged(currencyCode: currencyCode));
-      },
-    );
+    _currencyChangeSubscription = _watchPriceCurrencyUsecase.execute().listen((
+      currencyCode,
+    ) {
+      log.info('Currency changed to $currencyCode');
+      add(BitcoinPriceCurrencyChanged(currencyCode: currencyCode));
+    });
   }
 
   late final StreamSubscription<AmountDisplayPreferences?>?
   _amountDisplaySubscription;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final ReadPriceCurrencyUsecase _readPriceCurrencyUsecase;
   final GetBitcoinPriceUsecase _getBitcoinPriceUsecase;
-  final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
+  final WatchPriceCurrencyUsecase _watchPriceCurrencyUsecase;
   late final StreamSubscription<String> _currencyChangeSubscription;
 
   /// The currency whose price is being fetched by a currency change, so a
@@ -87,8 +85,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     final String currency;
     final List<String> availableCurrencies;
     try {
-      final settings = await _getSettingsUsecase.execute();
-      currency = event.currency ?? settings.currencyCode;
+      final savedCurrency = await _readPriceCurrencyUsecase.execute();
+      currency = event.currency ?? savedCurrency;
       availableCurrencies = SupportedCurrency.codes;
     } catch (e) {
       log.warning('BitcoinPriceStarted failed', error: e);

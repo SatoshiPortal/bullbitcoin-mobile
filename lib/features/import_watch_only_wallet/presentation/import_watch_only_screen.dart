@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -32,7 +34,9 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             locator<ImportWatchOnlyDescriptorUsecase>(),
         importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
         parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
-        settingsRepository: locator(),
+        readNetworkUsecase: ReadWatchOnlyNetworkUsecase(
+          locator<ActiveEnvironmentReader>(),
+        ),
       )..init(),
       child: Scaffold(
         appBar: AppBar(

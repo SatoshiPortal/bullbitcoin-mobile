@@ -1,6 +1,8 @@
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_price_currency_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
+
 import 'dart:async';
 
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
@@ -20,10 +22,11 @@ class _MockGetBitcoinPriceUsecase extends Mock
 class _MockGetPriceHistoryUsecase extends Mock
     implements GetPriceHistoryUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockReadPriceCurrencyUsecase extends Mock
+    implements ReadPriceCurrencyUsecase {}
 
-class _MockWatchCurrencyChangesUsecase extends Mock
-    implements WatchCurrencyChangesUsecase {}
+class _MockWatchPriceCurrencyUsecase extends Mock
+    implements WatchPriceCurrencyUsecase {}
 
 PricePoint _point(double price, int day) => PricePoint(
   currency: SupportedCurrency.cad,
@@ -37,19 +40,19 @@ void main() {
     List<PricePoint> prices, {
     int? selectedDataPointIndex,
   }) async {
-    final watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
+    final watchCurrencyChanges = _MockWatchPriceCurrencyUsecase();
     when(() => watchCurrencyChanges.execute())
         .thenAnswer((_) => const Stream<String>.empty());
 
     final bitcoinPriceBloc = BitcoinPriceBloc(
-      getSettingsUsecase: _MockGetSettingsUsecase(),
+      readPriceCurrencyUsecase: _MockReadPriceCurrencyUsecase(),
       getBitcoinPriceUsecase: _MockGetBitcoinPriceUsecase(),
-      watchCurrencyChangesUsecase: watchCurrencyChanges,
+      watchPriceCurrencyUsecase: watchCurrencyChanges,
     );
     final priceChartCubit =
         PriceChartCubit(
           getPriceHistoryUsecase: _MockGetPriceHistoryUsecase(),
-          getSettingsUsecase: _MockGetSettingsUsecase(),
+          readPriceCurrencyUsecase: _MockReadPriceCurrencyUsecase(),
         )..emit(
           PriceChartState(
             prices: prices,

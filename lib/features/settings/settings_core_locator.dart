@@ -54,10 +54,5 @@ class SettingsLocator {
         settingsRepository: locator<domain.SettingsRepository>(),
       ),
     );
-    locator.registerFactory<domain.WatchCurrencyChangesUsecase>(
-      () => domain.WatchCurrencyChangesUsecase(
-        settingsRepository: locator<domain.SettingsRepository>(),
-      ),
-    );
   }
 }

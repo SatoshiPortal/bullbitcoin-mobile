@@ -7,26 +7,20 @@ import 'package:primitives/primitives.dart';
 
 import '../../../../fake_index_price_reader.dart';
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
-
-SettingsEntity _settings({Environment environment = Environment.mainnet}) =>
-    SettingsEntity(
-      environment: environment,
-      bitcoinUnit: BitcoinUnit.sats,
-      currencyCode: 'USD',
-    );
+class _MockActiveEnvironment extends Mock implements ActiveEnvironmentReader {}
 
 void main() {
-  late _MockGetSettings getSettings;
+  late _MockActiveEnvironment environment;
   late FakeIndexPriceReader getIndexPrice;
   late GetBitcoinPriceUsecase usecase;
 
   setUp(() {
-    getSettings = _MockGetSettings();
-    when(getSettings.execute).thenAnswer((_) async => _settings());
+    environment = _MockActiveEnvironment();
+    when(environment.readActiveEnvironment)
+        .thenAnswer((_) async => Environment.mainnet);
     getIndexPrice = FakeIndexPriceReader(fiatAmount: 114214.20);
     usecase = GetBitcoinPriceUsecase(
-      getSettingsUsecase: getSettings,
+      environment: environment,
       getIndexPrice: getIndexPrice.call,
     );
   });
@@ -42,8 +36,8 @@ void main() {
   });
 
   test('asks the testnet price in the testnet environment', () async {
-    when(getSettings.execute)
-        .thenAnswer((_) async => _settings(environment: Environment.testnet));
+    when(environment.readActiveEnvironment)
+        .thenAnswer((_) async => Environment.testnet);
 
     expect(
       await usecase.execute(currencyCode: 'CAD'),
@@ -75,7 +69,8 @@ void main() {
   });
 
   test('a failed settings read is sanitized', () async {
-    when(getSettings.execute).thenThrow(Exception('storage locked'));
+    when(environment.readActiveEnvironment)
+        .thenThrow(Exception('storage locked'));
 
     final result = await usecase.execute(currencyCode: 'CAD');
 

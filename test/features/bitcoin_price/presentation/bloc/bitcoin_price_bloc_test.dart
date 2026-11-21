@@ -1,7 +1,9 @@
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_price_currency_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bull_pricer/bull_pricer.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -9,13 +11,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockReadPriceCurrencyUsecase extends Mock
+    implements ReadPriceCurrencyUsecase {}
 
 class _MockGetBitcoinPriceUsecase extends Mock
     implements GetBitcoinPriceUsecase {}
 
-class _MockWatchCurrencyChangesUsecase extends Mock
-    implements WatchCurrencyChangesUsecase {}
+class _MockWatchPriceCurrencyUsecase extends Mock
+    implements WatchPriceCurrencyUsecase {}
 
 /// The price the use case gives: [price] when it lands with one, no rate when
 /// it lands with none, and an unexpected failure when it fails.
@@ -33,14 +36,14 @@ Future<Result<double, PricerFailure>> _result(Future<double?> price) async {
 void main() {
   final currencies = SupportedCurrency.codes;
 
-  late _MockGetSettingsUsecase getSettings;
+  late _MockReadPriceCurrencyUsecase getSettings;
   late _MockGetBitcoinPriceUsecase getBitcoinPrice;
-  late _MockWatchCurrencyChangesUsecase watchCurrencyChanges;
+  late _MockWatchPriceCurrencyUsecase watchCurrencyChanges;
 
   BitcoinPriceBloc buildBloc() => BitcoinPriceBloc(
-    getSettingsUsecase: getSettings,
+    readPriceCurrencyUsecase: getSettings,
     getBitcoinPriceUsecase: getBitcoinPrice,
-    watchCurrencyChangesUsecase: watchCurrencyChanges,
+    watchPriceCurrencyUsecase: watchCurrencyChanges,
   );
 
   void stubPrice(Future<double?> Function() answer, {String currency = 'USD'}) {
@@ -49,19 +52,13 @@ void main() {
   }
 
   setUp(() {
-    getSettings = _MockGetSettingsUsecase();
+    getSettings = _MockReadPriceCurrencyUsecase();
     getBitcoinPrice = _MockGetBitcoinPriceUsecase();
-    watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
+    watchCurrencyChanges = _MockWatchPriceCurrencyUsecase();
 
     when(() => watchCurrencyChanges.execute())
         .thenAnswer((_) => const Stream.empty());
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
-      ),
-    );
+    when(() => getSettings.execute()).thenAnswer((_) async => 'USD');
   });
 
   group('offline start', () {

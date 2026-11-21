@@ -1,8 +1,10 @@
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_price_currency_usecase.dart';
 import 'package:preferences/preferences.dart'
     show
+        ActiveEnvironmentReader,
         AmountDisplayPreferencesReader,
-        GetSettingsUsecase,
-        WatchCurrencyChangesUsecase;
+        RuntimeDisplayPreferencesReader;
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_bitcoin_price_amount_display_usecase.dart';
 
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
@@ -21,7 +23,7 @@ class BitcoinPriceLocator {
     // Use cases
     locator.registerFactory<GetBitcoinPriceUsecase>(
       () => GetBitcoinPriceUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        environment: locator<ActiveEnvironmentReader>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
@@ -36,9 +38,13 @@ class BitcoinPriceLocator {
         watchAmountDisplayUsecase: WatchBitcoinPriceAmountDisplayUsecase(
           locator<AmountDisplayPreferencesReader>(),
         ),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        readPriceCurrencyUsecase: ReadPriceCurrencyUsecase(
+          locator<RuntimeDisplayPreferencesReader>(),
+        ),
         getBitcoinPriceUsecase: locator<GetBitcoinPriceUsecase>(),
-        watchCurrencyChangesUsecase: locator<WatchCurrencyChangesUsecase>(),
+        watchPriceCurrencyUsecase: WatchPriceCurrencyUsecase(
+          locator<RuntimeDisplayPreferencesReader>(),
+        ),
       ),
     );
 
@@ -46,7 +52,9 @@ class BitcoinPriceLocator {
     locator.registerFactory<PriceChartCubit>(
       () => PriceChartCubit(
         getPriceHistoryUsecase: locator<GetPriceHistoryUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        readPriceCurrencyUsecase: ReadPriceCurrencyUsecase(
+          locator<RuntimeDisplayPreferencesReader>(),
+        ),
       ),
     );
   }

@@ -4,13 +4,13 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-/// The price of one bitcoin in [currencyCode], on the network of the settings.
+/// The price of one bitcoin in [currencyCode], on the active network.
 class GetBitcoinPriceUsecase {
-  final GetSettingsUsecase _getSettingsUsecase;
+  final ActiveEnvironmentReader _environment;
   final IndexPriceReader _getIndexPrice;
 
   const GetBitcoinPriceUsecase({
-    required this._getSettingsUsecase,
+    required this._environment,
     required this._getIndexPrice,
   });
 
@@ -18,9 +18,9 @@ class GetBitcoinPriceUsecase {
   Future<Result<double, PricerFailure>> execute({
     required String currencyCode,
   }) async {
-    final SettingsEntity settings;
+    final Environment environment;
     try {
-      settings = await _getSettingsUsecase.execute();
+      environment = await _environment.readActiveEnvironment();
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the bitcoin price',
@@ -36,7 +36,7 @@ class GetBitcoinPriceUsecase {
       );
     }
     final price = await _getIndexPrice(
-      network: switch (settings.environment) {
+      network: switch (environment) {
         Environment.mainnet => BitcoinNetwork.mainnet,
         Environment.testnet => BitcoinNetwork.testnet,
         Environment.regtest => BitcoinNetwork.regtest,

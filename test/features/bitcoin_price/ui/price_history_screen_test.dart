@@ -1,4 +1,5 @@
-import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_price_currency_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
@@ -14,13 +15,13 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Settings extends Mock implements GetSettingsUsecase {}
+class _Settings extends Mock implements ReadPriceCurrencyUsecase {}
 
 class _History extends Mock implements GetPriceHistoryUsecase {}
 
 class _Price extends Mock implements GetBitcoinPriceUsecase {}
 
-class _Watch extends Mock implements WatchCurrencyChangesUsecase {}
+class _Watch extends Mock implements WatchPriceCurrencyUsecase {}
 
 void main() {
   testWidgets(
@@ -28,28 +29,22 @@ void main() {
     (tester) async {
       final settings = _Settings();
       final history = _History();
-      when(settings.execute).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.btc,
-          currencyCode: 'CAD',
-        ),
-      );
+      when(settings.execute).thenAnswer((_) async => 'CAD');
       when(() => history.execute(currencyCode: 'CAD'))
           .thenAnswer((_) async => const Err(PriceChartLoadFailure()));
       final locator = GetIt.asNewInstance();
       locator.registerFactory<PriceChartCubit>(
         () => PriceChartCubit(
           getPriceHistoryUsecase: history,
-          getSettingsUsecase: settings,
+          readPriceCurrencyUsecase: settings,
         ),
       );
       final watch = _Watch();
       when(watch.execute).thenAnswer((_) => const Stream<String>.empty());
       final priceBloc = BitcoinPriceBloc(
-        getSettingsUsecase: settings,
+        readPriceCurrencyUsecase: settings,
         getBitcoinPriceUsecase: _Price(),
-        watchCurrencyChangesUsecase: watch,
+        watchPriceCurrencyUsecase: watch,
       );
       addTearDown(locator.reset);
       addTearDown(priceBloc.close);

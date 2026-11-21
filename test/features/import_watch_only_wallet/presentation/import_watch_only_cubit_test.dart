@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -19,7 +19,8 @@ class _MockImportWatchOnlyXpubUsecase extends Mock
 class _MockParseWatchOnlyInputUsecase extends Mock
     implements ParseWatchOnlyInputUsecase {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockActiveEnvironmentReader extends Mock
+    implements ActiveEnvironmentReader {}
 
 class _MockWatchOnlyDescriptor extends Mock
     implements satoshifier.WatchOnlyDescriptor {}
@@ -28,19 +29,14 @@ class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 
 void main() {
   test('successful parsing clears a previous validation failure', () async {
-    final settings = _MockSettingsRepository();
-    when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
-      ),
-    );
+    final settings = _MockActiveEnvironmentReader();
+    when(() => settings.readActiveEnvironment())
+        .thenAnswer((_) async => Environment.testnet);
     final cubit = ImportWatchOnlyCubit(
       importWatchOnlyDescriptorUsecase: _MockImportWatchOnlyDescriptorUsecase(),
       importWatchOnlyXpubUsecase: _MockImportWatchOnlyXpubUsecase(),
       parseWatchOnlyInputUsecase: ParseWatchOnlyInputUsecase(),
-      settingsRepository: settings,
+      readNetworkUsecase: ReadWatchOnlyNetworkUsecase(settings),
     );
     addTearDown(cubit.close);
     await cubit.import();
@@ -63,20 +59,15 @@ void main() {
       label: 'SeedSigner',
     );
     final importDescriptor = _MockImportWatchOnlyDescriptorUsecase();
-    final settings = _MockSettingsRepository();
-    when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
-      ),
-    );
+    final settings = _MockActiveEnvironmentReader();
+    when(() => settings.readActiveEnvironment())
+        .thenAnswer((_) async => Environment.testnet);
     final cubit = ImportWatchOnlyCubit(
       watchOnlyWallet: wallet,
       importWatchOnlyDescriptorUsecase: importDescriptor,
       importWatchOnlyXpubUsecase: _MockImportWatchOnlyXpubUsecase(),
       parseWatchOnlyInputUsecase: _MockParseWatchOnlyInputUsecase(),
-      settingsRepository: settings,
+      readNetworkUsecase: ReadWatchOnlyNetworkUsecase(settings),
     );
     addTearDown(cubit.close);
 

@@ -1,4 +1,4 @@
-import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 
 class _MockGetPriceHistory extends Mock implements GetPriceHistoryUsecase {}
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+class _MockGetSettings extends Mock implements ReadPriceCurrencyUsecase {}
 
 PricePoint _point(int day) => PricePoint(
   currency: SupportedCurrency.cad,
@@ -29,16 +29,10 @@ void main() {
   setUp(() {
     history = _MockGetPriceHistory();
     settings = _MockGetSettings();
-    when(settings.execute).thenAnswer(
-      (_) async => SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
-      ),
-    );
+    when(settings.execute).thenAnswer((_) async => 'CAD');
     cubit = PriceChartCubit(
       getPriceHistoryUsecase: history,
-      getSettingsUsecase: settings,
+      readPriceCurrencyUsecase: settings,
     );
   });
 

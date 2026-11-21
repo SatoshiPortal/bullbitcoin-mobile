@@ -3,7 +3,7 @@ import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
@@ -17,24 +17,24 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyDescriptorUsecase _importWatchOnlyDescriptorUsecase;
   final ImportWatchOnlyXpubUsecase _importWatchOnlyXpubUsecase;
   final ParseWatchOnlyInputUsecase _parseWatchOnlyInputUsecase;
-  final SettingsRepository _settingsRepository;
+  final ReadWatchOnlyNetworkUsecase _readNetworkUsecase;
 
   ImportWatchOnlyCubit({
     WatchOnlyWalletEntity? watchOnlyWallet,
     required this._importWatchOnlyDescriptorUsecase,
     required this._importWatchOnlyXpubUsecase,
     required this._parseWatchOnlyInputUsecase,
-    required this._settingsRepository,
+    required this._readNetworkUsecase,
   }) : super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
   Future<void> init() async {
     final wallet = state.watchOnlyWallet;
     if (wallet == null) return;
-    final settings = await _settingsRepository.fetch();
+    final environment = await _readNetworkUsecase.execute();
     if (isClosed) return;
     switch (const CaptureWatchOnlyNetworkUsecase().execute(
       wallet,
-      environment: settings.environment.networkEnv,
+      environment: environment,
     )) {
       case Ok(:final value):
         emit(state.copyWith(watchOnlyWallet: value));
@@ -69,8 +69,8 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       emit(state.copyWith(failure: const LabelRequiredFailure()));
       return;
     }
-    final settings = await _settingsRepository.fetch();
-    if (wallet.network.environment != settings.environment.networkEnv) {
+    final environment = await _readNetworkUsecase.execute();
+    if (wallet.network.environment != environment) {
       emit(state.copyWith(failure: const NetworkMismatchFailure()));
       return;
     }
@@ -98,11 +98,11 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     final trimmed = input.trim();
     emit(state.copyWith(input: trimmed));
     if (trimmed.length >= 111) {
-      final settings = await _settingsRepository.fetch();
+      final environment = await _readNetworkUsecase.execute();
       if (isClosed || state.input != trimmed) return;
       final result = await _parseWatchOnlyInputUsecase.execute(
         trimmed,
-        environment: settings.environment.networkEnv,
+        environment: environment,
       );
       if (isClosed || state.input != trimmed) return;
       switch (result) {

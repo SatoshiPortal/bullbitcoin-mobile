@@ -1,4 +1,4 @@
-import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/read_price_currency_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -16,19 +16,19 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
   PriceChartCubit({
     required this._getPriceHistoryUsecase,
-    required this._getSettingsUsecase,
+    required this._readPriceCurrencyUsecase,
   }) : super(const PriceChartState());
 
   final GetPriceHistoryUsecase _getPriceHistoryUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final ReadPriceCurrencyUsecase _readPriceCurrencyUsecase;
 
   Future<void> loadPriceHistory({String? currency}) async {
     emit(state.copyWith(isLoading: true, failure: null));
 
     final String selectedCurrency;
     try {
-      final settings = await _getSettingsUsecase.execute();
-      selectedCurrency = currency ?? settings.currencyCode;
+      final savedCurrency = await _readPriceCurrencyUsecase.execute();
+      selectedCurrency = currency ?? savedCurrency;
     } catch (e) {
       log.warning('loadPriceHistory failed', error: e);
       emit(
@@ -81,8 +81,8 @@ class PriceChartCubit extends Cubit<PriceChartState> {
     if (currency != null) {
       loadPriceHistory(currency: currency);
     } else {
-      final settings = await _getSettingsUsecase.execute();
-      loadPriceHistory(currency: settings.currencyCode);
+      final savedCurrency = await _readPriceCurrencyUsecase.execute();
+      loadPriceHistory(currency: savedCurrency);
     }
   }
 
