@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repository.dart';
 import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
-import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show Err, Fingerprint, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 
 import 'dart:async';

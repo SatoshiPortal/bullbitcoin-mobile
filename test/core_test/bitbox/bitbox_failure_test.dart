@@ -13,8 +13,8 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_useca
 import 'package:bb_mobile/features/bitbox/domain/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, ScriptType;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

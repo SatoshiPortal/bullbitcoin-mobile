@@ -26,7 +26,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 
 class _Wallet extends Mock implements WalletBloc {}
 

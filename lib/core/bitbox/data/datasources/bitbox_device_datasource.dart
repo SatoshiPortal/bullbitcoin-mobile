@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show ScriptType;
+
 import 'dart:async';
 import 'dart:io' show Platform;
 
@@ -5,7 +7,6 @@ import 'package:bb_mobile/core/bitbox/data/models/bitbox_device_model.dart';
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:rust_bindings/bitbox.dart' as bitbox;
 import 'package:universal_ble/universal_ble.dart';

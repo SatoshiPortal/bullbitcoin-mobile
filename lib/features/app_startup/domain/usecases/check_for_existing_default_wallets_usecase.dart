@@ -8,7 +8,14 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart'
-    show Err, Fingerprint, NetworkCapabilities, NetworkCapability, Ok, Result;
+    show
+        Err,
+        Fingerprint,
+        NetworkCapabilities,
+        NetworkCapability,
+        Ok,
+        Result,
+        ScriptType;
 import 'package:secrets/secrets.dart';
 
 class CheckForExistingDefaultWalletsUsecase {

@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';

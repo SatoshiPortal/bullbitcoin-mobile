@@ -603,7 +603,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     _require(
       metadata.network == wallet.Network.bitcoinRegtest &&
           metadata.signer == Signer.local &&
-          metadata.scriptType == wallet.ScriptType.bip84 &&
+          metadata.scriptType == ScriptType.bip84 &&
           metadata.account == '0h' &&
           metadata.seedFingerprint != null,
     );

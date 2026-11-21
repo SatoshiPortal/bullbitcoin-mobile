@@ -4,7 +4,7 @@ Headless wallet sync on WorkManager, behind the maintainer gate `backgroundSyncE
 
 ## Runs
 
-`workmanager_runner.dart` receives the task WorkManager resolved, builds only that task (`BackgroundTaskRunner.forTask`), runs it and closes its resources in reverse order, even after a partial startup. Unknown and obsolete tasks are acknowledged without building anything. The published names and ids (`wallets-sync`, `bitcoin-sync`, `liquid-sync`, `swaps-sync`, `logs-prune`) and `lib/core/background_tasks/handler.dart` are fixed.
+`workmanager_runner.dart` receives the task WorkManager resolved, builds only that task (`BackgroundTaskRunner.forTask`), runs it and closes its resources in reverse order, even after a partial startup. Unknown and obsolete tasks are acknowledged without building anything. The published names and ids (`wallets-sync`, `bitcoin-sync`, `liquid-sync`, `swaps-sync`, `logs-prune`) and the app's entry point `backgroundTasksHandler` in `lib/background_entrypoint.dart` are fixed.
 
 `RunWalletSyncJobsUsecase` runs the wallets, chain by chain:
 

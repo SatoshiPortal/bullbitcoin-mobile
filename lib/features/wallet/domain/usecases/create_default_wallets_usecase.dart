@@ -7,7 +7,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart'
-    show Err, Fingerprint, NetworkEnv, Ok, Result;
+    show Err, Fingerprint, NetworkEnv, Ok, Result, ScriptType;
 
 /// Creates the default Bitcoin and Liquid wallets from one secret: generated, imported from words, or restored by the secrets package.
 class CreateDefaultWalletsUsecase {

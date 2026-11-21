@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/fixed_amount_wallet_choice_policy.dart';

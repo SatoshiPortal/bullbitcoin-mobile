@@ -1,7 +1,7 @@
 import 'initialization_result.dart';
 
 import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, Err, Ok, Result;
+    show BitcoinTransactionRecipient, Err, Ok, Result, ScriptType;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart' as primitives show Network;
 

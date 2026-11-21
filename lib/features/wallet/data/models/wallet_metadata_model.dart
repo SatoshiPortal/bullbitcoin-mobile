@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Fingerprint, ScriptType;
 
 part 'wallet_metadata_model.freezed.dart';
 
