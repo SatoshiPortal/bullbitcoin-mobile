@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -191,20 +192,20 @@ void main() {
     ),
   );
 
-  // The spinner animates forever, so pumpAndSettle would never return while
-  // it is on screen. The challenge reads its words inside the package, which
-  // does real asynchronous work (PBKDF2), so frames alternate with the real
-  // clock until no spinner is left, within a bound generous enough for a
-  // suite running in parallel.
-  Future<void> flush(WidgetTester tester) async {
-    for (var i = 0; i < 25; i++) {
+  // Secret operations complete off-isolate, so pump frames while letting the
+  // real clock run. The challenge has a spinner. Passphrase verification
+  // keeps the form visible, so its callers wait for the result in the UI.
+  Future<void> flush(WidgetTester tester, {bool Function()? until}) async {
+    final isReady =
+        until ??
+        () => find.byType(CircularProgressIndicator).evaluate().isEmpty;
+    final attempts = until == null ? 25 : 100;
+    for (var i = 0; i < attempts; i++) {
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
       await tester.pump();
-      if (i >= 2 && find.byType(CircularProgressIndicator).evaluate().isEmpty) {
-        return;
-      }
+      if (i >= 2 && isReady()) return;
     }
   }
 
@@ -285,14 +286,17 @@ void main() {
     );
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.enterText(find.byType(TextField), 'Mixed');
+    final incorrectPassphrase = find.text('Incorrect passphrase.');
     await tester.tap(find.text('Continue'));
-    await flush(tester);
-    expect(find.text('Incorrect passphrase.'), findsOneWidget);
+    await flush(tester, until: incorrectPassphrase.tryEvaluate);
+    expect(incorrectPassphrase, findsOneWidget);
     verifyNever(() => completeUsecase.execute());
 
+    final success = find.byType(BackupTestSuccessScreen);
     await tester.enterText(find.byType(TextField), ' Mixed ');
     await tester.tap(find.text('Continue'));
-    await flush(tester);
+    await flush(tester, until: success.tryEvaluate);
+    expect(success, findsOneWidget);
     verify(() => completeUsecase.execute()).called(1);
   });
 
