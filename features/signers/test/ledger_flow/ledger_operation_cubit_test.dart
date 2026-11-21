@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:signers/src/signer_device_entity.dart';
 import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:signers/src/ledger/domain/ledger_failure.dart';
@@ -97,6 +99,23 @@ void main() {
       await cubit.close();
     });
   }
+  test('late connection failure after close is ignored', () async {
+    final cubit = buildCubit();
+    stubScan(Ok([device]));
+    final pending = Completer<Result<void, LedgerFailure>>();
+    when(() => connect.execute(any())).thenAnswer((_) => pending.future);
+    var operationCalled = false;
+    final running = cubit.executeOperation(() async {
+      operationCalled = true;
+      return const Ok<void, LedgerFailure>(null);
+    });
+    await Future<void>.delayed(Duration.zero);
+    await cubit.close();
+    pending.complete(const Err(LedgerDeviceNotFoundFailure()));
+    await running;
+    expect(operationCalled, isFalse);
+  });
+
   group('LedgerOperationCubit.executeOperation', () {
     test('walks scanning → connecting → processing → success', () async {
       final cubit = buildCubit();
