@@ -136,7 +136,13 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
     final content = EncryptedVaultMapper.fromEntity(vault).toFile();
     return _serialized(() async {
       try {
-        await _dataSource.store(content);
+        // The file format normalizes the creation time to local time before
+        // deriving the Drive filename.
+        final storedVault = EncryptedVaultMapper.parse(content);
+        final bytes = utf8.encode(
+          EncryptedVaultMapper.fromEntity(storedVault).toFile(),
+        );
+        await _dataSource.store(storedVault.filename, bytes);
         return const Ok(null);
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
