@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, Result, ScriptType;
 
 class _Settings extends Mock implements SettingsRepository {}
 

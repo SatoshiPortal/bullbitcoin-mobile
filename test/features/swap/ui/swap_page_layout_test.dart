@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bull_ui/bull_ui.dart'
     show BullAmountInput, bullUiLocalizationsDelegate;
 

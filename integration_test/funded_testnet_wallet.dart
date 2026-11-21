@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart' show fail;
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:secrets/secrets.dart';
 
 /// Coins and Payjoin use the same Alice account in the aggregated suite.

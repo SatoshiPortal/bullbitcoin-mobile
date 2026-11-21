@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Sats;
+    show BitcoinNetwork, BitcoinUnit, Sats, ScriptType;
 
 /// Tests for the payjoin gating on [ReceiveState.isPayjoinLoading] and its
 /// downstream effect on [ReceiveState.paymentRequest]: with payjoin disabled

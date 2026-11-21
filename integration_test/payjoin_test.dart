@@ -19,7 +19,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide Network, ScriptType;
+import 'package:primitives/primitives.dart' hide Network;
 
 import 'developer_network.dart';
 import 'funded_testnet_wallet.dart';

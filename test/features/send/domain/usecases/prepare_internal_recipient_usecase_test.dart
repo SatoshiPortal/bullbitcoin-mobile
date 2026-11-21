@@ -4,9 +4,9 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 
 Wallet _wallet(Network network) => Wallet(
   origin: 'destination',

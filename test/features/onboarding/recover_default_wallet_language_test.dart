@@ -14,7 +14,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' show hex;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok, ScriptType;
 import 'package:primitives/primitives.dart' as p;
 import 'package:secrets/secrets.dart' as s;
 import 'package:secrets/testing.dart';
