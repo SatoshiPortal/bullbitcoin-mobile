@@ -14,7 +14,6 @@ void setupElectrum(GetIt locator) {
   locator.registerLazySingleton<Electrum>(
     () => Electrum.open(
       database: locator<SqliteDatabase>(),
-      readNetwork: environment.readNetwork,
       readPreferences: environment.readPreferences,
       tor: () => locator<Tor>(),
     ),

@@ -5,14 +5,16 @@ import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mempool/mempool.dart';
 import 'package:primitives/primitives.dart';
 
-import 'electrum_settings/electrum_settings_locator.dart';
+import 'electrum_settings/create_electrum_settings_bloc.dart';
 import 'electrum_settings/ui/electrum_settings_router.dart';
+import 'mempool_settings/create_mempool_settings_cubit.dart';
+import 'mempool_settings/domain/mempool_settings_network.dart';
 import 'mempool_settings/router.dart';
 import 'network_navigation.dart';
 import 'status_check/domain/check_all_service_status_usecase.dart';
-import 'status_check/domain/check_electrum_status_usecase.dart';
 import 'status_check/domain/check_service_status_usecase.dart';
 import 'status_check/status_session.dart';
 import 'status_check/ui/service_status_page.dart';
@@ -27,6 +29,8 @@ typedef NetworkRoutes = ({List<RouteBase> root, List<RouteBase> appSettings});
 
 typedef NetworkBindings = ({
   Future<Result<NetworkEnv?, Failure>> Function() readDefaultNetwork,
+  Future<NetworkEnv> Function() readEnvironment,
+  ReadMempoolEnvironment readMempoolEnvironment,
   Future<void> Function(BitcoinNetwork) checkBitcoinFees,
   Future<bool> Function() isTorRequired,
   ReadTorPreferences readTorPreferences,
@@ -44,7 +48,6 @@ final class NetworkFeature {
     required GetIt services,
     required NetworkBindings bindings,
   }) {
-    ElectrumSettingsLocator.setup(services);
     setupTorSettings(
       services,
       readPreferences: bindings.readTorPreferences,
@@ -58,9 +61,7 @@ final class NetworkFeature {
       () => CheckServiceStatusUsecase(
         readDefaultNetwork: bindings.readDefaultNetwork,
         checkAllServiceStatusUsecase: CheckAllServiceStatusUsecase(
-          checkElectrumStatus: CheckElectrumStatusUsecase(
-            services<Electrum>().servers,
-          ),
+          electrumServers: services<Electrum>().servers,
           getIndexPrice: Pricer.getIndexPrice,
           payjoinPolicy: services<PayjoinPolicyAccess>(),
           payjoinDiagnostics: services<PayjoinDiagnostics>(),
@@ -77,8 +78,19 @@ final class NetworkFeature {
       status: status,
       routes: (
         root: List.unmodifiable([
-          ElectrumSettingsRouter.route,
-          MempoolSettingsRoute.route,
+          ElectrumSettingsRouter.route(
+            createBloc: () => createElectrumSettingsBloc(
+              services<Electrum>(),
+              bindings.readEnvironment,
+            ),
+            createTorCubit: services.get<TorSettingsCubit>,
+          ),
+          MempoolSettingsRoute.route(
+            () => createMempoolSettingsCubit(
+              services<Mempool>(),
+              bindings.readMempoolEnvironment,
+            ),
+          ),
           GoRoute(
             path: '/service-status',
             name: serviceStatusRouteName,

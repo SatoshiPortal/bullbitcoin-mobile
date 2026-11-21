@@ -1,10 +1,9 @@
-import 'package:electrum/electrum.dart' show ElectrumServerNetwork;
+import 'package:electrum/electrum.dart';
 import 'package:network/src/tor_settings/domain/tor_preferences.dart';
 
 import 'dart:async';
 
 import 'package:network/src/status_check/domain/service_status.dart';
-import 'package:network/src/status_check/domain/check_electrum_status_usecase.dart';
 import 'package:network/src/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
@@ -15,8 +14,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, NetworkEnv, Result, Err, Ok;
 
-class _MockElectrumConnectivityPort extends Mock
-    implements CheckElectrumStatusUsecase {}
+class _MockElectrumServers extends Mock implements ElectrumServers {}
 
 class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 
@@ -62,8 +60,9 @@ void main() {
   // asking the pricer: the status must say when the pricer last answered.
   test('the pricer is dated by its last real answer, not by now', () async {
     final fetchedAt = DateTime.utc(2026, 10, 21, 12);
-    final electrum = _MockElectrumConnectivityPort();
-    when(() => electrum.execute(any())).thenAnswer((_) async => true);
+    final electrum = _MockElectrumServers();
+    when(() => electrum.check(network: any(named: 'network')))
+        .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
     final getIndexPrice = _FakeIndexPriceReader(fiatAmount: 70000)
       ..fetchedAt = fetchedAt;
     final feesRepository = _MockFeesRepository();
@@ -79,7 +78,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
-      checkElectrumStatus: electrum,
+      electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -104,8 +103,9 @@ void main() {
 
   test('an offline pricer is dated by the controlled clock', () async {
     final now = DateTime(2026, 10, 21, 12, 30);
-    final electrum = _MockElectrumConnectivityPort();
-    when(() => electrum.execute(any())).thenAnswer((_) async => true);
+    final electrum = _MockElectrumServers();
+    when(() => electrum.check(network: any(named: 'network')))
+        .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
     final getIndexPrice = _FakeIndexPriceReader(
       failure: const PricerNetworkFailure('offline'),
     );
@@ -122,7 +122,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
-      checkElectrumStatus: electrum,
+      electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -147,8 +147,9 @@ void main() {
   test(
     'Payjoin with every switch off is not probed or reported offline',
     () async {
-      final electrum = _MockElectrumConnectivityPort();
-      when(() => electrum.execute(any())).thenAnswer((_) async => true);
+      final electrum = _MockElectrumServers();
+      when(() => electrum.check(network: any(named: 'network')))
+          .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
       final getIndexPrice = _FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
@@ -169,7 +170,7 @@ void main() {
           .thenAnswer((_) async => _settings(useTorProxy: false));
       when(() => tor.external).thenReturn(external);
       final usecase = CheckAllServiceStatusUsecase(
-        checkElectrumStatus: electrum,
+        electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: payjoinDiagnostics,
@@ -195,8 +196,9 @@ void main() {
     () async {
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
-      final electrum = _MockElectrumConnectivityPort();
-      when(() => electrum.execute(any())).thenAnswer((_) async => true);
+      final electrum = _MockElectrumServers();
+      when(() => electrum.check(network: any(named: 'network')))
+          .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
       final getIndexPrice = _FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
@@ -221,7 +223,7 @@ void main() {
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
-        checkElectrumStatus: electrum,
+        electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -246,8 +248,9 @@ void main() {
     () async {
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
-      final electrum = _MockElectrumConnectivityPort();
-      when(() => electrum.execute(any())).thenAnswer((_) async => true);
+      final electrum = _MockElectrumServers();
+      when(() => electrum.check(network: any(named: 'network')))
+          .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
       final getIndexPrice = _FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
@@ -269,7 +272,7 @@ void main() {
         ),
       );
       final usecase = CheckAllServiceStatusUsecase(
-        checkElectrumStatus: electrum,
+        electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -292,12 +295,13 @@ void main() {
   test(
     'publishes completed services while Bitcoin Electrum is pending',
     () async {
-      final electrum = _MockElectrumConnectivityPort();
-      final bitcoinResult = Completer<bool>();
-      when(() => electrum.execute(ElectrumServerNetwork.bitcoinMainnet))
+      final electrum = _MockElectrumServers();
+      final bitcoinResult =
+          Completer<Result<ElectrumServerStatus, ElectrumFailure>>();
+      when(() => electrum.check(network: ElectrumServerNetwork.bitcoinMainnet))
           .thenAnswer((_) => bitcoinResult.future);
-      when(() => electrum.execute(ElectrumServerNetwork.liquidMainnet))
-          .thenAnswer((_) async => true);
+      when(() => electrum.check(network: ElectrumServerNetwork.liquidMainnet))
+          .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
       final getIndexPrice = _FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
@@ -314,7 +318,7 @@ void main() {
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
       final usecase = CheckAllServiceStatusUsecase(
-        checkElectrumStatus: electrum,
+        electrumServers: electrum,
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -342,7 +346,7 @@ void main() {
 
       await liquidPublished.future;
       expect(completed, isFalse);
-      bitcoinResult.complete(true);
+      bitcoinResult.complete(const Ok(ElectrumServerStatus.online));
 
       final result = await resultFuture;
       expect(result.bitcoinElectrum.isOnline, isTrue);
@@ -352,11 +356,11 @@ void main() {
   );
 
   test('keeps completed service results when another task throws', () async {
-    final electrum = _MockElectrumConnectivityPort();
-    when(() => electrum.execute(ElectrumServerNetwork.bitcoinMainnet))
-        .thenAnswer((_) async => false);
-    when(() => electrum.execute(ElectrumServerNetwork.liquidMainnet))
-        .thenAnswer((_) async => true);
+    final electrum = _MockElectrumServers();
+    when(() => electrum.check(network: ElectrumServerNetwork.bitcoinMainnet))
+        .thenAnswer((_) async => const Err(ElectrumLoadFailure()));
+    when(() => electrum.check(network: ElectrumServerNetwork.liquidMainnet))
+        .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
     final getIndexPrice = _FakeIndexPriceReader(
       failure: const PricerNetworkFailure('Pricer probe failed'),
     );
@@ -373,7 +377,7 @@ void main() {
 
     final updates = <AllServicesStatus>[];
     final usecase = CheckAllServiceStatusUsecase(
-      checkElectrumStatus: electrum,
+      electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -392,15 +396,16 @@ void main() {
     );
 
     expect(updates.any((status) => status.liquidElectrum.isOnline), isTrue);
+    expect(result.bitcoinElectrum.status, ServiceStatus.offline);
     expect(result.liquidElectrum.isOnline, isTrue);
     expect(result.lastChecked, isNotNull);
   });
 
   test('reports only the failing Electrum probe as unknown when it throws an Exception', () async {
-    final electrum = _MockElectrumConnectivityPort();
-    when(() => electrum.execute(ElectrumServerNetwork.bitcoinMainnet))
-        .thenAnswer((_) async => true);
-    when(() => electrum.execute(ElectrumServerNetwork.liquidMainnet))
+    final electrum = _MockElectrumServers();
+    when(() => electrum.check(network: ElectrumServerNetwork.bitcoinMainnet))
+        .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
+    when(() => electrum.check(network: ElectrumServerNetwork.liquidMainnet))
         .thenAnswer((_) async => throw Exception('Electrum probe failed'));
     final getIndexPrice = _FakeIndexPriceReader(
       failure: const PricerNetworkFailure('Pricer probe failed'),
@@ -417,7 +422,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
-      checkElectrumStatus: electrum,
+      electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
@@ -437,8 +442,8 @@ void main() {
   });
 
   test('propagates a StateError from a service probe', () async {
-    final electrum = _MockElectrumConnectivityPort();
-    when(() => electrum.execute(ElectrumServerNetwork.bitcoinMainnet))
+    final electrum = _MockElectrumServers();
+    when(() => electrum.check(network: ElectrumServerNetwork.bitcoinMainnet))
         .thenAnswer((_) async => throw StateError('Electrum probe failed'));
     final getIndexPrice = _FakeIndexPriceReader(
       failure: const PricerNetworkFailure('Pricer probe failed'),
@@ -455,7 +460,7 @@ void main() {
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
-      checkElectrumStatus: electrum,
+      electrumServers: electrum,
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),

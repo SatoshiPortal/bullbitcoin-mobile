@@ -5,9 +5,8 @@ import 'package:clock/clock.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 
 import 'service_status.dart';
-import 'check_electrum_status_usecase.dart';
 
-import 'package:electrum/electrum.dart' show ElectrumServerNetwork;
+import 'package:electrum/electrum.dart';
 
 import '../../tor_settings/domain/tor_preferences.dart';
 
@@ -25,7 +24,7 @@ class CheckAllServiceStatusUsecase {
   /// network reports `offline` instead of hanging.
   static const _torStatusTimeout = Duration(seconds: 20);
 
-  final CheckElectrumStatusUsecase _checkElectrumStatus;
+  final ElectrumServers _electrumServers;
   final IndexPriceReader _getIndexPrice;
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
@@ -37,7 +36,7 @@ class CheckAllServiceStatusUsecase {
   final Tor _tor;
 
   CheckAllServiceStatusUsecase({
-    required this._checkElectrumStatus,
+    required this._electrumServers,
     required this._getIndexPrice,
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
@@ -92,12 +91,12 @@ class CheckAllServiceStatusUsecase {
           serviceName: 'Internet Connection',
         ),
         publish(
-          _checkBitcoinElectrumServer(network),
+          _checkElectrumServer(network, isLiquid: false),
           (status, result) => status.copyWith(bitcoinElectrum: result),
           serviceName: 'Bitcoin Electrum',
         ),
         publish(
-          _checkLiquidElectrumServer(network),
+          _checkElectrumServer(network, isLiquid: true),
           (status, result) => status.copyWith(liquidElectrum: result),
           serviceName: 'Liquid Electrum',
         ),
@@ -139,37 +138,27 @@ class CheckAllServiceStatusUsecase {
     }
   }
 
-  Future<ServiceStatusInfo> _checkBitcoinElectrumServer(
-    NetworkEnv network,
-  ) async {
-    final isOnline = await _checkElectrumStatus.execute(
-      ElectrumServerNetwork.fromNetworkEnv(network, isLiquid: false),
-    );
-
-    return ServiceStatusInfo(
-      status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
-
-      lastChecked: DateTime.now(),
-    );
-  }
-
-  Future<ServiceStatusInfo> _checkLiquidElectrumServer(
-    NetworkEnv network,
-  ) async {
-    if (network == NetworkEnv.regtest) {
+  Future<ServiceStatusInfo> _checkElectrumServer(
+    NetworkEnv network, {
+    required bool isLiquid,
+  }) async {
+    if (isLiquid && network == NetworkEnv.regtest) {
       return ServiceStatusInfo(
         status: ServiceStatus.disabled,
-
         lastChecked: DateTime.now(),
       );
     }
-    final isOnline = await _checkElectrumStatus.execute(
-      ElectrumServerNetwork.fromNetworkEnv(network, isLiquid: true),
+    final result = await _electrumServers.check(
+      network: ElectrumServerNetwork.fromNetworkEnv(
+        network,
+        isLiquid: isLiquid,
+      ),
     );
-
     return ServiceStatusInfo(
-      status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
-
+      status: switch (result) {
+        Ok(value: ElectrumServerStatus.online) => ServiceStatus.online,
+        _ => ServiceStatus.offline,
+      },
       lastChecked: DateTime.now(),
     );
   }

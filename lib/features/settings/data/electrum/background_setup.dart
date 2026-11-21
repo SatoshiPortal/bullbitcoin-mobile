@@ -14,7 +14,6 @@ WalletConnectionPort createBackgroundWalletConnections(
   final preferences = EnvironmentAdapter(settingsRepository: () => settings);
   return Electrum.open(
     database: sqlite,
-    readNetwork: preferences.readNetwork,
     readPreferences: preferences.readPreferences,
     tor: () => tor,
   ).walletConnections;

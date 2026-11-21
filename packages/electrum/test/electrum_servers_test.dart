@@ -17,7 +17,6 @@ void main() {
     addTearDown(database.close);
     servers = Electrum.open(
       database: database,
-      readNetwork: () async => NetworkEnv.mainnet,
       readPreferences: () => throw StateError('Unexpected preferences read'),
       tor: () => throw StateError('Unexpected Tor access'),
     ).servers;

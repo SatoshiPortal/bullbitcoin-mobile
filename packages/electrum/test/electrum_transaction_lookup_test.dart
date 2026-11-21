@@ -18,7 +18,6 @@ void main() {
     addTearDown(database.close);
     electrum = Electrum.open(
       database: database,
-      readNetwork: () async => NetworkEnv.mainnet,
       readPreferences: () async => (
         isSuperuser: false,
         isDevModeEnabled: false,
@@ -58,46 +57,52 @@ void main() {
     expect(updates, [expected]);
   });
 
-  test('detects a custom onion on the active Bitcoin network only', () async {
-    const fixtures = [
-      (
-        'ssl://default.onion:50002',
-        ElectrumServerNetwork.bitcoinMainnet,
-        false,
-      ),
-      (
-        'ssl://custom.example:50002',
-        ElectrumServerNetwork.bitcoinMainnet,
-        true,
-      ),
-      ('ssl://liquid.onion:50002', ElectrumServerNetwork.liquidMainnet, true),
-    ];
-    Future<void> seed(
-      String url,
-      ElectrumServerNetwork network,
-      bool isCustom,
-    ) => database
-        .into(database.electrumServers)
-        .insert(
-          ElectrumServerRow(
-            url: url,
-            network: network.storageName,
-            priority: 0,
-            isCustom: isCustom,
-          ),
-        );
+  test(
+    'detects a custom onion on the requested Bitcoin network only',
+    () async {
+      const fixtures = [
+        (
+          'ssl://default.onion:50002',
+          ElectrumServerNetwork.bitcoinMainnet,
+          false,
+        ),
+        (
+          'ssl://custom.example:50002',
+          ElectrumServerNetwork.bitcoinMainnet,
+          true,
+        ),
+        ('ssl://liquid.onion:50002', ElectrumServerNetwork.liquidMainnet, true),
+      ];
+      Future<void> seed(
+        String url,
+        ElectrumServerNetwork network,
+        bool isCustom,
+      ) => database
+          .into(database.electrumServers)
+          .insert(
+            ElectrumServerRow(
+              url: url,
+              network: network.storageName,
+              priority: 0,
+              isCustom: isCustom,
+            ),
+          );
 
-    for (final (url, network, isCustom) in fixtures) {
-      await seed(url, network, isCustom);
-    }
-    final without = await electrum.servers.hasActiveCustomBitcoinOnionServer();
-    expect(without.fold((value) => value, (_) => null), isFalse);
+      for (final (url, network, isCustom) in fixtures) {
+        await seed(url, network, isCustom);
+      }
+      final without = await electrum.servers.hasCustomOnionServer(
+        network: network,
+      );
+      expect(without.fold((value) => value, (_) => null), isFalse);
 
-    await seed('ssl://custom.onion.:50002', network, true);
-    final withOnion = await electrum.servers
-        .hasActiveCustomBitcoinOnionServer();
-    expect(withOnion.fold((value) => value, (_) => null), isTrue);
-  });
+      await seed('ssl://custom.onion.:50002', network, true);
+      final withOnion = await electrum.servers.hasCustomOnionServer(
+        network: network,
+      );
+      expect(withOnion.fold((value) => value, (_) => null), isTrue);
+    },
+  );
 
   test('lookup maps an existing row to the published BitcoinTx', () async {
     await database

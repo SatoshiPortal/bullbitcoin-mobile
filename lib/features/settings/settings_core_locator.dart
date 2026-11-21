@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:network/network.dart' show MempoolSettingsLocator;
 
 class SettingsLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -39,13 +37,4 @@ class SettingsLocator {
       ),
     );
   }
-}
-
-void setupMempoolSettings(GetIt locator) {
-  MempoolSettingsLocator.setup(
-    locator,
-    readEnvironment: SettingsEnvironmentAdapter(
-      settingsRepository: locator<domain.SettingsRepository>(),
-    ).getEnvironment,
-  );
 }

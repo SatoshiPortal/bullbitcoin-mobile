@@ -3,6 +3,10 @@ import 'package:network/setup.dart';
 import 'package:primitives/primitives.dart';
 
 class SettingsNetworkBindings {
+  static Future<NetworkEnv> readEnvironment(
+    SettingsRepository settings,
+  ) async => (await settings.fetch()).environment.networkEnv;
+
   static Future<bool> saveTorProxy(
     SettingsRepository settings, {
     required bool enabled,

@@ -6,6 +6,8 @@ The network feature owns the Electrum, Mempool and Tor settings screens and serv
 await NetworkNavigation.open(context, section: NetworkSection.tor);
 ```
 
+The Electrum and Mempool routes borrow the capabilities opened by the host. Electrum settings read the current app environment through the mount bindings and keep that network on server operations. Service status probes Electrum on the default wallet's network and keeps the Bitcoin fee path as the Mempool probe.
+
 Each service-status consumer creates and closes its own session.
 
 ```dart

@@ -63,6 +63,10 @@ void main() {
           services: networkServices,
           bindings: (
             readDefaultNetwork: () async => const Ok(null),
+            readEnvironment: () async =>
+                throw StateError('Unexpected environment read'),
+            readMempoolEnvironment: () async =>
+                throw StateError('Unexpected Mempool environment read'),
             checkBitcoinFees: (_) async {},
             isTorRequired: () async => false,
             readTorPreferences: () async =>

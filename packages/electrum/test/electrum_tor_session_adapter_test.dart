@@ -3,7 +3,6 @@ import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
-import 'package:primitives/primitives.dart';
 
 import 'electrum_test_database.dart';
 
@@ -45,7 +44,6 @@ void main() {
     addTearDown(database.close);
     final electrum = Electrum.open(
       database: database,
-      readNetwork: () async => NetworkEnv.mainnet,
       readPreferences: () async => throw StateError('Settings are not ready'),
       tor: () => throw StateError('Tor is not ready'),
     );

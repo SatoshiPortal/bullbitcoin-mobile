@@ -51,8 +51,7 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
-import 'package:bb_mobile/features/settings/settings_core_locator.dart'
-    show setupMempoolSettings;
+import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
@@ -193,7 +192,6 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    setupMempoolSettings(locator);
     PinCodeLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
@@ -258,6 +256,12 @@ class AppLocator {
         bindings: (
           readDefaultNetwork: () =>
               locator<GetDefaultWalletNetworkUsecase>().execute(),
+          readEnvironment: () => SettingsNetworkBindings.readEnvironment(
+            locator<SettingsRepository>(),
+          ),
+          readMempoolEnvironment: SettingsEnvironmentAdapter(
+            settingsRepository: locator<SettingsRepository>(),
+          ).getEnvironment,
           checkBitcoinFees: (network) =>
               FeesLocator.checkBitcoinFees(locator, network),
           isTorRequired: () => locator<WalletRepository>().isTorRequired(),

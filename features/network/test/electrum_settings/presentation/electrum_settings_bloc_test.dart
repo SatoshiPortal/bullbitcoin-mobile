@@ -47,19 +47,20 @@ ElectrumServerChecks _checks(
 void main() {
   late _MockServers servers;
   late ElectrumSettingsBloc bloc;
+  late NetworkEnv environment;
 
   setUp(() {
     servers = _MockServers();
     final options = _MockOptions();
-    when(() => servers.activeNetwork(isLiquid: false))
-        .thenAnswer((_) async => const Ok(_bitcoin));
-    when(() => servers.activeNetwork(isLiquid: true))
-        .thenAnswer((_) async => const Ok(_liquid));
-    when(servers.hasActiveCustomBitcoinOnionServer)
+    environment = NetworkEnv.mainnet;
+    when(() => servers.hasCustomOnionServer(network: _bitcoin))
         .thenAnswer((_) async => const Ok(false));
     final update = UpdateElectrumSettingsUsecase(options);
     bloc = ElectrumSettingsBloc(
-      loadSettings: LoadElectrumSettingsUsecase(servers),
+      loadSettings: LoadElectrumSettingsUsecase(
+        servers,
+        () async => environment,
+      ),
       addServer: AddElectrumServerUsecase(servers, update),
       prioritizeServers: PrioritizeElectrumServersUsecase(servers),
       removeServer: RemoveElectrumServerUsecase(servers, update),
@@ -98,47 +99,46 @@ void main() {
     );
   });
 
-  test(
-    'displays the stored endpoint URL after adding a Liquid server',
-    () async {
-      const address = 'custom-liquid.example:50002';
-      const stored = ElectrumEndpoint(
-        url: address,
+  test('displays the stored Liquid endpoint and checks onion servers on the edited network', () async {
+    const address = 'custom-liquid.example:50002';
+    const stored = ElectrumEndpoint(
+      url: address,
+      network: _liquid,
+      isCustom: true,
+      priority: 0,
+    );
+    const defaultServer = ElectrumEndpoint(
+      url: 'default-liquid.example:50002',
+      network: _liquid,
+      isCustom: false,
+      priority: 0,
+    );
+    when(() => servers.watchChecks(network: _liquid)).thenAnswer(
+      (_) => Stream.value(Ok(_checks(defaultServer, validateDomain: false))),
+    );
+    when(
+      () => servers.store(
+        address,
         network: _liquid,
-        isCustom: true,
         priority: 0,
-      );
-      const defaultServer = ElectrumEndpoint(
-        url: 'default-liquid.example:50002',
-        network: _liquid,
-        isCustom: false,
-        priority: 0,
-      );
-      when(() => servers.watchChecks(network: _liquid)).thenAnswer(
-        (_) => Stream.value(Ok(_checks(defaultServer, validateDomain: false))),
-      );
-      when(
-        () => servers.store(
-          address,
-          network: _liquid,
-          priority: 0,
-          enableSsl: true,
-        ),
-      ).thenAnswer((_) async => const Ok(stored));
+        enableSsl: true,
+      ),
+    ).thenAnswer((_) async => const Ok(stored));
 
-      final loaded = bloc.stream.firstWhere(
-        (state) => !state.isLoadingData && state.defaultServers.isNotEmpty,
-      );
-      bloc.add(const ElectrumSettingsLoaded(isLiquid: true));
-      await loaded;
+    final loaded = bloc.stream.firstWhere(
+      (state) => !state.isLoadingData && state.defaultServers.isNotEmpty,
+    );
+    bloc.add(const ElectrumSettingsLoaded(isLiquid: true));
+    await loaded;
+    environment = NetworkEnv.testnet;
 
-      final added = bloc.stream.firstWhere(
-        (state) => state.customServers.isNotEmpty,
-      );
-      bloc.add(const ElectrumCustomServerAdded(url: address));
-      expect((await added).customServers.last.url, stored.url);
-    },
-  );
+    final added = bloc.stream.firstWhere(
+      (state) => state.customServers.isNotEmpty,
+    );
+    bloc.add(const ElectrumCustomServerAdded(url: address));
+    expect((await added).customServers.last.url, stored.url);
+    verify(() => servers.hasCustomOnionServer(network: _bitcoin)).called(2);
+  });
 
   test(
     'publishes servers before probes finish and then their final status',
@@ -146,7 +146,7 @@ void main() {
       final refresh = StreamController<_Refresh>();
       when(() => servers.watchChecks(network: _bitcoin))
           .thenAnswer((_) => refresh.stream);
-      when(servers.hasActiveCustomBitcoinOnionServer)
+      when(() => servers.hasCustomOnionServer(network: _bitcoin))
           .thenAnswer((_) async => const Ok(true));
 
       final partial = bloc.stream.firstWhere(

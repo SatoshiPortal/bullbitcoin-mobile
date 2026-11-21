@@ -59,7 +59,6 @@ class Electrum {
   /// Opening performs no I/O, including when used by a headless caller.
   factory Electrum.open({
     required GeneratedDatabase database,
-    required Future<NetworkEnv> Function() readNetwork,
     required Future<ElectrumPreferences> Function() readPreferences,
     required Tor Function() tor,
   }) {
@@ -91,7 +90,6 @@ class Electrum {
         status: status,
         torSessions: torSessions,
         readPreferences: readPreferences,
-        readNetwork: readNetwork,
       ),
       ElectrumTransactions._(
         serversPort: runner,
@@ -126,7 +124,6 @@ class ElectrumServers {
   final ServerStatusPort _status;
   final ElectrumTorSessionPort _torSessions;
   final Future<ElectrumPreferences> Function() _readPreferences;
-  final Future<NetworkEnv> Function() _readNetwork;
 
   const ElectrumServers._({
     required this._repository,
@@ -135,42 +132,16 @@ class ElectrumServers {
     required this._status,
     required this._torSessions,
     required this._readPreferences,
-    required this._readNetwork,
   });
 
   @useResult
-  Future<Result<ElectrumServerNetwork, ElectrumFailure>> activeNetwork({
-    required bool isLiquid,
-  }) async {
-    try {
-      return Ok(
-        ElectrumServerNetwork.fromNetworkEnv(
-          await _readNetwork(),
-          isLiquid: isLiquid,
-        ),
-      );
-    } on ElectrumUnsupportedNetworkException {
-      return const Err(ElectrumUnsupportedNetworkFailure());
-    } on Exception {
-      return const Err(ElectrumLoadFailure());
-    }
-  }
-
-  @useResult
-  Future<Result<bool, ElectrumFailure>>
-  hasActiveCustomBitcoinOnionServer() async {
-    final network = await activeNetwork(isLiquid: false);
-    return switch (network) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value) =>
-        (await _repository.fetchActiveServers(network: value)).map(
-          (servers) => servers.any(
-            (server) =>
-                server.isCustom && ElectrumServerUrl(server.url).isOnion,
-          ),
-        ),
-    };
-  }
+  Future<Result<bool, ElectrumFailure>> hasCustomOnionServer({
+    required ElectrumServerNetwork network,
+  }) async => (await _repository.fetchActiveServers(network: network)).map(
+    (servers) => servers.any(
+      (server) => server.isCustom && ElectrumServerUrl(server.url).isOnion,
+    ),
+  );
 
   @useResult
   Future<Result<List<ElectrumEndpoint>, ElectrumFailure>> fetch({

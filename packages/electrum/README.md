@@ -5,7 +5,6 @@
 ```dart
 final electrum = Electrum.open(
   database: database,
-  readNetwork: readNetwork,
   readPreferences: readPreferences,
   tor: getTor,
 );

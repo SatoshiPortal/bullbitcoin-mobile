@@ -1,4 +1,3 @@
-import 'package:get_it/get_it.dart';
 import 'package:network/src/tor_settings/presentation/tor_settings_cubit.dart';
 import 'package:network/src/tor_settings/public/tor_settings_scope.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,15 +16,14 @@ void main() {
     when(cubit.init).thenAnswer((_) async {});
     when(cubit.onAppResumed).thenAnswer((_) async {});
     when(cubit.close).thenAnswer((_) async {});
-    GetIt.I.registerSingleton<TorSettingsCubit>(cubit);
   });
-
-  tearDown(() => GetIt.I.reset());
 
   testWidgets('owns init, resume and close for exactly one scope', (
     tester,
   ) async {
-    await tester.pumpWidget(const TorSettingsScope(child: SizedBox()));
+    await tester.pumpWidget(
+      TorSettingsScope(createCubit: () => cubit, child: const SizedBox()),
+    );
     verify(cubit.init).called(1);
 
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);

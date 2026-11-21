@@ -1,6 +1,8 @@
 import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 
+import 'has_custom_bitcoin_onion_server.dart';
+
 typedef ElectrumSettingsSnapshot = ({
   ElectrumServerChecks data,
   bool hasActiveCustomBitcoinOnionServer,
@@ -8,8 +10,9 @@ typedef ElectrumSettingsSnapshot = ({
 
 class LoadElectrumSettingsUsecase {
   final ElectrumServers _servers;
+  final Future<NetworkEnv> Function() _readEnvironment;
 
-  const LoadElectrumSettingsUsecase(this._servers);
+  const LoadElectrumSettingsUsecase(this._servers, this._readEnvironment);
 
   Future<Result<ElectrumSettingsSnapshot?, ElectrumFailure>> execute({
     required bool isLiquid,
@@ -17,11 +20,15 @@ class LoadElectrumSettingsUsecase {
     required void Function(ElectrumServerChecks) onUpdate,
   }) async {
     final ElectrumServerNetwork network;
-    switch (await _servers.activeNetwork(isLiquid: isLiquid)) {
-      case Ok(:final value):
-        network = value;
-      case Err(:final failure):
-        return Err(failure);
+    try {
+      network = ElectrumServerNetwork.fromNetworkEnv(
+        await _readEnvironment(),
+        isLiquid: isLiquid,
+      );
+    } on ElectrumUnsupportedNetworkException {
+      return const Err(ElectrumUnsupportedNetworkFailure());
+    } on Exception {
+      return const Err(ElectrumLoadFailure());
     }
     if (!isCurrent()) return const Ok(null);
 
@@ -37,12 +44,11 @@ class LoadElectrumSettingsUsecase {
       }
     }
     if (!isCurrent() || last == null) return const Ok(null);
-    final onion = await _servers.hasActiveCustomBitcoinOnionServer();
     return Ok((
       data: last,
-      hasActiveCustomBitcoinOnionServer: onion.fold(
-        (value) => value,
-        (_) => false,
+      hasActiveCustomBitcoinOnionServer: await hasCustomBitcoinOnionServer(
+        _servers,
+        network,
       ),
     ));
   }

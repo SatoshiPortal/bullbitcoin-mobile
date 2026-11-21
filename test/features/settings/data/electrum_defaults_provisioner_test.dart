@@ -488,7 +488,6 @@ void main() {
       }
       final electrum = Electrum.open(
         database: database,
-        readNetwork: () async => NetworkEnv.mainnet,
         readPreferences: readPreferences,
         tor: () => throw StateError('Catalog reads must not open Tor'),
       );

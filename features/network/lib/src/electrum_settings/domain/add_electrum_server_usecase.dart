@@ -2,6 +2,7 @@ import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 
 import 'electrum_settings_failure.dart';
+import 'has_custom_bitcoin_onion_server.dart';
 import 'update_electrum_settings_usecase.dart';
 
 class AddElectrumServerUsecase {
@@ -41,14 +42,13 @@ class AddElectrumServerUsecase {
           current: currentOptions(),
           validateDomain: false,
         );
-        final onion = await _servers.hasActiveCustomBitcoinOnionServer();
         return Ok((
           server: value,
           status: ElectrumServerStatus.online,
           options: options,
-          hasActiveCustomBitcoinOnionServer: onion.fold(
-            (value) => value,
-            (_) => false,
+          hasActiveCustomBitcoinOnionServer: await hasCustomBitcoinOnionServer(
+            _servers,
+            network,
           ),
         ));
       case Err(:final failure):

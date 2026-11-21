@@ -2,6 +2,7 @@ import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 
 import 'electrum_settings_failure.dart';
+import 'has_custom_bitcoin_onion_server.dart';
 
 class PrioritizeElectrumServersUsecase {
   final ElectrumServers _servers;
@@ -30,12 +31,11 @@ class PrioritizeElectrumServersUsecase {
     );
     switch (await _servers.prioritize(reordered, network: network)) {
       case Ok(:final value):
-        final onion = await _servers.hasActiveCustomBitcoinOnionServer();
         return Ok((
           servers: value,
-          hasActiveCustomBitcoinOnionServer: onion.fold(
-            (value) => value,
-            (_) => false,
+          hasActiveCustomBitcoinOnionServer: await hasCustomBitcoinOnionServer(
+            _servers,
+            network,
           ),
         ));
       case Err(:final failure):
