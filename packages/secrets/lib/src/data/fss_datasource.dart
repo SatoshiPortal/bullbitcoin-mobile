@@ -28,7 +28,7 @@ typedef StoredListing = ({
 
 /// Everything this package puts in `flutter_secure_storage`, and the rules for getting it back.
 ///
-/// The only holder of a `FlutterSecureStorage` instance here, and the only place that composes a key. Not exported, and `Secrets` builds it itself, so nothing outside can obtain the instance.
+/// Owns the seed and database-key plugin instance and key composition. The separate OwnerKeychain transport owns closed legacy owner entries with the same plugin options. Neither exposes the plugin; Secrets constructs both internally.
 ///
 /// Two namespaces with deliberately different read semantics: a corrupt seed is skipped so it cannot hide the others, a corrupt module key is refused and kept. See doc/design.md, § The package owns the keystore.
 ///

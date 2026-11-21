@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:secrets/src/public/keychains.dart';
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     show Language, MnemonicLength;
 import 'package:bull_logger/bull_logger.dart';
@@ -51,17 +53,18 @@ final class Secrets {
 
   Secrets._(this._databaseKeys, this._scratchDirectory);
 
-  /// Every keystore key prefix this package owns.
-  ///
-  /// The app shares one OS keystore with this package, so its own store
-  /// must refuse these — a shared store that could read `seed_…` would
-  /// hand seed material to code that only meant to read a preference.
-  /// Published so the refusal is written against the package's own
-  /// strings and cannot drift from them.
+  /// Seed and database-key namespaces, kept for callers auditing legacy data.
+  /// Owner-scoped keychains use a separate closed set of historical keys.
   static const reservedKeyPrefixes = {
     FlutterSecureStorageDatasource.secretNamespace,
     FlutterSecureStorageDatasource.keyNamespace,
   };
+
+  /// Closed owner-scoped capabilities over unchanged legacy keychain entries.
+  AccessKeychain get accessKeychain => AccessKeychain();
+  ExchangeKeychain get exchangeKeychain => ExchangeKeychain();
+  SilentPaymentKeychain get silentPaymentKeychain => SilentPaymentKeychain();
+  SwapKeychain get swapKeychain => SwapKeychain();
 
   // ---------------------------------------------------------------- creation
 
