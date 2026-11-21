@@ -1,5 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart' show Icons, Scaffold;
+import 'package:material_ui/material_ui.dart'
+    show Icons, Scaffold, SelectableText;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -134,6 +135,64 @@ void main() {
         ),
       );
       semantics.dispose();
+    });
+
+    testWidgets('views the whole value and copies the exact payload', (
+      tester,
+    ) async {
+      final messages = <MethodCall>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          messages.add(call);
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            const Scaffold(
+              body: BullCopyField.withView(
+                text: 'Full payment address',
+                clipboardText: 'bitcoin:full-payment-address',
+                viewLabel: 'View address',
+                viewTitle: 'Address',
+                copyLabel: 'Copy address',
+                copiedMessage: 'Copied',
+              ),
+            ),
+          ),
+        );
+        final view = find.bySemanticsLabel('View address');
+        expect(view, findsOneWidget);
+        expect(tester.getSize(view).shortestSide, greaterThanOrEqualTo(48));
+        await tester.tap(view);
+        await tester.pumpAndSettle();
+        expect(find.byType(SelectableText), findsOneWidget);
+        expect(
+          tester.widget<SelectableText>(find.byType(SelectableText)).data,
+          'Full payment address',
+        );
+
+        await tester.tap(find.byType(BullViewerActionButton).first);
+        await tester.pumpAndSettle();
+        final copy = messages.singleWhere(
+          (call) => call.method == 'Clipboard.setData',
+        );
+        expect(copy.arguments, {'text': 'bitcoin:full-payment-address'});
+        expect(find.byType(SelectableText), findsNothing);
+        await tester.pump(const Duration(minutes: 1));
+      } finally {
+        semantics.dispose();
+      }
     });
 
     testWidgets('hides the copy button when there is nothing to copy', (
