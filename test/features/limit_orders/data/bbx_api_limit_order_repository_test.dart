@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
+import '../../exchange/data/exchange_log_capture.dart';
 import '../../exchange/data/bbx_api_test_http.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
@@ -410,6 +411,31 @@ void main() {
         isA<LimitOrdersLoadFailure>(),
       );
     });
+
+    test(
+      'a malformed limit order keeps foreign values out of diagnostics',
+      () async {
+        final capture = await captureExchangeLogs();
+        final failure = _failureOf(
+          await repository(
+            FakeBbxHttp(
+              body: {
+                'result': {..._order, 'fiatAmount': 'fixture-sensitive-amount'},
+              },
+            ),
+          ).get('lo-1'),
+        );
+
+        expect(failure, isA<LimitOrdersUnexpectedFailure>());
+        expect(failure.logMessage, 'FormatException');
+        expect(capture.reporter.errors, [
+          ('Failed to read the limit order', 'FormatException'),
+        ]);
+        final logs = (await capture.logger.readLogs()).join('\n');
+        expect(logs, contains('Failed to read the limit order'));
+        expect(logs, isNot(contains('fixture-sensitive-amount')));
+      },
+    );
 
     test('an unparsable amount is unexpected', () async {
       expect(
