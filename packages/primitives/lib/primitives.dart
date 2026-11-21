@@ -19,4 +19,6 @@ export 'src/outpoint.dart';
 export 'src/regtest_host_profile.dart';
 export 'src/result.dart';
 export 'src/script_type.dart';
+export 'src/percentage.dart';
+export 'src/string_formatting.dart';
 export 'src/xpub_type.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:primitives/primitives.dart' show StringFormatting;
 
 enum SignerEntity {
   local,

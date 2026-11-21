@@ -17,7 +17,7 @@ import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/percentage.dart';
+import 'package:primitives/primitives.dart' show calculatePercentage;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
