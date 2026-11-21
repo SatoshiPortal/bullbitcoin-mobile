@@ -3,22 +3,14 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullCopyField,
         BullInfoCard,
         BullQrCode,
         BullButton,
-        BullButtonSize,
-        BullDialog,
-        BullFieldAction,
         BullSegmented,
-        BullShapesX,
         BullShimmerBox,
-        BullSnackBar,
-        BullSpacing,
-        BullText,
-        BullThemeX,
         BullTypographyX,
         Gap;
-import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -216,113 +208,15 @@ class _AddressDisplay extends StatelessWidget {
         const Gap(16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _AddressCopyField(address: address),
+          child: BullCopyField.withView(
+            text: address,
+            viewTitle: context.loc.spAddressLabel,
+            viewLabel: context.loc.receiveViewDetails,
+            copyLabel: context.loc.copyDialogButton,
+            copiedMessage: context.loc.copiedToClipboard,
+          ),
         ),
       ],
-    );
-  }
-}
-
-class _AddressCopyField extends StatelessWidget {
-  const _AddressCopyField({required this.address});
-
-  final String address;
-
-  void _copyAddress() {
-    Clipboard.setData(ClipboardData(text: address));
-  }
-
-  void _showAddress(BuildContext context) {
-    final loc = context.loc;
-    BullDialog.show<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
-        ),
-        backgroundColor: dialogContext.bull.surface,
-        title: BullText(
-          loc.spAddressLabel,
-          style: dialogContext.bullType.subtitle.copyWith(fontWeight: .w700),
-          textAlign: TextAlign.center,
-        ),
-        content: SingleChildScrollView(
-          child: SelectableText(
-            address,
-            style: dialogContext.bullType.subtitle,
-          ),
-        ),
-        actions: [
-          BullButton.secondary(
-            size: BullButtonSize.small,
-            compact: true,
-            label: loc.copyDialogButton,
-            onPressed: _copyAddress,
-          ),
-          BullButton.secondary(
-            size: BullButtonSize.small,
-            compact: true,
-            label: loc.closeDialogButton,
-            onPressed: () => Navigator.of(dialogContext).pop(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.bull;
-    final loc = context.loc;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(context.bullShapes.input),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
-        children: [
-          const Gap(15),
-          Expanded(
-            child: Semantics(
-              button: true,
-              label: loc.receiveViewDetails,
-              child: InkWell(
-                onTap: () => _showAddress(context),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: BullSpacing.xxl),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: BullSpacing.sm,
-                    ),
-                    child: BullText(
-                      address,
-                      style: context.bullType.body,
-                      fontWeight: FontWeight.w500,
-                      color: colors.secondary,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          BullFieldAction(
-            label: loc.receiveViewDetails,
-            icon: Icons.visibility_outlined,
-            onPressed: () => _showAddress(context),
-          ),
-          BullFieldAction(
-            label: loc.copyDialogButton,
-            icon: Icons.copy_sharp,
-            onPressed: () {
-              _copyAddress();
-              BullSnackBar.show(context, message: loc.copiedToClipboard);
-            },
-          ),
-          const Gap(BullSpacing.xs),
-        ],
-      ),
     );
   }
 }
