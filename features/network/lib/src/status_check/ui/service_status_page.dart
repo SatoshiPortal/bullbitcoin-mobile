@@ -37,6 +37,10 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
           IconButton(
             tooltip: context.loc.statusCheckRefresh,
             icon: const Icon(Icons.refresh),
+            style: IconButton.styleFrom(
+              fixedSize: const Size.square(48),
+              visualDensity: VisualDensity.standard,
+            ),
             onPressed: () => _refreshIndicatorKey.currentState?.show(),
           ),
         ],

@@ -260,16 +260,23 @@ class _AddCustomServerBottomSheetState
                         ),
                         Semantics(
                           label: context.loc.electrumEnableSsl,
-                          child: Switch(
-                            value: _enableSsl,
-                            onChanged: _isOnion
-                                ? null
-                                : (value) {
-                                    setState(() {
-                                      _enableSsl = value;
-                                      _sslAutoDetected = false; // user override
-                                    });
-                                  },
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
+                            child: Switch(
+                              value: _enableSsl,
+                              onChanged: _isOnion
+                                  ? null
+                                  : (value) {
+                                      setState(() {
+                                        _enableSsl = value;
+                                        _sslAutoDetected =
+                                            false; // user override
+                                      });
+                                    },
+                            ),
                           ),
                         ),
                       ],

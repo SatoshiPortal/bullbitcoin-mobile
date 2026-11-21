@@ -275,5 +275,6 @@
   "statusCheckMempool": "Mempool",
   "statusCheckTor": "Tor",
   "statusCheckRecoverBull": "RecoverBull",
-  "torCloseTooltip": "Fermer"
+  "torCloseTooltip": "Fermer",
+  "networkRefreshServers": "Actualiser les serveurs"
 }
