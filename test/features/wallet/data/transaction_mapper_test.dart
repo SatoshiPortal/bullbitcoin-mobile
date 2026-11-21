@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show BitcoinTx, TxVout, TxScriptSig;
 import 'package:bb_mobile/features/wallet/data/transaction_mapper.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
+import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';

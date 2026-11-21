@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 

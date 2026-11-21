@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:convert/convert.dart';

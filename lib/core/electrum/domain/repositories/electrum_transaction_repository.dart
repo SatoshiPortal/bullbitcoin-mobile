@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show BitcoinTx;
 
 /// Fetches a parsed Bitcoin transaction from a given Electrum server.
 ///

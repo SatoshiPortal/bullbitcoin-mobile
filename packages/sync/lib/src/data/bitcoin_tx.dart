@@ -1,7 +1,7 @@
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:sync/sync.dart'
-    show DecodedBitcoinTransaction, decodeBitcoinPsbt, decodeBitcoinTransaction;
+
+import 'bitcoin_transaction_decoder.dart';
 
 part 'bitcoin_tx.freezed.dart';
 part 'bitcoin_tx.g.dart';
