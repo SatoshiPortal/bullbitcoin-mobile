@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/announcements/presentation/announcements_cubi
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullInfoCard;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,14 +26,17 @@ class _MockDismissAnnouncementUsecase extends Mock
 class _MockWatchAppUpdateAnnouncementUsecase extends Mock
     implements WatchAppUpdateAnnouncementUsecase {}
 
-Announcement _announcement(AnnouncementId id, {int priority = 0}) =>
-    Announcement(
-      id: id,
-      priority: priority,
-      tone: AnnouncementTone.warning,
-      action: const NoAction(),
-      dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
-    );
+Announcement _announcement(
+  AnnouncementId id, {
+  int priority = 0,
+  AnnouncementAction action = const NoAction(),
+}) => Announcement(
+  id: id,
+  priority: priority,
+  tone: AnnouncementTone.warning,
+  action: action,
+  dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
+);
 
 /// Pumps the carousel alone on a surface of [size], with the cubit already
 /// emitting [announcements].
@@ -42,6 +45,7 @@ Future<void> _pumpCarousel(
   required List<Announcement> announcements,
   Size size = const Size(390, 844),
   double textScale = 1,
+  VoidCallback? onOpenPayjoinSettings,
 }) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -77,7 +81,9 @@ Future<void> _pumpCarousel(
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: AnnouncementCarousel(onOpenPayjoinSettings: () {}),
+                  child: AnnouncementCarousel(
+                    onOpenPayjoinSettings: onOpenPayjoinSettings ?? () {},
+                  ),
                 ),
               ],
             ),
@@ -119,6 +125,54 @@ void main() {
     // Fully opaque, so the black backdrop the home screen paints behind its
     // scroll view can never show through and tint the banner mid-scroll.
     expect(tester.widget<BullInfoCard>(find.byType(BullInfoCard)).bgColor.a, 1);
+  });
+
+  testWidgets('the update warning exposes a 48dp dismiss control', (
+    tester,
+  ) async {
+    await _pumpCarousel(
+      tester,
+      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+    );
+
+    final dismiss = find.byTooltip('Dismiss');
+    expect(dismiss, findsOneWidget);
+    expect(tester.getSize(dismiss).width, greaterThanOrEqualTo(48));
+    expect(tester.getSize(dismiss).height, greaterThanOrEqualTo(48));
+    expect(
+      tester.widget<BullInfoCard>(find.byType(BullInfoCard)).onTap,
+      isNull,
+    );
+
+    await tester.tap(dismiss);
+    await tester.pumpAndSettle();
+    final read = find.widgetWithText(BullButton, 'Read');
+    expect(tester.widget<BullButton>(read).disabled, isTrue);
+  });
+
+  testWidgets('Payjoin opens Settings from the card and the Read action', (
+    tester,
+  ) async {
+    var openings = 0;
+    await _pumpCarousel(
+      tester,
+      announcements: [
+        _announcement(
+          AnnouncementId.payjoinPrivacy,
+          action: const NavigateAction(),
+        ),
+      ],
+      onOpenPayjoinSettings: () => openings++,
+    );
+
+    await tester.tap(find.text('Increase your privacy'));
+    expect(openings, 1);
+
+    await tester.tap(find.byTooltip('Dismiss'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(BullButton, 'Read'));
+    await tester.pumpAndSettle();
+    expect(openings, 2);
   });
 
   testWidgets('a lone banner ends where its text ends, with no gap', (
