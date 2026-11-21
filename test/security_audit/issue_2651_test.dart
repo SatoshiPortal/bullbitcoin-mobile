@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2651 abandoned operations', () {
     test('datasource has no operation cancellation in disposal path', () {
       final source = File(
-        'lib/core/bitbox/data/datasources/bitbox_device_datasource.dart',
+        'features/signers/lib/src/bitbox/data/datasources/bitbox_device_datasource.dart',
       ).readAsStringSync();
       final dispose = source.substring(
         source.indexOf('Future<void> dispose()'),

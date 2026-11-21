@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;

@@ -6,10 +6,6 @@
   "backupWarningLoseReasonKeystore": "잠금화면/기기 인증 방식을 변경하면 기기가 키스토어를 무효화합니다",
   "backupWarningLoseReasonCloudRestore": "클라우드 백업으로 기기를 복원하는 경우",
   "backupWarningNoRecovery": "백업이 없으면 지갑을 복구할 방법이 없습니다.",
-  "bitboxErrorMultipleDevicesFound": "발견되는 다수 BitBox 장치. 한 기기만 연결됩니다.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
   "payTransactionBroadcast": "Transaction 방송",
   "@payTransactionBroadcast": {
     "description": "Success message after broadcasting"
@@ -58,10 +54,6 @@
   "@electrumTimeoutPositiveError": {
     "description": "Validation error for non-positive Timeout value"
   },
-  "bitboxScreenNeedHelpButton": "도움이 필요하십니까?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
-  },
   "sellSendPaymentAboveMax": "이 지갑으로 판매 될 수있는 최대 금액 위에 판매하려고합니다.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -77,10 +69,6 @@
   "transactionDetailLabelTransactionFee": "거래 수수료",
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
-  },
-  "jadeStep13": "Bull Bitcoin 지갑은 Jade의 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
   },
   "transactionSwapDescLnSendPending": "스왑이 시작되었습니다. 우리는 당신의 자금을 잠그기 위해 on-chain 거래를 방송하고 있습니다.",
   "@transactionSwapDescLnSendPending": {
@@ -114,10 +102,6 @@
   "@exchangeDcaUnableToGetConfig": {
     "description": "Error message when DCA configuration cannot be retrieved"
   },
-  "psbtFlowClickScan": "스캔을 클릭합니다",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
   "sellInstitutionNumber": "기관 번호",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
@@ -142,10 +126,6 @@
   "@importQrDeviceKruxStep3": {
     "description": "Krux instruction step 3"
   },
-  "passportStep1": "여권에 로그인",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "sellAdvancedOptions": "고급 옵션",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -169,10 +149,6 @@
   "receiveGenerateAddress": "새 주소 생성",
   "@receiveGenerateAddress": {
     "description": "Button to create new on-chain address"
-  },
-  "kruxStep3": "PSBT를 클릭",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "hwColdcardQ": "콜드 카드 Q",
   "@hwColdcardQ": {
@@ -286,10 +262,6 @@
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
   },
-  "bitboxScreenTroubleshootingStep2": "휴대 전화가 USB 권한이 있는지 확인하십시오.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "요금 선택",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -314,10 +286,6 @@
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "kruxStep7": "   - 장치의 화면 밝기 증가",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
   "exchangeStatisticsBuySellRatio": "구매/판매 비율",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
@@ -330,17 +298,9 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "jadeStep11": "제이드는 그런 다음 자신의 QR 코드를 표시합니다.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
   "buyConfirmExternalWallet": "외부 Bitcoin 지갑",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "bitboxActionPairDeviceProcessing": "연락처",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
   },
   "exchangeCurrencyDropdownTitle": "통화 선택",
   "@exchangeCurrencyDropdownTitle": {
@@ -373,10 +333,6 @@
   "dcaLightningAddressInvalidError": "이용 약관",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "ledgerButtonNeedHelp": "도움이 필요하십니까?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
   },
   "backupInstruction4": "백업의 디지털 사본을 만들지 마십시오. 종이의 조각, 또는 금속에 새겨진에 그것을 아래로 씁니다.",
   "@backupInstruction4": {
@@ -451,14 +407,6 @@
   "swapInsufficientFunds": "잔액 부족",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "ledgerImportButton": "시작하기",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
-  "bitboxActionPairDeviceButton": "페어링 시작",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
   },
   "importQrDeviceSpecterName": "관련 상품",
   "@importQrDeviceSpecterName": {
@@ -546,10 +494,6 @@
   "@testBackupWriteDownPhrase": {
     "description": "Main instruction header for physical backup screen"
   },
-  "jadeStep8": "   - 장치를 더 가까이 움직이거나 더 멀리 시도",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
-  },
   "payNotLoggedIn": "로그아웃",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
@@ -581,15 +525,6 @@
   "coreWalletTransactionStatusPending": "관련 기사",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
-  },
-  "ledgerActionFailedMessage": "{action} 실패",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeLabelBankAccountCountry": "은행 계좌",
   "@fundExchangeLabelBankAccountCountry": {
@@ -677,10 +612,6 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "실시간 지원을 받으려면 먼저 Bull Bitcoin 계정에 로그인해야 합니다. 완전 무료이며 KYC가 필요하지 않고, 이메일 주소만 있으면 됩니다.",
-  "seedsignerStep12": "Bull Bitcoin 지갑은 SeedSigner에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
   "buyAboveMaxAmountError": "최대 금액 이상 구매하려고합니다.",
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
@@ -712,10 +643,6 @@
   "hwJade": "블록스트림 옥",
   "@hwJade": {
     "description": "Name of Blockstream Jade hardware wallet"
-  },
-  "keystoneStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
   },
   "exchangeStatisticsTitle": "관련 기사",
   "@exchangeStatisticsTitle": {
@@ -784,14 +711,6 @@
   "@payNetworkFees": {
     "description": "Label for network fees amount"
   },
-  "bitboxScreenSegwitBip84": "세그먼트 (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenConnectingSubtext": "보안 연결 설정 ...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
   "receiveShareAddress": "회사연혁",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
@@ -803,10 +722,6 @@
   "sharedWithBullBitcoin": "bull Bitcoin과 공유하십시오.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
-  },
-  "jadeStep7": "   - QR 코드를 보관하고 중심",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
   },
   "sendCouldNotBuildTransaction": "거래를 할 수 없습니다",
   "@sendCouldNotBuildTransaction": {
@@ -823,10 +738,6 @@
   "fundExchangeSinpeWarningNoBitcoin": "칫",
   "@fundExchangeSinpeWarningNoBitcoin": {
     "description": "Bold warning text at start of bitcoin warning message"
-  },
-  "ledgerHelpStep3": "Ledger가 Bluetooth가 켜져 있는지 확인하십시오.",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
   },
   "coreSwapsChainFailedRefunding": "스왑이 곧 환불됩니다.",
   "@coreSwapsChainFailedRefunding": {
@@ -860,10 +771,6 @@
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
   },
-  "bitboxActionImportWalletSuccessSubtext": "BitBox 지갑은 성공적으로 수입되었습니다.",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
   "electrumEmptyFieldError": "이 분야는 비어있을 수 없습니다",
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
@@ -884,10 +791,6 @@
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
   },
-  "ledgerWalletTypeSegwit": "세그먼트 (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
-  },
   "bip85Mnemonic": "Mnemonic의 특징",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -903,18 +806,6 @@
   "fundExchangeBankTransferWireTitle": "은행 송금 (wire)",
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
-  },
-  "psbtFlowPartProgress": "부분 {current} {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
   },
   "receiveShareInvoice": "인보이스",
   "@receiveShareInvoice": {
@@ -940,10 +831,6 @@
   "@importWatchOnlyYpub": {
     "description": "Label for ypub import method"
   },
-  "ledgerVerifyTitle": "Ledger에 주소 확인",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
-  },
   "exchangeDcaNetworkBitcoin": "Bitcoin 네트워크",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -951,10 +838,6 @@
   "autoswapWarningTitle": "Autoswap은 다음과 같은 설정으로 활성화됩니다",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
-  },
-  "seedsignerStep1": "당신의 SeedSigner 장치 켜기",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
   },
   "backupWalletHowToDecideBackupLosePhysical": "가장 일반적인 방법 중 하나는 Bitcoin을 잃고 물리적 백업을 잃기 때문입니다. 물리적 백업을 찾는 사람은 모든 Bitcoin을 취할 수 있습니다. 당신이 그것을 잘 숨기고 결코 잃을 수 있는 아주 confident인 경우에, 좋은 선택권입니다.",
   "@backupWalletHowToDecideBackupLosePhysical": {
@@ -1007,14 +890,6 @@
   "payPaymentInProgress": "결제 진행 중!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "ledgerProcessingSign": "결제 방법",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
-  },
-  "jadeStep6": "   - 장치의 화면 밝기 증가",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
   },
   "fundExchangeETransferLabelEmail": "이 이메일에 E-transfer 보내기",
   "@fundExchangeETransferLabelEmail": {
@@ -1084,10 +959,6 @@
   "payPayoutMethod": "Payout 방법",
   "@payPayoutMethod": {
     "description": "Label for payout method section"
-  },
-  "ledgerVerifyButton": "연락처",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
   },
   "sendErrorSwapFeesNotLoaded": "인출 수수료로드되지 않음",
   "@sendErrorSwapFeesNotLoaded": {
@@ -1164,10 +1035,6 @@
   "@replaceByFeeCustomFeeTitle": {
     "description": "Title for custom fee input section"
   },
-  "kruxStep14": "Bull Bitcoin 지갑은 Krux의 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
   "payAvailableBalance": "사용 가능: {amount}",
   "@payAvailableBalance": {
     "description": "Label showing available wallet balance",
@@ -1209,10 +1076,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "passportStep12": "Bull Bitcoin 지갑은 여권에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
   "paySelectRecipient": "자주 묻는 질문",
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
@@ -1233,10 +1096,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "bitboxScreenEnterPasswordSubtext": "BitBox 장치에서 비밀번호를 계속 입력하세요.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
   "systemLabelSwaps": "스왑",
   "@systemLabelSwaps": {
     "description": "System label for swap transactions"
@@ -1244,10 +1103,6 @@
   "sendOpenTheCamera": "카메라 열기",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
-  },
-  "passportStep11": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
   },
   "sendSwapId": "스왑 ID",
   "@sendSwapId": {
@@ -1285,15 +1140,6 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "psbtFlowScanDeviceQr": "Bull Bitcoin 지갑은 {device}에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailedMessage": "오류가 발생했습니다. 다시 로그인하십시오.",
   "@exchangeAuthLoginFailedMessage": {
     "description": "Message shown when exchange login fails"
@@ -1301,10 +1147,6 @@
   "okButton": "이름 *",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "passportStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
   },
   "importQrDeviceKeystoneStep3": "상단 오른쪽 코너에서 *** (3 점)를 탭",
   "@importQrDeviceKeystoneStep3": {
@@ -1362,10 +1204,6 @@
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
   },
-  "ledgerSuccessVerifyTitle": "Ledger에 주소 검증 ...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
-  },
   "payCorporateNameHint": "회사명",
   "@payCorporateNameHint": {
     "description": "Hint for corporate name input"
@@ -1402,10 +1240,6 @@
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
   },
-  "psbtFlowReadyToBroadcast": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
-  },
   "sendErrorLiquidWalletRequired": "액체 지갑은 교환을 번개하기 위해 액체를 사용해야합니다",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
@@ -1426,10 +1260,6 @@
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep5": "   - 장치의 화면 밝기 증가",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
   "transactionSwapDescLnReceiveExpired": "이 스왑이 만료되었습니다. 송금된 모든 자금은 자동으로 발송됩니다.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
@@ -1441,14 +1271,6 @@
   "buyKYCLevel": "사이트맵 1 단계",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
-  },
-  "passportInstructionsTitle": "Foundation 여권 안내",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
-  },
-  "ledgerSuccessImportTitle": "지갑은 성공적으로 수입",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
   },
   "physicalBackupTitle": "물리적 백업",
   "@physicalBackupTitle": {
@@ -1563,10 +1385,6 @@
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
   },
-  "bitboxErrorOperationCancelled": "운영이 취소되었습니다. 다시 시도하십시오.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
-  },
   "withdrawConfirmCard": "(주)",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
@@ -1632,10 +1450,6 @@
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
   },
-  "jadeInstructionsTitle": "블록스트림 제이드 PSBT 관련 기사",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
   "scanNfcButton": "검사 NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -1664,15 +1478,6 @@
   "exchangeAmountInputValidationInsufficient": "충분한 균형",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
-  },
-  "psbtFlowReviewTransaction": "거래가 {device}에서 수입되면 대상 주소와 금액을 검토하십시오.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "broadcastSignedTxCameraButton": "관련 기사",
   "@broadcastSignedTxCameraButton": {
@@ -1709,10 +1514,6 @@
   "coldcardStep13": "Bull Bitcoin 지갑은 Coldcard에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
-  },
-  "psbtFlowIncreaseBrightness": "장치의 화면 밝기를 증가",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
   },
   "payCoinjoinCompleted": "CoinJoin 완료",
   "@payCoinjoinCompleted": {
@@ -1771,10 +1572,6 @@
   "sellSendPaymentFeePriority": "요금 우선",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
-  },
-  "bitboxActionSignTransactionProcessing": "결제 방법",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
   },
   "sellWalletBalance": "밸런스: {amount}",
   "@sellWalletBalance": {
@@ -1844,10 +1641,6 @@
   "walletDeletionConfirmationCancelButton": "이름 *",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "ledgerErrorDeviceLocked": "Ledger 장치는 잠겨 있습니다. 기기를 잠금 해제하고 다시 시도하십시오.",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
   },
   "importQrDeviceSeedsignerStep5": "\"Single Sig\"를 선택하고 선호하는 스크립트 유형을 선택하십시오 (불확한 경우에 choose Native Segwit).",
   "@importQrDeviceSeedsignerStep5": {
@@ -1981,10 +1774,6 @@
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
   },
-  "ledgerHelpStep4": "Ledger Live에서 Bitcoin 앱의 최신 버전을 설치했는지 확인하십시오.",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
-  },
   "broadcastSignedTxBroadcast": "- 연혁",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2035,10 +1824,6 @@
   "exchangeStatisticsAveragePrice": "평균 가격",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
-  },
-  "ledgerSuccessSignDescription": "거래가 성공적으로 체결되었습니다.",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
   },
   "logoutConfirmationLogout": "로그아웃",
   "@logoutConfirmationLogout": {
@@ -2117,10 +1902,6 @@
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
   },
-  "ledgerWalletTypeLegacy": "유산 (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
   "transactionDetailTransferProgress": "스왑 진행 상황",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
@@ -2188,10 +1969,6 @@
   "@torSettingsPortValidationEmpty": {
     "description": "Validation error when port is empty"
   },
-  "ledgerHelpStep1": "Ledger 장치를 재시작하십시오.",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
-  },
   "swapAvailableBalance": "유효한 균형",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -2199,10 +1976,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "지불 묘사",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "ledgerConnectingSubtext": "보안 연결 설정 ...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
   },
   "electrumPrivacyNoticeCancel": "이름 *",
   "@electrumPrivacyNoticeCancel": {
@@ -2236,10 +2009,6 @@
   "receiveGenerateInvoice": "Invoice 생성",
   "@receiveGenerateInvoice": {
     "description": "Button to create Lightning invoice"
-  },
-  "kruxStep8": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
   },
   "coreScreensFeeDeductionExplanation": "전송 금액에서 공제 된 총 수수료입니다",
   "@coreScreensFeeDeductionExplanation": {
@@ -2410,10 +2179,6 @@
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
-  "kruxStep15": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
   "exchangeStatisticsVolume": "제품정보",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
@@ -2421,10 +2186,6 @@
   "fundExchangeETransferLabelSecretQuestion": "비밀 질문",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "jadeStep15": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "confirmButton": "제품정보",
   "@confirmButton": {
@@ -2461,10 +2222,6 @@
   "sendSigningFailed": "로그인 실패",
   "@sendSigningFailed": {
     "description": "Error during hardware wallet signing"
-  },
-  "bitboxErrorDeviceNotPaired": "결합되지 않는 장치. 페어링 프로세스를 먼저 완료하십시오.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
   },
   "transferIdLabel": "전송 ID",
   "@transferIdLabel": {
@@ -2562,10 +2319,6 @@
   "@testBackupAllWordsSelected": {
     "description": "Message shown when user has selected all 12 words"
   },
-  "ledgerProcessingImportSubtext": "시계 전용 지갑을 설정 ...",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
-  },
   "digitalCopyLabel": "디지털 복사",
   "@digitalCopyLabel": {
     "description": "Label for digital copy (with X mark)"
@@ -2589,10 +2342,6 @@
   "paySecurityAnswerHint": "보안 응답 입력",
   "@paySecurityAnswerHint": {
     "description": "Hint for security answer input"
-  },
-  "bitboxActionImportWalletTitle": "BitBox 지갑 가져 오기",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
   },
   "backupSettingsError": "계정 정보",
   "@backupSettingsError": {
@@ -2695,10 +2444,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "psbtFlowInstructions": "관련 기사",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
   "systemLabelExchangeSell": "구매하기",
   "@systemLabelExchangeSell": {
     "description": "System label for exchange sell transactions"
@@ -2719,17 +2464,9 @@
   "@importColdcardInstructionsStep9": {
     "description": "ImportColdcardQ: Ninth instruction step"
   },
-  "bitboxScreenTroubleshootingStep1": "BitBox에 설치된 최신 펌웨어가 있습니다.",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
   "backupSettingsExportVault": "수출 볼트",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
-  },
-  "bitboxActionUnlockDeviceTitle": "BitBox 장치 잠금 해제",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
   },
   "autoswapInfoSettingsButton": "설정 설정",
   "@autoswapInfoSettingsButton": {
@@ -2768,10 +2505,6 @@
       }
     }
   },
-  "kruxStep16": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
   "buyVerifyIdentity": "ID 찾기",
   "@buyVerifyIdentity": {
     "description": "Button to start KYC process"
@@ -2803,10 +2536,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google은이 앱으로 개인 정보를 공유하도록 요청합니다.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "bitboxScreenVerifyAddressSubtext": "BitBox02 화면에 이 주소를 비교",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
   },
   "importQrDeviceSeedsignerStep9": "SeedSigner 지갑에 라벨을 입력하고 가져 오기",
   "@importQrDeviceSeedsignerStep9": {
@@ -2890,10 +2619,6 @@
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails"
   },
-  "ledgerVerifyAddressLabel": "인증:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "이메일 알림",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2910,10 +2635,6 @@
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
   },
-  "jadeStep1": "로그인하여 Jade Device",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
   "exchangeAuthOk": "이름 *",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -2921,10 +2642,6 @@
   "settingsSecurityPinTitle": "안전 Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "psbtFlowTroubleScanningTitle": "문제가 있는 경우:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
   },
   "importQrDeviceJadeStep9": "기기에서 QR 코드를 스캔합니다.",
   "@importQrDeviceJadeStep9": {
@@ -2946,17 +2663,9 @@
   "@exchangeKycLight": {
     "description": "Light KYC level label"
   },
-  "seedsignerInstructionsTitle": "SeedSigner 지침",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
   "exchangeAmountInputValidationEmpty": "금액",
   "@exchangeAmountInputValidationEmpty": {
     "description": "Validation message when amount field is empty"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "BitBox 장치에서 페어링 코드를 확인하십시오 ...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
   },
   "backupInstruction3": "당신의 12 단어 백업에 액세스 할 수있는 사람은 Bitcoins을 훔칠 수 있습니다. 그것을 잘 숨깁니다.",
   "@backupInstruction3": {
@@ -3022,10 +2731,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 문제 해결",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
   "broadcastSignedTxPushTxButton": "푸시Tx",
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
@@ -3037,10 +2742,6 @@
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE를 사용하여 Colones 전송",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
-  },
-  "kruxStep2": "자주 묻는 질문",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "fundExchangeArsBankTransferDescription": "아래의 정확한 아르헨티나 은행 세부 정보를 사용하여 은행 계좌에서 은행 송금을 보내십시오.",
   "@fundExchangeArsBankTransferDescription": {
@@ -3069,10 +2770,6 @@
   "pinProtectionDescription": "PIN은 지갑과 설정에 대한 액세스를 보호합니다. 기억해 주세요.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "kruxStep5": "Bull 지갑에서 보이는 QR 코드를 스캔",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
   },
   "backupSettingsLabelsButton": "회사 소개",
   "@backupSettingsLabelsButton": {
@@ -3186,10 +2883,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "seedsignerStep11": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
   "transactionDetailLabelPayjoinStatus": "Payjoin 상태",
   "@transactionDetailLabelPayjoinStatus": {
     "description": "Label for payjoin status"
@@ -3238,10 +2931,6 @@
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "bitboxErrorConnectionFailed": "BitBox 장치에 연결할 실패. 자주 묻는 질문.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
   "exchangeFileUploadDocumentTitle": "모든 문서",
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
@@ -3277,14 +2966,6 @@
   "payBumpFee": "Bump 수수료",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "시계 전용 지갑을 설정 ...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "psbtFlowDone": "나는",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
   },
   "exchangeHomeDepositButton": "계좌정보",
   "@exchangeHomeDepositButton": {
@@ -3511,10 +3192,6 @@
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
   },
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - 추천",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
-  },
   "exchangeAccountInfoFirstNameLabel": "이름 *",
   "@exchangeAccountInfoFirstNameLabel": {
     "description": "Label for first name field in account information"
@@ -3587,10 +3264,6 @@
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
   },
-  "bitboxActionImportWalletProcessing": "수입 지갑",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
-  },
   "swapConfirmTransferTitle": "스왑 확인",
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
@@ -3658,10 +3331,6 @@
   "receiveWaitForSenderToFinish": "Payjoin 거래를 완료하는 sender를 기다립니다",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "seedsignerStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
   },
   "sellErrorLoadUtxos": "UTXO를로드 실패 : {error}",
   "@sellErrorLoadUtxos": {
@@ -3731,10 +3400,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "passportStep6": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
   "importQrDeviceSpecterStep8": "모바일 장치에서 열린 카메라 탭",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
@@ -3751,10 +3416,6 @@
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
   },
-  "keystoneStep4": "문제가 있는 경우:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
-  },
   "autoswapTriggerAtBalanceInfoText": "Autoswap은 잔액이 최대 잔액 위에 올라갈 때 트리거됩니다.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
@@ -3766,10 +3427,6 @@
   "sendCustomFeeRate": "주문 수수료율",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
-  },
-  "ledgerHelpTitle": "Ledger 문제 해결",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
   },
   "swapErrorAmountExceedsMaximum": "금액은 최대 스왑 금액을 초과합니다",
   "@swapErrorAmountExceedsMaximum": {
@@ -3815,10 +3472,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "psbtFlowMoveBack": "장치가 좀 조금 뒤로 움직이기",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
   "exchangeReferralsContactSupportMessage": "우리의 추천 프로그램에 대해 자세히 알아보기",
   "@exchangeReferralsContactSupportMessage": {
     "description": "Message prompting users to contact support about the referral program"
@@ -3830,10 +3483,6 @@
   "swapProgressCompleted": "스왑 완료",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
-  },
-  "keystoneStep2": "스캔을 클릭합니다",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
   },
   "sendContinue": "계속하기",
   "@sendContinue": {
@@ -3884,10 +3533,6 @@
   "sellBitcoinOnChain": "비트코인",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "ledgerWalletTypeLabel": "지갑 유형:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
   },
   "bip85ExperimentalWarning": "회사 소개\n수동으로 derivation 경로 백업",
   "@bip85ExperimentalWarning": {
@@ -3994,10 +3639,6 @@
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
   },
-  "keystoneStep6": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
   "walletDeletionErrorGeneric": "지갑을 삭제하려면 다시 시도하십시오.",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
@@ -4009,10 +3650,6 @@
   "sellNoInvoiceData": "사용 가능한 청구서",
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "ledgerInstructionsIos": "Ledger가 Bitcoin 앱이 열리고 Bluetooth가 활성화되었는지 확인하십시오.",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
   },
   "replaceByFeeScreenTitle": "결제 방법",
   "@replaceByFeeScreenTitle": {
@@ -4062,10 +3699,6 @@
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
-  "passportStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
   "settingsCurrencyTitle": "·",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -4081,15 +3714,6 @@
   "onboardingPhysicalBackupDescription": "12 단어를 통해 지갑을 복구.",
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
-  },
-  "psbtFlowSelectSeed": "거래가 {device}에서 수입되면 서명하고 싶은 씨앗을 선택해야합니다.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusLoading": "제품정보",
   "@pinStatusLoading": {
@@ -4109,10 +3733,6 @@
   "logoutConfirmationDescription": "Bull Bitcoin 계정에서 로그인 하시겠습니까? 교환 기능을 다시 로그인해야합니다.",
   "@logoutConfirmationDescription": {
     "description": "Description text for logout confirmation bottom sheet"
-  },
-  "ledgerSuccessAddressVerified": "자주 묻는 질문!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
   },
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "콜롬비아",
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
@@ -4162,14 +3782,6 @@
   "receivePaymentNormally": "지불을 일반적으로 받으십시오",
   "@receivePaymentNormally": {
     "description": "Option to receive payment without payjoin if it fails"
-  },
-  "kruxStep10": "거래가 Krux에 수입되면 목적지 주소와 금액을 검토하십시오.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "bitboxErrorHandshakeFailed": "보안 연결을 설정하는 실패. 다시 시도하십시오.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
   },
   "sellKYCRequired": "KYC 인증",
   "@sellKYCRequired": {
@@ -4321,14 +3933,6 @@
   "@sellGoHome": {
     "description": "Button to go to home screen"
   },
-  "keystoneStep8": "거래가 키스톤에 수입되면 목적지 주소와 금액을 검토하십시오.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "psbtFlowSpecterTitle": "Specter 지시",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "importMnemonicChecking": "체크인 ...",
   "@importMnemonicChecking": {
     "description": "Status while checking wallet type"
@@ -4356,14 +3960,6 @@
   "autoswapInfoRemindLater": "나중에 다시",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
-  },
-  "bitboxErrorDeviceNotFound": "BitBox 장치가 없습니다.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
-  "ledgerScanningMessage": "가까운 Ledger 장치를 찾고...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
   },
   "sellInsufficientBalanceError": "선택한 지갑에 충분한 잔액이 이 판매 주문을 완료합니다.",
   "@sellInsufficientBalanceError": {
@@ -4506,10 +4102,6 @@
   "@importWatchOnlyUnknown": {
     "description": "Default value when signing device is unknown"
   },
-  "bitboxScreenNestedSegwitBip49": "배열된 Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
-  },
   "payContinue": "계속하기",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -4600,10 +4192,6 @@
   "sendFeeRateTooHigh": "요금률은 매우 높음",
   "@sendFeeRateTooHigh": {
     "description": "Warning for excessive fee"
-  },
-  "ledgerHelpStep2": "휴대 전화가 Bluetooth가 켜져 있는지 확인하십시오.",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
   },
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "전송 코드.",
   "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
@@ -4703,10 +4291,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "keystoneStep5": "   - 장치의 화면 밝기 증가",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
   "sendSelectCoinsManually": "동전을 수동으로",
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
@@ -4763,10 +4347,6 @@
   "@coreScreensNetworkFeesLabel": {
     "description": "Label for network fees field"
   },
-  "kruxStep9": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
-  },
   "sendReceiveNetworkFee": "네트워크 수수료",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
@@ -4819,10 +4399,6 @@
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
   },
-  "kruxStep11": "Krux에서 거래에 서명 버튼을 클릭합니다.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
   "exchangeSupportChatEmptyState": "아직 메시지가 없습니다. 대화 시작!",
   "@exchangeSupportChatEmptyState": {
     "description": "Message shown when there are no chat messages"
@@ -4834,10 +4410,6 @@
   "electrumRetryCountEmptyError": "Retry Count는 비어있을 수 없습니다",
   "@electrumRetryCountEmptyError": {
     "description": "Validation error for empty Retry Count field"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "Ledger 장치에서 Bitcoin 앱을 열고 다시 시도하십시오.",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
   },
   "physicalBackupTag": "신뢰할 수 있는 (시간 소요)",
   "@physicalBackupTag": {
@@ -4858,10 +4430,6 @@
   "torSettingsDescConnecting": "회사연혁 Tor 연결",
   "@torSettingsDescConnecting": {
     "description": "Description when Tor is connecting"
-  },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - 이전 형식",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
   },
   "appleICloudProvider": "애플 iCloud",
   "@appleICloudProvider": {
@@ -4886,10 +4454,6 @@
   "backupWalletHowToDecideBackupEncryptedRecommendation": "암호화된 vault: ",
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
-  },
-  "seedsignerStep9": "대상 주소와 금액을 검토하고 서명을 확인합니다.Sign Seeder.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
   },
   "logoutButton": "로그아웃",
   "@logoutButton": {
@@ -4988,10 +4552,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "keystoneStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
-  },
   "receiveGenerationFailed": "생성 실패 {type}",
   "@receiveGenerationFailed": {
     "description": "Error when address/invoice generation fails",
@@ -5066,10 +4626,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "passportStep2": "QR Code로 로그인하기",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
   "pinCodeRemoveButton": "보안 PIN 제거",
   "@pinCodeRemoveButton": {
     "description": "Button label to remove the security PIN"
@@ -5101,10 +4657,6 @@
   "coreSwapsLnSendFailed": "스왑 실패.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "keystoneStep9": "Keystone에서 거래에 서명하는 버튼을 클릭합니다.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
   },
   "totalFeesLabel": "총 수수료",
   "@totalFeesLabel": {
@@ -5266,10 +4818,6 @@
   "@payPaymentDetails": {
     "description": "Section header for payment information"
   },
-  "bitboxActionVerifyAddressTitle": "BitBox에 주소 확인",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
   "psbtSignTransaction": "로그인",
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
@@ -5283,17 +4831,9 @@
       }
     }
   },
-  "bitboxActionImportWalletSuccess": "지갑은 성공적으로 수입",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
   "nextButton": "이름 *",
   "@nextButton": {
     "description": "Button label to go to next step"
-  },
-  "ledgerSignButton": "로그인",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
   },
   "payFromAnotherWallet": "다른 Bitcoin 지갑에서 지불",
   "@payFromAnotherWallet": {
@@ -5315,10 +4855,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "jadeStep14": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
   "payCorporateName": "회사명",
   "@payCorporateName": {
     "description": "Label for corporate name field"
@@ -5338,10 +4874,6 @@
   "customLocationRecommendationText": "당신은 confident 당신은 vault 파일을 잃지 않을 것이며 여전히 휴대 전화를 잃을 경우 액세스 할 수 있습니다.",
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
-  },
-  "kruxStep13": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
   },
   "transactionSwapInfoRefundableTransfer": "이 스왑은 몇 초 안에 자동으로 환불됩니다. 환불되지 않으면 \"스왑 환불 재시도\" 버튼을 눌러 수동으로 환불을 시도할 수 있습니다.",
   "@transactionSwapInfoRefundableTransfer": {
@@ -5387,10 +4919,6 @@
   "takeYourTimeTag": "자주 묻는 질문",
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
-  },
-  "ledgerSuccessVerifyDescription": "주소는 Ledger 장치에 확인되었습니다.",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
   },
   "bip85Title": "BIP85 신생 동물",
   "@bip85Title": {
@@ -5496,10 +5024,6 @@
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
   },
-  "psbtFlowSignTransaction": "로그인",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
   "payAllPayments": "모든 결제",
   "@payAllPayments": {
     "description": "Filter option to show all"
@@ -5552,15 +5076,6 @@
   "buyConfirmationTimeValue": "~10분",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
-  },
-  "ledgerConnectingMessage": "{deviceName}에 연결",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadUploading": "관련 기사.",
   "@exchangeFileUploadUploading": {
@@ -5648,14 +5163,6 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "jadeStep10": "버튼을 클릭해서 거래에 로그인하세요.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "bitboxScreenUnknownError": "Unknown 오류가 발생했습니다",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
   "electrumPrivacyNoticeTitle": "회사연혁",
   "@electrumPrivacyNoticeTitle": {
     "description": "Title for privacy notice bottom sheet"
@@ -5680,10 +5187,6 @@
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
   },
-  "psbtFlowTransactionImported": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
   "translationWarningDismissButton": "뚱 베어",
   "@translationWarningDismissButton": {
     "description": "Button to dismiss the translation warning"
@@ -5699,10 +5202,6 @@
   "payTimeoutError": "지불 timeout. 자주 묻는 질문",
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
-  },
-  "kruxStep4": "본문 바로가기",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
   },
   "sellErrorRecalculateFees": "송금 수수료: {error}",
   "@sellErrorRecalculateFees": {
@@ -5816,14 +5315,6 @@
   "@onboardingCreateWalletButtonLabel": {
     "description": "The label for the button to create a wallet from the onboarding screen"
   },
-  "bitboxScreenVerifyOnDevice": "BitBox 장치에서 이 주소를 확인",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
-  "ledgerConnectTitle": "Ledger 장치를 연결",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
   "withdrawAmountTitle": "인출 fiat",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
@@ -5908,10 +5399,6 @@
   "walletDeletionErrorOngoingSwaps": "지속적인 스왑으로 지갑을 삭제할 수 없습니다.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
-  },
-  "bitboxScreenConnecting": "BitBox에 연결",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
   },
   "transactionLabelServerNetworkFees": "서버 네트워크 요금",
   "@transactionLabelServerNetworkFees": {
@@ -6032,10 +5519,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "BitBox 장치에서 암호를 입력하십시오 ...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
   "sellWhichWalletQuestion": "어떤 지갑에서 판매하고 싶습니까?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
@@ -6051,10 +5534,6 @@
   "receiveFixedAmount": "계정 정보",
   "@receiveFixedAmount": {
     "description": "Required amount field"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "주소는 BitBox 장치에서 확인되었습니다.",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
   },
   "transactionSwapDescLnSendPaid": "당신의 온체인 거래가 방송되었습니다. 1 확인 후, 번개 결제가 전송됩니다.",
   "@transactionSwapDescLnSendPaid": {
@@ -6104,14 +5583,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "seedsignerStep6": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
-  "ledgerHelpStep5": "자주 묻는 질문 Ledger 장치는 최신 펌웨어를 사용하여 Ledger Live 데스크탑 앱을 사용하여 펌웨어를 업데이트 할 수 있습니다.",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
-  },
   "torSettingsPortDisplay": "항구: {port}",
   "@torSettingsPortDisplay": {
     "description": "Display text showing current port number",
@@ -6149,10 +5620,6 @@
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
   },
-  "psbtFlowScanQrShown": "Bull 지갑에서 보이는 QR 코드를 스캔",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
   "testBackupErrorInvalidFile": "잘못된 파일 내용",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -6168,10 +5635,6 @@
   "sendSlowPaymentWarningDescription": "Bitcoin swaps는 확인 시간을 취할 것입니다.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "BitBox 장치에서 주소를 확인하십시오.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
   },
   "pinConfirmHeadline": "새로운 핀을 확인",
   "@pinConfirmHeadline": {
@@ -6241,10 +5704,6 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "keystoneInstructionsTitle": "Keystone 지침",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
-  },
   "hwLedger": "연락처",
   "@hwLedger": {
     "description": "Name of Ledger hardware wallet"
@@ -6277,10 +5736,6 @@
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
   },
-  "bitboxActionVerifyAddressProcessing": "BitBox에 주소 표시 ...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
-  },
   "sendTypeSwap": "스왑",
   "@sendTypeSwap": {
     "description": "Send type name for Lightning swap transactions"
@@ -6288,10 +5743,6 @@
   "sendErrorAmountExceedsMaximum": "금액은 최대 스왑 금액을 초과합니다",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
-  },
-  "bitboxActionSignTransactionSuccess": "거래가 성공적으로 서명했습니다",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
   },
   "exchangeStatisticsBuyStats": "구매 통계",
   "@exchangeStatisticsBuyStats": {
@@ -6322,10 +5773,6 @@
   "importColdcardTitle": "Coldcard에 연결 ·",
   "@importColdcardTitle": {
     "description": "AppBar title for Coldcard Q import"
-  },
-  "ledgerSuccessImportDescription": "Ledger 지갑은 성공적으로 수입되었습니다.",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
   },
   "pinStatusProcessing": "제품정보",
   "@pinStatusProcessing": {
@@ -6374,10 +5821,6 @@
   "hwSeedSigner": "비밀번호",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
-  },
-  "bitboxActionUnlockDeviceButton": "비밀번호",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
   },
   "payNetworkError": "네트워크 오류. 다시 시도",
   "@payNetworkError": {
@@ -6433,10 +5876,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "ledgerInstructionsAndroidUsb": "자주 묻는 질문 Ledger는 Bitcoin 앱이 열리고 USB를 통해 연결됩니다.",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
-  },
   "onboardingOwnYourMoney": "당신의 돈을 소유",
   "@onboardingOwnYourMoney": {
     "description": "Tagline displayed in onboarding splash screen"
@@ -6482,10 +5921,6 @@
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
   },
-  "bitboxScreenTryAgainButton": "다시 시도",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
-  },
   "exchangeStatisticsNoData": "통계 없음",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -6523,17 +5958,9 @@
       }
     }
   },
-  "psbtFlowClickDone": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
   "addressCardUnusedLabel": "한국어",
   "@addressCardUnusedLabel": {
     "description": "Label indicating an address has not been used"
-  },
-  "bitboxActionUnlockDeviceSuccess": "장치 Unlocked 감사합니다",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
   },
   "receivePayjoinInProgress": "진행중인 Payjoin",
   "@receivePayjoinInProgress": {
@@ -6601,10 +6028,6 @@
   "@screenshotLabel": {
     "description": "Label for screenshot (with X mark)"
   },
-  "bitboxErrorOperationTimeout": "가동 시간. 다시 시도하십시오.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
   "receiveLightning": "연락처",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
@@ -6653,15 +6076,6 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "{device} 장치에 턴",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsKeyServer": "키 서버 ",
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
@@ -6669,10 +6083,6 @@
   "connectHardwareWalletColdcardQ": "콜드 카드 Q",
   "@connectHardwareWalletColdcardQ": {
     "description": "Coldcard Q hardware wallet option"
-  },
-  "seedsignerStep2": "스캔을 클릭합니다",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
   },
   "addressCardIndexLabel": "색인: ",
   "@addressCardIndexLabel": {
@@ -6709,15 +6119,6 @@
   "testBackupCreatedAt": "에 게시:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "psbtFlowSignTransactionOnDevice": "{device}에서 거래에 서명하는 버튼을 클릭합니다.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "transactionStatusPending": "관련 기사",
   "@transactionStatusPending": {
@@ -6796,10 +6197,6 @@
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
   },
-  "keystoneStep7": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
   "coreSwapsChainExpired": "스왑 만료",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
@@ -6857,14 +6254,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "passportStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "jadeStep5": "문제가 있는 경우:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
   "electrumProtocolError": "프로토콜 (ssl:// 또는 tcp://)을 포함하지 마십시오.",
   "@electrumProtocolError": {
     "description": "Validation error when protocol is included in server URL"
@@ -6912,10 +6301,6 @@
   "testBackupEncryptedVaultTag": "쉽고 간단한 (1 분)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "bitboxScreenTroubleshootingStep3": "BitBox02 장치를 제거하고 다시 연결하여 복원하십시오.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
   },
   "torSettingsProxyPort": "Tor 프록시 포트",
   "@torSettingsProxyPort": {
@@ -7069,14 +6454,6 @@
   "@transactionListToday": {
     "description": "Date label for today's transactions"
   },
-  "keystoneStep12": "Bull Bitcoin 지갑은 Keystone에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
-  "ledgerErrorRejectedByUser": "Transaction은 Ledger 장치에서 사용자에 의해 거부되었습니다.",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
   "payFeeRate": "수수료율",
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
@@ -7109,10 +6486,6 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "passportStep10": "여권은 자신의 QR 코드를 보여줍니다.",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
   "transactionDetailLabelAmountSent": "전송 금액",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
@@ -7129,10 +6502,6 @@
   "@buyInputInsufficientBalance": {
     "description": "Insufficient balance info card title"
   },
-  "ledgerProcessingSignSubtext": "Ledger 장치에서 거래를 확인하십시오 ...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
-  },
   "withdrawConfirmClabe": "사이트맵",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
@@ -7148,10 +6517,6 @@
   "payScanQRCode": "QR 코드 이름 *",
   "@payScanQRCode": {
     "description": "Button text to open QR code scanner for payment"
-  },
-  "seedsignerStep10": "SeedSigner는 자신의 QR 코드를 보여줍니다.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
   },
   "psbtInstructions": "관련 기사",
   "@psbtInstructions": {
@@ -7232,10 +6597,6 @@
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
-  "seedsignerStep7": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
   "sendAmount": "계정 정보",
   "@sendAmount": {
     "description": "Label for the transaction amount"
@@ -7251,10 +6612,6 @@
   "dcaConfirmAmount": "계정 정보",
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
-  },
-  "seedsignerStep8": "거래가 SeedSigner에서 수입되면 서명하려는 씨앗을 선택해야합니다.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
   },
   "sellSendPaymentPriceRefresh": "가격은 상쾌합니다 ",
   "@sellSendPaymentPriceRefresh": {
@@ -7279,10 +6636,6 @@
   "receiveInvoiceExpired": "청구서 만료",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
-  },
-  "ledgerButtonManagePermissions": "앱 권한 관리",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
   },
   "autoswapMinimumThresholdErrorSats": "최소 잔량 임계 값은 {amount} sats",
   "@autoswapMinimumThresholdErrorSats": {
@@ -7317,10 +6670,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - 추천",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
   "fundExchangeSpeiSubtitle": "CLABE를 사용하여 자금을 전송",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
@@ -7340,10 +6689,6 @@
   "appStartupContactSupportButton": "연락처",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
-  },
-  "bitboxScreenWaitingConfirmation": "BitBox02에 대한 확인을 기다리고 ...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
   },
   "howToDecideVaultLocationText1": "Google 또는 Apple과 같은 클라우드 스토리지 제공 업체는 암호화 암호가 너무 강하기 때문에 Bitcoin에 액세스 할 수 없습니다. Bitcoin은 주요 서버 (암호화 암호를 저장하는 온라인 서비스)와 충돌하지 않는 이벤트에 만 액세스 할 수 있습니다. 키 서버가 해킹을 받으면 Bitcoin은 Google 또는 Apple 클라우드로 위험 할 수 있습니다.",
   "@howToDecideVaultLocationText1": {
@@ -7462,14 +6807,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bitboxActionPairDeviceSuccess": "결합된 장치",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxErrorNoDevicesFound": "BitBox 장치가 없습니다. 장치가 전원을 켜고 USB를 통해 연결되도록하십시오.",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
   "torSettingsStatusConnecting": "연결 ...",
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
@@ -7486,10 +6823,6 @@
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
-  "ledgerWalletTypeNestedSegwit": "배열된 Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
-  },
   "fundExchangeJurisdictionMexico": "┗ 멕시코",
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
@@ -7501,10 +6834,6 @@
   "coreSwapsActionClose": "뚱 베어",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
-  },
-  "kruxStep6": "문제가 있는 경우:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
   },
   "autoswapMaximumFeeError": "최대 요금 임계 값은 {threshold} %",
   "@autoswapMaximumFeeError": {
@@ -7527,10 +6856,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "ledgerProcessingVerify": "Ledger에 주소 표시 ...",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
-  },
   "coreScreensFeePriorityLabel": "요금 우선",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
@@ -7546,10 +6871,6 @@
   "bip329LabelsHeading": "BIP329 상표 수입품/수출",
   "@bip329LabelsHeading": {
     "description": "Main heading on BIP329 labels page"
-  },
-  "jadeStep2": "(선택 사항)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "coldcardStep4": "Bull 지갑에서 보이는 QR 코드를 스캔",
   "@coldcardStep4": {
@@ -7650,14 +6971,6 @@
       }
     }
   },
-  "keystoneStep1": "Keystone 장치에 로그인",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "backupKeyWarningMessage": "경고: 백업 키를 저장하는 것을 조심하십시오.",
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
@@ -7669,10 +6982,6 @@
   "exchangeAuthErrorMessage": "오류가 발생했습니다. 다시 로그인하십시오.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
-  },
-  "bitboxActionSignTransactionTitle": "로그인",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
   },
   "testBackupGoogleDrivePrivacyPart3": "휴대폰을 떠나고 ",
   "@testBackupGoogleDrivePrivacyPart3": {
@@ -7725,10 +7034,6 @@
   "exchangeSupportChatYesterday": "1 년 전",
   "@exchangeSupportChatYesterday": {
     "description": "Label for yesterday in date formatting"
-  },
-  "jadeStep3": "\"Scan QR\" 옵션을 선택하십시오",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "dcaSetupFundAccount": "계정 생성",
   "@dcaSetupFundAccount": {
@@ -7808,10 +7113,6 @@
   "@confirmLogoutTitle": {
     "description": "Dialog title for logout confirmation"
   },
-  "ledgerWalletTypeSelectTitle": "지갑 선택 제품정보",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
   "swapTransferCompletedMessage": "와, 기다리셨군요! 스왑이 성공적으로 완료되었습니다.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
@@ -7848,10 +7149,6 @@
   "@payProcessingPayment": {
     "description": "Loading message while payment is being processed"
   },
-  "ledgerImportTitle": "수입 Ledger 지갑",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
   "exchangeDcaFrequencyMonth": "1 개월",
   "@exchangeDcaFrequencyMonth": {
     "description": "DCA frequency unit: month"
@@ -7864,10 +7161,6 @@
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
   },
-  "bitboxScreenScanning": "장치 스캔",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
   "howToDecideBackupTitle": "결정하는 방법",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
@@ -7876,17 +7169,9 @@
   "@statusCheckTitle": {
     "description": "Title for the service status screen"
   },
-  "ledgerHelpSubtitle": "먼저, Ledger 장치를 잠금 해제하고 Bitcoin 앱이 열립니다. 장치가 여전히 앱과 연결되지 않는 경우 다음을 시도하십시오",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
-  },
   "savingToDevice": "당신의 장치에 저장.",
   "@savingToDevice": {
     "description": "Message shown when saving to device"
-  },
-  "bitboxActionImportWalletButton": "시작하기",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
   },
   "fundExchangeLabelSwiftCode": "SWIFT 코드",
   "@fundExchangeLabelSwiftCode": {
@@ -7975,10 +7260,6 @@
   "@bip329LabelsExportButton": {
     "description": "Button text to export labels"
   },
-  "jadeStep4": "Bull 지갑에서 보이는 QR 코드를 스캔",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "payBillerNameValue": "선정된 빌러 이름",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -8014,10 +7295,6 @@
   "paySecurityQuestionHint": "보안 질문을 입력 (10-40 문자)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
-  },
-  "ledgerErrorMissingPsbt": "PSBT는 서명을 위해 요구됩니다",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
   },
   "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub 또는 디지터",
   "@importWatchOnlyPasteHint": {
@@ -8126,10 +7403,6 @@
   "@testBackupDoNotShare": {
     "description": "Warning header about keeping recovery phrase secret"
   },
-  "kruxInstructionsTitle": "Krux 지침",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
-  },
   "paySinpeNumeroComprobante": "참고 번호",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -8137,14 +7410,6 @@
   "backupSettingsViewVaultKey": "Vault 보기 이름 *",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
-  },
-  "ledgerErrorDeviceBusy": "다른 프로그램이 Ledger를 사용하고 있습니다. 해당 프로그램(예: Ledger Live)을 닫고 다시 시도하십시오.",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "사용할 수있는 Ledger 연결 없음",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
   },
   "testBackupSuccessButton": "뚱 베어",
   "@testBackupSuccessButton": {
@@ -8278,15 +7543,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "bitboxScreenActionFailed": "{action} 실패",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupScheduleMessage": "Bitcoin 구매는이 일정 당 자동으로 배치됩니다.",
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
@@ -8310,10 +7566,6 @@
   "swapProgressRefundMessage": "스왑에 오류가 발생했습니다. 환불이 진행 중입니다.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
-  },
-  "passportStep4": "문제가 있는 경우:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
   },
   "dcaConfirmContinue": "계속하기",
   "@dcaConfirmContinue": {
@@ -8343,10 +7595,6 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
-  "bitboxActionVerifyAddressButton": "연락처",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
   "importColdcardInstructionsStep7": "모바일 장치에서 \"오픈 카메라\"를 탭",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
@@ -8358,10 +7606,6 @@
   "enterBackupKeyLabel": "백업 키 입력",
   "@enterBackupKeyLabel": {
     "description": "Label for backup key input field"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "첫째로, 당신의 BitBox02 장치는 당신의 전화 USB 항구에 연결됩니다. 장치가 여전히 앱과 연결되지 않는 경우 다음을 시도하십시오",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
   },
   "securityWarningTitle": "보안 경고",
   "@securityWarningTitle": {
@@ -8396,25 +7640,13 @@
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
   },
-  "bitboxScreenAddressToVerify": "인증:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
   "payConfirmPayment": "결제방법",
   "@payConfirmPayment": {
     "description": "Button text to confirm and execute payment"
   },
-  "bitboxErrorPermissionDenied": "USB 권한은 BitBox 장치에 연결해야 합니다.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
   "recoveryPhraseTitle": "복구 구문을 작성\n정확한 순서에서",
   "@recoveryPhraseTitle": {
     "description": "Title instructing user to write down recovery phrase"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "BitBox 장치에서 거래를 확인하십시오 ...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
   },
   "sellConfirmPayment": "결제방법",
   "@sellConfirmPayment": {
@@ -8498,10 +7730,6 @@
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
-  "bitboxActionPairDeviceSuccessSubtext": "BitBox 장치는 이제 페어링하고 사용할 준비가되어 있습니다.",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
-  },
   "pickPasswordInsteadButton": "대신 암호를 선택 >>",
   "@pickPasswordInsteadButton": {
     "description": "Button label to switch to password input"
@@ -8509,10 +7737,6 @@
   "coreScreensSendNetworkFeeLabel": "네트워크 수수료",
   "@coreScreensSendNetworkFeeLabel": {
     "description": "Label for send network fee field"
-  },
-  "bitboxScreenScanningSubtext": "BitBox 장치를 찾고 ...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
   },
   "sellOrderFailed": "판매 주문에 실패",
   "@sellOrderFailed": {
@@ -8545,10 +7769,6 @@
   "dcaConfirmNetworkBitcoin": "비트 코인",
   "@dcaConfirmNetworkBitcoin": {
     "description": "Bitcoin network label"
-  },
-  "seedsignerStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN 코스타리카 (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
@@ -8595,25 +7815,9 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "bitboxErrorConnectionTypeNotInitialized": "연결 유형은 초기화되지 않습니다.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
-  },
   "transactionListOngoingTransfersDescription": "이 스왑은 현재 진행 중입니다. 자금은 안전하며 스왑이 완료되면 사용할 수 있습니다.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
-  },
-  "ledgerErrorPermissionDenied": "Ledger 기기에 연결하려면 블루투스 권한이 필요합니다.",
-  "ledgerErrorNoDevicesFound": "Ledger 기기를 찾을 수 없습니다. 기기가 켜져 있고 블루투스가 활성화되어 있는지 확인하세요.",
-  "ledgerErrorMultipleDevicesFound": "여러 개의 Ledger 기기가 발견되었습니다. 근처에 기기가 하나만 있는지 확인하세요.",
-  "ledgerErrorDeviceNotFound": "Ledger 기기를 찾을 수 없습니다.",
-  "ledgerErrorDeviceMismatch": "기기 불일치가 감지되었습니다.",
-  "ledgerErrorInvalidPsbt": "잘못된 PSBT 형식이 감지되었습니다.",
-  "ledgerErrorMissingDerivationPath": "파생 경로가 필요합니다",
-  "ledgerErrorMissingScriptType": "스크립트 유형이 필요합니다",
-  "ledgerProcessingVerifySubtext": "Ledger 장치에 주소를 확인하십시오.",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
   },
   "transactionOrderLabelOriginCedula": "근원 Cedula",
   "@transactionOrderLabelOriginCedula": {
@@ -8676,25 +7880,13 @@
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
-  "ledgerInstructionsAndroidDual": "Ledger가 Bitcoin 앱이 열리고 Bluetooth가 활성화되었는지 확인하십시오.",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
   "defaultWalletsLabel": "기본 지갑",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
   },
-  "jadeStep9": "거래가 옥에 수입되면 목적지 주소와 금액을 검토합니다.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
   "receiveAddLabel": "상표 추가",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
-  },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
   },
   "dcaConfirmFrequencyHourly": "매시간",
   "@dcaConfirmFrequencyHourly": {
@@ -8720,10 +7912,6 @@
   "testBackupGoogleDrivePrivacyPart5": "bull Bitcoin과 공유하십시오.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "거래가 성공적으로 체결되었습니다.",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
   },
   "transactionStatusTransferExpired": "스왑 만료",
   "@transactionStatusTransferExpired": {
@@ -8807,14 +7995,6 @@
   "@recoverButton": {
     "description": "Button label to recover wallet"
   },
-  "passportStep5": "   - 장치의 화면 밝기 증가",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "bitboxScreenConnectSubtext": "BitBox02가 잠금 해제되고 USB를 통해 연결되도록하십시오.",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
   "payOwnerName": "회사명",
   "@payOwnerName": {
     "description": "Label for owner name field"
@@ -8835,10 +8015,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxErrorInvalidResponse": "BitBox 장치에서 잘못된 응답. 다시 시도하십시오.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
   },
   "payAdvancedOptions": "고급 옵션",
   "@payAdvancedOptions": {
@@ -8917,10 +8093,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner 지침",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "jadeStep12": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
   },
   "payFilterByType": "필터 유형",
   "@payFilterByType": {
@@ -9059,10 +8231,6 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "bitboxScreenWalletTypeLabel": "지갑 유형:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
-  },
   "importQrDeviceKruxStep6": "그것은!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
@@ -9114,10 +8282,6 @@
   "coreScreensPageNotFound": "사이트 맵",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "passportStep8": "거래가 여권에 수입되면 목적지 주소와 금액을 검토합니다.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
   },
   "importQrDeviceTitle": "연결 {deviceName}",
   "@importQrDeviceTitle": {
@@ -9214,10 +8378,6 @@
   "@swapTotalFees": {
     "description": "Total fees label"
   },
-  "keystoneStep11": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
   "scanningCompletedMessage": "스캔 완료",
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
@@ -9233,10 +8393,6 @@
   "buyUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
-  },
-  "bitboxActionSignTransactionButton": "로그인",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
   },
   "sendEnterAbsoluteFee": "Sats에서 절대 수수료를 입력하십시오",
   "@sendEnterAbsoluteFee": {
@@ -9347,10 +8503,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "passportStep9": "여권에 거래를 등록하려면 버튼을 클릭합니다.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
   "electrumDeleteConfirmation": "이 서버를 삭제하시겠습니까?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
@@ -9409,17 +8561,9 @@
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
   },
-  "kruxStep12": "Krux는 그런 다음 자신의 QR 코드를 표시합니다.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
   "buyInputMinAmountError": "당신은 적어도 사야한다",
   "@buyInputMinAmountError": {
     "description": "Minimum amount error message"
-  },
-  "ledgerScanningTitle": "장치 스캔",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
   },
   "payInstitutionCode": "기관 코드",
   "@payInstitutionCode": {
@@ -9429,10 +8573,6 @@
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
   },
-  "bitboxActionUnlockDeviceSuccessSubtext": "BitBox 장치는 이제 잠금 해제하고 사용할 준비가되어 있습니다.",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
   "payShareInvoice": "인보이스",
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
@@ -9440,18 +8580,6 @@
   "walletDetailsSignerDeviceLabel": "Signer 장치",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "bitboxScreenEnterPassword": "비밀번호",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "keystoneStep10": "키스톤은 자신의 QR 코드를 보여줍니다.",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
-  },
-  "ledgerSuccessSignTitle": "거래가 성공적으로 서명했습니다",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
   },
   "electrumPrivacyNoticeContent1": "개인 정보 보호 정책 : 자신의 노드를 사용하여 제 3자가 귀하의 IP 주소를 링크 할 수 없다는 것을 보장합니다.",
   "@electrumPrivacyNoticeContent1": {
@@ -9472,10 +8600,6 @@
   "allWordsSelectedMessage": "모든 단어를 선택했습니다",
   "@allWordsSelectedMessage": {
     "description": "Message shown when all words are selected"
-  },
-  "bitboxActionPairDeviceTitle": "쌍 BitBox 장치",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
   },
   "buyKYCLevel2": "레벨 2 - 향상된",
   "@buyKYCLevel2": {
@@ -9501,10 +8625,6 @@
   "toLabel": "으로",
   "@toLabel": {
     "description": "Label for destination address in transaction details"
-  },
-  "passportStep7": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
   },
   "sendConfirm": "제품정보",
   "@sendConfirm": {
@@ -9541,10 +8661,6 @@
   "sellInteracTransfer": "이메일 송금",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
-  },
-  "bitboxScreenPairingCodeSubtext": "이 코드는 BitBox02 화면과 일치하여 장치를 확인합니다.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
   },
   "createdAtLabel": "에 게시:",
   "@createdAtLabel": {
@@ -9619,10 +8735,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "kruxStep1": "Krux 장치에 로그인",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "dcaUseDefaultLightningAddress": "기본 번개 주소를 사용합니다.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -9682,17 +8794,9 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "bitboxActionVerifyAddressSuccess": "성공 사례",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
   "psbtImDone": "나는",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
-  },
-  "bitboxScreenSelectWalletType": "지갑 선택 제품정보",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
   },
   "appUnlockEnterPinMessage": "잠금을 해제하는 핀 코드를 입력",
   "@appUnlockEnterPinMessage": {
@@ -9721,10 +8825,6 @@
   "payCompleted": "결제 완료!",
   "@payCompleted": {
     "description": "Title for payment completed screen"
-  },
-  "bitboxScreenManagePermissionsButton": "앱 권한 관리",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
   },
   "sellKYCPending": "KYC 인증",
   "@sellKYCPending": {
@@ -9762,10 +8862,6 @@
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
   },
-  "seedsignerStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
-  },
   "autoswapRecipientWalletDefaultLabel": "Bitcoin 지갑",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
@@ -9801,10 +8897,6 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
-  "psbtFlowMoveLaser": "빨간색 레이저를 위로 이동하고 QR 코드를 통해 아래로",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
   "chooseVaultLocationTitle": "Vault 위치 선택",
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
@@ -9812,15 +8904,6 @@
   "dcaConfirmOrderTypeValue": "Recurring 구매",
   "@dcaConfirmOrderTypeValue": {
     "description": "Order type value"
-  },
-  "psbtFlowDeviceShowsQr": "{device} 은 다음 자신의 QR 코드를 표시합니다.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "testBackupEncryptedVaultTitle": "암호화된 vault",
   "@testBackupEncryptedVaultTitle": {
@@ -9907,10 +8990,6 @@
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
   },
-  "bitboxScreenPairingCode": "페어링 코드",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
-  },
   "testBackupPhysicalBackupTitle": "물리적 백업",
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
@@ -9919,10 +8998,6 @@
   "@fundExchangeSpeiDescription": {
     "description": "Description for SPEI transfer method"
   },
-  "ledgerProcessingImport": "수입 지갑",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
-  },
   "coldcardStep15": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
@@ -9930,10 +9005,6 @@
   "comingSoonDefaultMessage": "이 기능은 현재 개발 중이며 곧 사용할 수 있습니다.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "ledgerErrorMissingAddress": "인증에 대한 문의",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
   },
   "enterBackupKeyManuallyTitle": "백업 키를 수동으로 입력",
   "@enterBackupKeyManuallyTitle": {
@@ -9983,14 +9054,6 @@
   "@pinCodeConfirm": {
     "description": "Button label to confirm PIN entry"
   },
-  "bitboxActionUnlockDeviceProcessing": "잠금 장치",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "seedsignerStep4": "문제가 있는 경우:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
   "mempoolNetworkLiquidTestnet": "액체 Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -10002,14 +9065,6 @@
   "torSettingsDescDisconnected": "Tor 프록시는 실행되지 않습니다",
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
-  },
-  "ledgerButtonTryAgain": "다시 시도",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
   },
   "buyInstantPaymentWallet": "즉시 결제 지갑",
   "@buyInstantPaymentWallet": {
@@ -10063,14 +9118,6 @@
   "@receiveDescription": {
     "description": "Optional memo field"
   },
-  "bitboxScreenVerifyAddress": "연락처",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenConnectDevice": "BitBox 장치 연결",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
-  },
   "amountRequestedLabel": "요청 수량 : {amount}",
   "@amountRequestedLabel": {
     "description": "Shows the requested amount to send",
@@ -10111,10 +9158,6 @@
   "fundExchangeCrIbanUsdLabelRecipientName": "이름 *",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN USD transfer"
-  },
-  "ledgerSignTitle": "로그인",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
   },
   "importWatchOnlyCancel": "이름 *",
   "@importWatchOnlyCancel": {
@@ -10676,46 +9719,6 @@
   "sendSubSatVbyteWarning": "1 sat/vB 미만의 트랜잭션은 확인되는 데 시간이 더 걸릴 수 있으며 모든 노드에 전파되지 않을 수 있습니다.",
   "sendBelowMinFeeRateError": "수수료율은 최소 0.1 sat/vB 이상이어야 합니다.",
   "sendErrorInsufficientBalanceFrozenHint": "사용 가능한 잔액이 부족합니다 — 동결된 금액: {amount}. 코인 관리에서 동결을 해제하여 사용하세요.",
-  "psbtFlowSignViaNfc": "NFC로 서명",
-  "psbtFlowSignViaNfcSheetTitle": "{deviceName} 기기를 태그하여 PSBT를 NFC로 전송하세요",
-  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q 안내",
-  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 안내",
-  "psbtFlowColdcardQStep1": "Coldcard Q 기기에 로그인하세요",
-  "psbtFlowColdcardQStep2": "패스프레이즈가 있다면 입력하세요 (선택 사항)",
-  "psbtFlowColdcardQStep3": "원하는 서명 방법을 선택하세요:",
-  "psbtFlowColdcardQStep4": "QR 코드의 경우:",
-  "psbtFlowColdcardQStep5": "   - Coldcard Q에서 \"Scan any QR code\"를 선택하세요",
-  "psbtFlowColdcardQStep6": "   - Bull 지갑에 표시된 QR 코드를 스캔하세요",
-  "psbtFlowColdcardQStep7": "   - 스캔이 잘 되지 않는다면:",
-  "psbtFlowColdcardQStep8": "     - 기기의 화면 밝기를 높이세요",
-  "psbtFlowColdcardQStep9": "     - 빨간 레이저를 QR 코드 위에서 위아래로 움직이세요",
-  "psbtFlowColdcardQStep10": "     - 기기를 조금 뒤로 이동해 보세요",
-  "psbtFlowColdcardQStep11": "NFC의 경우:",
-  "psbtFlowColdcardQStep12": "   - Coldcard Q에서 \"Ready to Sign\"을 선택한 다음 NFC 버튼을 탭하세요",
-  "psbtFlowColdcardQStep13": "   - 휴대폰을 Coldcard Q에 태그하세요",
-  "psbtFlowColdcardQStep14": "   - PSBT가 전송될 때까지 기다리세요",
-  "psbtFlowColdcardQStep15": "Coldcard Q에 트랜잭션을 가져온 후, 대상 주소와 금액을 확인하세요.",
-  "psbtFlowColdcardQStep16": "Coldcard Q에서 버튼을 눌러 트랜잭션에 서명하세요.",
-  "psbtFlowColdcardQStep17": "그러면 Coldcard Q가 서명된 트랜잭션 QR 코드를 표시하거나 NFC 전송을 준비합니다.",
-  "psbtFlowColdcardQStep18": "QR로 서명했다면, Bull Bitcoin 지갑에서 \"I'm done\"을 클릭하세요.",
-  "psbtFlowColdcardQStep19": "Bull Bitcoin 지갑이 서명된 트랜잭션 QR 코드를 스캔하거나 NFC로 받을 것을 요청합니다.",
-  "psbtFlowColdcardQStep20": "   - QR의 경우: Coldcard Q의 QR 코드를 스캔하세요",
-  "psbtFlowColdcardQStep21": "   - NFC의 경우: 휴대폰을 Coldcard Q에 태그하세요",
-  "psbtFlowColdcardQStep22": "서명된 트랜잭션이 Bull Bitcoin 지갑으로 가져와집니다.",
-  "psbtFlowColdcardQStep23": "이제 브로드캐스트할 준비가 되었습니다. 브로드캐스트를 클릭하는 즉시 트랜잭션이 Bitcoin 네트워크에 게시됩니다.",
-  "psbtFlowColdcardMk4Step1": "Coldcard Mk4 기기에 로그인하세요",
-  "psbtFlowColdcardMk4Step2": "패스프레이즈가 있다면 입력하세요 (선택 사항)",
-  "psbtFlowColdcardMk4Step3": "Coldcard Mk4에서 \"Ready to Sign\"을 선택한 다음 숫자 3 버튼을 탭하세요",
-  "psbtFlowColdcardMk4Step4": "휴대폰을 Coldcard Mk4에 태그하세요",
-  "psbtFlowColdcardMk4Step5": "PSBT가 전송될 때까지 기다리세요",
-  "psbtFlowColdcardMk4Step6": "Coldcard Mk4에 트랜잭션을 가져온 후, 대상 주소와 금액을 확인하세요.",
-  "psbtFlowColdcardMk4Step7": "Coldcard Mk4에서 버튼을 눌러 트랜잭션에 서명하세요.",
-  "psbtFlowColdcardMk4Step8": "그러면 Coldcard Mk4가 서명된 트랜잭션을 NFC 전송용으로 준비합니다.",
-  "psbtFlowColdcardMk4Step9": "Bull Bitcoin 지갑의 브로드캐스트 화면에서 NFC를 탭하세요.",
-  "psbtFlowColdcardMk4Step10": "휴대폰을 Coldcard Mk4에 태그하여 서명된 트랜잭션을 받으세요.",
-  "psbtFlowColdcardMk4Step11": "서명된 트랜잭션이 Bull Bitcoin 지갑으로 가져와집니다.",
-  "psbtFlowColdcardMk4Step12": "Bull Bitcoin 지갑에서 트랜잭션 세부정보를 확인하세요.",
-  "psbtFlowColdcardMk4Step13": "이제 브로드캐스트할 준비가 되었습니다. 브로드캐스트를 클릭하는 즉시 트랜잭션이 Bitcoin 네트워크에 게시됩니다.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Coldcard를 태그하여 NFC로 서명된 트랜잭션을 받으세요",
@@ -10876,18 +9879,6 @@
   "exchangeSupportChatAttachLogsFailed": "로그 첨부에 실패했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatFetchFileDataFailed": "파일 데이터를 가져오지 못했습니다",
   "importWatchOnlyXpubLabel": "XPUB",
-  "bitboxErrorBluetoothPermissionDenied": "BitBox02 Nova에 연결하려면 블루투스 권한이 필요합니다.",
-  "bitboxErrorBluetoothUnavailable": "블루투스를 사용할 수 없습니다. 블루투스를 켜고 다시 시도해 주세요.",
-  "bitboxErrorNoBleDevicesFound": "근처에서 BitBox02 Nova를 찾을 수 없습니다. 블루투스를 확인하고 다시 시도해 주세요.",
-  "bitboxErrorMultipleBleDevicesFound": "여러 대의 BitBox02 Nova 기기가 발견되었습니다. 한 대만 가까이에 두고 다시 시도해 주세요.",
-  "bitboxErrorOperationFailed": "BitBox 작업에 실패했습니다. 다시 시도해 주세요.",
-  "bitboxScreenConnectSubtextBluetooth": "BitBox02 Nova의 잠금이 해제되어 있고 블루투스가 켜져 있는지 확인하세요.",
-  "bitboxScreenScanningSubtextBluetooth": "근처에서 BitBox02 Nova를 찾는 중...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova 문제 해결",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "앱과 기기가 여전히 연결되지 않는다면 다음을 시도해 보세요:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "블루투스가 켜져 있고 이 앱에 대해 허용되어 있는지 확인하세요.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "BitBox02 Nova에서 블루투스가 활성화되어 있는지 확인하세요.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "BitBox02 Nova를 재시작하고 다시 연결을 시도해 보세요.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "완료",
@@ -10981,8 +9972,6 @@
   "statusCheckNoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
   "statusCheckResultsMayBeOutdated": "결과가 오래되었을 수 있습니다",
   "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
-  "psbtFlowInvalidPsbtError": "이 거래를 읽을 수 없습니다. 뒤로 돌아가 다시 생성하세요.",
-  "psbtFlowQrEncodingError": "이 거래를 QR 코드로 변환할 수 없습니다.",
   "sendErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sendErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
   "sendErrorExchangeOrderMismatch": "이 결제가 주문과 더 이상 일치하지 않습니다. 결제를 다시 시작하세요.",

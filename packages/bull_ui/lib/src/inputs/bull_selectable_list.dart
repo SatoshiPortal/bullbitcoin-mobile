@@ -89,53 +89,65 @@ class _BullSelectableRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    return InkWell(
-      radius: 2,
-      onTap: onSelected,
-      child: Material(
-        elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(context.bullShapes.card),
-        clipBehavior: Clip.hardEdge,
-        color: colors.surface,
-        shadowColor: colors.border,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (item.iconPath != null)
-                Image.asset(item.iconPath!, width: 24, height: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    BullText(
-                      item.title,
-                      style: context.bullType.subtitle.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+    return MergeSemantics(
+      child: Semantics(
+        selected: isSelected,
+        button: true,
+        child: InkWell(
+          radius: 2,
+          onTap: onSelected,
+          child: Material(
+            elevation: isSelected ? 4 : 1,
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
+            clipBehavior: Clip.hardEdge,
+            color: colors.surface,
+            shadowColor: colors.border,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (item.iconPath case final iconPath?)
+                    Image.asset(iconPath, width: 24, height: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        BullText(
+                          item.title,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const Gap(4),
+                        BullText(
+                          item.subtitle1,
+                          style: context.bullType.caption,
+                        ),
+                        const Gap(2),
+                        if (item.isSubtitle2Loading)
+                          const BullShimmerLine(
+                            width: 160,
+                            height: 12,
+                            padding: EdgeInsets.zero,
+                          )
+                        else
+                          BullText(
+                            item.subtitle2,
+                            style: context.bullType.caption,
+                          ),
+                      ],
                     ),
-                    const Gap(4),
-                    BullText(item.subtitle1, style: context.bullType.caption),
-                    const Gap(2),
-                    if (item.isSubtitle2Loading)
-                      const BullShimmerLine(
-                        width: 160,
-                        height: 12,
-                        padding: EdgeInsets.zero,
-                      )
-                    else
-                      BullText(item.subtitle2, style: context.bullType.caption),
-                  ],
-                ),
+                  ),
+                  const Gap(8),
+                  Icon(
+                    Icons.radio_button_checked_outlined,
+                    color: isSelected ? colors.primary : colors.textMuted,
+                  ),
+                ],
               ),
-              const Gap(8),
-              Icon(
-                Icons.radio_button_checked_outlined,
-                color: isSelected ? colors.primary : colors.textMuted,
-              ),
-            ],
+            ),
           ),
         ),
       ),

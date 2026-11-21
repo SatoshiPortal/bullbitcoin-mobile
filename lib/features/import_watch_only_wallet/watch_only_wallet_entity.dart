@@ -1,6 +1,6 @@
 import 'package:bip32_keys/bip32_keys.dart'
     show changeVersionBytes, Slip132Format;
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;

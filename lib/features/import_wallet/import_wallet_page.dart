@@ -1,17 +1,19 @@
+import 'package:signers/signers.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_failure_l10n.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:primitives/primitives.dart' show NetworkCapability;
 
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullTabMenuVerticalButton, BullText, Gap, BullTypographyX;
@@ -22,6 +24,7 @@ class ImportWalletPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final network = SettingsFacade.networkOf(context);
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.importWalletTitle)),
       body: SafeArea(
@@ -121,20 +124,70 @@ class ImportWalletPage extends StatelessWidget {
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletLedger,
-                      onTap: () =>
-                          context.pushNamed(LedgerRoute.importLedger.name),
+                      onTap: network == null
+                          ? null
+                          : () async {
+                              final account =
+                                  await SignersNavigation.importLedger(
+                                    context,
+                                    network: network,
+                                  );
+                              if (account == null || !context.mounted) return;
+                              final result = GetLedgerWatchOnlyWalletUsecase()
+                                  .execute(
+                                    account: account,
+                                    label: context.loc.ledgerDefaultWalletLabel,
+                                  );
+                              switch (result) {
+                                case Ok(:final value):
+                                  await context.pushNamed(
+                                    ImportWatchOnlyWalletRoutes.import.name,
+                                    extra: value,
+                                  );
+                                case Err(:final failure):
+                                  BullSnackBar.show(
+                                    context,
+                                    message: failure.toTranslated(context),
+                                  );
+                              }
+                            },
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: Platform.isAndroid
                           ? context.loc.importWalletBitBox
                           : context.loc.importWalletBitBoxNova,
-                      onTap: () => context.pushNamed(
-                        BitBoxRoute.importBitBox.name,
-                        extra: const BitBoxRouteParams(
-                          requestedDeviceType: SignerDeviceEntity.bitbox02,
-                        ),
-                      ),
+                      onTap: network == null
+                          ? null
+                          : () async {
+                              final account =
+                                  await SignersNavigation.importBitBox(
+                                    context,
+                                    network: network,
+                                    requestedDeviceType:
+                                        SignerDeviceEntity.bitbox02,
+                                  );
+                              if (account == null || !context.mounted) return;
+                              final result = GetBitBoxWatchOnlyWalletUsecase()
+                                  .execute(
+                                    account: account,
+                                    label: context
+                                        .loc
+                                        .bitboxScreenDefaultWalletLabel,
+                                  );
+                              switch (result) {
+                                case Ok(:final value):
+                                  await context.pushNamed(
+                                    ImportWatchOnlyWalletRoutes.import.name,
+                                    extra: value,
+                                  );
+                                case Err(:final failure):
+                                  BullSnackBar.show(
+                                    context,
+                                    message: failure.toTranslated(context),
+                                  );
+                              }
+                            },
                     ),
                   ],
                 ),

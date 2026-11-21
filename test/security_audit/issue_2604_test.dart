@@ -10,7 +10,8 @@ void main() {
     test(
       'decoder normalizes CBOR integer keys and uses byte-string key data',
       () {
-        final source = File('lib/core/urqr/urqr.dart').readAsStringSync();
+        final source = File('features/signers/lib/src/urqr/urqr.dart')
+            .readAsStringSync();
         expect(source, contains('keyData = (map[3] as CborBytes).bytes'));
         expect(source, contains('map[_cborInt(entry.key)] = entry.value'));
         expect(source, contains('CryptoHdKey.fromCborMap(map)'));

@@ -1,0 +1,1021 @@
+{
+  "bitboxErrorMultipleDevicesFound": "발견되는 다수 BitBox 장치. 한 기기만 연결됩니다.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "도움이 필요하십니까?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "Bull Bitcoin 지갑은 Jade의 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "스캔을 클릭합니다",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "여권에 로그인",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "PSBT를 클릭",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "휴대 전화가 USB 권한이 있는지 확인하십시오.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - 장치의 화면 밝기 증가",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "제이드는 그런 다음 자신의 QR 코드를 표시합니다.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "연락처",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "ledgerButtonNeedHelp": "도움이 필요하십니까?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerImportButton": "시작하기",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxActionPairDeviceButton": "페어링 시작",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - 장치를 더 가까이 움직이거나 더 멀리 시도",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "ledgerActionFailedMessage": "{action} 실패",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep12": "Bull Bitcoin 지갑은 SeedSigner에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "세그먼트 (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "보안 연결 설정 ...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   - QR 코드를 보관하고 중심",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "ledgerHelpStep3": "Ledger가 Bluetooth가 켜져 있는지 확인하십시오.",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "BitBox 지갑은 성공적으로 수입되었습니다.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "ledgerWalletTypeSegwit": "세그먼트 (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "psbtFlowPartProgress": "부분 {current} {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyTitle": "Ledger에 주소 확인",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "seedsignerStep1": "당신의 SeedSigner 장치 켜기",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerProcessingSign": "결제 방법",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "jadeStep6": "   - 장치의 화면 밝기 증가",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "ledgerVerifyButton": "연락처",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "kruxStep14": "Bull Bitcoin 지갑은 Krux의 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "Bull Bitcoin 지갑은 여권에 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "BitBox 장치에서 비밀번호를 계속 입력하세요.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "psbtFlowScanDeviceQr": "Bull Bitcoin 지갑은 {device}에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "ledgerSuccessVerifyTitle": "Ledger에 주소 검증 ...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - 장치의 화면 밝기 증가",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "Foundation 여권 안내",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "지갑은 성공적으로 수입",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "bitboxErrorOperationCancelled": "운영이 취소되었습니다. 다시 시도하십시오.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "블록스트림 제이드 PSBT 관련 기사",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "psbtFlowReviewTransaction": "거래가 {device}에서 수입되면 대상 주소와 금액을 검토하십시오.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "장치의 화면 밝기를 증가",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "결제 방법",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "ledgerErrorDeviceLocked": "Ledger 장치는 잠겨 있습니다. 기기를 잠금 해제하고 다시 시도하십시오.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerHelpStep4": "Ledger Live에서 Bitcoin 앱의 최신 버전을 설치했는지 확인하십시오.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerSuccessSignDescription": "거래가 성공적으로 체결되었습니다.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "유산 (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerHelpStep1": "Ledger 장치를 재시작하십시오.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerConnectingSubtext": "보안 연결 설정 ...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "결합되지 않는 장치. 페어링 프로세스를 먼저 완료하십시오.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "시계 전용 지갑을 설정 ...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "bitboxActionImportWalletTitle": "BitBox 지갑 가져 오기",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "관련 기사",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "BitBox에 설치된 최신 펌웨어가 있습니다.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "BitBox 장치 잠금 해제",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "BitBox02 화면에 이 주소를 비교",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "ledgerVerifyAddressLabel": "인증:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "jadeStep1": "로그인하여 Jade Device",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "psbtFlowTroubleScanningTitle": "문제가 있는 경우:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "seedsignerInstructionsTitle": "SeedSigner 지침",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "BitBox 장치에서 페어링 코드를 확인하십시오 ...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "BitBox02 문제 해결",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "자주 묻는 질문",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "Bull 지갑에서 보이는 QR 코드를 스캔",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "BitBox 장치에 연결할 실패. 자주 묻는 질문.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "시계 전용 지갑을 설정 ...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "나는",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - 추천",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "bitboxActionImportWalletProcessing": "수입 지갑",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "문제가 있는 경우:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "ledgerHelpTitle": "Ledger 문제 해결",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "psbtFlowMoveBack": "장치가 좀 조금 뒤로 움직이기",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep2": "스캔을 클릭합니다",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerWalletTypeLabel": "지갑 유형:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "keystoneStep6": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "ledgerInstructionsIos": "Ledger가 Bitcoin 앱이 열리고 Bluetooth가 활성화되었는지 확인하십시오.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "passportStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "psbtFlowSelectSeed": "거래가 {device}에서 수입되면 서명하고 싶은 씨앗을 선택해야합니다.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerSuccessAddressVerified": "자주 묻는 질문!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "kruxStep10": "거래가 Krux에 수입되면 목적지 주소와 금액을 검토하십시오.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "보안 연결을 설정하는 실패. 다시 시도하십시오.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "거래가 키스톤에 수입되면 목적지 주소와 금액을 검토하십시오.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "Specter 지시",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "BitBox 장치가 없습니다.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "ledgerScanningMessage": "가까운 Ledger 장치를 찾고...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "bitboxScreenNestedSegwitBip49": "배열된 Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "ledgerHelpStep2": "휴대 전화가 Bluetooth가 켜져 있는지 확인하십시오.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "keystoneStep5": "   - 장치의 화면 밝기 증가",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "Krux에서 거래에 서명 버튼을 클릭합니다.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Ledger 장치에서 Bitcoin 앱을 열고 다시 시도하십시오.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - 이전 형식",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "seedsignerStep9": "대상 주소와 금액을 검토하고 서명을 확인합니다.Sign Seeder.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "QR Code로 로그인하기",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "Keystone에서 거래에 서명하는 버튼을 클릭합니다.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "BitBox에 주소 확인",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "지갑은 성공적으로 수입",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "로그인",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep14": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "ledgerSuccessVerifyDescription": "주소는 Ledger 장치에 확인되었습니다.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "psbtFlowSignTransaction": "로그인",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "ledgerConnectingMessage": "{deviceName}에 연결",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveQRCode": "QR 코드",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "버튼을 클릭해서 거래에 로그인하세요.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "Unknown 오류가 발생했습니다",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowTransactionImported": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "kruxStep4": "본문 바로가기",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "BitBox 장치에서 이 주소를 확인",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "ledgerConnectTitle": "Ledger 장치를 연결",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "bitboxScreenConnecting": "BitBox에 연결",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "BitBox 장치에서 암호를 입력하십시오 ...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "주소는 BitBox 장치에서 확인되었습니다.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - 위로 빨간색 레이저를 이동하고 QR 부호에 아래로",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "ledgerHelpStep5": "자주 묻는 질문 Ledger 장치는 최신 펌웨어를 사용하여 Ledger Live 데스크탑 앱을 사용하여 펌웨어를 업데이트 할 수 있습니다.",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "psbtFlowScanQrShown": "Bull 지갑에서 보이는 QR 코드를 스캔",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "BitBox 장치에서 주소를 확인하십시오.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "Keystone 지침",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "BitBox에 주소 표시 ...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "거래가 성공적으로 서명했습니다",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerSuccessImportDescription": "Ledger 지갑은 성공적으로 수입되었습니다.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionUnlockDeviceButton": "비밀번호",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "ledgerInstructionsAndroidUsb": "자주 묻는 질문 Ledger는 Bitcoin 앱이 열리고 USB를 통해 연결됩니다.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "bitboxScreenTryAgainButton": "다시 시도",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "psbtFlowClickDone": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxActionUnlockDeviceSuccess": "장치 Unlocked 감사합니다",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "가동 시간. 다시 시도하십시오.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "{device} 장치에 턴",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "스캔을 클릭합니다",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "psbtFlowSignTransactionOnDevice": "{device}에서 거래에 서명하는 버튼을 클릭합니다.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "keystoneStep7": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "문제가 있는 경우:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "BitBox02 장치를 제거하고 다시 연결하여 복원하십시오.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "Bull Bitcoin 지갑은 Keystone에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "ledgerErrorRejectedByUser": "Transaction은 Ledger 장치에서 사용자에 의해 거부되었습니다.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "passportStep10": "여권은 자신의 QR 코드를 보여줍니다.",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "Ledger 장치에서 거래를 확인하십시오 ...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "seedsignerStep10": "SeedSigner는 자신의 QR 코드를 보여줍니다.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "거래가 SeedSigner에서 수입되면 서명하려는 씨앗을 선택해야합니다.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "ledgerButtonManagePermissions": "앱 권한 관리",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - 추천",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "BitBox02에 대한 확인을 기다리고 ...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "결합된 장치",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "BitBox 장치가 없습니다. 장치가 전원을 켜고 USB를 통해 연결되도록하십시오.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "ledgerWalletTypeNestedSegwit": "배열된 Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "kruxStep6": "문제가 있는 경우:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "ledgerProcessingVerify": "Ledger에 주소 표시 ...",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "jadeStep2": "(선택 사항)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "Keystone 장치에 로그인",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "Bull 지갑에서 보이는 QR 코드를 스캔",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "로그인",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "\"Scan QR\" 옵션을 선택하십시오",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "ledgerWalletTypeSelectTitle": "지갑 선택 제품정보",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerImportTitle": "수입 Ledger 지갑",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "bitboxScreenScanning": "장치 스캔",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "ledgerHelpSubtitle": "먼저, Ledger 장치를 잠금 해제하고 Bitcoin 앱이 열립니다. 장치가 여전히 앱과 연결되지 않는 경우 다음을 시도하십시오",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "bitboxActionImportWalletButton": "시작하기",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "jadeStep4": "Bull 지갑에서 보이는 QR 코드를 스캔",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "PSBT는 서명을 위해 요구됩니다",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "kruxInstructionsTitle": "Krux 지침",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "ledgerErrorDeviceBusy": "다른 프로그램이 Ledger를 사용하고 있습니다. 해당 프로그램(예: Ledger Live)을 닫고 다시 시도하십시오.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "사용할 수있는 Ledger 연결 없음",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "bitboxScreenActionFailed": "{action} 실패",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "문제가 있는 경우:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "연락처",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "첫째로, 당신의 BitBox02 장치는 당신의 전화 USB 항구에 연결됩니다. 장치가 여전히 앱과 연결되지 않는 경우 다음을 시도하십시오",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "인증:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "USB 권한은 BitBox 장치에 연결해야 합니다.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "BitBox 장치에서 거래를 확인하십시오 ...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "BitBox 장치는 이제 페어링하고 사용할 준비가되어 있습니다.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "BitBox 장치를 찾고 ...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "연결 유형은 초기화되지 않습니다.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerErrorPermissionDenied": "Ledger 기기에 연결하려면 블루투스 권한이 필요합니다.",
+  "ledgerErrorNoDevicesFound": "Ledger 기기를 찾을 수 없습니다. 기기가 켜져 있고 블루투스가 활성화되어 있는지 확인하세요.",
+  "ledgerErrorMultipleDevicesFound": "여러 개의 Ledger 기기가 발견되었습니다. 근처에 기기가 하나만 있는지 확인하세요.",
+  "ledgerErrorDeviceNotFound": "Ledger 기기를 찾을 수 없습니다.",
+  "ledgerErrorDeviceMismatch": "기기 불일치가 감지되었습니다.",
+  "ledgerErrorInvalidPsbt": "잘못된 PSBT 형식이 감지되었습니다.",
+  "ledgerErrorMissingDerivationPath": "파생 경로가 필요합니다",
+  "ledgerErrorMissingScriptType": "스크립트 유형이 필요합니다",
+  "ledgerProcessingVerifySubtext": "Ledger 장치에 주소를 확인하십시오.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerInstructionsAndroidDual": "Ledger가 Bitcoin 앱이 열리고 Bluetooth가 활성화되었는지 확인하십시오.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "jadeStep9": "거래가 옥에 수입되면 목적지 주소와 금액을 검토합니다.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "거래가 성공적으로 체결되었습니다.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - 장치의 화면 밝기 증가",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "BitBox02가 잠금 해제되고 USB를 통해 연결되도록하십시오.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "BitBox 장치에서 잘못된 응답. 다시 시도하십시오.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "지갑 유형:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "거래가 여권에 수입되면 목적지 주소와 금액을 검토합니다.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "Bull Bitcoin 지갑에서 \"I'm done\"를 클릭하십시오.",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "로그인",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "여권에 거래를 등록하려면 버튼을 클릭합니다.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "Krux는 그런 다음 자신의 QR 코드를 표시합니다.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "ledgerScanningTitle": "장치 스캔",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "BitBox 장치는 이제 잠금 해제하고 사용할 준비가되어 있습니다.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "비밀번호",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "키스톤은 자신의 QR 코드를 보여줍니다.",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "ledgerSuccessSignTitle": "거래가 성공적으로 서명했습니다",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "bitboxActionPairDeviceTitle": "쌍 BitBox 장치",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   - 장치가 조금 조금 뒤로 움직이는 것을 시도하십시오",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "이 코드는 BitBox02 화면과 일치하여 장치를 확인합니다.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "Krux 장치에 로그인",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "성공 사례",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "지갑 선택 제품정보",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "앱 권한 관리",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "psbtFlowMoveLaser": "빨간색 레이저를 위로 이동하고 QR 코드를 통해 아래로",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "{device} 은 다음 자신의 QR 코드를 표시합니다.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenPairingCode": "페어링 코드",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "ledgerProcessingImport": "수입 지갑",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerErrorMissingAddress": "인증에 대한 문의",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "bitboxActionUnlockDeviceProcessing": "잠금 장치",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "문제가 있는 경우:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "ledgerButtonTryAgain": "다시 시도",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "연락처",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "BitBox 장치 연결",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "ledgerSignTitle": "로그인",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "psbtFlowSignViaNfc": "NFC로 서명",
+  "psbtFlowSignViaNfcSheetTitle": "{deviceName} 기기를 태그하여 PSBT를 NFC로 전송하세요",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q 안내",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 안내",
+  "psbtFlowColdcardQStep1": "Coldcard Q 기기에 로그인하세요",
+  "psbtFlowColdcardQStep2": "패스프레이즈가 있다면 입력하세요 (선택 사항)",
+  "psbtFlowColdcardQStep3": "원하는 서명 방법을 선택하세요:",
+  "psbtFlowColdcardQStep4": "QR 코드의 경우:",
+  "psbtFlowColdcardQStep5": "   - Coldcard Q에서 \"Scan any QR code\"를 선택하세요",
+  "psbtFlowColdcardQStep6": "   - Bull 지갑에 표시된 QR 코드를 스캔하세요",
+  "psbtFlowColdcardQStep7": "   - 스캔이 잘 되지 않는다면:",
+  "psbtFlowColdcardQStep8": "     - 기기의 화면 밝기를 높이세요",
+  "psbtFlowColdcardQStep9": "     - 빨간 레이저를 QR 코드 위에서 위아래로 움직이세요",
+  "psbtFlowColdcardQStep10": "     - 기기를 조금 뒤로 이동해 보세요",
+  "psbtFlowColdcardQStep11": "NFC의 경우:",
+  "psbtFlowColdcardQStep12": "   - Coldcard Q에서 \"Ready to Sign\"을 선택한 다음 NFC 버튼을 탭하세요",
+  "psbtFlowColdcardQStep13": "   - 휴대폰을 Coldcard Q에 태그하세요",
+  "psbtFlowColdcardQStep14": "   - PSBT가 전송될 때까지 기다리세요",
+  "psbtFlowColdcardQStep15": "Coldcard Q에 트랜잭션을 가져온 후, 대상 주소와 금액을 확인하세요.",
+  "psbtFlowColdcardQStep16": "Coldcard Q에서 버튼을 눌러 트랜잭션에 서명하세요.",
+  "psbtFlowColdcardQStep17": "그러면 Coldcard Q가 서명된 트랜잭션 QR 코드를 표시하거나 NFC 전송을 준비합니다.",
+  "psbtFlowColdcardQStep18": "QR로 서명했다면, Bull Bitcoin 지갑에서 \"I'm done\"을 클릭하세요.",
+  "psbtFlowColdcardQStep19": "Bull Bitcoin 지갑이 서명된 트랜잭션 QR 코드를 스캔하거나 NFC로 받을 것을 요청합니다.",
+  "psbtFlowColdcardQStep20": "   - QR의 경우: Coldcard Q의 QR 코드를 스캔하세요",
+  "psbtFlowColdcardQStep21": "   - NFC의 경우: 휴대폰을 Coldcard Q에 태그하세요",
+  "psbtFlowColdcardQStep22": "서명된 트랜잭션이 Bull Bitcoin 지갑으로 가져와집니다.",
+  "psbtFlowColdcardQStep23": "이제 브로드캐스트할 준비가 되었습니다. 브로드캐스트를 클릭하는 즉시 트랜잭션이 Bitcoin 네트워크에 게시됩니다.",
+  "psbtFlowColdcardMk4Step1": "Coldcard Mk4 기기에 로그인하세요",
+  "psbtFlowColdcardMk4Step2": "패스프레이즈가 있다면 입력하세요 (선택 사항)",
+  "psbtFlowColdcardMk4Step3": "Coldcard Mk4에서 \"Ready to Sign\"을 선택한 다음 숫자 3 버튼을 탭하세요",
+  "psbtFlowColdcardMk4Step4": "휴대폰을 Coldcard Mk4에 태그하세요",
+  "psbtFlowColdcardMk4Step5": "PSBT가 전송될 때까지 기다리세요",
+  "psbtFlowColdcardMk4Step6": "Coldcard Mk4에 트랜잭션을 가져온 후, 대상 주소와 금액을 확인하세요.",
+  "psbtFlowColdcardMk4Step7": "Coldcard Mk4에서 버튼을 눌러 트랜잭션에 서명하세요.",
+  "psbtFlowColdcardMk4Step8": "그러면 Coldcard Mk4가 서명된 트랜잭션을 NFC 전송용으로 준비합니다.",
+  "psbtFlowColdcardMk4Step9": "Bull Bitcoin 지갑의 브로드캐스트 화면에서 NFC를 탭하세요.",
+  "psbtFlowColdcardMk4Step10": "휴대폰을 Coldcard Mk4에 태그하여 서명된 트랜잭션을 받으세요.",
+  "psbtFlowColdcardMk4Step11": "서명된 트랜잭션이 Bull Bitcoin 지갑으로 가져와집니다.",
+  "psbtFlowColdcardMk4Step12": "Bull Bitcoin 지갑에서 트랜잭션 세부정보를 확인하세요.",
+  "psbtFlowColdcardMk4Step13": "이제 브로드캐스트할 준비가 되었습니다. 브로드캐스트를 클릭하는 즉시 트랜잭션이 Bitcoin 네트워크에 게시됩니다.",
+  "bitboxErrorBluetoothPermissionDenied": "BitBox02 Nova에 연결하려면 블루투스 권한이 필요합니다.",
+  "bitboxErrorBluetoothUnavailable": "블루투스를 사용할 수 없습니다. 블루투스를 켜고 다시 시도해 주세요.",
+  "bitboxErrorNoBleDevicesFound": "근처에서 BitBox02 Nova를 찾을 수 없습니다. 블루투스를 확인하고 다시 시도해 주세요.",
+  "bitboxErrorMultipleBleDevicesFound": "여러 대의 BitBox02 Nova 기기가 발견되었습니다. 한 대만 가까이에 두고 다시 시도해 주세요.",
+  "bitboxErrorOperationFailed": "BitBox 작업에 실패했습니다. 다시 시도해 주세요.",
+  "bitboxScreenConnectSubtextBluetooth": "BitBox02 Nova의 잠금이 해제되어 있고 블루투스가 켜져 있는지 확인하세요.",
+  "bitboxScreenScanningSubtextBluetooth": "근처에서 BitBox02 Nova를 찾는 중...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova 문제 해결",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "앱과 기기가 여전히 연결되지 않는다면 다음을 시도해 보세요:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "블루투스가 켜져 있고 이 앱에 대해 허용되어 있는지 확인하세요.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "BitBox02 Nova에서 블루투스가 활성화되어 있는지 확인하세요.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "BitBox02 Nova를 재시작하고 다시 연결을 시도해 보세요.",
+  "psbtFlowInvalidPsbtError": "이 거래를 읽을 수 없습니다. 뒤로 돌아가 다시 생성하세요.",
+  "psbtFlowQrEncodingError": "이 거래를 QR 코드로 변환할 수 없습니다."
+}

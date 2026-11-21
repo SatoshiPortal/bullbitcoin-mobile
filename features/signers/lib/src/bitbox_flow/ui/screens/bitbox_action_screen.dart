@@ -1,0 +1,757 @@
+import 'package:signers/src/bitbox_flow/domain/disconnect_bitbox_device_usecase.dart';
+import 'package:signers/src/bitbox_flow/domain/dispose_bitbox_connections_usecase.dart';
+
+import 'dart:io' show Platform;
+
+import 'package:signers/src/bitbox/domain/errors/bitbox_failure.dart';
+import 'package:signers/src/bitbox/domain/repositories/bitbox_device_repository.dart';
+import 'package:signers/src/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
+import 'package:signers/src/bitbox_flow/domain/read_bitbox_account_usecase.dart';
+import 'package:signers/src/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
+import 'package:signers/src/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
+import 'package:signers/src/bitbox_flow/domain/sign_psbt_bitbox_usecase.dart';
+import 'package:signers/src/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
+import 'package:signers/src/bitbox_flow/domain/verify_address_bitbox_usecase.dart';
+import 'package:signers/src/signer_device_entity.dart';
+import 'package:bull_ui/bull_ui.dart' show BullThemeX;
+import 'package:signers/src/signers_l10n.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkEnv, Err, Ok, Result, ScriptType;
+import 'package:signers/src/bitbox_flow/bitbox_action.dart';
+import 'package:signers/src/bitbox_flow/presentation/bitbox_failure_l10n.dart';
+import 'package:signers/src/bitbox_flow/presentation/cubit/bitbox_operation_cubit.dart';
+import 'package:signers/src/bitbox_flow/presentation/cubit/bitbox_operation_state.dart';
+import 'package:signers/src/ledger_flow/domain/signer_account.dart';
+import 'package:signers/src/locator.dart';
+import 'package:screen_awake/screen_awake.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullButtonSize,
+        BullBottomSheet,
+        BullButton,
+        BullInstructionsSheet,
+        BullSelectableList,
+        BullSelectableListItem,
+        BullShapesX,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        BullTypographyX,
+        Gap;
+import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+bool get _usesBluetoothTransport => !Platform.isAndroid;
+
+class BitBoxRouteParams {
+  final NetworkEnv network;
+  final String? psbt;
+  final String? derivationPath;
+  final String? address;
+  final SignerDeviceEntity? requestedDeviceType;
+  final ScriptType? scriptType;
+
+  const BitBoxRouteParams({
+    required this.network,
+    this.psbt,
+    this.derivationPath,
+    this.address,
+    this.requestedDeviceType,
+    this.scriptType,
+  });
+}
+
+class BitBoxActionScreen extends StatelessWidget {
+  final BitBoxAction action;
+  final BitBoxRouteParams parameters;
+
+  const BitBoxActionScreen({
+    super.key,
+    required this.action,
+    required this.parameters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => BitBoxOperationCubit(
+        disconnect: locator<DisconnectBitBoxDeviceUsecase>(),
+        dispose: locator<DisposeBitBoxConnectionsUsecase>(),
+        network: parameters.network,
+        scanBitBoxDevicesUsecase: locator<ScanBitBoxDevicesUsecase>(),
+        connectBitBoxDeviceUsecase: locator<ConnectBitBoxDeviceUsecase>(),
+      ),
+      child: _BitBoxActionView(action: action, parameters: parameters),
+    );
+  }
+}
+
+class _BitBoxActionView extends StatefulWidget {
+  final BitBoxAction action;
+  final BitBoxRouteParams parameters;
+
+  const _BitBoxActionView({required this.action, required this.parameters});
+
+  @override
+  State<_BitBoxActionView> createState() => _BitBoxActionViewState();
+}
+
+class _BitBoxActionViewState extends State<_BitBoxActionView> {
+  ScriptType _selectedScriptType = ScriptType.bip84;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.bull.background,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: BullTopBar(
+          title: widget.action.toTitle(context),
+          color: context.bull.background,
+          onBack: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: BlocConsumer<BitBoxOperationCubit, BitBoxOperationState>(
+        listener: (context, state) {
+          if (state.isSuccess) {
+            BullSnackBar.show(
+              context,
+              message: widget.action.toSuccessText(context),
+            );
+            if (widget.action == const BitBoxAction.importWallet()) {
+              if (state.result is SignerAccount &&
+                  state.connectedDevice != null) {
+                _returnAccount(context, state.result as SignerAccount);
+              }
+            } else if (widget.action == const BitBoxAction.verifyAddress()) {
+              Navigator.of(context).pop();
+            } else if (widget.action == const BitBoxAction.signTransaction()) {
+              Navigator.of(context).pop(state.result);
+            }
+          }
+        },
+        builder: (context, state) {
+          return ScreenAwakeScope(
+            enabled: !state.isInitial && !state.isSuccess && !state.isError,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const Gap(32),
+                      _buildMainContent(context, state),
+                      const Gap(32),
+                      _buildActionButtons(context, state),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMainContent(BuildContext context, BitBoxOperationState state) {
+    return Column(
+      children: [
+        _buildIconsForState(context, state),
+        const Gap(24),
+        BullText(
+          _getMainTextForState(context, state),
+          textAlign: .center,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
+        const Gap(16),
+        BullText(
+          _getSubTextForState(context, state),
+          textAlign: .center,
+          color: context.bull.textMuted,
+          style: context.bullType.body,
+        ),
+        if (widget.action == const BitBoxAction.importWallet() &&
+            state.isInitial) ...[
+          const Gap(24),
+          _buildScriptTypeButton(context),
+        ],
+        if (widget.action == const BitBoxAction.verifyAddress() &&
+            state.isShowingAddressVerification) ...[
+          const Gap(24),
+          _buildAddressDisplay(context),
+        ],
+        if (state.isShowingPairingCode) ...[
+          const Gap(24),
+          _buildPairingCodeDisplay(context, state),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildIconsForState(BuildContext context, BitBoxOperationState state) {
+    IconData icon;
+    switch (state.status) {
+      case BitBoxOperationStatus.initial:
+        icon = _usesBluetoothTransport ? Icons.bluetooth : Icons.usb;
+      case BitBoxOperationStatus.scanning:
+        icon = Icons.search;
+      case BitBoxOperationStatus.connecting:
+        icon = Icons.link;
+      case BitBoxOperationStatus.processing:
+        icon = Icons.sync;
+      case BitBoxOperationStatus.showingPairingCode:
+        icon = Icons.security;
+      case BitBoxOperationStatus.waitingForPassword:
+        icon = Icons.lock;
+      case BitBoxOperationStatus.showingAddressVerification:
+        icon = Icons.verified_user;
+      case BitBoxOperationStatus.success:
+        icon = Icons.check_circle;
+      case BitBoxOperationStatus.error:
+        icon = Icons.error;
+    }
+
+    return Icon(icon, size: 80, color: context.bull.primary);
+  }
+
+  Widget _buildPairingCodeDisplay(
+    BuildContext context,
+    BitBoxOperationState state,
+  ) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: context.bull.surface,
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
+            border: Border.all(
+              color: context.bull.primary.withValues(alpha: 0.3),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: context.bull.primary.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: BullText(
+            state.result?.toString() ?? '',
+            textAlign: .center,
+            style: context.bullType.subtitle
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  fontFamily: 'monospace',
+                  fontWeight: .bold,
+                  color: context.bull.primary,
+                  letterSpacing: 2,
+                ),
+          ),
+        ),
+        const Gap(20),
+        BullText(
+          context.loc.bitboxScreenWaitingConfirmation,
+          textAlign: TextAlign.center,
+          color: context.bull.textMuted.withValues(alpha: 0.7),
+          style: context.bullType.body,
+        ),
+      ],
+    );
+  }
+
+  Future<void> _executeAction(BuildContext context) async {
+    final cubit = context.read<BitBoxOperationCubit>();
+
+    if (widget.action == const BitBoxAction.importWallet()) {
+      await _executeImportWithPairing(context, cubit);
+    } else if (widget.action == const BitBoxAction.verifyAddress()) {
+      await _executeVerifyAddress(context, cubit);
+    } else if (widget.action == const BitBoxAction.signTransaction()) {
+      await _executeSignTransaction(context, cubit);
+    }
+  }
+
+  void _returnAccount(BuildContext context, SignerAccount account) {
+    if (context.mounted) {
+      context.pop(account);
+    }
+  }
+
+  Widget _buildAddressDisplay(BuildContext context) {
+    String? address = widget.parameters.address;
+
+    if (widget.action == const BitBoxAction.verifyAddress() &&
+        context
+            .read<BitBoxOperationCubit>()
+            .state
+            .isShowingAddressVerification) {
+      address = context.read<BitBoxOperationCubit>().state.result as String?;
+    }
+
+    if (address == null) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        BullText(
+          context.loc.bitboxScreenAddressToVerify,
+          style: context.bullType.body,
+          color: context.bull.textMuted.withValues(alpha: 0.8),
+        ),
+        const Gap(12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: context.bull.surface,
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
+            border: Border.all(
+              color: context.bull.border.withValues(alpha: 0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: context.bull.border.withValues(alpha: 0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: SelectableText(
+            address
+                .replaceAllMapped(
+                  RegExp('.{1,4}'),
+                  (match) => '${match.group(0)} ',
+                )
+                .trim(),
+            style: context.bullType.subtitle.copyWith(
+              fontFamily: 'monospace',
+              color: context.bull.text,
+              letterSpacing: 1,
+            ),
+            textAlign: .center,
+          ),
+        ),
+        const Gap(12),
+        BullText(
+          context.loc.bitboxScreenVerifyOnDevice,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
+          color: context.bull.textMuted.withValues(alpha: 0.6),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Future<void> _executeVerifyAddress(
+    BuildContext context,
+    BitBoxOperationCubit cubit,
+  ) async {
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
+
+      final device = cubit.state.connectedDevice;
+      if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
+      final address = widget.parameters.address;
+      final derivationPath = widget.parameters.derivationPath;
+      final scriptType = widget.parameters.scriptType ?? ScriptType.bip84;
+
+      if (address == null || derivationPath == null) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'verify requested without address/derivationPath',
+          ),
+        );
+      }
+
+      cubit.showAddressVerification(address);
+
+      return locator<VerifyAddressBitBoxUsecase>().execute(
+        network: widget.parameters.network,
+        device: device,
+        address: address,
+        derivationPath: derivationPath,
+        scriptType: scriptType,
+      );
+    });
+  }
+
+  Future<void> _executeSignTransaction(
+    BuildContext context,
+    BitBoxOperationCubit cubit,
+  ) async {
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
+
+      final device = cubit.state.connectedDevice;
+      if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
+      final psbt = widget.parameters.psbt;
+      final derivationPath = widget.parameters.derivationPath;
+      final scriptType = widget.parameters.scriptType ?? ScriptType.bip84;
+
+      if (psbt == null || derivationPath == null) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'sign requested without psbt/derivationPath',
+          ),
+        );
+      }
+
+      return locator<SignPsbtBitBoxUsecase>().execute(
+        device,
+        network: widget.parameters.network,
+        psbt: psbt,
+        derivationPath: derivationPath,
+        scriptType: scriptType,
+      );
+    });
+  }
+
+  Future<Result<void, BitBoxFailure>> _ensureDeviceReady(
+    BitBoxOperationCubit cubit,
+  ) async {
+    final device = cubit.state.connectedDevice;
+    if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
+    final repository = locator<BitBoxDeviceRepository>();
+
+    if (await repository.getMasterFingerprint(device) case Err()) {
+      cubit.showWaitingForPassword();
+
+      final String pairingCode;
+      switch (await locator<UnlockBitBoxDeviceUsecase>().execute(device)) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          pairingCode = value;
+      }
+
+      if (pairingCode.isNotEmpty) {
+        cubit.showPairingCode(pairingCode);
+
+        if (await locator<PairBitBoxDeviceUsecase>().execute(device) case Err(
+          :final failure,
+        )) {
+          return Err(failure);
+        }
+      }
+    }
+    cubit.showProcessing();
+    return const Ok(null);
+  }
+
+  Future<void> _executeImportWithPairing(
+    BuildContext context,
+    BitBoxOperationCubit cubit,
+  ) async {
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
+
+      final device = cubit.state.connectedDevice;
+      if (device == null) return const Err(DeviceNotFoundBitBoxFailure());
+
+      return locator<ReadBitBoxAccountUsecase>().execute(
+        network: widget.parameters.network,
+        device: device,
+        scriptType: _selectedScriptType,
+      );
+    });
+  }
+
+  Widget _buildScriptTypeButton(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Column(
+          children: [
+            BullText(
+              context.loc.bitboxScreenWalletTypeLabel,
+              style: context.bullType.body,
+              color: context.bull.textMuted,
+            ),
+            const Gap(12),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: context.bull.surface,
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
+                border: Border.all(color: context.bull.border, width: 1),
+              ),
+              child: Material(
+                color: context.bull.transparent,
+                child: Semantics(
+                  label: context.loc.bitboxScreenWalletTypeLabel,
+                  value: _getScriptTypeDisplayName(
+                    context,
+                    _selectedScriptType,
+                  ),
+                  button: true,
+                  enabled: true,
+                  excludeSemantics: true,
+                  onTap: () => _showScriptTypeSelection(context),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
+                    onTap: () => _showScriptTypeSelection(context),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: .spaceBetween,
+                        children: [
+                          Expanded(
+                            child: BullText(
+                              _getScriptTypeDisplayName(
+                                context,
+                                _selectedScriptType,
+                              ),
+                              style: context.bullType.body
+                                  .copyWith(fontWeight: FontWeight.w500)
+                                  .copyWith(fontWeight: .w500),
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: context.bull.textMuted,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getScriptTypeDisplayName(
+    BuildContext context,
+    ScriptType scriptType,
+  ) {
+    switch (scriptType) {
+      case ScriptType.bip84:
+        return context.loc.bitboxScreenSegwitBip84;
+      case ScriptType.bip49:
+        return context.loc.bitboxScreenNestedSegwitBip49;
+      default:
+        return '';
+    }
+  }
+
+  Future<void> _showScriptTypeSelection(BuildContext context) async {
+    final scriptTypeItems = [
+      BullSelectableListItem(
+        value: 'bip84',
+        title: context.loc.bitboxScreenSegwitBip84,
+        subtitle1: context.loc.bitboxScreenSegwitBip84Subtitle,
+        subtitle2: '',
+      ),
+      BullSelectableListItem(
+        value: 'bip49',
+        title: context.loc.bitboxScreenNestedSegwitBip49,
+        subtitle1: context.loc.bitboxScreenNestedSegwitBip49Subtitle,
+        subtitle2: '',
+      ),
+    ];
+
+    final selected = await BullBottomSheet.show<String>(
+      context: context,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: .stretch,
+              children: [
+                const Gap(16),
+                BullText(
+                  context.loc.bitboxScreenSelectWalletType,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Gap(16),
+                BullSelectableList(
+                  selectedValue: _selectedScriptType.name,
+                  items: scriptTypeItems,
+                ),
+                const Gap(24),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (selected != null) {
+      final newScriptType = ScriptType.fromName(selected);
+      if (newScriptType != _selectedScriptType) {
+        setState(() => _selectedScriptType = newScriptType);
+      }
+    }
+  }
+
+  void _showInstructions(BuildContext context) {
+    final subtitle = _usesBluetoothTransport
+        ? context.loc.bitboxScreenTroubleshootingBluetoothSubtitle
+        : context.loc.bitboxScreenTroubleshootingSubtitle;
+    final instructions = _usesBluetoothTransport
+        ? [
+            context.loc.bitboxScreenTroubleshootingStep1,
+            context.loc.bitboxScreenTroubleshootingBluetoothStep1,
+            context.loc.bitboxScreenTroubleshootingBluetoothStep2,
+            context.loc.bitboxScreenTroubleshootingBluetoothStep3,
+          ]
+        : [
+            context.loc.bitboxScreenTroubleshootingStep1,
+            context.loc.bitboxScreenTroubleshootingStep2,
+            context.loc.bitboxScreenTroubleshootingStep3,
+          ];
+
+    BullInstructionsSheet.show(
+      context,
+      title: _usesBluetoothTransport
+          ? context.loc.bitboxScreenTroubleshootingBluetoothTitle
+          : context.loc.bitboxScreenTroubleshootingTitle,
+      subtitle: subtitle,
+      instructions: instructions,
+    );
+  }
+
+  Future<void> _openAppSettings() async {
+    try {
+      await openAppSettings();
+    } catch (e) {
+      log.warning('Could not open app settings', error: e);
+    }
+  }
+
+  Widget _buildActionButtons(BuildContext context, BitBoxOperationState state) {
+    return Column(
+      children: [
+        if (state.isInitial)
+          BullButton.primary(
+            onPressed: () => _executeAction(context),
+            label: widget.action.toButtonText(context),
+          ),
+        if (state.isError) ...[
+          BullButton.primary(
+            onPressed: () => context.read<BitBoxOperationCubit>().reset(),
+            label: context.loc.bitboxScreenTryAgainButton,
+          ),
+          if (state.failure case PermissionDeniedBitBoxFailure()) ...[
+            const Gap(16),
+            BullButton.secondary(
+              onPressed: () => _openAppSettings(),
+              label: context.loc.bitboxScreenManagePermissionsButton,
+            ),
+          ],
+        ],
+        const Gap(16),
+        if (state.isInitial || state.isError)
+          BullButton.secondary(
+            size: BullButtonSize.small,
+            label: context.loc.bitboxScreenNeedHelpButton,
+            onPressed: () => _showInstructions(context),
+          ),
+      ],
+    );
+  }
+
+  String _getMainTextForState(
+    BuildContext context,
+    BitBoxOperationState state,
+  ) {
+    switch (state.status) {
+      case BitBoxOperationStatus.initial:
+        return context.loc.bitboxScreenConnectDevice;
+      case BitBoxOperationStatus.scanning:
+        return context.loc.bitboxScreenScanning;
+      case BitBoxOperationStatus.connecting:
+        return context.loc.bitboxScreenConnecting;
+      case BitBoxOperationStatus.processing:
+        return widget.action.toProcessingText(context);
+      case BitBoxOperationStatus.showingPairingCode:
+        return context.loc.bitboxScreenPairingCode;
+      case BitBoxOperationStatus.waitingForPassword:
+        return context.loc.bitboxScreenEnterPassword;
+      case BitBoxOperationStatus.showingAddressVerification:
+        return context.loc.bitboxScreenVerifyAddress;
+      case BitBoxOperationStatus.success:
+        return widget.action.toSuccessText(context);
+      case BitBoxOperationStatus.error:
+        return context.loc.bitboxScreenActionFailed(
+          widget.action.toTitle(context),
+        );
+    }
+  }
+
+  String _getSubTextForState(BuildContext context, BitBoxOperationState state) {
+    switch (state.status) {
+      case BitBoxOperationStatus.initial:
+        return _usesBluetoothTransport
+            ? context.loc.bitboxScreenConnectSubtextBluetooth
+            : context.loc.bitboxScreenConnectSubtext;
+      case BitBoxOperationStatus.scanning:
+        return _usesBluetoothTransport
+            ? context.loc.bitboxScreenScanningSubtextBluetooth
+            : context.loc.bitboxScreenScanningSubtext;
+      case BitBoxOperationStatus.connecting:
+        return context.loc.bitboxScreenConnectingSubtext;
+      case BitBoxOperationStatus.processing:
+        return widget.action.toProcessingSubText(context);
+      case BitBoxOperationStatus.showingPairingCode:
+        return context.loc.bitboxScreenPairingCodeSubtext;
+      case BitBoxOperationStatus.waitingForPassword:
+        return context.loc.bitboxScreenEnterPasswordSubtext;
+      case BitBoxOperationStatus.showingAddressVerification:
+        return context.loc.bitboxScreenVerifyAddressSubtext;
+      case BitBoxOperationStatus.success:
+        return widget.action.toSuccessSubText(context);
+      case BitBoxOperationStatus.error:
+        return _getErrorTextForState(context, state);
+    }
+  }
+
+  String _getErrorTextForState(
+    BuildContext context,
+    BitBoxOperationState state,
+  ) {
+    if (_usesBluetoothTransport) {
+      switch (state.failure) {
+        case PermissionDeniedBitBoxFailure():
+          return context.loc.bitboxErrorBluetoothPermissionDenied;
+        case BluetoothUnavailableBitBoxFailure():
+          return context.loc.bitboxErrorBluetoothUnavailable;
+        case NoDevicesFoundBitBoxFailure():
+          return context.loc.bitboxErrorNoBleDevicesFound;
+        case MultipleDevicesFoundBitBoxFailure():
+          return context.loc.bitboxErrorMultipleBleDevicesFound;
+        default:
+          break;
+      }
+    }
+
+    return state.failure?.toTranslated(context) ??
+        context.loc.bitboxScreenUnknownError;
+  }
+}

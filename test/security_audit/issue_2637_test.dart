@@ -21,7 +21,8 @@ void main() {
     });
 
     test('scanner resets the reader before delivering a decoded result', () {
-      final readerSource = File('lib/core/urqr/urqr.dart').readAsStringSync();
+      final readerSource = File('features/signers/lib/src/urqr/urqr.dart')
+          .readAsStringSync();
       final widgetSource = File(
         'lib/features/scanning/ui/widgets/qr_scanner_widget.dart',
       ).readAsStringSync();
