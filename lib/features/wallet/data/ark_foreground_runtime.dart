@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
