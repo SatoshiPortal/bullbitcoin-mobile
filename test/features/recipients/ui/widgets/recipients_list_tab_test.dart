@@ -113,6 +113,30 @@ void main() {
     return AppLocalizations.of(tester.element(find.byType(RecipientsListTab)));
   }
 
+  testWidgets('recipient search can be cleared by its accessible action', (
+    tester,
+  ) async {
+    final loc = await pumpList(tester);
+    final field = find.widgetWithText(TextField, loc.recipientsSearchHint);
+    final context = tester.element(field);
+    final clearLabel = MaterialLocalizations.of(context).clearButtonTooltip;
+    final clear = find.byTooltip(clearLabel);
+
+    expect(clear, findsNothing);
+    await tester.enterText(field, 'Satoshi');
+    await tester.pump();
+    expect(find.bySemanticsLabel(clearLabel), findsOneWidget);
+    expect(tester.getSize(clear).shortestSide, greaterThanOrEqualTo(48));
+    verify(() => bloc.add(const RecipientsEvent.searchChanged('Satoshi')))
+        .called(1);
+
+    await tester.tap(clear);
+    await tester.pump();
+    expect(clear, findsNothing);
+    expect(tester.widget<TextField>(field).controller?.text, isEmpty);
+    verify(() => bloc.add(const RecipientsEvent.searchChanged(''))).called(1);
+  });
+
   Future<void> chooseConfidentialSepa(
     WidgetTester tester,
     AppLocalizations loc,
