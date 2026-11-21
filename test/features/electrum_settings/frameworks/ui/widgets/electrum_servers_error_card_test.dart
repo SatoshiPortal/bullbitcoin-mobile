@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/electrum_servers_error_card.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/localizations.dart';

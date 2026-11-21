@@ -1,10 +1,8 @@
+import 'package:electrum/testing.dart';
+
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/features/electrum_settings/data/server_status_adapter.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 

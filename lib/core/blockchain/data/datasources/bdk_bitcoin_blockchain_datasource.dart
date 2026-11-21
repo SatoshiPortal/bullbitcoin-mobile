@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -12,7 +12,7 @@ import 'package:primitives/primitives.dart';
 
 class _Settings extends Mock implements SettingsRepository {}
 
-class _Electrum extends Mock implements ElectrumSettingsFacade {}
+class _Electrum extends Mock implements ElectrumDefaultsProvisioner {}
 
 void main() {
   late _Settings repository;

@@ -1,36 +1,49 @@
-import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
-import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
-import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_mapper.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:electrum/electrum.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show BitcoinTx;
 
-/// Build a [ReviewableTransaction] from a domain [Transaction], resolving
-/// each input's value by fetching the parent transaction via [TransactionPort].
-///
-/// Change output is left unresolved (`null`) since external transactions
-/// don't carry wallet-side ownership data.
 class BuildReviewableTransactionUsecase {
-  final TransactionPort _transactionPort;
+  final Electrum _electrum;
 
-  BuildReviewableTransactionUsecase({required this._transactionPort});
+  BuildReviewableTransactionUsecase({required this._electrum});
 
-  /// This use-case is the boundary: it catches the throwing [TransactionPort],
-  /// maps the foreign error into a sanitized [TransactionReviewFailure], and
-  /// returns a [Result]. The presentation layer never sees a foreign type.
+  /// Resolve input values from their parent transactions. External transactions
+  /// carry no wallet ownership data, so their change output remains unknown.
   @useResult
   Future<Result<ReviewableTransaction, TransactionReviewFailure>> execute(
-    Transaction tx,
-  ) async {
-    final resolvedInputs = <ResolvedInput>[];
-
-    for (final input in tx.inputs) {
-      try {
-        final parentTx = await _transactionPort.fetch(txid: input.previousTxId);
-
-        if (parentTx.txid != input.previousTxId) {
+    BitcoinTx bitcoinTx, {
+    required Future<BitcoinNetwork?> network,
+  }) async {
+    try {
+      final bitcoinNetwork = await network;
+      if (bitcoinNetwork == null) {
+        return const Err(TransactionReviewNoServersFailure());
+      }
+      final tx = TransactionReviewMapper.fromBitcoinTx(
+        bitcoinTx,
+        network: bitcoinNetwork,
+      );
+      final resolvedInputs = <ResolvedInput>[];
+      for (final input in tx.inputs) {
+        final result = await _electrum.fetchBitcoinTransaction(
+          txid: input.previousTxId,
+          network: bitcoinNetwork,
+        );
+        final BitcoinTx parentTx;
+        switch (result) {
+          case Ok(:final value):
+            parentTx = value;
+          case Err(:final failure):
+            return Err(_mapFailure(failure));
+        }
+        if (parentTx.txid != input.previousTxId ||
+            input.previousVout < 0 ||
+            input.previousVout >= parentTx.outputs.length) {
           return Err(
             TransactionReviewInputResolutionFailure(
               parentTxId: input.previousTxId,
@@ -38,17 +51,11 @@ class BuildReviewableTransactionUsecase {
             ),
           );
         }
-
-        if (input.previousVout >= parentTx.outputs.length) {
-          return Err(
-            TransactionReviewInputResolutionFailure(
-              parentTxId: input.previousTxId,
-              vout: input.previousVout,
-            ),
-          );
-        }
-
-        final parentOutput = parentTx.outputs[input.previousVout];
+        final parentOutput = TransactionReviewMapper.output(
+          parentTx.outputs[input.previousVout],
+          input.previousVout,
+          network: bitcoinNetwork,
+        );
         resolvedInputs.add(
           ResolvedInput(
             valueSat: parentOutput.valueSat,
@@ -57,29 +64,30 @@ class BuildReviewableTransactionUsecase {
             address: parentOutput.address,
           ),
         );
-      } on TransactionPortError catch (e) {
-        return Err(_mapPortError(e));
-      } catch (e, st) {
-        // Genuinely unexpected escape — the raw reason is born here, so it is
-        // logged here (Sentry) and the UI shows a generic message.
-        log.severe(
-          message: 'Unexpected failure building reviewable transaction',
-          error: e,
-          trace: st,
-        );
-        return Err(TransactionReviewUnexpectedFailure(e.toString()));
       }
+      return Ok(
+        ReviewableTransaction(transaction: tx, resolvedInputs: resolvedInputs),
+      );
+    } on Exception catch (error, trace) {
+      log.severe(
+        message: 'Unexpected failure building reviewable transaction',
+        error: error.runtimeType,
+        trace: trace,
+      );
+      return Err(
+        TransactionReviewUnexpectedFailure(error.runtimeType.toString()),
+      );
     }
-
-    return Ok(
-      ReviewableTransaction(transaction: tx, resolvedInputs: resolvedInputs),
-    );
   }
 
-  TransactionReviewFailure _mapPortError(TransactionPortError e) => switch (e) {
-    TransactionPortFetchFailed(:final txid, :final message) =>
-      TransactionReviewFetchFailure(txid: txid, logMessage: message),
-    TransactionPortNoServersAvailable(:final network) =>
-      TransactionReviewNoServersFailure(network: network),
-  };
+  TransactionReviewFailure _mapFailure(ElectrumFailure failure) =>
+      switch (failure) {
+        ElectrumTransactionFetchFailure(:final txid) =>
+          TransactionReviewFetchFailure(txid: txid),
+        ElectrumUnsupportedNetworkFailure() =>
+          const TransactionReviewNoServersFailure(),
+        ElectrumNoTransactionServersFailure(:final network) =>
+          TransactionReviewNoServersFailure(network: network.toString()),
+        _ => TransactionReviewUnexpectedFailure(failure.logMessage),
+      };
 }

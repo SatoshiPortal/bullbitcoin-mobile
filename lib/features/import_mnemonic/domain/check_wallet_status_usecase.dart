@@ -3,15 +3,13 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:electrum/electrum.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 

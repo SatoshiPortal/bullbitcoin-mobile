@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart'
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullCarousel, BullInfoCard, Gap;
@@ -43,7 +42,7 @@ class HomeWarnings extends StatelessWidget {
               bgColor: context.appColors.errorContainer,
               onTap: () => context.pushNamed(switch (warning.action) {
                 WalletWarningAction.electrumSettings =>
-                  locator<ElectrumSettingsFacade>().settingsRouteName,
+                  const ElectrumSettingsFacade().settingsRouteName,
                 WalletWarningAction.torSettings =>
                   const TorSettingsFacade().settingsRouteName,
               }),

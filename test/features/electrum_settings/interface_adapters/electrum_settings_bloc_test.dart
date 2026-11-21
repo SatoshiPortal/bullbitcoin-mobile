@@ -1,29 +1,14 @@
+import 'package:electrum/testing.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/delete_custom_server_request.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/usecases/add_custom_server_usecase.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/usecases/delete_custom_server_usecase.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/usecases/load_electrum_server_data_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart'
-    as core;
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/electrum.dart' as core;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/electrum_settings/data/environment_adapter.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/usecases/has_active_custom_bitcoin_onion_server_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -116,7 +101,10 @@ void main() {
       setAdvancedElectrumOptionsUsecase:
           _MockSetAdvancedElectrumOptionsUsecase(),
       hasActiveCustomBitcoinOnionServerUsecase:
-          HasActiveCustomBitcoinOnionServerUsecase(servers, appSettings),
+          HasActiveCustomBitcoinOnionServerUsecase(
+            servers,
+            EnvironmentAdapter(settingsRepository: () => appSettings),
+          ),
     );
     addTearDown(bloc.close);
 
@@ -193,7 +181,7 @@ void main() {
         hasActiveCustomBitcoinOnionServerUsecase:
             HasActiveCustomBitcoinOnionServerUsecase(
               serverRepository,
-              settingsRepository,
+              EnvironmentAdapter(settingsRepository: () => settingsRepository),
             ),
       );
       addTearDown(bloc.close);
@@ -278,7 +266,7 @@ void main() {
       hasActiveCustomBitcoinOnionServerUsecase:
           HasActiveCustomBitcoinOnionServerUsecase(
             serverRepository,
-            settingsRepository,
+            EnvironmentAdapter(settingsRepository: () => settingsRepository),
           ),
     );
     addTearDown(bloc.close);
@@ -363,7 +351,10 @@ void main() {
         setAdvancedElectrumOptionsUsecase:
             _MockSetAdvancedElectrumOptionsUsecase(),
         hasActiveCustomBitcoinOnionServerUsecase:
-            HasActiveCustomBitcoinOnionServerUsecase(servers, settings),
+            HasActiveCustomBitcoinOnionServerUsecase(
+              servers,
+              EnvironmentAdapter(settingsRepository: () => settings),
+            ),
       );
       addTearDown(bloc.close);
       final bitcoinLoaded = bloc.stream.firstWhere(

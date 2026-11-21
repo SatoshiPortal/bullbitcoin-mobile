@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
     as settings;
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';

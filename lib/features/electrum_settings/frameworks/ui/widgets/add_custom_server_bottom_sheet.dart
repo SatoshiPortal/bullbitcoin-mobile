@@ -1,8 +1,6 @@
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:material_ui/material_ui.dart';

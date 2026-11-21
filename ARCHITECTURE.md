@@ -420,7 +420,7 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 ### Signer boundary
 
-`signers` receives the captured `NetworkEnv` from Send/Receive wallets or the import request. Unsupported networks are refused before discovery and again in device use cases. Hardware import returns a `SignerAccount`; import owns descriptor construction and confirmation. PSBT handoff returns a confirmation, and Send retains the original wallet and unsigned PSBT while the shell opens signed-transaction acquisition. The member never imports root app code. `setupSigners` registers its own dependencies in the foreground locator. URQR and BBQR encoding live in the member; the legacy BBQR transaction decoder remains in the shell pending relocation of `BitcoinTx` to `sync`.
+`signers` receives the captured `NetworkEnv` from Send/Receive wallets or the import request. Unsupported networks are refused before discovery and again in device use cases. Hardware import returns a `SignerAccount`; import owns descriptor construction and confirmation. PSBT handoff returns a confirmation, and Send retains the original wallet and unsigned PSBT while the shell opens signed-transaction acquisition. The member never imports root app code. `setupSigners` registers its own dependencies in the foreground locator. URQR and BBQR encoding live in the member; the legacy BBQR transaction decoder in the app consumes `BitcoinTx` from `sync`.
 
 ## Owner-scoped keychain capabilities
 
@@ -435,3 +435,9 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 Ordinary `.drift.dart` files are ignored build outputs. Historical schema JSON, migration steps and already tracked migration-test helpers remain versioned. Only the monolithic Drift builder is disabled; the shared-part combining builder remains available to other generators. Migration options belong to the enabled modular builder.
 
 When extracting a table owner, add its package path to `DRIFT_OWNER_PACKAGES` in the makefile in dependency order. Both `make build-runner` and `make build-runner-watch` finish those owner builds before starting the app composer; watch then starts owner watchers as well. Listed owners are excluded from the ordinary member passes, so an existing member such as `packages/swaps` builds once before the composer and starts only one watcher. Owner DAOs use `DatabaseAccessor<GeneratedDatabase>` without importing the composer, so they can later attach to an owner database. CI restores and saves modular outputs alongside its build graph. The future encrypted database split requires separate schema and data validation.
+
+## Electrum storage ownership
+
+`packages/electrum` owns server configuration, fallback and scoped Tor connections, and implements the wallet connection contract published by `sync`. Its transaction lookup returns `BitcoinTx` from `sync` with typed Electrum failures. Signed-transaction review supplies its captured Bitcoin network for every parent lookup and maps the result to its own review model.
+
+Electrum also owns the declarations, generated rows and queries for `ElectrumServers`, `ElectrumSettings` and `Transactions`. The app's Drift composer attaches these tables to its existing SQLite file. The Electrum accessor uses the composed connection. The physical schema remains at version 16. Generate Electrum's Drift libraries before the app composer with `make build-runner`.

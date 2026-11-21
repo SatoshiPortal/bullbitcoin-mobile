@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
 
 import 'dart:io';
 
@@ -34,7 +34,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
-class _Electrum extends Mock implements ElectrumSettingsFacade {}
+class _Electrum extends Mock implements ElectrumDefaultsProvisioner {}
 
 void main() {
   setUpAll(() {

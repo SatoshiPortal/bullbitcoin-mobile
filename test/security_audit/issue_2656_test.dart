@@ -10,7 +10,7 @@ void main() {
   group('Security audit #2656 Electrum read timeout', () {
     test('first response has a bounded read timeout', () {
       final source = File(
-        'lib/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart',
+        'packages/electrum/lib/src/data/datasources/electrum_remote_datasource.dart',
       ).readAsStringSync();
       expect(
         source,
