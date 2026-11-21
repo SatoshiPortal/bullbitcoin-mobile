@@ -164,7 +164,7 @@ void main() {
     final settingsRoute = SettingsRouter.route(
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
-      buildPriceHistory: (_) => const SizedBox.shrink(),
+      priceRoutes: const [],
     );
     final manage = settingsRoute.routes.whereType<GoRoute>().singleWhere(
       (route) => route.name == SettingsRoute.exchangeAccess.name,
@@ -255,7 +255,7 @@ void main() {
         SettingsRouter.route(
           appSettingsRoutes: const [],
           onBackupTestSucceeded: (_) {},
-          buildPriceHistory: (_) => const SizedBox.shrink(),
+          priceRoutes: const [],
         ).routes.whereType<GoRoute>().singleWhere(
           (route) => route.name == SettingsRoute.exchangeAccess.name,
         );

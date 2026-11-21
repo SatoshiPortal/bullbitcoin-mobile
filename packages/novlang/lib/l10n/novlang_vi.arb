@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Mở ứng dụng trong vòng 24 giờ để hoàn tất khoản chuyển của bạn.",
   "app__homeActionTransfer_apple": "Chuyển",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Tỷ giá không khả dụng. Vui lòng thử lại sau.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Tỷ giá không khả dụng. Vui lòng thử lại sau.",
   "app__swapUnderReviewTitle_apple": "Chuyển khoản đang được xem xét",
   "app__swapUnderReviewDescription_apple": "Khoản chuyển này cần được xem xét thủ công. Hãy liên hệ hỗ trợ để được trợ giúp. Nếu bạn chưa có tài khoản hỗ trợ, bạn chỉ cần tạo một tài khoản; không cần KYC.",
   "app__swapUnderReviewSupportMessage_apple": "Chuyển khoản đang được xem xét\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

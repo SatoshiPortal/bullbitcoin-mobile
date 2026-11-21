@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/bitcoin_price/public/fiat_amount_text.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Displays the fiat value recorded on an exchange order.

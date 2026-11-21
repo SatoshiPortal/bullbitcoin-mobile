@@ -938,7 +938,6 @@
   "payDecodingInvoice": "Decodifica della fattura…",
   "importColdcardInstructionsStep5": "Seleziona \"Export Wallet\"",
   "sellInstantPayments": "Pagamenti istantanei",
-  "priceChartFetchingHistory": "Recuperare la cronologia dei prezzi...",
   "sellDone": "Fatto",
   "payFromWallet": "Dal portafoglio",
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
@@ -2949,7 +2948,6 @@
   "@logsDeletedMessage": {
     "description": "Confirmation message when logs are deleted"
   },
-  "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
   "priceFailedToLoad": "Impossibile caricare il prezzo",
   "statusScreenTryAgain": "Riprova",
   "statusScreenContinue": "Continua",
@@ -3313,7 +3311,6 @@
   "pinCodeDeleteError": "Impossibile eliminare il PIN. Riprova.",
   "pinCodeNotSetError": "Nessun codice PIN impostato.",
   "bitcoinPriceExchangeRateUnavailable": "Tasso di cambio non disponibile. Riprova più tardi.",
-  "priceChartLoadFailed": "I dati del grafico dei prezzi non sono stati caricati. Riprova.",
   "allSeedViewErrorFetch": "Impossibile caricare le frasi di recupero. Riprova.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"

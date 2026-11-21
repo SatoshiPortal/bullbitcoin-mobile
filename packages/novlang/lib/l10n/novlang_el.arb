@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε τη μεταφορά σας.",
   "app__homeActionTransfer_apple": "Μεταφορά",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Η ισοτιμία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Η ισοτιμία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.",
   "app__swapUnderReviewTitle_apple": "Μεταφορά υπό έλεγχο",
   "app__swapUnderReviewDescription_apple": "Αυτή η μεταφορά απαιτεί χειροκίνητο έλεγχο. Επικοινωνήστε με την υποστήριξη για βοήθεια. Εάν δεν έχετε λογαριασμό υποστήριξης, χρειάζεται μόνο να δημιουργήσετε έναν· δεν απαιτείται KYC.",
   "app__swapUnderReviewSupportMessage_apple": "Μεταφορά υπό έλεγχο\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

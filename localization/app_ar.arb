@@ -2928,10 +2928,6 @@
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "priceChartFetchingHistory": "أخذ تاريخ الأسعار...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "sellDone": "تم",
   "@sellDone": {
     "description": "Button to close bottom sheet"
@@ -8884,7 +8880,6 @@
   "pinCodeDeleteError": "تعذر حذف رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
-  "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
   "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9256,7 +9251,6 @@
   "fundExchangeCopGeneratePaymentLink": "إنشاء رابط الدفع",
   "fundExchangeCopRedirectMessage": "سيتم تحويلك إلى صفحة خارجية لإجراء الدفع.",
   "fundExchangeCopOpenPaymentLink": "فتح رابط الدفع",
-  "priceChartFailedToLoad": "فشل تحميل سجل الأسعار",
   "priceFailedToLoad": "فشل تحميل السعر",
   "statusScreenTryAgain": "حاول مرة أخرى",
   "statusScreenContinue": "متابعة",

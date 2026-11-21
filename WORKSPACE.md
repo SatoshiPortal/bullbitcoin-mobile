@@ -16,6 +16,8 @@ graph TD
   style bbx_api stroke:#3c2ed2
   bitbox_transport["bitbox_transport"]
   style bitbox_transport stroke:#b095db
+  bitcoin_price["bitcoin_price"]
+  style bitcoin_price stroke:#c735eb
   boltz_stream["boltz_stream"]
   style boltz_stream stroke:#ec4b6c
   btc_map["btc_map"]
@@ -94,6 +96,11 @@ graph TD
   background_tasks --> bull_logger
   background_tasks --> primitives
   bitbox_transport --> rust_bindings
+  bitcoin_price --> bull_logger
+  bitcoin_price --> bull_pricer
+  bitcoin_price --> bull_ui
+  bitcoin_price --> preferences
+  bitcoin_price --> primitives
   boltz_stream --> rust_bindings
   btc_map --> bull_logger
   btc_map --> bull_ui
@@ -190,6 +197,7 @@ graph TD
   sync --> primitives
   subgraph features0 ["features"]
     announcements
+    bitcoin_price
     btc_map
     bull_ark
     bull_logs

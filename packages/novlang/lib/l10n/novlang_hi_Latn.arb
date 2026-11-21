@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Apna transfer poora karne ke liye 24 ghante ke andar app kholo.",
   "app__homeActionTransfer_apple": "Transfer Karo",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Rate uplabdh nahi hai. Kripya baad mein dobara koshish karein.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Rate uplabdh nahi hai. Kripya baad mein dobara koshish karein.",
   "app__swapUnderReviewTitle_apple": "Transfer under review",
   "app__swapUnderReviewDescription_apple": "Is transfer ki manual review ki zaroorat hai. Madad ke liye support se sampark karo. Agar aapke paas support account nahi hai, toh bas ek bana lo; KYC ki zaroorat nahi hai.",
   "app__swapUnderReviewSupportMessage_apple": "Transfer under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

@@ -8820,14 +8820,6 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "Fetching Price History…",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
-  "priceChartFailedToLoad": "Failed to load price history",
-  "@priceChartFailedToLoad": {
-    "description": "Error message shown when price history fails to load"
-  },
   "priceFailedToLoad": "Failed to load price",
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
@@ -10346,10 +10338,6 @@
   "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
   "@bitcoinPriceExchangeRateUnavailable": {
     "description": "Error shown when exchange rate cannot be fetched"
-  },
-  "priceChartLoadFailed": "Price chart data could not be loaded. Please try again.",
-  "@priceChartLoadFailed": {
-    "description": "Error shown when price chart data fails to load"
   },
   "mempoolErrorUnexpected": "An unexpected error occurred",
   "@mempoolErrorUnexpected": {
@@ -13356,10 +13344,6 @@
   "quickActionsSettingsTitle": "Quick Actions",
   "@quickActionsSettingsTitle": {
     "description": "Optional exchange access or wallet quick action setting."
-  },
-  "priceHistoryTitle": "Price history",
-  "@priceHistoryTitle": {
-    "description": "Full screen public bitcoin price history title."
   },
   "exchangeTradingUnavailable": "Trading is unavailable.",
   "@exchangeTradingUnavailable": {

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
 import 'package:btc_map/btc_map.dart';
@@ -14,7 +15,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/language_locale.dart'
@@ -197,6 +198,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                         NovlangAnnouncementsLocalizationsDelegate(
                           novlangPolicy,
                         ),
+                        NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
                         LogsLocalizations.delegate,
                         NetworkLocalizations.delegate,
@@ -248,6 +250,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
       ),
     );
-    return locator<BitcoinPriceFacade>().providePrices(child: app);
+    return locator<BitcoinPriceFeature>().providePrices(child: app);
   }
 }

@@ -3162,10 +3162,6 @@
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "priceChartFetchingHistory": "Fetching Price इतिहास..।",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "sellDone": "हो गया",
   "@sellDone": {
     "description": "Button to close bottom sheet"
@@ -8927,10 +8923,6 @@
   "@sendErrorAmountBelowSwapLimitsBitcoin": {
     "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
-  "priceChartFailedToLoad": "मूल्य इतिहास लोड करने में विफल",
-  "@priceChartFailedToLoad": {
-    "description": "Error message shown when price history fails to load"
-  },
   "priceFailedToLoad": "मूल्य लोड करने में विफल",
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
@@ -9107,7 +9099,6 @@
   "pinCodeDeleteError": "आपका PIN हटाया नहीं जा सका। कृपया पुनः प्रयास करें।",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
-  "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।",
   "sendEstimatedDeliveryHours": "घंटे",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"

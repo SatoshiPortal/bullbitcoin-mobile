@@ -1,0 +1,12 @@
+{
+  "currencySettingsDefaultFiatCurrencyLabel": "Standard-Fiatwährung",
+  "fiatCurrencySettingsLabel": "Fiat-Währung",
+  "priceChartFetchingHistory": "Preisverlauf wird abgerufen…",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
+  "priceChartLoadFailed": "Preisdiagrammdaten konnten nicht geladen werden. Bitte versuchen Sie es erneut."
+}

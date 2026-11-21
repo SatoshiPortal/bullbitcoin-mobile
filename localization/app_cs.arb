@@ -3262,10 +3262,6 @@
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "priceChartFetchingHistory": "Fetching Cena Historie...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "sellDone": "Čeština",
   "@sellDone": {
     "description": "Button to close bottom sheet"
@@ -8996,7 +8992,6 @@
   "pinCodeDeleteError": "PIN nelze smazat. Zkuste to prosím znovu.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
-  "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu.",
   "importMnemonicEmptyLabelError": "Pro import mnemoniky je nutný štítek",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9360,7 +9355,6 @@
   "fundExchangeCopGeneratePaymentLink": "Vygenerovat platební odkaz",
   "fundExchangeCopRedirectMessage": "Budete přesměrováni na externí stránku, kde provedete platbu.",
   "fundExchangeCopOpenPaymentLink": "Otevřít platební odkaz",
-  "priceChartFailedToLoad": "Nepodařilo se načíst historii cen",
   "priceFailedToLoad": "Nepodařilo se načíst cenu",
   "statusScreenTryAgain": "Zkusit znovu",
   "statusScreenContinue": "Pokračovat",

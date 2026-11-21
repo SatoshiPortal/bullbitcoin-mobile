@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Apri l'app entro 24 ore per completare il tuo trasferimento.",
   "app__homeActionTransfer_apple": "Trasferisci",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Tasso non disponibile. Riprova più tardi.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Tasso non disponibile. Riprova più tardi.",
   "app__swapUnderReviewTitle_apple": "Trasferimento in revisione",
   "app__swapUnderReviewDescription_apple": "Questo trasferimento richiede una revisione manuale. Contatta l'assistenza. Se non hai un account di assistenza, ti basta crearne uno: non è richiesto il KYC.",
   "app__swapUnderReviewSupportMessage_apple": "Trasferimento in revisione\nID ordine: {orderId}\nID richiesta: {requestId}\nNumero d'ordine: {orderNumber}",

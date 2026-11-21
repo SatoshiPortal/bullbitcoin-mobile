@@ -1,0 +1,18 @@
+{
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "currencySettingsDefaultFiatCurrencyLabel": "По подразбиране фиатна валута",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "fiatCurrencySettingsLabel": "Фиатна валута",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "retry": "Повтори",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
+  "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
+  "priceChartFetchingHistory": "Извличане на история на цените..."
+}

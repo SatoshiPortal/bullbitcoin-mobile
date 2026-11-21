@@ -879,7 +879,11 @@
     "description": "Apple (App Store) wording for the root catalogue key homeActionTransfer."
   },
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Rate unavailable. Please try again later.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Rate unavailable. Please try again later.",
   "@app__bitcoinPriceExchangeRateUnavailable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key bitcoinPriceExchangeRateUnavailable."
+  },
+  "@bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": {
     "description": "Apple (App Store) wording for the root catalogue key bitcoinPriceExchangeRateUnavailable."
   },
   "app__swapUnderReviewTitle_apple": "Transfer under review",

@@ -280,7 +280,6 @@
   "appUnlockPinCheckError": "Imeshindwa kupakia mipangilio ya usalama. Tafadhali anzisha upya programu.",
   "appUnlockPinVerifyError": "Imeshindwa kuthibitisha PIN yako. Tafadhali jaribu tena.",
   "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
-  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
   "allSeedViewErrorFetch": "Imeshindwa kupakia mbegu. Tafadhali jaribu tena.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -2529,8 +2528,6 @@
   "exchangeFeatureBankTransfers": "• Tuma uhamisho wa benki na lipa bili",
   "exchangeFeatureCustomerSupport": "• Ongea na huduma kwa wateja",
   "exchangeFeatureUnifiedHistory": "• Historia moja ya miamala",
-  "priceChartFetchingHistory": "Inapata Historia ya Bei...",
-  "priceChartFailedToLoad": "Imeshindwa kupakia historia ya bei",
   "priceFailedToLoad": "Imeshindwa kupakia bei",
   "statusScreenTryAgain": "Jaribu Tena",
   "statusScreenContinue": "Endelea",

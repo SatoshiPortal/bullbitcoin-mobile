@@ -420,7 +420,6 @@
   "appUnlockPinCheckError": "უსაფრთხოების პარამეტრების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, გადატვირთოთ აპლიკაცია.",
   "appUnlockPinVerifyError": "PIN-ის გადამოწმება ვერ მოხერხდა. გთხოვთ, კიდევ სცადოთ.",
   "bitcoinPriceExchangeRateUnavailable": "გაცვლითი კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
-  "priceChartLoadFailed": "ფასის სქემის მონაცემები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.",
   "allSeedViewErrorFetch": "სიდების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -2635,8 +2634,6 @@
   "exchangeFeatureBankTransfers": "• გააგზავნეთ საბანკო გადარიცხვები და გადაიხადეთ ინვოისები",
   "exchangeFeatureCustomerSupport": "• ჩაატარეთ მიმოწერა მომხმარებელთა მხარდაჭერასთან",
   "exchangeFeatureUnifiedHistory": "• გაერთიანებული ტრანზაქციების ისტორია",
-  "priceChartFetchingHistory": "ფასის ისტორიის ჩატვირთვა...",
-  "priceChartFailedToLoad": "ფასის ისტორიის ჩატვირთვა ვერ მოხერხდა",
   "priceFailedToLoad": "ფასის ჩატვირთვა ვერ მოხერხდა",
   "statusScreenTryAgain": "ხელახლა ცდა",
   "statusScreenContinue": "გაგრძელება",

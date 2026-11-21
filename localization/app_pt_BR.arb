@@ -2801,10 +2801,6 @@
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
   },
-  "priceChartFetchingHistory": "Fetching Price History...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "exchangeAccountInfoVerificationLevelLabel": "Nível de verificação",
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
@@ -9008,7 +9004,6 @@
   "pinCodeDeleteError": "Não foi possível excluir seu PIN. Por favor, tente novamente.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
-  "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente.",
   "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9377,7 +9372,6 @@
   "fundExchangeCopGeneratePaymentLink": "Gerar link de pagamento",
   "fundExchangeCopRedirectMessage": "Você será redirecionado para uma página externa para realizar o pagamento.",
   "fundExchangeCopOpenPaymentLink": "Abrir link de pagamento",
-  "priceChartFailedToLoad": "Falha ao carregar o histórico de preços",
   "priceFailedToLoad": "Falha ao carregar o preço",
   "statusScreenTryAgain": "Tente novamente",
   "statusScreenContinue": "Continue",

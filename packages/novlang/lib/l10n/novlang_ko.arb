@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "24시간 이내에 앱을 열어 이체를 완료하세요.",
   "app__homeActionTransfer_apple": "이체",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "시세를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "시세를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
   "app__swapUnderReviewTitle_apple": "검토 중인 이체",
   "app__swapUnderReviewDescription_apple": "이 이체는 수동 검토가 필요합니다. 지원팀에 문의하세요. 지원 계정이 없다면 계정만 만들면 되며 KYC는 필요하지 않습니다.",
   "app__swapUnderReviewSupportMessage_apple": "검토 중인 이체\n주문 ID: {orderId}\n요청 ID: {requestId}\n주문 번호: {orderNumber}",

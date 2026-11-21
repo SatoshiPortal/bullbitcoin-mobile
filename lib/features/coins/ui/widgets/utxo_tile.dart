@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,7 +58,7 @@ class UtxoTile extends StatelessWidget {
     final hideAmounts =
         context.select((CoinsCubit c) => c.state.amountDisplay?.hideAmounts) ??
         true;
-    final fiat = BitcoinPriceFacade.watchFiatAmount(
+    final fiat = BitcoinPriceFeature.watchFiatAmount(
       context,
       utxo.amountSat.toInt(),
     );

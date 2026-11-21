@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkFacade, ArkAccountId;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -18,7 +19,14 @@ import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
+import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+
+class PricePreferences extends Mock
+    implements
+        ActiveEnvironmentReader,
+        AmountDisplayPreferencesReader,
+        RuntimeDisplayPreferencesReader {}
 
 class Exchange extends Mock implements ExchangeFacade {}
 
@@ -81,6 +89,14 @@ void main() {
       locator.registerSingleton(
         FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
       );
+      final preferences = PricePreferences();
+      locator.registerSingleton(
+        BitcoinPriceFeature.mount(
+          environment: preferences,
+          amountDisplay: preferences,
+          display: preferences,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
@@ -93,6 +109,7 @@ void main() {
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
+        await locator.unregister<BitcoinPriceFeature>();
         await networkServices.reset();
         directory.deleteSync(recursive: true);
       });

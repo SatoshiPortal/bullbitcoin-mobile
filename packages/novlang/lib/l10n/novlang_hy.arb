@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր փոխանցումն ավարտելու համար։",
   "app__homeActionTransfer_apple": "Փոխանցել",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
   "app__swapUnderReviewTitle_apple": "Փոխանցումը ստուգման փուլում է",
   "app__swapUnderReviewDescription_apple": "Այս փոխանցումը պահանջում է ձեռքով ստուգում։ Օգնության համար դիմեք աջակցությանը։ Եթե աջակցության հաշիվ չունեք, պարզապես ստեղծեք այն. KYC չի պահանջվում։",
   "app__swapUnderReviewSupportMessage_apple": "Փոխանցումը ստուգման փուլում է\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

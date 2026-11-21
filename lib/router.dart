@@ -1,5 +1,5 @@
 import 'package:bull_ark/ark_ui_setup.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:btc_map/btc_map.dart';
@@ -96,7 +96,7 @@ class AppRouter {
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
-        context.pushNamed(SettingsRoute.priceHistory.name);
+        BitcoinPriceFeature.openHistory(context);
       case QuickAction.buy:
         context.pushNamed(BuyRoute.buy.name);
       case QuickAction.sell:
@@ -184,7 +184,7 @@ class AppRouter {
               ),
             ),
           );
-          return locator<BitcoinPriceFacade>().provideEmbeddedChart(
+          return locator<BitcoinPriceFeature>().provideEmbeddedChart(
             child: shell,
           );
         },
@@ -215,8 +215,7 @@ class AppRouter {
       SettingsRouter.route(
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,
-        buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
-            .buildHistory(onBack: () => context.pop()),
+        priceRoutes: locator<BitcoinPriceFeature>().routes,
       ),
       TransactionsRouter.transactionsRoute(
         scope: (child) => ActiveNetworkScope(child: child),
@@ -268,8 +267,10 @@ class AppRouter {
         sendRouteName: SendRoute.send.name,
         sendRouteExtra: const SendRouteArgs.sp(),
         exitRedirectPath: WalletRoute.walletHome.path,
-        fiatBalanceBuilder: (balanceSat) =>
-            HomeFiatBalance(balanceSat: balanceSat),
+        fiatBalanceBuilder: (balanceSat) => HomeFiatBalance(
+          balanceSat: balanceSat,
+          onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
+        ),
       ),
       ...ImportQrDeviceRouter.routes,
       locator<RecoverBullFeature>().route(

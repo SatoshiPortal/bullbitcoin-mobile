@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
@@ -182,7 +182,7 @@ class ExchangeHomeScreen extends StatelessWidget {
           right: 0,
           child: Builder(
             builder: (context) {
-              final showChart = BitcoinPriceFacade.watchChartVisible(context);
+              final showChart = BitcoinPriceFeature.watchChartVisible(context);
 
               return AppBar(
                 backgroundColor: Colors.transparent,
@@ -204,7 +204,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                             size: 24,
                           ),
                           onPressed: () {
-                            BitcoinPriceFacade.hideChart(context);
+                            BitcoinPriceFeature.hideChart(context);
                           },
                         )
                       : SizedBox(
@@ -230,7 +230,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                                   size: 24,
                                 ),
                                 onPressed: () {
-                                  BitcoinPriceFacade.showChart(context);
+                                  BitcoinPriceFeature.showChart(context);
                                 },
                               ),
                               BullSupportButton.icon(

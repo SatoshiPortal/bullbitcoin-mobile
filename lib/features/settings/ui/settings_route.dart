@@ -10,7 +10,6 @@ enum SettingsRoute {
   experimental('experimental-settings'),
   exchangeAccess('exchange-access'),
   quickActions('quick-actions'),
-  priceHistory('price-history'),
   walletSettings('bitcoin-settings'),
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),

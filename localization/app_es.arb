@@ -2537,7 +2537,6 @@
   "exchangeFeatureBankTransfers": "• Envía transferencias bancarias y paga facturas",
   "exchangeFeatureCustomerSupport": "• Chatea con el soporte al cliente",
   "exchangeFeatureUnifiedHistory": "• Historial de transacciones unificado",
-  "priceChartFetchingHistory": "Obteniendo historial de precios...",
   "exchangeLandingDisclaimerLegal": "El acceso a los servicios de intercambio estará restringido a países donde Bull Bitcoin pueda operar legalmente y puede requerir KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Los servicios de intercambio de criptomonedas no están disponibles en la aplicación móvil de Bull Bitcoin.",
   "exchangeLoginButton": "Iniciar sesión o registrarse",
@@ -2936,7 +2935,6 @@
   "deleteLogsTitle": "Eliminar registros",
   "logsDeletedMessage": "Registros eliminados",
   "sendSelfTransfer": "Autotransferencia",
-  "priceChartFailedToLoad": "Error al cargar el historial de precios",
   "priceFailedToLoad": "Error al cargar el precio",
   "statusScreenTryAgain": "Intentar de nuevo",
   "statusScreenContinue": "Continuar",
@@ -3297,7 +3295,6 @@
   "pinCodeDeleteError": "No se pudo eliminar tu PIN. Por favor, inténtalo de nuevo.",
   "pinCodeNotSetError": "No se ha configurado ningún código PIN.",
   "bitcoinPriceExchangeRateUnavailable": "Tipo de cambio no disponible. Por favor, inténtelo de nuevo más tarde.",
-  "priceChartLoadFailed": "No se pudieron cargar los datos del gráfico de precios. Por favor, inténtelo de nuevo.",
   "allSeedViewErrorFetch": "No se pudieron cargar las semillas. Por favor, inténtalo de nuevo.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -4263,7 +4260,6 @@
   "wizardExchangeTitle": "BULL Exchange",
   "wizardExchangeDescription": "Compra, vende y paga con Bull Bitcoin directamente desde tu billetera.",
   "quickActionsSettingsTitle": "Acciones rápidas",
-  "priceHistoryTitle": "Historial de precios",
   "exchangeTradingUnavailable": "Las operaciones no están disponibles.",
   "exchangeTradingRetry": "Reintentar",
   "exchangeAccessUnreadable": "No se pudo leer el acceso al exchange. Reinténtalo o restablécelo.",

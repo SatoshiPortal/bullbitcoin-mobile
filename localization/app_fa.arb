@@ -74,10 +74,6 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "دانلود بازی Fetching Price history.",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "exchangeLandingDisclaimerLegal": "دسترسی به خدمات تبادل به کشورهایی که بیت کوین بول می تواند به صورت قانونی کار کند محدود خواهد شد و ممکن است نیاز به KYC داشته باشد.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -8880,7 +8876,6 @@
   "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
-  "priceChartLoadFailed": "داده‌های نمودار قیمت بارگذاری نشد. لطفاً دوباره امتحان کنید.",
   "importMnemonicEmptyLabelError": "برای وارد کردن عبارت بازیابی، برچسب الزامی است",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9252,7 +9247,6 @@
   "fundExchangeCopGeneratePaymentLink": "ایجاد لینک پرداخت",
   "fundExchangeCopRedirectMessage": "برای انجام پرداخت به یک صفحه‌ی خارجی هدایت خواهید شد.",
   "fundExchangeCopOpenPaymentLink": "باز کردن لینک پرداخت",
-  "priceChartFailedToLoad": "بارگذاری تاریخچه‌ی قیمت ممکن نشد",
   "priceFailedToLoad": "بارگذاری قیمت ممکن نشد",
   "statusScreenTryAgain": "تلاش مجدد",
   "statusScreenContinue": "ادامه",

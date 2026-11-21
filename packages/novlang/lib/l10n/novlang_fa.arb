@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "برای تکمیل انتقال خود، ظرف ۲۴ ساعت برنامه را باز کنید.",
   "app__homeActionTransfer_apple": "انتقال",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "نرخ در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "نرخ در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
   "app__swapUnderReviewTitle_apple": "انتقال در حال بررسی",
   "app__swapUnderReviewDescription_apple": "این انتقال به بررسی دستی نیاز دارد. برای دریافت کمک با پشتیبانی تماس بگیرید. اگر حساب پشتیبانی ندارید، فقط کافی است یکی بسازید؛ KYC لازم نیست.",
   "app__swapUnderReviewSupportMessage_apple": "انتقال در حال بررسی\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

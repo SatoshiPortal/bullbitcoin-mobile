@@ -7183,7 +7183,6 @@
   "pinCodeDeleteError": "Неуспешно изтриване на вашия ПИН. Моля, опитайте отново.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
-  "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
   "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -7845,8 +7844,6 @@
   "exchangeFeatureBankTransfers": "• Изпращайте банкови преводи и плащайте сметки",
   "exchangeFeatureCustomerSupport": "• Разговаряйте с клиентска поддръжка",
   "exchangeFeatureUnifiedHistory": "• Обединена история на транзакциите",
-  "priceChartFetchingHistory": "Извличане на история на цените...",
-  "priceChartFailedToLoad": "Неуспешно зареждане на историята на цените",
   "priceFailedToLoad": "Неуспешно зареждане на цената",
   "statusScreenTryAgain": "Опитай отново",
   "statusScreenContinue": "Продължи",

@@ -936,7 +936,6 @@
   "payDecodingInvoice": "Удаление счета-фактуры...",
   "importColdcardInstructionsStep5": "Выберите \"Export Wallet\"",
   "sellInstantPayments": "Мгновенные платежи",
-  "priceChartFetchingHistory": "Получение истории цен...",
   "sellDone": "Дон",
   "payFromWallet": "От Wallet",
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
@@ -2955,7 +2954,6 @@
   "@logsDeletedMessage": {
     "description": "Confirmation message when logs are deleted"
   },
-  "priceChartFailedToLoad": "Не удалось загрузить историю цен",
   "priceFailedToLoad": "Не удалось загрузить цену",
   "statusScreenTryAgain": "Попробовать снова",
   "statusScreenContinue": "Продолжить",
@@ -3319,7 +3317,6 @@
   "pinCodeDeleteError": "Не удалось удалить PIN. Пожалуйста, попробуйте ещё раз.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменный курс недоступен. Пожалуйста, попробуйте позже.",
-  "priceChartLoadFailed": "Данные графика цен не удалось загрузить. Пожалуйста, попробуйте снова.",
   "allSeedViewErrorFetch": "Не удалось загрузить сид-фразы. Пожалуйста, попробуйте снова.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"

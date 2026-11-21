@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Відкрийте застосунок протягом 24 годин, щоб завершити переказ.",
   "app__homeActionTransfer_apple": "Переказати",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступний. Будь ласка, спробуйте пізніше.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступний. Будь ласка, спробуйте пізніше.",
   "app__swapUnderReviewTitle_apple": "Переказ на перевірці",
   "app__swapUnderReviewDescription_apple": "Цей переказ потребує ручної перевірки. Зверніться до підтримки по допомогу. Якщо у вас немає облікового запису підтримки, достатньо його створити; KYC не потрібен.",
   "app__swapUnderReviewSupportMessage_apple": "Переказ на перевірці\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

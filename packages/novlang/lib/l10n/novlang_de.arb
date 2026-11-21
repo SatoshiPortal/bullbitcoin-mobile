@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Öffnen Sie die App innerhalb von 24 Stunden, um Ihren Transfer abzuschließen.",
   "app__homeActionTransfer_apple": "Transfer",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Kurs nicht verfügbar. Bitte später erneut versuchen.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Kurs nicht verfügbar. Bitte später erneut versuchen.",
   "app__swapUnderReviewTitle_apple": "Transfer wird geprüft",
   "app__swapUnderReviewDescription_apple": "Dieser Transfer muss manuell geprüft werden. Wenden Sie sich an den Support. Falls Sie noch kein Supportkonto haben, müssen Sie lediglich eines erstellen; eine Identitätsprüfung (KYC) ist nicht erforderlich.",
   "app__swapUnderReviewSupportMessage_apple": "Transfer wird geprüft\nAuftrags-ID: {orderId}\nAnfrage-ID: {requestId}\nAuftragsnummer: {orderNumber}",

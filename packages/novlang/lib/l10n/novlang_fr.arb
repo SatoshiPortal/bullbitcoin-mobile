@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Ouvrez l'application dans les 24 heures pour finaliser votre transfert.",
   "app__homeActionTransfer_apple": "Transférer",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Taux indisponible. Veuillez réessayer plus tard.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Taux indisponible. Veuillez réessayer plus tard.",
   "app__swapUnderReviewTitle_apple": "Transfert en cours d’examen",
   "app__swapUnderReviewDescription_apple": "Ce transfert nécessite un examen manuel. Contactez le support pour obtenir de l’aide. Si vous n’avez pas de compte de support, il vous suffit d’en créer un; aucune vérification KYC n’est requise.",
   "app__swapUnderReviewSupportMessage_apple": "Transfert en cours d’examen\nID de commande : {orderId}\nID de requête : {requestId}\nNuméro de commande : {orderNumber}",

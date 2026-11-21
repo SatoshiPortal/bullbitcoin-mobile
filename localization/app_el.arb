@@ -7829,10 +7829,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "priceChartFetchingHistory": "Κερδίζοντας ιστορία τιμών...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "autoswapTriggerAtBalanceInfoText": "Το Autoswap θα προκαλέσει όταν η ισορροπία σας υπερβαίνει αυτή τη μέγιστη ισορροπία.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
@@ -8996,7 +8992,6 @@
   "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
-  "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά.",
   "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9360,7 +9355,6 @@
   "fundExchangeCopGeneratePaymentLink": "Δημιουργία συνδέσμου πληρωμής",
   "fundExchangeCopRedirectMessage": "Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.",
   "fundExchangeCopOpenPaymentLink": "Άνοιγμα συνδέσμου πληρωμής",
-  "priceChartFailedToLoad": "Αποτυχία φόρτωσης ιστορικού τιμών",
   "priceFailedToLoad": "Αποτυχία φόρτωσης τιμής",
   "statusScreenTryAgain": "Δοκιμάστε ξανά",
   "statusScreenContinue": "Συνέχεια",

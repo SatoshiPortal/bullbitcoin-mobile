@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +7,7 @@ void main() {
     final routeNames = SettingsRouter.route(
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
-      buildPriceHistory: (_) => const SizedBox.shrink(),
+      priceRoutes: const [],
     ).routes.whereType<GoRoute>().map((route) => route.name);
 
     expect(routeNames, contains('swapRestore'));

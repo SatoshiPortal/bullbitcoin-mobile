@@ -1,4 +1,4 @@
-import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox, Widget;
+import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
@@ -52,7 +52,7 @@ export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
   static GoRoute route({
-    required Widget Function(BuildContext) buildPriceHistory,
+    required List<RouteBase> priceRoutes,
     required void Function(BuildContext) onBackupTestSucceeded,
     required List<RouteBase> appSettingsRoutes,
   }) => GoRoute(
@@ -64,11 +64,7 @@ class SettingsRouter {
       ).execute,
     ),
     routes: [
-      GoRoute(
-        name: SettingsRoute.priceHistory.name,
-        path: SettingsRoute.priceHistory.path,
-        builder: (context, state) => buildPriceHistory(context),
-      ),
+      ...priceRoutes,
       GoRoute(
         name: SettingsRoute.search.name,
         path: SettingsRoute.search.path,

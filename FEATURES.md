@@ -146,7 +146,7 @@ graph TB
     LABEL_EDITOR[Label Editor<br/>Notes, labels and BIP-329 files]
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
-    BTC_PRICE[Bitcoin Price]
+    BTC_PRICE[Bitcoin Price<br/>Workspace Feature]
     BIP85[BIP85]
     FEES[App fee environment adapter]
     FEES_PACKAGE[Fees Package]
@@ -221,7 +221,11 @@ graph TB
     BULL_PAYJOIN --> PRIMITIVES
     CORE --> BULL_PRICER
     BULL_PRICER --> PRIMITIVES
+    CORE -->|price and chart composition| BTC_PRICE
     BTC_PRICE --> BULL_PRICER
+    BTC_PRICE --> BULL_UI
+    BTC_PRICE --> BULL_LOGGER
+    BTC_PRICE --> PRIMITIVES
     SWAPS_PKG[Swaps Package<br/>Swap engine: store, resolver, Boltz provider]
     SWAPS_PKG --> PRIMITIVES
     SWAPS --> SWAPS_PKG
@@ -284,7 +288,9 @@ graph TB
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     WALLETS --> BTC_PRICE
-    BTC_PRICE --> SETTINGS
+    COINS --> BTC_PRICE
+    SELL --> BTC_PRICE
+    SETTINGS --> BTC_PRICE
     BUY -->|public routine sync and destination validation| WALLETS
     BUY --> EXCHANGE
     BUY --> RECEIVE

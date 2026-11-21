@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
@@ -113,7 +113,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
     context.read<WalletBloc>().add(const WalletRefreshed());
     // Only a price that never loaded (e.g. an offline start) is retried here:
     // re-fetching a working one would hit the price API on every navigation.
-    BitcoinPriceFacade.refresh(context, onlyIfUnavailable: true);
+    BitcoinPriceFeature.refresh(context, onlyIfUnavailable: true);
   }
 
   @override
@@ -155,7 +155,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             waitForRefresh: context.read<WalletBloc>().waitForRefresh,
             onRefresh: () {
               setState(() => ++_arkRefresh);
-              BitcoinPriceFacade.refresh(context);
+              BitcoinPriceFeature.refresh(context);
               return context.read<WalletBloc>().refresh();
             },
             // Clearance for the bar pinned at the bottom of this Stack, so

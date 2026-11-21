@@ -5660,14 +5660,6 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "মূল্যৰ ইতিহাস আনা হৈছে...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
-  "priceChartFailedToLoad": "মূল্যৰ ইতিহাস লোড কৰিবলৈ বিফল হৈছে",
-  "@priceChartFailedToLoad": {
-    "description": "Error message shown when price history fails to load"
-  },
   "priceFailedToLoad": "মূল্য লোড কৰিবলৈ বিফল হৈছে",
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
@@ -6361,7 +6353,6 @@
   "pinCodeDeleteError": "আপোনাৰ PIN মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
-  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।",
   "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
   "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে: {error}",
   "@mempoolErrorUpdateSettingsFailed": {

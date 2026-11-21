@@ -3142,10 +3142,6 @@
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "priceChartFetchingHistory": "Fetching Price History...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "sellDone": "Done",
   "@sellDone": {
     "description": "Button to close bottom sheet"
@@ -8880,7 +8876,6 @@
   "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
-  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
   "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9252,7 +9247,6 @@
   "fundExchangeCopGeneratePaymentLink": "Ödeme Bağlantısı Oluştur",
   "fundExchangeCopRedirectMessage": "Ödemeyi yapmak için harici bir sayfaya yönlendirileceksiniz.",
   "fundExchangeCopOpenPaymentLink": "Ödeme Bağlantısını Aç",
-  "priceChartFailedToLoad": "Fiyat geçmişi yüklenemedi",
   "priceFailedToLoad": "Fiyat yüklenemedi",
   "statusScreenTryAgain": "Tekrar Dene",
   "statusScreenContinue": "Devam Et",

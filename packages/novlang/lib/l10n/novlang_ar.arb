@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "افتح التطبيق خلال 24 ساعة لإكمال تحويلك.",
   "app__homeActionTransfer_apple": "تحويل",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "السعر غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "السعر غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
   "app__swapUnderReviewTitle_apple": "التحويل قيد المراجعة",
   "app__swapUnderReviewDescription_apple": "يتطلب هذا التحويل مراجعة يدوية. تواصل مع الدعم للحصول على المساعدة. إذا لم يكن لديك حساب دعم، فعليك فقط إنشاء حساب؛ لا يلزم KYC.",
   "app__swapUnderReviewSupportMessage_apple": "التحويل قيد المراجعة\nمعرّف الطلبية: {orderId}\nمعرّف الطلب: {requestId}\nرقم الطلبية: {orderNumber}",

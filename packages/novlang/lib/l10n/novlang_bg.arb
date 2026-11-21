@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Отворете приложението в рамките на 24 часа, за да завършите прехвърлянето си.",
   "app__homeActionTransfer_apple": "Прехвърли",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Курсът не е наличен. Моля, опитайте отново по-късно.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Курсът не е наличен. Моля, опитайте отново по-късно.",
   "app__swapUnderReviewTitle_apple": "Прехвърлянето се проверява",
   "app__swapUnderReviewDescription_apple": "Това прехвърляне изисква ръчна проверка. Свържете се с поддръжката за съдействие. Ако нямате акаунт за поддръжка, трябва само да създадете такъв; KYC не се изисква.",
   "app__swapUnderReviewSupportMessage_apple": "Прехвърлянето се проверява\nID на поръчката: {orderId}\nID на заявката: {requestId}\nНомер на поръчката: {orderNumber}",

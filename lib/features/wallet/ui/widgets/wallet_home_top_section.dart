@@ -1,8 +1,9 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,7 +77,7 @@ class _UI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showChart = BitcoinPriceFacade.watchChartVisible(context);
+    final showChart = BitcoinPriceFeature.watchChartVisible(context);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -173,6 +174,7 @@ class _FiatAmt extends StatelessWidget {
     final total = walletState.totalBalance();
     if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
+      onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
       balanceSat: total,
       showBalanceLoading: showBalanceLoading,
       frameBuilder: (context, child) => _HomeBalanceFrame(
@@ -249,7 +251,7 @@ class _ChartView extends StatelessWidget {
           child: IconButton(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: Icon(Icons.arrow_back, color: context.appColors.onPrimary),
-            onPressed: () => BitcoinPriceFacade.hideChart(context),
+            onPressed: () => BitcoinPriceFeature.hideChart(context),
           ),
         ),
       ],

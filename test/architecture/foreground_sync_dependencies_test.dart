@@ -29,7 +29,6 @@ const _allowedTargets = <String, String>{
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
-  'bitcoin_price': 'settings',
   'broadcast_signed_tx': 'scanning send wallet',
   'buy': 'exchange fees fund_exchange transactions wallet',
   'coins': 'bitcoin_price wallet',

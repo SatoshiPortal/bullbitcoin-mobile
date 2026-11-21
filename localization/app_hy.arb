@@ -268,7 +268,6 @@
   "appUnlockPinCheckError": "Անհնար է բեռնել անվտանգության կարգավորումները: Խնդրում ենք վերագործարկել հավելվածը:",
   "appUnlockPinVerifyError": "Անհնար է հաստատել ձեր PIN-ը: Խնդրում ենք կրկին փորձել:",
   "bitcoinPriceExchangeRateUnavailable": "Փոխարժեքն անհասանելի է: Խնդրում ենք կրկին փորձել ավելի ուշ:",
-  "priceChartLoadFailed": "Գնի գծապատկերի տվյալները չհաջողվեց բեռնել: Խնդրում ենք կրկին փորձել:",
   "allSeedViewErrorFetch": "Չհաջողվեց բեռնել սերմերը։ Խնդրում ենք կրկին փորձել։",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -2540,8 +2539,6 @@
   "exchangeFeatureBankTransfers": "• Ուղարկեք բանկային փոխանցումներ և վճարեք հաշիվները",
   "exchangeFeatureCustomerSupport": "• Զրուցեք հաճախորդների աջակցության հետ",
   "exchangeFeatureUnifiedHistory": "• Միասնական գործարքների պատմություն",
-  "priceChartFetchingHistory": "Գնի պատմությունը բեռնվում է...",
-  "priceChartFailedToLoad": "Չհաջողվեց բեռնել գնի պատմությունը",
   "priceFailedToLoad": "Չհաջողվեց բեռնել գինը",
   "exchangeLandingDisclaimerNotAvailable": "Կրիպտոարժույթի փոխանակման ծառայությունները հասանելի չեն Bull Bitcoin բջջային հավելվածում։",
   "exchangeGoToWebsiteButton": "Անցնել Bull Bitcoin փոխանակման կայք",

@@ -1,0 +1,35 @@
+{
+  "@@locale": "en",
+  "fiatCurrencySettingsLabel": "Fiat currency",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "currencySettingsDefaultFiatCurrencyLabel": "Default fiat currency",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "priceChartFetchingHistory": "Fetching Price History…",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Exchange rate unavailable. Please try again later.",
+  "@bitcoinPriceExchangeRateUnavailable": {
+    "description": "Error shown when exchange rate cannot be fetched"
+  },
+  "priceChartLoadFailed": "Price chart data could not be loaded. Please try again.",
+  "@priceChartLoadFailed": {
+    "description": "Error shown when price chart data fails to load"
+  },
+  "priceHistoryTitle": "Price history",
+  "@priceHistoryTitle": {
+    "description": "Full screen public bitcoin price history title."
+  }
+}

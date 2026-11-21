@@ -268,7 +268,6 @@
   "appUnlockPinCheckError": "Không thể tải cài đặt bảo mật. Vui lòng khởi động lại ứng dụng.",
   "appUnlockPinVerifyError": "Không thể xác minh PIN của bạn. Vui lòng thử lại.",
   "bitcoinPriceExchangeRateUnavailable": "Tỷ giá hối đoái không khả dụng. Vui lòng thử lại sau.",
-  "priceChartLoadFailed": "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.",
   "allSeedViewErrorFetch": "Không thể tải seed. Vui lòng thử lại.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -2520,8 +2519,6 @@
   "exchangeFeatureBankTransfers": "• Gửi chuyển khoản ngân hàng và thanh toán hóa đơn",
   "exchangeFeatureCustomerSupport": "• Trò chuyện với bộ phận hỗ trợ khách hàng",
   "exchangeFeatureUnifiedHistory": "• Lịch sử giao dịch hợp nhất",
-  "priceChartFetchingHistory": "Đang lấy lịch sử giá...",
-  "priceChartFailedToLoad": "Không thể tải lịch sử giá",
   "priceFailedToLoad": "Không thể tải giá",
   "statusScreenTryAgain": "Thử lại",
   "statusScreenContinue": "Tiếp tục",

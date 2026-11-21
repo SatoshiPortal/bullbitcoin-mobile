@@ -7454,14 +7454,6 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
-  "priceChartFetchingHistory": "Price History fetch ho raha hai...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
-  "priceChartFailedToLoad": "Price history load karne mein fail",
-  "@priceChartFailedToLoad": {
-    "description": "Error message shown when price history fails to load"
-  },
   "priceFailedToLoad": "Price load karne mein fail",
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
@@ -9156,7 +9148,6 @@
   "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
-  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein.",
   "mempoolErrorUnexpected": "Ek unexpected error aayi",
   "@mempoolErrorUnexpected": {
     "description": "Generic unexpected error message"

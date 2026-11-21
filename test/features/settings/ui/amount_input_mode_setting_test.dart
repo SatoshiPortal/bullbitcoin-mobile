@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/features/settings/ui/widgets/amount_input_mode_setting.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
@@ -15,8 +15,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 class _Settings extends Mock implements SettingsCubit {}
-
-class _Prices extends Mock implements BitcoinPriceBloc {}
 
 void main() {
   setUpAll(() async {
@@ -109,11 +107,7 @@ void main() {
         when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
         when(() => cubit.setStartAmountsInFiat(true))
             .thenAnswer((_) async => const Ok(null));
-        final prices = _Prices();
-        when(() => prices.state).thenReturn(
-          const BitcoinPriceState(availableCurrencies: ['CAD', 'USD', 'EUR']),
-        );
-        when(() => prices.stream).thenAnswer((_) => const Stream.empty());
+
         final boundary = GlobalKey();
         await tester.pumpWidget(
           MaterialApp(
@@ -127,7 +121,9 @@ void main() {
             home: MultiBlocProvider(
               providers: [
                 BlocProvider<SettingsCubit>.value(value: cubit),
-                BlocProvider<BitcoinPriceBloc>.value(value: prices),
+                BitcoinPriceFixture.prices(
+                  availableCurrencies: const ['CAD', 'USD', 'EUR'],
+                ),
               ],
               child: RepaintBoundary(
                 key: boundary,

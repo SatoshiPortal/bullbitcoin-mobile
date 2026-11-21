@@ -47,6 +47,9 @@ catalogues:
   announcements:
     path: features/announcements
     description: the wallet home announcements catalogue
+  bitcoin_price:
+    path: features/bitcoin_price
+    description: fiat display and price charts
 entries:
   - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
@@ -261,6 +264,7 @@ entries:
   - {catalogue: app, key: transactionSwapOpenWithin24h, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: homeActionTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: bitcoin_price, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: swapUnderReviewTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewSupportMessage, store: apple, word: swap, euphemism: transfer}

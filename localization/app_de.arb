@@ -909,7 +909,6 @@
   },
   "payDecodingInvoice": "Invoice wird entschlüsselt…",
   "sellInstantPayments": "Sofortzahlungen",
-  "priceChartFetchingHistory": "Preisverlauf wird abgerufen…",
   "sellDone": "Fertig",
   "payFromWallet": "Von Wallet",
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
@@ -3227,7 +3226,6 @@
   "fundExchangeCopGeneratePaymentLink": "Zahlungslink erstellen",
   "fundExchangeCopRedirectMessage": "Sie werden auf eine externe Seite weitergeleitet, um die Zahlung vorzunehmen.",
   "fundExchangeCopOpenPaymentLink": "Zahlungslink öffnen",
-  "priceChartFailedToLoad": "Preisverlauf konnte nicht geladen werden",
   "priceFailedToLoad": "Preis konnte nicht geladen werden",
   "statusScreenTryAgain": "Erneut versuchen",
   "statusScreenContinue": "Fortfahren",
@@ -3254,7 +3252,6 @@
   "pinCodeDeleteError": "PIN konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
   "pinCodeNotSetError": "Es wurde kein PIN-Code festgelegt.",
   "bitcoinPriceExchangeRateUnavailable": "Wechselkurs nicht verfügbar. Bitte später erneut versuchen.",
-  "priceChartLoadFailed": "Preisdiagrammdaten konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
   "allSeedViewErrorFetch": "Seeds konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"

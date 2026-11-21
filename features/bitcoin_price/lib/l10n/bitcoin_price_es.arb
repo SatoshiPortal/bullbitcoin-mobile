@@ -1,0 +1,14 @@
+{
+  "@@locale": "es",
+  "fiatCurrencySettingsLabel": "Moneda fiduciaria",
+  "currencySettingsDefaultFiatCurrencyLabel": "Moneda fiat predeterminada",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "priceChartFetchingHistory": "Obteniendo historial de precios...",
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Tipo de cambio no disponible. Por favor, inténtelo de nuevo más tarde.",
+  "priceChartLoadFailed": "No se pudieron cargar los datos del gráfico de precios. Por favor, inténtelo de nuevo.",
+  "priceHistoryTitle": "Historial de precios"
+}

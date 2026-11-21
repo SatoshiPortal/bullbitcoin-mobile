@@ -9,6 +9,7 @@ environment:
   flutter: "3.50.0"
 workspace:
   - features/announcements
+  - features/bitcoin_price
   - packages/labels
   - features/label_editor
   - features/network
@@ -54,6 +55,7 @@ workspace:
 
 dependencies:
   announcements:
+  bitcoin_price:
   labels:
   label_editor:
   network:

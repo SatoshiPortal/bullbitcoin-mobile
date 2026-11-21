@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "请在 24 小时内打开应用以完成您的转账。",
   "app__homeActionTransfer_apple": "转账",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "汇率不可用。请稍后重试。",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "汇率不可用。请稍后重试。",
   "app__swapUnderReviewTitle_apple": "转账审核中",
   "app__swapUnderReviewDescription_apple": "此转账需要人工审核。请联系客服获取帮助。如果您没有客服账户，只需创建一个即可，无需 KYC。",
   "app__swapUnderReviewSupportMessage_apple": "转账审核中\n订单 ID：{orderId}\n请求 ID：{requestId}\n订单号：{orderNumber}",

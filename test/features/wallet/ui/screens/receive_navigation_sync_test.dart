@@ -5,7 +5,7 @@ import 'package:secrets/secrets.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
@@ -20,8 +20,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _WalletBloc extends Mock implements WalletBloc {}
-
-class _PriceBloc extends Mock implements BitcoinPriceBloc {}
 
 class _Settings extends Mock implements Preferences {}
 
@@ -44,15 +42,12 @@ void main() {
     tester,
   ) async {
     final wallet = _WalletBloc();
-    final price = _PriceBloc();
+
     when(() => wallet.state)
         .thenReturn(const WalletState(failure: NoWalletsFoundFailure()));
     when(() => wallet.stream)
         .thenAnswer((_) => const Stream<WalletState>.empty());
-    when(() => price.state)
-        .thenReturn(const BitcoinPriceState(loadingPrice: true));
-    when(() => price.stream)
-        .thenAnswer((_) => const Stream<BitcoinPriceState>.empty());
+
     final settings = _Settings();
     when(settings.readDeveloperEnvironment).thenAnswer(
       (_) => (Completer<DeveloperEnvironmentPreferences>().future).then(
@@ -113,7 +108,7 @@ void main() {
       MultiBlocProvider(
         providers: [
           BlocProvider<WalletBloc>.value(value: wallet),
-          BlocProvider<BitcoinPriceBloc>.value(value: price),
+          BitcoinPriceFixture.prices(loadingPrice: true),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),

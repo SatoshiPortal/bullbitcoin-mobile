@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Otevřete aplikaci do 24 hodin, abyste dokončili převod.",
   "app__homeActionTransfer_apple": "Převést",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Kurz není dostupný. Zkuste to prosím později.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Kurz není dostupný. Zkuste to prosím později.",
   "app__swapUnderReviewTitle_apple": "Převod je v kontrole",
   "app__swapUnderReviewDescription_apple": "Tento převod vyžaduje ruční kontrolu. Obraťte se na podporu. Pokud nemáte účet podpory, stačí si jej vytvořit; KYC není vyžadováno.",
   "app__swapUnderReviewSupportMessage_apple": "Převod je v kontrole\nID objednávky: {orderId}\nID požadavku: {requestId}\nČíslo objednávky: {orderNumber}",

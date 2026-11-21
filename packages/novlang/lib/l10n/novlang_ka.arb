@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "გახსენით აპლიკაცია 24 საათის განმავლობაში თქვენი გადარიცხვის დასასრულებლად.",
   "app__homeActionTransfer_apple": "გადარიცხვა",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
   "app__swapUnderReviewTitle_apple": "გადარიცხვა განხილვის პროცესშია",
   "app__swapUnderReviewDescription_apple": "ამ გადარიცხვას ხელით განხილვა სჭირდება. დაუკავშირდით მხარდაჭერას. თუ მხარდაჭერის ანგარიში არ გაქვთ, საკმარისია შექმნათ — KYC საჭირო არ არის.",
   "app__swapUnderReviewSupportMessage_apple": "გადარიცხვა განხილვის პროცესშია\nორდერის ID: {orderId}\nმოთხოვნის ID: {requestId}\nორდერის ნომერი: {orderNumber}",

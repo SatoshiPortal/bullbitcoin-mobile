@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "আপনার ট্রান্সফার সম্পন্ন করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
   "app__homeActionTransfer_apple": "ট্রান্সফার করুন",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
   "app__swapUnderReviewTitle_apple": "ট্রান্সফার পর্যালোচনাধীন",
   "app__swapUnderReviewDescription_apple": "এই ট্রান্সফারের জন্য ম্যানুয়াল পর্যালোচনা প্রয়োজন। সহায়তার জন্য সাপোর্টে যোগাযোগ করুন। আপনার সাপোর্ট অ্যাকাউন্ট না থাকলে শুধু একটি তৈরি করুন; KYC প্রয়োজন নেই।",
   "app__swapUnderReviewSupportMessage_apple": "ট্রান্সফার পর্যালোচনাধীন\nঅর্ডার ID: {orderId}\nঅনুরোধ ID: {requestId}\nঅর্ডার নম্বর: {orderNumber}",

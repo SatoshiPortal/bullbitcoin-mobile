@@ -3162,10 +3162,6 @@
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "priceChartFetchingHistory": "Fetching 가격 역사 ...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "sellDone": "한국어",
   "@sellDone": {
     "description": "Button to close bottom sheet"
@@ -8880,7 +8876,6 @@
   "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
-  "priceChartLoadFailed": "가격 차트 데이터를 불러올 수 없습니다. 다시 시도해 주세요.",
   "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9260,7 +9255,6 @@
   "importColdcardMk4Step10": "\"Scan NFC\" 버튼을 클릭하세요",
   "importColdcardMk4Step11": "휴대폰의 NFC를 Coldcard NFC 위에 올려두세요",
   "importColdcardMk4Step12": "완료되었습니다!",
-  "priceChartFailedToLoad": "가격 히스토리를 불러오지 못했습니다",
   "priceFailedToLoad": "가격을 불러오지 못했습니다",
   "statusScreenTryAgain": "다시 시도",
   "statusScreenContinue": "계속",

@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi siirtosi.",
   "app__homeActionTransfer_apple": "Siirrä",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "Kurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "Kurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
   "app__swapUnderReviewTitle_apple": "Siirto tarkistettavana",
   "app__swapUnderReviewDescription_apple": "Tämä siirto vaatii manuaalisen tarkistuksen. Ota yhteyttä tukeen saadaksesi apua. Jos sinulla ei ole tukitiliä, sinun tarvitsee vain luoda sellainen; KYC ei ole pakollinen.",
   "app__swapUnderReviewSupportMessage_apple": "Siirto tarkistettavana\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",

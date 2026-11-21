@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "আপোনাৰ ট্ৰান্সফাৰ সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপ্টো খোলক।",
   "app__homeActionTransfer_apple": "ট্ৰান্সফাৰ কৰক",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "ৰেট উপলব্ধ নহয়। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "ৰেট উপলব্ধ নহয়। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
   "app__swapUnderReviewTitle_apple": "ট্ৰান্সফাৰ পৰ্যালোচনাধীন",
   "app__swapUnderReviewDescription_apple": "এই ট্ৰান্সফাৰ ৰ বাবে হাতে-কলমে পৰ্যালোচনাৰ প্ৰয়োজন। সহায়তাৰ বাবে সহায়তা দলৰ সৈতে যোগাযোগ কৰক। আপোনাৰ সহায়তা একাউন্ট নাথাকিলে, আপুনি কেৱল এটা সৃষ্টি কৰিলেই হ'ব; KYC প্ৰয়োজন নাই।",
   "app__swapUnderReviewSupportMessage_apple": "ট্ৰান্সফাৰ পৰ্যালোচনাধীন\nঅৰ্ডাৰ আইডি: {orderId}\nৰিকুৱেষ্ট আইডি: {requestId}\nঅৰ্ডাৰ নম্বৰ: {orderNumber}",

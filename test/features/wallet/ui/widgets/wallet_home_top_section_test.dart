@@ -1,8 +1,9 @@
+import 'package:bitcoin_price/bitcoin_price.dart'
+    show BitcoinPriceLocalizations;
 import 'package:flutter/rendering.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
@@ -26,11 +27,6 @@ class _Wallet extends MockBloc<WalletEvent, WalletState>
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
-class _Price extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
-    implements BitcoinPriceBloc {}
-
-class _Chart extends MockCubit<PriceChartState> implements PriceChartCubit {}
-
 const _actionKey = ValueKey('actions');
 
 Future<void> _pumpTopSection(
@@ -43,8 +39,7 @@ Future<void> _pumpTopSection(
 }) async {
   final wallet = _Wallet();
   final settings = _Settings();
-  final price = _Price();
-  final chart = _Chart();
+
   final amountDisplay = (
     bitcoinUnit: BitcoinUnit.btc,
     currencyCode: 'CAD',
@@ -71,25 +66,13 @@ Future<void> _pumpTopSection(
       ),
     ),
   );
-  whenListen(
-    price,
-    const Stream<BitcoinPriceState>.empty(),
-    initialState: BitcoinPriceState(
-      amountDisplay: amountDisplay,
-      currency: 'CAD',
-      bitcoinPrice: 100000,
-    ),
-  );
-  whenListen(
-    chart,
-    const Stream<PriceChartState>.empty(),
-    initialState: const PriceChartState(),
-  );
+
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: [
         ...AppLocalizations.localizationsDelegates,
+        BitcoinPriceLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,
         bullUiLocalizationsDelegate,
       ],
@@ -113,8 +96,12 @@ Future<void> _pumpTopSection(
             providers: [
               BlocProvider<WalletBloc>.value(value: wallet),
               BlocProvider<SettingsCubit>.value(value: settings),
-              BlocProvider<BitcoinPriceBloc>.value(value: price),
-              BlocProvider<PriceChartCubit>.value(value: chart),
+              BitcoinPriceFixture.prices(
+                amountDisplay: amountDisplay,
+                currency: 'CAD',
+                bitcoinPrice: 100000,
+              ),
+              BitcoinPriceFixture.chart(),
             ],
             child: BullAmountScope(
               snapshot: BullAmountSnapshot(

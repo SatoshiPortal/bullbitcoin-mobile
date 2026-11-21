@@ -6,8 +6,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -31,10 +30,6 @@ import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 class _Wallet extends Mock implements WalletBloc {}
 
 class _Settings extends Mock implements SettingsCubit {}
-
-class _Price extends Mock implements BitcoinPriceBloc {}
-
-class _Chart extends Mock implements PriceChartCubit {}
 
 class _Transactions extends Mock implements TransactionsCubit {}
 
@@ -111,19 +106,7 @@ void main() {
           ),
         );
         when(() => settings.stream).thenAnswer((_) => const Stream.empty());
-        final price = _Price();
-        when(() => price.state).thenReturn(
-          const BitcoinPriceState(
-            amountDisplay: amountDisplay,
-            currency: 'CAD',
-            bitcoinPrice: 125000,
-            availableCurrencies: ['CAD', 'USD'],
-          ),
-        );
-        when(() => price.stream).thenAnswer((_) => const Stream.empty());
-        final chart = _Chart();
-        when(() => chart.state).thenReturn(const PriceChartState());
-        when(() => chart.stream).thenAnswer((_) => const Stream.empty());
+
         final transactions = _Transactions();
         when(() => transactions.state)
             .thenReturn(const TransactionsState(transactions: []));
@@ -208,8 +191,13 @@ void main() {
               providers: [
                 BlocProvider<WalletBloc>.value(value: wallets),
                 BlocProvider<SettingsCubit>.value(value: settings),
-                BlocProvider<BitcoinPriceBloc>.value(value: price),
-                BlocProvider<PriceChartCubit>.value(value: chart),
+                BitcoinPriceFixture.prices(
+                  amountDisplay: amountDisplay,
+                  currency: 'CAD',
+                  bitcoinPrice: 125000,
+                  availableCurrencies: const ['CAD', 'USD'],
+                ),
+                BitcoinPriceFixture.chart(),
               ],
               child: MaterialApp.router(
                 debugShowCheckedModeBanner: false,

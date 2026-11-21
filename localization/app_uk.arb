@@ -1527,7 +1527,6 @@
   },
   "payDecodingInvoice": "Випадковий рахунок ...",
   "importColdcardInstructionsStep5": "Виберіть \"Експорт Гаманець\"",
-  "priceChartFetchingHistory": "Історія ціни.",
   "payFromWallet": "Від Wallet",
   "sellBankDetails": "Банк Детальніше",
   "pinStatusCheckingDescription": "Перевірка стану PIN",
@@ -2946,7 +2945,6 @@
   "@logsDeletedMessage": {
     "description": "Confirmation message when logs are deleted"
   },
-  "priceChartFailedToLoad": "Не вдалося завантажити історію цін",
   "priceFailedToLoad": "Не вдалося завантажити ціну",
   "statusScreenTryAgain": "Спробувати ще раз",
   "statusScreenContinue": "Продовжити",
@@ -3310,7 +3308,6 @@
   "pinCodeDeleteError": "Не вдалося видалити ваш PIN. Будь ласка, спробуйте ще раз.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
-  "priceChartLoadFailed": "Дані графіка цін не вдалося завантажити. Будь ласка, спробуйте знову.",
   "allSeedViewErrorFetch": "Не вдалося завантажити сіди. Будь ласка, спробуйте ще раз.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"

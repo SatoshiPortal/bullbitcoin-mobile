@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/testing.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
@@ -33,8 +33,6 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 class _MockWalletBloc extends Mock implements WalletBloc {}
-
-class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
 
 SettingsState _settingsState() => SettingsState(
   storedSettings: SettingsEntity(
@@ -64,7 +62,6 @@ SpWalletData _walletData({
 Widget _buildPage({
   required SpCubit cubit,
   required SettingsCubit settingsCubit,
-  required BitcoinPriceBloc bitcoinPriceBloc,
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
   final walletBloc = _MockWalletBloc();
@@ -91,14 +88,16 @@ Widget _buildPage({
         BlocProvider<SpCubit>.value(value: cubit),
         BlocProvider<WalletBloc>.value(value: walletBloc),
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
-        BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+        BitcoinPriceFixture.prices(),
       ],
       child: SettingsFacade.amountScope(
         navigatorKey: navigatorKey,
         child: SpWalletDetailScreen(
           exitRedirectPath: '/exit-target',
-          fiatBalanceBuilder: (balanceSat) =>
-              HomeFiatBalance(balanceSat: balanceSat),
+          fiatBalanceBuilder: (balanceSat) => HomeFiatBalance(
+            balanceSat: balanceSat,
+            onCurrencyChanged: (_, _) {},
+          ),
         ),
       ),
     ),
@@ -109,18 +108,17 @@ void main() {
   late SpCubitHarness harness;
   late MockLoadSpWalletDataUsecase loadUsecase;
   late _MockSettingsCubit settingsCubit;
-  late _MockBitcoinPriceBloc bitcoinPriceBloc;
+
   late SpCubit cubit;
 
   setUp(() {
     harness = SpCubitHarness();
     loadUsecase = harness.loadUsecase;
     settingsCubit = _MockSettingsCubit();
-    bitcoinPriceBloc = _MockBitcoinPriceBloc();
+
     when(() => settingsCubit.state).thenReturn(_settingsState());
     when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(() => bitcoinPriceBloc.state).thenReturn(const BitcoinPriceState());
-    when(() => bitcoinPriceBloc.stream).thenAnswer((_) => const Stream.empty());
+
     when(() => loadUsecase.execute())
         .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(_walletData()));
     when(() => harness.watchUsecase.execute())
@@ -133,11 +131,7 @@ void main() {
 
   Future<void> pumpPage(WidgetTester tester) async {
     await tester.pumpWidget(
-      _buildPage(
-        cubit: cubit,
-        settingsCubit: settingsCubit,
-        bitcoinPriceBloc: bitcoinPriceBloc,
-      ),
+      _buildPage(cubit: cubit, settingsCubit: settingsCubit),
     );
   }
 

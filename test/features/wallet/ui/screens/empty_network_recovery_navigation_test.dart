@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -30,9 +30,6 @@ class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
 
 class _WalletBloc extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
-
-class _PriceBloc extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
-    implements BitcoinPriceBloc {}
 
 class _MemoryQuickActionsStorage implements QuickActionsStorage {
   String? value;
@@ -81,12 +78,7 @@ void main() {
         const Stream<WalletState>.empty(),
         initialState: const WalletState(failure: NoWalletsFoundFailure()),
       );
-      final price = _PriceBloc();
-      whenListen(
-        price,
-        const Stream<BitcoinPriceState>.empty(),
-        initialState: const BitcoinPriceState(loadingPrice: true),
-      );
+
       final quickActions = createQuickActionsCubit(
         storage: _MemoryQuickActionsStorage(),
         warning: (_) {},
@@ -139,7 +131,7 @@ void main() {
         MultiBlocProvider(
           providers: [
             BlocProvider<WalletBloc>.value(value: wallets),
-            BlocProvider<BitcoinPriceBloc>.value(value: price),
+            BitcoinPriceFixture.prices(loadingPrice: true),
           ],
           child: MaterialApp.router(
             theme: AppTheme.themeData(AppThemeType.light),
@@ -179,7 +171,6 @@ void main() {
       verifyZeroInteractions(references);
       await tester.pumpWidget(const SizedBox.shrink());
       await wallets.close();
-      await price.close();
     });
   }
 }

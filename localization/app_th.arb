@@ -3162,10 +3162,6 @@
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
-  "priceChartFetchingHistory": "นามสกุล:.",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "sellDone": "อย่าลืม",
   "@sellDone": {
     "description": "Button to close bottom sheet"
@@ -8884,7 +8880,6 @@
   "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
-  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
   "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -9256,7 +9251,6 @@
   "fundExchangeCopGeneratePaymentLink": "สร้างลิงก์ชำระเงิน",
   "fundExchangeCopRedirectMessage": "คุณจะถูกนำไปยังหน้าเว็บภายนอกเพื่อทำการชำระเงิน",
   "fundExchangeCopOpenPaymentLink": "เปิดลิงก์ชำระเงิน",
-  "priceChartFailedToLoad": "โหลดประวัติราคาไม่สำเร็จ",
   "priceFailedToLoad": "โหลดราคาไม่สำเร็จ",
   "statusScreenTryAgain": "ลองใหม่อีกครั้ง",
   "statusScreenContinue": "อ่านต่อ",

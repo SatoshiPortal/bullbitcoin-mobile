@@ -213,6 +213,7 @@
   "app__transactionSwapOpenWithin24h_apple": "เปิดแอปภายใน 24 ชั่วโมงเพื่อให้การโอนของคุณเสร็จสมบูรณ์",
   "app__homeActionTransfer_apple": "โอน",
   "app__bitcoinPriceExchangeRateUnavailable_apple": "ไม่มีอัตราให้ใช้งาน โปรดลองอีกครั้งในภายหลัง",
+  "bitcoin_price__bitcoinPriceExchangeRateUnavailable_apple": "ไม่มีอัตราให้ใช้งาน โปรดลองอีกครั้งในภายหลัง",
   "app__swapUnderReviewTitle_apple": "การโอนอยู่ระหว่างการตรวจสอบ",
   "app__swapUnderReviewDescription_apple": "การโอนนี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",
   "app__swapUnderReviewSupportMessage_apple": "การโอนอยู่ระหว่างการตรวจสอบ\nOrder ID: {orderId}\nRequest ID: {requestId}\nหมายเลขคำสั่งซื้อ: {orderNumber}",

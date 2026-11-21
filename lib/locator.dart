@@ -33,7 +33,7 @@ import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart'
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
-import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
@@ -237,7 +237,13 @@ class AppLocator {
     );
     const LogsFeature().setup(locator);
     BtcMapFeature.setup(locator);
-    BitcoinPriceLocator.setup(locator);
+    locator.registerLazySingleton<BitcoinPriceFeature>(
+      () => BitcoinPriceFeature.mount(
+        environment: locator<ActiveEnvironmentReader>(),
+        amountDisplay: locator<AmountDisplayPreferencesReader>(),
+        display: locator<RuntimeDisplayPreferencesReader>(),
+      ),
+    );
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);

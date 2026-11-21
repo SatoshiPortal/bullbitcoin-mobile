@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/bitcoin_price/domain/usecases/watch_bitcoin_price_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,7 +27,6 @@ void main() {
   final consumers = {
     'wallet': WatchWalletAmountDisplayUsecase(reader).execute,
     'coins': WatchCoinsAmountDisplayUsecase(reader).execute,
-    'price': WatchBitcoinPriceAmountDisplayUsecase(reader).execute,
   };
   for (final consumer in consumers.entries) {
     test(

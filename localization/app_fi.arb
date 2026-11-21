@@ -2495,7 +2495,6 @@
   "exchangeFeatureBankTransfers": "• Lähetä pankkisiirtoja ja maksa laskuja",
   "exchangeFeatureCustomerSupport": "• Keskustele asiakastuen kanssa",
   "exchangeFeatureUnifiedHistory": "• Yhdistetty tapahtumahistoria",
-  "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
   "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
@@ -2938,7 +2937,6 @@
   "deleteLogsTitle": "Poista lokit",
   "logsDeletedMessage": "Lokit poistettu",
   "sendSelfTransfer": "Siirto itselle",
-  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
   "priceFailedToLoad": "Kurssin lataus epäonnistui",
   "statusScreenTryAgain": "Yritä uudelleen",
   "statusScreenContinue": "Jatka",
@@ -3301,7 +3299,6 @@
   "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
-  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen.",
   "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
