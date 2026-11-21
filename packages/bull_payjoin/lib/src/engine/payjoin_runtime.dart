@@ -732,9 +732,9 @@ PayjoinOwnership? _deriveOwnership(engine.Payjoin payjoin) {
     final proposal = BitcoinTx.fromPsbtSync(proposalPsbt);
     // A completed receiver holds the txid it saw land, which differs from the
     // proposal's when the sender's inputs carry a scriptSig.
-    final landedAsProposed =
+    final isCompletedReceiver =
         payjoin is engine.PayjoinReceiver && payjoin.isCompleted;
-    if (proposal.txid != txId && !landedAsProposed) return null;
+    if (proposal.txid != txId && !isCompletedReceiver) return null;
 
     final (original, bip21) = switch (payjoin) {
       engine.PayjoinSender(:final originalPsbt, :final uri) => (

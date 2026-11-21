@@ -1571,6 +1571,17 @@ void main() {
       },
     );
 
+    test('an unreadable proposal is logged and watched by its txid', () async {
+      final model = proposed().copyWith(proposalPsbt: 'not-a-psbt');
+      await local.storeReceiver(model);
+
+      await engine.resumePayjoinsOnStartup();
+
+      final warning = logs.withCode(PayjoinLogCode.watchFailure).single;
+      expect(warning.level, PayjoinLogLevel.warning);
+      expect(warning.sessionRef, PayjoinSession.logRefForId(model.id));
+    });
+
     test('spends of other outpoints do not complete it', () async {
       final model = proposed(expired: true);
       await local.storeReceiver(model);

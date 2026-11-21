@@ -655,7 +655,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         payjoinId: receiver.id,
         walletId: receiver.walletId,
         txId: receiver.txId!,
-        spentOutpoints: _proposalInputs(receiver.proposalPsbt),
+        spentOutpoints: _proposalInputs(receiver.id, receiver.proposalPsbt),
       );
     }
     if (receiver.originalTxId != null) {
@@ -895,7 +895,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           payjoinId: result.id,
           walletId: result.walletId,
           txId: result.txId!,
-          spentOutpoints: _proposalInputs(result.proposalPsbt),
+          spentOutpoints: _proposalInputs(result.id, result.proposalPsbt),
         );
       }
     }
@@ -1339,15 +1339,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  expiry (app was closed) it re-arms the watcher the session lost
       //  when the app closed, which is exactly the behavior the retention
       //  above intends.
-      if (expiredModel is PayjoinReceiverModel && expiredModel.txId != null) {
-        final spentOutpoints = _proposalInputs(expiredModel.proposalPsbt);
+      final proposalTxId = expiredModel.txId;
+      if (expiredModel is PayjoinReceiverModel && proposalTxId != null) {
+        final spentOutpoints = _proposalInputs(
+          expiredModel.id,
+          expiredModel.proposalPsbt,
+        );
         // The payjoin may have landed while nothing watched it (app closed):
         //  complete instead of reporting an expiry.
         String? seenTxId;
         try {
           seenTxId = await _findWatchedTransaction(
             walletId: expiredModel.walletId,
-            txId: expiredModel.txId!,
+            txId: proposalTxId,
             spentOutpoints: spentOutpoints,
           );
         } catch (e) {
@@ -1357,14 +1361,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             error: e,
           );
         }
-        if (seenTxId != null) {
-          await _completeOnPayjoinTransactionSeen(expiredModel.id, seenTxId);
-          return;
-        }
+        final completed = seenTxId == null
+            ? null
+            : await _completeOnPayjoinTransactionSeen(
+                expiredModel.id,
+                seenTxId,
+              );
+        if (completed != null) return;
         _watchForBroadcast(
           payjoinId: expiredModel.id,
           walletId: expiredModel.walletId,
-          txId: expiredModel.txId!,
+          txId: proposalTxId,
           spentOutpoints: spentOutpoints,
         );
         // Same reasoning as _resumeOne's equivalent receiver branch: the
@@ -1600,7 +1607,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           payjoinId: model.id,
           walletId: model.walletId,
           txId: model.txId!,
-          spentOutpoints: _proposalInputs(model.proposalPsbt),
+          spentOutpoints: _proposalInputs(model.id, model.proposalPsbt),
         );
         // The sender still owns finalizing/broadcasting the real proposal
         //  from here, but could instead fall back to the original
@@ -2207,14 +2214,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   /// The inputs of a receiver's proposal. Its SIGHASH_ALL signature commits
   /// to all of them, so only the payjoin spends them together.
-  List<primitives.Outpoint> _proposalInputs(String? proposalPsbt) {
+  List<primitives.Outpoint> _proposalInputs(
+    String payjoinId,
+    String? proposalPsbt,
+  ) {
     if (proposalPsbt == null) return const [];
     try {
       return [
         for (final input in BitcoinTx.fromPsbtSync(proposalPsbt).inputs)
           (txId: input.txid, vout: input.vout),
       ];
-    } catch (_) {
+    } catch (e) {
+      _log.warning(
+        code: api.PayjoinLogCode.watchFailure,
+        role: api.PayjoinLogRole.receiver,
+        sessionRef: payjoinId,
+        error: e,
+      );
       return const [];
     }
   }
