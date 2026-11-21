@@ -1,5 +1,11 @@
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_servers_table.drift.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_settings_table.drift.dart';
+import 'package:bb_mobile/core/storage/tables/mempool_servers_table.drift.dart';
+import 'package:bb_mobile/core/storage/tables/mempool_settings_table.drift.dart';
+import 'package:bb_mobile/core/storage/tables/recoverbull_table.drift.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 

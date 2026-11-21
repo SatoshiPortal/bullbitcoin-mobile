@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_servers_table.drift.dart';
 
 class ElectrumServerModel {
   final String url;

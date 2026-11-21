@@ -428,3 +428,10 @@ See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refu
 
 `packages/swaps` depends directly on `secrets`: `SwapStorage` owns the legacy `swap_` key composition and maps `SwapKeychain` failures inside the engine. Composition injects the closed capability directly, with no feature-owned secret-store bridge. Its regtest view shares the canonical capability and fingerprint allocation locks; only swap blobs use the separate `swap_regtest_` namespace.
 
+## Legacy SQLite composition
+
+`lib/core/storage/sqlite_database.dart` composes the existing tables with modular Drift generation. The physical `bullbitcoin_sqlite` database, schema 16, migrations, defaults and text date-time representation remain unchanged. Tables stay at their current paths until each owner moves its table, queries, mapper and consumers together. Consumers import generated rows and companions directly from the table’s `.drift.dart` library; the composer does not re-export them. The transaction row mapper lives beside the Electrum adapter.
+
+Ordinary `.drift.dart` files are ignored build outputs. Historical schema JSON, migration steps and already tracked migration-test helpers remain versioned. Only the monolithic Drift builder is disabled; the shared-part combining builder remains available to other generators. Migration options belong to the enabled modular builder.
+
+When extracting a table owner, add its package path to `DRIFT_OWNER_PACKAGES` in the makefile in dependency order. Both `make build-runner` and `make build-runner-watch` finish those owner builds before starting the app composer; watch then starts owner watchers as well. Owner DAOs use `DatabaseAccessor<GeneratedDatabase>` without importing the composer, so they can later attach to an owner database. CI restores and saves modular outputs alongside its build graph. The future encrypted database split requires separate schema and data validation.

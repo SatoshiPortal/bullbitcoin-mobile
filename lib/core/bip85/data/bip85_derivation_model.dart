@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 
 class Bip85DerivationModel {

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/mempool_servers_table.drift.dart';
 
 class MempoolServerModel {
   final String url;

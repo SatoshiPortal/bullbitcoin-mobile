@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/frozen_utxos_freeze_store.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
