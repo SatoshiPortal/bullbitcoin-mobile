@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:satoshifier/satoshifier.dart';
+import 'package:primitives/primitives.dart' show XpubType;
 
 void main() {
   group('Network', () {
