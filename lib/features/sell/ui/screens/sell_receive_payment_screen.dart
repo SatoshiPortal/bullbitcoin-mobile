@@ -132,6 +132,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                 const BullShimmerLine()
               else
                 BullCopyField(
+                  copyLabel: context.loc.copyDialogButton,
                   copiedMessage: context.loc.copiedToClipboard,
                   text: bitcoinUnit == BitcoinUnit.btc
                       ? FormatAmount.btc(order.payinAmount)
