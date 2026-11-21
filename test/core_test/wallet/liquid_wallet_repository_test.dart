@@ -55,6 +55,7 @@ void main() {
   const fee = RelativeFee(25);
   late _Spender spender;
   late sync.Wallet wallet;
+  late int walletOpens;
   final sdk = _Sdk();
   late _MockValues values;
   late _MockFrozenDatasource frozen;
@@ -89,6 +90,7 @@ void main() {
   setUp(() async {
     final metadata = _MockMetadataDatasource();
     spender = _Spender();
+    walletOpens = 0;
     reset(sdk);
     values = _MockValues();
     frozen = _MockFrozenDatasource();
@@ -103,6 +105,7 @@ void main() {
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       wallet: (_) async {
+        walletOpens++;
         return Ok(wallet);
       },
       walletValuesDatasource: values,
@@ -155,6 +158,26 @@ void main() {
       (verify(() => spender.build(any(), any(), captureAny())).captured.single
               as sync.LiquidSpendRequest)
           .selected;
+
+  for (final drain in <bool?>[null, false]) {
+    test(
+      'refuses a missing amount when drain is $drain before opening a wallet',
+      () async {
+        final result = await repository.buildPset(
+          walletId: walletId,
+          address: 'recipient',
+          feeRate: fee,
+          drain: drain,
+        );
+        expect(
+          (result as Err<String, WalletFailure>).failure,
+          isA<WalletTransactionBuildFailure>(),
+        );
+        expect(walletOpens, 0);
+        verifyZeroInteractions(spender);
+      },
+    );
+  }
 
   test('passes exactly the selected outpoints to the builder', () async {
     expect(await build(selected: {second}), isA<Ok<String, WalletFailure>>());
