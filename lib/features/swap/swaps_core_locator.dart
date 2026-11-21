@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/swap/data/secure_secret_store.dart';
 import 'package:bb_mobile/features/swap/domain/regtest_boltz_profile.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -44,10 +43,8 @@ class SwapsLocator {
     );
     final rowStore = DriftSwapRowStore(locator<BoltzSwapsDatabase>());
     locator.registerLazySingleton<SwapStorage>(
-      () => SwapStorage(
-        rows: rowStore,
-        secrets: SecureSecretStore(locator<Secrets>().swapKeychain),
-      ),
+      () =>
+          SwapStorage(rows: rowStore, secrets: locator<Secrets>().swapKeychain),
     );
     locator.registerLazySingleton<SwapStorage>(
       () => locator<SwapStorage>().regtestView(

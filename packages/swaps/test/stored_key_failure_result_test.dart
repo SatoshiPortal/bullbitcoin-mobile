@@ -1,3 +1,7 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
 import 'dart:convert';
 
 import 'package:drift/native.dart';
@@ -6,33 +10,19 @@ import 'package:primitives/primitives.dart' show NetworkEnv, Err;
 import 'package:swaps/swaps.dart';
 import 'package:test/test.dart';
 
-class _Keychain implements SecretStore {
-  final values = <String, String>{};
-  @override
-  Future<String?> read(String key) async => values[key];
-  @override
-  Future<void> write(String key, String value) async {
-    values[key] = value;
-  }
-
-  @override
-  Future<void> delete(String key) async {
-    values.remove(key);
-  }
-}
-
 class _Electrum extends Mock implements ElectrumRunner {}
 
 class _Chain extends Mock implements LockupChain {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   for (final restore in [false, true]) {
     test(
       'foreign stored key ${restore ? 'restore' : 'info'} returns a modeled failure before transport',
       () async {
         final db = BoltzSwapsDatabase(NativeDatabase.memory());
         addTearDown(db.close);
-        final secrets = _Keychain();
+        final secrets = ReproKeychainBackend();
         secrets.values['swap_master_key_mainnet_00000001'] = jsonEncode({
           'xprv': '',
           'xpub': '',
@@ -45,7 +35,10 @@ void main() {
         final repository = BoltzSwapRepository.connect(
           url: 'http://127.0.0.1:1',
           environment: NetworkEnv.mainnet,
-          storage: SwapStorage(rows: DriftSwapRowStore(db), secrets: secrets),
+          storage: SwapStorage(
+            rows: DriftSwapRowStore(db),
+            secrets: secrets.capability,
+          ),
           electrum: electrum,
           lockupChain: chain,
           newAddressFor: (_) async => throw StateError('No address operation'),

@@ -21,22 +21,8 @@ class _Electrum extends Mock implements swaps.ElectrumRunner {}
 
 class _Lockup extends Mock implements swaps.LockupChain {}
 
-class _Keychain implements swaps.SecretStore {
-  final _values = <String, String>{};
-  @override
-  Future<String?> read(String key) async => _values[key];
-  @override
-  Future<void> write(String key, String value) async {
-    _values[key] = value;
-  }
-
-  @override
-  Future<void> delete(String key) async {
-    _values.remove(key);
-  }
-}
-
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(BullSdk.init);
   for (final environment in [
     NetworkEnv.mainnet,
@@ -89,7 +75,10 @@ void main() {
       final defaultWallet = _Wallet();
       when(() => defaultWallet.masterFingerprint).thenReturn(secret.id.hex);
       final glue = SwapsAppGlue(walletRepository: wallets, secrets: secrets);
-      final canonical = swaps.SwapStorage(rows: _Rows(), secrets: _Keychain());
+      final canonical = swaps.SwapStorage(
+        rows: _Rows(),
+        secrets: secrets.swapKeychain,
+      );
       for (final environment in [
         NetworkEnv.mainnet,
         NetworkEnv.testnet,

@@ -1,3 +1,7 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -47,8 +51,6 @@ class _Rows extends Fake implements SwapRowStore {
     stored.add(model.id);
   }
 }
-
-class _Secrets extends Fake implements SecretStore {}
 
 class _Headers extends Fake implements HttpHeaders {
   @override
@@ -176,7 +178,10 @@ class _Transport {
 BoltzDatasource _datasource(_Rows rows) => BoltzDatasource(
   url: 'http://unused.invalid',
   environment: NetworkEnv.mainnet,
-  boltzStore: SwapStorage(rows: rows, secrets: _Secrets()),
+  boltzStore: SwapStorage(
+    rows: rows,
+    secrets: ReproKeychainBackend().capability,
+  ),
   webSocketFactory: (url, {onDone, onError}) =>
       throw StateError('Websocket must stay off'),
 );
@@ -188,6 +193,7 @@ void _flush(FakeAsync clock) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
     await BullSdk.init();
     // Native setup failures are not the fairness Red. Check both real parser

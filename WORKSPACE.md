@@ -115,6 +115,7 @@ graph TD
   swaps --> rust_bindings
   swaps --> boltz_stream
   swaps --> primitives
+  swaps --> secrets
   sync --> rust_bindings
   sync --> bull_logger
   sync --> primitives

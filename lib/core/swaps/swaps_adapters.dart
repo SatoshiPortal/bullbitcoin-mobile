@@ -19,7 +19,7 @@ import 'package:sync/sync.dart';
 
 /// Opens the engine's own database file. Same platform choices as the app
 /// database (documents dir, WAL, busy timeout, cross-isolate sharing) — the
-/// package itself stays pure Dart and just takes the executor.
+/// engine receives the configured executor from composition.
 QueryExecutor openBoltzSwapsDbConnection() {
   return driftDatabase(
     name: swaps.BoltzSwapsDatabase.name,

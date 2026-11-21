@@ -1,3 +1,5 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
 import 'dart:async';
 
 import 'package:drift/native.dart';
@@ -8,6 +10,7 @@ import 'package:test/test.dart';
 import 'support/real_swap_backends.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   for (final action in ['retry', 'stop']) {
     test(
       'R4 $action can report a bounded result while a chain request hangs',
@@ -15,7 +18,7 @@ void main() {
         final db = BoltzSwapsDatabase(NativeDatabase.memory());
         final storage = SwapStorage(
           rows: DriftSwapRowStore(db),
-          secrets: ReproKeychainBackend(),
+          secrets: ReproKeychainBackend().capability,
         );
         final entered = Completer<void>();
         final release = Completer<bool>();
