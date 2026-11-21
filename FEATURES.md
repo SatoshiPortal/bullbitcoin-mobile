@@ -666,3 +666,5 @@ Send uses `sync.broadcastLiquidTransaction` for wallet-independent Liquid broadc
 ### Native runtime extraction
 
 The wallet module supplies inventory and protocol ports to the runtime in `sync`. Ark and Payjoin consumers pass exact wallet keys to the same runtime instance. The global foreground queue still orders native, swap and Silent Payments work; catalog metadata and presentation enrichment stay outside sync.
+
+Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.

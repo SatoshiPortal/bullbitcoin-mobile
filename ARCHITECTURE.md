@@ -457,3 +457,5 @@ Send and Payjoin consume the chain operations published by `sync` through `Walle
 ### Native lifecycle ownership
 
 `packages/sync` owns `WalletNativeRuntime`, composed through `sync/write.dart`. Runtime operations accept wallet keys and return typed results; the application resolves metadata and maps failures at its existing consumer boundaries. The catalog owner supplies the callback that removes an inventory entry after native deletion is confirmed. Native storage paths, revisions and recovery order remain unchanged.
+
+Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.

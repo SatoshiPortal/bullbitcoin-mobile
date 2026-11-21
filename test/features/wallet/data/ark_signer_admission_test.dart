@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -17,8 +16,6 @@ import 'package:sync/sync.dart';
 import 'ark_funding_test_fixture.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
-
-class _Bdk extends Mock implements BdkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -51,7 +48,7 @@ void main() {
   BitcoinWalletRepository generic() => BitcoinWalletRepository(
     walletMetadataDatasource: metadata,
     secrets: Secrets(scratchDirectory: () async => fixture.directory.path),
-    bdkWalletDatasource: _Bdk(),
+    wallet: (_) async => throw StateError('no native access expected'),
     walletValuesDatasource: _Values(),
     arkFundingGuard: guard,
   );

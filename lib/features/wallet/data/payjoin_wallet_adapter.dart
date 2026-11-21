@@ -2,8 +2,7 @@ import 'ark_funding_signing_guard.dart';
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
-    show SpendWallet;
+import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -17,7 +16,8 @@ import 'package:sync/sync.dart' show BitcoinSpendStatus;
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
   final ArkFundingSigningGuard _arkFundingGuard;
-  final SpendWallet _wallet;
+  final Future<Result<sync.Wallet, sync.SyncFailure>> Function(WalletKey)
+  _wallet;
   final Future<BitcoinSpendStatus> Function(String walletId) _spendStatus;
   final SyncWalletValuesDatasource _values;
   final WalletMetadataDatasource _metadata;
@@ -65,8 +65,13 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: sync adds the
     // paths first, from the public descriptors.
-    final annotated = switch (await (await _wallet(walletId)).tx
-        .annotate(psbt)) {
+    final handle = switch (await _wallet(
+      WalletKey(id: walletId, network: network),
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
+    final annotated = switch (await handle.tx.annotate(psbt)) {
       Ok(:final value) => value,
       Err(:final failure) => throw StateError('sync: ${failure.logCode}'),
     };

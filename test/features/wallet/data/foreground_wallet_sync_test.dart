@@ -23,8 +23,6 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -53,10 +51,6 @@ class _Labels extends Mock implements Labels {}
 class _Catalog extends Mock implements WalletCatalogPort {}
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
-
-class _Bdk extends Mock implements BdkWalletDatasource {}
-
-class _Lwk extends Mock implements LwkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -102,7 +96,6 @@ void main() {
   late Directory directory;
   late _Policy policy;
   late _Metadata metadata;
-  late _Bdk bdk;
   late _Values values;
   late WalletRepository repository;
   late ForegroundWalletSync bridge;
@@ -111,7 +104,6 @@ void main() {
     directory = Directory.systemTemp.createTempSync('foreground-sync-');
     policy = _Policy();
     metadata = _Metadata();
-    bdk = _Bdk();
     values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
     when(() => metadata.store(any())).thenAnswer((_) async {});
@@ -135,8 +127,7 @@ void main() {
     );
     repository = WalletRepository(
       walletMetadataDatasource: metadata,
-      bdkWalletDatasource: bdk,
-      lwkWalletDatasource: _Lwk(),
+      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: bridge.synchronize,
       isSyncing: bridge.isSyncing,
@@ -209,8 +200,7 @@ void main() {
         final guardedRepository = WalletRepository(
           native: native,
           walletMetadataDatasource: metadata,
-          bdkWalletDatasource: bdk,
-          lwkWalletDatasource: _Lwk(),
+          wallet: (_) async => throw StateError('no native access expected'),
           walletValuesDatasource: values,
           synchronize: bridge.synchronize,
           isSyncing: bridge.isSyncing,
@@ -472,8 +462,7 @@ void main() {
       final requests = <(bool, bool)>[];
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,
-        bdkWalletDatasource: bdk,
-        lwkWalletDatasource: _Lwk(),
+        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize: (
           metadata, {
@@ -665,8 +654,7 @@ void main() {
       final importing = WalletRepository(
         native: native,
         walletMetadataDatasource: metadata,
-        bdkWalletDatasource: bdk,
-        lwkWalletDatasource: _Lwk(),
+        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize:
             (

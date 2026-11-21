@@ -11,9 +11,7 @@ import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
@@ -79,7 +77,7 @@ class WalletLocator {
       () => BitcoinWalletRepository(
         arkFundingGuard: locator<ArkFundingSigningGuard>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
       ),
@@ -89,7 +87,7 @@ class WalletLocator {
       () => LiquidWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         secrets: locator<Secrets>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         freezesDatasource: locator<SyncFreezesDatasource>(),
       ),

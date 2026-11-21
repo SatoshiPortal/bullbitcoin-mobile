@@ -73,14 +73,7 @@ abstract final class PayjoinSetup {
         databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
-          (id) async => WalletCatalogPortImpl.value(
-            await locator<WalletNativeRuntime>().wallet(
-              await WalletCatalogPortImpl.keyForId(
-                locator<WalletMetadataDatasource>(),
-                id,
-              ),
-            ),
-          ),
+          locator<WalletNativeRuntime>().wallet,
           (id) async {
             try {
               return WalletCatalogPortImpl.value<BitcoinSpendStatus>(

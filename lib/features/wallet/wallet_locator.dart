@@ -41,16 +41,13 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
 import 'package:labels/storage.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:sync/sync.dart';
-import 'package:sync/sync.dart' as native_sync show Wallet;
 import 'package:sync/write.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -85,10 +82,6 @@ class WalletLocator {
   static void setup(GetIt locator) {
     Future<WalletKey> keyFor(String id) =>
         WalletCatalogPortImpl.keyForId(locator<WalletMetadataDatasource>(), id);
-    Future<native_sync.Wallet> openWallet(String id) async =>
-        WalletCatalogPortImpl.value(
-          await locator<WalletNativeRuntime>().wallet(await keyFor(id)),
-        );
     Future<BitcoinSpendStatus> spendStatus(
       String id, {
       String? replacing,
@@ -240,12 +233,7 @@ class WalletLocator {
             : null,
       ),
     );
-    locator.registerLazySingleton<BdkWalletDatasource>(
-      () => BdkWalletDatasource(wallet: openWallet),
-    );
-    locator.registerLazySingleton<LwkWalletDatasource>(
-      () => LwkWalletDatasource(wallet: openWallet),
-    );
+
     locator.registerLazySingleton<SyncWalletValuesDatasource>(
       () => SyncWalletValuesDatasource(
         load: (key) async => WalletCatalogPortImpl.value(
@@ -308,8 +296,7 @@ class WalletLocator {
       return WalletRepository(
         native: locator<WalletNativeRuntime>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
         isSyncing: sync.isSyncing,

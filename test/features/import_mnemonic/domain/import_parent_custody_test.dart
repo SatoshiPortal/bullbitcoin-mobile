@@ -10,8 +10,6 @@ import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -33,10 +31,6 @@ import 'package:sync/sync.dart' show SyncReason, SyncFailure, WalletKey;
 class _Settings extends Mock implements Preferences {}
 
 class _Swaps extends Mock implements SwapStore {}
-
-class _Bdk extends Fake implements BdkWalletDatasource {}
-
-class _Lwk extends Fake implements LwkWalletDatasource {}
 
 class _Native extends Fake implements WalletNativeLifecycle {
   Future<void> Function()? beforeCreate;
@@ -135,8 +129,7 @@ void main() {
     repository = WalletRepository(
       native: native,
       walletMetadataDatasource: metadata,
-      bdkWalletDatasource: _Bdk(),
-      lwkWalletDatasource: _Lwk(),
+      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
         _, {

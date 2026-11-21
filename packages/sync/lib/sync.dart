@@ -79,3 +79,5 @@ export 'src/data/chain/electrum_chain.dart'
 export 'src/data/chain/bitcoin_prescan.dart' show prescanBitcoinWallet;
 export 'src/data/write/datasources/native_store_errors.dart'
     show isLiquidStatusConflict;
+export 'src/data/codec/bitcoin_recipient_amounts.dart'
+    show bitcoinRecipientAmounts;

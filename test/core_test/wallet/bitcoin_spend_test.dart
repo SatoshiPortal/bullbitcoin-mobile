@@ -3,7 +3,7 @@ import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 
-// Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
+// Regression test for a bug where `wallet.tx.build` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
 //
 // bdk_dart's `TxBuilder` is an IMMUTABLE builder: every method (`addUtxos`,
@@ -46,10 +46,10 @@ import 'package:sync/sync.dart'
         SyncInsufficientFundsFailure,
         SyncNoSpendableInputsFailure,
         SyncProtectedInputsFailure;
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:sync/sync.dart' as sync;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
@@ -66,15 +66,12 @@ const _testMnemonic =
 // external send destination (not owned by the test wallet).
 const _externalTestnetAddress = 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx';
 
-List<BitcoinTransactionRecipientModel> _fixedRecipients(int amountSat) => [
-  BitcoinTransactionRecipientModel.fixed(
-    address: _externalTestnetAddress,
-    fixedAmountSat: amountSat,
-  ),
+List<({String address, int? amountSat})> _fixedRecipients(int amountSat) => [
+  (address: _externalTestnetAddress, amountSat: amountSat),
 ];
 
-final _remainderRecipients = <BitcoinTransactionRecipientModel>[
-  BitcoinTransactionRecipientModel.remainder(address: _externalTestnetAddress),
+final _remainderRecipients = <({String address, int? amountSat})>[
+  (address: _externalTestnetAddress, amountSat: null),
 ];
 
 Uint8List _leUint32(int value) {
@@ -140,7 +137,7 @@ void main() {
   const utxoOtherAmountSat = 50000;
 
   setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('bdk_wallet_datasource_');
+    tempDir = await Directory.systemTemp.createTemp('bitcoin_spend_');
     const channel = MethodChannel('plugins.flutter.io/path_provider');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
@@ -490,14 +487,8 @@ void main() {
       datasource.buildPsbt(
         wallet: walletModel,
         recipients: [
-          BitcoinTransactionRecipientModel.fixed(
-            address: _externalTestnetAddress,
-            fixedAmountSat: 150000,
-          ),
-          BitcoinTransactionRecipientModel.fixed(
-            address: secondRecipientAddress,
-            fixedAmountSat: 140000,
-          ),
+          (address: _externalTestnetAddress, amountSat: 150000),
+          (address: secondRecipientAddress, amountSat: 140000),
         ],
         networkFee: const NetworkFee.relativeSatPerKwu(1000),
       ),
@@ -613,14 +604,8 @@ void main() {
     final psbt = await datasource.buildPsbt(
       wallet: walletModel,
       recipients: [
-        BitcoinTransactionRecipientModel.fixed(
-          address: _externalTestnetAddress,
-          fixedAmountSat: firstAmountSat,
-        ),
-        BitcoinTransactionRecipientModel.fixed(
-          address: secondRecipientAddress,
-          fixedAmountSat: secondAmountSat,
-        ),
+        (address: _externalTestnetAddress, amountSat: firstAmountSat),
+        (address: secondRecipientAddress, amountSat: secondAmountSat),
       ],
       networkFee: const NetworkFee.absolute(feeSat),
     );
@@ -686,13 +671,8 @@ void main() {
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
         recipients: [
-          BitcoinTransactionRecipientModel.remainder(
-            address: secondRecipientAddress,
-          ),
-          BitcoinTransactionRecipientModel.fixed(
-            address: _externalTestnetAddress,
-            fixedAmountSat: fixedAmountSat,
-          ),
+          (address: secondRecipientAddress, amountSat: null),
+          (address: _externalTestnetAddress, amountSat: fixedAmountSat),
         ],
         networkFee: const NetworkFee.absolute(feeSat),
         selectedOnly: true,
@@ -756,13 +736,8 @@ void main() {
       ),
     ];
     final recipients = [
-      BitcoinTransactionRecipientModel.fixed(
-        address: _externalTestnetAddress,
-        fixedAmountSat: fixedAmountSat,
-      ),
-      BitcoinTransactionRecipientModel.remainder(
-        address: secondRecipientAddress,
-      ),
+      (address: _externalTestnetAddress, amountSat: fixedAmountSat),
+      (address: secondRecipientAddress, amountSat: null),
     ];
 
     final lowFeePsbt = await datasource.buildPsbt(
@@ -799,9 +774,7 @@ void main() {
     const feeSat = 1000;
     final datasource = _Datasource(fixture);
     final recipients = [
-      BitcoinTransactionRecipientModel.remainder(
-        address: _externalTestnetAddress.toUpperCase(),
-      ),
+      (address: _externalTestnetAddress.toUpperCase(), amountSat: null),
     ];
 
     final psbt = await datasource.buildPsbt(
@@ -835,16 +808,16 @@ void main() {
     'separates fixed and remainder amounts sent to the same script',
     () async {
       const fixedAmountSat = 50000;
+      const secondFixedAmountSat = 20000;
       const feeSat = 1000;
       final datasource = _Datasource(fixture);
       final recipients = [
-        BitcoinTransactionRecipientModel.fixed(
-          address: _externalTestnetAddress,
-          fixedAmountSat: fixedAmountSat,
-        ),
-        BitcoinTransactionRecipientModel.remainder(
+        (address: _externalTestnetAddress, amountSat: fixedAmountSat),
+        (
           address: _externalTestnetAddress.toUpperCase(),
+          amountSat: secondFixedAmountSat,
         ),
+        (address: _externalTestnetAddress.toUpperCase(), amountSat: null),
       ];
 
       final psbt = await datasource.buildPsbt(
@@ -870,7 +843,11 @@ void main() {
           recipients,
           network: Network.bitcoinTestnet,
         ),
-        [fixedAmountSat, utxoLargeAmountSat - fixedAmountSat - feeSat],
+        [
+          fixedAmountSat,
+          secondFixedAmountSat,
+          utxoLargeAmountSat - fixedAmountSat - secondFixedAmountSat - feeSat,
+        ],
       );
     },
   );
@@ -881,12 +858,7 @@ void main() {
     await expectLater(
       datasource.buildPsbt(
         wallet: walletModel,
-        recipients: [
-          BitcoinTransactionRecipientModel.fixed(
-            address: _externalTestnetAddress,
-            fixedAmountSat: 1,
-          ),
-        ],
+        recipients: [(address: _externalTestnetAddress, amountSat: 1)],
         networkFee: const NetworkFee.absolute(1000),
       ),
       throwsA(isA<InsufficientFundsException>()),
@@ -900,13 +872,8 @@ void main() {
       datasource.buildPsbt(
         wallet: walletModel,
         recipients: [
-          BitcoinTransactionRecipientModel.fixed(
-            address: _externalTestnetAddress,
-            fixedAmountSat: 28800,
-          ),
-          BitcoinTransactionRecipientModel.remainder(
-            address: secondRecipientAddress,
-          ),
+          (address: _externalTestnetAddress, amountSat: 28800),
+          (address: secondRecipientAddress, amountSat: null),
         ],
         networkFee: const NetworkFee.absolute(1000),
         selectedOnly: true,
@@ -947,26 +914,37 @@ void main() {
 /// The datasource over sync's writer, with its failures thrown as the
 /// exceptions these tests name.
 final class _Datasource {
-  final BdkWalletDatasource _datasource;
-  _Datasource(SyncSpendFixture fixture)
-    : _datasource = BdkWalletDatasource(wallet: fixture.wallet);
+  final SyncSpendFixture _fixture;
+  _Datasource(this._fixture);
 
   Future<String> buildPsbt({
-    required List<BitcoinTransactionRecipientModel> recipients,
+    required List<({String address, int? amountSat})> recipients,
     required NetworkFee networkFee,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxoModel>? selected,
     bool selectedOnly = false,
     bool replaceByFee = true,
     required WalletModel wallet,
-  }) async => switch (await _datasource.buildPsbt(
-    recipients: recipients,
-    networkFee: networkFee,
-    unspendable: unspendable,
-    selected: selected,
-    selectedOnly: selectedOnly,
-    replaceByFee: replaceByFee,
-    wallet: wallet,
+  }) async => switch (await (await _fixture.wallet(wallet.id)).tx.build(
+    sync.BitcoinSpendRequest(
+      recipients: [
+        for (final recipient in recipients)
+          sync.SpendRecipient(
+            recipient.address,
+            amountSat: recipient.amountSat,
+          ),
+      ],
+      fee: switch (networkFee) {
+        AbsoluteFee(:final sats) => sync.SpendAbsoluteFee(sats),
+        RelativeFee(:final satPerKwu) => sync.SpendFeeRate(satPerKwu),
+      },
+      exclude: {...?unspendable},
+      selected: selected == null
+          ? null
+          : [for (final coin in selected) (txId: coin.txId, vout: coin.vout)],
+      selectedOnly: selectedOnly,
+      replaceable: replaceByFee,
+    ),
   )) {
     Ok(:final value) => value.encoded,
     Err(failure: SyncInsufficientFundsFailure()) =>
@@ -980,13 +958,25 @@ final class _Datasource {
 
   Future<List<int>> getRecipientAmounts(
     String psbt,
-    List<BitcoinTransactionRecipientModel> recipients, {
+    List<({String address, int? amountSat})> recipients, {
     required Network network,
-  }) => _datasource.getRecipientAmounts(psbt, recipients, network: network);
+  }) async => switch (await sync.bitcoinRecipientAmounts(
+    psbt: psbt,
+    network: network.bitcoin,
+    recipients: [
+      for (final recipient in recipients)
+        (address: recipient.address, amountSat: recipient.amountSat),
+    ],
+  )) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw StateError(failure.logCode),
+  };
 
   Future<int> getAmountSentToAddress(
     String psbt,
     String address, {
     required Network network,
-  }) => _datasource.getAmountSentToAddress(psbt, address, network: network);
+  }) async => (await getRecipientAmounts(psbt, [
+    (address: address, amountSat: null),
+  ], network: network)).single;
 }

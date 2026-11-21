@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -45,10 +43,6 @@ import 'package:sync/testing.dart' show MemoryFreezeStore;
 class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Reporter extends Mock implements LoggerReporter {}
-
-class _Bitcoin extends Mock implements BdkWalletDatasource {}
-
-class _Liquid extends Mock implements LwkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -100,7 +94,6 @@ void main() {
     native = _Native();
     when(() => native.prepareCreate(any()))
         .thenAnswer((_) async => const Ok(null));
-    final bitcoin = _Bitcoin();
     final values = _Values();
     when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => BalanceModel(
@@ -115,8 +108,7 @@ void main() {
     repository = WalletRepository(
       native: native,
       walletMetadataDatasource: metadata,
-      bdkWalletDatasource: bitcoin,
-      lwkWalletDatasource: _Liquid(),
+      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
         _, {

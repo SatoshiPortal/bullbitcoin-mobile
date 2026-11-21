@@ -9,3 +9,5 @@ export 'src/testing/test_wallets.dart'
     show MemoryFreezeStore, testWallet, testWalletFromNative;
 
 export 'src/testing/freezes_only_sync.dart';
+
+export 'src/data/write/spend/spend_writer.dart' show WalletSpender;

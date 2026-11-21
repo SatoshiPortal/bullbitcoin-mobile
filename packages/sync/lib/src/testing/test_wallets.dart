@@ -6,6 +6,7 @@ import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
 import '../data/freeze_authority.dart';
+import '../data/write/spend/spend_writer.dart' show WalletSpender;
 import '../data/read/wallet_frame_mapper.dart';
 import '../data/wallet_projections.dart';
 import '../domain/coin_freezes.dart';
@@ -30,12 +31,14 @@ Future<Wallet> testWallet({
   List<Outpoint> ownedOutpoints = const [],
   bool stale = false,
   bool load = true,
+  WalletSpender? spender,
 }) {
   final revision = WalletRevision(key: key, generation: 0, revision: 0);
   return _wallet(
     key,
     frozen: frozen,
     load: load,
+    spender: spender,
     (_) async => WalletFrame(
       WalletFrameData(
         revision: revision,
@@ -90,6 +93,7 @@ Future<Wallet> _wallet(
   Object? derive,
   Set<Outpoint> frozen = const {},
   bool load = true,
+  WalletSpender? spender,
 }) async {
   final projections = WalletProjections(
     revisions: _Revisions(key),
@@ -101,7 +105,7 @@ Future<Wallet> _wallet(
   );
   // Test-support library (`package:sync/testing.dart`), imported from test/ only.
   // ignore: invalid_use_of_visible_for_testing_member
-  final wallet = walletOver(projections, key, 0);
+  final wallet = walletOver(projections, key, 0, spender: spender);
   if (!load) return wallet;
   switch (await wallet.load()) {
     case Ok():
