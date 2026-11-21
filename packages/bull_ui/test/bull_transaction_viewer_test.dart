@@ -89,4 +89,42 @@ void main() {
     expect(resolutions, ['public', 'disclosure']);
     expect(opened, [Uri.parse(disclosureUrl)]);
   });
+
+  testWidgets('an unavailable explorer link leaves the dialog open', (
+    tester,
+  ) async {
+    final opened = <Uri>[];
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Scaffold(
+          body: BullTransactionViewer(
+            'public',
+            title: 'Transaction ID',
+            copyLabel: 'Copy ID',
+            copiedMessage: 'Copied',
+            openUrl: (url) async => opened.add(url),
+            explorerActions: [
+              (
+                copyLabel: 'Copy link',
+                openLabel: 'Open explorer',
+                resolveUrl: () async => null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(BullTransactionViewer));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Copy link'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open explorer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Copy ID'), findsOneWidget);
+    expect(find.text('Copied'), findsNothing);
+    expect(opened, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
 }

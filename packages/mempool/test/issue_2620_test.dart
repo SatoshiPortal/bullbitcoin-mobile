@@ -1,5 +1,5 @@
 import 'package:mempool/src/domain/entities/mempool_server.dart';
-import 'package:mempool/src/domain/value_objects/mempool_server_network.dart';
+import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Security audit reproducer for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2620
@@ -10,10 +10,10 @@ void main() {
     test('HTTP custom server cannot control fee estimation by default', () {
       // The settings UI derives enableSsl=false when the user types an
       // http:// URL (MempoolUrlParser.parse) and passes it through
-      // SetCustomMempoolServerRequest — this is that plaintext path.
+      // Mempool.servers.store — this is that plaintext path.
       final result = MempoolServer.tryCreateCustom(
         url: 'http://fees.example.com',
-        network: MempoolServerNetwork.bitcoinMainnet,
+        network: BitcoinNetwork.mainnet,
         enableSsl: false,
       );
       final server = result.fold(

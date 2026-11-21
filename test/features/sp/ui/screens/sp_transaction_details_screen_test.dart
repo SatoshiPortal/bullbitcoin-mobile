@@ -15,6 +15,8 @@ import 'package:bb_mobile/localizations.dart';
 
 import '../../sp_cubit_harness.dart';
 
+class _Links extends Mock implements MempoolLinks {}
+
 SpPayment _payment({
   BitcoinNetwork? network = BitcoinNetwork.mainnet,
   required String txid,
@@ -201,7 +203,7 @@ void main() {
           null,
         ),
       );
-      final explorerRequests = <(bool, bool)>[];
+      final links = _Links();
       final txid = 'abcd' * 16;
       final payment = _payment(
         network: network,
@@ -210,23 +212,17 @@ void main() {
         status: SpPaymentStatus.verified,
         amountSat: Sats.fromInt(3),
       );
+      final url = Uri.https(
+        network == BitcoinNetwork.mainnet
+            ? 'mainnet.example'
+            : 'testnet.example',
+        '/tx/$txid',
+      );
+      when(() => links.transaction(txid, network: network))
+          .thenAnswer((_) async => Ok(url));
       await tester.pumpWidget(
-        RepositoryProvider<MempoolUrlBuilder>.value(
-          value: MempoolUrlBuilder(
-            getActiveServer: ({required isTestnet, required isLiquid}) async {
-              explorerRequests.add((isTestnet, isLiquid));
-              return Ok(
-                MempoolServer.existing(
-                  url: isTestnet ? 'testnet.example' : 'mainnet.example',
-                  network: MempoolServerNetwork.fromEnvironment(
-                    isTestnet: isTestnet,
-                    isLiquid: isLiquid,
-                  ),
-                  isCustom: true,
-                ),
-              );
-            },
-          ),
+        RepositoryProvider<MempoolLinks>.value(
+          value: links,
           child: _buildPage(cubit, payment),
         ),
       );
@@ -241,7 +237,7 @@ void main() {
         copied,
         'https://${network == BitcoinNetwork.mainnet ? 'mainnet' : 'testnet'}.example/tx/$txid',
       );
-      expect(explorerRequests, [(network == BitcoinNetwork.testnet, false)]);
+      verify(() => links.transaction(txid, network: network)).called(1);
     });
   }
 }

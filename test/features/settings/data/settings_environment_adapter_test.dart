@@ -53,7 +53,7 @@ void main() {
       isA<Err<BitcoinNetwork, MempoolFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<MempoolLoadFailure>(),
+        isA<MempoolUnsupportedNetworkFailure>(),
       ),
     );
   });

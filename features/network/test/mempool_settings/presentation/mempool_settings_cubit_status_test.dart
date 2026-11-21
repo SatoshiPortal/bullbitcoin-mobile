@@ -7,6 +7,7 @@ import 'package:network/src/mempool_settings/domain/usecases/set_custom_mempool_
 import 'package:network/src/mempool_settings/domain/usecases/check_mempool_server_status_usecase.dart';
 import 'package:network/src/mempool_settings/presentation/mempool_settings_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:network/src/mempool_settings/presentation/mempool_server_row.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
@@ -21,7 +22,7 @@ class _CheckStatus implements CheckMempoolServerStatusUsecase {
   final probes = <String, List<Completer<bool>>>{};
 
   @override
-  Future<bool> execute(MempoolServerDto server) {
+  Future<bool> execute(MempoolServer server) {
     final probe = Completer<bool>();
     (probes[server.url] ??= []).add(probe);
     return probe.future;
@@ -35,16 +36,16 @@ class _CheckStatus implements CheckMempoolServerStatusUsecase {
   }
 }
 
-MempoolServerDto _server(
-  String url, {
-  bool liquid = false,
-  bool custom = false,
-}) => MempoolServerDto(
-  url: url,
-  isCustom: custom,
-  isTestnet: false,
-  isLiquid: liquid,
-);
+class _Server extends Fake implements MempoolServer {
+  @override
+  final String url;
+  @override
+  final Network network;
+  @override
+  final bool isCustom;
+
+  _Server(this.url, this.network, {this.isCustom = false});
+}
 
 void main() {
   late _LoadData loadData;
@@ -52,29 +53,28 @@ void main() {
   late _CheckStatus validator;
   late MempoolSettingsCubit cubit;
 
-  setUpAll(() {
-    registerFallbackValue(LoadMempoolServerDataRequest(isLiquid: false));
-    registerFallbackValue(DeleteCustomMempoolServerRequest(isLiquid: false));
-  });
-
   setUp(() {
     loadData = _LoadData();
     deleteCustom = _DeleteCustom();
     validator = _CheckStatus();
-    when(() => loadData.execute(any())).thenAnswer((invocation) async {
-      final request =
-          invocation.positionalArguments.first as LoadMempoolServerDataRequest;
-      return Ok(
-        LoadMempoolServerDataResponse(
-          defaultServer: request.isLiquid
-              ? _server('liquid.example', liquid: true)
-              : _server('bitcoin.example'),
-          customServer: request.isLiquid
-              ? null
-              : _server('custom.example', custom: true),
-        ),
-      );
-    });
+    when(() => loadData.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((invocation) async {
+          final isLiquid = invocation.namedArguments[#isLiquid] == true;
+          return Ok(
+            MempoolServerSelection(
+              defaultServer: isLiquid
+                  ? _Server('liquid.example', LiquidNetwork.mainnet)
+                  : _Server('bitcoin.example', BitcoinNetwork.mainnet),
+              customServer: isLiquid
+                  ? null
+                  : _Server(
+                      'custom.example',
+                      BitcoinNetwork.mainnet,
+                      isCustom: true,
+                    ),
+            ),
+          );
+        });
     cubit = MempoolSettingsCubit(
       loadDataUsecase: loadData,
       setCustomServerUsecase: _SetCustom(),
@@ -98,12 +98,12 @@ void main() {
     validator.answer('bitcoin.example');
     await pumpEventQueue();
 
-    expect(cubit.state.defaultServer?.url, 'liquid.example');
+    expect(cubit.state.defaultServer?.server.url, 'liquid.example');
     await cubit.close();
   });
 
   test('a late probe never brings a deleted custom server back', () async {
-    when(() => deleteCustom.execute(any()))
+    when(() => deleteCustom.execute(isLiquid: any(named: 'isLiquid')))
         .thenAnswer((_) async => const Ok(null));
     await cubit.loadData();
     await cubit.deleteCustomServer();

@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+
 import 'dart:async';
 
 import 'package:rust_bindings/lwk.dart' as lwk;
@@ -12,7 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Urls extends Mock implements MempoolUrlBuilder {}
+class _Urls extends Mock implements MempoolLinks {}
 
 void main() {
   late String unconfidential;
@@ -25,60 +27,64 @@ void main() {
     expect(unconfidential, startsWith('ert1'));
   });
   tearDownAll(BullSdk.dispose);
-  testWidgets(
-    'dialog retains the injected explorer builder across navigation',
-    (tester) async {
-      const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
-      const url = 'https://explorer.example/address/$address';
-      final urls = _Urls();
-      when(() => urls.bitcoinAddress(address, isTestnet: false))
-          .thenAnswer((_) async => url);
-      Object? copied;
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        (call) async {
-          if (call.method == 'Clipboard.setData') copied = call.arguments;
-          return null;
-        },
-      );
-      addTearDown(
-        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+  for (final (network, address) in [
+    (BitcoinNetwork.mainnet, '1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
+    (BitcoinNetwork.testnet, 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx'),
+  ]) {
+    testWidgets(
+      'dialog resolves the injected $network explorer link across navigation',
+      (tester) async {
+        final url = 'https://explorer.example/address/$address';
+        final urls = _Urls();
+        when(() => urls.address(address, network: network))
+            .thenAnswer((_) async => Ok(Uri.parse(url)));
+        Object? copied;
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
           SystemChannels.platform,
-          null,
-        ),
-      );
-      await tester.pumpWidget(
-        RepositoryProvider<MempoolUrlBuilder>.value(
-          value: urls,
-          child: MaterialApp(
-            theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(body: AddressViewer(address)),
+          (call) async {
+            if (call.method == 'Clipboard.setData') copied = call.arguments;
+            return null;
+          },
+        );
+        addTearDown(
+          () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            SystemChannels.platform,
+            null,
           ),
-        ),
-      );
-      await tester.tap(find.byType(AddressViewer));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.link));
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(seconds: 4));
-      await tester.pumpAndSettle();
-      expect(copied, {'text': url});
-      verify(() => urls.bitcoinAddress(address, isTestnet: false)).called(1);
-    },
-  );
+        );
+        await tester.pumpWidget(
+          RepositoryProvider<MempoolLinks>.value(
+            value: urls,
+            child: MaterialApp(
+              theme: AppTheme.themeData(AppThemeType.light),
+              localizationsDelegates: appLocalizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: Scaffold(body: AddressViewer(address)),
+            ),
+          ),
+        );
+        await tester.tap(find.byType(AddressViewer));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byIcon(Icons.link));
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpAndSettle();
+        expect(copied, {'text': url});
+        verify(() => urls.address(address, network: network)).called(1);
+      },
+    );
+  }
 
   testWidgets('URI view observes a failing local explorer lookup', (
     tester,
   ) async {
     const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
     final urls = _Urls();
-    final lookup = Completer<String>();
-    when(() => urls.bitcoinAddress(address, isTestnet: false))
+    final lookup = Completer<Result<Uri, MempoolFailure>>();
+    when(() => urls.address(address, network: BitcoinNetwork.mainnet))
         .thenAnswer((_) => lookup.future);
     await tester.pumpWidget(
-      RepositoryProvider<MempoolUrlBuilder>.value(
+      RepositoryProvider<MempoolLinks>.value(
         value: urls,
         child: MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
@@ -95,7 +101,7 @@ void main() {
     );
     await tester.tap(find.byType(AddressViewer));
     await tester.pumpAndSettle();
-    lookup.completeError(Exception('Local explorer settings unavailable'));
+    lookup.complete(const Err(MempoolLoadFailure(MempoolServerKind.custom)));
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.link), findsNothing);
     expect(tester.takeException(), isNull);
@@ -114,7 +120,7 @@ void main() {
     ) async {
       final urls = _Urls();
       await tester.pumpWidget(
-        RepositoryProvider<MempoolUrlBuilder>.value(
+        RepositoryProvider<MempoolLinks>.value(
           value: urls,
           child: MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),

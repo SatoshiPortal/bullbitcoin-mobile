@@ -18,6 +18,7 @@ void main() {
           transactionId: 'public-txid',
         ),
       );
+      expect(transaction.explorerNetwork, network);
       expect(
         transaction.supportsPublicExplorer,
         NetworkCapabilities.supports(network, NetworkCapability.publicExplorer),
@@ -25,6 +26,7 @@ void main() {
     });
   }
   test('unknown transaction provenance does not advertise public explorer', () {
+    expect(const Transaction().explorerNetwork, isNull);
     expect(const Transaction().supportsPublicExplorer, isFalse);
   });
 }

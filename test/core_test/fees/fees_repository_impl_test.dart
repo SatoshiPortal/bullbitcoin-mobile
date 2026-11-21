@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/features/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:mempool/mempool.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -47,7 +47,9 @@ class _MockElectrum extends Mock implements ElectrumServersPort {}
 
 class _MockDatasource extends Mock implements FeesDatasource {}
 
-class _MockServerRepository extends Mock implements Mempool {}
+class _MockMempool extends Mock implements Mempool {}
+
+class _MockServers extends Mock implements MempoolServerSettings {}
 
 const _fees = MempoolFeesModel(
   fastestFee: 5,
@@ -59,27 +61,18 @@ const _fees = MempoolFeesModel(
 
 void main() {
   late _MockDatasource datasource;
-  late _MockServerRepository serverRepository;
+  late _MockMempool mempool;
+  late _MockServers servers;
   late FeesRepositoryImpl repository;
-  late MempoolServerNetwork network;
-
-  setUpAll(() {
-    registerFallbackValue(
-      MempoolServerNetwork.fromEnvironment(isTestnet: false, isLiquid: false),
-    );
-  });
-
   setUp(() {
     datasource = _MockDatasource();
-    serverRepository = _MockServerRepository();
+    mempool = _MockMempool();
+    servers = _MockServers();
+    when(() => mempool.servers).thenReturn(servers);
     repository = FeesRepositoryImpl(
       feesDatasource: datasource,
       electrumServers: _MockElectrum(),
-      mempool: serverRepository,
-    );
-    network = MempoolServerNetwork.fromEnvironment(
-      isTestnet: false,
-      isLiquid: false,
+      mempool: mempool,
     );
     when(
       () => datasource.fetchBitcoinNetworkFees(baseUrl: any(named: 'baseUrl')),
@@ -90,7 +83,7 @@ void main() {
     final electrum = _RegtestPort();
     final regtestRepository = FeesRepositoryImpl(
       feesDatasource: datasource,
-      mempool: serverRepository,
+      mempool: mempool,
       electrumServers: electrum,
       regtestFeesDatasource: _UnavailableRegtest(),
     );
@@ -100,44 +93,51 @@ void main() {
     );
     expect(electrum.selected, ElectrumServerNetwork.bitcoinRegtest);
     verifyZeroInteractions(datasource);
-    verifyZeroInteractions(serverRepository);
+    verifyZeroInteractions(servers);
   });
 
-  test('uses the custom server when one exists', () async {
-    final custom = MempoolServer.existing(
-      url: 'custom.example',
-      network: network,
-      isCustom: true,
-    );
-    when(() => serverRepository.customServer(network))
-        .thenAnswer((_) async => Ok(custom));
+  for (final (network, bitcoin, base) in [
+    (
+      Network.bitcoinMainnet,
+      BitcoinNetwork.mainnet,
+      'http://custom.example:8080',
+    ),
+    (
+      Network.bitcoinTestnet,
+      BitcoinNetwork.testnet,
+      'https://default.example/testnet',
+    ),
+  ]) {
+    test('routes $network estimates through its active Mempool base', () async {
+      when(() => servers.activeBase(network: bitcoin))
+          .thenAnswer((_) async => Ok(Uri.parse(base)));
 
-    await repository.getNetworkFees(network: Network.bitcoinMainnet);
+      await repository.getNetworkFees(network: network);
 
-    verify(
-      () =>
-          datasource.fetchBitcoinNetworkFees(baseUrl: 'https://custom.example'),
-    ).called(1);
-    verifyNever(() => serverRepository.defaultServer(any()));
-  });
+      verify(() => datasource.fetchBitcoinNetworkFees(baseUrl: base)).called(1);
+      verify(() => servers.activeBase(network: bitcoin)).called(1);
+    });
+  }
 
-  test('uses the default server when no custom server exists', () async {
-    final defaultServer = MempoolServer.existing(
-      url: 'default.example',
-      network: network,
-      isCustom: false,
-    );
-    when(() => serverRepository.customServer(network))
-        .thenAnswer((_) async => const Ok(null));
-    when(() => serverRepository.defaultServer(network))
-        .thenAnswer((_) async => Ok(defaultServer));
+  for (final (kind, label) in [
+    (MempoolServerKind.custom, 'custom'),
+    (MempoolServerKind.defaultServer, 'default'),
+  ]) {
+    test('a $label lookup failure stops fees before transport', () async {
+      when(() => servers.activeBase(network: BitcoinNetwork.mainnet))
+          .thenAnswer((_) async => Err(MempoolLoadFailure(kind)));
 
-    await repository.getNetworkFees(network: Network.bitcoinMainnet);
-
-    verify(
-      () => datasource.fetchBitcoinNetworkFees(
-        baseUrl: 'https://default.example',
-      ),
-    ).called(1);
-  });
+      await expectLater(
+        repository.getNetworkFees(network: Network.bitcoinMainnet),
+        throwsA(
+          isA<MempoolFeesException>().having(
+            (error) => error.toString(),
+            'message',
+            contains('Failed to fetch $label mempool server'),
+          ),
+        ),
+      );
+      verifyZeroInteractions(datasource);
+    });
+  }
 }
