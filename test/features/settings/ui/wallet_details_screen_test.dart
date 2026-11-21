@@ -102,16 +102,14 @@ void main() {
     final semantics = tester.ensureSemantics();
     await _pumpScreen(tester, isDefault: false);
 
-    final buttons = find.ancestor(
-      of: find.byIcon(Icons.copy_sharp),
-      matching: find.byType(IconButton),
+    final buttons = find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.label == 'Copy',
     );
     expect(buttons, findsNWidgets(2));
-    for (final button in buttons.evaluate()) {
-      expect(
-        tester.getSemantics(find.byWidget(button.widget)),
-        isSemantics(tooltip: 'Copy', isButton: true),
-      );
+    for (var i = 0; i < 2; i++) {
+      final node = tester.getSemantics(buttons.at(i));
+      expect(node, isSemantics(isButton: true));
+      expect(node.label, endsWith('\nCopy'));
     }
     semantics.dispose();
   });

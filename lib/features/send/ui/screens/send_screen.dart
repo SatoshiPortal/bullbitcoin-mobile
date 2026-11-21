@@ -1,4 +1,3 @@
-import '../../../coins/public/coins_facade.dart' show CoinsRoute;
 import '../widgets/send_leave_payment_dialog.dart';
 import '../widgets/send_grouped_address.dart';
 
@@ -109,7 +108,9 @@ String _sendFlowTitle(BuildContext context) {
 }
 
 class SendScreen extends StatefulWidget {
-  const SendScreen({super.key});
+  const SendScreen({super.key, this.onOpenCoins});
+
+  final void Function(BuildContext context, Wallet wallet)? onOpenCoins;
 
   @override
   State<SendScreen> createState() => _SendScreenState();
@@ -122,7 +123,10 @@ class _SendScreenState extends State<SendScreen> {
   @override
   void initState() {
     super.initState();
-    _payment = _SendPaymentSession(context.read<SendCubit>());
+    _payment = _SendPaymentSession(
+      context.read<SendCubit>(),
+      onOpenCoins: widget.onOpenCoins,
+    );
   }
 
   @override

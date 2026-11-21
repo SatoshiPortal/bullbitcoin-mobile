@@ -212,7 +212,10 @@ class AppRouter {
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
-      SendRouter.route,
+      SendRouter.route(
+        onOpenCoins: (context, wallet) =>
+            context.pushReplacementNamed(CoinsRoute.coins.name, extra: wallet),
+      ),
       CoinsRouter.route(
         missingWalletRedirect: WalletRoute.walletHome.path,
         onSend: (context, wallet, outpoints) => context.pushNamed<void>(

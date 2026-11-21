@@ -261,7 +261,13 @@ void main() {
             path: '/',
             builder: (_, _) => const Scaffold(body: Text('Origin')),
           ),
-          GoRoute(path: '/send', builder: (_, _) => const SendScreen()),
+          GoRoute(
+            path: '/send',
+            builder: (_, _) => SendScreen(
+              onOpenCoins: (context, wallet) =>
+                  context.pushReplacementNamed('coins', extra: wallet),
+            ),
+          ),
           GoRoute(
             path: '/coins',
             name: 'coins',

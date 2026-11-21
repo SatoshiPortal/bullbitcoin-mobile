@@ -7,11 +7,14 @@ import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SendRouter {
-  static final route = GoRoute(
+  static GoRoute route({
+    required void Function(BuildContext context, Wallet wallet) onOpenCoins,
+  }) => GoRoute(
     name: SendRoute.send.name,
     path: SendRoute.send.path,
     builder: (context, state) {
@@ -37,7 +40,7 @@ class SendRouter {
             )..loadWalletWithRatesAndFees(),
           ),
         ],
-        child: const SendScreen(),
+        child: SendScreen(onOpenCoins: onOpenCoins),
       );
     },
   );

@@ -2,10 +2,11 @@ part of 'send_screen.dart';
 
 /// Owns ephemeral mono UI state; transaction intent remains in SendCubit.
 final class _SendPaymentSession {
-  _SendPaymentSession(this.cubit)
+  _SendPaymentSession(this.cubit, {this.onOpenCoins})
     : amountController = TextEditingController(text: cubit.state.amount),
       unit = ValueNotifier(cubit.state.bitcoinUnit ?? BitcoinUnit.btc);
   final SendCubit cubit;
+  final void Function(BuildContext context, Wallet wallet)? onOpenCoins;
   final TextEditingController amountController;
   final FocusNode amountFocus = FocusNode();
   final ValueNotifier<BitcoinUnit> unit;
@@ -585,7 +586,7 @@ final class _SendPaymentSession {
     if (openCoins == true && !_disposed && context.mounted) {
       final wallet = cubit.state.selectedBitcoinWallet;
       if (wallet != null) {
-        context.pushReplacementNamed(CoinsRoute.coins.name, extra: wallet);
+        onOpenCoins?.call(context, wallet);
       }
     }
   }
@@ -648,15 +649,7 @@ final class _SendPaymentSession {
       stepLabels: steps(context),
       stepSemanticLabel: (i, label) => '${i + 1}: $label',
       youSendLabel: context.loc.sendYouSend,
-      amount: money(
-        context,
-        sats,
-        style: context.bullType.headline.copyWith(
-          fontSize: 28,
-          height: 36 / 28,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      amount: money(context, sats, style: context.bullType.headline),
       equivalent: fiat(state, sats),
       enteredDetail: entered == null || quoteTime == null
           ? null

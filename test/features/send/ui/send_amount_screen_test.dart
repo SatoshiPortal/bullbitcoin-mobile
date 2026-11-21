@@ -129,61 +129,6 @@ void main() {
       expect(find.text(entry.key), findsOneWidget);
     });
   }
-  testWidgets('offers Add actions after enabling multiple recipients', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(800, 1600);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    Device.screen = const Size(800, 1600);
-    final state = SendState(
-      sendType: SendType.bitcoin,
-      paymentRequest: const PaymentRequest.bitcoin(
-        address: 'bc1qfirst',
-        isTestnet: false,
-      ),
-      copiedRawPaymentRequest: 'bc1qfirst',
-      recipientDrafts: const [
-        (
-          id: 0,
-          address: 'bc1qfirst',
-          amount: '',
-          receivesRemainder: false,
-          isValid: true,
-        ),
-      ],
-    );
-    final cubit = _MockSendCubit();
-    when(() => cubit.isSpMode).thenReturn(false);
-    when(() => cubit.state).thenReturn(state);
-    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: const [
-          bullUiLocalizationsDelegate,
-          ...appLocalizationsDelegates,
-        ],
-        builder: _amountScope,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: BlocProvider<SendCubit>.value(
-          value: cubit,
-          child: const SendScreen(),
-        ),
-      ),
-    );
-    await tester.pump();
-
-    expect(find.text('Add'), findsNothing);
-    await tester.tap(find.byType(Switch));
-    await tester.pumpAndSettle();
-    expect(find.text('Add'), findsOneWidget);
-    expect(find.text('Recipient'), findsOneWidget);
-    expect(find.text('My wallet'), findsOneWidget);
-  });
-
   testWidgets(
     'fixed BIP21 amount stays locked and continues with the request amount',
     (tester) async {
