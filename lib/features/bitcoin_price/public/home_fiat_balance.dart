@@ -1,6 +1,5 @@
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
@@ -66,7 +65,7 @@ class HomeFiatBalance extends StatelessWidget {
             formattedAmount: priceState.calculateFiatPrice(balanceSat),
             hideAmounts: priceState.amountDisplay?.hideAmounts ?? true,
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
-            color: context.appColors.onPrimary,
+            color: context.bull.onPrimary,
           );
     return picker(
       frameBuilder?.call(context, amount) ??
@@ -75,9 +74,9 @@ class HomeFiatBalance extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(context.bullShapes.button),
               border: Border.all(
-                color: context.appColors.border.withValues(alpha: 0.3),
+                color: context.bull.border.withValues(alpha: 0.3),
               ),
-              color: context.appColors.border.withValues(alpha: 0.3),
+              color: context.bull.border.withValues(alpha: 0.3),
             ),
             child: amount,
           ),
@@ -91,14 +90,14 @@ class _HomeFiatBalanceSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: context.appColors.shimmerBase,
-      highlightColor: context.appColors.shimmerHighlight,
+      baseColor: context.bull.shimmerBase,
+      highlightColor: context.bull.shimmerHighlight,
       child: SizedBox(
         width: 140,
         height: 22,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: context.appColors.surface,
+            color: context.bull.surface,
             borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
         ),

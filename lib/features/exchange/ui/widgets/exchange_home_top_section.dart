@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,9 +34,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
 
     final topGap = balances.length > 3 ? 32.0 : 46.0;
 
-    final showChart = context.select(
-      (PriceChartCubit cubit) => cubit.state.showChart,
-    );
+    final showChart = BitcoinPriceFacade.watchChartVisible(context);
 
     return SizedBox(
       height: _balanceAreaHeight + _actionsOverhang(context),

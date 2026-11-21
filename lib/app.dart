@@ -14,7 +14,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/language_locale.dart'
@@ -109,16 +109,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Widget build(BuildContext context) {
     Device.init(context);
 
-    return MultiBlocProvider(
+    final app = MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
         BlocProvider(
           create: (_) =>
               locator<AppStartupBloc>()..add(const AppStartupStarted()),
-        ),
-        BlocProvider(
-          create: (_) =>
-              locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
@@ -252,5 +248,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
       ),
     );
+    return locator<BitcoinPriceFacade>().providePrices(child: app);
   }
 }

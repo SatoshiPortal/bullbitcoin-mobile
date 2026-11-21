@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
@@ -28,9 +28,7 @@ class _PayWalletSelectionScreenState extends State<PayWalletSelectionScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final currency = context.read<PayBloc>().state.currency;
-      context.read<BitcoinPriceBloc>().add(
-        BitcoinPriceCurrencyChanged(currencyCode: currency.code),
-      );
+      BitcoinPriceFacade.quoteInCurrency(context, currency.code);
     });
   }
 

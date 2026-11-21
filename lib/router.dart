@@ -52,7 +52,6 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
@@ -165,28 +164,28 @@ class AppRouter {
               ? 1
               : 0;
 
-          return BlocProvider(
-            create: (_) => locator<PriceChartCubit>(),
-            child: PopScope(
-              canPop: false,
-              onPopInvokedWithResult: (didPop, _) {
-                context.goNamed(WalletRoute.walletHome.name);
-              },
-              child: BackupWarningOverlay(
-                child: Scaffold(
-                  // The app bar of the exchange tab is rendered by the
-                  // ExchangeHomeScreen itself, as an overlay.
-                  appBar: tabIndex == 0
-                      ? WalletHomeAppBar(
-                          onSettings: () =>
-                              context.pushNamed(SettingsRoute.settings.name),
-                        )
-                      : null,
-                  extendBodyBehindAppBar: true,
-                  body: child,
-                ),
+          final shell = PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, _) {
+              context.goNamed(WalletRoute.walletHome.name);
+            },
+            child: BackupWarningOverlay(
+              child: Scaffold(
+                // The app bar of the exchange tab is rendered by the
+                // ExchangeHomeScreen itself, as an overlay.
+                appBar: tabIndex == 0
+                    ? WalletHomeAppBar(
+                        onSettings: () =>
+                            context.pushNamed(SettingsRoute.settings.name),
+                      )
+                    : null,
+                extendBodyBehindAppBar: true,
+                body: child,
               ),
             ),
+          );
+          return locator<BitcoinPriceFacade>().provideEmbeddedChart(
+            child: shell,
           );
         },
         routes: [

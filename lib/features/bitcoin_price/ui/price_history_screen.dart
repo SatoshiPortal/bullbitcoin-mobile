@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:material_ui/material_ui.dart' show Theme;
 
 class PriceHistoryScreen extends StatelessWidget {
   const PriceHistoryScreen({super.key, required this.onBack});
@@ -18,7 +19,7 @@ class PriceHistoryScreen extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) => SingleChildScrollView(
                   child: Container(
-                    color: context.theme.brightness == .dark
+                    color: Theme.of(context).brightness == .dark
                         ? context.bull.background
                         : context.bull.surface,
                     height: constraints.maxHeight < 320

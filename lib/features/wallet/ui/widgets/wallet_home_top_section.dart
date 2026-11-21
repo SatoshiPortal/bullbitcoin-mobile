@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
@@ -78,9 +76,7 @@ class _UI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showChart = context.select(
-      (PriceChartCubit cubit) => cubit.state.showChart,
-    );
+    final showChart = BitcoinPriceFacade.watchChartVisible(context);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -253,7 +249,7 @@ class _ChartView extends StatelessWidget {
           child: IconButton(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: Icon(Icons.arrow_back, color: context.appColors.onPrimary),
-            onPressed: () => context.read<PriceChartCubit>().hideChart(),
+            onPressed: () => BitcoinPriceFacade.hideChart(context),
           ),
         ),
       ],

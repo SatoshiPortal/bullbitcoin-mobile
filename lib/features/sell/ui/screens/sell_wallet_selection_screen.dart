@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
@@ -30,9 +30,7 @@ class _SellWalletSelectionScreenState extends State<SellWalletSelectionScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final currency = context.read<SellBloc>().state.fiatCurrency;
-      context.read<BitcoinPriceBloc>().add(
-        BitcoinPriceCurrencyChanged(currencyCode: currency.code),
-      );
+      BitcoinPriceFacade.quoteInCurrency(context, currency.code);
     });
   }
 

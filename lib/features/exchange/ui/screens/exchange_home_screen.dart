@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
@@ -180,9 +180,9 @@ class ExchangeHomeScreen extends StatelessWidget {
           top: 0,
           left: 0,
           right: 0,
-          child: BlocBuilder<PriceChartCubit, PriceChartState>(
-            builder: (context, priceChartState) {
-              final showChart = priceChartState.showChart;
+          child: Builder(
+            builder: (context) {
+              final showChart = BitcoinPriceFacade.watchChartVisible(context);
 
               return AppBar(
                 backgroundColor: Colors.transparent,
@@ -204,7 +204,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                             size: 24,
                           ),
                           onPressed: () {
-                            context.read<PriceChartCubit>().hideChart();
+                            BitcoinPriceFacade.hideChart(context);
                           },
                         )
                       : SizedBox(
@@ -230,7 +230,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                                   size: 24,
                                 ),
                                 onPressed: () {
-                                  context.read<PriceChartCubit>().showChart();
+                                  BitcoinPriceFacade.showChart(context);
                                 },
                               ),
                               BullSupportButton.icon(
