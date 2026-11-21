@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQrCode, BullButton, BullSegmented, BullShimmerBox;
+    show BullQrCode, BullSegmented, BullShimmerBox, BullViewerActionButton;
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,19 +126,24 @@ void main() {
       tester.element(find.byType(SpReceiveScreen)),
     );
     final preview = find.widgetWithText(SelectableText, address);
-    final close = find.widgetWithText(BullButton, loc.closeDialogButton);
+    final closeLabel = MaterialLocalizations.of(
+      tester.element(find.byType(SpReceiveScreen)),
+    ).closeButtonLabel;
+    final close = find.widgetWithText(BullViewerActionButton, closeLabel);
     await tester.tap(find.text(address));
     await tester.pumpAndSettle();
     expect(preview, findsOneWidget);
 
-    await tester.tap(find.widgetWithText(BullButton, loc.copyDialogButton));
+    await tester.tap(
+      find.widgetWithText(BullViewerActionButton, loc.copyDialogButton),
+    );
     await tester.pumpAndSettle();
     expect(copied, [address]);
-    expect(preview, findsOneWidget);
-    expect(find.text(loc.copiedToClipboard), findsNothing);
-
-    await tester.tap(close);
+    expect(preview, findsNothing);
+    expect(find.text(loc.copiedToClipboard), findsOneWidget);
+    await tester.pump(const Duration(seconds: 6));
     await tester.pumpAndSettle();
+
     final viewAction = find.byTooltip(loc.receiveViewDetails);
     expect(tester.getSize(viewAction).shortestSide, greaterThanOrEqualTo(48));
     await tester.tap(viewAction);
