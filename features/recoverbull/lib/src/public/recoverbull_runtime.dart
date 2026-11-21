@@ -89,7 +89,7 @@ final class RecoverBullRuntime {
   }) async {
     final storage = RecoverBullStorage(databasePath);
     final vaults = SecretsVaultRepository(secrets);
-    final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive());
+    final drive = GoogleDriveRepositoryImpl(drive: GoogleDrive.open());
     const files = FileSystem();
     final sessions = KeyServerSessionRepositoryImpl(routes, clients);
     BackupMetadataRepositoryImpl? metadata;

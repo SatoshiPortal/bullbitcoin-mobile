@@ -354,7 +354,7 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 `packages/file_system` owns document selection, bounded reads and saving bytes through the platform picker. RecoverBull parses vaults, Exchange Settings validates KYC documents, Transactions formats CSV and Labels owns the BIP329 import and export policy.
 
-`packages/google_drive` owns Google sign-in and listing, reading, writing and deleting files in the app data folder. RecoverBull owns the vault format, metadata mapping and account-scoped vault selection.
+`packages/google_drive` owns Google sign-in and listing, reading, writing and deleting files in the app data folder. `GoogleDrive.open()` creates the transport. Its operations return typed results, `revokeAccess()` revokes the user grant, and synchronous `dispose()` releases local resources. RecoverBull owns the vault format, metadata mapping and account-scoped vault selection.
 
 **Target layout.** As modules are extracted (one at a time, never a big-bang), they become pub-workspace members:
 

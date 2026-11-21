@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'google_drive_failure.dart';
 import 'google_drive_file_metadata.dart';
 
 class GoogleDrive {
@@ -28,8 +29,9 @@ class GoogleDrive {
   late final StreamSubscription<GoogleSignInAccount?> _authentication;
   bool _disposed = false;
 
-  GoogleDrive({GoogleSignIn? googleSignIn, this._authenticatedClient})
-    : _google = googleSignIn ?? _sharedGoogle {
+  GoogleDrive.open() : this._(_sharedGoogle);
+
+  GoogleDrive._(this._google, {this._authenticatedClient}) {
     _currentAccount = _google.currentUser;
     _authentication = _google.onCurrentUserChanged.listen(
       (account) {
@@ -61,7 +63,8 @@ class GoogleDrive {
 
   /// Revokes the user's grant. Use [dispose] to only release local resources.
   @useResult
-  Future<Result<void, GoogleDriveFailure>> disconnect() => _run(_disconnect);
+  Future<Result<void, GoogleDriveFailure>> revokeAccess() =>
+      _run(_revokeAccess);
 
   @useResult
   Future<Result<List<GoogleDriveFileMetadata>, GoogleDriveFailure>> listFiles({
@@ -95,23 +98,19 @@ class GoogleDrive {
     Future<T> Function() action,
   ) async {
     if (_disposed) {
-      return Err(const GoogleDriveFailure(GoogleDriveFailureKind.disposed));
+      return const Err(GoogleDriveDisposedFailure());
     }
     try {
       return Ok(await action());
     } on _DriveFileTooLargeException {
-      return Err(const GoogleDriveFailure(GoogleDriveFailureKind.tooLarge));
+      return const Err(GoogleDriveTooLargeFailure());
     } on FormatException {
-      return Err(
-        const GoogleDriveFailure(GoogleDriveFailureKind.invalidResponse),
-      );
+      return const Err(GoogleDriveInvalidResponseFailure());
     } on Exception {
       return Err(
-        GoogleDriveFailure(
-          _disposed
-              ? GoogleDriveFailureKind.disposed
-              : GoogleDriveFailureKind.unavailable,
-        ),
+        _disposed
+            ? const GoogleDriveDisposedFailure()
+            : const GoogleDriveUnavailableFailure(),
       );
     }
   }
@@ -243,7 +242,7 @@ class GoogleDrive {
     }
   }
 
-  Future<void> _disconnect() async {
+  Future<void> _revokeAccess() async {
     try {
       await _google.disconnect();
       _currentAccount = null;
@@ -392,10 +391,9 @@ final class _DriveFileTooLargeException implements Exception {
   const _DriveFileTooLargeException();
 }
 
-enum GoogleDriveFailureKind { disposed, unavailable, invalidResponse, tooLarge }
-
-final class GoogleDriveFailure extends Failure {
-  final GoogleDriveFailureKind kind;
-
-  const GoogleDriveFailure(this.kind);
-}
+/// Opens a Drive transport with substitutes for platform authentication and HTTP.
+@visibleForTesting
+GoogleDrive openGoogleDriveForTesting({
+  required GoogleSignIn googleSignIn,
+  Future<http.Client?> Function()? authenticatedClient,
+}) => GoogleDrive._(googleSignIn, authenticatedClient: authenticatedClient);

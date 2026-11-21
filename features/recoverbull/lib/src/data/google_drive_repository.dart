@@ -41,7 +41,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   @override
   Future<void> disconnect() => _serialized(() async {
     _accountGeneration++;
-    _requireDrive(await _drive.disconnect());
+    _requireDrive(await _drive.revokeAccess());
   });
 
   @override
@@ -177,7 +177,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   // Internal session callbacks still use exceptions to abort queued work.
   T _requireDrive<T>(Result<T, GoogleDriveFailure> result) => switch (result) {
     Ok(:final value) => value,
-    Err(:final failure) => throw Exception(failure.kind),
+    Err(:final failure) => throw Exception(failure),
   };
 
   static DriveFileMetadata _toVaultMetadata(GoogleDriveFileMetadata file) =>

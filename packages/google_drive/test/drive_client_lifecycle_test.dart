@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_drive/google_drive.dart';
+import 'package:google_drive/testing.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,7 @@ void main() {
     google = _Google();
     client = _Client();
     authenticate = () async => client;
-    drive = GoogleDrive(
+    drive = openGoogleDriveForTesting(
       googleSignIn: google,
       authenticatedClient: () => authenticate(),
     );
@@ -134,9 +135,9 @@ void main() {
     expect(
       await drive.readFile(fileId: 'file-id', maxBytes: 3),
       isA<Err<List<int>, GoogleDriveFailure>>().having(
-        (result) => result.failure.kind,
-        'failure kind',
-        GoogleDriveFailureKind.tooLarge,
+        (result) => result.failure,
+        'failure',
+        isA<GoogleDriveTooLargeFailure>(),
       ),
     );
   });
@@ -154,7 +155,7 @@ void main() {
 
   test('silent discovery never requests interactive token recovery', () async {
     drive.dispose();
-    drive = GoogleDrive(googleSignIn: google);
+    drive = openGoogleDriveForTesting(googleSignIn: google);
     tokens.accessToken = null;
     expect(
       (await drive.connectSilently()).fold(
@@ -174,7 +175,7 @@ void main() {
 
   test('foreground connection can authenticate interactively', () async {
     drive.dispose();
-    drive = GoogleDrive(googleSignIn: google);
+    drive = openGoogleDriveForTesting(googleSignIn: google);
     expect(await drive.connect(), isA<Ok<void, GoogleDriveFailure>>());
     expect(google.signIns, 1);
     expect(tokens.recoveryRequests, [true]);
@@ -185,7 +186,7 @@ void main() {
     test('late token recovery is fenced after '
         '${disposed ? 'disposal' : 'account change'}', () async {
       drive.dispose();
-      drive = GoogleDrive(googleSignIn: google);
+      drive = openGoogleDriveForTesting(googleSignIn: google);
       final pending = Completer<GoogleSignInTokenData>();
       tokens.pending = pending.future;
       final refresh = drive.connectSilently();
@@ -202,11 +203,11 @@ void main() {
       expect(
         await drive.listFiles(),
         isA<Err<List<GoogleDriveFileMetadata>, GoogleDriveFailure>>().having(
-          (result) => result.failure.kind,
-          'failure kind',
+          (result) => result.failure,
+          'failure',
           disposed
-              ? GoogleDriveFailureKind.disposed
-              : GoogleDriveFailureKind.unavailable,
+              ? isA<GoogleDriveDisposedFailure>()
+              : isA<GoogleDriveUnavailableFailure>(),
         ),
       );
       expect(tokens.recoveryRequests, [false]);
