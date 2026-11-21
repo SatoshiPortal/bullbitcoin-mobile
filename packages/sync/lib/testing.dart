@@ -7,3 +7,5 @@ library;
 
 export 'src/testing/test_wallets.dart'
     show MemoryFreezeStore, testWallet, testWalletFromNative;
+
+export 'src/testing/freezes_only_sync.dart';

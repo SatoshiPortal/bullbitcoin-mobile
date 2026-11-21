@@ -214,10 +214,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "ऑटो स्वैप",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE स्थानांतरण",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1096,10 +1092,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "स्वैप",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "कैमरा खोलें",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1368,15 +1360,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} लेबल आयातित",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "से",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1466,10 +1449,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "खरीदें",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "प्राप्तकर्ता का पता",
   "@sendRecipientAddress": {
@@ -1711,10 +1690,6 @@
   "transactionDetailLabelPayjoinExpired": "समाप्त",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "1 लेबल आयात",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "बिलर का नाम",
   "@payBillerName": {
@@ -2444,10 +2419,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "बेचें",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "उच्च शुल्क चेतावनी",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2495,15 +2466,6 @@
   "sellPriceWillRefreshIn": "मूल्य रिफ्रेश होगा ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "\"{label}\" को हटाने में असमर्थ। फिर से प्रयास करें।।",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "पहचान",
   "@buyVerifyIdentity": {
@@ -3236,10 +3198,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "आयात लेबल",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "सभी फ़ाइलें सफलतापूर्वक अपलोड हो गईं",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3885,10 +3843,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "पेजोइन",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "स्वागत है",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -4016,10 +3970,6 @@
   "exchangeKycLevelLight": "प्रकाश",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "लेबल सफलतापूर्वक निर्यात",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "सबसे धीमा विकल्प, लेकिन ऑनलाइन बैंकिंग के माध्यम से किया जा सकता है (3-4 कार्य दिवस)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5806,10 +5756,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 लेबल",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Bitcoin Wallet",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6868,10 +6814,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "BIP329 लेबल आयात / निर्यात",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -7256,10 +7198,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "निर्यात लेबल",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "चयनित बिलर का नाम",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7558,10 +7496,6 @@
   "payFee": "शुल्क",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "आत्म खर्च",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "स्वैप में त्रुटि हुई। आपका रिफंड प्रगति में है।",
   "@swapProgressRefundMessage": {
@@ -8101,10 +8035,6 @@
   "importMnemonicImporting": "आयात।",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "BIP329 मानक प्रारूप का उपयोग करके वॉलेट लेबल आयात या निर्यात करें।।",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "आप सुनिश्चित नहीं हैं और बैकअप सुरक्षा प्रथाओं के बारे में जानने के लिए आपको अधिक समय की आवश्यकता है।।",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -9950,7 +9880,6 @@
   "importColdcardMk4Step10": "\"Scan NFC\" बटन पर क्लिक करें",
   "importColdcardMk4Step11": "फ़ोन के NFC को कोल्डकार्ड के NFC के ऊपर रखें",
   "importColdcardMk4Step12": "यही है!",
-  "noteVisibleToSenderNotice": "यह नोट आपके QR या चालान के प्राप्तकर्ता को दिखाई देगा।",
   "viewerAddressTab": "पता",
   "viewerPaymentUriTab": "भुगतान URI",
   "transactionSwapOpenWithin24h": "अपने Swap को पूरा करने के लिए 24 घंटों के भीतर ऐप खोलें।",
@@ -10190,15 +10119,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "वह फ़ाइल प्रकार स्वीकार्य नहीं है। दूसरी चुनें।",
   "exchangeSettingsErrorDocumentUnreadable": "वह फ़ाइल पढ़ी नहीं जा सकी। दूसरी चुनें।",
   "exchangeSettingsErrorUploadingDocument": "दस्तावेज़ अपलोड नहीं हो सका। कृपया पुनः प्रयास करें।",
-  "labelsErrorNoteTooLong": "नोट {max} अक्षरों से अधिक नहीं होना चाहिए",
-  "labelsErrorNoteForbiddenCharacter": "नोट में {character} वर्ण नहीं हो सकता",
-  "labelsErrorFileTooLarge": "यह फ़ाइल बहुत बड़ी है। लेबल फ़ाइलें {max} से छोटी होनी चाहिए।",
-  "labelsErrorFileUnreadable": "यह BIP-329 लेबल फ़ाइल नहीं लगती। जाँचें कि आपने सही फ़ाइल चुनी है।",
-  "labelsErrorFileEmpty": "इस फ़ाइल में आयात करने के लिए कोई लेबल नहीं है।",
-  "labelsErrorExportFailed": "आपके लेबल सहेजे नहीं जा सके। कृपया फिर से प्रयास करें।",
-  "labelsErrorFileReservedName": "यह फ़ाइल ऐप द्वारा आरक्षित लेबल नाम का उपयोग करती है। फ़ाइल में इसका नाम बदलें और फिर से प्रयास करें।",
-  "labelsErrorNoteForbiddenWhitespace": "नोट में लाइन ब्रेक या टैब नहीं हो सकते",
-  "labelsErrorFileInvalidEntry": "उस फ़ाइल की कुछ प्रविष्टियाँ पढ़ी नहीं जा सकीं। फ़ाइल जाँचें और फिर से प्रयास करें।",
   "recipientsErrorLoadFailed": "आपके प्राप्तकर्ता लोड नहीं किए जा सके। कृपया फिर से प्रयास करें।",
   "recipientsErrorSaveFailed": "यह प्राप्तकर्ता सहेजा नहीं जा सका। कृपया जानकारी जाँचें और फिर से प्रयास करें।",
   "recipientsErrorSinpeLookupFailed": "हम इस फ़ोन नंबर की पुष्टि नहीं कर सके। कृपया इसे जाँचें और फिर से प्रयास करें।",

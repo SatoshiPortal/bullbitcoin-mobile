@@ -2,8 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
-import 'package:bb_mobile/features/labels/label.dart';
+import 'package:labels/labels.dart';
 
 /// Builds a [WalletUtxo] (Bitcoin variant) for tests with sensible defaults.
 ///

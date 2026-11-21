@@ -205,10 +205,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE Transfer",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1014,10 +1010,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "افتح الكاميرا",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1254,15 +1246,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} labels imported",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "من",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1352,10 +1335,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "اشتري",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "عنوان المتلقي",
   "@sendRecipientAddress": {
@@ -1579,10 +1558,6 @@
   "transactionDetailLabelPayjoinExpired": "Expired",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "بطاقة واحدة مستوردة",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "اسم بيلر",
   "@payBillerName": {
@@ -2274,10 +2249,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "Sell",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "إنذار برسوم عالية",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2317,15 +2288,6 @@
   "sellPriceWillRefreshIn": "ستنعش الأسعار ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "غير قادر على حذف \"{label}\". أرجوك حاول مرة أخرى.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "التحقق من الهوية",
   "@buyVerifyIdentity": {
@@ -3002,10 +2964,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "علامات استيراد",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "جميع الملفات المحملة بنجاح",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3616,10 +3574,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "مرحباً",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -3739,10 +3693,6 @@
   "exchangeKycLevelLight": "الضوء",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Labels exported successfully",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "أبطأ خيار، ولكن يمكن القيام به عن طريق المصارف الإلكترونية (3-4 أيام عمل)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5377,10 +5327,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Labels",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "اختيار محفظة بيتكوين",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6361,10 +6307,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "BIP329 Labels Import/Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -6711,10 +6653,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "علامات التصدير",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "Selected Biller Name",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -6983,10 +6921,6 @@
   "payFee": "Fee",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "خلاصة",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "حدث خطأ في المبادلة. عملية الاسترداد قيد التنفيذ.",
   "@swapProgressRefundMessage": {
@@ -7494,10 +7428,6 @@
   "importMnemonicImporting": "استيراد...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "(ب) بطاقات محفظة الاستيراد أو التصدير باستخدام النموذج المعياري BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletImportanceWarning": "بدون دعم، ستخسر في النهاية الوصول إلى مالك من المهم للغاية أن نقدم الدعم.",
   "@backupWalletImportanceWarning": {
@@ -9752,7 +9682,6 @@
   "priceFailedToLoad": "فشل تحميل السعر",
   "statusScreenTryAgain": "حاول مرة أخرى",
   "statusScreenContinue": "متابعة",
-  "noteVisibleToSenderNotice": "ستكون هذه الملاحظة مرئية لمستلم رمز QR أو الفاتورة الخاصة بك.",
   "viewerAddressTab": "العنوان",
   "viewerPaymentUriTab": "رابط الدفع (URI)",
   "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
@@ -10006,15 +9935,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "نوع الملف هذا غير مقبول. اختر ملفًا آخر.",
   "exchangeSettingsErrorDocumentUnreadable": "تعذرت قراءة هذا الملف. اختر ملفًا آخر.",
   "exchangeSettingsErrorUploadingDocument": "تعذر رفع المستند. يرجى المحاولة مرة أخرى.",
-  "labelsErrorNoteTooLong": "يجب ألا تزيد الملاحظة عن {max} حرفًا",
-  "labelsErrorNoteForbiddenCharacter": "لا يمكن أن تحتوي الملاحظة على الحرف {character}",
-  "labelsErrorFileTooLarge": "هذا الملف كبير جدًا. يجب أن تكون ملفات التسميات أصغر من {max}.",
-  "labelsErrorFileUnreadable": "لا يبدو أن هذا ملف تسميات BIP-329. تأكد من اختيارك الملف الصحيح.",
-  "labelsErrorFileEmpty": "لا يحتوي هذا الملف على تسميات لاستيرادها.",
-  "labelsErrorExportFailed": "تعذّر حفظ تسمياتك. حاول مرة أخرى.",
-  "labelsErrorFileReservedName": "يستخدم هذا الملف اسم تسمية محجوزًا للتطبيق. غيّر الاسم في الملف وحاول مرة أخرى.",
-  "labelsErrorNoteForbiddenWhitespace": "لا يمكن أن تحتوي الملاحظة على أسطر جديدة أو علامات جدولة",
-  "labelsErrorFileInvalidEntry": "تعذّرت قراءة بعض الإدخالات في هذا الملف. تحقق من الملف وحاول مرة أخرى.",
   "recipientsErrorLoadFailed": "تعذّر تحميل المستفيدين لديك. حاول مرة أخرى.",
   "recipientsErrorSaveFailed": "تعذّر حفظ هذا المستفيد. تحقق من البيانات وحاول مرة أخرى.",
   "recipientsErrorSinpeLookupFailed": "لم نتمكن من التحقق من رقم الهاتف هذا. تحقق منه وحاول مرة أخرى.",

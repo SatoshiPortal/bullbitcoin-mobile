@@ -15,12 +15,12 @@ import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart'
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
 
-import '../../../wallet/data/freezes_only_sync.dart';
+import 'package:sync/testing.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

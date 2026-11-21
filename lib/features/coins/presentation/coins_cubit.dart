@@ -11,8 +11,8 @@ import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.d
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/load_coin_label_filters_usecase.dart';
 
 /// Debounce applied before reloading after a wallet sync finishes — a real
 /// wait that keeps multiple finish events from each triggering a reload.
@@ -29,7 +29,7 @@ class CoinsCubit extends Cubit<CoinsState> {
     required this._freezeUtxosUsecase,
     required this._unfreezeUtxosUsecase,
     required this._refreshCoinsUsecase,
-    required this._labelsFacade,
+    required this._loadCoinLabelFilters,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
   }) : super(CoinsState(walletId: walletId)) {
@@ -50,7 +50,7 @@ class CoinsCubit extends Cubit<CoinsState> {
   final FreezeUtxosUsecase _freezeUtxosUsecase;
   final UnfreezeUtxosUsecase _unfreezeUtxosUsecase;
   final RefreshCoinsUsecase _refreshCoinsUsecase;
-  final LabelsFacade _labelsFacade;
+  final LoadCoinLabelFiltersUsecase _loadCoinLabelFilters;
 
   StreamSubscription? _startedSub;
   StreamSubscription? _finishedSub;
@@ -85,7 +85,7 @@ class CoinsCubit extends Cubit<CoinsState> {
           );
         }
       case Ok(:final value):
-        final labels = await _labelsFacade.fetchDistinctLabels();
+        final labels = await _loadCoinLabelFilters.execute();
         if (isClosed) return;
 
         final stillPresent = value.map(utxoOutpointKey).toSet();

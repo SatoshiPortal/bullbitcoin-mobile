@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/save_transactions_csv_usecase.dart';

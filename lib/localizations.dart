@@ -1,3 +1,4 @@
+import 'package:label_editor/label_editor.dart' show LabelEditorLocalizations;
 import 'package:signers/signers.dart' show SignersLocalizations;
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,5 +11,6 @@ export 'package:bb_mobile/generated/l10n/localization.dart'
 const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   AppLocalizations.delegate,
   SignersLocalizations.delegate,
+  LabelEditorLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,
 ];

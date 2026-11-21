@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_u
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
@@ -76,6 +76,8 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_fo
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
 
 class SendLocator {
   static void setup(GetIt locator) {
@@ -289,7 +291,12 @@ class SendLocator {
           final args? when !args.isSweep => args.selectedOutpoints,
           _ => const {},
         },
-        labelsFacade: locator<LabelsFacade>(),
+        loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(
+          locator<LabelsFacade>(),
+        ),
+        storeSendTransactionLabel: StoreSendTransactionLabelUsecase(
+          locator<LabelsFacade>(),
+        ),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),

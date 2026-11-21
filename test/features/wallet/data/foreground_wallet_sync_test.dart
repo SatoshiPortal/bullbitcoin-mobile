@@ -18,7 +18,7 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'

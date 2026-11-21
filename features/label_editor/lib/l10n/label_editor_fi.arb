@@ -1,0 +1,45 @@
+{
+  "@@locale": "fi",
+  "receiveSave": "Tallenna",
+  "receiveEnterHere": "(on antamatta)",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "bip329LabelsTitle": "BIP329-tunnisteet",
+  "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
+  "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",
+  "bip329LabelsImportButton": "Tuo tunnisteet",
+  "bip329LabelsExportButton": "Vie tunnisteet",
+  "bip329LabelsExportSuccess": "Tunnisteet viety onnistuneesti",
+  "bip329LabelsImportSuccessSingular": "1 tunniste tuotu",
+  "bip329LabelsImportSuccessPlural": "{count} tunnistetta tuotu",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelSwaps": "Swapit",
+  "systemLabelAutoSwap": "Automaattinen swap",
+  "systemLabelPayjoin": "Payjoin",
+  "systemLabelSelfSpend": "Oma siirto",
+  "systemLabelExchangeBuy": "Osta",
+  "systemLabelExchangeSell": "Myy",
+  "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noteVisibleToSenderNotice": "Tämä kuvaus näkyy QR-koodisi tai laskusi vastaanottajalle.",
+  "labelsErrorNoteTooLong": "Muistiinpano voi olla enintään {max} merkkiä",
+  "labelsErrorNoteForbiddenCharacter": "Muistiinpano ei voi sisältää merkkiä {character}",
+  "labelsErrorFileTooLarge": "Tiedosto on liian suuri. Tunnistetiedostojen on oltava alle {max}.",
+  "labelsErrorFileUnreadable": "Tämä ei näytä BIP-329-tunnistetiedostolta. Tarkista, että valitsit oikean tiedoston.",
+  "labelsErrorFileEmpty": "Tiedostossa ei ole tuotavia tunnisteita.",
+  "labelsErrorExportFailed": "Tunnisteitasi ei voitu tallentaa. Yritä uudelleen.",
+  "labelsErrorFileReservedName": "Tiedosto käyttää sovelluksen varaamaa tunnisteen nimeä. Nimeä se uudelleen tiedostossa ja yritä uudelleen.",
+  "labelsErrorNoteForbiddenWhitespace": "Muistiinpano ei voi sisältää rivinvaihtoja tai sarkaimia",
+  "labelsErrorFileInvalidEntry": "Joitakin tiedoston merkintöjä ei voitu lukea. Tarkista tiedosto ja yritä uudelleen."
+}

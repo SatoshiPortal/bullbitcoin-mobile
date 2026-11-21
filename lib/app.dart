@@ -1,3 +1,4 @@
+import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
@@ -194,6 +195,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       theme: AppTheme.themeData(appThemeType),
                       locale: language?.locale,
                       localizationsDelegates: [
+                        NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
                         LogsLocalizations.delegate,
                         BtcMapFeature.localizationsDelegate,

@@ -214,10 +214,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "স্বয়ংক্রিয় বিনিময়",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE ট্রান্সফার",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1076,10 +1072,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "বিনিময়",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "ক্যামেরা খুলুন",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1433,10 +1425,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "ক্রয়",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "প্রাপকের ঠিকানা",
   "@sendRecipientAddress": {
@@ -2365,10 +2353,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "বিক্রি",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "উচ্চ ফি সতর্কতা",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2416,15 +2400,6 @@
   "sellPriceWillRefreshIn": "মূল্য রিফ্রেশ হবে ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "মুছে ফেলতে পারছি না \"{label}\"। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "পরিচয় যাচাই করুন",
   "@buyVerifyIdentity": {
@@ -3748,10 +3723,6 @@
   "payAllTypes": "সব ধরন",
   "@payAllTypes": {
     "description": "Option for all types filter"
-  },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
   },
   "onboardingScreenTitle": "স্বাগতম",
   "@onboardingScreenTitle": {
@@ -7316,10 +7287,6 @@
   "@payFee": {
     "description": "Label for fee"
   },
-  "systemLabelSelfSpend": "স্ব-ব্যয়",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
   "swapProgressRefundMessage": "সোয়াপে একটি ত্রুটি ঘটেছে। আপনার রিফান্ড প্রক্রিয়াধীন।",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
@@ -9300,43 +9267,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 লেবেল",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
-  "bip329LabelsHeading": "BIP329 লেবেল আমদানি/রপ্তানি",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "bip329LabelsDescription": "BIP329 স্ট্যান্ডার্ড ফরম্যাট ব্যবহার করে ওয়ালেট লেবেল আমদানি বা রপ্তানি করুন।",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
-  },
-  "bip329LabelsImportButton": "লেবেল আমদানি করুন",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
-  "bip329LabelsExportButton": "লেবেল রপ্তানি করুন",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "bip329LabelsExportSuccess": "লেবেল সফলভাবে রপ্তানি হয়েছে",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
-  },
-  "bip329LabelsImportSuccessSingular": "১টি লেবেল আমদানি হয়েছে",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
-  "bip329LabelsImportSuccessPlural": "{count}টি লেবেল আমদানি হয়েছে",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "electrumTimeoutTooHighError": "টাইমআউট অনেক বেশি মনে হচ্ছে। (সর্বোচ্চ {maxTimeout} সেকেন্ড)",
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
@@ -9970,7 +9900,6 @@
   "importColdcardMk4Step10": "\"Scan NFC\" বোতামে ক্লিক করুন",
   "importColdcardMk4Step11": "ফোনের NFC-টি Coldcard-এর NFC-এর ওপর রাখুন",
   "importColdcardMk4Step12": "এটাই!",
-  "noteVisibleToSenderNotice": "এই নোটটি আপনার QR বা চালানের প্রাপকের কাছে দৃশ্যমান হবে।",
   "viewerAddressTab": "ঠিকানা",
   "viewerPaymentUriTab": "পেমেন্ট URI",
   "transactionSwapOpenWithin24h": "আপনার সোয়াপ সম্পন্ন করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",
@@ -10210,15 +10139,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "সেই ফাইলের ধরন গ্রহণযোগ্য নয়। অন্য একটি বেছে নিন।",
   "exchangeSettingsErrorDocumentUnreadable": "সেই ফাইলটি পড়া যায়নি। অন্য একটি বেছে নিন।",
   "exchangeSettingsErrorUploadingDocument": "নথিটি আপলোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "labelsErrorNoteTooLong": "নোট {max} অক্ষরের বেশি হতে পারবে না",
-  "labelsErrorNoteForbiddenCharacter": "নোটে {character} অক্ষরটি থাকতে পারবে না",
-  "labelsErrorFileTooLarge": "এই ফাইলটি খুব বড়। লেবেল ফাইল {max} এর কম হতে হবে।",
-  "labelsErrorFileUnreadable": "এটি BIP-329 লেবেল ফাইল বলে মনে হচ্ছে না। আপনি সঠিক ফাইল বেছেছেন কিনা দেখুন।",
-  "labelsErrorFileEmpty": "এই ফাইলে আমদানি করার মতো কোনো লেবেল নেই।",
-  "labelsErrorExportFailed": "আপনার লেবেল সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
-  "labelsErrorFileReservedName": "এই ফাইলটি অ্যাপের সংরক্ষিত লেবেল নাম ব্যবহার করে। ফাইলে নাম পরিবর্তন করে আবার চেষ্টা করুন।",
-  "labelsErrorNoteForbiddenWhitespace": "নোটে লাইন ব্রেক বা ট্যাব থাকতে পারবে না",
-  "labelsErrorFileInvalidEntry": "সেই ফাইলের কিছু এন্ট্রি পড়া যায়নি। ফাইলটি পরীক্ষা করে আবার চেষ্টা করুন।",
   "recipientsErrorLoadFailed": "আপনার প্রাপকদের লোড করা যায়নি। আবার চেষ্টা করুন।",
   "recipientsErrorSaveFailed": "এই প্রাপককে সংরক্ষণ করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।",
   "recipientsErrorSinpeLookupFailed": "আমরা এই ফোন নম্বরটি যাচাই করতে পারিনি। এটি পরীক্ষা করে আবার চেষ্টা করুন।",

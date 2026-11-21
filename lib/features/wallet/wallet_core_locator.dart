@@ -32,10 +32,21 @@ import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sync/sync.dart' show Sync, Wallet;
 
 class WalletLocator {
+  /// Resolves the runtime lazily so composition can wire ports before startup.
+  static ({
+    Future<Sync> Function() foreground,
+    Future<Wallet> Function(String walletId) openWallet,
+  })
+  syncAccess(GetIt locator) => (
+    foreground: () => locator<WalletNativeRuntime>().foreground(),
+    openWallet: (walletId) => locator<WalletNativeRuntime>().wallet(walletId),
+  );
+
   static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<WalletMetadataDatasource>(
       () => WalletMetadataDatasource(sqlite: locator<SqliteDatabase>()),

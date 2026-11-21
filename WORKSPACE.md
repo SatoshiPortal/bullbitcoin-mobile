@@ -46,6 +46,10 @@ graph TD
   style file_system stroke:#2571b0
   google_drive["google_drive"]
   style google_drive stroke:#a640f1
+  label_editor["label_editor"]
+  style label_editor stroke:#c2f687
+  labels["labels"]
+  style labels stroke:#a4c2d7
   mempool["mempool"]
   style mempool stroke:#26e46e
   notifications["notifications"]
@@ -116,6 +120,15 @@ graph TD
   file_system --> primitives
   google_drive --> bull_logger
   google_drive --> primitives
+  label_editor --> bull_logger
+  label_editor --> bull_ui
+  label_editor --> file_system
+  label_editor --> labels
+  label_editor --> primitives
+  labels --> bull_logger
+  labels --> bull_payjoin
+  labels --> primitives
+  labels --> sync
   mempool --> bull_logger
   mempool --> bull_tor
   mempool --> primitives
@@ -159,6 +172,7 @@ graph TD
     electrum
     file_system
     google_drive
+    labels
     mempool
     notifications
     novlang
@@ -178,6 +192,7 @@ graph TD
     bull_logs
     bull_quick_actions
     bull_recoverbull
+    label_editor
     signers
   end
 ```

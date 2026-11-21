@@ -17,8 +17,8 @@ import '../domain/wallet_revision.dart';
 import '../domain/wallet_values.dart';
 import '../public/sync.dart';
 
-/// A loaded wallet publishing the given values at revision 0. [frozen]
-/// starts a [MemoryFreezeStore] its coin commands change.
+/// A wallet that publishes the given values at revision 0. Set [load] to false
+/// to exercise the first load. [frozen] seeds its [MemoryFreezeStore].
 Future<Wallet> testWallet({
   required WalletKey key,
   Balances? balances,
@@ -29,11 +29,13 @@ Future<Wallet> testWallet({
   List<Uint8List> ownedScripts = const [],
   List<Outpoint> ownedOutpoints = const [],
   bool stale = false,
+  bool load = true,
 }) {
   final revision = WalletRevision(key: key, generation: 0, revision: 0);
-  return _loaded(
+  return _wallet(
     key,
     frozen: frozen,
+    load: load,
     (_) async => WalletFrame(
       WalletFrameData(
         revision: revision,
@@ -72,7 +74,7 @@ Future<Wallet> testWallet({
 /// with the production mapper. The test keeps ownership of [native].
 Future<Wallet> testWalletFromNative(Object native, {required WalletKey key}) {
   final revision = WalletRevision(key: key, generation: 0, revision: 0);
-  return _loaded(key, (_) async {
+  return _wallet(key, (_) async {
     final data = switch (native) {
       final bdk.Wallet wallet => bitcoinFrameData(wallet, revision),
       final lwk.Wallet wallet => await liquidFrameData(wallet, revision),
@@ -82,11 +84,12 @@ Future<Wallet> testWalletFromNative(Object native, {required WalletKey key}) {
   }, derive: native);
 }
 
-Future<Wallet> _loaded(
+Future<Wallet> _wallet(
   WalletKey key,
   Future<WalletFrame> Function(WalletKey) frame, {
   Object? derive,
   Set<Outpoint> frozen = const {},
+  bool load = true,
 }) async {
   final projections = WalletProjections(
     revisions: _Revisions(key),
@@ -99,6 +102,7 @@ Future<Wallet> _loaded(
   // Test-support library (`package:sync/testing.dart`), imported from test/ only.
   // ignore: invalid_use_of_visible_for_testing_member
   final wallet = walletOver(projections, key, 0);
+  if (!load) return wallet;
   switch (await wallet.load()) {
     case Ok():
       return wallet;

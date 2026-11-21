@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 
 class ConfirmBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;

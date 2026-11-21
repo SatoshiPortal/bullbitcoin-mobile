@@ -1,0 +1,42 @@
+import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:labels/labels.dart';
+import 'package:material_ui/material_ui.dart';
+
+import '../presentation/label_system_l10n.dart';
+
+class LabelText extends StatelessWidget {
+  const LabelText(this.label, {super.key, this.style});
+
+  final String label;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final system = LabelSystem.displayedAs(label);
+    final displayLabel = system?.toTranslatedLabel(context) ?? label;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textPainter = TextPainter(
+          text: TextSpan(text: displayLabel, style: style),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: constraints.maxWidth);
+
+        final isOverflowing = textPainter.didExceedMaxLines;
+
+        final textWidget = BullText(
+          displayLabel,
+          style: style,
+          maxLines: 1,
+          overflow: .ellipsis,
+        );
+
+        if (isOverflowing) {
+          return Tooltip(message: displayLabel, child: textWidget);
+        }
+
+        return textWidget;
+      },
+    );
+  }
+}

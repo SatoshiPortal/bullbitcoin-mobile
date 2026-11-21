@@ -163,7 +163,7 @@ packages:
     source: hosted
     version: "2.2.0"
   bip329_labels:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: bip329_labels
       sha256: "9a47f8b193fa0a7b0dfd86d289a45ceb376c43d462238854d9dce043f5156afa"

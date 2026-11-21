@@ -8,6 +8,8 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - packages/labels
+  - features/label_editor
   - features/signers
   - features/ark
   - packages/ark
@@ -46,6 +48,8 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  labels:
+  label_editor:
   signers:
   ark:
   bull_ark:
@@ -114,7 +118,6 @@ dependencies:
   bip21_uri: ^2.2.0
   bip32_keys: ^3.1.1
   bip39_mnemonic: ^4.1.0
-  bip329_labels: ^2.0.0
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^2.0.0

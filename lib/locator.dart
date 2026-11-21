@@ -170,8 +170,6 @@ class AppLocator {
     if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
-    CoreLocator.registerFrameworks(locator);
-    CoreLocator.registerFacades(locator);
     PayjoinSetup.setup(
       locator,
       database,

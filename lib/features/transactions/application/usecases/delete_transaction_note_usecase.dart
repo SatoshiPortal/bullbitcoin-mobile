@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:meta/meta.dart';
 

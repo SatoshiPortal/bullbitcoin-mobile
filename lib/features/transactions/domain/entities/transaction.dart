@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

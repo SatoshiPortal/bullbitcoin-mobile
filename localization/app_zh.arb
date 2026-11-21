@@ -41,15 +41,6 @@
   "importQrDeviceKruxStep3": "Click XPUB - QR Code",
   "sellAdvancedOptions": "A. 先进选择",
   "electrumPrivacyNoticeSave": "Save",
-  "bip329LabelsImportSuccessSingular": "1 个标签已导入",
-  "bip329LabelsImportSuccessPlural": "{count} 个标签已导入",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "withdrawOwnershipOtherAccount": "这是他人的陈述",
   "receiveInvoice": "闪电",
   "receiveGenerateAddress": "生成新地址",
@@ -79,7 +70,6 @@
   "importColdcardInstructionsStep2": "1. 如果适用,采用代谢法",
   "satsSuffix": " ats",
   "sellSendPaymentExchangeRate": "汇率",
-  "systemLabelAutoSwap": "Auto Swap",
   "fundExchangeSinpeTitle": "SINPE 转让",
   "payExpiresIn": "{time}年到期",
   "@payExpiresIn": {
@@ -348,7 +338,6 @@
   "appStartupErrorMessage": "应用启动失败。请尝试完全关闭应用并重新启动。如果错误仍然存在，请联系支持并提供日志。",
   "payPasteInvoice": "Paste Invoice",
   "dcaWalletBitcoinSubtitle": "最低0.001 BTC",
-  "systemLabelSwaps": "蒸汽",
   "sendOpenTheCamera": "开放照相机",
   "sendSwapId": "Swap ID",
   "electrumServerOnline": "在线",
@@ -451,7 +440,6 @@
       }
     }
   },
-  "systemLabelExchangeBuy": "1. 采购",
   "sendRecipientAddress": "接收人的讲话",
   "exchangeAmountInputValidationInsufficient": "结余不足",
   "broadcastSignedTxCameraButton": "摄像机",
@@ -754,7 +742,6 @@
   "electrumReset": "收 复",
   "payInsufficientBalanceError": "当前钱包的余额不足以支付这笔订单",
   "backupCompletedTitle": "填满!",
-  "systemLabelExchangeSell": "Sell",
   "sendHighFeeWarning": "2. 高额费用警告",
   "electrumStopGapNegativeError": "消除差距是负面的",
   "walletButtonSend": "修正",
@@ -765,14 +752,6 @@
   "sellSendPaymentPayFromWallet": "付款钱包",
   "settingsServiceStatusTitle": "现况",
   "sellPriceWillRefreshIn": "价格上涨 ",
-  "labelDeleteFailed": "不可删除“{label}”。 请再次审判.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "buyVerifyIdentity": "身份证明",
   "exchangeDcaCancelDialogConfirmButton": "是的,中止",
   "electrumServerUrlHint": "{network} {environment} 服务器URL",
@@ -992,7 +971,6 @@
   "fundExchangeLabelCvu": "CVU",
   "electrumStopGap": "消除差距",
   "payBroadcastingTransaction": "广播交易.",
-  "bip329LabelsImportButton": "进口标签",
   "fiatCurrencySettingsLabel": "货币",
   "withdrawConfirmAmount": "数额",
   "transactionSwapDoNotUninstall": "不要 app,直到打完 complete.",
@@ -1194,7 +1172,6 @@
   "testBackupErrorUnexpectedSuccess": "意外成功：备份应与现有钱包匹配",
   "coreScreensReceiveAmountLabel": "收款情况",
   "payAllTypes": "所有类型",
-  "systemLabelPayjoin": "Payjoin",
   "onboardingScreenTitle": "致欢迎辞",
   "pinCodeConfirmTitle": "1. 确认新的支柱",
   "keyServerLabel": "主要服务器 ",
@@ -1226,7 +1203,6 @@
   "sendSignatureReceived": "收到的签名",
   "failedToDeriveBackupKey": "未能获得备用钥匙",
   "exchangeKycLevelLight": "灯光",
-  "bip329LabelsExportSuccess": "标签导出成功",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "最低选择,但可以通过在线银行进行(3-4个工作日)",
   "walletDeletionErrorWalletNotFound": "您试图删除的钱包不存在",
   "payEnableRBF": "Enable RBF",
@@ -1824,7 +1800,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Labels",
   "autoswapSelectWalletRequired": "选择一个比特币钱包 *",
   "exchangeFeatureSellBitcoin": "• Sell, 获得有偿服务",
   "hwSeedSigner": "SeedSigner",
@@ -2172,7 +2147,6 @@
   "coreScreensFeePriorityLabel": "妇女优先",
   "coreScreensLogsTitle": "记录",
   "testBackupErrorWalletMismatch": "备份与已有钱包不匹配",
-  "bip329LabelsHeading": "BIP329 进口/出口",
   "coldcardStep4": "扫描 Bull 钱包中显示的二维码",
   "importQrDevicePassportStep5": "选择“箭”办法",
   "sendInvoicePaid": "Invoice Paid",
@@ -2306,7 +2280,6 @@
   "payViewRecipient": "观点接受者",
   "exchangeAccountInfoUserNumberCopiedMessage": "用户编号为纸板",
   "settingsAppVersionLabel": "申请文本: ",
-  "bip329LabelsExportButton": "出口标签",
   "payBillerNameValue": "选定的账簿名称",
   "sendSelectCoins": "Select",
   "fundExchangeLabelRoutingNumber": "序号",
@@ -2414,7 +2387,6 @@
   "coreSwapsStatusExpired": "过期",
   "fundExchangeCanadaPostStep3": "3. 。 转售出你想要装载的金额",
   "payFee": "Fee",
-  "systemLabelSelfSpend": "自助津贴",
   "swapProgressRefundMessage": "Swap 出现错误。您的退款正在处理中。",
   "dcaConfirmContinue": "继续",
   "decryptVaultButton": "加密",
@@ -2592,7 +2564,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "见dSigner 指示",
   "payFilterByType": "按类型分列的过滤",
   "importMnemonicImporting": "导入中...",
-  "bip329LabelsDescription": "采用BIP329标准格式的进出口标签.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "你不相信,你需要更多时间了解后备安保做法.",
   "backupWalletImportanceWarning": "如果没有支持,你最终将失去获得你的钱的机会。 提供支持至关重要.",
   "autoswapMaxFeeInfoText": "如果 Swap 总费用高于设定的百分比，Auto Swap 将被阻止",
@@ -3808,7 +3779,6 @@
   "fundExchangeCopGeneratePaymentLink": "生成付款链接",
   "fundExchangeCopRedirectMessage": "您将被跳转到外部页面以完成付款。",
   "fundExchangeCopOpenPaymentLink": "打开付款链接",
-  "noteVisibleToSenderNotice": "此备注将对您的二维码或发票的接收方可见。",
   "viewerAddressTab": "地址",
   "viewerPaymentUriTab": "付款 URI",
   "transactionSwapOpenWithin24h": "请在 24 小时内打开应用以完成您的 Swap。",
@@ -4048,15 +4018,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "不接受该文件类型。请选择其他文件。",
   "exchangeSettingsErrorDocumentUnreadable": "无法读取该文件。请选择其他文件。",
   "exchangeSettingsErrorUploadingDocument": "无法上传该文件。请重试。",
-  "labelsErrorNoteTooLong": "备注不能超过 {max} 个字符",
-  "labelsErrorNoteForbiddenCharacter": "备注不能包含字符 {character}",
-  "labelsErrorFileTooLarge": "该文件太大。标签文件必须小于 {max}。",
-  "labelsErrorFileUnreadable": "这看起来不是 BIP-329 标签文件。请确认您选择了正确的文件。",
-  "labelsErrorFileEmpty": "该文件不包含可导入的标签。",
-  "labelsErrorExportFailed": "无法保存您的标签。请重试。",
-  "labelsErrorFileReservedName": "该文件使用了应用保留的标签名称。请在文件中重命名后重试。",
-  "labelsErrorNoteForbiddenWhitespace": "备注不能包含换行符或制表符",
-  "labelsErrorFileInvalidEntry": "该文件中的某些条目无法读取。请检查文件后重试。",
   "recipientsErrorLoadFailed": "无法加载您的收款人。请重试。",
   "recipientsErrorSaveFailed": "无法保存此收款人。请检查信息后重试。",
   "recipientsErrorSinpeLookupFailed": "我们无法验证此电话号码。请检查后重试。",

@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,0 +1,94 @@
+{
+  "systemLabelAutoSwap": "자동차 교환",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "스왑",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} 상표 수입",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "구매하기",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "수입되는 1개의 상표",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "구매하기",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "\"{label}\"를 삭제할 수 없습니다. 다시 시도하십시오.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "이...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "수입 라벨",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "지불조인",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "상표는 성공적으로 수출했습니다",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "제품 정보",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 라벨",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 상표 수입품/수출",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "수출 상표",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "공유하기",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "BIP329 표준 형식을 사용하여 수입 또는 수출 지갑 라벨.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "이 메모는 QR 코드 또는 인보이스를 받는 상대방에게 표시됩니다.",
+  "labelsErrorNoteTooLong": "메모는 {max}자 이하여야 합니다",
+  "labelsErrorNoteForbiddenCharacter": "메모에 {character} 문자를 사용할 수 없습니다",
+  "labelsErrorFileTooLarge": "파일이 너무 큽니다. 라벨 파일은 {max} 미만이어야 합니다.",
+  "labelsErrorFileUnreadable": "BIP-329 라벨 파일이 아닌 것 같습니다. 올바른 파일을 선택했는지 확인하세요.",
+  "labelsErrorFileEmpty": "이 파일에는 가져올 라벨이 없습니다.",
+  "labelsErrorExportFailed": "라벨을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "labelsErrorFileReservedName": "이 파일은 앱이 예약한 라벨 이름을 사용합니다. 파일에서 이름을 바꾼 후 다시 시도하세요.",
+  "labelsErrorNoteForbiddenWhitespace": "메모에는 줄바꿈이나 탭을 사용할 수 없습니다",
+  "labelsErrorFileInvalidEntry": "이 파일의 일부 항목을 읽을 수 없습니다. 파일을 확인한 후 다시 시도하세요."
+}

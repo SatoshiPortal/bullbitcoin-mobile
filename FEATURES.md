@@ -114,10 +114,16 @@ graph TB
     RECOVERBULL --> FILE_SYSTEM
     EXCHANGE_SETTINGS --> FILE_SYSTEM
     TX_HISTORY --> FILE_SYSTEM
-    LABELS --> FILE_SYSTEM
+    LABEL_EDITOR --> FILE_SYSTEM
+    LABEL_EDITOR --> LABELS
+    SEND --> LABEL_EDITOR
+    RECEIVE --> LABEL_EDITOR
+    TX_HISTORY --> LABEL_EDITOR
+    SETTINGS --> LABEL_EDITOR
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
-    LABELS[Labels]
+    LABELS[Labels Package<br/>Labels and Frozen UTXOs]
+    LABEL_EDITOR[Label Editor<br/>Workspace Feature]
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]
@@ -271,6 +277,11 @@ graph TB
     BUY --> SETTINGS
     COINS --> UTXO_MGMT
     COINS --> LABELS
+    SEND --> LABELS
+    RECEIVE --> LABELS
+    SELL --> LABELS
+    SETTINGS --> LABELS
+    AUTOSWAP --> LABELS
     COINS -->|public revision stream| WALLETS
     DCA -->|public destination validation and input| WALLETS
     DCA --> RECEIVE
@@ -304,7 +315,7 @@ graph TB
     FUNDING --> EXCHANGE
     FUNDING --> RECIPIENTS
     HW_WALLETS --> CORE
-    LABELS --> CORE
+    CORE --> LABELS
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
     PAY --> BTC_PRICE
@@ -410,7 +421,6 @@ graph TB
     EXCHANGE --> SETTINGS
     EXCHANGE_SUPPORT_CHAT --> EXCHANGE
     FEES --> WALLETS
-    LABELS --> WALLETS
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
     SETTINGS --> MEMPOOL_SETTINGS
@@ -440,7 +450,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -584,7 +594,6 @@ The architecture test records source dependencies, including internal imports an
 | `fees → electrum_settings` | Network behavior: Concrete regtest fee requests select the matching Electrum endpoint before backend access. | `lib/features/fees/data/fees_repository_impl.dart -> lib/features/electrum_settings/domain/electrum_server_network.dart` |
 | `fees → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/fees/domain/get_network_fees_usecase.dart -> lib/features/wallet/domain/wallet.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
-| `labels → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/labels/frameworks/bip329_codec.dart -> lib/features/wallet/data/wallet_metadata_service.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/pay/pay_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |

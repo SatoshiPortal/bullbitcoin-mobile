@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:mempool/mempool.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
@@ -17,6 +16,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
+import 'package:labels/labels.dart';
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
@@ -44,7 +44,13 @@ class CoreLocator {
 
   static void registerPorts(GetIt locator) {
     SettingsLocator.registerPorts(locator);
-    LabelsLocator.registerPorts(locator);
+    final walletSync = WalletLocator.syncAccess(locator);
+    setupLabels(
+      locator,
+      database: locator<SqliteDatabase>(),
+      sync: walletSync.foreground,
+      openWallet: walletSync.openWallet,
+    );
   }
 
   static Future<Result<void, ElectrumFailure>> registerRepositories(
@@ -102,7 +108,6 @@ class CoreLocator {
 
   static void registerUsecases(GetIt locator) {
     bull_tor.TorLocator.registerUsecases(locator);
-    LabelsLocator.registerUseCases(locator);
     BlockchainLocator.registerUsecases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
@@ -110,13 +115,5 @@ class CoreLocator {
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);
     Bip85DerivationsLocator.registerUsecases(locator);
-  }
-
-  static void registerFacades(GetIt locator) {
-    LabelsLocator.registerFacade(locator);
-  }
-
-  static void registerFrameworks(GetIt locator) {
-    LabelsLocator.registerFrameworks(locator);
   }
 }
