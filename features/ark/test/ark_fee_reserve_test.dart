@@ -3,7 +3,7 @@ import 'package:bull_ark/src/ui/ark_information_screen.dart';
 import 'package:bull_ui/bull_ui.dart' show BullCopyField, BullQrCode, ValueKey;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart' show IconButton;
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:primitives/primitives.dart';
 
 import 'ark_information_widget_test.dart' show app, config;
@@ -84,7 +84,7 @@ void main() {
         );
         final copy = find.descendant(
           of: find.byType(BullCopyField),
-          matching: find.byType(IconButton),
+          matching: find.byIcon(Icons.copy_sharp),
         );
         await tester.ensureVisible(copy);
         await tester.tap(copy);
