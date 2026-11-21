@@ -38,7 +38,7 @@ import 'package:bb_mobile/core/utils/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';

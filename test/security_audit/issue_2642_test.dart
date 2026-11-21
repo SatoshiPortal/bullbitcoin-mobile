@@ -11,16 +11,19 @@ void main() {
     test('import bounds input and uses atomic batch storage', () {
       String read(String path) => File(path).readAsStringSync();
 
-      final page = read('lib/features/labels/ui/page.dart');
+      final page = read('features/label_editor/lib/src/ui/page.dart');
       final datasource = read('packages/file_system/lib/file_system.dart');
       final fromFile = read(
-        'lib/features/labels/application/usecases/import_labels_from_file_usecase.dart',
+        'features/label_editor/lib/src/domain/import_labels_from_file_usecase.dart',
+      );
+      final capability = read(
+        'packages/labels/lib/src/public/labels_facade.dart',
       );
       final converter = read(
-        'lib/features/labels/adapters/labels_converter_apadater.dart',
+        'packages/labels/lib/src/data/labels_converter_adapter.dart',
       );
       final usecase = read(
-        'lib/features/labels/application/usecases/import_labels_usecase.dart',
+        'packages/labels/lib/src/domain/usecases/import_labels_usecase.dart',
       );
 
       // The page no longer touches the file; reading moved behind a use-case.
@@ -38,14 +41,12 @@ void main() {
       expect(datasource, isNot(contains('readAsBytes()')));
 
       // The bound is the codec's limit for the requested format.
-      expect(
-        fromFile,
-        contains('maxBytes = _labelConverter.maxImportBytes(format)'),
-      );
+      expect(fromFile, contains('maxBytes = _labels.maxImportBytes(format)'));
       expect(
         fromFile,
         contains('_fileSystem.read(document, maxBytes: maxBytes)'),
       );
+      expect(capability, contains('_converter.maxImportBytes(format)'));
       expect(
         converter,
         contains('LabelFormat.bip329 => Bip329LabelsCodec.maxImportBytes'),

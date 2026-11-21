@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 /// The notes already used elsewhere, offered as suggestions when writing a new

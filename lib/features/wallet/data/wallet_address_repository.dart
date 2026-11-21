@@ -9,7 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:sync/sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';

@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';

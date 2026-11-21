@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_address.freezed.dart';

@@ -41,15 +41,6 @@
   "importQrDeviceKruxStep3": "Нажмите XPUB - QR-код",
   "sellAdvancedOptions": "Дополнительные варианты",
   "electrumPrivacyNoticeSave": "Сохранить",
-  "bip329LabelsImportSuccessSingular": "1 метка импортирована",
-  "bip329LabelsImportSuccessPlural": "{count} меток импортировано",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "withdrawOwnershipOtherAccount": "Это чей-то счет",
   "receiveInvoice": "Осветительный счет",
   "receiveGenerateAddress": "Создать новый адрес",
@@ -78,7 +69,6 @@
   "importColdcardInstructionsStep2": "Введите пароль, если применимо",
   "satsSuffix": " сидение",
   "sellSendPaymentExchangeRate": "Обменный курс",
-  "systemLabelAutoSwap": "Автозавод",
   "fundExchangeSinpeTitle": "SINPE Transfer",
   "payExpiresIn": "Исходит в {time}",
   "@payExpiresIn": {
@@ -347,7 +337,6 @@
   "appStartupErrorMessage": "Не удалось запустить приложение. Попробуйте полностью закрыть его и перезапустить. Если ошибка сохраняется, обратитесь в поддержку и отправьте логи.",
   "payPasteInvoice": "Счет-фактура",
   "dcaWalletBitcoinSubtitle": "Минимальный 0,001 BTC",
-  "systemLabelSwaps": "Свапы",
   "sendOpenTheCamera": "Откройте камеру",
   "sendSwapId": "Идентификатор швапа",
   "electrumServerOnline": "Онлайн",
@@ -449,7 +438,6 @@
       }
     }
   },
-  "systemLabelExchangeBuy": "Купить",
   "sendRecipientAddress": "Адрес получателя",
   "exchangeAmountInputValidationInsufficient": "Недостаточный баланс",
   "broadcastSignedTxCameraButton": "Камера",
@@ -752,7 +740,6 @@
   "electrumReset": "Перезагрузка",
   "payInsufficientBalanceError": "Недостаточный баланс в выбранном кошельке для выполнения этого платежного поручения.",
   "backupCompletedTitle": "Закрытие завершено!",
-  "systemLabelExchangeSell": "Печать",
   "sendHighFeeWarning": "Предупреждение",
   "electrumStopGapNegativeError": "Stop Gap не может быть отрицательным",
   "walletButtonSend": "Отправить",
@@ -763,14 +750,6 @@
   "sellSendPaymentPayFromWallet": "Платить за кошелек",
   "settingsServiceStatusTitle": "Статус",
   "sellPriceWillRefreshIn": "Цена освежится ",
-  "labelDeleteFailed": "Невозможно удалить \"{label}. Попробуй еще раз.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "buyVerifyIdentity": "Верификация",
   "exchangeDcaCancelDialogConfirmButton": "Да, деактивация",
   "electrumServerUrlHint": "{network} {environment}",
@@ -990,7 +969,6 @@
   "fundExchangeLabelCvu": "CVU",
   "electrumStopGap": "Остановите Гэп",
   "payBroadcastingTransaction": "Трансляция...",
-  "bip329LabelsImportButton": "Импорт этикеток",
   "fiatCurrencySettingsLabel": "Fiat валюта",
   "withdrawConfirmAmount": "Сумма",
   "transactionSwapDoNotUninstall": "Не удаляйте приложение до завершения обмена.",
@@ -1192,7 +1170,6 @@
   "testBackupErrorUnexpectedSuccess": "Неожиданный успех: резервное копирование должно соответствовать существующему кошельку",
   "coreScreensReceiveAmountLabel": "Получить сумму",
   "payAllTypes": "Все типы",
-  "systemLabelPayjoin": "Payjoin",
   "onboardingScreenTitle": "Добро пожаловать",
   "pinCodeConfirmTitle": "Подтвердить новый значок",
   "keyServerLabel": "Ключевой сервер ",
@@ -1224,7 +1201,6 @@
   "sendSignatureReceived": "Подписание получено",
   "failedToDeriveBackupKey": "Не удалось вывести резервный ключ",
   "exchangeKycLevelLight": "Свет",
-  "bip329LabelsExportSuccess": "Метки успешно экспортированы",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Самый простой вариант, но его можно сделать с помощью онлайн-банкинга (3-4 рабочих дня)",
   "walletDeletionErrorWalletNotFound": "Кошелек, который вы пытаетесь удалить, не существует.",
   "payEnableRBF": "Включить RBF",
@@ -1822,7 +1798,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329",
   "autoswapSelectWalletRequired": "Выберите биткойн-кошелек*",
   "exchangeFeatureSellBitcoin": "• Продавайте биткойн, получите оплату с Bitcoin",
   "hwSeedSigner": "SeedSigner",
@@ -2170,7 +2145,6 @@
   "coreScreensFeePriorityLabel": "Очередность",
   "coreScreensLogsTitle": "Журналы",
   "testBackupErrorWalletMismatch": "Резервное копирование не соответствует существующему кошельку",
-  "bip329LabelsHeading": "BIP329",
   "coldcardStep4": "Сканировать код QR, показанный в кошельке Bull",
   "importQrDevicePassportStep5": "Выберите опцию \"Sparrow\"",
   "sendInvoicePaid": "Оплата счетов-фактур",
@@ -2304,7 +2278,6 @@
   "payViewRecipient": "Вид получателя",
   "exchangeAccountInfoUserNumberCopiedMessage": "Номер пользователя скопирован в буфер обмена",
   "settingsAppVersionLabel": "Версия приложения: ",
-  "bip329LabelsExportButton": "Экспортные этикетки",
   "payBillerNameValue": "Выбранное имя",
   "sendSelectCoins": "Выберите монеты",
   "fundExchangeLabelRoutingNumber": "Номер маршрута",
@@ -2412,7 +2385,6 @@
   "coreSwapsStatusExpired": "Заключено",
   "fundExchangeCanadaPostStep3": "3. Скажите кассиру сумму, которую вы хотите загрузить",
   "payFee": "Fee",
-  "systemLabelSelfSpend": "Самостоятельные расходы",
   "swapProgressRefundMessage": "При выполнении свопа произошла ошибка. Ваш возврат выполняется.",
   "dcaConfirmContinue": "Продолжить",
   "decryptVaultButton": "Зашифрованное хранилище",
@@ -2592,7 +2564,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "Инструкции для SeedSigner",
   "payFilterByType": "Фильтр по типу",
   "importMnemonicImporting": "Импорт...",
-  "bip329LabelsDescription": "Импорт или экспортные этикетки кошельков с использованием стандартного формата BIP329.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Вы не уверены, и вам нужно больше времени, чтобы узнать о практике резервного копирования безопасности.",
   "backupWalletImportanceWarning": "Без резервного копирования вы в конечном итоге потеряете доступ к своим деньгам. Крайне важно сделать резервную копию.",
   "autoswapMaxFeeInfoText": "Если общая комиссия за своп превышает заданный процент, автосвоп будет заблокирован",
@@ -3922,7 +3893,6 @@
   "fundExchangeCopGeneratePaymentLink": "Создать ссылку для оплаты",
   "fundExchangeCopRedirectMessage": "Вы будете перенаправлены на внешнюю страницу для совершения платежа.",
   "fundExchangeCopOpenPaymentLink": "Открыть ссылку для оплаты",
-  "noteVisibleToSenderNotice": "Эта заметка будет видна получателю вашего QR-кода или счёта.",
   "viewerAddressTab": "Адрес",
   "viewerPaymentUriTab": "Платёжный URI",
   "transactionSwapOpenWithin24h": "Откройте приложение в течение 24 часов, чтобы завершить своп.",
@@ -4054,15 +4024,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Этот тип файла не принимается. Выберите другой.",
   "exchangeSettingsErrorDocumentUnreadable": "Не удалось прочитать этот файл. Выберите другой.",
   "exchangeSettingsErrorUploadingDocument": "Не удалось загрузить документ. Пожалуйста, попробуйте снова.",
-  "labelsErrorNoteTooLong": "Заметка должна содержать не более {max} символов",
-  "labelsErrorNoteForbiddenCharacter": "Заметка не может содержать символ {character}",
-  "labelsErrorFileTooLarge": "Этот файл слишком большой. Файлы меток должны быть меньше {max}.",
-  "labelsErrorFileUnreadable": "Похоже, это не файл меток BIP-329. Проверьте, что выбрали нужный файл.",
-  "labelsErrorFileEmpty": "В этом файле нет меток для импорта.",
-  "labelsErrorExportFailed": "Не удалось сохранить ваши метки. Попробуйте ещё раз.",
-  "labelsErrorFileReservedName": "В этом файле используется имя метки, зарезервированное приложением. Переименуйте его в файле и попробуйте снова.",
-  "labelsErrorNoteForbiddenWhitespace": "Заметка не может содержать переносы строк или табуляции",
-  "labelsErrorFileInvalidEntry": "Некоторые записи в этом файле не удалось прочитать. Проверьте файл и попробуйте снова.",
   "recipientsErrorLoadFailed": "Не удалось загрузить ваших получателей. Попробуйте ещё раз.",
   "recipientsErrorSaveFailed": "Не удалось сохранить этого получателя. Проверьте данные и попробуйте ещё раз.",
   "recipientsErrorSinpeLookupFailed": "Не удалось проверить этот номер телефона. Проверьте его и попробуйте ещё раз.",

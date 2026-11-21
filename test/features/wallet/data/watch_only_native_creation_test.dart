@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'freezes_only_sync.dart' show NoConnections;
+import 'package:sync/testing.dart' show NoConnections;
 
 import 'package:primitives/primitives.dart' as p;
 import 'package:sync/sync.dart';

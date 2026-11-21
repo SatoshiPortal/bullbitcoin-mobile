@@ -185,10 +185,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE Transfer",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -978,10 +974,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "Ανοίξτε την κάμερα",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1206,15 +1198,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} ετικέτες εισαγόμενων",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "Από",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1291,10 +1274,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "Αγοράστε αγορά αγορά",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "Η διεύθυνση του Recipient",
   "@sendRecipientAddress": {
@@ -1498,10 +1477,6 @@
   "transactionDetailLabelPayjoinExpired": "Επεκτάθηκαν",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "1 ετικέτα εισαγόμενα",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "Biller Name",
   "@payBillerName": {
@@ -2139,10 +2114,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "Πώληση",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "Υψηλή προειδοποίηση",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2190,15 +2161,6 @@
   "sellPriceWillRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "Μη μπορώ να διαγράψουμε «{label}». Παρακαλώ δοκιμάστε ξανά.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "Ενισχύστε την ταυτότητα",
   "@buyVerifyIdentity": {
@@ -2833,10 +2795,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "Σημειώσεις",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "Όλα τα αρχεία που μεταφορτώνονται με επιτυχία",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3400,10 +3358,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Payjoinin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "ΚαλώςWelcome",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -3523,10 +3477,6 @@
   "exchangeKycLevelLight": "Φως",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Οι ετικέτες που εξάγονται επιτυχώς",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Η πιο αργή επιλογή, αλλά μπορεί να γίνει μέσω online banking (3-4 εργάσιμες ημέρες)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5059,10 +5009,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 ετικέτες",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -5953,10 +5899,6 @@
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
   },
-  "bip329LabelsHeading": "Εισαγωγή/Εξαγωγή Ετικετών BIP329",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -6253,10 +6195,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "Εξάγει ετικέτες",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "Επιλέξτε όνομα Biller",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -6487,10 +6425,6 @@
   "payFee": "Fee",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "Περάστε τον εαυτό σας",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
   "@swapProgressRefundMessage": {
@@ -6940,10 +6874,6 @@
   "importMnemonicImporting": "Εισαγωγή...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "Εισαγόμενες ή εξαγωγικές ετικέτες χρησιμοποιώντας την τυποποιημένη μορφή BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletImportanceWarning": "Χωρίς ένα αντίγραφο ασφαλείας, θα χάσετε τελικά την πρόσβαση στα χρήματά σας. Είναι εξαιρετικά σημαντικό να κάνετε ένα αντίγραφο ασφαλείας.",
   "@backupWalletImportanceWarning": {
@@ -9856,7 +9786,6 @@
   "priceFailedToLoad": "Αποτυχία φόρτωσης τιμής",
   "statusScreenTryAgain": "Δοκιμάστε ξανά",
   "statusScreenContinue": "Συνέχεια",
-  "noteVisibleToSenderNotice": "Αυτή η σημείωση θα είναι ορατή στον παραλήπτη του QR ή του invoice σας.",
   "viewerAddressTab": "Διεύθυνση",
   "viewerPaymentUriTab": "URI πληρωμής",
   "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
@@ -10003,15 +9932,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Αυτός ο τύπος αρχείου δεν γίνεται δεκτός. Επιλέξτε άλλο.",
   "exchangeSettingsErrorDocumentUnreadable": "Δεν ήταν δυνατή η ανάγνωση αυτού του αρχείου. Επιλέξτε άλλο.",
   "exchangeSettingsErrorUploadingDocument": "Δεν ήταν δυνατή η μεταφόρτωση του εγγράφου. Παρακαλώ δοκιμάστε ξανά.",
-  "labelsErrorNoteTooLong": "Η σημείωση δεν πρέπει να υπερβαίνει τους {max} χαρακτήρες",
-  "labelsErrorNoteForbiddenCharacter": "Η σημείωση δεν μπορεί να περιέχει τον χαρακτήρα {character}",
-  "labelsErrorFileTooLarge": "Αυτό το αρχείο είναι πολύ μεγάλο. Τα αρχεία ετικετών πρέπει να είναι μικρότερα από {max}.",
-  "labelsErrorFileUnreadable": "Αυτό δεν μοιάζει με αρχείο ετικετών BIP-329. Ελέγξτε ότι επιλέξατε το σωστό αρχείο.",
-  "labelsErrorFileEmpty": "Αυτό το αρχείο δεν περιέχει ετικέτες για εισαγωγή.",
-  "labelsErrorExportFailed": "Δεν ήταν δυνατή η αποθήκευση των ετικετών σας. Δοκιμάστε ξανά.",
-  "labelsErrorFileReservedName": "Αυτό το αρχείο χρησιμοποιεί όνομα ετικέτας που δεσμεύει η εφαρμογή. Μετονομάστε το στο αρχείο και δοκιμάστε ξανά.",
-  "labelsErrorNoteForbiddenWhitespace": "Η σημείωση δεν μπορεί να περιέχει αλλαγές γραμμής ή στηλοθέτες",
-  "labelsErrorFileInvalidEntry": "Ορισμένες καταχωρίσεις αυτού του αρχείου δεν μπόρεσαν να διαβαστούν. Ελέγξτε το αρχείο και δοκιμάστε ξανά.",
   "recipientsErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των παραληπτών σας. Δοκιμάστε ξανά.",
   "recipientsErrorSaveFailed": "Δεν ήταν δυνατή η αποθήκευση αυτού του παραλήπτη. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
   "recipientsErrorSinpeLookupFailed": "Δεν μπορέσαμε να επαληθεύσουμε αυτόν τον αριθμό τηλεφώνου. Ελέγξτε τον και δοκιμάστε ξανά.",

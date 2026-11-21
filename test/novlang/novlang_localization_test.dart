@@ -1,5 +1,6 @@
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:novlang/novlang.dart';
@@ -18,7 +19,9 @@ void main() {
           final loc = await _load(policy, en);
           expect(loc.coreSwapsChainExpired, 'Swap Expired');
           expect(loc.homeActionTransfer, 'Swap');
-          expect(loc.systemLabelAutoSwap, 'Auto Swap');
+          final labels = await NovlangLabelEditorLocalizationsDelegate(policy)
+              .load(en);
+          expect(labels.systemLabelAutoSwap, 'Auto Swap');
           expect(loc.settingsExchangeSettingsTitle, 'Exchange Settings');
           expect(loc.sellExchangeRate, 'Exchange rate');
           expect(loc.sellRateExpired, 'Exchange rate expired. Refreshing…');
@@ -31,7 +34,10 @@ void main() {
       expect(loc.coreSwapsChainExpired, 'Transfer Expired');
       expect(loc.homeActionTransfer, 'Transfer');
       expect(loc.swapTransferTitle, 'Transfer');
-      expect(loc.systemLabelAutoSwap, 'Auto Transfer');
+      final labels = await NovlangLabelEditorLocalizationsDelegate(
+        NovlangPolicy.apple,
+      ).load(en);
+      expect(labels.systemLabelAutoSwap, 'Auto Transfer');
       expect(loc.settingsExchangeSettingsTitle, 'Account Settings');
       expect(loc.navigationTabExchange, 'Account');
       expect(loc.sellExchangeRate, 'Rate');

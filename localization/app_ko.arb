@@ -213,10 +213,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "자동차 교환",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE 전송",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1096,10 +1092,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "스왑",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "카메라 열기",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1368,15 +1360,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} 상표 수입",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "내 계정",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1466,10 +1449,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "구매하기",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "Recipient의 주소",
   "@sendRecipientAddress": {
@@ -1711,10 +1690,6 @@
   "transactionDetailLabelPayjoinExpired": "구매하기",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "수입되는 1개의 상표",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "Biller 이름",
   "@payBillerName": {
@@ -2444,10 +2419,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "구매하기",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "높은 수수료 경고",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2495,15 +2466,6 @@
   "sellPriceWillRefreshIn": "가격은 상쾌합니다 ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "\"{label}\"를 삭제할 수 없습니다. 다시 시도하십시오.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "ID 찾기",
   "@buyVerifyIdentity": {
@@ -3236,10 +3198,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "수입 라벨",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "모든 파일 업로드",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3885,10 +3843,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "지불조인",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "제품 정보",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -4016,10 +3970,6 @@
   "exchangeKycLevelLight": "제품 정보",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "상표는 성공적으로 수출했습니다",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "가장 느린 옵션이지만 온라인 뱅킹을 통해 수행 할 수 있습니다 (3-4 영업일)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5806,10 +5756,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 라벨",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Bitcoin 지갑 선택 *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6868,10 +6814,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "BIP329 상표 수입품/수출",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "Bull 지갑에서 보이는 QR 코드를 스캔",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -7256,10 +7198,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "수출 상표",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "선정된 빌러 이름",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7558,10 +7496,6 @@
   "payFee": "요금안내",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "공유하기",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "스왑에 오류가 발생했습니다. 환불이 진행 중입니다.",
   "@swapProgressRefundMessage": {
@@ -8101,10 +8035,6 @@
   "importMnemonicImporting": "수입 ...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "BIP329 표준 형식을 사용하여 수입 또는 수출 지갑 라벨.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "당신은 확실하지 않고 당신은 백업 보안 관행에 대해 더 많은 시간을 필요로.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -9685,7 +9615,6 @@
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
   "liquidRiskDisclosureTitle": "Instant Payment Wallet Liquid Bitcoin 위험 고지",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
-  "noteVisibleToSenderNotice": "이 메모는 QR 코드 또는 인보이스를 받는 상대방에게 표시됩니다.",
   "viewerAddressTab": "주소",
   "viewerPaymentUriTab": "결제 URI",
   "transactionSwapOpenWithin24h": "24시간 이내에 앱을 열어 스왑을 완료하세요.",
@@ -10003,15 +9932,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "해당 파일 형식은 지원되지 않습니다. 다른 파일을 선택하세요.",
   "exchangeSettingsErrorDocumentUnreadable": "해당 파일을 읽을 수 없습니다. 다른 파일을 선택하세요.",
   "exchangeSettingsErrorUploadingDocument": "서류를 업로드할 수 없습니다. 다시 시도해 주세요.",
-  "labelsErrorNoteTooLong": "메모는 {max}자 이하여야 합니다",
-  "labelsErrorNoteForbiddenCharacter": "메모에 {character} 문자를 사용할 수 없습니다",
-  "labelsErrorFileTooLarge": "파일이 너무 큽니다. 라벨 파일은 {max} 미만이어야 합니다.",
-  "labelsErrorFileUnreadable": "BIP-329 라벨 파일이 아닌 것 같습니다. 올바른 파일을 선택했는지 확인하세요.",
-  "labelsErrorFileEmpty": "이 파일에는 가져올 라벨이 없습니다.",
-  "labelsErrorExportFailed": "라벨을 저장할 수 없습니다. 다시 시도해 주세요.",
-  "labelsErrorFileReservedName": "이 파일은 앱이 예약한 라벨 이름을 사용합니다. 파일에서 이름을 바꾼 후 다시 시도하세요.",
-  "labelsErrorNoteForbiddenWhitespace": "메모에는 줄바꿈이나 탭을 사용할 수 없습니다",
-  "labelsErrorFileInvalidEntry": "이 파일의 일부 항목을 읽을 수 없습니다. 파일을 확인한 후 다시 시도하세요.",
   "recipientsErrorLoadFailed": "수취인을 불러올 수 없습니다. 다시 시도해 주세요.",
   "recipientsErrorSaveFailed": "이 수취인을 저장할 수 없습니다. 정보를 확인한 후 다시 시도해 주세요.",
   "recipientsErrorSinpeLookupFailed": "이 전화번호를 확인할 수 없습니다. 번호를 확인한 후 다시 시도해 주세요.",

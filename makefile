@@ -134,8 +134,8 @@ onion-codegen:
 
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
-DRIFT_OWNER_PACKAGES := packages/electrum packages/mempool
-BUILD_RUNNER_MEMBERS := packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map
+DRIFT_OWNER_PACKAGES := packages/electrum packages/mempool packages/labels
+BUILD_RUNNER_MEMBERS := packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor
 BUILD_RUNNER_WATCH_MEMBERS := packages/bull_payjoin packages/bull_pricer packages/swaps
 
 .PHONY: drift-owners-build
@@ -167,6 +167,7 @@ translations:
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@(cd features/signers && fvm flutter gen-l10n)
+	@(cd features/label_editor && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations

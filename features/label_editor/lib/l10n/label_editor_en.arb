@@ -1,0 +1,140 @@
+{
+  "@@locale": "en",
+  "receiveSave": "Save",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "receiveEnterHere": "Enter here…",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsTitle": "BIP329 Labels",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Labels Import/Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "Import or export wallet labels using the BIP329 standard format.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "Import Labels",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "Export Labels",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "Labels exported successfully",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "bip329LabelsImportSuccessSingular": "1 label imported",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} labels imported",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noteVisibleToSenderNotice": "This note will be visible to the recipient of your QR or invoice.",
+  "@noteVisibleToSenderNotice": {
+    "description": "Privacy disclosure shown in the note entry bottom sheet for counterparty-visible notes (BIP21 message, lightning swap description)."
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "Self Spend",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "Buy",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "Sell",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "Unable to delete \"{label}\". Please try again.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorNoteTooLong": "Note must be {max} characters or fewer",
+  "@labelsErrorNoteTooLong": {
+    "description": "Shown under the note field when the typed note exceeds the maximum length.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "labelsErrorNoteForbiddenCharacter": "Note cannot contain the character {character}",
+  "@labelsErrorNoteForbiddenCharacter": {
+    "description": "Shown when the typed note contains a character that cannot be carried in a BIP21 URI.",
+    "placeholders": {
+      "character": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorFileTooLarge": "That file is too large. Labels files must be under {max}.",
+  "@labelsErrorFileTooLarge": {
+    "description": "Shown when the chosen labels file exceeds the import size limit.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorFileUnreadable": "This does not look like a BIP-329 labels file. Check you picked the right file.",
+  "@labelsErrorFileUnreadable": {
+    "description": "Shown when the chosen labels file cannot be parsed as BIP-329."
+  },
+  "labelsErrorFileEmpty": "That file contains no labels to import.",
+  "@labelsErrorFileEmpty": {
+    "description": "Shown when the labels file parses correctly but holds no labels."
+  },
+  "labelsErrorExportFailed": "Your labels could not be saved. Please try again.",
+  "@labelsErrorExportFailed": {
+    "description": "Shown when writing the exported labels file fails. Not used when the user cancels the save dialog."
+  },
+  "labelsErrorFileReservedName": "That file uses a label name reserved by the app. Rename it in the file and try again.",
+  "@labelsErrorFileReservedName": {
+    "description": "Shown when an imported labels file contains a label matching one of the app's system label names."
+  },
+  "labelsErrorNoteForbiddenWhitespace": "Note cannot contain line breaks or tabs",
+  "@labelsErrorNoteForbiddenWhitespace": {
+    "description": "Shown when the note contains a control character. Used instead of the forbidden-character message, which would render the character itself and so show nothing visible."
+  },
+  "labelsErrorFileInvalidEntry": "Some entries in that file could not be read. Check the file and try again.",
+  "@labelsErrorFileInvalidEntry": {
+    "description": "Shown when an imported labels file is structurally valid BIP-329 but an entry carries an invalid reference (txid, outpoint or xpub)."
+  }
+}

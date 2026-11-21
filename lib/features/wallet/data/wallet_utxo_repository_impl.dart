@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;

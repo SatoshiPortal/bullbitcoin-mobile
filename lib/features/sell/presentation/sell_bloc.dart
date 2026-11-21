@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/fees/public/fee_modal_contract.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
@@ -44,6 +43,7 @@ import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/store_sell_transaction_label_usecase.dart';
 
 part 'sell_bloc.freezed.dart';
 part 'sell_event.dart';
@@ -68,7 +68,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._calculateSellLiquidFeesUsecase,
     required this._loadSellWalletUtxosUsecase,
     required this._readSellPayinTxidUsecase,
-    required this._labelsFacade,
+    required this._storeSellTransactionLabel,
     required this._labelCompletedSellOrderUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
@@ -123,7 +123,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final CalculateSellLiquidFeesUsecase _calculateSellLiquidFeesUsecase;
   final LoadSellWalletUtxosUsecase _loadSellWalletUtxosUsecase;
   final ReadSellPayinTxidUsecase _readSellPayinTxidUsecase;
-  final LabelsFacade _labelsFacade;
+  final StoreSellTransactionLabelUsecase _storeSellTransactionLabel;
   final LabelCompletedSellOrderUsecase _labelCompletedSellOrderUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
@@ -799,12 +799,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
           return;
         }
         _latchBroadcast(emit, txid);
-        await _labelsFacade.store(
-          NewLabel.tx(
-            transactionId: txid,
-            label: LabelSystem.exchangeSell.label,
-            origin: wallet.id,
-          ),
+        await _storeSellTransactionLabel.execute(
+          transactionId: txid,
+          origin: wallet.id,
         );
       } else {
         // The rate the user committed in the fee modal, which defaults to
@@ -978,12 +975,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
           // The original transaction is what reaches the chain whenever the
           // negotiation does not complete, and the payjoin repository labels the
           // payjoin transaction itself once it does.
-          await _labelsFacade.store(
-            NewLabel.tx(
-              transactionId: payjoinSender.originalTxId,
-              label: LabelSystem.exchangeSell.label,
-              origin: wallet.id,
-            ),
+          await _storeSellTransactionLabel.execute(
+            transactionId: payjoinSender.originalTxId,
+            origin: wallet.id,
           );
         } else {
           log.fine(
@@ -1033,12 +1027,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
             return;
           }
           _latchBroadcast(emit, txid);
-          await _labelsFacade.store(
-            NewLabel.tx(
-              transactionId: txid,
-              label: LabelSystem.exchangeSell.label,
-              origin: wallet.id,
-            ),
+          await _storeSellTransactionLabel.execute(
+            transactionId: txid,
+            origin: wallet.id,
           );
         }
       }
@@ -1525,12 +1516,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     final payjoinTxId = order.payjoin?.txid;
     if (payjoinTxId == null) return;
 
-    await _labelsFacade.store(
-      NewLabel.tx(
-        transactionId: payjoinTxId,
-        label: LabelSystem.exchangeSell.label,
-        origin: walletId,
-      ),
+    await _storeSellTransactionLabel.execute(
+      transactionId: payjoinTxId,
+      origin: walletId,
     );
   }
 

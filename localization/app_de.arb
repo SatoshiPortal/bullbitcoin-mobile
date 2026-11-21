@@ -39,15 +39,6 @@
   "fundExchangeSinpeLabelPhone": "Senden Sie an diese Telefonnummer.",
   "importQrDeviceKruxStep3": "Tippen Sie auf XPUB-QR-Code.",
   "sellAdvancedOptions": "Erweiterte Optionen",
-  "bip329LabelsImportSuccessSingular": "1 Label importiert",
-  "bip329LabelsImportSuccessPlural": "{count} Labels importiert",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "withdrawOwnershipOtherAccount": "Dies ist das Konto einer anderen Person",
   "receiveInvoice": "Lightning-Invoice",
   "receiveGenerateAddress": "Neue Adresse generieren",
@@ -76,7 +67,6 @@
   "coreSwapsChainCanCoop": "Der Swap wird in Kürze abgeschlossen.",
   "satsSuffix": " Sats",
   "sellSendPaymentExchangeRate": "Wechselkurs",
-  "systemLabelAutoSwap": "Auto-Swap",
   "fundExchangeSinpeTitle": "SINPE-Transfer",
   "payExpiresIn": "Läuft in {time} ab",
   "@payExpiresIn": {
@@ -341,7 +331,6 @@
   "appStartupErrorMessage": "Die App konnte nicht gestartet werden. Versuchen Sie, sie vollständig zu schließen und neu zu starten. Wenn der Fehler weiterhin besteht, kontaktieren Sie den Support und teilen Sie Ihre Protokolle.",
   "payPasteInvoice": "Invoice einfügen",
   "dcaWalletBitcoinSubtitle": "Mindestens 0,001 BTC",
-  "systemLabelSwaps": "Tauschvorgänge",
   "sendOpenTheCamera": "Kamera öffnen",
   "sendSwapId": "Swap-ID",
   "electrumServerOnline": "Online",
@@ -443,7 +432,6 @@
       }
     }
   },
-  "systemLabelExchangeBuy": "Kaufen",
   "sendRecipientAddress": "Adresse des Empfängers",
   "exchangeAmountInputValidationInsufficient": "Unzureichendes Guthaben",
   "broadcastSignedTxCameraButton": "Kamera",
@@ -733,7 +721,6 @@
   "electrumReset": "Zurücksetzen",
   "payInsufficientBalanceError": "Das Guthaben in der ausgewählten Wallet reicht nicht aus, um diesen Zahlungsauftrag auszuführen.",
   "backupCompletedTitle": "Sicherung abgeschlossen!",
-  "systemLabelExchangeSell": "Verkauf",
   "sendHighFeeWarning": "Warnung: hohe Gebühren.",
   "electrumStopGapNegativeError": "Stop-Gap kann nicht negativ sein.",
   "walletButtonSend": "Senden",
@@ -743,14 +730,6 @@
   "sellSendPaymentPayFromWallet": "Aus Wallet bezahlen",
   "settingsServiceStatusTitle": "Servicestatus",
   "sellPriceWillRefreshIn": "Der Preis wird aktualisiert in ",
-  "labelDeleteFailed": "„{label}“ kann nicht gelöscht werden. Bitte versuchen Sie es erneut.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "buyVerifyIdentity": "Identität verifizieren",
   "exchangeDcaCancelDialogConfirmButton": "Ja, beenden",
   "electrumServerUrlHint": "{network} {environment} Server-URL.",
@@ -962,7 +941,6 @@
   "fundExchangeLabelCvu": "CVU",
   "electrumStopGap": "Stop Gap",
   "payBroadcastingTransaction": "Transaktion wird übertragen…",
-  "bip329LabelsImportButton": "Labels importieren",
   "fiatCurrencySettingsLabel": "Fiat-Währung",
   "withdrawConfirmAmount": "Betrag",
   "transactionSwapDoNotUninstall": "Deinstallieren Sie die App erst, wenn der Swap abgeschlossen ist.",
@@ -1158,7 +1136,6 @@
   "testBackupErrorUnexpectedSuccess": "Unerwarteter Erfolg: Sicherung sollte mit vorhandener Wallet übereinstimmen.",
   "coreScreensReceiveAmountLabel": "Empfangsbetrag",
   "payAllTypes": "Alle Arten",
-  "systemLabelPayjoin": "Payjoin",
   "onboardingScreenTitle": "Willkommen",
   "pinCodeConfirmTitle": "Neue PIN bestätigen",
   "keyServerLabel": "Schlüsselserver",
@@ -1190,7 +1167,6 @@
   "sendSignatureReceived": "Signatur empfangen",
   "failedToDeriveBackupKey": "Fehler beim Ableiten des Sicherungsschlüssels",
   "exchangeKycLevelLight": "Basis",
-  "bip329LabelsExportSuccess": "Labels erfolgreich exportiert",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Die langsamste Option, kann jedoch über Online-Banking durchgeführt werden (3–4 Werktage)",
   "walletDeletionErrorWalletNotFound": "Die Wallet, die Sie löschen möchten, existiert nicht.",
   "payEnableRBF": "RBF aktivieren",
@@ -1771,7 +1747,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Labels",
   "autoswapSelectWalletRequired": "Wählen Sie eine Bitcoin-Wallet aus *",
   "exchangeFeatureSellBitcoin": "• Bitcoin verkaufen, mit Bitcoin bezahlt werden",
   "hwSeedSigner": "SeedSigner",
@@ -2111,7 +2086,6 @@
   "coreScreensFeePriorityLabel": "Priorität",
   "coreScreensLogsTitle": "Protokolle",
   "testBackupErrorWalletMismatch": "Sicherung stimmt nicht mit vorhandener Wallet überein.",
-  "bip329LabelsHeading": "BIP329-Labels importieren/exportieren",
   "importQrDevicePassportStep5": "Wählen Sie die Option „Sparrow“.",
   "sendInvoicePaid": "Invoice bezahlt",
   "buyKycPendingDescription": "Sie müssen zuerst die Identitätsprüfung abschließen.",
@@ -2242,7 +2216,6 @@
   "payViewRecipient": "Empfänger anzeigen",
   "exchangeAccountInfoUserNumberCopiedMessage": "Benutzernummer in Zwischenablage kopiert",
   "settingsAppVersionLabel": "App-Version:",
-  "bip329LabelsExportButton": "Labels exportieren",
   "payBillerNameValue": "Ausgewählter Rechnungsempfänger",
   "sendSelectCoins": "Wählen Sie Coins.",
   "fundExchangeLabelRoutingNumber": "Bankleitzahl",
@@ -2351,7 +2324,6 @@
   "coreSwapsStatusExpired": "Abgelaufen",
   "fundExchangeCanadaPostStep3": "3. Teilen Sie dem Kassierer den Betrag mit, den Sie aufladen möchten.",
   "payFee": "Gebühren",
-  "systemLabelSelfSpend": "Eigen-Transfer",
   "swapProgressRefundMessage": "Beim Swap ist ein Fehler aufgetreten. Ihre Rückerstattung läuft.",
   "dcaConfirmContinue": "Fortfahren",
   "decryptVaultButton": "Tresor entschlüsseln",
@@ -2526,7 +2498,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-Anleitung",
   "payFilterByType": "Nach Typ filtern",
   "importMnemonicImporting": "Wird importiert…",
-  "bip329LabelsDescription": "Wallet-Labels (BIP-329) importieren oder exportieren.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Sie sind sich noch nicht sicher und möchten mehr Zeit, um sichere Backup-Methoden zu lernen.",
   "backupWalletImportanceWarning": "Ohne Backup verlieren Sie dauerhaft den Zugriff auf Ihre Bitcoins. Eine Sicherung ist absolut notwendig.",
   "autoswapMaxFeeInfoText": "Wenn die gesamte Swap-Gebühr über dem festgelegten Prozentsatz liegt, wird der Auto-Swap blockiert.",
@@ -3472,7 +3443,6 @@
   "priceFailedToLoad": "Preis konnte nicht geladen werden",
   "statusScreenTryAgain": "Erneut versuchen",
   "statusScreenContinue": "Fortfahren",
-  "noteVisibleToSenderNotice": "Diese Notiz ist für den Empfänger Ihres QR-Codes oder Ihrer Rechnung sichtbar.",
   "viewerAddressTab": "Adresse",
   "viewerPaymentUriTab": "Zahlungs-URI",
   "settingsErrorReportingTitle": "Fehlerberichterstattung",
@@ -4088,15 +4058,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Dieser Dateityp wird nicht akzeptiert. Wählen Sie eine andere Datei.",
   "exchangeSettingsErrorDocumentUnreadable": "Diese Datei konnte nicht gelesen werden. Wählen Sie eine andere.",
   "exchangeSettingsErrorUploadingDocument": "Das Dokument konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.",
-  "labelsErrorNoteTooLong": "Die Notiz darf höchstens {max} Zeichen lang sein",
-  "labelsErrorNoteForbiddenCharacter": "Die Notiz darf das Zeichen {character} nicht enthalten",
-  "labelsErrorFileTooLarge": "Diese Datei ist zu groß. Etikettendateien müssen kleiner als {max} sein.",
-  "labelsErrorFileUnreadable": "Dies scheint keine BIP-329-Etikettendatei zu sein. Prüfen Sie, ob Sie die richtige Datei ausgewählt haben.",
-  "labelsErrorFileEmpty": "Diese Datei enthält keine Etiketten zum Importieren.",
-  "labelsErrorExportFailed": "Ihre Etiketten konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
-  "labelsErrorFileReservedName": "Diese Datei verwendet einen von der App reservierten Etikettennamen. Benennen Sie ihn in der Datei um und versuchen Sie es erneut.",
-  "labelsErrorNoteForbiddenWhitespace": "Die Notiz darf keine Zeilenumbrüche oder Tabulatoren enthalten",
-  "labelsErrorFileInvalidEntry": "Einige Einträge in dieser Datei konnten nicht gelesen werden. Prüfen Sie die Datei und versuchen Sie es erneut.",
   "withdrawInteracSecurityDetailsTitle": "Sicherheitsdaten für den Transfer",
   "withdrawInteracSaveAsDefault": "Diese Angaben als Standard speichern",
   "withdrawInteracSecurityQuestionLengthError": "Die Sicherheitsfrage muss 3–40 Zeichen lang sein",

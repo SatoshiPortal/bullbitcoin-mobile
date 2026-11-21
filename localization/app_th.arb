@@ -213,10 +213,6 @@
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
   },
-  "systemLabelAutoSwap": "ข้อมูลอัตโนมัติ",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
   "fundExchangeSinpeTitle": "SINPE โอน",
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
@@ -1096,10 +1092,6 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "systemLabelSwaps": "คะแนน",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "เปิดกล้อง",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
@@ -1368,15 +1360,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} เครื่องหมายนําเข้า",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "จาก",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1466,10 +1449,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "ซื้อ",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "ที่อยู่อีเมล",
   "@sendRecipientAddress": {
@@ -1711,10 +1690,6 @@
   "transactionDetailLabelPayjoinExpired": "วันหมดอายุ",
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
-  },
-  "bip329LabelsImportSuccessSingular": "1 ป้ายนําเข้า",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "ชื่อ",
   "@payBillerName": {
@@ -2444,10 +2419,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "systemLabelExchangeSell": "ขาย",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "ค่าแจ้งเตือนสูง",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2495,15 +2466,6 @@
   "sellPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "labelDeleteFailed": "ไม่สามารถลบป้ายชื่อ \"{label}\" ได้ กรุณาลองอีกครั้ง.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "buyVerifyIdentity": "ระบุ",
   "@buyVerifyIdentity": {
@@ -3236,10 +3198,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "ป้าย",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "ไฟล์ทั้งหมดอัปโหลด",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -3885,10 +3843,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "ชําระเงิน",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "ยินดีต้อนรับสู่",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -4016,10 +3970,6 @@
   "exchangeKycLevelLight": "แสง",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "ส่งออก",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "ตัวเลือกที่ช้า แต่สามารถทําได้ผ่านทางธนาคารออนไลน์ (3-4 วัน)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -5810,10 +5760,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 ป้าย",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "เลือกกระเป๋าสตางค์ Bitcoin *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6868,10 +6814,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "bip329LabelsHeading": "BIP329 นําเข้าและส่งออก",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "coldcardStep4": "สแกนรหัส QR จะแสดงในกระเป๋าเงิน",
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
@@ -7256,10 +7198,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "ป้ายส่งออก",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
   "payBillerNameValue": "ชื่อคูปอง",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7558,10 +7496,6 @@
   "payFee": "ค่าธรรมเนียม",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "systemLabelSelfSpend": "ประหยัดเวลา",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
   },
   "swapProgressRefundMessage": "เกิดข้อผิดพลาดกับ Swap กำลังดำเนินการคืนเงินให้คุณ",
   "@swapProgressRefundMessage": {
@@ -8101,10 +8035,6 @@
   "importMnemonicImporting": "การนําเข้า ...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "การนําเข้าหรือฉลากส่งออกโดยใช้รูปแบบ BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "คุณไม่ต้องกังวลและคุณต้องเรียนรู้เกี่ยวกับการดําเนินงานความปลอดภัย.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -9752,7 +9682,6 @@
   "priceFailedToLoad": "โหลดราคาไม่สำเร็จ",
   "statusScreenTryAgain": "ลองใหม่อีกครั้ง",
   "statusScreenContinue": "อ่านต่อ",
-  "noteVisibleToSenderNotice": "โน้ตนี้จะแสดงให้ผู้รับ QR หรือใบแจ้งหนี้ของคุณเห็น",
   "viewerAddressTab": "ที่อยู่",
   "viewerPaymentUriTab": "Payment URI",
   "settingsErrorReportingTitle": "การรายงานข้อผิดพลาด",
@@ -10007,15 +9936,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "ไม่รองรับไฟล์ประเภทนี้ โปรดเลือกไฟล์อื่น",
   "exchangeSettingsErrorDocumentUnreadable": "ไม่สามารถอ่านไฟล์นี้ได้ โปรดเลือกไฟล์อื่น",
   "exchangeSettingsErrorUploadingDocument": "ไม่สามารถอัปโหลดเอกสารได้ โปรดลองอีกครั้ง",
-  "labelsErrorNoteTooLong": "หมายเหตุต้องมีความยาวไม่เกิน {max} ตัวอักษร",
-  "labelsErrorNoteForbiddenCharacter": "หมายเหตุไม่สามารถมีอักขระ {character} ได้",
-  "labelsErrorFileTooLarge": "ไฟล์นี้ใหญ่เกินไป ไฟล์ป้ายกำกับต้องมีขนาดน้อยกว่า {max}",
-  "labelsErrorFileUnreadable": "ไฟล์นี้ดูเหมือนจะไม่ใช่ไฟล์ป้ายกำกับ BIP-329 โปรดตรวจสอบว่าคุณเลือกไฟล์ถูกต้อง",
-  "labelsErrorFileEmpty": "ไฟล์นี้ไม่มีป้ายกำกับให้นำเข้า",
-  "labelsErrorExportFailed": "ไม่สามารถบันทึกป้ายกำกับของคุณได้ โปรดลองอีกครั้ง",
-  "labelsErrorFileReservedName": "ไฟล์นี้ใช้ชื่อป้ายกำกับที่แอปสงวนไว้ โปรดเปลี่ยนชื่อในไฟล์แล้วลองอีกครั้ง",
-  "labelsErrorNoteForbiddenWhitespace": "หมายเหตุไม่สามารถมีการขึ้นบรรทัดใหม่หรือแท็บได้",
-  "labelsErrorFileInvalidEntry": "ไม่สามารถอ่านบางรายการในไฟล์นี้ได้ โปรดตรวจสอบไฟล์แล้วลองอีกครั้ง",
   "recipientsErrorLoadFailed": "ไม่สามารถโหลดผู้รับของคุณได้ โปรดลองอีกครั้ง",
   "recipientsErrorSaveFailed": "ไม่สามารถบันทึกผู้รับรายนี้ได้ โปรดตรวจสอบข้อมูลแล้วลองอีกครั้ง",
   "recipientsErrorSinpeLookupFailed": "เราไม่สามารถยืนยันหมายเลขโทรศัพท์นี้ได้ โปรดตรวจสอบแล้วลองอีกครั้ง",

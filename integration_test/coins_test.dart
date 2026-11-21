@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/frozen_utxos_freeze_store.dart';
+import 'package:labels/storage.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -89,7 +89,7 @@ Future<void> main({bool isInitialized = false}) async {
         documentsDirectory: dir.path,
         catalog: const _NoCatalog(),
         reservedAddresses: const _NoReserved(),
-        freezes: FrozenUtxosFreezeStore(sqlite: db),
+        freezes: FrozenUtxosFreezeStore(database: db),
         inputReservations: _NoInputReservations(),
         connections: const _NoConnections(),
       );

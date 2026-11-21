@@ -1,0 +1,44 @@
+{
+  "bip329LabelsImportSuccessSingular": "1 метка импортирована",
+  "bip329LabelsImportSuccessPlural": "{count} меток импортировано",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelAutoSwap": "Автозавод",
+  "systemLabelSwaps": "Свапы",
+  "systemLabelExchangeBuy": "Купить",
+  "systemLabelExchangeSell": "Печать",
+  "labelDeleteFailed": "Невозможно удалить \"{label}. Попробуй еще раз.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Входите сюда...",
+  "bip329LabelsImportButton": "Импорт этикеток",
+  "systemLabelPayjoin": "Payjoin",
+  "bip329LabelsExportSuccess": "Метки успешно экспортированы",
+  "receiveSave": "Сохранить",
+  "bip329LabelsTitle": "BIP329",
+  "bip329LabelsHeading": "BIP329",
+  "oopsSomethingWentWrong": "Упс! Что-то не так",
+  "bip329LabelsExportButton": "Экспортные этикетки",
+  "systemLabelSelfSpend": "Самостоятельные расходы",
+  "bip329LabelsDescription": "Импорт или экспортные этикетки кошельков с использованием стандартного формата BIP329.",
+  "noteVisibleToSenderNotice": "Эта заметка будет видна получателю вашего QR-кода или счёта.",
+  "labelsErrorNoteTooLong": "Заметка должна содержать не более {max} символов",
+  "labelsErrorNoteForbiddenCharacter": "Заметка не может содержать символ {character}",
+  "labelsErrorFileTooLarge": "Этот файл слишком большой. Файлы меток должны быть меньше {max}.",
+  "labelsErrorFileUnreadable": "Похоже, это не файл меток BIP-329. Проверьте, что выбрали нужный файл.",
+  "labelsErrorFileEmpty": "В этом файле нет меток для импорта.",
+  "labelsErrorExportFailed": "Не удалось сохранить ваши метки. Попробуйте ещё раз.",
+  "labelsErrorFileReservedName": "В этом файле используется имя метки, зарезервированное приложением. Переименуйте его в файле и попробуйте снова.",
+  "labelsErrorNoteForbiddenWhitespace": "Заметка не может содержать переносы строк или табуляции",
+  "labelsErrorFileInvalidEntry": "Некоторые записи в этом файле не удалось прочитать. Проверьте файл и попробуйте снова."
+}

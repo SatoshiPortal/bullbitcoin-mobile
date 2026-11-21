@@ -983,15 +983,6 @@
   "addressViewTransactions": "Твитнуть",
   "importQrDeviceKruxStep3": "Натисніть XPUB - QR-код",
   "electrumPrivacyNoticeSave": "Зберегти",
-  "bip329LabelsImportSuccessSingular": "1 мітка імпортована",
-  "bip329LabelsImportSuccessPlural": "{count} міток імпортовано",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "withdrawOwnershipOtherAccount": "Це чужий рахунок",
   "receiveInvoice": "Блискавка Invoice",
   "receiveGenerateAddress": "Створити новий сайт",
@@ -1015,7 +1006,6 @@
   "sellPaymentMethod": "Спосіб оплати",
   "importColdcardInstructionsStep2": "Вкажіть прохід, якщо це можливо",
   "satsSuffix": " атласне",
-  "systemLabelAutoSwap": "Автообмін",
   "payExpiresIn": "Закінчується {time}",
   "@payExpiresIn": {
     "placeholders": {
@@ -1192,7 +1182,6 @@
   "appStartupErrorMessage": "Не вдалося запустити застосунок. Спробуйте повністю його закрити та перезапустити. Якщо помилка повторюється, зверніться до підтримки та поділіться логами.",
   "payPasteInvoice": "Паста Invoice",
   "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
-  "systemLabelSwaps": "Обмін",
   "sendSwapId": "Обмін ID",
   "electrumServerOnline": "Інтернет",
   "testBackupDefaultWallets": "Гаманець за замовчуванням",
@@ -1256,7 +1245,6 @@
       }
     }
   },
-  "systemLabelExchangeBuy": "Купити",
   "exchangeAmountInputValidationInsufficient": "Недостатній баланс",
   "broadcastSignedTxCameraButton": "Камери",
   "importQrDeviceJadeName": "Блокстрім Jade",
@@ -1456,20 +1444,11 @@
   "pleaseWaitFetching": "Будь ласка, почекайте, коли ми фіксуємо файл резервного копіювання.",
   "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
   "electrumReset": "Зареєструватися",
-  "systemLabelExchangeSell": "Продати",
   "electrumStopGapNegativeError": "Стоп Gap не може бути негативним",
   "importColdcardInstructionsStep9": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації",
   "backupSettingsExportVault": "Експорт Vault",
   "autoswapRecipientRequired": "Ім'я *",
   "exchangeLandingFeature4": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
-  "labelDeleteFailed": "Неможливо видалити \"{label}. Будь ласка, спробуйте знову.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "buyVerifyIdentity": "Перевірити ідентичність",
   "exchangeDcaCancelDialogConfirmButton": "Так, деактивація",
   "electrumServerUrlHint": "{network} {environment} URL сервера",
@@ -1594,7 +1573,6 @@
   "testBackupRetrieveVaultDescription": "Перевірте, щоб переконатися, що ви можете отримати зашифрований за замовчуванням.",
   "electrumStopGap": "Зупинити Gap",
   "payBroadcastingTransaction": "Трансляція транзакцій...",
-  "bip329LabelsImportButton": "Імпорт етикеток",
   "withdrawConfirmAmount": "Сума",
   "copyDialogButton": "Партнерство",
   "swapConfirmTransferTitle": "Підтвердьте обмін",
@@ -1731,7 +1709,6 @@
   "testBackupGoogleDrivePermission": "Google попросить Вас поділитися персональною інформацією з цією програмою.",
   "testBackupErrorUnexpectedSuccess": "Невибагливий успіх: резервне копіювання повинно відповідати існуючому гаманцю",
   "coreScreensReceiveAmountLabel": "Отримувати Amount",
-  "systemLabelPayjoin": "Офіціант",
   "payReviewPayment": "Огляд платежів",
   "buyKYCLevel3": "Рівень 3 - Повний",
   "importMnemonicChecking": "Перевірити...",
@@ -1749,7 +1726,6 @@
   "swapToLabel": "До",
   "sendSignatureReceived": "Отримали підпис",
   "exchangeKycLevelLight": "Світло",
-  "bip329LabelsExportSuccess": "Мітки успішно експортовано",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Найменший варіант, але можна зробити через онлайн-банкінг (3-4 робочих днів)",
   "payEnableRBF": "Увімкнути RBF",
   "importQrDeviceInvalidQR": "Неточний QR-код",
@@ -2173,7 +2149,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 етикетки",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Продати Bitcoin, оплачується з Bitcoin",
   "hwSeedSigner": "НасінняСинер",
@@ -2397,7 +2372,6 @@
   "coreScreensFeePriorityLabel": "Пріоритетність",
   "coreScreensLogsTitle": "Логін",
   "testBackupErrorWalletMismatch": "Резервне копіювання не відповідає існуючому гаманцю",
-  "bip329LabelsHeading": "BIP329 Етикетки Імпорт / Експорт",
   "coldcardStep4": "Сканування QR-коду, показаного в булл-гаманці",
   "importQrDevicePassportStep5": "Виберіть опцію \"Ворна\"",
   "sendInvoicePaid": "Пайд пароля",
@@ -2487,7 +2461,6 @@
   "swapFromLabel": "З",
   "importQrDeviceKeystoneStep4": "Натисніть \"Connect Software Wallet\"",
   "rbfOriginalTransaction": "Оригінальна угода",
-  "bip329LabelsExportButton": "Експорт етикеток",
   "sendSelectCoins": "Виберіть монети",
   "fundExchangeLabelRoutingNumber": "Номер маршрутизації",
   "paySyncingWallet": "Syncing гаманець ...",
@@ -2555,7 +2528,6 @@
   "payChannelBalanceLow": "Невисокий баланс каналу",
   "allSeedViewNoSeedsFound": "Не знайдено насіння.",
   "dcaSetupScheduleMessage": "Біткіні покупки будуть розміщені автоматично за цей графік.",
-  "systemLabelSelfSpend": "Самопоширення",
   "swapProgressRefundMessage": "Під час обміну сталася помилка. Повернення коштів виконується.",
   "electrumNetworkBitcoin": "Bitcoin у USD",
   "importColdcardInstructionsStep7": "На мобільному пристрої натисніть \"відкрита камера\"",
@@ -2674,7 +2646,6 @@
   "electrumRetryCount": "Птиця графа",
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Інструкції",
   "importMnemonicImporting": "Імпорт.",
-  "bip329LabelsDescription": "Імпорт або експорт етикеток гаманця за допомогою стандартного формату BIP329.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Ви не впевнені, що вам потрібно більше часу, щоб дізнатися про методи резервної копії.",
   "backupWalletImportanceWarning": "Без резервної копії ви в кінцевому підсумку втратите доступ до ваших грошей. Важливо зробити резервну копію.",
   "autoswapMaxFeeInfoText": "Якщо загальна комісія обміну перевищує встановлений відсоток, автообмін буде заблоковано",
@@ -3913,7 +3884,6 @@
   "fundExchangeCopGeneratePaymentLink": "Створити посилання на оплату",
   "fundExchangeCopRedirectMessage": "Вас буде перенаправлено на зовнішню сторінку для здійснення оплати.",
   "fundExchangeCopOpenPaymentLink": "Відкрити посилання на оплату",
-  "noteVisibleToSenderNotice": "Ця примітка буде видима отримувачу вашого QR-коду або рахунку.",
   "viewerAddressTab": "Адреса",
   "viewerPaymentUriTab": "URI платежу",
   "transactionSwapOpenWithin24h": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
@@ -4045,15 +4015,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Цей тип файлу не приймається. Виберіть інший.",
   "exchangeSettingsErrorDocumentUnreadable": "Не вдалося прочитати цей файл. Виберіть інший.",
   "exchangeSettingsErrorUploadingDocument": "Не вдалося завантажити документ. Будь ласка, спробуйте ще раз.",
-  "labelsErrorNoteTooLong": "Примітка має містити не більше {max} символів",
-  "labelsErrorNoteForbiddenCharacter": "Примітка не може містити символ {character}",
-  "labelsErrorFileTooLarge": "Цей файл завеликий. Файли міток мають бути менші за {max}.",
-  "labelsErrorFileUnreadable": "Це не схоже на файл міток BIP-329. Перевірте, чи обрали ви потрібний файл.",
-  "labelsErrorFileEmpty": "У цьому файлі немає міток для імпорту.",
-  "labelsErrorExportFailed": "Не вдалося зберегти ваші мітки. Спробуйте ще раз.",
-  "labelsErrorFileReservedName": "У цьому файлі використано назву мітки, зарезервовану застосунком. Перейменуйте її у файлі та спробуйте ще раз.",
-  "labelsErrorNoteForbiddenWhitespace": "Примітка не може містити розриви рядків або табуляції",
-  "labelsErrorFileInvalidEntry": "Деякі записи в цьому файлі не вдалося прочитати. Перевірте файл і спробуйте ще раз.",
   "recipientsErrorLoadFailed": "Не вдалося завантажити ваших одержувачів. Спробуйте ще раз.",
   "recipientsErrorSaveFailed": "Не вдалося зберегти цього одержувача. Перевірте дані та спробуйте ще раз.",
   "recipientsErrorSinpeLookupFailed": "Не вдалося перевірити цей номер телефону. Перевірте його та спробуйте ще раз.",

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
-import 'package:bb_mobile/features/labels/locator.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 
 import 'dart:io';
@@ -18,6 +17,7 @@ import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:labels/labels.dart';
 import 'package:secrets/secrets.dart';
 
 class _NativeTor implements TorNativeInitializer {
@@ -67,8 +67,9 @@ void main() {
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);
       final walletSync = WalletLocator.syncAccess(services);
-      LabelsLocator.registerPorts(
+      setupLabels(
         services,
+        database: database,
         sync: walletSync.foreground,
         openWallet: walletSync.openWallet,
       );

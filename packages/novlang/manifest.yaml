@@ -41,6 +41,9 @@ catalogues:
   quick_actions:
     path: features/quick_actions
     description: the quick actions feature catalogue (features/quick_actions/localization/app_<lang>.arb)
+  label_editor:
+    path: features/label_editor
+    description: the label editor catalogue (features/label_editor/lib/l10n/label_editor_<lang>.arb)
 entries:
   - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
@@ -247,8 +250,8 @@ entries:
   - {catalogue: app, key: coreScreensConfirmTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreScreensTransferIdLabel, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreScreensTransferFeeLabel, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: label_editor, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: label_editor, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: logoutConfirmationDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: wizardJourneyTip5, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: wizardJourneyTip6, store: apple, word: swap, euphemism: transfer}
