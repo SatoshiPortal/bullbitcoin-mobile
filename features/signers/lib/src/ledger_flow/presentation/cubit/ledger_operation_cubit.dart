@@ -11,6 +11,7 @@ import 'package:signers/src/ledger_flow/presentation/cubit/ledger_operation_stat
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LedgerOperationCubit extends Cubit<LedgerOperationState> {
+  bool _closing = false;
   final NetworkEnv _network;
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
@@ -31,6 +32,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
 
   @override
   Future<void> close() async {
+    _closing = true;
     _logTeardown(await _disposeLedgerConnectionsUsecase.execute(), 'dispose');
     await super.close();
   }
@@ -48,6 +50,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   Future<void> executeOperation<T>(
     Future<Result<T, LedgerFailure>> Function() operation,
   ) async {
+    if (_closing || isClosed) return;
     if (_network != NetworkEnv.mainnet && _network != NetworkEnv.testnet) {
       _emitFailure(const LedgerUnexpectedFailure('unsupported network'));
       return;
@@ -59,7 +62,10 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
       );
     }
 
-    emit(state.copyWith(status: LedgerOperationStatus.scanning, failure: null));
+    if (_closing || isClosed) return;
+    _emitIfActive(
+      state.copyWith(status: LedgerOperationStatus.scanning, failure: null),
+    );
 
     final List<LedgerDeviceEntity> devices;
     switch (await _scanLedgerDevicesUsecase.execute(
@@ -70,11 +76,12 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
       case Err(:final failure):
         return _emitFailure(failure);
     }
+    if (_closing || isClosed) return;
     if (devices.isEmpty) {
       return _emitFailure(const LedgerNoDevicesFoundFailure());
     }
 
-    emit(
+    _emitIfActive(
       state.copyWith(
         status: LedgerOperationStatus.connecting,
         connectedDevice: devices.first,
@@ -88,11 +95,12 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
         return _emitFailure(failure);
     }
 
-    emit(state.copyWith(status: LedgerOperationStatus.processing));
+    if (_closing || isClosed) return;
+    _emitIfActive(state.copyWith(status: LedgerOperationStatus.processing));
 
     switch (await operation()) {
       case Ok(:final value):
-        emit(
+        _emitIfActive(
           state.copyWith(status: LedgerOperationStatus.success, result: value),
         );
       case Err(:final failure):
@@ -100,11 +108,17 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     }
   }
 
+  void _emitIfActive(LedgerOperationState next) {
+    if (!_closing && !isClosed) emit(next);
+  }
+
   void _emitFailure(LedgerFailure failure) {
-    emit(state.copyWith(status: LedgerOperationStatus.error, failure: failure));
+    _emitIfActive(
+      state.copyWith(status: LedgerOperationStatus.error, failure: failure),
+    );
   }
 
   void reset() {
-    emit(const LedgerOperationState());
+    _emitIfActive(const LedgerOperationState());
   }
 }
