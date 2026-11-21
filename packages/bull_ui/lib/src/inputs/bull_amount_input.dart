@@ -696,6 +696,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
                           : TextAlign.end,
                       decoration: InputDecoration(
                         border: InputBorder.none,
+                        filled: false,
                         // A compact row centres its body line in the 48 dp
                         // target, on the same line as its unit.
                         contentPadding: widget.compact
