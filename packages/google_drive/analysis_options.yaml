@@ -1,0 +1,10 @@
+analyzer:
+  exclude:
+    - lib/generated/**
+    - build/**
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - prefer_relative_imports
+    - implementation_imports
