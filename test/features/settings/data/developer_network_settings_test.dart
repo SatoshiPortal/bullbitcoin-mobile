@@ -49,6 +49,25 @@ void main() {
     expect(settings.isDevModeEnabled, isFalse);
   });
 
+  for (final environment in ['testnet', 'regtest']) {
+    test('revoking superuser restores mainnet from $environment', () async {
+      await database.customStatement(
+        'UPDATE settings SET environment = ? WHERE id = 1',
+        [environment],
+      );
+      await datasource.setIsSuperuser(false);
+
+      final settings = await datasource.fetch();
+      expect(settings.environment.name, 'mainnet');
+      expect(settings.isSuperuser, isFalse);
+      expect(settings.isDevModeEnabled, isFalse);
+
+      final row = await database.managers.settings.getSingle();
+      expect(row.environment, 'mainnet');
+      expect(row.isDevModeEnabled, isFalse);
+    });
+  }
+
   test('an authorized testnet read does not rewrite settings', () async {
     final settings = await datasource.fetch();
     expect(settings.environment.name, 'testnet');
