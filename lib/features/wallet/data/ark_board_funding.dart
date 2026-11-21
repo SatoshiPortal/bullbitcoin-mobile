@@ -22,7 +22,6 @@ import 'foreground_wallet_sync.dart';
 import 'models/wallet_metadata_model.dart';
 import 'sqlite_ark_funding_reservations.dart';
 import 'wallet_metadata_datasource.dart';
-import 'wallet_native_runtime.dart';
 
 /// Main-wallet Board funding. No Bark key, raw PSBT or data binding leaves here.
 /// Every ambiguous signer/delivery result retains the original operation/holds.
@@ -105,7 +104,11 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       if (parent == null) throw const _HostFailure(ArkAccountRecoveryFailure());
       _require(parent == config.id.parent);
       await _sourceSync.synchronize(metadata, reason: sync.SyncReason.manual);
-      final handle = await _runtime.wallet(metadata.id);
+      final handle = _sync(
+        await _runtime.wallet(
+          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+        ),
+      );
       _sync(await handle.load());
       final fastest = (await _fees.getNetworkFees(network: metadata.network))
           .fastest;
@@ -280,7 +283,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       }
       final review = _Review(entry, account);
       await _eligible(entry.binding.key.id, expected: entry.binding);
-      final handle = await _runtime.wallet(entry.binding.key.id);
+      final handle = _sync(await _runtime.wallet(entry.binding.key));
       _sync(await handle.load());
       final ownership = _sync(await handle.ownership());
       _checkOutputs(
@@ -346,7 +349,11 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         expected: entry.binding,
       );
       await _fresh(review);
-      final handle = await _runtime.wallet(metadata.id);
+      final handle = _sync(
+        await _runtime.wallet(
+          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+        ),
+      );
       final loaded = _sync(await handle.load());
       final ownership = _sync(await handle.ownership());
       _require(
@@ -359,7 +366,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         review.display.fundingAmount,
         ownership,
       );
-      final gate = (await _runtime.foreground()).stores.spendGate;
+      final gate = _sync(await _runtime.foreground()).stores.spendGate;
       final lease = await gate.acquire(entry.binding.key);
       if (lease is! BitcoinSpendAdmission) {
         throw const _HostFailure(ArkOperationBusyFailure());
@@ -413,7 +420,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       );
       final receipt = _sync(
         await _runtime.broadcast(
-          metadata.id,
+          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
           sync.SignedPsbt(signed),
           network: BitcoinNetwork.regtest,
           built: built,
@@ -463,7 +470,11 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       final metadata = await _eligible(key.id, expected: binding);
       _require(metadata.seedFingerprint == parent);
       await _sourceSync.synchronize(metadata, reason: sync.SyncReason.manual);
-      final handle = await _runtime.wallet(metadata.id);
+      final handle = _sync(
+        await _runtime.wallet(
+          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+        ),
+      );
       final loaded = _sync(await handle.load());
       final ownership = _sync(await handle.ownership());
       final history = handle.history.now;
@@ -473,7 +484,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
             history.status == sync.ValueStatus.ready &&
             history.data != null,
       );
-      final gate = (await _runtime.foreground()).stores.spendGate;
+      final gate = _sync(await _runtime.foreground()).stores.spendGate;
       final lease = await gate.acquire(key);
       if (lease is! BitcoinSpendAdmission) {
         throw const _HostFailure(ArkOperationBusyFailure());

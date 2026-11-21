@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -56,7 +55,7 @@ final class ForegroundWalletSync {
         final native = _native;
         if (result case Err(failure: SyncNeedsRepairFailure())
             when native != null) {
-          await native.repair(value.key);
+          WalletCatalogPortImpl.value(await native.repair(value.key));
           result = await _sync.execute(
             value,
             discover: discover,
@@ -64,7 +63,9 @@ final class ForegroundWalletSync {
             reason: reason,
           );
         }
-        await native?.refresh(value.key);
+        if (native != null) {
+          WalletCatalogPortImpl.value(await native.refresh(value.key));
+        }
         if (result case Err(:final failure)) {
           // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.
           throw WalletSnapshotException(failure);

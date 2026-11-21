@@ -28,7 +28,7 @@ graph TB
     BG_TASKS --> ARK_PROTOCOL
     WALLETS --> BULL_PRICER
     ELECTRUM[Electrum package<br/>Server selection, settings and transaction lookup]
-    SYNC[Sync Package<br/>Electrum sync, BitcoinTx, review values, chain access,<br/>contracts and owner ports]
+    SYNC[Sync Package<br/>Native lifecycle, Electrum sync, BitcoinTx, review values, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
     BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS
@@ -662,3 +662,7 @@ The settings hub, onboarding and wallet error actions use `NetworkNavigation`. T
 ### Direct chain capability consumers
 
 Send uses `sync.broadcastLiquidTransaction` for wallet-independent Liquid broadcasts. Transactions uses the sync chain queries and broadcasts for Payjoin, with the published connection port supplied by composition. These paths no longer depend on the app blockchain datasource or the Liquid forwarding repository.
+
+### Native runtime extraction
+
+The wallet module supplies inventory and protocol ports to the runtime in `sync`. Ark and Payjoin consumers pass exact wallet keys to the same runtime instance. The global foreground queue still orders native, swap and Silent Payments work; catalog metadata and presentation enrichment stay outside sync.

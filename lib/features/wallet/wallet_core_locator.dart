@@ -1,4 +1,5 @@
 import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 
@@ -6,7 +7,7 @@ import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 
-import 'data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -46,8 +47,17 @@ class WalletLocator {
     Future<Wallet> Function(String walletId) openWallet,
   })
   syncAccess(GetIt locator) => (
-    foreground: () => locator<WalletNativeRuntime>().foreground(),
-    openWallet: (walletId) => locator<WalletNativeRuntime>().wallet(walletId),
+    foreground: () async => WalletCatalogPortImpl.value(
+      await locator<WalletNativeRuntime>().foreground(),
+    ),
+    openWallet: (walletId) async => WalletCatalogPortImpl.value(
+      await locator<WalletNativeRuntime>().wallet(
+        await WalletCatalogPortImpl.keyForId(
+          locator<WalletMetadataDatasource>(),
+          walletId,
+        ),
+      ),
+    ),
   );
 
   static Future<void> registerDatasources(GetIt locator) async {
@@ -57,7 +67,9 @@ class WalletLocator {
 
     locator.registerLazySingleton<SyncFreezesDatasource>(
       () => SyncFreezesDatasource(
-        sync: () => locator<WalletNativeRuntime>().foreground(),
+        sync: () async => WalletCatalogPortImpl.value(
+          await locator<WalletNativeRuntime>().foreground(),
+        ),
       ),
     );
   }

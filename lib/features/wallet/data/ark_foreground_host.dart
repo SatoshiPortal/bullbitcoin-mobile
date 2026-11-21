@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;

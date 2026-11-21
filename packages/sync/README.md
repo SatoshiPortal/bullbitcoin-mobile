@@ -23,6 +23,10 @@ Values are mapped from the native wallet once per revision, built into one immut
 
 ⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. Liquid has no ownership index: LWK does not expose it.
 
+## Native runtime
+
+`package:sync/write.dart` publishes `WalletNativeRuntime.open` for composition. It owns provisioning, recovery and native lifecycle operations on `WalletKey`, returning `Result` values. The catalog remains external through `WalletCatalogPort`; its owner supplies the deletion callback, invoked only after native deletion succeeds. A failed global provisioning pass does not prevent a known wallet from attempting its own read or receive operation.
+
 ## Transactions
 
 `transactions.dart` publishes wallet-independent Bitcoin and Liquid transaction values used by signed-transaction review. These provide review projections, while the history types in `sync.dart` describe a wallet’s view of its activity. Import the library for the view you need; neither exposes native handles.

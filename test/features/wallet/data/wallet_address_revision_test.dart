@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
@@ -7,7 +8,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -43,7 +44,11 @@ void main() {
       final liquid = _Values();
       final labels = _Labels();
       when(() => metadata.fetch(id)).thenAnswer((_) async => row);
-      when(() => native.issuedReceiveIndex(row)).thenAnswer((_) async => 7);
+      when(
+        () => native.issuedReceiveIndex(
+          WalletCatalogPortImpl.keyFromMetadata(row),
+        ),
+      ).thenAnswer((_) async => const Ok(7));
       when(() => liquid.getLastAddressIndex(wallet: any(named: 'wallet')))
           .thenAnswer((_) async => 0);
       when(

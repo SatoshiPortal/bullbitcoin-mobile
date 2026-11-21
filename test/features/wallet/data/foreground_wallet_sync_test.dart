@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
@@ -12,7 +13,6 @@ import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_u
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 
 import 'dart:io';
 
@@ -98,6 +98,7 @@ void main() {
   );
   registerFallbackValue(WalletModel.fromMetadata(row));
   registerFallbackValue(row);
+  registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
   late Directory directory;
   late _Policy policy;
   late _Metadata metadata;
@@ -200,8 +201,10 @@ void main() {
         when(() => metadata.fetch(id)).thenAnswer((_) async => local);
         when(() => metadata.fetchAll()).thenAnswer((_) async => [remaining]);
         final native = _Native();
-        when(() => native.delete(any())).thenAnswer((_) async {});
-        when(() => native.catalogDeleted(any())).thenAnswer((_) async {});
+        when(() => native.delete(any()))
+            .thenAnswer((_) async => const Ok(null));
+        when(() => native.catalogDeleted(any()))
+            .thenAnswer((_) async => const Ok(null));
         when(() => metadata.delete(id)).thenAnswer((_) async {});
         final guardedRepository = WalletRepository(
           native: native,
@@ -641,11 +644,13 @@ void main() {
       final native = _Native();
       when(() => native.prepareCreate(any())).thenAnswer((_) async {
         verifyNever(() => metadata.insert(any()));
+        return const Ok(null);
       });
       when(() => native.create(any())).thenAnswer((_) async {
         verify(() => metadata.insert(any())).called(1);
         verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
         provisioned = true;
+        return const Ok(null);
       });
       var synchronized = false;
       final originalBalance = await values.getBalance(

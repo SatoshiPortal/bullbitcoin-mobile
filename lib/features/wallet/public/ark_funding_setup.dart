@@ -13,7 +13,8 @@ import '../data/ark_board_funding.dart';
 import '../data/foreground_wallet_sync.dart';
 import '../data/sqlite_ark_funding_reservations.dart';
 import '../data/wallet_metadata_datasource.dart';
-import '../data/wallet_native_runtime.dart';
+
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 export '../data/ark_funding_signing_guard.dart';
 export '../data/ark_installation_state.dart';

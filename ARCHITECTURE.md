@@ -453,3 +453,7 @@ Electrum also owns the declarations, generated rows and queries for `ElectrumSer
 ### Wallet-independent chain operations
 
 Send and Payjoin consume the chain operations published by `sync` through `WalletConnectionPort`. The former `core/blockchain` adapters are removed. Electrum implements connection selection and fallback; Payjoin retains its script-based reconciliation for unrecognized transaction lookup replies, and Send retains authorization and presentation failure mapping.
+
+### Native lifecycle ownership
+
+`packages/sync` owns `WalletNativeRuntime`, composed through `sync/write.dart`. Runtime operations accept wallet keys and return typed results; the application resolves metadata and maps failures at its existing consumer boundaries. The catalog owner supplies the callback that removes an inventory entry after native deletion is confirmed. Native storage paths, revisions and recovery order remain unchanged.

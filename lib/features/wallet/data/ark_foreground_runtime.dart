@@ -32,7 +32,9 @@ import 'package:secrets/secrets.dart';
 import 'ark_board_abandonment.dart';
 import 'ark_installation_state.dart';
 import 'ark_display_data.dart';
-import 'wallet_native_runtime.dart';
+
+import 'package:sync/write.dart' show WalletNativeRuntime;
+
 import 'sqlite_ark_funding_reservations.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.

@@ -1,33 +1,24 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-
 import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
-
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/sync.dart' hide Wallet;
-import 'package:sync/sync.dart' as sync show Wallet;
-import 'package:sync/write.dart';
 
-import 'wallet_catalog_port_impl.dart';
-import '../domain/wallet_spend_failure.dart';
+import '../../../sync.dart' hide Wallet;
+import '../../../sync.dart' as sync show Wallet;
+import '../../../write.dart';
 
-/// Owns application lifecycle orchestration; the shell only composes this owner.
-/// The repository compensates catalog insertion on native creation failure.
-/// Process death before compensation leaves the row for startup to resume;
-/// secrets and native recovery state are retained.
+/// Coordinates provisioning and recovery of native stores. Catalog entries are
+/// supplied through [WalletCatalogPort]; their deletion remains with the owner.
 abstract interface class WalletNativeLifecycle {
-  Future<void> prepareCreate(WalletMetadataModel metadata);
-  Future<void> create(WalletMetadataModel metadata);
-  Future<void> delete(WalletMetadataModel metadata);
-  Future<void> catalogDeleted(WalletMetadataModel metadata);
-  Future<int?> issuedReceiveIndex(WalletMetadataModel metadata);
-  Future<({String address, int index})> receive(
-    WalletMetadataModel metadata, {
+  Future<Result<void, SyncFailure>> prepareCreate(WalletKey key);
+  Future<Result<void, SyncFailure>> create(WalletKey key);
+  Future<Result<void, SyncFailure>> delete(WalletKey key);
+  Future<Result<void, SyncFailure>> catalogDeleted(WalletKey key);
+  Future<Result<int?, SyncFailure>> issuedReceiveIndex(WalletKey key);
+  Future<Result<({String address, int index}), SyncFailure>> receive(
+    WalletKey key, {
     bool advance = false,
   });
 }
@@ -37,7 +28,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final ReservedAddressPort _reserved;
   final InputReservationPort _inputReservations;
   final FundingReservationPort? _fundingReservations;
-  final WalletMetadataDatasource _metadata;
+  final Future<Result<void, SyncFailure>> Function(WalletKey)
+  _deleteCatalogEntry;
   final ElectrumSync _sync;
   final Future<String> Function() _documentsDirectory;
   final _changes = StreamController<WalletRevisionState>.broadcast();
@@ -49,18 +41,75 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final FreezeStorePort _freezes;
   final WalletConnectionPort _connections;
 
-  WalletNativeRuntime({
+  WalletNativeRuntime.open({
     required this._catalog,
     required this._reserved,
     required this._inputReservations,
     this._fundingReservations,
-    required this._metadata,
+    required this._deleteCatalogEntry,
     required this._sync,
     required this._documentsDirectory,
     required this._freezes,
     required this._connections,
     @visibleForTesting this._onStoresOpened,
   });
+
+  Future<Result<T, SyncFailure>> _result<T>(
+    Future<T> Function() operation,
+  ) async {
+    try {
+      return Ok(await operation());
+    } on WalletSnapshotException catch (error) {
+      return Err(error.failure);
+    } on Exception {
+      return const Err(SyncStorageFailure());
+    }
+  }
+
+  Future<Result<void, SyncFailure>> initialize() => _result(_initialize);
+  Future<Result<void, SyncFailure>> resumeProvisioning() =>
+      _result(_resumeProvisioning);
+  @override
+  Future<Result<void, SyncFailure>> prepareCreate(WalletKey key) =>
+      _result(() => _prepareCreate(key));
+  @override
+  Future<Result<void, SyncFailure>> create(WalletKey key) =>
+      _result(() => _create(key));
+  @override
+  Future<Result<void, SyncFailure>> delete(WalletKey key) =>
+      _result(() => _delete(key));
+  @override
+  Future<Result<({String address, int index}), SyncFailure>> receive(
+    WalletKey key, {
+    bool advance = false,
+  }) => _result(() => _receive(key, advance: advance));
+  @override
+  Future<Result<int?, SyncFailure>> issuedReceiveIndex(WalletKey key) =>
+      _result(() => _issuedReceiveIndex(key));
+  Future<Result<sync.Wallet, SyncFailure>> wallet(WalletKey key) =>
+      _result(() => _wallet(key));
+  Future<Result<BitcoinSpendStatus, SyncFailure>> spendStatus(
+    WalletKey key, {
+    String? replacing,
+  }) => _result(() => _spendStatus(key, replacing: replacing));
+  Future<Result<bool, SyncFailure>> protectObservedSpend(
+    WalletKey key,
+    String txid,
+  ) => _result(() => _protectObservedSpend(key, txid));
+  Future<Result<sync.Wallet, SyncFailure>> loadWallet(WalletKey key) =>
+      _result(() => _loadWallet(key));
+  Future<Result<Sync, SyncFailure>> foreground() => _result(_foreground);
+  Future<Result<void, SyncFailure>> refresh(
+    WalletKey key, {
+    bool catalogChanged = false,
+  }) => _result(() => _refresh(key, catalogChanged: catalogChanged));
+  @override
+  Future<Result<void, SyncFailure>> catalogDeleted(WalletKey key) =>
+      _result(() => _catalogDeleted(key));
+  Future<Result<void, SyncFailure>> refreshAll() => _result(_refreshAll);
+  Future<Result<void, SyncFailure>> repair(WalletKey key) =>
+      _result(() => _repair(key));
+  Future<Result<void, SyncFailure>> close() => _result(_close);
 
   Stream<WalletRevisionState> get changes => _changes.stream;
 
@@ -70,7 +119,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   Future<Result<WalletRevisionState, SyncFailure>> readRevision(
     WalletKey key,
-  ) async => (await _services).stores.revisions.read(key);
+  ) async {
+    try {
+      return await (await _services).stores.revisions.read(key);
+    } on Exception {
+      return const Err(SyncStorageFailure());
+    }
+  }
 
   Future<_NativeServices> get _services =>
       _opening ??= _open().catchError((Object error, StackTrace trace) {
@@ -104,11 +159,11 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
-  Future<void> initialize() => _initialization ??= _initializeSafely();
+  Future<void> _initialize() => _initialization ??= _initializeSafely();
 
   Future<void> _initializeSafely() async {
     try {
-      await _initialize();
+      await _provision();
       _initializationFailure = null;
     } catch (error) {
       _initialization = null;
@@ -118,17 +173,32 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
           'Native wallet initialization unavailable category=${error is WalletSnapshotException ? error.failure.logCode : 'storage'}',
         );
       }
+      rethrow;
+    }
+  }
+
+  /// Readers remain usable when a global catalog pass fails, provided their
+  /// own catalog entry and native revision are available.
+  Future<void> _initializeBestEffort() async {
+    try {
+      await _initialize();
+    } on Exception {
+      // The individual read or write still performs its own admission checks.
     }
   }
 
   /// Explicit provisioning retry; ordinary readers never trigger this pass.
-  Future<void> resumeProvisioning() async {
-    await initialize();
+  Future<void> _resumeProvisioning() async {
+    try {
+      await _initialize();
+    } on Exception {
+      // Explicit retry still retries a failed first opening.
+    }
     _initialization = null;
-    await initialize();
+    await _initialize();
   }
 
-  Future<void> _initialize() async {
+  Future<void> _provision() async {
     final services = await _services;
     final descriptors = _value(await _catalog.list());
     final catalogKeys = descriptors.map((descriptor) => descriptor.key).toSet();
@@ -143,7 +213,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
             expectedGeneration: state?.stamp.generation ?? 0,
           );
           if (result is Ok) {
-            await _metadata.delete(descriptor.key.id);
+            _value(await _deleteCatalogEntry(descriptor.key));
           } else if (result case Err(:final failure)) {
             _unavailable[descriptor.key] = failure;
           }
@@ -172,7 +242,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
             if (synced case Err(:final failure)) {
               _unavailable[descriptor.key] = failure;
             }
-            await refresh(descriptor.key);
+            await _refresh(descriptor.key);
           }
         }
         if (result case Err(:final failure)) {
@@ -209,69 +279,54 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
 
-  @override
-  Future<void> prepareCreate(WalletMetadataModel metadata) async {
-    final descriptor = _value(
-      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
-    );
+  Future<void> _prepareCreate(WalletKey key) async {
     final services = await _services;
-    final state = await _state(services, descriptor.key);
+    final state = await _state(services, key);
     if (state != null && state.lifecycle == WalletLifecycle.deleted) {
       _value(
         await services.writer.prepareReimport(
-          descriptor.key,
+          key,
           expectedGeneration: state.stamp.generation,
         ),
       );
     }
   }
 
-  @override
-  Future<void> create(WalletMetadataModel metadata) async {
-    final descriptor = _value(
-      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
-    );
+  Future<void> _create(WalletKey key) async {
     final services = await _services;
-    final state = await _state(services, descriptor.key);
+    final state = await _state(services, key);
     _value(
       await services.writer.create(
-        descriptor.key,
+        key,
         expectedGeneration: state?.stamp.generation ?? 0,
       ),
     );
-    _unavailable.remove(descriptor.key);
+    _unavailable.remove(key);
   }
 
-  @override
-  Future<void> delete(WalletMetadataModel metadata) async {
-    final descriptor = _value(
-      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
-    );
+  Future<void> _delete(WalletKey key) async {
     final services = await _services;
-    final state = await _state(services, descriptor.key);
+    final state = await _state(services, key);
     _value(
       await services.writer.delete(
-        descriptor.key,
+        key,
         expectedGeneration: state?.stamp.generation ?? 0,
       ),
     );
-    _unavailable.remove(descriptor.key);
+    _unavailable.remove(key);
   }
 
-  @override
-  Future<({String address, int index})> receive(
-    WalletMetadataModel metadata, {
+  Future<({String address, int index})> _receive(
+    WalletKey key, {
     bool advance = false,
   }) async {
-    await initialize();
-    final descriptor = _value(
-      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
-    );
+    await _initializeBestEffort();
+
     final services = await _services;
-    final state = await _state(services, descriptor.key);
+    final state = await _state(services, key);
     final issued = _value(
       await services.writer.receive(
-        descriptor.key,
+        key,
         expectedGeneration: state?.stamp.generation ?? 0,
         advance: advance,
       ),
@@ -279,12 +334,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     return (address: issued.address, index: issued.index);
   }
 
-  @override
-  Future<int?> issuedReceiveIndex(WalletMetadataModel metadata) async {
-    final descriptor = _value(
-      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
-    );
-    final state = await _state(await _services, descriptor.key);
+  Future<int?> _issuedReceiveIndex(WalletKey key) async {
+    final state = await _state(await _services, key);
     if (state?.lifecycle == WalletLifecycle.deleted) {
       throw const WalletSnapshotException(SyncNotFoundFailure());
     }
@@ -294,35 +345,24 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<BitcoinSpendGate> get _spendGate async =>
       (await _services).stores.spendGate;
 
-  Future<WalletKey> _spendKey(String walletId) async {
-    final metadata = await _metadata.fetch(walletId);
-    if (metadata == null || !metadata.isBitcoin) {
-      throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
-    }
-    return WalletKey(id: walletId, network: metadata.network.shared);
-  }
-
-  /// [walletId]'s handle on its current generation, without loading values.
-  /// Throws [WalletSnapshotException] when the wallet is unavailable.
-  Future<sync.Wallet> wallet(String walletId) async {
-    await initialize();
-    final metadata = await _metadata.fetch(walletId);
-    if (metadata == null) {
-      throw const WalletSnapshotException(SyncNotFoundFailure());
-    }
-    final key = WalletKey(id: walletId, network: metadata.network.shared);
+  /// Returns a handle for an exact network and generation.
+  Future<sync.Wallet> _wallet(WalletKey key) async {
+    await _initializeBestEffort();
+    // A stale native generation is insufficient: the current catalog must
+    // still contain this exact identity and network.
+    _value(await _catalog.find(key));
     final failure = _unavailable[key];
     if (failure != null) throw WalletSnapshotException(failure);
     return _value(await (await _services).sync.wallet(key));
   }
 
   /// The Bitcoin guard's verdict, asked now under the writer lock.
-  Future<BitcoinSpendStatus> spendStatus(
-    String walletId, {
+  Future<BitcoinSpendStatus> _spendStatus(
+    WalletKey key, {
     String? replacing,
   }) async {
     try {
-      return switch (await (await wallet(walletId)).tx
+      return switch (await (await _wallet(key)).tx
           .check(replacing: replacing)) {
         Ok(:final value) => value,
         Err(failure: SyncBusyFailure()) => BitcoinSpendStatus.busy,
@@ -333,13 +373,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
-  /// Broadcasts [transaction] for [walletId] through `wallet.tx`, which
+  /// Broadcasts [transaction] for [key] through `wallet.tx`, which
   /// checks its generation and inputs again under the guard. [built] carries
   /// the generation it was built at; without it, the current one is used.
   /// A wallet of another [network] than the one expected is refused before
   /// any admission or server.
   Future<Result<SpendReceipt, SyncFailure>> broadcast(
-    String walletId,
+    WalletKey key,
     SignedTransaction transaction, {
     required Network network,
     UnsignedSpend? built,
@@ -348,9 +388,11 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }) async {
     final sync.Wallet handle;
     try {
-      handle = await wallet(walletId);
+      handle = await _wallet(key);
     } on WalletSnapshotException catch (error) {
       return Err(error.failure);
+    } on Exception {
+      return const Err(SyncStorageFailure());
     }
     if (built != null && built.key != handle.key) {
       return const Err(SyncNotFoundFailure());
@@ -366,12 +408,11 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   /// Called before a Payjoin terminal transition releases owned-input guards.
-  Future<bool> protectObservedSpend(String walletId, String txid) async {
+  Future<bool> _protectObservedSpend(WalletKey key, String txid) async {
     try {
-      final admission = await (await _spendGate).acquire(
-        await _spendKey(walletId),
-        handoff: true,
-      );
+      if (key.network is! BitcoinNetwork) return false;
+      _value(await _catalog.find(key));
+      final admission = await (await _spendGate).acquire(key, handoff: true);
       if (admission is! BitcoinSpendAdmission) return false;
       try {
         return admission.accepted(txid).durable;
@@ -385,8 +426,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   /// A wallet whose values are loaded at its latest committed revision, from
   /// local stores only. Throws [WalletSnapshotException] with the failure.
-  Future<sync.Wallet> loadWallet(WalletKey key) async {
-    await initialize();
+  Future<sync.Wallet> _loadWallet(WalletKey key) async {
+    await _initializeBestEffort();
     final failure = _unavailable[key];
     if (failure != null) throw WalletSnapshotException(failure);
     final wallet = _value(await (await _services).sync.wallet(key));
@@ -395,12 +436,15 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   /// The foreground [Sync], for freezes. Opens it on first use.
-  Future<Sync> foreground() async => (await _services).sync;
+  Future<Sync> _foreground() async => (await _services).sync;
 
   /// Called after every worker outcome, including interrupted/failed writes.
-  Future<void> refresh(WalletKey key, {bool catalogChanged = false}) async {
+  Future<void> _refresh(WalletKey key, {bool catalogChanged = false}) async {
     final services = await _services;
     final state = await services.stores.revisions.read(key);
+    if (state case Err(:final failure) when failure is! SyncNotFoundFailure) {
+      throw WalletSnapshotException(failure);
+    }
     if (state case Ok(:final value) when catalogChanged) {
       _changes.add(value);
     }
@@ -410,22 +454,18 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
-  @override
-  Future<void> catalogDeleted(WalletMetadataModel metadata) async {
-    final descriptor = _value(
-      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
-    );
-    await refresh(descriptor.key, catalogChanged: true);
+  Future<void> _catalogDeleted(WalletKey key) async {
+    await _refresh(key, catalogChanged: true);
   }
 
-  Future<void> refreshAll() async {
+  Future<void> _refreshAll() async {
     final descriptors = _value(await _catalog.list());
     for (final descriptor in descriptors) {
-      await refresh(descriptor.key);
+      await _refresh(descriptor.key);
     }
   }
 
-  Future<void> repair(WalletKey key) async {
+  Future<void> _repair(WalletKey key) async {
     final services = await _services;
     final state = await _state(services, key);
     _value(
@@ -436,7 +476,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     );
   }
 
-  Future<void> close() async {
+  Future<void> _close() async {
     final opening = _opening;
     if (opening != null) {
       final services = await opening;

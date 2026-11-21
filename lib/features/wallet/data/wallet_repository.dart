@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repository.dart';
 import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
@@ -7,7 +8,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show
@@ -645,10 +646,16 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
 
       final native = _native;
       if (native == null) throw StateError('Native writer is not configured');
-      await native.delete(metadata);
+      WalletCatalogPortImpl.value(
+        await native.delete(WalletCatalogPortImpl.keyFromMetadata(metadata)),
+      );
 
       await _walletMetadataDatasource.delete(walletId);
-      await native.catalogDeleted(metadata);
+      WalletCatalogPortImpl.value(
+        await native.catalogDeleted(
+          WalletCatalogPortImpl.keyFromMetadata(metadata),
+        ),
+      );
       log.fine('Wallet deleted outcome=ok');
       return const Ok(null);
     } catch (e, st) {
@@ -679,7 +686,14 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     if (await _walletMetadataDatasource.fetch(metadata.id) != null) {
       throw WalletAlreadyExistsException(metadata.id);
     }
-    await _native?.prepareCreate(metadata);
+    final native = _native;
+    if (native != null) {
+      WalletCatalogPortImpl.value(
+        await native.prepareCreate(
+          WalletCatalogPortImpl.keyFromMetadata(metadata),
+        ),
+      );
+    }
     // The writer resolves descriptors from this row. Claim it exclusively,
     // without holding an app database transaction across native work.
     await _walletMetadataDatasource.insert(metadata);
@@ -697,7 +711,9 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   Future<void> _createNative(WalletMetadataModel metadata) async {
     final native = _native;
     if (native == null) throw StateError('Native writer is not configured');
-    await native.create(metadata);
+    WalletCatalogPortImpl.value(
+      await native.create(WalletCatalogPortImpl.keyFromMetadata(metadata)),
+    );
   }
 
   Future<BalanceModel> _getBalance(

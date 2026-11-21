@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:preferences/preferences.dart';
@@ -10,7 +11,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.da
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:get_it/get_it.dart';
 import 'package:primitives/primitives.dart';
 
@@ -58,11 +59,15 @@ class SyncLocator {
         syncSwapsOutcome: syncSwapsOutcome,
         syncSp: syncSp,
         syncSpOutcome: syncSpOutcome,
-        refreshRevisions: () => locator<WalletNativeRuntime>().refreshAll(),
+        refreshRevisions: () async => WalletCatalogPortImpl.value(
+          await locator<WalletNativeRuntime>().refreshAll(),
+        ),
       ),
     );
   }
 }
 
-Future<void> initializeWalletRuntime(GetIt locator) =>
-    locator<WalletNativeRuntime>().initialize();
+Future<void> initializeWalletRuntime(GetIt locator) async {
+  // Startup continues when native stores are unavailable, as before.
+  await locator<WalletNativeRuntime>().initialize();
+}

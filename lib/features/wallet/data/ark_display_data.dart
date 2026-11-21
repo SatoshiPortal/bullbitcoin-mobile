@@ -12,9 +12,7 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
-import 'package:sync/write.dart' show SyncForegroundStores;
-
-import 'wallet_native_runtime.dart';
+import 'package:sync/write.dart' show SyncForegroundStores, WalletNativeRuntime;
 
 /// Observations only: no coin selection, address allocation or funding writes.
 final class WalletArkDisplayData implements ArkDisplayDataPort {
@@ -87,7 +85,11 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
       if (selected case Err(:final failure)) return Err(failure);
       final id = (selected as Ok<String, ArkFailure>).value;
       _walletId = id;
-      final handle = await _runtime.wallet(id);
+      final result = await _runtime.wallet(
+        WalletKey(id: id, network: account.network),
+      );
+      if (result case Err()) return const Err(ArkFeatureStorageFailure());
+      final handle = (result as Ok<Wallet, SyncFailure>).value;
       if (!_live) return const Err(ArkServiceUnavailableFailure());
       if (handle.key.network != account.network) {
         return const Err(ArkFeatureStorageFailure());
@@ -98,7 +100,10 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
       final stamp = (loaded as Ok<WalletRevision, SyncFailure>).value;
       final coins = await handle.unspent();
       if (!_live) return const Err(ArkServiceUnavailableFailure());
-      final reservations = await (await _runtime.foreground())
+      final foreground = await _runtime.foreground();
+      if (foreground case Err()) return const Err(ArkFeatureStorageFailure());
+      final reservations = await (foreground as Ok<Sync, SyncFailure>)
+          .value
           .stores
           .inputReservations
           .reservations();

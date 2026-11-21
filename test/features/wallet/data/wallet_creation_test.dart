@@ -14,7 +14,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart'
+    show WalletNativeRuntime, WalletNativeLifecycle;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:drift/native.dart';
 import 'package:sqlite3/sqlite3.dart' show Database;
@@ -31,7 +32,10 @@ import 'package:sync/sync.dart'
         SyncFailure,
         SyncReason,
         SyncNotFoundFailure,
-        WalletConnectionPort;
+        SyncStorageFailure,
+        WalletSnapshotException,
+        WalletConnectionPort,
+        WalletKey;
 import 'package:sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
@@ -81,6 +85,7 @@ void main() {
       isDefault: false,
     );
     registerFallbackValue(row);
+    registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
     registerFallbackValue(WalletModel.fromMetadata(row));
     descriptor = await WatchOnlyWalletEntity.parse(
       row.externalPublicDescriptor,
@@ -93,7 +98,8 @@ void main() {
     );
     metadata = WalletMetadataDatasource(sqlite: database);
     native = _Native();
-    when(() => native.prepareCreate(any())).thenAnswer((_) async {});
+    when(() => native.prepareCreate(any()))
+        .thenAnswer((_) async => const Ok(null));
     final bitcoin = _Bitcoin();
     final values = _Values();
     when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
@@ -165,6 +171,7 @@ void main() {
       when(() => native.create(any())).thenAnswer((_) async {
         entered.complete();
         await release.future;
+        return const Ok(null);
       });
       final creating = create('secret');
       await entered.future;
@@ -182,8 +189,9 @@ void main() {
     final observer = await independent();
     when(() => native.prepareCreate(any())).thenAnswer((_) async {
       await observer.customStatement('UPDATE settings SET rowid = rowid');
+      return const Ok(null);
     });
-    when(() => native.create(any())).thenAnswer((_) async {});
+    when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
     try {
       await create('secret');
       verify(() => native.create(any())).called(1);
@@ -196,15 +204,24 @@ void main() {
     test('$path rolls back failed native creation and permits retry', () async {
       final secretsBefore = Map.of(storage.entries);
       when(() => native.create(any())).thenAnswer((call) async {
-        final pending = call.positionalArguments.single as WalletMetadataModel;
+        final pending = call.positionalArguments.single as WalletKey;
         expect(
           await metadata.fetch(pending.id),
-          pending,
+          isNotNull,
           reason: 'the writer must resolve the provisional catalog row',
         );
-        throw const FileSystemException('injected native failure');
+        return const Err(SyncStorageFailure());
       });
-      await expectLater(create(path), throwsA(isA<FileSystemException>()));
+      await expectLater(
+        create(path),
+        throwsA(
+          isA<WalletSnapshotException>().having(
+            (error) => error.failure,
+            'failure',
+            isA<SyncStorageFailure>(),
+          ),
+        ),
+      );
       expect(await metadata.fetchAll(), isEmpty);
       expect(
         (await log.readLogs())
@@ -214,7 +231,7 @@ void main() {
       );
       verifyZeroInteractions(reporter);
       expect(storage.entries, secretsBefore);
-      when(() => native.create(any())).thenAnswer((_) async {});
+      when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
       final wallet = await create(path);
       expect((await metadata.fetchAll()).single.id, wallet.id);
       expect(storage.entries, secretsBefore);
@@ -223,11 +240,14 @@ void main() {
   }
 
   test('real writer resolves metadata during native creation', () async {
-    final runtime = WalletNativeRuntime(
+    final runtime = WalletNativeRuntime.open(
       catalog: WalletCatalogPortImpl(metadata),
       reserved: _Reserved(),
       inputReservations: _NoInputReservations(),
-      metadata: metadata,
+      deleteCatalogEntry: (key) async {
+        await metadata.delete(key.id);
+        return const Ok(null);
+      },
       sync: ElectrumSync(
         connections: _Connections(),
         documentsDirectory: () async => directory.path,
@@ -238,9 +258,7 @@ void main() {
       connections: _Connections(),
     );
     when(() => native.create(any())).thenAnswer(
-      (call) => runtime.create(
-        call.positionalArguments.single as WalletMetadataModel,
-      ),
+      (call) => runtime.create(call.positionalArguments.single as WalletKey),
     );
     try {
       final wallet = await create('secret');
@@ -260,9 +278,18 @@ void main() {
     try {
       when(() => native.create(any())).thenAnswer((_) async {
         expect((await observed.fetchAll()).single.id, row.id);
-        throw const FileSystemException('native failure');
+        return const Err(SyncStorageFailure());
       });
-      await expectLater(create('secret'), throwsA(isA<FileSystemException>()));
+      await expectLater(
+        create('secret'),
+        throwsA(
+          isA<WalletSnapshotException>().having(
+            (error) => error.failure,
+            'failure',
+            isA<SyncStorageFailure>(),
+          ),
+        ),
+      );
       expect(await observed.fetchAll(), isEmpty);
     } finally {
       await observer.close();
@@ -288,6 +315,7 @@ void main() {
     when(() => native.prepareCreate(any())).thenAnswer((_) async {
       prepared.complete();
       await resume.future;
+      return const Ok(null);
     });
     final rejected = expectLater(
       create('secret'),
@@ -318,6 +346,7 @@ void main() {
       }
       entered.complete();
       await release.future;
+      return const Ok(null);
     });
     final first = create('xpub');
     await entered.future;

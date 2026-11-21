@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/wallet/data/ark_board_funding.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:crypto/crypto.dart';
@@ -87,12 +86,15 @@ void main() {
       documentsDirectory: () async => fixture.directory.path,
       readRevision: (_) async => const Err(SyncNotFoundFailure()),
     );
-    runtime = WalletNativeRuntime(
+    runtime = WalletNativeRuntime.open(
       catalog: _Catalog(),
       reserved: _Reserved(),
       inputReservations: fixture.store,
       fundingReservations: fixture.store,
-      metadata: metadata,
+      deleteCatalogEntry: (key) async {
+        await metadata.delete(key.id);
+        return const Ok(null);
+      },
       sync: engine,
       documentsDirectory: () async => fixture.directory.path,
       freezes: _Freezes(),
@@ -455,11 +457,14 @@ void main() {
         documentsDirectory: () async => fixture.directory.path,
         readRevision: (_) async => const Err(SyncNotFoundFailure()),
       );
-      final unconfigured = WalletNativeRuntime(
+      final unconfigured = WalletNativeRuntime.open(
         catalog: _Catalog(),
         reserved: _Reserved(),
         inputReservations: fixture.store,
-        metadata: metadata,
+        deleteCatalogEntry: (key) async {
+          await metadata.delete(key.id);
+          return const Ok(null);
+        },
         sync: engine,
         documentsDirectory: () async => fixture.directory.path,
         freezes: _Freezes(),

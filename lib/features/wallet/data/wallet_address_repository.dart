@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:primitives/primitives.dart' show Err;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
@@ -7,7 +8,7 @@ import 'dart:math';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sync/sync.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -52,7 +53,12 @@ class WalletAddressRepository {
     late ({String address, int index}) issued;
     for (var attempt = 0; ; attempt++) {
       try {
-        issued = await native.receive(metadata, advance: advance);
+        issued = WalletCatalogPortImpl.value(
+          await native.receive(
+            WalletCatalogPortImpl.keyFromMetadata(metadata),
+            advance: advance,
+          ),
+        );
         if (attempt > 0) {
           log.fine('Receive writer recovered retries=$attempt');
         }
@@ -100,7 +106,14 @@ class WalletAddressRepository {
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
 
-    final issued = await _native?.issuedReceiveIndex(walletMetadata);
+    final native = _native;
+    final issued = native == null
+        ? null
+        : WalletCatalogPortImpl.value(
+            await native.issuedReceiveIndex(
+              WalletCatalogPortImpl.keyFromMetadata(walletMetadata),
+            ),
+          );
     final from =
         fromIndex ??
         max(

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -10,7 +11,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
@@ -25,7 +26,8 @@ import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart';
-import 'package:sync/sync.dart' show InputReservationPort, WalletConnectionPort;
+import 'package:sync/sync.dart'
+    show InputReservationPort, WalletConnectionPort, BitcoinSpendStatus;
 
 abstract final class PayjoinSetup {
   static void setup(
@@ -71,8 +73,28 @@ abstract final class PayjoinSetup {
         databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
-          locator<WalletNativeRuntime>().wallet,
-          locator<WalletNativeRuntime>().spendStatus,
+          (id) async => WalletCatalogPortImpl.value(
+            await locator<WalletNativeRuntime>().wallet(
+              await WalletCatalogPortImpl.keyForId(
+                locator<WalletMetadataDatasource>(),
+                id,
+              ),
+            ),
+          ),
+          (id) async {
+            try {
+              return WalletCatalogPortImpl.value<BitcoinSpendStatus>(
+                await locator<WalletNativeRuntime>().spendStatus(
+                  await WalletCatalogPortImpl.keyForId(
+                    locator<WalletMetadataDatasource>(),
+                    id,
+                  ),
+                ),
+              );
+            } on Exception {
+              return BitcoinSpendStatus.unavailable;
+            }
+          },
           locator<SyncWalletValuesDatasource>(),
           locator<WalletMetadataDatasource>(),
           locator<ArkFundingSigningGuard>(),
