@@ -69,7 +69,10 @@ class BullDetailsTableItem extends StatefulWidget {
     this.copiedMessage = 'Copied to clipboard',
     this.onCopied,
     this.onValueTap,
-  });
+  }) : assert(
+         onValueTap == null || (displayValue != null && displayWidget == null),
+         'onValueTap requires a text value. Custom widgets own their actions.',
+       );
 
   /// Left-hand row label.
   final String label;
@@ -100,7 +103,8 @@ class BullDetailsTableItem extends StatefulWidget {
   /// screens that confirm the copy their own way.
   final VoidCallback? onCopied;
 
-  /// Opens an action from the text value and adds a trailing chevron.
+  /// Opens an action from [displayValue] and adds a trailing chevron.
+  /// A custom [displayWidget] owns its own interactions.
   final VoidCallback? onValueTap;
 
   @override
