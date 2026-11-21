@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -64,7 +65,13 @@ void main() {
           builder: (context, state) => Scaffold(
             body: BlocProvider<SendCubit>.value(
               value: cubit,
-              child: const ShowPsbtButton(),
+              child: SendPsbtHandoff(
+                openReader: (context, psbt, wallet) => context.pushNamed<void>(
+                  BroadcastSignedTxRoute.broadcastHome.name,
+                  extra: (psbt: psbt, wallet: wallet),
+                ),
+                child: const ShowPsbtButton(),
+              ),
             ),
           ),
         ),
@@ -99,7 +106,6 @@ void main() {
     expect(find.text(l10n.oopsSomethingWentWrong), findsNothing);
     expect(find.byType(ShowPsbtScreen), findsOneWidget);
     final screen = tester.widget<ShowPsbtScreen>(find.byType(ShowPsbtScreen));
-    expect(screen.wallet, same(wallet));
     expect(screen.psbt, psbt);
     expect(screen.signerDevice, SignerDeviceEntity.coldcardMk4);
 

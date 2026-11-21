@@ -2,23 +2,18 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
-import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/ledger/domain/read_ledger_account_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv, Err, ScriptType;
+import 'package:bb_mobile/features/ledger/domain/signer_account.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockLedgerDeviceRepository extends Mock
     implements LedgerDeviceRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
 void main() {
   late _MockLedgerDeviceRepository repository;
-  late _MockSettingsRepository settingsRepository;
 
   const device = LedgerDeviceEntity(
     id: 'device-1',
@@ -34,7 +29,6 @@ void main() {
 
   setUp(() {
     repository = _MockLedgerDeviceRepository();
-    settingsRepository = _MockSettingsRepository();
   });
 
   group('SignPsbtLedgerUsecase', () {
@@ -51,6 +45,7 @@ void main() {
 
       final result = await usecase.execute(
         device,
+        network: NetworkEnv.mainnet,
         psbt: 'psbt',
         derivationPath: "m/84'/0'/0'",
         scriptType: ScriptType.bip84,
@@ -60,32 +55,21 @@ void main() {
     });
   });
 
-  group('GetLedgerWatchOnlyWalletUsecase', () {
-    GetLedgerWatchOnlyWalletUsecase buildUsecase() =>
-        GetLedgerWatchOnlyWalletUsecase(
-          repository: repository,
-          settingsRepository: settingsRepository,
-        );
-
-    void stubSettings() {
-      when(() => settingsRepository.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
-      );
-    }
+  group('ReadLedgerAccountUsecase', () {
+    ReadLedgerAccountUsecase buildUsecase() =>
+        ReadLedgerAccountUsecase(repository: repository);
 
     test('forwards a repository failure unchanged (no raw leak)', () async {
       final usecase = buildUsecase();
-      stubSettings();
       when(() => repository.getMasterFingerprint(any()))
           .thenAnswer((_) async => const Err(LedgerDeviceLockedFailure()));
 
-      final result = await usecase.execute(label: 'Ledger', device: device);
+      final result = await usecase.execute(
+        network: NetworkEnv.mainnet,
+        device: device,
+      );
 
-      expect(result, isA<Err<WatchOnlyWalletEntity, LedgerFailure>>());
+      expect(result, isA<Err<SignerAccount, LedgerFailure>>());
       expect((result as Err).failure, isA<LedgerDeviceLockedFailure>());
       // The xpub step must not run once the fingerprint step fails.
       verifyNever(
@@ -97,16 +81,13 @@ void main() {
       );
     });
 
-    test('sanitizes a throwing settings fetch into an unexpected failure '
-        'without touching the device', () async {
-      final usecase = buildUsecase();
-      when(() => settingsRepository.fetch())
-          .thenThrow(Exception('STORAGE UNAVAILABLE'));
-
-      final result = await usecase.execute(label: 'Ledger', device: device);
-
+    test('refuses regtest before reading the device', () async {
+      final result = await buildUsecase().execute(
+        network: NetworkEnv.regtest,
+        device: device,
+      );
       expect((result as Err).failure, isA<LedgerUnexpectedFailure>());
-      verifyNever(() => repository.getMasterFingerprint(any()));
+      verifyZeroInteractions(repository);
     });
   });
 }

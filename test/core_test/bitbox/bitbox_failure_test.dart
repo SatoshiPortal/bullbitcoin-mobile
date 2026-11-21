@@ -5,34 +5,24 @@ import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart'
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
-import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/read_bitbox_account_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/sign_psbt_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/verify_address_bitbox_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, ScriptType;
+    show NetworkEnv, Err, Ok, ScriptType;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockDatasource extends Mock implements BitBoxDeviceDatasource {}
-
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 const _device = BitBoxDeviceEntity(
   deviceName: 'BitBox02',
   serialNumber: '0001',
   product: 'bitbox02',
   connectionType: BitBoxConnectionType.usb,
-);
-
-SettingsEntity _mainnetSettings() => const SettingsEntity(
-  environment: Environment.mainnet,
-  bitcoinUnit: BitcoinUnit.sats,
-  currencyCode: 'USD',
 );
 
 void main() {
@@ -83,29 +73,22 @@ void main() {
     });
   });
 
-  group('SignPsbtBitBoxUsecase (settings boundary)', () {
-    test(
-      'maps a throwing settings fetch to a sanitized failure — no raw leak',
-      () async {
-        final repo = _MockRepository();
-        final settings = _MockSettingsRepository();
-        final usecase = SignPsbtBitBoxUsecase(
-          repository: repo,
-          settingsRepository: settings,
-        );
-        when(() => settings.fetch()).thenThrow(Exception('boom'));
+  group('SignPsbtBitBoxUsecase (network boundary)', () {
+    test('refuses regtest before accessing the device', () async {
+      final repo = _MockRepository();
+      final usecase = SignPsbtBitBoxUsecase(repository: repo);
 
-        final result = await usecase.execute(
-          _device,
-          psbt: 'psbt',
-          derivationPath: "m/84'/0'/0'",
-          scriptType: ScriptType.bip84,
-        );
+      final result = await usecase.execute(
+        _device,
+        network: NetworkEnv.regtest,
+        psbt: 'psbt',
+        derivationPath: "m/84'/0'/0'",
+        scriptType: ScriptType.bip84,
+      );
 
-        expect(result, isA<Err>());
-        expect((result as Err).failure, isA<BitBoxUnexpectedFailure>());
-      },
-    );
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<InvalidParametersBitBoxFailure>());
+    });
   });
 
   group('ConnectBitBoxDeviceUsecase', () {
@@ -154,8 +137,6 @@ void main() {
   group('VerifyAddressBitBoxUsecase', () {
     test('maps an address mismatch to InvalidResponse', () async {
       final repo = _MockRepository();
-      final settings = _MockSettingsRepository();
-      when(() => settings.fetch()).thenAnswer((_) async => _mainnetSettings());
       when(
         () => repo.verifyAddress(
           _device,
@@ -165,12 +146,10 @@ void main() {
           isTestnet: false,
         ),
       ).thenAnswer((_) async => const Ok(false));
-      final usecase = VerifyAddressBitBoxUsecase(
-        repository: repo,
-        settingsRepository: settings,
-      );
+      final usecase = VerifyAddressBitBoxUsecase(repository: repo);
 
       final result = await usecase.execute(
+        network: NetworkEnv.mainnet,
         device: _device,
         address: 'bc1qexpected',
         derivationPath: "m/84'/0'/0'",
@@ -182,23 +161,18 @@ void main() {
     });
   });
 
-  group('GetBitBoxWatchOnlyWalletUsecase', () {
-    test(
-      'maps a throwing settings fetch to a sanitized failure — no raw leak',
-      () async {
-        final settings = _MockSettingsRepository();
-        final usecase = GetBitBoxWatchOnlyWalletUsecase(
-          repository: _MockRepository(),
-          settingsRepository: settings,
-        );
-        when(() => settings.fetch()).thenThrow(Exception('boom'));
+  group('ReadBitBoxAccountUsecase', () {
+    test('refuses regtest before accessing the device', () async {
+      final usecase = ReadBitBoxAccountUsecase(repository: _MockRepository());
 
-        final result = await usecase.execute(label: 'wallet', device: _device);
+      final result = await usecase.execute(
+        network: NetworkEnv.regtest,
+        device: _device,
+      );
 
-        expect(result, isA<Err>());
-        expect((result as Err).failure, isA<BitBoxUnexpectedFailure>());
-      },
-    );
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<InvalidParametersBitBoxFailure>());
+    });
   });
 
   group('ScanBitBoxDevicesUsecase', () {

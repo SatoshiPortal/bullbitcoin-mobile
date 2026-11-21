@@ -52,12 +52,14 @@ void main() {
         .thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
   });
 
-  LedgerOperationCubit buildCubit() => LedgerOperationCubit(
-    scanLedgerDevicesUsecase: scan,
-    connectLedgerDeviceUsecase: connect,
-    disconnectLedgerDeviceUsecase: disconnect,
-    disposeLedgerConnectionsUsecase: disposeConnections,
-  );
+  LedgerOperationCubit buildCubit({NetworkEnv network = NetworkEnv.mainnet}) =>
+      LedgerOperationCubit(
+        network: network,
+        scanLedgerDevicesUsecase: scan,
+        connectLedgerDeviceUsecase: connect,
+        disconnectLedgerDeviceUsecase: disconnect,
+        disposeLedgerConnectionsUsecase: disposeConnections,
+      );
 
   void stubScan(Result<List<LedgerDeviceEntity>, LedgerFailure> result) {
     when(() => scan.execute(deviceType: any(named: 'deviceType')))
@@ -80,6 +82,21 @@ void main() {
     return statuses;
   }
 
+  for (final network in [NetworkEnv.regtest, NetworkEnv.signet]) {
+    test('$network refuses discovery before any operation', () async {
+      final cubit = buildCubit(network: network);
+      var operationCalled = false;
+      await cubit.executeOperation(() async {
+        operationCalled = true;
+        return const Ok<void, LedgerFailure>(null);
+      });
+      expect(operationCalled, isFalse);
+      expect(cubit.state.failure, isA<LedgerUnexpectedFailure>());
+      verifyZeroInteractions(scan);
+      verifyZeroInteractions(connect);
+      await cubit.close();
+    });
+  }
   group('LedgerOperationCubit.executeOperation', () {
     test('walks scanning → connecting → processing → success', () async {
       final cubit = buildCubit();
