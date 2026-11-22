@@ -196,6 +196,7 @@ graph TD
   secrets --> primitives
   secrets --> bull_logger
   secrets --> rust_bindings
+  secrets --> legacy_storage
   signers --> bitbox_transport
   signers --> bull_logger
   signers --> bull_ui
