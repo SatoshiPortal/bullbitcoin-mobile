@@ -146,6 +146,8 @@ graph TD
   electrum --> bull_logger
   electrum --> bull_tor
   electrum --> primitives
+  electrum --> legacy_storage
+  electrum --> secrets
   electrum --> sync
   fees --> bull_payjoin
   fees --> mempool
