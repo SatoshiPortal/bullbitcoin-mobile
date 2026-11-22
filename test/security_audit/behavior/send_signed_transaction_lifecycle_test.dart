@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:primitives/primitives.dart' show ConvertAmount, Ok, ScriptType;
@@ -31,7 +32,6 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -101,7 +101,7 @@ class _MockPreferences extends Mock implements Preferences {}
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
 
-class _MockAppFeeEstimates extends Mock implements AppFeeEstimates {}
+class _MockFees extends Mock implements Fees {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -252,7 +252,7 @@ class _TestSendCubit extends SendCubit {
     required super.detectBitcoinStringUsecase,
     required super.loadPreferencesUsecase,
     required super.getSendExchangeRateUsecase,
-    required super.feeEstimates,
+    required super.loadNetworkFeesUsecase,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -371,7 +371,7 @@ void main() {
         _MockPreferences(),
       ),
       getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
-      feeEstimates: _MockAppFeeEstimates(),
+      loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: _MockFees()),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,

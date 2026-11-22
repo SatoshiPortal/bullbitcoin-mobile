@@ -1,3 +1,4 @@
+import 'package:fees/fees.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
@@ -43,6 +44,8 @@ class Memory implements QuickActionsStorage {
 
 class _UnusedPreferences extends Mock implements Preferences {}
 
+class _MockFees extends Mock implements Fees {}
+
 void main() {
   testWidgets(
     'actual shell routes keep unavailable Ark entries inert and navigable',
@@ -70,13 +73,13 @@ void main() {
         ),
       );
       final networkServices = GetIt.asNewInstance();
+      networkServices.registerSingleton<Fees>(_MockFees());
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
           preferences: _UnusedPreferences(),
           bindings: (
             readDefaultNetwork: () async => const Ok(null),
-            checkBitcoinFees: (_) async {},
             isTorRequired: () async => const Ok(false),
           ),
         ),

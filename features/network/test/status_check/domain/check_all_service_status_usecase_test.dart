@@ -1,3 +1,4 @@
+import 'package:fees/fees.dart';
 import 'package:electrum/electrum.dart';
 import 'package:preferences/preferences.dart';
 
@@ -20,7 +21,7 @@ class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 
 class _MockPayjoinDiagnostics extends Mock implements PayjoinDiagnostics {}
 
-class _MockFeesRepository extends Mock implements _BitcoinFees {}
+class _MockFeesRepository extends Mock implements Fees {}
 
 class _MockWalletRepository extends Mock implements _WalletUsage {}
 
@@ -29,10 +30,6 @@ class _MockSettingsRepository extends Mock
 
 abstract interface class _WalletUsage {
   Future<Result<bool, Failure>> isTorRequired();
-}
-
-abstract interface class _BitcoinFees {
-  Future<void> getNetworkFees({required BitcoinNetwork network});
 }
 
 class _MockTor extends Mock implements Tor {}
@@ -61,8 +58,8 @@ void main() {
     final getIndexPrice = _FakeIndexPriceReader(fiatAmount: 70000)
       ..fetchedAt = fetchedAt;
     final feesRepository = _MockFeesRepository();
-    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired)
@@ -78,8 +75,7 @@ void main() {
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
-      checkBitcoinFees: (network) =>
-          feesRepository.getNetworkFees(network: network),
+      fees: feesRepository,
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
@@ -89,6 +85,13 @@ void main() {
 
     final status = await usecase.execute(network: NetworkEnv.mainnet);
 
+    expect(status.mempool.status, ServiceStatus.unknown);
+    verify(
+      () => feesRepository.estimate(
+        BitcoinNetwork.mainnet,
+        source: FeeSource.mempool,
+      ),
+    ).called(1);
     expect(status.pricer.status, ServiceStatus.online);
     expect(status.pricer.lastChecked, fetchedAt.toLocal());
     expect(getIndexPrice.requests.single, (
@@ -106,8 +109,17 @@ void main() {
       failure: const PricerNetworkFailure('offline'),
     );
     final feesRepository = _MockFeesRepository();
-    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+        .thenAnswer(
+          (_) async => const Ok(
+            FeeOptions(
+              fastest: RelativeFee(1000),
+              economic: RelativeFee(750),
+              slow: RelativeFee(500),
+              minRelay: RelativeFee(25),
+            ),
+          ),
+        );
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired)
@@ -123,8 +135,7 @@ void main() {
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
-      checkBitcoinFees: (network) =>
-          feesRepository.getNetworkFees(network: network),
+      fees: feesRepository,
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
@@ -137,6 +148,7 @@ void main() {
       () => usecase.execute(network: NetworkEnv.mainnet),
     );
 
+    expect(status.mempool.status, ServiceStatus.online);
     expect(status.pricer.status, ServiceStatus.offline);
     expect(status.pricer.lastChecked, now);
   });
@@ -151,8 +163,8 @@ void main() {
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       final payjoinDiagnostics = _MockPayjoinDiagnostics();
       final walletRepository = _MockWalletRepository();
@@ -172,8 +184,7 @@ void main() {
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: payjoinDiagnostics,
-        checkBitcoinFees: (network) =>
-            feesRepository.getNetworkFees(network: network),
+        fees: feesRepository,
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
@@ -202,8 +213,8 @@ void main() {
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
@@ -226,8 +237,7 @@ void main() {
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
-        checkBitcoinFees: (network) =>
-            feesRepository.getNetworkFees(network: network),
+        fees: feesRepository,
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
@@ -255,8 +265,8 @@ void main() {
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
@@ -276,8 +286,7 @@ void main() {
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
-        checkBitcoinFees: (network) =>
-            feesRepository.getNetworkFees(network: network),
+        fees: feesRepository,
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
@@ -306,8 +315,8 @@ void main() {
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
 
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired)
@@ -323,8 +332,7 @@ void main() {
         getIndexPrice: getIndexPrice.call,
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
-        checkBitcoinFees: (network) =>
-            feesRepository.getNetworkFees(network: network),
+        fees: feesRepository,
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
@@ -366,8 +374,8 @@ void main() {
       failure: const PricerNetworkFailure('Pricer probe failed'),
     );
     final feesRepository = _MockFeesRepository();
-    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
 
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired)
@@ -384,8 +392,7 @@ void main() {
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
-      checkBitcoinFees: (network) =>
-          feesRepository.getNetworkFees(network: network),
+      fees: feesRepository,
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
@@ -413,6 +420,9 @@ void main() {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final tor = _MockTor();
+    final fees = _MockFeesRepository();
+    when(() => fees.estimate(any(), source: FeeSource.mempool))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
     final preferences = _MockSettingsRepository();
     when(preferences.readTorProxyPreferences)
         .thenAnswer((_) async => _settings(useTorProxy: false));
@@ -421,7 +431,7 @@ void main() {
       getIndexPrice: _FakeIndexPriceReader(fiatAmount: 70000).call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
-      checkBitcoinFees: (_) async {},
+      fees: fees,
       isTorRequired: () async => const Err(_WalletReadFailure()),
       checkServerConnection: () async => const Ok(false),
       preferences: preferences,
@@ -445,8 +455,8 @@ void main() {
       failure: const PricerNetworkFailure('Pricer probe failed'),
     );
     final feesRepository = _MockFeesRepository();
-    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final walletRepository = _MockWalletRepository();
@@ -461,8 +471,7 @@ void main() {
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
-      checkBitcoinFees: (network) =>
-          feesRepository.getNetworkFees(network: network),
+      fees: feesRepository,
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
@@ -484,8 +493,8 @@ void main() {
       failure: const PricerNetworkFailure('Pricer probe failed'),
     );
     final feesRepository = _MockFeesRepository();
-    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
-        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.estimate(any(), source: FeeSource.mempool))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final walletRepository = _MockWalletRepository();
@@ -500,8 +509,7 @@ void main() {
       getIndexPrice: getIndexPrice.call,
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
-      checkBitcoinFees: (network) =>
-          feesRepository.getNetworkFees(network: network),
+      fees: feesRepository,
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),

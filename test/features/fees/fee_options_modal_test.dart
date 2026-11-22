@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
-
 import 'dart:async';
 
 import 'package:fees/fees.dart';
@@ -24,7 +22,9 @@ const _feePresets = FeeOptions(
 );
 
 void main() {
-  testWidgets('formats preset previews through the host FeeUi', (tester) async {
+  testWidgets('localizes the picker and preserves custom preview formatting', (
+    tester,
+  ) async {
     final state = _State();
     when(() => state.snapshot).thenReturn(
       const FeeModalSnapshot(
@@ -43,6 +43,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('fr'),
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -50,8 +51,7 @@ void main() {
           body: Builder(
             builder: (context) => FeeOptionsModal(
               ui: FeeUi(
-                label: appFeeUi.label,
-                formatSats: appFeeUi.formatSats,
+                formatSats: FeeUi.standard.formatSats,
                 formatApproximateSats: (sats) => 'custom format [$sats]',
                 satsToFiat: (sats, rate) => sats + rate,
               ),
@@ -71,6 +71,8 @@ void main() {
     final list = tester.widget<BullSelectableList>(
       find.byType(BullSelectableList),
     );
+    expect(find.text('Sélectionnez les frais de réseau'), findsOneWidget);
+    expect(find.text('Rapide'), findsOneWidget);
     expect(
       list.items.first.subtitle2,
       allOf(contains('custom format [863]'), contains('866.0 CAD')),
@@ -114,7 +116,7 @@ void main() {
                   selection = await BullBottomSheet.show<String>(
                     context: context,
                     child: FeeOptionsModal(
-                      ui: appFeeUi,
+                      ui: FeeUi.standard,
                       viewState: state,
                       actions: actions,
                       defaultAbsoluteCustomFee: false,

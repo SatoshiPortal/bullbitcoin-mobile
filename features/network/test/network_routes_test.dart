@@ -1,4 +1,5 @@
 import 'package:preferences/preferences.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,6 +32,8 @@ class _Tor extends Mock implements Tor {}
 class _ExternalTor extends Mock implements ExternalTor {}
 
 class _EmbeddedTor extends Mock implements EmbeddedTor {}
+
+class _MockFees extends Mock implements Fees {}
 
 void main() {
   testWidgets('mounted settings routes use the supplied services', (
@@ -78,12 +81,12 @@ void main() {
     );
     when(preferences.readActiveEnvironment)
         .thenAnswer((_) async => const Ok(Environment.testnet));
+    services.registerSingleton<Fees>(_MockFees());
     final feature = NetworkFeature.mount(
       services: services,
       preferences: preferences,
       bindings: (
         readDefaultNetwork: () async => const Ok(null),
-        checkBitcoinFees: (_) async {},
         isTorRequired: () async => const Ok(false),
       ),
     );
