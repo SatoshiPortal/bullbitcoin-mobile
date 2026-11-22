@@ -1,16 +1,16 @@
-import 'tor_preferences.dart';
-
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 
 /// Verifies an external SOCKS proxy before making it the configured route.
 class UpdateTorProxyUsecase {
-  final SaveTorProxy _saveProxy;
+  final Preferences _preferences;
   final ExternalTor _externalTor;
   Future<void> _persistenceQueue = Future<void>.value();
 
-  UpdateTorProxyUsecase(this._saveProxy, this._externalTor);
+  UpdateTorProxyUsecase(this._preferences, this._externalTor);
 
   Future<TorConnectionState> execute({
     required bool useTorProxy,
@@ -19,7 +19,7 @@ class UpdateTorProxyUsecase {
   }) async {
     if (!useTorProxy) {
       final stored = await _persist(
-        () => _saveProxy(enabled: false, port: torProxyPort),
+        () => _preferences.setTorProxy(enabled: false, port: torProxyPort),
         isCurrent,
       );
       if (!stored) {
@@ -48,7 +48,7 @@ class UpdateTorProxyUsecase {
     if (connection is! TorReady) return connection;
 
     final stored = await _persist(
-      () => _saveProxy(enabled: true, port: torProxyPort),
+      () => _preferences.setTorProxy(enabled: true, port: torProxyPort),
       isCurrent,
     );
     if (!stored) {
@@ -69,12 +69,12 @@ class UpdateTorProxyUsecase {
   /// the user their Tor setting could not be saved when it was simply
   /// superseded.
   Future<bool> _persist(
-    Future<bool> Function() operation,
+    Future<Result<void, PreferencesFailure>> Function() operation,
     bool Function()? isCurrent,
   ) {
     final queued = _persistenceQueue.then((_) async {
       if (isCurrent != null && !isCurrent()) return true;
-      return operation();
+      return await operation() is Ok;
     });
     _persistenceQueue = queued.catchError((_) => false);
     return queued;

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/settings/public/network_bindings.dart';
 import 'package:electrum/electrum.dart' show ElectrumFailure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -89,10 +88,7 @@ class Bull {
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
     final settings = locator<Preferences>();
     configureLogTorContext(
-      () async => loadTorDiagnosticContext(
-        await SettingsNetworkBindings.readTorPreferences(settings),
-        locator<Tor>(),
-      ),
+      () => loadTorDiagnosticContext(settings, locator<Tor>()),
     );
     await refreshReportingConsent(settings);
     await prepareBackgroundWalletStores(locator);

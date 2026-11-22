@@ -8,7 +8,7 @@ import 'service_status.dart';
 
 import 'package:electrum/electrum.dart';
 
-import '../../tor_settings/domain/tor_preferences.dart';
+import 'package:preferences/preferences.dart';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -32,7 +32,7 @@ class CheckAllServiceStatusUsecase {
   final Future<Result<bool, Failure>> Function() _isTorRequired;
   final Future<rb.Result<bool, rb.RecoverBullFailure>> Function()
   _checkServerConnection;
-  final Future<TorPreferences> Function() _readTorPreferences;
+  final TorProxyPreferencesReader _preferences;
   final Tor _tor;
 
   CheckAllServiceStatusUsecase({
@@ -43,7 +43,7 @@ class CheckAllServiceStatusUsecase {
     required this._checkBitcoinFees,
     required this._isTorRequired,
     required this._checkServerConnection,
-    required this._readTorPreferences,
+    required this._preferences,
     required this._tor,
   });
 
@@ -276,7 +276,9 @@ class CheckAllServiceStatusUsecase {
     // An explicitly configured external proxy is authoritative even when this
     // wallet has no backup requiring embedded Tor. Only the disabled branch
     // consults wallet usage before probing embedded Tor.
-    final settings = await _readTorPreferences();
+    final result = await _preferences.readTorProxyPreferences();
+    final settings = result.fold((value) => value, (_) => null);
+    if (settings == null) return status;
     if (settings.useTorProxy) {
       final TorProxyEndpoint endpoint;
       try {

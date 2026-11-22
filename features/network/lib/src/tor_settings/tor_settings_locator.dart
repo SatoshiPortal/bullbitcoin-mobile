@@ -1,35 +1,30 @@
 import 'package:bull_tor/tor.dart';
 import 'package:get_it/get_it.dart';
-import 'package:primitives/primitives.dart';
+import 'package:preferences/preferences.dart';
 
 import 'domain/check_external_tor_connection_usecase.dart';
-import 'domain/tor_preferences.dart';
+import 'domain/load_tor_preferences_usecase.dart';
 import 'domain/update_tor_proxy_usecase.dart';
 import 'domain/update_tor_transport_mode_usecase.dart';
 import 'domain/watch_tor_settings_usecase.dart';
 import 'presentation/tor_settings_cubit.dart';
 
-void setupTorSettings(
-  GetIt locator, {
-  required ReadTorPreferences readPreferences,
-  required SaveTorProxy saveProxy,
-  required Future<Result<void, Failure>> Function(TorTransportMode) saveMode,
-}) {
+void setupTorSettings(GetIt locator, Preferences preferences) {
   locator.registerLazySingleton<UpdateTorProxyUsecase>(
-    () => UpdateTorProxyUsecase(saveProxy, locator<Tor>().external),
+    () => UpdateTorProxyUsecase(preferences, locator<Tor>().external),
   );
   locator.registerFactory<TorSettingsCubit>(() {
     final tor = locator<Tor>();
     return TorSettingsCubit(
-      readPreferences: readPreferences,
+      loadPreferences: LoadTorPreferencesUsecase(preferences),
       updateTorProxyUsecase: locator<UpdateTorProxyUsecase>(),
       updateTorTransportModeUsecase: UpdateTorTransportModeUsecase(
-        saveMode,
+        preferences,
         tor.embedded,
       ),
       watchSettingsUsecase: WatchTorSettingsUsecase(tor.embedded),
       checkExternalTorConnectionUsecase: CheckExternalTorConnectionUsecase(
-        readPreferences,
+        preferences,
         tor,
       ),
     );

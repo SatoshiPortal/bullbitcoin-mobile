@@ -108,6 +108,7 @@ graph TB
     SETTINGS[Settings]
     PREFERENCES[Preferences Package]
     CORE -->|Drift composition| PREFERENCES
+    NETWORK --> PREFERENCES
     SETTINGS --> PREFERENCES
     WALLETS --> PREFERENCES
     BTC_PRICE --> PREFERENCES
@@ -426,7 +427,6 @@ graph TB
     MEMPOOL --> TOR
     MEMPOOL --> BULL_LOGGER
     CORE -->|composes schema 16 tables| MEMPOOL
-    MEMPOOL_SETTINGS --> MEMPOOL
     SETTINGS -->|typed settings failures| MEMPOOL
     FEES_PACKAGE -->|active fee service base| MEMPOOL
     SP --> MEMPOOL
@@ -459,7 +459,6 @@ graph TB
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
-    SETTINGS -->|active environment reader| MEMPOOL_SETTINGS
     PAY --> FEES
     PAY --> FEES_UI
     SEND --> SIGNERS
@@ -679,7 +678,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 
 ## Network settings and service status
 
-The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The app supplies a default wallet environment, Mempool-only Bitcoin fee probe that is independent of the saved fee source and Tor preference access. Background Electrum composition remains independent of the network UI.
+The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The shell supplies the default wallet environment and the wallet Tor requirement through WalletFacade, and passes a Mempool-only Bitcoin fee probe. Network reads Preferences directly. Background Electrum composition remains independent of the network UI.
 
 ## Wallet-independent transaction values
 

@@ -1,29 +1,28 @@
-import '../domain/tor_preferences.dart';
-import '../domain/watch_tor_settings_usecase.dart';
-
 import 'dart:async';
 
-import '../domain/check_external_tor_connection_usecase.dart';
-import '../domain/update_tor_proxy_usecase.dart';
-import '../domain/update_tor_transport_mode_usecase.dart';
-
+import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:bull_tor/tor.dart';
+
+import '../domain/check_external_tor_connection_usecase.dart';
+import '../domain/load_tor_preferences_usecase.dart';
+import '../domain/update_tor_proxy_usecase.dart';
+import '../domain/update_tor_transport_mode_usecase.dart';
+import '../domain/watch_tor_settings_usecase.dart';
 
 part 'tor_settings_cubit.freezed.dart';
 part 'tor_settings_state.dart';
 
 class TorSettingsCubit extends Cubit<TorSettingsState> {
   TorSettingsCubit({
-    required this._readPreferences,
+    required this._loadPreferences,
     required this._updateTorProxyUsecase,
     required this._updateTorTransportModeUsecase,
     required this._watchSettingsUsecase,
     required this._checkExternalTorConnectionUsecase,
   }) : super(const TorSettingsState());
 
-  final ReadTorPreferences _readPreferences;
+  final LoadTorPreferencesUsecase _loadPreferences;
   final UpdateTorProxyUsecase _updateTorProxyUsecase;
   final UpdateTorTransportModeUsecase _updateTorTransportModeUsecase;
   final WatchTorSettingsUsecase _watchSettingsUsecase;
@@ -60,10 +59,12 @@ class TorSettingsCubit extends Cubit<TorSettingsState> {
   }
 
   Future<bool> _loadSettings({int? generation}) async {
-    final settings = await _readPreferences();
+    final result = await _loadPreferences.execute();
     if (isClosed || (generation != null && generation != _settingsGeneration)) {
       return false;
     }
+    final settings = result.fold((value) => value, (_) => null);
+    if (settings == null) return false;
     emit(
       state.copyWith(
         useTorProxy: settings.useTorProxy,
