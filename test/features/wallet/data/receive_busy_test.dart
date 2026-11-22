@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -90,6 +91,9 @@ void main() {
           native: native,
           walletMetadataDatasource: metadata,
           walletValuesDatasource: _Values(),
+          history: WalletHistoryDatasource(
+            load: (_) async => throw StateError('Unexpected history read'),
+          ),
           labelsFacade: labels,
         );
       });

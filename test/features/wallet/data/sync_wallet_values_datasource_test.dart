@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -51,25 +53,31 @@ void main() {
     isExplicitlyRbf: false,
   );
 
-  SyncWalletValuesDatasource over({
+  Future<sync.Wallet> load(
+    sync.WalletKey key, {
     List<sync.ChainTransaction> transactions = const [],
     List<sync.Coin> coins = const [],
     List<Uint8List> ownedScripts = const [],
-  }) => SyncWalletValuesDatasource(
-    load: (key) => testWallet(
-      key: key,
-      balances: sync.Balances(
-        confirmedSat: BigInt.from(7),
-        immatureSat: BigInt.zero,
-        trustedPendingSat: BigInt.zero,
-        untrustedPendingSat: BigInt.zero,
-        spendableSat: BigInt.from(7),
-        totalSat: BigInt.from(7),
-      ),
-      transactions: transactions,
-      coins: coins,
-      ownedScripts: ownedScripts,
+  }) => testWallet(
+    key: key,
+    balances: sync.Balances(
+      confirmedSat: BigInt.from(7),
+      immatureSat: BigInt.zero,
+      trustedPendingSat: BigInt.zero,
+      untrustedPendingSat: BigInt.zero,
+      spendableSat: BigInt.from(7),
+      totalSat: BigInt.from(7),
     ),
+    transactions: transactions,
+    coins: coins,
+    ownedScripts: ownedScripts,
+  );
+
+  SyncWalletValuesDatasource over({
+    List<sync.Coin> coins = const [],
+    List<Uint8List> ownedScripts = const [],
+  }) => SyncWalletValuesDatasource(
+    load: (key) => load(key, coins: coins, ownedScripts: ownedScripts),
   );
 
   test('a wallet that cannot load never reads as a zero balance', () async {
@@ -85,30 +93,31 @@ void main() {
   });
 
   test('history shapes direction, ownership and the paid amount', () async {
-    final values = over(
-      transactions: [
-        tx(
-          'funding',
-          outputs: [output(0, 1000, own: true), output(1, 50)],
-          sent: 0,
-          received: 1000,
-        ),
-        tx(
-          'payment',
-          inputs: [
-            sync.BitcoinInput(
-              previousOutput: (txId: 'funding', vout: 0),
-              scriptSig: Uint8List(0),
-            ),
-          ],
-          outputs: [
-            output(0, 600, to: address),
-            output(1, 300, own: true),
-          ],
-          sent: 1000,
-          received: 300,
-        ),
-      ],
+    final transactions = [
+      tx(
+        'funding',
+        outputs: [output(0, 1000, own: true), output(1, 50)],
+        sent: 0,
+        received: 1000,
+      ),
+      tx(
+        'payment',
+        inputs: [
+          sync.BitcoinInput(
+            previousOutput: (txId: 'funding', vout: 0),
+            scriptSig: Uint8List(0),
+          ),
+        ],
+        outputs: [
+          output(0, 600, to: address),
+          output(1, 300, own: true),
+        ],
+        sent: 1000,
+        received: 300,
+      ),
+    ];
+    final values = WalletHistoryDatasource(
+      load: (key) => load(key, transactions: transactions),
     );
     final history = await values.getTransactions(key: key);
     final payment = history.firstWhere((tx) => tx.txId == 'payment');
@@ -130,13 +139,15 @@ void main() {
   });
 
   test('an unpriced transaction fails history, not balances', () async {
-    final values = over(
-      transactions: [
-        tx('foreign', outputs: [output(0, 5)], sent: 0, received: 5, fee: null),
-      ],
-    );
+    final transactions = [
+      tx('foreign', outputs: [output(0, 5)], sent: 0, received: 5, fee: null),
+    ];
+    Future<sync.Wallet> withUnknownFee(sync.WalletKey key) =>
+        load(key, transactions: transactions);
+    final history = WalletHistoryDatasource(load: withUnknownFee);
+    final values = SyncWalletValuesDatasource(load: withUnknownFee);
     await expectLater(
-      values.getTransactions(key: key),
+      history.getTransactions(key: key),
       throwsA(isA<WalletSnapshotException>()),
     );
     expect((await values.getBalance(key: key)).totalSat, BigInt.from(7));

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:primitives/primitives.dart';
@@ -30,16 +31,16 @@ import 'data/payment_notifications.dart';
 import 'data/wallet_payment_observer.dart';
 
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
 import 'package:labels/storage.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -250,6 +251,11 @@ class WalletLocator {
         native: locator<WalletNativeRuntime>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
+        history: WalletHistoryDatasource(
+          load: (key) async => WalletCatalogPortImpl.value(
+            await locator<WalletNativeRuntime>().loadWallet(key),
+          ),
+        ),
         labelsFacade: locator<Labels>(),
       ),
     );
@@ -313,7 +319,11 @@ class WalletLocator {
       () => WalletTransactionRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         labelsFacade: locator<Labels>(),
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
+        history: WalletHistoryDatasource(
+          load: (key) async => WalletCatalogPortImpl.value(
+            await locator<WalletNativeRuntime>().loadWallet(key),
+          ),
+        ),
         synchronize: locator<ForegroundWalletSync>().synchronize,
       ),
     );

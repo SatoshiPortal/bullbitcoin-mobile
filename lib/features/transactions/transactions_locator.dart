@@ -6,12 +6,12 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.da
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';

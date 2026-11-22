@@ -1,28 +1,14 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_input.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:labels/labels.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
 
 enum WalletTransactionDirection { incoming, outgoing }
 
-enum WalletTransactionStatus {
-  pending,
-  confirmed;
-
-  String displayName(BuildContext context) {
-    switch (this) {
-      case WalletTransactionStatus.pending:
-        return context.loc.coreWalletTransactionStatusPending;
-      case WalletTransactionStatus.confirmed:
-        return context.loc.coreWalletTransactionStatusConfirmed;
-    }
-  }
-}
+enum WalletTransactionStatus { pending, confirmed }
 
 @freezed
 sealed class WalletTransaction with _$WalletTransaction {

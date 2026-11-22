@@ -1,12 +1,12 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:sync/sync.dart' show WalletKey;
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -14,7 +14,7 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Labels extends Mock implements Labels {}
 
-class _Values extends Mock implements SyncWalletValuesDatasource {}
+class _Values extends Mock implements WalletHistoryDatasource {}
 
 WalletMetadataModel _row(String id, String networkCode) => WalletMetadataModel(
   networkCode: networkCode,
@@ -37,7 +37,7 @@ void main() {
 
   setUpAll(
     () => registerFallbackValue(
-      WalletKey(id: readable.id, network: readable.network.shared),
+      WalletKey(id: 'readable', network: BitcoinNetwork.testnet),
     ),
   );
 
@@ -59,7 +59,7 @@ void main() {
     repository = WalletTransactionRepositoryImpl(
       walletMetadataDatasource: metadata,
       labelsFacade: _Labels(),
-      walletValuesDatasource: bdk,
+      history: bdk,
       synchronize: (row) async => synchronized.add(row),
     );
   });

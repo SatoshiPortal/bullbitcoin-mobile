@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
+import 'package:bb_mobile/features/transactions/data/models/transaction_input_model.dart';
+import 'package:bb_mobile/features/transactions/data/models/transaction_output_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction_model.freezed.dart';

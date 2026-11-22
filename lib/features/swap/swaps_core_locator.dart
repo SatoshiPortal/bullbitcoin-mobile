@@ -25,7 +25,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network, NetworkX;
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';

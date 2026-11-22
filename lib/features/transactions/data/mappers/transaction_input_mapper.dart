@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
+import 'package:bb_mobile/features/transactions/data/models/transaction_input_model.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_input.dart';
 
 class TransactionInputMapper {
   static TransactionInput toEntity(

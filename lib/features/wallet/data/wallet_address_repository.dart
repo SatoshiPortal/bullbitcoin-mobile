@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:primitives/primitives.dart' show Err;
@@ -23,12 +24,14 @@ class WalletAddressRepository {
   final WalletNativeLifecycle? _native;
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SyncWalletValuesDatasource _values;
+  final WalletHistoryDatasource _history;
   final Labels _labelsFacade;
 
   WalletAddressRepository({
     this._native,
     required this._walletMetadataDatasource,
     required SyncWalletValuesDatasource walletValuesDatasource,
+    required this._history,
     required this._labelsFacade,
   }) : _values = walletValuesDatasource;
 
@@ -182,7 +185,7 @@ class WalletAddressRepository {
     required WalletModel walletModel,
     required bool isBdkWallet,
   }) async {
-    final allTransactions = await _values.getTransactions(
+    final allTransactions = await _history.getTransactions(
       key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
     );
     final addressBalances = await _values.getAddressBalancesSat(

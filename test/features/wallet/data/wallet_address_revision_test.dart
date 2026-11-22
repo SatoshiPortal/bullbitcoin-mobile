@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
@@ -21,6 +22,8 @@ class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 class _Labels extends Mock implements Labels {}
 
+class _History extends Mock implements WalletHistoryDatasource {}
+
 void main() {
   test(
     'Liquid address history keeps the issued high-water when labels fail',
@@ -43,6 +46,7 @@ void main() {
       final metadata = _Metadata();
       final native = _Native();
       final liquid = _Values();
+      final history = _History();
       final labels = _Labels();
       when(() => metadata.fetch(id)).thenAnswer((_) async => row);
       when(
@@ -62,7 +66,7 @@ void main() {
         final index = call.positionalArguments.first as int;
         return 'confidential$index';
       });
-      when(() => liquid.getTransactions(key: any(named: 'key')))
+      when(() => history.getTransactions(key: any(named: 'key')))
           .thenAnswer((_) async => []);
       when(() => liquid.getAddressBalancesSat(key: any(named: 'key')))
           .thenAnswer((_) async => {});
@@ -72,6 +76,7 @@ void main() {
         native: native,
         walletMetadataDatasource: metadata,
         walletValuesDatasource: liquid,
+        history: history,
         labelsFacade: labels,
       );
       final addresses = await repository.getGeneratedReceiveAddresses(

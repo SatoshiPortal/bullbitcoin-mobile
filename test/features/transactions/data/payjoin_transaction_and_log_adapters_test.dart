@@ -7,8 +7,8 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';

@@ -1,30 +1,29 @@
-import 'package:sync/sync.dart' show WalletKey;
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_transaction_mapper.dart';
+import 'package:bb_mobile/features/transactions/data/mappers/transaction_input_mapper.dart';
+import 'package:bb_mobile/features/transactions/data/mappers/transaction_output_mapper.dart';
+import 'package:bb_mobile/features/transactions/data/mappers/wallet_transaction_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Labels _labelsFacade;
-  final SyncWalletValuesDatasource _values;
+  final WalletHistoryDatasource _history;
   final Future<void> Function(WalletMetadataModel) _synchronize;
 
   WalletTransactionRepositoryImpl({
     required this._walletMetadataDatasource,
     required this._labelsFacade,
-    required SyncWalletValuesDatasource walletValuesDatasource,
+    required this._history,
     required this._synchronize,
-  }) : _values = walletValuesDatasource;
+  });
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
@@ -34,7 +33,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     Environment? environment,
     bool sync = false,
   }) async {
-    final walletModels = await _getPublicWalletModels(
+    final walletKeys = await _getWalletKeys(
       walletId: walletId,
       environment: environment,
       sync: sync,
@@ -42,7 +41,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
     final walletTransactions = await _getWalletTransactions(
       txId: txId,
-      walletModels: walletModels,
+      walletKeys: walletKeys,
       toAddress: toAddress,
     );
 
@@ -69,17 +68,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
           .fold((labels) => labels, (_) => const <Label>[]);
 
   Future<List<WalletTransaction>> _getWalletTransactions({
-    required List<WalletModel> walletModels,
+    required List<WalletKey> walletKeys,
     String? txId,
     String? toAddress,
   }) async {
     final walletTransactionLists = await Future.wait(
-      walletModels.map((walletModel) async {
-        final walletTransactionModels = await _values.getTransactions(
-          key: WalletKey(
-            id: walletModel.id,
-            network: walletModel.network.shared,
-          ),
+      walletKeys.map((key) async {
+        final walletTransactionModels = await _history.getTransactions(
+          key: key,
           toAddress: toAddress,
         );
 
@@ -124,7 +120,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
             return WalletTransactionMapper.toEntity(
               walletTransactionModel,
-              walletId: walletModel.id,
+              walletId: key.id,
               inputs: inputs,
               outputs: outputs,
               labels: labels,
@@ -138,7 +134,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     return walletTransactionLists.expand((tx) => tx).toList();
   }
 
-  Future<List<WalletModel>> _getPublicWalletModels({
+  Future<List<WalletKey>> _getWalletKeys({
     String? walletId,
     Environment? environment,
     bool sync = false,
@@ -161,28 +157,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   environment.networkEnv == metadata.network.environment,
             )
             .toList();
-    final walletModels = filteredWalletsMetadata
-        .map(
-          (metadata) => metadata.isBitcoin
-              ? WalletModel.publicBdk(
-                  externalDescriptor: metadata.externalPublicDescriptor,
-                  internalDescriptor: metadata.internalPublicDescriptor,
-                  network: metadata.network,
-                  id: metadata.id,
-                )
-              : WalletModel.publicLwk(
-                  combinedCtDescriptor: metadata.externalPublicDescriptor,
-                  network: metadata.network,
-                  id: metadata.id,
-                ),
-        )
-        .toList();
-
     if (sync) {
       await Future.wait(filteredWalletsMetadata.map(_synchronize));
     }
 
-    return walletModels;
+    return [
+      for (final metadata in filteredWalletsMetadata)
+        WalletKey(id: metadata.id, network: metadata.network.shared),
+    ];
   }
 
   /// A row whose stored network cannot be decoded (left `unresolved` by the

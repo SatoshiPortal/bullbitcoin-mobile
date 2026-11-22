@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/features/transactions/data/models/transaction_output_model.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
 import 'package:labels/labels.dart';
 
 class TransactionOutputMapper {

@@ -20,7 +20,8 @@ import 'dart:typed_data';
 import 'support/bdk_test_store.dart';
 
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
+
+import 'package:bb_mobile/features/transactions/data/models/wallet_transaction_model.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -219,7 +220,7 @@ void main() {
   test(
     'address filter matches the second output and rejects absent addresses',
     () async {
-      final datasource = BdkTestStore.values(walletModel);
+      final datasource = BdkTestStore.history(walletModel);
       final wallet = await BdkTestStore.createWallet(walletModel);
       final second = wallet
           .peekAddress(keychain: bdk.KeychainKind.external_, index: 1)
@@ -273,9 +274,13 @@ void main() {
     );
     await BdkTestStore.saveWallet(wallet, walletModel.hexId);
 
-    final transactions = await BdkTestStore.values(walletModel).getTransactions(
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-    );
+    final transactions = await BdkTestStore.history(walletModel)
+        .getTransactions(
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
+        );
     return transactions.firstWhere(
       (transaction) => transaction.txId == tx.computeTxid().toString(),
     );
@@ -362,9 +367,13 @@ void main() {
   });
 
   test('an incoming transaction is unaffected', () async {
-    final transactions = await BdkTestStore.values(walletModel).getTransactions(
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-    );
+    final transactions = await BdkTestStore.history(walletModel)
+        .getTransactions(
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
+        );
     final funding = transactions.firstWhere((tx) => tx.txId == fundingTxId);
 
     expect(funding.isToSelf, isFalse);

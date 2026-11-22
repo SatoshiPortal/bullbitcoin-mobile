@@ -1,11 +1,10 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:sync/sync.dart' show WalletKey;
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/testing.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+import 'package:primitives/primitives.dart' show LiquidNetwork;
+import 'package:sync/sync.dart' show WalletKey;
+import 'package:sync/testing.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,13 +14,9 @@ class _MockLwkWallet extends Mock implements lwk.Wallet {}
 // The Liquid builds moved into sync: see
 // packages/sync/test/spend/liquid_spend_test.dart.
 void main() {
-  const wallet = WalletModel.publicLwk(
-    id: 'liquid-wallet',
-    combinedCtDescriptor: 'descriptor',
-    network: Network.liquidTestnet,
-  );
+  final key = WalletKey(id: 'liquid-wallet', network: LiquidNetwork.testnet);
   late _MockLwkWallet lwkWallet;
-  late SyncWalletValuesDatasource values;
+  late WalletHistoryDatasource values;
 
   lwk.TxOut coin(
     String txid, {
@@ -48,7 +43,7 @@ void main() {
 
   setUp(() {
     lwkWallet = _MockLwkWallet();
-    values = SyncWalletValuesDatasource(
+    values = WalletHistoryDatasource(
       load: (key) => testWalletFromNative(lwkWallet, key: key),
     );
     // The frame reads every value; tests override what they exercise.
@@ -98,9 +93,10 @@ void main() {
       (_) async => [coin('lbtc'), coin('other-asset', asset: 'other')],
     );
 
-    final coins = await values.getUtxos(
-      key: WalletKey(id: wallet.id, network: wallet.network.shared),
+    final coinReader = SyncWalletValuesDatasource(
+      load: (key) => testWalletFromNative(lwkWallet, key: key),
     );
+    final coins = await coinReader.getUtxos(key: key);
 
     expect(coins.map((coin) => coin.txId), ['lbtc']);
     expect((coins.single as LiquidWalletUtxoModel).blockHeight, 100);
@@ -144,9 +140,7 @@ void main() {
 
     Future<int> amountOf(lwk.Tx tx) async {
       when(() => lwkWallet.txs()).thenAnswer((_) async => [tx]);
-      final txs = await values.getTransactions(
-        key: WalletKey(id: wallet.id, network: wallet.network.shared),
-      );
+      final txs = await values.getTransactions(key: key);
       return txs.single.amountSat;
     }
 

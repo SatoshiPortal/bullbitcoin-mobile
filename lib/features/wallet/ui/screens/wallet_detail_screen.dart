@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_amount.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart'

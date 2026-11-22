@@ -1,3 +1,5 @@
+import '../../presentation/wallet_transaction_status_l10n.dart';
+
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';

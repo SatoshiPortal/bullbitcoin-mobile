@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/data/mappers/transaction_input_mapper.dart';
+import 'package:bb_mobile/features/transactions/data/mappers/transaction_output_mapper.dart';
+import 'package:bb_mobile/features/transactions/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_input.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
 import 'package:labels/labels.dart';
 
 class WalletTransactionMapper {

@@ -13,10 +13,10 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';

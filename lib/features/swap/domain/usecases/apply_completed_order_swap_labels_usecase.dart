@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';

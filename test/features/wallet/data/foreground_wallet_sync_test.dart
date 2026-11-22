@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -17,7 +18,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
@@ -27,8 +28,8 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -51,6 +52,8 @@ class _Catalog extends Mock implements WalletCatalogPort {}
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _History extends Mock implements WalletHistoryDatasource {}
 
 final class _Policy implements WalletConnectionPort {
   SyncFailure? failure;
@@ -550,12 +553,13 @@ void main() {
   });
 
   test('transaction reads delegate sync to the same operation', () async {
-    when(() => values.getTransactions(key: any(named: 'key'), toAddress: null))
+    final history = _History();
+    when(() => history.getTransactions(key: any(named: 'key'), toAddress: null))
         .thenAnswer((_) async => []);
     final transactions = WalletTransactionRepositoryImpl(
       walletMetadataDatasource: metadata,
       labelsFacade: _Labels(),
-      walletValuesDatasource: values,
+      history: history,
       synchronize: bridge.synchronize,
     );
     expect(
@@ -564,7 +568,7 @@ void main() {
     );
     expect(policy.calls, 1);
     verify(
-      () => values.getTransactions(key: any(named: 'key'), toAddress: null),
+      () => history.getTransactions(key: any(named: 'key'), toAddress: null),
     ).called(1);
   });
 

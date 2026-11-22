@@ -1,8 +1,7 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
 
-abstract class WalletTransactionRepository {
-  //Stream<WalletTransaction> get walletTransactions;
+abstract interface class WalletTransactionRepository {
   Future<List<WalletTransaction>> getWalletTransactions({
     String? txId,
     String? walletId,
