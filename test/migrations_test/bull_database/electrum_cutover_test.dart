@@ -31,9 +31,14 @@ void main() {
         FakeSecureStoragePlatform().install();
         final secrets = Secrets(scratchDirectory: () async => directory.path);
         final source = File('${directory.path}/legacy.sqlite');
+        final expectedNetwork = freshPilot
+            ? 'unknown-network'
+            : 'bitcoinTestnet';
         Future<void> writeFixture(GeneratedDatabase database) async {
           await database.customStatement(
-            "INSERT INTO electrum_servers VALUES ('custom-later.example','unknown-network',71,1)",
+            freshPilot
+                ? "INSERT INTO electrum_servers VALUES ('custom-later.example','unknown-network',71,1)"
+                : "INSERT INTO electrum_servers VALUES ('custom-later.example',1,0,71,1)",
           );
           await database.customStatement(
             "INSERT INTO transactions VALUES ('cache-later',2,'00042','21',0,' [ ] ',' [] ',NULL,NULL,0,NULL,NULL)",
@@ -94,13 +99,14 @@ void main() {
           expect(
             (await probe
                     .customSelect(
-                      "SELECT * FROM electrum_servers WHERE network='unknown-network'",
+                      'SELECT * FROM electrum_servers WHERE network = ?',
+                      variables: [Variable(expectedNetwork)],
                     )
                     .getSingle())
                 .data,
             {
               'url': 'custom-later.example',
-              'network': 'unknown-network',
+              'network': expectedNetwork,
               'priority': 71,
               'is_custom': 1,
             },
