@@ -242,6 +242,7 @@ class AppLocator {
     // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
+    AddressViewLocator.setup(locator);
     // Inventory survives disabled routing and missing endpoint build defines.
     final _ = await prepareArkCustodyReferences(
       locator,
@@ -309,7 +310,6 @@ class AppLocator {
     );
 
     FundExchangeLocator.setup(locator);
-    AddressViewLocator.setup(locator);
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);

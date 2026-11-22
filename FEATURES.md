@@ -478,6 +478,17 @@ graph TB
 
     IMPORT_MNEMONIC --> ELECTRUM
 
+    %% Wallet readers and spend preparation assigned to their app owners
+    ADDRESS_MGMT --> SYNC
+    RECEIVE --> ADDRESS_MGMT
+    AUTOSWAP --> ADDRESS_MGMT
+    BUY --> ADDRESS_MGMT
+    DCA --> ADDRESS_MGMT
+    LIMIT_ORDERS --> ADDRESS_MGMT
+    PAY --> ADDRESS_MGMT
+    SELL --> ADDRESS_MGMT
+    SWAPS --> ADDRESS_MGMT
+
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa

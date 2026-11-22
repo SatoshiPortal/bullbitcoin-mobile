@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:sync/sync.dart' show Keychain;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -108,28 +108,28 @@ void main() {
   group('sortAndFilterUtxos — filters', () {
     test('keychain receive keeps only external', () {
       final utxos = [
-        walletUtxoFixture(keychain: WalletAddressKeyChain.external, vout: 0),
-        walletUtxoFixture(keychain: WalletAddressKeyChain.internal, vout: 1),
+        walletUtxoFixture(keychain: Keychain.external, vout: 0),
+        walletUtxoFixture(keychain: Keychain.internal, vout: 1),
       ];
       final result = sortAndFilterUtxos(
         utxos,
         const CoinsFilter(keychain: KeychainFilter.receive),
       );
       expect(result, hasLength(1));
-      expect(result.single.addressKeyChain, WalletAddressKeyChain.external);
+      expect(result.single.addressKeyChain, Keychain.external);
     });
 
     test('keychain change keeps only internal', () {
       final utxos = [
-        walletUtxoFixture(keychain: WalletAddressKeyChain.external, vout: 0),
-        walletUtxoFixture(keychain: WalletAddressKeyChain.internal, vout: 1),
+        walletUtxoFixture(keychain: Keychain.external, vout: 0),
+        walletUtxoFixture(keychain: Keychain.internal, vout: 1),
       ];
       final result = sortAndFilterUtxos(
         utxos,
         const CoinsFilter(keychain: KeychainFilter.change),
       );
       expect(result, hasLength(1));
-      expect(result.single.addressKeyChain, WalletAddressKeyChain.internal);
+      expect(result.single.addressKeyChain, Keychain.internal);
     });
 
     test('frozen filter keeps only frozen', () {

@@ -84,62 +84,6 @@ class SyncWalletValuesDatasource {
       (model: _utxo(coin), frozen: coin.frozen),
   ];
 
-  /// Bitcoin: last revealed index of the keychain, -1 when none. Liquid: the
-  /// last unused external index; Liquid exposes no change keychain.
-  Future<int> getLastAddressIndex({
-    required sync.WalletKey key,
-    bool isChange = false,
-  }) async {
-    final book = WalletCatalogPortImpl.value(
-      (await _load(key)).addresses.book.now.latest,
-    );
-    if (!isChange) return book.receiveIndex;
-    final change = book.changeIndex;
-    if (change == null) {
-      throw const WalletSnapshotException(sync.SyncUnsupportedNetworkFailure());
-    }
-    return change;
-  }
-
-  /// Bitcoin address, or Liquid confidential address, at [index].
-  Future<String> getAddressByIndex(
-    int index, {
-    required sync.WalletKey key,
-    bool isChange = false,
-  }) async {
-    final handle = await _load(key);
-    final value = await handle.addresses
-        .at(
-          index,
-          // Liquid has no change keychain; its index is always external.
-          keychain: isChange && key.network is BitcoinNetwork
-              ? sync.Keychain.internal
-              : sync.Keychain.external,
-        )
-        .watch()
-        .firstWhere((value) => value.status != sync.ValueStatus.notLoaded);
-    return WalletCatalogPortImpl.value(value.latest).address;
-  }
-
-  /// Balance per address, from the coins: Bitcoin address, Liquid
-  /// confidential address.
-  Future<Map<String, BigInt>> getAddressBalancesSat({
-    required sync.WalletKey key,
-  }) async {
-    final balances = <String, BigInt>{};
-    for (final coin in WalletCatalogPortImpl.value(
-      (await _load(key)).coins.now.latest,
-    )) {
-      final address = switch (coin) {
-        sync.BitcoinCoin(:final address) => address,
-        sync.LiquidCoin(:final confidentialAddress) => confidentialAddress,
-      };
-      if (address == null) continue;
-      balances[address] = (balances[address] ?? BigInt.zero) + coin.amountSat;
-    }
-    return balances;
-  }
-
   static Future<T> _exact<T>(
     Future<Result<T, sync.SyncFailure>> Function() query,
   ) async {

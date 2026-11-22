@@ -1,7 +1,8 @@
 import 'package:primitives/primitives.dart';
 
 import '../wallet_discovery_failure.dart';
-import 'get_receive_address_usecase.dart';
+
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 
 /// Maps the legacy address reader's exceptions at the public wallet boundary.
 final class GetTransferReceiveAddressUsecase {

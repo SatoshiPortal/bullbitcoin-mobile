@@ -1,5 +1,5 @@
+import 'package:sync/sync.dart' show Keychain;
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:labels/labels.dart';
 
@@ -22,8 +22,8 @@ class WalletUtxoMapper {
           scriptPubkey: model.scriptPubkey,
           address: model.address,
           addressKeyChain: model.isExternalKeyChain
-              ? WalletAddressKeyChain.external
-              : WalletAddressKeyChain.internal,
+              ? Keychain.external
+              : Keychain.internal,
           labels: labels,
           txLabels: txLabels,
           addressLabels: addressLabels,
@@ -58,8 +58,7 @@ class WalletUtxoMapper {
           amountSat: entity.amountSat,
           scriptPubkey: entity.scriptPubkey,
           address: entity.address,
-          isExternalKeyChain:
-              entity.addressKeyChain == WalletAddressKeyChain.external,
+          isExternalKeyChain: entity.addressKeyChain == Keychain.external,
           confirmations: entity.confirmations,
         );
       case LiquidWalletUtxo _:

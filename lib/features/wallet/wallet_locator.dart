@@ -4,8 +4,10 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_di
 import 'package:primitives/primitives.dart';
 
 import 'data/ark_installation_state.dart';
+
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
-import 'domain/usecases/get_receive_address_usecase.dart';
 import 'domain/usecases/get_transfer_receive_address_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
@@ -37,7 +39,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/features/transactions/data/wallet_transaction_repository_impl.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
@@ -244,19 +245,6 @@ class WalletLocator {
         load: (key) async => WalletCatalogPortImpl.value(
           await locator<WalletNativeRuntime>().loadWallet(key),
         ),
-      ),
-    );
-    locator.registerLazySingleton<WalletAddressRepository>(
-      () => WalletAddressRepository(
-        native: locator<WalletNativeRuntime>(),
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        history: WalletHistoryDatasource(
-          load: (key) async => WalletCatalogPortImpl.value(
-            await locator<WalletNativeRuntime>().loadWallet(key),
-          ),
-        ),
-        labelsFacade: locator<Labels>(),
       ),
     );
 

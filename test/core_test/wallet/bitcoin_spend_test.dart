@@ -249,21 +249,17 @@ void main() {
 
   test('last revealed index read does not reveal an address', () async {
     final native = await BdkTestStore.createWallet(walletModel);
-    final datasource = SyncWalletValuesDatasource(
-      load: (key) => testWalletFromNative(native, key: key),
+    final wallet = await testWalletFromNative(
+      native,
+      key: sync.WalletKey(
+        id: walletModel.id,
+        network: walletModel.network.shared,
+      ),
     );
     final before = native.nextDerivationIndex(
       keychain: bdk.KeychainKind.external_,
     );
-    expect(
-      await datasource.getLastAddressIndex(
-        key: sync.WalletKey(
-          id: walletModel.id,
-          network: walletModel.network.shared,
-        ),
-      ),
-      before - 1,
-    );
+    expect(wallet.addresses.book.now.data?.receiveIndex, before - 1);
     expect(
       native.nextDerivationIndex(keychain: bdk.KeychainKind.external_),
       before,

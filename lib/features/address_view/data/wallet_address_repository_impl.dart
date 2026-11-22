@@ -1,9 +1,11 @@
-import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
+import '../domain/repositories/wallet_address_repository.dart';
+
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:primitives/primitives.dart' show Err;
+import 'package:primitives/primitives.dart' show Err, Result;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show InvalidWalletAddressException;
 
 import 'dart:math';
 
@@ -12,33 +14,31 @@ import 'package:sync/sync.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/data/mappers/wallet_address_mapper.dart';
+import 'package:bb_mobile/features/address_view/data/models/wallet_address_model.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
-class WalletAddressRepository {
-  final WalletNativeLifecycle? _native;
+class WalletAddressRepositoryImpl implements WalletAddressRepository {
+  final WalletNativeLifecycle _native;
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SyncWalletValuesDatasource _values;
-  final WalletHistoryDatasource _history;
+  final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
   final Labels _labelsFacade;
 
-  WalletAddressRepository({
-    this._native,
+  WalletAddressRepositoryImpl({
+    required this._native,
     required this._walletMetadataDatasource,
-    required SyncWalletValuesDatasource walletValuesDatasource,
-    required this._history,
+    required this._loadWallet,
     required this._labelsFacade,
-  }) : _values = walletValuesDatasource;
+  });
 
+  @override
   Future<WalletAddress> getLastRevealedReceiveAddress({
     required String walletId,
   }) => _receive(walletId, advance: false);
 
+  @override
   Future<WalletAddress> generateNewReceiveAddress({required String walletId}) =>
       _receive(walletId, advance: true);
 
@@ -48,8 +48,6 @@ class WalletAddressRepository {
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) throw WalletError.notFound(walletId);
-    final native = _native;
-    if (native == null) throw StateError('Native writer is not configured');
     // Retry only native admission, never label lookup after an issued address.
     // Busy may follow a reconciled write: an advance can skip an index, but
     // the writer's durable high-water mark prevents address reuse.
@@ -57,7 +55,7 @@ class WalletAddressRepository {
     for (var attempt = 0; ; attempt++) {
       try {
         issued = WalletCatalogPortImpl.value(
-          await native.receive(
+          await _native.receive(
             WalletCatalogPortImpl.keyFromMetadata(metadata),
             advance: advance,
           ),
@@ -96,37 +94,33 @@ class WalletAddressRepository {
     );
   }
 
+  @override
   Future<List<WalletAddress>> getGeneratedReceiveAddresses(
     String walletId, {
     int? limit,
     int? fromIndex,
   }) async {
-    // Fetch wallet metadata and history in parallel
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (walletMetadata == null) throw WalletError.notFound(walletId);
 
-    final walletModel = WalletModel.fromMetadata(walletMetadata);
-    final isBdkWallet = walletModel is PublicBdkWalletModel;
-
-    final native = _native;
-    final issued = native == null
-        ? null
-        : WalletCatalogPortImpl.value(
-            await native.issuedReceiveIndex(
-              WalletCatalogPortImpl.keyFromMetadata(walletMetadata),
-            ),
-          );
+    final key = WalletKey(
+      id: walletMetadata.id,
+      network: walletMetadata.network.shared,
+    );
+    final issued = WalletCatalogPortImpl.value(
+      await _native.issuedReceiveIndex(
+        WalletCatalogPortImpl.keyFromMetadata(walletMetadata),
+      ),
+    );
+    if (fromIndex != null && fromIndex < 0) return const [];
+    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
     final from =
         fromIndex ??
         max(
           issued ?? -1,
-          await _values.getLastAddressIndex(
-            key: WalletKey(
-              id: walletModel.id,
-              network: walletModel.network.shared,
-            ),
-          ),
+          WalletCatalogPortImpl.value(wallet.addresses.book.now.latest)
+              .receiveIndex,
         );
     if (from < 0) return const [];
     final to = limit != null ? max(from - limit + 1, 0) : 0;
@@ -142,34 +136,35 @@ class WalletAddressRepository {
       indexes.map((index) async {
         return await _generateAddressModel(
           index: index,
-          walletModel: walletModel,
+          wallet: wallet,
           walletId: walletId,
-          isBdkWallet: isBdkWallet,
           isChange: false,
         );
       }),
     );
 
-    // Enrich addresses with balance and transaction data in parallel
-    return await _enrichAddresses(
-      addresses: addresses,
-      walletModel: walletModel,
-      isBdkWallet: isBdkWallet,
-    );
+    return await _enrichAddresses(addresses: addresses, wallet: wallet);
+  }
+
+  Future<String> _addressAt(
+    Wallet wallet,
+    int index, {
+    required bool isChange,
+  }) async {
+    final value = await wallet.addresses
+        .at(index, keychain: isChange ? Keychain.internal : Keychain.external)
+        .watch()
+        .firstWhere((value) => value.status != ValueStatus.notLoaded);
+    return WalletCatalogPortImpl.value(value.latest).address;
   }
 
   Future<WalletAddressModel> _generateAddressModel({
     required int index,
-    required WalletModel walletModel,
+    required Wallet wallet,
     required String walletId,
-    required bool isBdkWallet,
     required bool isChange,
   }) async {
-    final address = await _values.getAddressByIndex(
-      index,
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-      isChange: isChange,
-    );
+    final address = await _addressAt(wallet, index, isChange: isChange);
 
     return WalletAddressModel(
       walletId: walletId,
@@ -182,39 +177,17 @@ class WalletAddressRepository {
 
   Future<List<WalletAddress>> _enrichAddresses({
     required List<WalletAddressModel> addresses,
-    required WalletModel walletModel,
-    required bool isBdkWallet,
+    required Wallet wallet,
   }) async {
-    final allTransactions = await _history.getTransactions(
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-    );
-    final addressBalances = await _values.getAddressBalancesSat(
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-    );
-
-    final enrichedAddresses = await Future.wait(
-      addresses.map((addressModel) async {
-        // Fetch balance and transactions in parallel
-        final balanceSat = addressBalances[addressModel.address] ?? BigInt.zero;
-
-        final transactions = allTransactions
-            .where(
-              (tx) => tx.outputs.any(
-                (element) => element.address == addressModel.address,
-              ),
-            )
-            .toList();
-
-        return addressModel.copyWith(
-          balanceSat: balanceSat.toInt(),
-          nrOfTransactions: transactions.length,
-          updatedAt: DateTime.now(),
-        );
-      }),
-    );
-
+    final usage = WalletCatalogPortImpl.value(wallet.addresses.usage());
     final result = <WalletAddress>[];
-    for (var model in enrichedAddresses) {
+    for (final address in addresses) {
+      final stats = usage[address.address];
+      final model = address.copyWith(
+        balanceSat: stats?.balanceSat.toInt() ?? 0,
+        nrOfTransactions: stats?.transactionCount ?? 0,
+        updatedAt: DateTime.now(),
+      );
       final labels = (await _labelsFacade.fetch(reference: model.address))
           .fold((labels) => labels, (_) => const <Label>[]);
       final entity = WalletAddressMapper.toEntity(model, labels: labels);
@@ -224,35 +197,37 @@ class WalletAddressRepository {
     return result;
   }
 
+  @override
   Future<List<WalletAddress>> getUsedChangeAddresses(
     String walletId, {
     int? limit,
     int? fromIndex,
     required bool descending,
   }) async {
-    // Fetch wallet metadata and history in parallel
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (walletMetadata == null) throw WalletError.notFound(walletId);
 
-    final walletModel = WalletModel.fromMetadata(walletMetadata);
-    final isBdkWallet = walletModel is PublicBdkWalletModel;
-
-    if (!isBdkWallet) {
+    if (!walletMetadata.network.isBitcoin) {
       // LWK currently doesn't support fetching
       // change addresses separately, so we return an empty list here.
       return [];
     }
 
+    if (fromIndex != null && fromIndex < 0) return const [];
+    final key = WalletKey(
+      id: walletMetadata.id,
+      network: walletMetadata.network.shared,
+    );
+    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+
     final from =
         fromIndex ??
-        await _values.getLastAddressIndex(
-          key: WalletKey(
-            id: walletModel.id,
-            network: walletModel.network.shared,
-          ),
-          isChange: true,
-        );
+        WalletCatalogPortImpl.value(wallet.addresses.book.now.latest)
+            .changeIndex;
+    if (from == null) {
+      throw const WalletSnapshotException(SyncUnsupportedNetworkFailure());
+    }
     if (from < 0) {
       // No change addresses have been revealed yet, so we return an empty list.
       return [];
@@ -270,22 +245,17 @@ class WalletAddressRepository {
       indexes.map((index) async {
         return await _generateAddressModel(
           index: index,
-          walletModel: walletModel,
+          wallet: wallet,
           walletId: walletId,
-          isBdkWallet: isBdkWallet,
           isChange: true,
         );
       }),
     );
 
-    // Enrich addresses with balance and transaction data in parallel
-    return await _enrichAddresses(
-      addresses: addresses,
-      walletModel: walletModel,
-      isBdkWallet: isBdkWallet,
-    );
+    return await _enrichAddresses(addresses: addresses, wallet: wallet);
   }
 
+  @override
   Future<WalletAddress> getAddressAtIndex({
     required String walletId,
     required int index,
@@ -297,11 +267,12 @@ class WalletAddressRepository {
       throw WalletError.notFound(walletId);
     }
 
-    final walletModel = WalletModel.fromMetadata(metadata);
-    final address = await _values.getAddressByIndex(
+    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
+    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+    final address = await _addressAt(
+      wallet,
       index,
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-      isChange: isChange,
+      isChange: isChange && metadata.network.isBitcoin,
     );
 
     final walletAddressModel = WalletAddressModel(

@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:sync/sync.dart' show Keychain;
+import 'package:bb_mobile/features/address_view/data/models/wallet_address_model.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:labels/labels.dart';
 
 class WalletAddressMapper {
@@ -12,8 +13,8 @@ class WalletAddressMapper {
       index: walletAddressModel.index,
       address: walletAddressModel.address,
       keyChain: walletAddressModel.isChange
-          ? WalletAddressKeyChain.internal
-          : WalletAddressKeyChain.external,
+          ? Keychain.internal
+          : Keychain.external,
       balanceSat: walletAddressModel.balanceSat,
       nrOfTransactions: walletAddressModel.nrOfTransactions,
       //highestPreviousBalanceSat: walletAddressModel.highestPreviousBalanceSat,
@@ -28,7 +29,7 @@ class WalletAddressMapper {
       address: walletAddress.address,
       walletId: walletAddress.walletId,
       index: walletAddress.index,
-      isChange: walletAddress.keyChain == WalletAddressKeyChain.internal,
+      isChange: walletAddress.keyChain == Keychain.internal,
       balanceSat: walletAddress.balanceSat,
       nrOfTransactions: walletAddress.nrOfTransactions,
       createdAt: walletAddress.createdAt,

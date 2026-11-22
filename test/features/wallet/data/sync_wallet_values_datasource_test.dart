@@ -179,8 +179,5 @@ void main() {
     expect(coin.amountSat, BigInt.from(900));
     expect(coin.keychain, sync.Keychain.internal);
     expect(coin.confirmations, 3);
-    expect(await values.getAddressBalancesSat(key: key), {
-      address: BigInt.from(900),
-    });
   });
 }

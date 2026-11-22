@@ -1,7 +1,8 @@
+import 'package:sync/sync.dart' show Keychain;
+
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart' show Outpoint;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:labels/labels.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -16,8 +17,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     required Uint8List scriptPubkey,
     required BigInt amountSat,
     required String address,
-    @Default(WalletAddressKeyChain.external)
-    WalletAddressKeyChain addressKeyChain,
+    @Default(Keychain.external) Keychain addressKeyChain,
     @Default([]) List<Label> labels,
     @Default([]) List<Label> txLabels,
     @Default([]) List<Label> addressLabels,
@@ -33,8 +33,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     required BigInt amountSat,
     required String standardAddress,
     required String confidentialAddress,
-    @Default(WalletAddressKeyChain.external)
-    WalletAddressKeyChain addressKeyChain,
+    @Default(Keychain.external) Keychain addressKeyChain,
     @Default([]) List<Label> labels,
     @Default([]) List<Label> txLabels,
     @Default([]) List<Label> addressLabels,

@@ -2,7 +2,8 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 import '../wallet_failure.dart';
-import 'get_receive_address_usecase.dart';
+
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 
 /// Issues addresses through the native writer, never by deriving a local index.
 class NextUnusedReceiveAddressUsecase {
