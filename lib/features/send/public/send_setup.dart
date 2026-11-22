@@ -1,5 +1,5 @@
 export '../data/broadcast_observation_follow_up.dart'
-    show BroadcastObservationFollowUp;
+    show BroadcastObservationFollowUp, BroadcastSpend;
 export '../data/bitcoin_wallet_repository.dart' show BitcoinWalletRepository;
 export '../data/liquid_wallet_repository.dart' show LiquidWalletRepository;
 export '../domain/bitcoin_send_port.dart' show BitcoinSendPort;

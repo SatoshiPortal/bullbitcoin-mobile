@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/send/public/send_facade.dart'
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart'
     show WalletSpendBlockedException;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus;

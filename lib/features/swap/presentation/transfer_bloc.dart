@@ -1,5 +1,10 @@
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart'
+    show
+        SendConsolidationRequiredFailure,
+        SendInsufficientBalanceFailure,
+        SendInsufficientFundsForFeesFailure;
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import '../domain/swap_amount_conversion.dart';
@@ -30,7 +35,6 @@ import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_co
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
