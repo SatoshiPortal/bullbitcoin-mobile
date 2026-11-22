@@ -43,6 +43,7 @@ final class Sync {
   final ForegroundStores _stores;
   final WalletProjections _projections;
   final _Cell<bool> _recoveryPending;
+  Future<void>? _closing;
 
   Sync._(this._stores, this._projections)
     : _recoveryPending = _Cell(_stores.recoveredMetadata);
@@ -136,7 +137,9 @@ final class Sync {
   SyncCoins get coins => SyncCoins._(_projections.freezes);
 
   /// Publishes `closed` to every observer, then ends their streams.
-  Future<void> close() async {
+  Future<void> close() => _closing ??= _close();
+
+  Future<void> _close() async {
     try {
       await _projections.close();
       _recoveryPending.close();
