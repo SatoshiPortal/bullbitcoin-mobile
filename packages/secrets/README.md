@@ -201,6 +201,8 @@ Sealed display and challenge widgets obtain language in the same read as the wor
 
 `secrets.databaseKeys(module:)` scopes `getOrCreate(name:)`, `get(name:)` and `reset(name:)` to one module. Inject that handle instead of all of `Secrets`. Creation is serialized within the isolate and occurs only on a clean miss; corrupt entries are never replaced automatically. `get` never creates, and `reset` deletes without regeneration. The module owner must also discard the database encrypted by a reset key.
 
+For Drift workers, capture `Secrets.databaseOpener` on the root isolate. It binds the database name, module, file and expected schema without transferring keys or a live connection. The worker initializes the keystore bridge and returns only a keyed executor or a caller-supplied failure. The owner still controls admission and verifies its readiness receipt before exposing the database.
+
 ## Sealed widgets and failures
 
 The host styles the sealed word widgets with `wordBuilder` or `tileBuilder` and arranges them with `layoutBuilder`. `failureBuilder(context, failure, retry)` renders an error and can offer a new read after the keystore unlocks. The challenge reports `onSolved`, `onMistake` and `onProgress`; completing the selection is distinct from successful verification. A keystore failure is never reported as a wrong answer. The host supplies localized messages and owns authentication and capture protection around the screen.

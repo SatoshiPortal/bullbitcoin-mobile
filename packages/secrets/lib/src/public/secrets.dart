@@ -277,6 +277,32 @@ final class Secrets {
     return DatabaseKeys._(_databaseKeys, module);
   }
 
+  /// Captures the Flutter keystore bridge on the root isolate and returns a
+  /// factory of worker-only openers. Only scoped names and the file path are
+  /// sent to the worker, never the Secrets instance, a key, or a connection.
+  /// A worker opening an existing owner still needs to verify its readiness.
+  static Future<Result<QueryExecutor, F>> Function() Function(bool existing)
+  databaseOpener<F extends Failure>({
+    required String module,
+    required String name,
+    required File file,
+    required int schema,
+    required F deferred,
+    required F unavailable,
+  }) {
+    _requireKeySegment(module, 'module');
+    _requireKeySegment(name, 'name');
+    if (schema < 1) throw ArgumentError.value(schema, 'schema');
+    return captureDatabaseWorkerOpener(
+      module: module,
+      name: name,
+      path: file.path,
+      schema: schema,
+      deferred: deferred,
+      unavailable: unavailable,
+    );
+  }
+
   Secret _handle(SecretInfo info) => Secret(
     info,
     repository: _repository,
