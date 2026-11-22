@@ -89,11 +89,18 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   TorLocator.registerUsecases(torLocator);
   final tor = torLocator<Tor>();
   resources.onClose(tor.dispose);
-  final connections = Electrum.open(
-    database: sqlite,
+  final support = await getApplicationSupportDirectory();
+  final opened = await Electrum.open(
+    file: File(p.join(support.path, 'databases', 'electrum.sqlite')),
+    admission: admission,
     readPreferences: settings.readConnectionPreferences,
     tor: () => tor,
-  ).walletConnections;
+  );
+  if (opened case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final connections =
+      (opened as Ok<Electrum, ElectrumFailure>).value.walletConnections;
   final catalog = WalletCatalogPortImpl(
     WalletMetadataDatasource(sqlite: sqlite),
   );

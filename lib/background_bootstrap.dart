@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:electrum/migration.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -21,6 +23,15 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
       handlers: const {},
     );
   }
+  return bootstrapAdmittedBackgroundRunner(task, clock: clock);
+}
+
+/// Runs storage admission after the platform rollout decision.
+@visibleForTesting
+Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
+  BackgroundTask task, {
+  required Stopwatch clock,
+}) async {
   final documents = await getApplicationDocumentsDirectory();
   await initializeLogging(directory: documents, background: true);
   final logger = LoggerBackgroundTaskLogger(log);
@@ -36,7 +47,10 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
       create: SqliteDatabase.new,
     ),
     expectedOwners: splitV1Owners,
-    participants: const [],
+    participants: [
+      if (task == BackgroundTask.walletsSync)
+        ElectrumImport(file: File('${support.path}/databases/electrum.sqlite')),
+    ],
   );
   final admitted = await cutover.admit();
   if (admitted case Err()) {

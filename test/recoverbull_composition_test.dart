@@ -1,3 +1,5 @@
+import 'package:electrum/testing.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 
@@ -59,7 +61,15 @@ void main() {
       expect(nativeTor.calls, 1);
       TorLocator.registerRepositories(services);
       TorLocator.registerUsecases(services);
-      CoreLocator.setupElectrum(services);
+      CoreLocator.setupElectrum(
+        services,
+        createElectrumForTesting(
+          database: database,
+          readPreferences: () =>
+              services<Preferences>().readConnectionPreferences(),
+          tor: () => services<Tor>(),
+        ),
+      );
       await WalletLocator.registerDatasources(services);
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);

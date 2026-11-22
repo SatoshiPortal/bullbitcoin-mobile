@@ -1,3 +1,6 @@
+import 'package:electrum/electrum.dart';
+import 'package:electrum/migration.dart';
+
 import 'dart:io';
 
 import 'package:legacy_storage/coordination.dart';
@@ -79,6 +82,9 @@ class Bull {
     final mempoolFile = File(
       p.join(support.path, 'databases', 'mempool.sqlite'),
     );
+    final electrumFile = File(
+      p.join(support.path, 'databases', 'electrum.sqlite'),
+    );
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -97,6 +103,7 @@ class Bull {
             ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
           ],
         ),
+        ElectrumImport(file: electrumFile),
       ],
     );
     final admitted = await cutover.prepare();
@@ -111,6 +118,12 @@ class Bull {
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),
+        openElectrum: (readPreferences, tor) => Electrum.open(
+          file: electrumFile,
+          admission: admission,
+          readPreferences: readPreferences,
+          tor: tor,
+        ),
         openMempool: (tor, http) => Mempool.open(
           file: mempoolFile,
           admission: admission,

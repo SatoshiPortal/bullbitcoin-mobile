@@ -1,3 +1,4 @@
+import 'package:electrum/testing.dart';
 import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
@@ -115,6 +116,13 @@ void main() {
         await AppLocator.setup(
           locator,
           database,
+          openElectrum: (readPreferences, tor) async => Ok(
+            createElectrumForTesting(
+              database: database,
+              readPreferences: readPreferences,
+              tor: tor,
+            ),
+          ),
           openMempool: (tor, http) async => Ok(
             createMempoolForTesting(
               database: database,
@@ -354,6 +362,13 @@ void main() {
       final result = await AppLocator.setup(
         locator,
         database,
+        openElectrum: (readPreferences, tor) async => Ok(
+          createElectrumForTesting(
+            database: database,
+            readPreferences: readPreferences,
+            tor: tor,
+          ),
+        ),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
@@ -420,6 +435,13 @@ void main() {
     final result = await AppLocator.setup(
       locator,
       database,
+      openElectrum: (readPreferences, tor) async => Ok(
+        createElectrumForTesting(
+          database: database,
+          readPreferences: readPreferences,
+          tor: tor,
+        ),
+      ),
       openMempool: (tor, http) async => Ok(
         createMempoolForTesting(database: database, tor: tor, torHttp: http),
       ),

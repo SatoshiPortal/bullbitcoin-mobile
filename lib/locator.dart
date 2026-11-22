@@ -1,3 +1,4 @@
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +9,8 @@ import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:electrum/setup.dart' show RegtestElectrumProfile;
+import 'package:electrum/setup.dart'
+    show RegtestElectrumProfile, ReadElectrumPreferences;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
@@ -107,6 +109,11 @@ class AppLocator {
     GetIt locator,
     SqliteDatabase database, {
     required String payjoinDatabasePath,
+    required Future<Result<Electrum, ElectrumFailure>> Function(
+      ReadElectrumPreferences readPreferences,
+      Tor Function() tor,
+    )
+    openElectrum,
     required Future<Result<Mempool, MempoolFailure>> Function(
       Tor Function() tor,
       TorHttpClientFactory http,
@@ -178,6 +185,15 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
+    final electrum = await openElectrum(
+      () => locator<ConnectionPreferencesReader>().readConnectionPreferences(),
+      () => locator<Tor>(),
+    );
+    if (electrum case Err(:final failure)) return Err(failure);
+    CoreLocator.setupElectrum(
+      locator,
+      (electrum as Ok<Electrum, ElectrumFailure>).value,
+    );
     // Lazy registrations only; storage is prepared before network repositories.
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories

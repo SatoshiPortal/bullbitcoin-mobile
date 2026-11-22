@@ -1,3 +1,4 @@
+import 'package:electrum/testing.dart';
 import 'package:drift/native.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/storage.dart';
@@ -16,7 +17,7 @@ void main() {
   setUp(() async {
     database = ElectrumTestDatabase(NativeDatabase.memory());
     addTearDown(database.close);
-    electrum = Electrum.open(
+    electrum = createElectrumForTesting(
       database: database,
       readPreferences: () async => const Ok((
         isSuperuser: false,

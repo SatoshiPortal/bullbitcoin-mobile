@@ -1,4 +1,3 @@
-import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
@@ -29,20 +28,20 @@ class CoreLocator {
         warningCallback: log.warning,
       ),
     );
-    setupElectrum(locator);
     ExchangeLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
   }
 
-  static void setupElectrum(GetIt locator) {
-    locator.registerLazySingleton<Electrum>(
-      () => Electrum.open(
-        database: locator<SqliteDatabase>(),
-        readPreferences: locator<settings.ConnectionPreferencesReader>()
-            .readConnectionPreferences,
-        tor: () => locator<Tor>(),
-      ),
+  static void setupElectrum(GetIt locator, Electrum electrum) {
+    locator.registerSingleton<Electrum>(
+      electrum,
+      dispose: (value) async {
+        final closed = await value.close();
+        if (closed case Err(:final failure)) {
+          log.warning('Electrum close unconfirmed', error: failure.runtimeType);
+        }
+      },
     );
     locator.registerLazySingleton<WalletConnectionPort>(
       () => locator<Electrum>().walletConnections,

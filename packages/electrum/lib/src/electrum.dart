@@ -1,7 +1,16 @@
+import 'dart:io';
+
+import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart';
+import 'package:secrets/secrets.dart';
+
+import 'data/electrum_store.dart';
+import 'data/electrum_import.dart';
+
 import 'dart:async';
 
 import 'package:bull_tor/tor.dart';
-import 'package:drift/drift.dart' show GeneratedDatabase;
+import 'package:drift/drift.dart' show GeneratedDatabase, Variable;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' show BitcoinTx, WalletConnectionPort;
@@ -43,6 +52,7 @@ import 'domain/value_objects/electrum_server_url.dart';
 
 /// Electrum server policy, settings and transaction reads.
 class Electrum {
+  final ElectrumStore? _store;
   final ElectrumServers servers;
   final ElectrumTransactions transactions;
   final ElectrumDefaultsProvisioner _provisioner;
@@ -52,15 +62,70 @@ class Electrum {
     this.servers,
     this.transactions,
     this._provisioner,
-    this._runner,
-  );
+    this._runner, {
+    this._store,
+  });
 
-  /// Borrows the database and Tor service. The caller owns their lifecycle.
-  /// Opening performs no I/O, including when used by a headless caller.
-  factory Electrum.open({
+  /// Opens only a prepared owner store; callbacks remain lazy until use.
+  @useResult
+  static Future<Result<Electrum, ElectrumFailure>> open({
+    required File file,
+    required RuntimeAdmission admission,
+    required ReadElectrumPreferences readPreferences,
+    required Tor Function() tor,
+  }) async {
+    try {
+      final opened = await ElectrumStore.open(file, admission, existing: true);
+      if (opened case Err(:final failure)) {
+        return Err(
+          failure is DatabaseNotReady ||
+                  failure is DatabaseKeyUnavailable &&
+                      failure.reason == DatabaseKeyProblem.locked
+              ? const ElectrumStorageNotReadyFailure()
+              : const ElectrumLoadFailure(),
+        );
+      }
+      final store = (opened as Ok<ElectrumStore, DatabaseOpenFailure>).value;
+      var published = false;
+      try {
+        final readiness = await readElectrumReadiness(store.database);
+        if (readiness case Ok(value: final ready)
+            when ready != OwnerReadiness.pending) {
+          final capability = _usingDatabase(
+            database: store.database,
+            readPreferences: readPreferences,
+            tor: tor,
+            store: store,
+          );
+          published = true;
+          return Ok(capability);
+        }
+        return readiness is Err<OwnerReadiness, LegacyImportFailure>
+            ? const Err(ElectrumLoadFailure())
+            : const Err(ElectrumStorageNotReadyFailure());
+      } finally {
+        if (!published) await store.handle.close();
+      }
+    } on Exception {
+      return const Err(ElectrumLoadFailure());
+    }
+  }
+
+  @useResult
+  Future<Result<void, ElectrumFailure>> close() async {
+    try {
+      await _store?.handle.close();
+      return const Ok(null);
+    } on Exception {
+      return const Err(ElectrumStorageNotReadyFailure());
+    }
+  }
+
+  static Electrum _usingDatabase({
     required GeneratedDatabase database,
     required ReadElectrumPreferences readPreferences,
     required Tor Function() tor,
+    ElectrumStore? store,
   }) {
     final servers = DriftElectrumServerRepository(
       electrumServerStorageDatasource: ElectrumServerStorageDatasource(
@@ -102,6 +167,7 @@ class Electrum {
       ),
       ElectrumDefaultsProvisioner(database),
       runner,
+      store: store,
     );
   }
 }
@@ -302,4 +368,40 @@ class ElectrumTransactions {
       return Err(ElectrumUnexpectedFailure(failure.runtimeType.toString()));
     }
   }
+}
+
+/// Constructs an isolated test capability without owning the injected database.
+@visibleForTesting
+Electrum createElectrumForTesting({
+  required GeneratedDatabase database,
+  required ReadElectrumPreferences readPreferences,
+  required Tor Function() tor,
+}) => Electrum._usingDatabase(
+  database: database,
+  readPreferences: readPreferences,
+  tor: tor,
+);
+
+/// Test-only inspection of the actual encrypted owner cache.
+@visibleForTesting
+Future<bool> hasCachedElectrumTransactionForTesting(
+  Electrum owner,
+  String txid,
+) async {
+  final store = owner._store;
+  if (store == null) throw StateError('Owner store required');
+  final rows = await store.database
+      .customSelect(
+        'SELECT 1 FROM transactions WHERE txid = ?',
+        variables: [Variable(txid)],
+      )
+      .get();
+  return rows.isNotEmpty;
+}
+
+@visibleForTesting
+Future<void> clearElectrumCacheForTesting(Electrum owner) async {
+  final store = owner._store;
+  if (store == null) throw StateError('Owner store required');
+  await store.database.customStatement('DELETE FROM transactions');
 }

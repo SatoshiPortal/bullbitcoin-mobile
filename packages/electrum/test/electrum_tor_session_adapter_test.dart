@@ -42,7 +42,7 @@ void main() {
   test('opens and exposes the sync connection policy before Tor is ready', () {
     final database = ElectrumTestDatabase(NativeDatabase.memory());
     addTearDown(database.close);
-    final electrum = Electrum.open(
+    final electrum = createElectrumForTesting(
       database: database,
       readPreferences: () async => throw StateError('Settings are not ready'),
       tor: () => throw StateError('Tor is not ready'),

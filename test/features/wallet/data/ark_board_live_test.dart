@@ -16,6 +16,8 @@
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
+import 'package:electrum/testing.dart';
+
 import 'package:mempool/testing.dart';
 
 import 'dart:convert';
@@ -143,6 +145,13 @@ void main() {
       await AppLocator.setup(
         locator,
         database,
+        openElectrum: (readPreferences, tor) async => Ok(
+          createElectrumForTesting(
+            database: database,
+            readPreferences: readPreferences,
+            tor: tor,
+          ),
+        ),
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
