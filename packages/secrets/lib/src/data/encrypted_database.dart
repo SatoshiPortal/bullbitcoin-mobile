@@ -5,7 +5,6 @@ import 'package:drift/drift.dart'
 import 'package:drift/native.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/database_key_repository.dart';
-import 'package:secrets/src/domain/database_open_failure.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:sqlite3/sqlite3.dart';
 

@@ -11,8 +11,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart';
 import 'package:secrets/src/data/data.dart';
-import 'package:secrets/src/data/encrypted_database.dart';
-import 'package:secrets/src/domain/database_open_failure.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/public/secret.dart';
 
