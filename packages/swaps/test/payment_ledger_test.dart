@@ -74,6 +74,32 @@ void main() {
       kind,
     ),
   );
+
+  Future<void> expectOneWinner(
+    Future<Result<PaymentSnapshot, PaymentLedgerFailure>> Function() first,
+    Future<Result<PaymentSnapshot, PaymentLedgerFailure>> Function() second,
+  ) async {
+    final commands = [first, second];
+    final results = await Future.wait(commands.map((command) => command()));
+    expect(
+      results.whereType<Ok<PaymentSnapshot, PaymentLedgerFailure>>(),
+      hasLength(1),
+    );
+    for (final (index, result) in results.indexed) {
+      if (result case Err(failure: final rejection)) {
+        if (rejection == PaymentLedgerFailure.busy) {
+          // Once the winner has committed, the losing revision is stale.
+          await expectLater(
+            commands[index](),
+            failure(PaymentLedgerFailure.stale),
+          );
+        } else {
+          expect(rejection, PaymentLedgerFailure.stale);
+        }
+      }
+    }
+  }
+
   PreflightRefusal refusal(PaymentSnapshot p) => PreflightRefusal(
     network: p.request.key.network,
     operationId: active(p).operationId,
@@ -351,21 +377,10 @@ void main() {
     'two real connections admit exactly one attempt at one revision',
     () async {
       final p = await ok(first.createOrReadReview(request(), review));
-      Future<Object> admit(PaymentLedger ledger, String operation) async =>
-          (await ledger.beginPreflight(
-            key(),
-            p.revision,
-            liquid,
-            operation,
-          )).fold<Object>((value) => value, (failure) => failure);
-      final results = await Future.wait([
-        admit(first, 'one'),
-        admit(second, 'two'),
-      ]);
-      expect(results.whereType<PaymentSnapshot>(), hasLength(1));
-      expect(results.whereType<PaymentLedgerFailure>(), [
-        PaymentLedgerFailure.stale,
-      ]);
+      await expectOneWinner(
+        () => first.beginPreflight(key(), p.revision, liquid, 'one'),
+        () => second.beginPreflight(key(), p.revision, liquid, 'two'),
+      );
       final stored = (await required(second, key()));
       expect(stored.attempts, hasLength(1));
       expect(stored.revision, 2);
@@ -377,18 +392,10 @@ void main() {
     'preflight refusal and create seal compete on the same predecessor',
     () async {
       final p = await preflight();
-      Future<Object> capture(
-        Future<Result<PaymentSnapshot, PaymentLedgerFailure>> command,
-      ) async =>
-          (await command).fold<Object>((value) => value, (failure) => failure);
-      final results = await Future.wait([
-        capture(first.closePreflightRefused(p, active(p), refusal(p))),
-        capture(second.sealCreate(p, active(p))),
-      ]);
-      expect(results.whereType<PaymentSnapshot>(), hasLength(1));
-      expect(results.whereType<PaymentLedgerFailure>(), [
-        PaymentLedgerFailure.stale,
-      ]);
+      await expectOneWinner(
+        () => first.closePreflightRefused(p, active(p), refusal(p)),
+        () => second.sealCreate(p, active(p)),
+      );
       final stored = (await required(first, key()));
       expect(stored.revision, 3);
       if (stored.active == null) {
