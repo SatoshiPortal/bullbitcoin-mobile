@@ -1,9 +1,12 @@
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+import 'package:bb_mobile/features/send/public/send_facade.dart'
     show BitcoinSpendStatus, WalletSpendBlockedException;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show
+        CalculateBitcoinAbsoluteFeesUsecase,
+        PrepareBitcoinSendUsecase,
+        PreparedBitcoinSend;
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';

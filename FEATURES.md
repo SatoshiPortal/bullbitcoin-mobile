@@ -490,6 +490,7 @@ graph TB
     PAY --> UTXO_MGMT
     SELL --> ADDRESS_MGMT
     SELL --> UTXO_MGMT
+    SEND --> ADDRESS_MGMT
     SWAPS --> ADDRESS_MGMT
 
     %% Styling

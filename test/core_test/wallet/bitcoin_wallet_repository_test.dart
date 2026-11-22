@@ -10,7 +10,7 @@ import 'package:sync/sync.dart'
         UnsignedSpend,
         WalletKey,
         WalletRevision;
-import 'package:bb_mobile/features/wallet/domain/wallet_spend_failure.dart';
+import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
@@ -35,7 +35,7 @@ import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

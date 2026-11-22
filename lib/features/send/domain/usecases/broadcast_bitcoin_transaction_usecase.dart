@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
+    show WalletSpendBlockedException;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:sync/sync.dart'

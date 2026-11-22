@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show LiquidWalletRepository;
 import 'package:bb_mobile/features/consolidation/domain/consolidation_config.dart';
 
 /// Result of building (but not yet broadcasting) a consolidation: the unsigned

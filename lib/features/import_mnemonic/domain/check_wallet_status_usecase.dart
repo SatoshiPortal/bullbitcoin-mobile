@@ -10,7 +10,8 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BitcoinWalletRepository;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 

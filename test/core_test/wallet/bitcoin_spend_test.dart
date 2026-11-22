@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 
 // Regression test for a bug where `wallet.tx.build` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
@@ -51,7 +51,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';

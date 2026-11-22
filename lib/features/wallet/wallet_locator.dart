@@ -14,7 +14,10 @@ import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
 import 'data/sqlite_parent_custody_admission.dart';
-import 'data/broadcast_observation_follow_up.dart';
+
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BroadcastObservationFollowUp;
+
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';

@@ -4,8 +4,6 @@ export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 export '../ui/widgets/wallet_detail_balance_card.dart'
     show WalletDetailBalanceCard;
 
-export '../domain/wallet_spend_failure.dart';
-
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
     show SeedReferences;
 
@@ -14,7 +12,8 @@ export '../domain/network_x.dart' show NetworkX;
 
 import 'package:sync/sync.dart';
 
-import '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
+import 'package:bb_mobile/features/send/public/send_facade.dart'
+    show BroadcastSpend;
 
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show NetworkEnv, Result, Err;
@@ -42,7 +41,6 @@ export 'package:sync/sync.dart'
         WalletLifecycle;
 
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
-export '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
 export '../background_setup.dart'
     show
         setupBackgroundWalletTask,

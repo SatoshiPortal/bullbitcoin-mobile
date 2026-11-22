@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_spend_failure.dart'
+import 'package:bb_mobile/features/send/public/send_facade.dart'
     show WalletSpendBlockedException;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus;
@@ -11,7 +11,8 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' hide Network;
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BitcoinWalletRepository;
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:sync/sync.dart'
     show

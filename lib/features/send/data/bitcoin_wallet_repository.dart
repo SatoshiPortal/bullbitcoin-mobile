@@ -1,4 +1,7 @@
-import 'ark_funding_signing_guard.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+import 'package:electrum/setup.dart';
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
+    show ArkFundingSigningGuard;
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -20,7 +23,7 @@ import 'package:sync/sync.dart' show validateAddress;
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
@@ -32,10 +35,8 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
     show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
-import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -298,6 +299,31 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     };
   }
 
+  /// Verifies the stored transaction's wallet-owned input signatures against
+  /// its watch-only descriptors (GHSA-6jp4-8v48-cc5v guard); no key material
+  /// is loaded.
+  Future<sync.SignatureCheck> getTransactionSignatureStatus({
+    required String walletId,
+    required String txid,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
+    final handle = switch (await _wallet(key)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
+    return switch (await handle.tx.originalSignatures(txid)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
+  }
+
   Future<({BigInt satoshis, int transactions})> dryScan({
     required String externalDescriptor,
     required String internalDescriptor,
@@ -322,31 +348,6 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         satoshis: value.confirmedSat,
         transactions: value.transactions,
       ),
-      Err(:final failure) => throw sync.WalletSnapshotException(failure),
-    };
-  }
-
-  /// Verifies the stored transaction's wallet-owned input signatures against
-  /// its watch-only descriptors (GHSA-6jp4-8v48-cc5v guard); no key material
-  /// is loaded.
-  Future<sync.SignatureCheck> getTransactionSignatureStatus({
-    required String walletId,
-    required String txid,
-  }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
-    final handle = switch (await _wallet(key)) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw sync.WalletSnapshotException(failure),
-    };
-    return switch (await handle.tx.originalSignatures(txid)) {
-      Ok(:final value) => value,
       Err(:final failure) => throw sync.WalletSnapshotException(failure),
     };
   }

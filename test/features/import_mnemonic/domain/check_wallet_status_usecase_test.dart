@@ -17,7 +17,7 @@ import 'package:primitives/primitives.dart'
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
+    show WalletSpendBlockedException;
+
 import '../../../../scripted_wallet_connections.dart';
 import '../../../../frozen_outpoints_fixture.dart';
 

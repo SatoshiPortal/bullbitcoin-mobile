@@ -16,11 +16,11 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/core/wallet/domain/liquid_send_port.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/features/send/domain/liquid_send_port.dart';
+import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
 
 class LiquidWalletRepository implements LiquidSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
