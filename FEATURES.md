@@ -151,6 +151,7 @@ graph TB
     BTC_PRICE[Bitcoin Price<br/>Workspace Feature]
     BIP85[BIP85]
     FEES_PACKAGE[Fees Package]
+    FEES_PACKAGE -->|receiver fee estimation port| BULL_PAYJOIN
     FEES_UI[Fees Feature]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
