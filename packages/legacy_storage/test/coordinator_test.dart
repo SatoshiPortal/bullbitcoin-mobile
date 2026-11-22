@@ -111,6 +111,40 @@ void main() {
     expect(await fixtureCutover(directory).admit(), isA<Err>());
   });
 
+  for (final entry in <String, Result<OwnerReadiness, LegacyImportFailure>>{
+    'unavailable': const Err(LegacyImportUnavailable()),
+    'verification failure': const Err(LegacyImportVerificationFailed()),
+    'deferred': const Err(LegacyImportDeferred()),
+    'pending': const Ok(OwnerReadiness.pending),
+  }.entries) {
+    final result = entry.value;
+    test(
+      'admission preserves inspection classification ${entry.key}',
+      () async {
+        await (await prepare()).close();
+        final fixture = fixtureCutover(directory);
+        final coordinator = StorageCutover(
+          directory: fixture.directory,
+          legacy: fixture.legacy,
+          expectedOwners: fixture.expectedOwners,
+          participants: [_InspectionOwner(directory, result)],
+        );
+        final admitted = await coordinator.admit();
+        expect(admitted, isA<Err<RuntimeAdmission, LegacyImportFailure>>());
+        final failure =
+            (admitted as Err<RuntimeAdmission, LegacyImportFailure>).failure;
+        switch (result) {
+          case Err(failure: final expected):
+            expect(identical(failure, expected), isTrue);
+          case Ok():
+            expect(failure, isA<LegacyImportDeferred>());
+        }
+        // Failed inspection must close its shared admission.
+        await (await prepare()).close();
+      },
+    );
+  }
+
   test('marker write failure preserves an absent source', () async {
     final temporary = Directory(
       '${directory.path}/coordination/split-v1.json.tmp',
@@ -211,4 +245,15 @@ void main() {
       await check.close();
     });
   }
+}
+
+class _InspectionOwner extends FixtureOwner {
+  final Result<OwnerReadiness, LegacyImportFailure> result;
+  _InspectionOwner(Directory directory, this.result)
+    : super('pilot', File('${directory.path}/pilot.sqlite'));
+
+  @override
+  Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
+    RuntimeAdmission admission,
+  ) async => result;
 }
