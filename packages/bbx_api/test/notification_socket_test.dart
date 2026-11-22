@@ -124,6 +124,33 @@ void main() {
     s.dispose();
   });
 
+  test('maps every known type and keeps an unknown one', () async {
+    final s = socket();
+    final kinds = <BbxNotificationKind>[];
+    s.events.listen(
+      (event) => event.fold((n) => kinds.add(n.kind), (f) => fail('$f')),
+    );
+    await s.connect();
+    connector.handshakes.single.channel.server
+      ..add('{"type":"balance"}')
+      ..add('{"type":"group"}')
+      ..add('{"type":"kyc"}')
+      ..add('{"type":"userPreferences"}')
+      ..add('{"type":"message"}')
+      ..add('{"type":"order"}')
+      ..add('{"type":"limitOrder"}')
+      ..add('{"type":"user"}')
+      ..add('{"type":"recipient"}')
+      ..add('{"type":"never-seen"}')
+      ..add('{}');
+    await pumpEventQueue();
+    expect(kinds, [
+      ...BbxNotificationKind.values,
+      BbxNotificationKind.unknown,
+    ], reason: 'a missing type and an unknown one are both unknown');
+    s.dispose();
+  });
+
   test('a signed-out user is silent: no event, no handshake, no retry', () {
     fakeAsync((time) {
       var keyReads = 0;
@@ -153,6 +180,30 @@ void main() {
       expect(logs.map((r) => '$r'), [
         'fine: WebSocket skipped: user not authenticated',
       ]);
+      s.dispose();
+      time.flushMicrotasks();
+      expect(time.nonPeriodicTimerCount, 0);
+    });
+  });
+
+  test('a signed-out skip does not stop a later signed-in connect', () {
+    fakeAsync((time) {
+      String? key;
+      final s = socket(
+        readApiKey: () async {
+          reads++;
+          return Ok(key);
+        },
+      );
+      unawaited(s.connect());
+      time.flushMicrotasks();
+      expect(connector.handshakes, isEmpty);
+      key = 'late-key';
+      unawaited(s.connect());
+      time.flushMicrotasks();
+      expect(reads, 2, reason: 'each connect reads the credential again');
+      expect(connector.handshakes.single.headers['X-API-Key'], 'late-key');
+      expect(s.isConnected, isTrue);
       s.dispose();
       time.flushMicrotasks();
       expect(time.nonPeriodicTimerCount, 0);
@@ -219,6 +270,24 @@ void main() {
       expect(connector.handshakes, hasLength(3));
       expect(s.isConnected, isTrue);
       expect(reads, 3);
+      s.dispose();
+      time.flushMicrotasks();
+      expect(time.nonPeriodicTimerCount, 0);
+    });
+  });
+
+  test('a failed connect returns its failure', () {
+    fakeAsync((time) {
+      connector.onConnect = (channel) => channel.readyCompleter.complete(
+        Future.error(const SocketLikeException('refused')),
+      );
+      final s = socket();
+      final results = <Result<void, BbxFailure>>[];
+      unawaited(s.connect().then(results.add));
+      time.flushMicrotasks();
+      expect(failureOfVoid(results.single), isA<BbxConnectionFailure>());
+      expect(s.isConnected, isFalse);
+      expect(connector.handshakes.single.channel.fakeSink.closes, 1);
       s.dispose();
       time.flushMicrotasks();
       expect(time.nonPeriodicTimerCount, 0);

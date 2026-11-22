@@ -12,6 +12,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+/// The failure of a `Result<void, BbxFailure>`, failing the test on an [Ok].
+BbxFailure _failureOfVoid(Result<void, BbxFailure> result) => switch (result) {
+  Ok() => fail('Unexpected value'),
+  Err(:final failure) => failure,
+};
+
 /// A comparable summary of one event, without quoting the frame.
 String _summary(Result<BbxNotification, BbxFailure> event) => switch (event) {
   Ok(:final value) => 'ok: ${value.kind.name}/${value.orderId}/${value.event}',
@@ -173,6 +179,38 @@ void main() {
         expect(datasource.isConnected, isFalse);
       },
     );
+
+    test('a storage failure is a typed socket failure, never its text', () {
+      final logger = _recordLogs();
+      fakeAsync((time) {
+        var reads = 0;
+        final failures = <BbxFailure>[];
+        final datasource = _fakeDatasource(
+          baseUrl: 'https://example.invalid',
+          readApiKey: () async {
+            reads++;
+            return const Err(ExchangeApiKeyReadFailure());
+          },
+          connector: connector,
+        );
+        unawaited(
+          datasource.connect().then((r) => failures.add(_failureOfVoid(r))),
+        );
+        time.flushMicrotasks();
+        expect(failures.single, isA<BbxCredentialUnavailableFailure>());
+        expect(reads, 1);
+        expect(handshakes, isEmpty);
+        time.elapse(const Duration(seconds: 5));
+        expect(reads, 2, reason: 'a storage failure still retries');
+        expect(logger.calls.first, contains('BbxCredentialUnavailableFailure'));
+        datasource.dispose();
+        time.flushMicrotasks();
+        expect(
+          logger.calls.join(),
+          isNot(contains('ExchangeApiKeyReadFailure')),
+        );
+      });
+    });
 
     test('each handshake reads the latest credential', () async {
       String? key = 'first';

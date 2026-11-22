@@ -52,6 +52,26 @@ Future<BbxFailure> summaryFailure(
 );
 
 void main() {
+  test('open shares the credential reader with notifications', () async {
+    var credentialReads = 0;
+    final api = Bbx.open(
+      endpoint: 'https://example.invalid',
+      readActiveApiKey: () async {
+        credentialReads++;
+        return const Ok(null);
+      },
+    );
+    addTearDown(api.notifications.dispose);
+
+    expect(
+      await failedCall(api.users.getUserSummary()),
+      isA<BbxMissingCredentialFailure>(),
+    );
+    expect(await api.notifications.connect(), isA<Ok<void, BbxFailure>>());
+    expect(api.notifications.isConnected, isFalse);
+    expect(credentialReads, 2);
+  });
+
   group('request', () {
     test('sends the JSON-RPC envelope with the API key', () async {
       final http = FakeHttp(
