@@ -230,6 +230,12 @@ final class StorageCutover {
       }
       _validate(marker);
       _checkFamily(allowAbsent: !marker.sourceEstablished);
+      for (final participant in participants) {
+        if (marker.admittedOwners.contains(participant.ownerId) &&
+            !await participant.hasState()) {
+          return const Err(LegacyImportUnavailable());
+        }
+      }
       await legacy.prepare(exclusive);
       await durableStep?.call('source-prepared');
       if (!marker.sourceEstablished) {
@@ -237,8 +243,12 @@ final class StorageCutover {
         await _publish(marker);
       }
       await durableStep?.call('source-established');
+      var established = marker;
       for (final participant in participants) {
-        final origin = marker.origins[participant.ownerId];
+        final ownerId = participant.ownerId;
+        // The legacy source no longer contains all writes to an admitted owner.
+        if (established.admittedOwners.contains(ownerId)) continue;
+        final origin = established.origins[ownerId];
         if (origin == null) throw const LifecycleException('owner');
         final prepared = await participant.prepare(exclusive, origin);
         if (prepared case Err(:final failure)) return Err(failure);
@@ -250,9 +260,11 @@ final class StorageCutover {
         if (result case Err(:final failure)) return Err(failure);
         final receipt = await owner.receipt();
         if (!_ready(receipt, origin)) throw const LifecycleException('receipt');
-        await durableStep?.call('owner-${participant.ownerId}');
+        await durableStep?.call('owner-$ownerId');
         final closed = await owner.close();
         if (closed case Err(:final failure)) return Err(failure);
+        established = established.withAdmittedOwner(ownerId);
+        await _publish(established, stage: 'owner-$ownerId');
       }
       await exclusive.close();
       held = null;
@@ -304,14 +316,24 @@ final class StorageCutover {
       _checkFamily(allowAbsent: false);
       legacy.verify();
       for (final participant in participants) {
-        final origin = marker.origins[participant.ownerId];
+        final ownerId = participant.ownerId;
+        final origin = marker.origins[ownerId];
         if (origin == null) throw const LifecycleException('owner');
+        if (!marker.admittedOwners.contains(ownerId)) {
+          return const Err(LegacyImportDeferred());
+        }
+        if (!await participant.hasState()) {
+          return const Err(LegacyImportUnavailable());
+        }
         final inspection = await participant.inspect(shared);
         if (inspection case Err(:final failure)) return Err(failure);
         if (!_ready(inspection, origin)) {
           throw const LifecycleException('not_ready');
         }
       }
+      // A foreground publisher may have died after rename but before fsync.
+      // No runtime writes may start off a non-durable owner milestone.
+      if (participants.isNotEmpty) syncLifecycleDirectory(directory);
       held = null;
       return Ok(shared);
     } on LifecycleException catch (error) {
@@ -372,7 +394,9 @@ final class StorageCutover {
     }
     if (marker.sourceSchemaVersion != legacy.source.schemaVersion ||
         marker.origins.length != expectedOwners.length ||
-        !expectedOwners.containsAll(marker.origins.keys)) {
+        !expectedOwners.containsAll(marker.origins.keys) ||
+        !expectedOwners.containsAll(marker.admittedOwners) ||
+        (!marker.sourceEstablished && marker.admittedOwners.isNotEmpty)) {
       throw const LifecycleException('manifest');
     }
   }
@@ -395,14 +419,15 @@ final class StorageCutover {
     return marker;
   }
 
-  Future<void> _publish(_CutoverMarker marker) async {
+  Future<void> _publish(_CutoverMarker marker, {String? stage}) async {
     directory.createSync(recursive: true);
     final temporary = File('${_marker.path}.tmp');
     await temporary.writeAsString(jsonEncode(marker.json), flush: true);
-    final stage = marker.sourceEstablished ? 'established' : 'initial';
-    await durableStep?.call('marker-$stage-flushed');
+    final checkpoint =
+        stage ?? (marker.sourceEstablished ? 'established' : 'initial');
+    await durableStep?.call('marker-$checkpoint-flushed');
     await temporary.rename(_marker.path);
-    await durableStep?.call('marker-$stage-renamed');
+    await durableStep?.call('marker-$checkpoint-renamed');
     // Failure after rename is not evidence that the old marker survived.
     // Abort this invocation. The next exclusive admission rereads and validates.
     syncLifecycleDirectory(directory);
@@ -414,12 +439,14 @@ final class _CutoverMarker {
   final bool initialFresh;
   final bool sourceEstablished;
   final Map<String, OwnerOrigin> origins;
+  final Set<String> admittedOwners;
 
   const _CutoverMarker({
     required this.sourceSchemaVersion,
     required this.initialFresh,
     required this.sourceEstablished,
     required this.origins,
+    this.admittedOwners = const {},
   });
 
   _CutoverMarker established() => _CutoverMarker(
@@ -427,22 +454,32 @@ final class _CutoverMarker {
     initialFresh: initialFresh,
     sourceEstablished: true,
     origins: origins,
+    admittedOwners: admittedOwners,
+  );
+
+  _CutoverMarker withAdmittedOwner(String owner) => _CutoverMarker(
+    sourceSchemaVersion: sourceSchemaVersion,
+    initialFresh: initialFresh,
+    sourceEstablished: sourceEstablished,
+    origins: origins,
+    admittedOwners: {...admittedOwners, owner},
   );
 
   Map<String, Object> get json => {
-    'version': 1,
+    'version': 2,
     'protocol': 'split-v1',
     'sourceSchemaVersion': sourceSchemaVersion,
     'state': 'importing',
     'initialFresh': initialFresh,
     'sourceEstablished': sourceEstablished,
     'origins': origins.map((key, value) => MapEntry(key, value.name)),
+    'admittedOwners': admittedOwners.toList()..sort(),
   };
 
   static _CutoverMarker decode(String text) {
     final value = jsonDecode(text);
     if (value is! Map<String, dynamic> ||
-        value['version'] != 1 ||
+        (value['version'] != 1 && value['version'] != 2) ||
         value['protocol'] != 'split-v1' ||
         value['state'] != 'importing' ||
         value['sourceSchemaVersion'] is! int ||
@@ -459,11 +496,25 @@ final class _CutoverMarker {
         _ => throw const FormatException('Invalid owner origin'),
       };
     }
+    // The field did not exist in the provisional S1a development marker.
+    final admittedOwners = <String>{};
+    if (value['version'] == 2 || value.containsKey('admittedOwners')) {
+      final raw = value['admittedOwners'];
+      if (raw is! List<dynamic>) {
+        throw const FormatException('Invalid owner admission');
+      }
+      for (final owner in raw) {
+        if (owner is! String || !admittedOwners.add(owner)) {
+          throw const FormatException('Invalid owner admission');
+        }
+      }
+    }
     return _CutoverMarker(
       sourceSchemaVersion: value['sourceSchemaVersion'] as int,
       initialFresh: value['initialFresh'] as bool,
       sourceEstablished: value['sourceEstablished'] as bool,
       origins: origins,
+      admittedOwners: admittedOwners,
     );
   }
 }
