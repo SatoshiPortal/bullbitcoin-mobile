@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:legacy_storage/coordination.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,6 +106,70 @@ void main() {
     );
     expect(events, ['queue', 'connection', 'catalog']);
   });
+
+  test(
+    'dispatcher retries when a successful task cannot close its resources',
+    () async {
+      expect(
+        await mapBackgroundTaskResult(
+          BackgroundTask.logsPrune.id,
+          (_) async => BackgroundTaskRunner(
+            logger: _Logger(),
+            handlers: {
+              BackgroundTask.logsPrune: () async =>
+                  const BackgroundTaskExecutionResult.success(),
+            },
+            onFinished: () async {
+              throw const LifecycleException('resources_still_open');
+            },
+          ),
+        ),
+        isFalse,
+      );
+    },
+  );
+
+  test(
+    'failed native cleanup retains admission through generic resource cleanup',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('worker-lease-');
+      final gate = NativeFileGate(File('${directory.path}/gate'));
+      final admission = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      var live = true;
+      final result = await mapBackgroundTaskResult(
+        BackgroundTask.logsPrune.id,
+        (task) => BackgroundTaskRunner.forTask(
+          task: task,
+          logger: _Logger(),
+          admission: admission,
+          intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+          tasks: {
+            task: (resources) async {
+              resources.onClose(() {
+                if (live) throw const LifecycleException('handle_alive');
+              });
+              return () async => const BackgroundTaskExecutionResult.success();
+            },
+          },
+        ),
+      );
+      expect(result, isFalse);
+      await expectLater(
+        gate.acquire(exclusive: true, timeout: Duration.zero),
+        throwsA(isA<LifecycleException>()),
+      );
+      live = false;
+      await LifecycleAdmission.retryQuarantined();
+      await (await gate.acquire(
+        exclusive: true,
+        timeout: Duration.zero,
+      )).close();
+      await directory.delete(recursive: true);
+    },
+  );
 
   test('cleanup is idempotent and rejects late registration', () async {
     final resources = BackgroundTaskResources();
