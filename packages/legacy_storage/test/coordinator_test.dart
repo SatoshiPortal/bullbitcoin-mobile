@@ -89,6 +89,49 @@ void main() {
   );
 
   test(
+    'an admitted owner cannot be recreated from stale legacy data',
+    () async {
+      final source = File('${directory.path}/legacy.sqlite');
+      final legacy = FixtureDatabase(source, legacy: true);
+      await legacy.customStatement(
+        "INSERT INTO sample VALUES (1, 'stale legacy data')",
+      );
+      await legacy.close();
+      await (await prepare()).close();
+      final file = File('${directory.path}/pilot.sqlite');
+      final database = FixtureDatabase(file);
+      await database.customStatement(
+        "UPDATE sample SET data = 'live owner data'",
+      );
+      await database.close();
+      final before = await source.readAsBytes();
+      await file.delete();
+
+      final foreground = await fixtureCutover(directory).prepare();
+      if (foreground case Ok(:final value)) await value.close();
+      expect(
+        foreground,
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+          (result) => result.failure,
+          'admission after owner loss',
+          isA<LegacyImportUnavailable>(),
+        ),
+      );
+      expect(file.existsSync(), isFalse);
+      expect(await source.readAsBytes(), before);
+      final background = await fixtureCutover(directory).admit();
+      expect(
+        background,
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+          (result) => result.failure,
+          'headless admission after owner loss',
+          isA<LegacyImportUnavailable>(),
+        ),
+      );
+    },
+  );
+
+  test(
     'established missing source and orphan sidecars never create a source',
     () async {
       await (await prepare()).close();
@@ -127,6 +170,36 @@ void main() {
     },
   );
 
+  test(
+    'first verified receipt can be resumed before owner admission',
+    () async {
+      final interrupted = await fixtureCutover(
+        directory,
+        durableStep: (step) async {
+          if (step == 'owner-pilot') {
+            throw const FileSystemException('fixture interruption');
+          }
+        },
+      ).prepare();
+      expect(interrupted, isA<Err<RuntimeAdmission, LegacyImportFailure>>());
+      expect(File('${directory.path}/pilot.sqlite').existsSync(), isTrue);
+      final notYetAdmitted = await fixtureCutover(directory).admit();
+      if (notYetAdmitted case Ok(:final value)) await value.close();
+      expect(
+        notYetAdmitted,
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+          (result) => result.failure,
+          'background requires published milestone',
+          isA<LegacyImportDeferred>(),
+        ),
+      );
+      await (await prepare()).close();
+      final admitted = await fixtureCutover(directory).admit();
+      expect(admitted, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+      if (admitted case Ok(:final value)) await value.close();
+    },
+  );
+
   test('new source with orphan WAL is not interpreted as fresh', () async {
     await File('${directory.path}/legacy.sqlite-wal').writeAsString('orphan');
     expect(await fixtureCutover(directory).prepare(), isA<Err>());
@@ -139,6 +212,18 @@ void main() {
     await marker.writeAsString('{"version":999}');
     expect(await fixtureCutover(directory).prepare(), isA<Err>());
     expect(await fixtureCutover(directory).admit(), isA<Err>());
+  });
+
+  test('the current marker rejects a missing admission manifest', () async {
+    await (await prepare()).close();
+    final marker = File('${directory.path}/coordination/split-v1.json');
+    final data =
+        (jsonDecode(await marker.readAsString()) as Map<String, Object?>)
+          ..remove('admittedOwners');
+    await marker.writeAsString(jsonEncode(data));
+    final result = await fixtureCutover(directory).prepare();
+    if (result case Ok(:final value)) await value.close();
+    expect(result, isA<Err<RuntimeAdmission, LegacyImportFailure>>());
   });
 
   for (final entry in <String, Result<OwnerReadiness, LegacyImportFailure>>{
@@ -238,6 +323,8 @@ void main() {
     'source-prepared',
     'source-established',
     'owner-pilot',
+    'marker-owner-pilot-flushed',
+    'marker-owner-pilot-renamed',
   ]) {
     test('SIGKILL after $step resumes twice without recopy', () async {
       final child = await Process.start(Platform.resolvedExecutable, [
