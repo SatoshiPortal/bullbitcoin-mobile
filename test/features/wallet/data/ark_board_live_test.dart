@@ -16,7 +16,7 @@
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
-import 'package:mempool/mempool.dart';
+import 'package:mempool/testing.dart';
 
 import 'dart:convert';
 import 'dart:io';
@@ -143,8 +143,9 @@ void main() {
       await AppLocator.setup(
         locator,
         database,
-        openMempool: (tor, http) async =>
-            Ok(Mempool.testing(database: database, tor: tor, torHttp: http)),
+        openMempool: (tor, http) async => Ok(
+          createMempoolForTesting(database: database, tor: tor, torHttp: http),
+        ),
         payjoinDatabasePath: '${appDirectory.path}/payjoin.sqlite',
         startPayjoinRecovery: false,
         startOrderSwapWatcher: false,

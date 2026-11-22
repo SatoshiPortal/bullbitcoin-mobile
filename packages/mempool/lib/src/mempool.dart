@@ -82,13 +82,6 @@ class Mempool {
     }
   }
 
-  @visibleForTesting
-  static Mempool testing({
-    required GeneratedDatabase database,
-    required Tor Function() tor,
-    required TorHttpClientFactory torHttp,
-  }) => _usingDatabase(database: database, tor: tor, torHttp: torHttp);
-
   static Mempool _usingDatabase({
     MempoolStore? store,
     required GeneratedDatabase database,
@@ -115,3 +108,11 @@ class Mempool {
     );
   }
 }
+
+/// Constructs a capability around an injected database for tests only.
+@visibleForTesting
+Mempool createMempoolForTesting({
+  required GeneratedDatabase database,
+  required Tor Function() tor,
+  required TorHttpClientFactory torHttp,
+}) => Mempool._usingDatabase(database: database, tor: tor, torHttp: torHttp);

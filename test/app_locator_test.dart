@@ -1,4 +1,4 @@
-import 'package:mempool/mempool.dart';
+import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
@@ -115,8 +115,13 @@ void main() {
         await AppLocator.setup(
           locator,
           database,
-          openMempool: (tor, http) async =>
-              Ok(Mempool.testing(database: database, tor: tor, torHttp: http)),
+          openMempool: (tor, http) async => Ok(
+            createMempoolForTesting(
+              database: database,
+              tor: tor,
+              torHttp: http,
+            ),
+          ),
           payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
           arkFundingDatabasePath: '${directory.path}/ark-funding.sqlite',
           initializeArkFunding: initialize,
@@ -349,8 +354,9 @@ void main() {
       final result = await AppLocator.setup(
         locator,
         database,
-        openMempool: (tor, http) async =>
-            Ok(Mempool.testing(database: database, tor: tor, torHttp: http)),
+        openMempool: (tor, http) async => Ok(
+          createMempoolForTesting(database: database, tor: tor, torHttp: http),
+        ),
         payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
         startPayjoinRecovery: false,
         startOrderSwapWatcher: false,
@@ -414,8 +420,9 @@ void main() {
     final result = await AppLocator.setup(
       locator,
       database,
-      openMempool: (tor, http) async =>
-          Ok(Mempool.testing(database: database, tor: tor, torHttp: http)),
+      openMempool: (tor, http) async => Ok(
+        createMempoolForTesting(database: database, tor: tor, torHttp: http),
+      ),
       payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
       startPayjoinRecovery: false,
       startOrderSwapWatcher: false,
