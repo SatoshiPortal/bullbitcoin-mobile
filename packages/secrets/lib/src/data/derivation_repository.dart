@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:drift/drift.dart';
@@ -12,6 +13,7 @@ import 'secrets_database.drift.dart';
 final class DerivationRepository {
   final SecretsDatabase _database;
 
+  @internal
   const DerivationRepository(this._database);
 
   Future<Result<List<RecordedDerivation>, SecretFailure>> list(String view) =>

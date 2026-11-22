@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
 
@@ -14,6 +15,7 @@ import 'secrets_database.drift.dart';
 final class AccessRepository {
   final SecretsDatabase _database;
 
+  @internal
   const AccessRepository(this._database);
 
   Future<Result<bool, SecretFailure>> isProtected() => boundary(

@@ -1,8 +1,12 @@
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 
 import 'secrets_database.drift.dart';
 
 class Wallets extends Table {
+  @internal
+  Wallets();
+
   TextColumn get id => text()();
   TextColumn get secretFingerprint => text().nullable()();
   TextColumn get masterFingerprint => text()();
@@ -20,6 +24,9 @@ class Wallets extends Table {
 }
 
 class Derivations extends Table {
+  @internal
+  Derivations();
+
   TextColumn get parentFingerprint => text()();
   TextColumn get path => text()();
   TextColumn get application => text()();
@@ -31,6 +38,9 @@ class Derivations extends Table {
 }
 
 class Credentials extends Table {
+  @internal
+  Credentials();
+
   TextColumn get id => text()();
   TextColumn get scheme => text()();
   BlobColumn get salt => blob()();
@@ -43,6 +53,9 @@ class Credentials extends Table {
 
 @DataClassName('AccessViewRow')
 class Views extends Table {
+  @internal
+  Views();
+
   TextColumn get id => text()();
   TextColumn get name => text()();
   BoolColumn get backgroundEnabled =>
@@ -55,6 +68,9 @@ class Views extends Table {
 }
 
 class ViewMembers extends Table {
+  @internal
+  ViewMembers();
+
   TextColumn get viewId =>
       text().references(Views, #id, onDelete: KeyAction.cascade)();
   TextColumn get member => text()();
@@ -65,6 +81,9 @@ class ViewMembers extends Table {
 
 @DataClassName('AccessStateRow')
 class AccessState extends Table {
+  @internal
+  AccessState();
+
   IntColumn get singleton => integer()();
   IntColumn get failedAttempts => integer()();
   IntColumn get lockedUntil => integer().nullable()();
@@ -84,6 +103,7 @@ class AccessState extends Table {
   tables: [Wallets, Derivations, Credentials, Views, ViewMembers, AccessState],
 )
 final class SecretsDatabase extends $SecretsDatabase {
+  @internal
   SecretsDatabase(super.executor);
 
   @override
