@@ -232,3 +232,7 @@ The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys
 The Secrets schema owns wallet definitions, BIP85 derivation records and access views. `package:secrets/migration.dart` supplies the foreground participant for split-v1. It copies the inventory from a read-only schema-16 snapshot and verifies every destination value before committing its receipt in `access_state`. A wallet marked local keeps its expected seed fingerprint even when the seed cannot be read. Descriptor spelling, nullable labels and unknown legacy enum text survive the copy.
 
 The initial view preserves the legacy access policy. An existing PIN becomes a salted Argon2id verifier and the failed-attempt count and lockout are copied into the same transaction. The importer keeps the legacy file and keychain entries for coordinated retirement after all owners verify their data.
+
+The storage library opens an existing admitted inventory. Its foreground capability checks the session before reading or mutating wallet registrations and rechecks the session before returning data. Locking withdraws inventory access. Credential checks and attempt updates share one transaction. The active view's background grant controls a separate descriptor-only capability for sync.
+
+Reserve BIP85 indices per parent and application before deriving the child. Keep every reservation, including revoked entries, so a retry cannot return the same child. Historical paths retain their original spelling.

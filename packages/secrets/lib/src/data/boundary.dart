@@ -64,3 +64,9 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return Err(orElse(safe));
   }
 }
+
+const inventorySessionChangedFailure = UseSecretFailure('access changed');
+const inventoryCredentialRequiredFailure = UseSecretFailure(
+  'credential required',
+);
+const inventoryLockedFailure = UseSecretFailure('inventory locked');
