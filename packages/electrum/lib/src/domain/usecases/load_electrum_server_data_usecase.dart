@@ -23,7 +23,7 @@ class LoadElectrumServerDataUsecase {
   final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
   final ElectrumTorSessionPort _torSessionPort;
-  final Future<ElectrumPreferences> Function() _readPreferences;
+  final ReadElectrumPreferences _readPreferences;
 
   const LoadElectrumServerDataUsecase({
     required this._electrumServerRepository,
@@ -64,7 +64,11 @@ class LoadElectrumServerDataUsecase {
         return const Err(ElectrumLoadFailure('No Electrum servers found'));
       }
 
-      final appSettings = await _readPreferences();
+      final appSettings = (await _readPreferences()).fold(
+        (value) => value,
+        (_) => null,
+      );
+      if (appSettings == null) return const Err(ElectrumUnexpectedFailure());
       final endpoints = servers.map(toElectrumEndpoint).toList();
       final options = toElectrumOptions(settings);
       final serverStatusMap = {

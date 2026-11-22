@@ -8,9 +8,9 @@ import 'package:sync/sync.dart';
 
 /// Reuses the existing privacy policy, fallback loop and scoped Tor lifetime.
 final class WalletConnectionPolicyImpl implements WalletConnectionPort {
-  final ElectrumServersPort _servers;
+  final RunElectrumWithFallback _runWithFallback;
 
-  WalletConnectionPolicyImpl(this._servers);
+  WalletConnectionPolicyImpl(this._runWithFallback);
 
   @override
   Future<Result<T, SyncFailure>> run<T>({
@@ -34,7 +34,7 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPort {
     }
     SyncFailure? lastFailure;
     try {
-      return await _servers.runWithFallback(
+      final result = await _runWithFallback(
         network: serverNetwork,
         isTransient: (error) => error is _RetryableFailure,
         operation: (connection) async {
@@ -56,6 +56,10 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPort {
           return result;
         },
       );
+      return switch (result) {
+        Ok(:final value) => value,
+        Err() => const Err(SyncConnectionFailure()),
+      };
     } on ElectrumNetworkUnauthorizedException {
       return const Err(SyncUnauthorizedNetworkFailure());
     } on AllElectrumServersFailedException {

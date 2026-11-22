@@ -46,7 +46,7 @@ class Electrum {
   final ElectrumServers servers;
   final ElectrumTransactions transactions;
   final ElectrumDefaultsProvisioner _provisioner;
-  final ElectrumServersPort _runner;
+  final ElectrumServersAdapter _runner;
 
   const Electrum._(
     this.servers,
@@ -59,7 +59,7 @@ class Electrum {
   /// Opening performs no I/O, including when used by a headless caller.
   factory Electrum.open({
     required GeneratedDatabase database,
-    required Future<ElectrumPreferences> Function() readPreferences,
+    required ReadElectrumPreferences readPreferences,
     required Tor Function() tor,
   }) {
     final servers = DriftElectrumServerRepository(
@@ -86,13 +86,13 @@ class Electrum {
       ElectrumServers._(
         repository: servers,
         options: ElectrumServerOptions._(options),
-        runner: runner,
+        runWithFallback: runner.runWithFallbackResult,
         status: status,
         torSessions: torSessions,
         readPreferences: readPreferences,
       ),
       ElectrumTransactions._(
-        serversPort: runner,
+        runWithFallback: runner.runWithFallbackResult,
         repository: DriftElectrumTransactionRepository(
           datasource: ElectrumRemoteDatasource(
             sqlite: database,
@@ -110,7 +110,7 @@ class Electrum {
 /// explicit foreground storage preparation.
 extension ElectrumSetup on Electrum {
   WalletConnectionPort get walletConnections =>
-      WalletConnectionPolicyImpl(_runner);
+      WalletConnectionPolicyImpl(_runner.runWithFallbackResult);
 
   ElectrumServersPort get integrationRunner => _runner;
 
@@ -120,15 +120,15 @@ extension ElectrumSetup on Electrum {
 class ElectrumServers {
   final ElectrumServerRepository _repository;
   final ElectrumServerOptions options;
-  final ElectrumServersPort _runner;
+  final RunElectrumWithFallback _runWithFallback;
   final ServerStatusPort _status;
   final ElectrumTorSessionPort _torSessions;
-  final Future<ElectrumPreferences> Function() _readPreferences;
+  final ReadElectrumPreferences _readPreferences;
 
   const ElectrumServers._({
     required this._repository,
     required this.options,
-    required this._runner,
+    required this._runWithFallback,
     required this._status,
     required this._torSessions,
     required this._readPreferences,
@@ -236,7 +236,7 @@ class ElectrumServers {
   @useResult
   Future<Result<ElectrumServerStatus, ElectrumFailure>> check({
     required ElectrumServerNetwork network,
-  }) => checkConfiguredElectrum(_runner, _status, network);
+  }) => checkConfiguredElectrum(_runWithFallback, _status, network);
 
   LoadElectrumServerDataUsecase _loader() => LoadElectrumServerDataUsecase(
     electrumServerRepository: _repository,
@@ -266,11 +266,11 @@ class ElectrumServerOptions {
 
 /// Reads parsed Bitcoin transactions through the active server policy.
 class ElectrumTransactions {
-  final ElectrumServersPort _serversPort;
+  final RunElectrumWithFallback _runWithFallback;
   final ElectrumTransactionRepository _repository;
 
   const ElectrumTransactions._({
-    required this._serversPort,
+    required this._runWithFallback,
     required this._repository,
   });
 
@@ -289,12 +289,10 @@ class ElectrumTransactions {
       return const Err(ElectrumUnsupportedNetworkFailure());
     }
     try {
-      return Ok(
-        await _serversPort.runWithFallback(
-          network: serverNetwork,
-          operation: (connection) =>
-              _repository.fetch(connection: connection, txid: txid),
-        ),
+      return await _runWithFallback(
+        network: serverNetwork,
+        operation: (connection) =>
+            _repository.fetch(connection: connection, txid: txid),
       );
     } on NoElectrumServersConfiguredException catch (failure) {
       return Err(ElectrumNoTransactionServersFailure(failure.network));

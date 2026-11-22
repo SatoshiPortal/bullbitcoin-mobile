@@ -19,7 +19,7 @@ class AddCustomServerUsecase {
   final ElectrumSettingsRepository _electrumSettingsRepository;
   final ServerStatusPort _serverStatusPort;
   final ElectrumTorSessionPort _torSessionPort;
-  final Future<ElectrumPreferences> Function() _readPreferences;
+  final ReadElectrumPreferences _readPreferences;
 
   AddCustomServerUsecase({
     required this._electrumServerRepository,
@@ -61,7 +61,11 @@ class AddCustomServerUsecase {
           return Err(failure);
       }
 
-      final appSettings = await _readPreferences();
+      final appSettings = (await _readPreferences()).fold(
+        (value) => value,
+        (_) => null,
+      );
+      if (appSettings == null) return const Err(ElectrumUnexpectedFailure());
 
       final route = await _torSessionPort.open(
         network: server.network,

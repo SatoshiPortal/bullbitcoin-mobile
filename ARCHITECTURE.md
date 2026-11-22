@@ -451,7 +451,7 @@ When extracting a table owner, add its package path to `DRIFT_OWNER_PACKAGES` in
 
 ## Electrum storage ownership
 
-`packages/electrum` owns server configuration, fallback and scoped Tor connections. `Electrum.open` borrows the composed database and Tor service and does no I/O. Consumers use `electrum.servers` for the catalog, options and status, and `electrum.transactions.fetch(txid, network: ...)` for decoded `BitcoinTx` values from `sync`. Signed-transaction review supplies its captured Bitcoin network for every parent lookup and maps the typed Electrum failures to its own review model.
+`packages/electrum` owns server configuration, fallback and scoped Tor connections. `Electrum.open` borrows the composed database and Tor service and does no I/O. Both composition roots pass the Result-returning Preferences connection reader directly. A failed read stops the operation before it selects a server or opens a route. Consumers use `electrum.servers` for the catalog, options and status, and `electrum.transactions.fetch(txid, network: ...)` for decoded `BitcoinTx` values from `sync`. Signed-transaction review supplies its captured Bitcoin network for every parent lookup and maps the typed Electrum failures to its own review model.
 
 The Electrum setup library exposes the sync-owned connection contract through an Electrum adapter and supplies the existing fallback integration seam for native operations whose callers own retry eligibility. Foreground composition prepares the regtest catalog explicitly before startup or selection. Headless composition borrows an existing, current-schema database and opens only the connection policy.
 

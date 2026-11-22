@@ -1,7 +1,6 @@
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
-import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:mempool/mempool.dart';
@@ -15,6 +14,7 @@ import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
+import 'package:sync/sync.dart' show WalletConnectionPort;
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
@@ -34,6 +34,26 @@ class CoreLocator {
     ExchangeLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
+  }
+
+  static void setupElectrum(GetIt locator) {
+    locator.registerLazySingleton<Electrum>(
+      () => Electrum.open(
+        database: locator<SqliteDatabase>(),
+        readPreferences: locator<settings.ConnectionPreferencesReader>()
+            .readConnectionPreferences,
+        tor: () => locator<Tor>(),
+      ),
+    );
+    locator.registerLazySingleton<WalletConnectionPort>(
+      () => locator<Electrum>().walletConnections,
+    );
+    locator.registerLazySingleton<ElectrumServersPort>(
+      () => locator<Electrum>().integrationRunner,
+    );
+    locator.registerLazySingleton<ElectrumDefaultsProvisioner>(
+      () => locator<Electrum>().foregroundStorage,
+    );
   }
 
   static void registerPorts(GetIt locator) {
