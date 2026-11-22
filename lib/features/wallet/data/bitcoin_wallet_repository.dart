@@ -32,7 +32,6 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
     show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -213,26 +212,11 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String walletId,
     required Uint8List script,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final wallet = WalletModel.publicBdk(
-      externalDescriptor: metadata.externalPublicDescriptor,
-      internalDescriptor: metadata.internalPublicDescriptor,
-      network: metadata.network,
-      id: metadata.id,
-    ) as PublicBdkWalletModel;
-
-    final isFromWallet = await _values.isMine(script, wallet: wallet);
-
-    return isFromWallet;
+    final metadata = await _metadataFor(walletId);
+    return _values.isMine(
+      script,
+      key: WalletKey(id: metadata.id, network: metadata.network.shared),
+    );
   }
 
   @override
@@ -240,29 +224,11 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     List<String> addresses, {
     required String walletId,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
-
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
-
-    final wallet = WalletModel.publicBdk(
-      externalDescriptor: metadata.externalPublicDescriptor,
-      internalDescriptor: metadata.internalPublicDescriptor,
-      network: metadata.network,
-      id: metadata.id,
-    ) as PublicBdkWalletModel;
-
-    final isFromWallet = await _values.areAddressesMine(
+    final metadata = await _metadataFor(walletId);
+    return _values.areAddressesMine(
       addresses,
-      wallet: wallet,
+      key: WalletKey(id: metadata.id, network: metadata.network.shared),
     );
-
-    return isFromWallet;
   }
 
   @override

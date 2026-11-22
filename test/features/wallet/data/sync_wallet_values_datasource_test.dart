@@ -1,9 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:sync/sync.dart' show WalletSnapshotException;
@@ -13,12 +10,7 @@ import 'package:sync/testing.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const model = WalletModel.publicBdk(
-    id: 'values',
-    externalDescriptor: 'unused',
-    internalDescriptor: 'unused',
-    network: Network.bitcoinTestnet,
-  );
+  final key = sync.WalletKey(id: 'values', network: BitcoinNetwork.testnet);
   // BIP173 test vector: a testnet P2WPKH address.
   const address = 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx';
   final script = (sync.bitcoinAddressScript(
@@ -86,10 +78,10 @@ void main() {
           throw const WalletSnapshotException(sync.SyncBusyFailure()),
     );
     await expectLater(
-      values.getBalance(wallet: model),
+      values.getBalance(key: key),
       throwsA(isA<WalletSnapshotException>()),
     );
-    expect((await over().getBalance(wallet: model)).totalSat, BigInt.from(7));
+    expect((await over().getBalance(key: key)).totalSat, BigInt.from(7));
   });
 
   test('history shapes direction, ownership and the paid amount', () async {
@@ -118,7 +110,7 @@ void main() {
         ),
       ],
     );
-    final history = await values.getTransactions(wallet: model);
+    final history = await values.getTransactions(key: key);
     final payment = history.firstWhere((tx) => tx.txId == 'payment');
     expect(payment.isIncoming, isFalse);
     expect(payment.isToSelf, isFalse);
@@ -130,7 +122,7 @@ void main() {
     expect(funding.amountSat, 1000);
     expect(
       (await values.getTransactions(
-        wallet: model,
+        key: key,
         toAddress: address,
       )).map((tx) => tx.txId),
       ['payment'],
@@ -144,17 +136,17 @@ void main() {
       ],
     );
     await expectLater(
-      values.getTransactions(wallet: model),
+      values.getTransactions(key: key),
       throwsA(isA<WalletSnapshotException>()),
     );
-    expect((await values.getBalance(wallet: model)).totalSat, BigInt.from(7));
+    expect((await values.getBalance(key: key)).totalSat, BigInt.from(7));
   });
 
   test('address ownership comes from the exact index', () async {
     final values = over(ownedScripts: [script]);
-    expect(await values.areAddressesMine([address], wallet: model), isTrue);
-    expect(await values.isMine(script, wallet: model), isTrue);
-    expect(await over().areAddressesMine([address], wallet: model), isFalse);
+    expect(await values.areAddressesMine([address], key: key), isTrue);
+    expect(await values.isMine(script, key: key), isTrue);
+    expect(await over().areAddressesMine([address], key: key), isFalse);
   });
 
   test('exact coins keep the Bitcoin coin fields', () async {
@@ -171,14 +163,12 @@ void main() {
       ],
     );
     final coin =
-        (await values.getExactUtxos(wallet: model)).single
-            as BitcoinWalletUtxoModel;
-    expect(coin.txId, 'coin');
-    expect(coin.vout, 2);
+        (await values.getExactUtxos(key: key)).single as sync.BitcoinCoin;
+    expect(coin.outpoint, (txId: 'coin', vout: 2));
     expect(coin.amountSat, BigInt.from(900));
-    expect(coin.isExternalKeyChain, isFalse);
+    expect(coin.keychain, sync.Keychain.internal);
     expect(coin.confirmations, 3);
-    expect(await values.getAddressBalancesSat(wallet: model), {
+    expect(await values.getAddressBalancesSat(key: key), {
       address: BigInt.from(900),
     });
   });

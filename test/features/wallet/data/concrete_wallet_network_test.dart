@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/sync.dart' show SyncReason;
-import 'package:primitives/primitives.dart' show Fingerprint, Ok;
+import 'package:sync/sync.dart' show SyncReason, WalletKey;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Fingerprint, Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -47,8 +48,10 @@ void main() {
           _row(network),
       ];
       when(metadata.fetchAll).thenAnswer((_) async => rows);
-      registerFallbackValue(WalletModel.fromMetadata(rows.first));
-      when(() => values.getBalance(wallet: any(named: 'wallet')))
+      registerFallbackValue(
+        WalletKey(id: 'test', network: BitcoinNetwork.mainnet),
+      );
+      when(() => values.getBalance(key: any(named: 'key')))
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,

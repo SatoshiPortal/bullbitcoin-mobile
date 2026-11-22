@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart';
@@ -131,12 +130,9 @@ class LiquidWalletRepository implements LiquidSendPort {
     if (!metadata.isLiquid) {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
-    final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
-      network: metadata.network,
-      id: metadata.id,
+    return _values.getLbtcUtxoCount(
+      key: sync.WalletKey(id: metadata.id, network: metadata.network.shared),
     );
-    return _values.getLbtcUtxoCount(wallet: wallet);
   }
 
   /// The unsigned consolidation PSETs, built and checked by sync's writer.

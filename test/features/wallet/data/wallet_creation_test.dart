@@ -5,9 +5,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
@@ -24,6 +22,7 @@ import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:sync/sync.dart'
     show
+        Balances,
         InputReservation,
         InputReservationPort,
         ReservedAddressPort,
@@ -80,7 +79,6 @@ void main() {
     );
     registerFallbackValue(row);
     registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
-    registerFallbackValue(WalletModel.fromMetadata(row));
     descriptor = await WatchOnlyWalletEntity.parse(
       row.externalPublicDescriptor,
     ) as WatchOnlyDescriptorEntity;
@@ -95,8 +93,8 @@ void main() {
     when(() => native.prepareCreate(any()))
         .thenAnswer((_) async => const Ok(null));
     final values = _Values();
-    when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
-      (_) async => BalanceModel(
+    when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
+      (_) async => Balances(
         confirmedSat: BigInt.zero,
         immatureSat: BigInt.zero,
         trustedPendingSat: BigInt.zero,

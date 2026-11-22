@@ -256,7 +256,12 @@ void main() {
       keychain: bdk.KeychainKind.external_,
     );
     expect(
-      await datasource.getLastAddressIndex(wallet: walletModel),
+      await datasource.getLastAddressIndex(
+        key: sync.WalletKey(
+          id: walletModel.id,
+          network: walletModel.network.shared,
+        ),
+      ),
       before - 1,
     );
     expect(
@@ -287,17 +292,23 @@ void main() {
     );
 
     expect(
-      await datasource.areAddressesMine([
-        firstRecipientAddress,
-        secondRecipientAddress,
-      ], wallet: walletModel),
+      await datasource.areAddressesMine(
+        [firstRecipientAddress, secondRecipientAddress],
+        key: sync.WalletKey(
+          id: walletModel.id,
+          network: walletModel.network.shared,
+        ),
+      ),
       isTrue,
     );
     expect(
-      await datasource.areAddressesMine([
-        firstRecipientAddress,
-        _externalTestnetAddress,
-      ], wallet: walletModel),
+      await datasource.areAddressesMine(
+        [firstRecipientAddress, _externalTestnetAddress],
+        key: sync.WalletKey(
+          id: walletModel.id,
+          network: walletModel.network.shared,
+        ),
+      ),
       isFalse,
     );
   });

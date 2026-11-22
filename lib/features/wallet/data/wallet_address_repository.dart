@@ -118,7 +118,12 @@ class WalletAddressRepository {
         fromIndex ??
         max(
           issued ?? -1,
-          await _values.getLastAddressIndex(wallet: walletModel),
+          await _values.getLastAddressIndex(
+            key: WalletKey(
+              id: walletModel.id,
+              network: walletModel.network.shared,
+            ),
+          ),
         );
     if (from < 0) return const [];
     final to = limit != null ? max(from - limit + 1, 0) : 0;
@@ -159,7 +164,7 @@ class WalletAddressRepository {
   }) async {
     final address = await _values.getAddressByIndex(
       index,
-      wallet: walletModel,
+      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
       isChange: isChange,
     );
 
@@ -177,9 +182,11 @@ class WalletAddressRepository {
     required WalletModel walletModel,
     required bool isBdkWallet,
   }) async {
-    final allTransactions = await _values.getTransactions(wallet: walletModel);
+    final allTransactions = await _values.getTransactions(
+      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
+    );
     final addressBalances = await _values.getAddressBalancesSat(
-      wallet: walletModel,
+      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
     );
 
     final enrichedAddresses = await Future.wait(
@@ -236,7 +243,13 @@ class WalletAddressRepository {
 
     final from =
         fromIndex ??
-        await _values.getLastAddressIndex(wallet: walletModel, isChange: true);
+        await _values.getLastAddressIndex(
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
+          isChange: true,
+        );
     if (from < 0) {
       // No change addresses have been revealed yet, so we return an empty list.
       return [];
@@ -284,7 +297,7 @@ class WalletAddressRepository {
     final walletModel = WalletModel.fromMetadata(metadata);
     final address = await _values.getAddressByIndex(
       index,
-      wallet: walletModel,
+      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
       isChange: isChange,
     );
 

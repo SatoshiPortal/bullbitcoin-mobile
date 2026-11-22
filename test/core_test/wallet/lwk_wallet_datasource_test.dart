@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -96,7 +98,9 @@ void main() {
       (_) async => [coin('lbtc'), coin('other-asset', asset: 'other')],
     );
 
-    final coins = await values.getUtxos(wallet: wallet);
+    final coins = await values.getUtxos(
+      key: WalletKey(id: wallet.id, network: wallet.network.shared),
+    );
 
     expect(coins.map((coin) => coin.txId), ['lbtc']);
     expect((coins.single as LiquidWalletUtxoModel).blockHeight, 100);
@@ -140,7 +144,9 @@ void main() {
 
     Future<int> amountOf(lwk.Tx tx) async {
       when(() => lwkWallet.txs()).thenAnswer((_) async => [tx]);
-      final txs = await values.getTransactions(wallet: wallet);
+      final txs = await values.getTransactions(
+        key: WalletKey(id: wallet.id, network: wallet.network.shared),
+      );
       return txs.single.amountSat;
     }
 

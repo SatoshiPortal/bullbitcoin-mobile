@@ -6,11 +6,9 @@ import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.da
 import 'package:preferences/preferences.dart' hide Language;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:swaps/swaps.dart' show SwapStore;
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -26,7 +24,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:sync/sync.dart' show SyncReason, SyncFailure, WalletKey;
+import 'package:sync/sync.dart'
+    show Balances, SyncReason, SyncFailure, WalletKey;
 
 class _Settings extends Mock implements Preferences {}
 
@@ -56,9 +55,9 @@ class _Native extends Fake implements WalletNativeLifecycle {
 class _Values extends Fake implements SyncWalletValuesDatasource {
   Future<void> Function()? beforeRead;
   @override
-  Future<BalanceModel> getBalance({required WalletModel wallet}) async {
+  Future<Balances> getBalance({required WalletKey key}) async {
     await beforeRead?.call();
-    return BalanceModel(
+    return Balances(
       confirmedSat: BigInt.zero,
       immatureSat: BigInt.zero,
       trustedPendingSat: BigInt.zero,

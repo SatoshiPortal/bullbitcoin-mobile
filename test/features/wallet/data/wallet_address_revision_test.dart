@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
@@ -5,7 +7,6 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:sync/write.dart' show WalletNativeLifecycle;
@@ -38,7 +39,7 @@ void main() {
         signer: Signer.none,
         isDefault: false,
       );
-      registerFallbackValue(WalletModel.fromMetadata(row));
+      registerFallbackValue(WalletKey(id: row.id, network: row.network.shared));
       final metadata = _Metadata();
       final native = _Native();
       final liquid = _Values();
@@ -49,21 +50,21 @@ void main() {
           WalletCatalogPortImpl.keyFromMetadata(row),
         ),
       ).thenAnswer((_) async => const Ok(7));
-      when(() => liquid.getLastAddressIndex(wallet: any(named: 'wallet')))
+      when(() => liquid.getLastAddressIndex(key: any(named: 'key')))
           .thenAnswer((_) async => 0);
       when(
         () => liquid.getAddressByIndex(
           any(),
-          wallet: any(named: 'wallet'),
+          key: any(named: 'key'),
           isChange: any(named: 'isChange'),
         ),
       ).thenAnswer((call) async {
         final index = call.positionalArguments.first as int;
         return 'confidential$index';
       });
-      when(() => liquid.getTransactions(wallet: any(named: 'wallet')))
+      when(() => liquid.getTransactions(key: any(named: 'key')))
           .thenAnswer((_) async => []);
-      when(() => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')))
+      when(() => liquid.getAddressBalancesSat(key: any(named: 'key')))
           .thenAnswer((_) async => {});
       when(() => labels.fetch(reference: any(named: 'reference')))
           .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));

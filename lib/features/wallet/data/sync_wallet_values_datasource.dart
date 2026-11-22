@@ -1,107 +1,61 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok, Outpoint, Result;
+    show BitcoinNetwork, LiquidNetwork, Err, Ok, Outpoint, Result;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
-/// Loads a wallet's values at its latest committed revision, or throws
-/// [WalletSnapshotException] with the typed failure.
-typedef LoadWallet = Future<sync.Wallet> Function(sync.WalletKey key);
-
-/// The wallet values the app reads, from the values `sync` publishes, shaped
-/// into the app's models. No native handle is involved.
+/// Reads through the native runtime while the application still resolves
+/// wallet IDs through the legacy catalog.
 class SyncWalletValuesDatasource {
-  final LoadWallet _load;
+  final Future<sync.Wallet> Function(sync.WalletKey) _load;
 
   SyncWalletValuesDatasource({required this._load});
 
-  static sync.WalletKey _key(WalletModel wallet) =>
-      sync.WalletKey(id: wallet.id, network: wallet.network.shared);
-
-  Future<sync.Wallet> _wallet(WalletModel wallet) => _load(_key(wallet));
-
-  /// Data of a value read right after its load, or the reason it has none.
-  static D _data<D extends Object>(sync.WalletValue<D> value) =>
-      switch (value) {
-        sync.WalletValue(status: sync.ValueStatus.ready, :final data?) ||
-        sync.WalletValue(status: sync.ValueStatus.stale, :final data?) => data,
-        sync.WalletValue(:final failure) => throw WalletSnapshotException(
-          failure ?? const sync.SyncBusyFailure(),
-        ),
-      };
-
-  Future<BalanceModel> getBalance({required WalletModel wallet}) async {
-    final balances = _data((await _wallet(wallet)).balances.now);
-    return BalanceModel(
-      confirmedSat: balances.confirmedSat,
-      immatureSat: balances.immatureSat,
-      trustedPendingSat: balances.trustedPendingSat,
-      untrustedPendingSat: balances.untrustedPendingSat,
-      spendableSat: balances.spendableSat,
-      totalSat: balances.totalSat,
-    );
-  }
-
-  Future<List<WalletUtxoModel>> getUtxos({
-    required WalletModel wallet,
-  }) async => [
-    for (final coin in _data((await _wallet(wallet)).coins.now)) _utxo(coin),
-  ];
-
-  /// The coins with their frozen state, as sync publishes them. Throws
-  /// while the freezes are unknown: a coin never reads as unfrozen.
-  Future<List<({WalletUtxoModel model, bool frozen})>> getCoins({
-    required WalletModel wallet,
-  }) async => [
-    for (final coin in _data((await _wallet(wallet)).coins.now))
-      (model: _utxo(coin), frozen: coin.frozen),
-  ];
+  Future<sync.Balances> getBalance({required sync.WalletKey key}) async =>
+      WalletCatalogPortImpl.value((await _load(key)).balances.now.latest);
 
   /// Number of L-BTC coins, the count that matters for LWK's input limit.
-  Future<int> getLbtcUtxoCount({required WalletModel wallet}) async =>
-      _data((await _wallet(wallet)).coins.now).length;
+  Future<int> getLbtcUtxoCount({required sync.WalletKey key}) async =>
+      WalletCatalogPortImpl.value((await _load(key)).coins.now.latest).length;
 
   /// The unspent coins exactly at the latest committed revision, for a
   /// protocol decision. Retries briefly while the writer is busy.
-  Future<List<WalletUtxoModel>> getExactUtxos({
-    required WalletModel wallet,
-  }) async {
-    final handle = await _wallet(wallet);
-    final coins = await _exact(handle.unspent);
-    return [for (final coin in coins) _utxo(coin)];
+  Future<sync.CoinList> getExactUtxos({required sync.WalletKey key}) async {
+    final handle = await _load(key);
+    return _exact(handle.unspent);
   }
 
   /// Exact ownership at the latest committed revision: scripts the index
   /// derives and outputs held, spent ones included. Retries briefly while
   /// the writer is busy; never answers from an older revision.
   Future<sync.OwnershipIndex> getOwnership({
-    required WalletModel wallet,
+    required sync.WalletKey key,
   }) async {
-    final handle = await _wallet(wallet);
+    final handle = await _load(key);
     return _exact(handle.ownership);
   }
 
-  Future<bool> isMine(Uint8List script, {required WalletModel wallet}) async =>
-      (await getOwnership(wallet: wallet)).ownsScript(script);
+  Future<bool> isMine(Uint8List script, {required sync.WalletKey key}) async =>
+      (await getOwnership(key: key)).ownsScript(script);
 
   Future<bool> areAddressesMine(
     List<String> addresses, {
-    required WalletModel wallet,
+    required sync.WalletKey key,
   }) async {
-    final network = wallet.network.shared;
+    final network = key.network;
     if (network is! BitcoinNetwork) {
       throw const WalletSnapshotException(sync.SyncUnsupportedNetworkFailure());
     }
-    final ownership = await getOwnership(wallet: wallet);
+    final ownership = await getOwnership(key: key);
     for (final address in addresses) {
       switch (sync.bitcoinAddressScript(address, network)) {
         case Ok(value: final script) when ownership.ownsScript(script):
@@ -115,13 +69,34 @@ class SyncWalletValuesDatasource {
     return true;
   }
 
+  Future<List<WalletUtxoModel>> getUtxos({required sync.WalletKey key}) async =>
+      [
+        for (final coin in WalletCatalogPortImpl.value(
+          (await _load(key)).coins.now.latest,
+        ))
+          _utxo(coin),
+      ];
+
+  /// The coins with their frozen state, as sync publishes them. Throws
+  /// while the freezes are unknown: a coin never reads as unfrozen.
+  Future<List<({WalletUtxoModel model, bool frozen})>> getCoins({
+    required sync.WalletKey key,
+  }) async => [
+    for (final coin in WalletCatalogPortImpl.value(
+      (await _load(key)).coins.now.latest,
+    ))
+      (model: _utxo(coin), frozen: coin.frozen),
+  ];
+
   /// Bitcoin: last revealed index of the keychain, -1 when none. Liquid: the
   /// last unused external index; Liquid exposes no change keychain.
   Future<int> getLastAddressIndex({
-    required WalletModel wallet,
+    required sync.WalletKey key,
     bool isChange = false,
   }) async {
-    final book = _data((await _wallet(wallet)).addresses.book.now);
+    final book = WalletCatalogPortImpl.value(
+      (await _load(key)).addresses.book.now.latest,
+    );
     if (!isChange) return book.receiveIndex;
     final change = book.changeIndex;
     if (change == null) {
@@ -133,30 +108,32 @@ class SyncWalletValuesDatasource {
   /// Bitcoin address, or Liquid confidential address, at [index].
   Future<String> getAddressByIndex(
     int index, {
-    required WalletModel wallet,
+    required sync.WalletKey key,
     bool isChange = false,
   }) async {
-    final handle = await _wallet(wallet);
+    final handle = await _load(key);
     final value = await handle.addresses
         .at(
           index,
           // Liquid has no change keychain; its index is always external.
-          keychain: isChange && wallet is PublicBdkWalletModel
+          keychain: isChange && key.network is BitcoinNetwork
               ? sync.Keychain.internal
               : sync.Keychain.external,
         )
         .watch()
         .firstWhere((value) => value.status != sync.ValueStatus.notLoaded);
-    return _data(value).address;
+    return WalletCatalogPortImpl.value(value.latest).address;
   }
 
   /// Balance per address, from the coins: Bitcoin address, Liquid
   /// confidential address.
   Future<Map<String, BigInt>> getAddressBalancesSat({
-    required WalletModel wallet,
+    required sync.WalletKey key,
   }) async {
     final balances = <String, BigInt>{};
-    for (final coin in _data((await _wallet(wallet)).coins.now)) {
+    for (final coin in WalletCatalogPortImpl.value(
+      (await _load(key)).coins.now.latest,
+    )) {
       final address = switch (coin) {
         sync.BitcoinCoin(:final address) => address,
         sync.LiquidCoin(:final confidentialAddress) => confidentialAddress,
@@ -168,24 +145,30 @@ class SyncWalletValuesDatasource {
   }
 
   Future<List<WalletTransactionModel>> getTransactions({
-    required WalletModel wallet,
+    required sync.WalletKey key,
     String? toAddress,
   }) async {
-    final handle = await _wallet(wallet);
+    final handle = await _load(key);
     // Both values come from one frame: no await between the two reads.
-    final transactions = _data(handle.history.now);
-    final book = _data(handle.addresses.book.now);
+    final transactions = WalletCatalogPortImpl.value(handle.history.now.latest);
+    final book = WalletCatalogPortImpl.value(handle.addresses.book.now.latest);
     final filter = toAddress != null && toAddress.isNotEmpty ? toAddress : null;
-    final result = switch (wallet) {
-      PublicBdkWalletModel() => _bitcoinHistory(
+    final result = switch (key.network) {
+      BitcoinNetwork() => _bitcoinHistory(
         transactions.whereType<sync.BitcoinTransaction>().toList(),
-        network: wallet.network,
+        network: Network.fromEnvironment(
+          environment: key.network.env,
+          isLiquid: false,
+        ),
         toAddress: filter,
       ),
-      PublicLwkWalletModel() => _liquidHistory(
+      LiquidNetwork() => _liquidHistory(
         transactions.whereType<sync.LiquidTransaction>().toList(),
         book,
-        network: wallet.network,
+        network: Network.fromEnvironment(
+          environment: key.network.env,
+          isLiquid: true,
+        ),
         toAddress: filter,
       ),
     };

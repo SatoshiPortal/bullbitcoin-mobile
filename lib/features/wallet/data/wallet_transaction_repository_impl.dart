@@ -1,3 +1,5 @@
+import 'package:sync/sync.dart' show WalletKey;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:preferences/preferences.dart';
@@ -74,7 +76,10 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     final walletTransactionLists = await Future.wait(
       walletModels.map((walletModel) async {
         final walletTransactionModels = await _values.getTransactions(
-          wallet: walletModel,
+          key: WalletKey(
+            id: walletModel.id,
+            network: walletModel.network.shared,
+          ),
           toAddress: toAddress,
         );
 

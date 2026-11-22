@@ -277,13 +277,12 @@ void main() {
         final before = await locator<WalletRepository>().getWalletBalances(
           walletId: source.id,
         );
-        final sourceAfter =
-            before.confirmedSat - prepared.sourceDebit.value.toInt();
+        final sourceAfter = before.confirmedSat - prepared.sourceDebit.value;
         _report(
           'source confirmed=${before.confirmedSat} '
           'debit=${prepared.sourceDebit} sourceAfterBoard=$sourceAfter',
         );
-        if (sourceAfter < 10000) {
+        if (sourceAfter < BigInt.from(10000)) {
           throw StateError('source reserve after Board below 10000 sat');
         }
         final review = _ok(
@@ -319,13 +318,12 @@ void main() {
         final before = await locator<WalletRepository>().getWalletBalances(
           walletId: source.id,
         );
-        final sourceAfter =
-            before.confirmedSat - prepared.sourceDebit.value.toInt();
+        final sourceAfter = before.confirmedSat - prepared.sourceDebit.value;
         _report(
           'source confirmed=${before.confirmedSat} '
           'debit=${prepared.sourceDebit} sourceAfterBoard=$sourceAfter',
         );
-        if (sourceAfter < 10000) {
+        if (sourceAfter < BigInt.from(10000)) {
           throw StateError('source reserve after Board below 10000 sat');
         }
         _writePrivate(confirmFile, jsonEncode({'operationId': operationId}));

@@ -53,7 +53,9 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
 
     // Sync publishes each coin with its frozen state: a freeze is global by
     // outpoint, whichever wallet or import froze it.
-    final coins = await _values.getCoins(wallet: walletModel);
+    final coins = await _values.getCoins(
+      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
+    );
 
     final utxos = await Future.wait(
       coins.map((coin) async {
