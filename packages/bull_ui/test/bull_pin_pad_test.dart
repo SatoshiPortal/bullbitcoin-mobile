@@ -1,3 +1,4 @@
+import 'dart:ui' show SemanticsAction, Tristate;
 import 'dart:math';
 
 import 'package:bull_ui/bull_ui.dart';
@@ -56,6 +57,59 @@ List<int> layoutOf(WidgetTester tester) {
 
 void main() {
   group('BullPinPad', () {
+    testWidgets('names every key and exposes enabled and scramble states', (
+      tester,
+    ) async {
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(320, 568);
+      addTearDown(tester.view.reset);
+      final semantics = tester.ensureSemantics();
+      try {
+        await pumpPad(tester);
+        final padContext = tester.element(find.byType(BullPinPad));
+        final deleteLabel = MaterialLocalizations.of(padContext)
+            .deleteButtonTooltip;
+        final labels = [
+          'scramble',
+          deleteLabel,
+          for (var i = 0; i < 10; i++) '$i',
+        ];
+        void expectKeys({required bool enabled}) {
+          for (final label in labels) {
+            final keys = find.semantics.byPredicate(
+              (node) => node.label == label && node.flagsCollection.isButton,
+            );
+            expect(keys, findsOne, reason: label);
+            final key = keys.evaluate().single;
+            expect(
+              key.flagsCollection.isEnabled,
+              enabled ? Tristate.isTrue : Tristate.isFalse,
+            );
+            expect(
+              key.getSemanticsData().hasAction(SemanticsAction.tap),
+              enabled,
+            );
+            expect(key.rect.width, greaterThanOrEqualTo(48));
+            expect(key.rect.height, greaterThanOrEqualTo(48));
+          }
+        }
+
+        expectKeys(enabled: true);
+        await tester.tap(scrambleKey);
+        await tester.pump();
+        expect(
+          tester.getSemantics(scrambleKey).flagsCollection.isToggled,
+          Tristate.isTrue,
+        );
+
+        await pumpPad(tester, enabled: false);
+        expectKeys(enabled: false);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
     testWidgets('starts in the plain layout and reports taps', (tester) async {
       final digits = <int>[];
       var backspaces = 0;
