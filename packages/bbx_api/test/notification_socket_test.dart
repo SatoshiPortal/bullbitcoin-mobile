@@ -1,10 +1,24 @@
 import 'dart:async';
 
 import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:fake_async/fake_async.dart';
+import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 import 'fake_socket.dart';
+
+/// The failure of a `Result<void, BbxFailure>`, failing the test on an [Ok].
+BbxFailure failureOfVoid(Result<void, BbxFailure> result) => switch (result) {
+  Ok() => fail('Unexpected value'),
+  Err(:final failure) => failure,
+};
+
+/// A comparable summary of one event, without quoting the frame.
+String summary(Result<BbxNotification, BbxFailure> event) => switch (event) {
+  Ok(:final value) => 'ok: ${value.kind.name}/${value.orderId}/${value.event}',
+  Err(:final failure) => 'err: $failure',
+};
 
 void main() {
   late FakeConnector connector;
@@ -13,14 +27,14 @@ void main() {
 
   BbxNotificationSocket socket({
     String baseUrl = 'https://api.test',
-    Future<String?> Function()? readApiKey,
-  }) => BbxNotificationSocket(
+    Future<Result<String?, BbxFailure>> Function()? readApiKey,
+  }) => bbxNotificationSocketForTesting(
     baseUrl: baseUrl,
     readApiKey:
         readApiKey ??
         () async {
           reads++;
-          return 'synthetic-key';
+          return const Ok('synthetic-key');
         },
     connector: connector.call,
     log: (level, message, {error}) =>
@@ -51,7 +65,7 @@ void main() {
 
   test('handshake sends the API key header and pings every 30 s', () async {
     final s = socket();
-    await s.connect();
+    expect(await s.connect(), isA<Ok<void, BbxFailure>>());
     expect(s.isConnected, isTrue);
     expect(connector.handshakes, hasLength(1));
     final handshake = connector.handshakes.single;
@@ -63,63 +77,85 @@ void main() {
   });
 
   test('connect while connecting or connected does nothing', () async {
-    final key = Completer<String?>();
+    final key = Completer<Result<String?, BbxFailure>>();
     final s = socket(readApiKey: () => key.future);
     final first = s.connect();
-    await s.connect();
-    key.complete('k');
+    expect(await s.connect(), isA<Ok<void, BbxFailure>>());
+    key.complete(const Ok('k'));
     await first;
     await s.connect();
     expect(connector.handshakes, hasLength(1));
     s.dispose();
   });
 
-  test(
-    'emits JSON object frames and drops the rest without quoting them',
-    () async {
-      final s = socket();
-      final received = <Map<String, dynamic>>[];
-      s.messages.listen(received.add);
-      await s.connect();
-      final server = connector.handshakes.single.channel.server
-        ..add('invalid JSON SYNTHETIC_PRIVATE_FRAME')
-        ..add('[]')
-        ..add('{"type":{"label":"SYNTHETIC_PRIVATE_FRAME"}}')
-        ..add('{"type":"order","orderId":"o1","event":"updated"}')
-        ..add({'type': 'balance'});
-      await pumpEventQueue();
-      expect(received, [
-        {
-          'type': {'label': 'SYNTHETIC_PRIVATE_FRAME'},
-        },
-        {'type': 'order', 'orderId': 'o1', 'event': 'updated'},
-        {'type': 'balance'},
-      ]);
-      expect(logs.map((r) => '$r'), [
-        'fine: WebSocket connected successfully',
-        'warning: WebSocket message rejected: invalid JSON',
-        'warning: WebSocket message rejected: invalid shape',
-        'info: WebSocket message received',
-        'info: WebSocket message received',
-        'info: WebSocket message received',
-      ]);
-      expect(logs.join(), isNot(contains('SYNTHETIC')));
-      await server.close();
-      s.dispose();
-    },
-  );
+  test('emits typed notifications and a failure per malformed frame', () async {
+    final s = socket();
+    final received = <Result<BbxNotification, BbxFailure>>[];
+    s.events.listen(received.add);
+    await s.connect();
+    final server = connector.handshakes.single.channel.server
+      ..add('invalid JSON SYNTHETIC_PRIVATE_FRAME')
+      ..add('[]')
+      ..add('{"type":{"label":"SYNTHETIC_PRIVATE_FRAME"}}')
+      ..add('{"orderId":7}')
+      ..add('{"type":"order","orderId":"o1","event":"updated"}')
+      ..add({'type': 'balance'});
+    await pumpEventQueue();
+    expect(received.map(summary), [
+      'err: BbxResponseFormatFailure(notification frame)',
+      'err: BbxResponseFormatFailure(notification frame)',
+      'err: BbxResponseFormatFailure(notification frame)',
+      'err: BbxResponseFormatFailure(notification frame)',
+      'ok: order/o1/updated',
+      'ok: balance/null/null',
+    ]);
+    expect(logs.map((r) => '$r'), [
+      'fine: WebSocket connected successfully',
+      'warning: WebSocket message rejected: invalid JSON',
+      'warning: WebSocket message rejected: invalid JSON',
+      'warning: WebSocket message rejected: invalid JSON',
+      'warning: WebSocket message rejected: invalid JSON',
+      'info: WebSocket message received',
+      'info: WebSocket message received',
+    ]);
+    expect(logs.join(), isNot(contains('SYNTHETIC')));
+    expect(logs.join(), isNot(contains('o1')));
+    await server.close();
+    s.dispose();
+  });
 
-  test('a signed-out user gets no handshake and no retry', () {
+  test('a signed-out user is silent: no event, no handshake, no retry', () {
     fakeAsync((time) {
-      final s = socket(readApiKey: () async => null);
-      unawaited(s.connect());
-      time.elapse(const Duration(minutes: 1));
-      expect(connector.handshakes, isEmpty);
+      var keyReads = 0;
+      final s = socket(
+        readApiKey: () async {
+          keyReads++;
+          return const Ok(null);
+        },
+      );
+      final events = <Result<BbxNotification, BbxFailure>>[];
+      s.events.listen(events.add);
+      final results = <Result<void, BbxFailure>>[];
+      unawaited(s.connect().then(results.add));
+      time.flushMicrotasks();
+      expect(results.single, isA<Ok<void, BbxFailure>>());
       expect(s.isConnected, isFalse);
+      expect(
+        time.nonPeriodicTimerCount,
+        0,
+        reason: 'a signed-out skip schedules no retry timer',
+      );
+      // Far past the 5 s retry delay and the 30 s ping interval.
+      time.elapse(const Duration(minutes: 5));
+      expect(keyReads, 1, reason: 'the credential is never re-read');
+      expect(connector.handshakes, isEmpty);
+      expect(events, isEmpty);
       expect(logs.map((r) => '$r'), [
         'fine: WebSocket skipped: user not authenticated',
       ]);
       s.dispose();
+      time.flushMicrotasks();
+      expect(time.nonPeriodicTimerCount, 0);
     });
   });
 
@@ -129,8 +165,8 @@ void main() {
       final s = socket(
         readApiKey: () async {
           reads++;
-          if (!available) throw const FormatException('unreadable');
-          return null;
+          if (!available) return const Err(BbxCredentialUnavailableFailure());
+          return const Ok(null);
         },
       );
       unawaited(s.connect());
@@ -149,8 +185,8 @@ void main() {
       time.flushMicrotasks();
       expect(time.nonPeriodicTimerCount, 0);
       expect(logs.map((r) => '$r'), [
-        'warning: WebSocket unavailable FormatException',
-        'info: WebSocket retry failed FormatException',
+        'warning: WebSocket unavailable BbxCredentialUnavailableFailure',
+        'info: WebSocket retry failed BbxCredentialUnavailableFailure',
         'fine: WebSocket skipped: user not authenticated',
         'info: WebSocket manually disconnected',
       ]);
@@ -162,11 +198,20 @@ void main() {
       connector.onConnect = (channel) =>
           channel.refuse(const SocketLikeException('refused'));
       final s = socket();
-      unawaited(s.connect());
+      final events = <Result<BbxNotification, BbxFailure>>[];
+      final results = <Result<void, BbxFailure>>[];
+      s.events.listen(events.add);
+      unawaited(s.connect().then(results.add));
       time.flushMicrotasks();
+      expect(failureOfVoid(results.single), isA<BbxConnectionFailure>());
       expect(connector.handshakes, hasLength(1));
       expect(connector.handshakes.single.channel.fakeSink.closes, 1);
       expect(s.isConnected, isFalse);
+      expect(events, hasLength(1), reason: 'one event per failed attempt');
+      expect(switch (events.single) {
+        Err(:final failure) => failure,
+        Ok() => fail('Unexpected value'),
+      }, isA<BbxConnectionFailure>());
       time.elapse(const Duration(seconds: 5));
       expect(connector.handshakes, hasLength(2));
       connector.onConnect = (channel) => channel.accept();
@@ -196,7 +241,10 @@ void main() {
 
   test('a closed connection reconnects with a fresh key after 5 s', () {
     fakeAsync((time) {
-      final keys = ['first', 'second'];
+      final keys = [
+        const Ok<String?, BbxFailure>('first'),
+        const Ok<String?, BbxFailure>('second'),
+      ];
       final s = socket(readApiKey: () async => keys[reads++]);
       unawaited(s.connect());
       time.flushMicrotasks();
@@ -230,19 +278,19 @@ void main() {
       expect(s.isConnected, isTrue);
       expect(
         logs.map((r) => '$r'),
-        contains('warning: WebSocket unavailable SocketLikeException'),
+        contains('warning: WebSocket unavailable BbxConnectionFailure'),
       );
       s.dispose();
     });
   });
 
   test('disconnect during the key read prevents a late connection', () async {
-    final key = Completer<String?>();
+    final key = Completer<Result<String?, BbxFailure>>();
     final s = socket(readApiKey: () => key.future);
     final pending = s.connect();
     s.disconnect();
-    key.complete('late');
-    await pending;
+    key.complete(const Ok('late'));
+    expect(await pending, isA<Ok<void, BbxFailure>>());
     expect(connector.handshakes, isEmpty);
     expect(s.isConnected, isFalse);
     s.dispose();
@@ -266,7 +314,7 @@ void main() {
   test('reconnect opens a new handshake', () async {
     final s = socket();
     await s.connect();
-    await s.reconnect();
+    expect(await s.reconnect(), isA<Ok<void, BbxFailure>>());
     expect(connector.handshakes, hasLength(2));
     expect(connector.handshakes.first.channel.fakeSink.closes, 1);
     expect(s.isConnected, isTrue);
@@ -295,17 +343,14 @@ void main() {
     s.dispose();
   });
 
-  test(
-    'dispose closes the message stream and ignores later connects',
-    () async {
-      final s = socket();
-      final done = s.messages.toList();
-      s.dispose();
-      await s.connect();
-      expect(await done, isEmpty);
-      expect(connector.handshakes, isEmpty);
-    },
-  );
+  test('dispose closes the event stream and ignores later connects', () async {
+    final s = socket();
+    final done = s.events.toList();
+    s.dispose();
+    expect(await s.connect(), isA<Ok<void, BbxFailure>>());
+    expect(await done, isEmpty);
+    expect(connector.handshakes, isEmpty);
+  });
 }
 
 class SocketLikeException implements Exception {

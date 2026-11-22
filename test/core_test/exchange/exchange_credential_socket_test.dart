@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:bbx_api/bbx_api.dart';
 import 'package:primitives/primitives.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,6 +91,7 @@ void main() {
       socket.add('invalid JSON SYNTHETIC_PRIVATE_FRAME');
       socket.add('[]');
       socket.add('{"type":{"label":"SYNTHETIC_PRIVATE_FRAME"}}');
+      socket.add('{"type":"kyc","event":"SYNTHETIC_PRIVATE_FRAME"}');
       socket.listen((_) {});
     });
     final datasource = BbxApiNotificationDatasource(
@@ -102,13 +104,29 @@ void main() {
       await subscription.cancel();
       await server.close(force: true);
     });
-    final message = datasource.messageStream.first;
+    final events = <Result<BbxNotification, BbxFailure>>[];
+    final all = Completer<void>();
+    final listening = datasource.events.listen((event) {
+      events.add(event);
+      if (events.length == 4 && !all.isCompleted) all.complete();
+    });
     await datasource.connect();
-    await message;
+    await all.future;
+    await listening.cancel();
+    expect(
+      events.take(3),
+      everyElement(isA<Err<BbxNotification, BbxFailure>>()),
+    );
+    expect(switch (events.last) {
+      Ok(:final value) => value.kind,
+      Err() => fail('Expected the valid frame'),
+    }, BbxNotificationKind.kyc);
     final fine = verify(() => logger.fine(captureAny())).captured;
     expect(fine.join(' '), isNot(contains('SYNTHETIC_PRIVATE_FRAME')));
     final info = verify(() => logger.info(captureAny())).captured;
     expect(info.join(' '), isNot(contains('SYNTHETIC_PRIVATE_FRAME')));
+    final warning = verify(() => logger.warning(captureAny())).captured;
+    expect(warning.join(' '), isNot(contains('SYNTHETIC_PRIVATE_FRAME')));
   });
 
   test('storage errors retry but logout cancels further attempts', () {

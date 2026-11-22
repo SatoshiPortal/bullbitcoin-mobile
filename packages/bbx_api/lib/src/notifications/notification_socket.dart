@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bbx_api/src/bbx_failure.dart';
+import 'package:bbx_api/src/notifications/bbx_notification.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -10,17 +14,6 @@ typedef BbxWebSocketConnector = WebSocketChannel Function(
   Uri uri, {
   required Map<String, Object> headers,
   required Duration pingInterval,
-});
-
-/// Severity of a [BbxNotificationSocket] diagnostic.
-enum BbxNotificationLogLevel { fine, info, warning }
-
-/// Receives the socket's diagnostics. [message] is a fixed text and [error]
-/// is at most the failure's runtime type; neither carries frames or keys.
-typedef BbxNotificationLog = void Function(
-  BbxNotificationLogLevel level,
-  String message, {
-  Type? error,
 });
 
 WebSocketChannel _ioConnector(
@@ -35,18 +28,38 @@ WebSocketChannel _ioConnector(
 
 void _noLog(BbxNotificationLogLevel level, String message, {Type? error}) {}
 
+@internal
+BbxNotificationSocket openBbxNotificationSocket({
+  required String baseUrl,
+  required Future<Result<String?, BbxFailure>> Function() readApiKey,
+  BbxNotificationLog log = _noLog,
+}) => BbxNotificationSocket._(baseUrl, readApiKey, _ioConnector, log);
+
+BbxNotificationSocket bbxNotificationSocketForTesting({
+  required String baseUrl,
+  required Future<Result<String?, BbxFailure>> Function() readApiKey,
+  BbxWebSocketConnector? connector,
+  BbxNotificationLog log = _noLog,
+}) => BbxNotificationSocket._(
+  baseUrl,
+  readApiKey,
+  connector ?? _ioConnector,
+  log,
+);
+
 /// The exchange notification socket, `/ak/api-commcenter`, authenticated
-/// with the `X-API-Key` header.
+/// with the `X-API-Key` header. Instances come from `Bbx.open`; tests use
+/// `package:bbx_api/bbx_api_testing.dart`.
 ///
-/// [connector] opens the socket, by default with `dart:io`.
-/// [readApiKey] is called before every handshake. A `null` key means the
-/// user is signed out: the socket stays closed until the next [connect]. An
-/// [Exception] thrown by [readApiKey] or by the connection is a failure:
-/// the socket retries 5 seconds later until [disconnect] or [dispose]. An
-/// [Error] disconnects and propagates.
+/// The credential is read before every handshake. `Ok(null)` means the user is
+/// signed out: the socket stays closed, emits nothing and never retries until
+/// the next [connect]. A credential or connection failure is emitted on
+/// [events] and returned by [connect], and the socket retries 5 seconds later
+/// until [disconnect] or [dispose]. An [Error] disconnects and propagates.
 ///
-/// [messages] emits each frame that decodes to a JSON object; other frames
-/// are dropped.
+/// [events] emits a decoded notification for each valid frame and a
+/// [BbxResponseFormatFailure] for each malformed frame. Raw frames remain
+/// private to the package.
 class BbxNotificationSocket {
   // A missed pong closes the socket, so a connection the OS dropped silently
   // reaches _handleDisconnect and auto-reconnects.
@@ -54,7 +67,7 @@ class BbxNotificationSocket {
   static const retryDelay = Duration(seconds: 5);
 
   final String _baseUrl;
-  final Future<String?> Function() _readApiKey;
+  final Future<Result<String?, BbxFailure>> Function() _readApiKey;
   final BbxWebSocketConnector _connector;
   final BbxNotificationLog _log;
 
@@ -68,14 +81,15 @@ class BbxNotificationSocket {
   bool _isManuallyDisconnected = false;
   bool _isConnecting = false;
 
-  final _messageController = StreamController<Map<String, dynamic>>.broadcast();
+  final _eventController =
+      StreamController<Result<BbxNotification, BbxFailure>>.broadcast();
 
-  BbxNotificationSocket({
-    required this._baseUrl,
-    required this._readApiKey,
-    BbxWebSocketConnector? connector,
-    this._log = _noLog,
-  }) : _connector = connector ?? _ioConnector;
+  BbxNotificationSocket._(
+    this._baseUrl,
+    this._readApiKey,
+    this._connector,
+    this._log,
+  );
 
   /// The socket URL for the API at [baseUrl]: `http(s)` becomes `ws(s)`,
   /// a missing scheme becomes `wss`, trailing slashes are dropped.
@@ -101,12 +115,13 @@ class BbxNotificationSocket {
 
   Uri get uri => Uri.parse(webSocketUrl(_baseUrl));
 
-  Stream<Map<String, dynamic>> get messages => _messageController.stream;
+  Stream<Result<BbxNotification, BbxFailure>> get events =>
+      _eventController.stream;
 
   bool get isConnected => _isConnected;
 
-  Future<void> connect() async {
-    if (_disposed || _isConnected || _isConnecting) return;
+  Future<Result<void, BbxFailure>> connect() async {
+    if (_disposed || _isConnected || _isConnecting) return const Ok(null);
     _retryTimer?.cancel();
     final attempt = Object();
     _attempt = attempt;
@@ -114,9 +129,18 @@ class BbxNotificationSocket {
     _isManuallyDisconnected = false;
 
     try {
-      final apiKey = await _readApiKey();
-      if (!identical(_attempt, attempt)) return;
+      final credential = await _readApiKey();
+      if (!identical(_attempt, attempt)) return const Ok(null);
+      final String? apiKey;
+      switch (credential) {
+        case Ok(:final value):
+          apiKey = value;
+        case Err(:final failure):
+          return _connectionFailure(failure);
+      }
       if (apiKey == null) {
+        // Signed out: not a failure, so nothing is emitted and no retry is
+        // scheduled. The next connect reads the credential again.
         _attempt = null;
         _isConnecting = false;
         _isManuallyDisconnected = true;
@@ -125,7 +149,7 @@ class BbxNotificationSocket {
           BbxNotificationLogLevel.fine,
           'WebSocket skipped: user not authenticated',
         );
-        return;
+        return const Ok(null);
       }
 
       final channel = _connector(
@@ -146,47 +170,89 @@ class BbxNotificationSocket {
         },
       );
       await channel.ready;
-      if (!identical(_attempt, attempt)) return;
+      if (!identical(_attempt, attempt)) {
+        return const Ok(null);
+      }
       _isConnected = true;
       _isConnecting = false;
       _hasConnectionFailure = false;
       _log(BbxNotificationLogLevel.fine, 'WebSocket connected successfully');
+      return const Ok(null);
     } catch (error) {
       if (error is Error) {
         if (identical(_attempt, attempt)) disconnect();
         rethrow;
       }
-      if (!identical(_attempt, attempt)) return;
-      _isConnecting = false;
+      if (!identical(_attempt, attempt)) {
+        return const Ok(null);
+      }
       if (error.toString().contains('not upgraded to websocket')) {
         _isManuallyDisconnected = true;
       }
-      _recordConnectionFailure(error);
-      _handleDisconnect();
+      return _connectionFailure(const BbxConnectionFailure());
     }
   }
 
+  Result<void, BbxFailure> _connectionFailure(BbxFailure failure) {
+    _isConnecting = false;
+    _recordConnectionFailure(failure);
+    _eventController.add(Err(failure));
+    _handleDisconnect();
+    return Err(failure);
+  }
+
   void _handleMessage(Object? message) {
-    final Object? decoded;
     try {
-      decoded = message is String ? jsonDecode(message) : message;
+      final decoded = message is String ? jsonDecode(message) : message;
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('Expected a JSON object');
+      }
+      final notification = _decodeNotification(decoded);
+      // Even the discriminator is untrusted and may contain account data.
+      _log(BbxNotificationLogLevel.info, 'WebSocket message received');
+      _eventController.add(Ok(notification));
     } on FormatException {
       _log(
         BbxNotificationLogLevel.warning,
         'WebSocket message rejected: invalid JSON',
       );
-      return;
-    }
-    if (decoded is! Map<String, dynamic>) {
-      _log(
-        BbxNotificationLogLevel.warning,
-        'WebSocket message rejected: invalid shape',
+      _eventController.add(
+        const Err(BbxResponseFormatFailure('notification frame')),
       );
-      return;
     }
-    // Even the discriminator is untrusted and may contain account data.
-    _log(BbxNotificationLogLevel.info, 'WebSocket message received');
-    _messageController.add(decoded);
+  }
+
+  static BbxNotification _decodeNotification(Map<String, dynamic> json) {
+    final type = json['type'];
+    if (type != null && type is! String) {
+      throw const FormatException('Expected a nullable string: type');
+    }
+    final orderId = _optionalString(json, 'orderId');
+    final event = _optionalString(json, 'event');
+    return BbxNotification(
+      kind: switch (type) {
+        'balance' => BbxNotificationKind.balance,
+        'group' => BbxNotificationKind.group,
+        'kyc' => BbxNotificationKind.kyc,
+        'userPreferences' => BbxNotificationKind.userPreferences,
+        'message' => BbxNotificationKind.message,
+        'order' => BbxNotificationKind.order,
+        'limitOrder' => BbxNotificationKind.limitOrder,
+        'user' => BbxNotificationKind.user,
+        'recipient' => BbxNotificationKind.recipient,
+        _ => BbxNotificationKind.unknown,
+      },
+      orderId: orderId,
+      event: event,
+    );
+  }
+
+  static String? _optionalString(Map<String, dynamic> json, String field) {
+    return switch (json[field]) {
+      null => null,
+      String value => value,
+      _ => throw FormatException('Expected a nullable string: $field'),
+    };
   }
 
   void _handleDisconnect() {
@@ -222,12 +288,12 @@ class BbxNotificationSocket {
     }
   }
 
-  void _recordConnectionFailure(Object error) {
+  void _recordConnectionFailure(BbxFailure failure) {
     if (_hasConnectionFailure) {
       _log(
         BbxNotificationLogLevel.info,
         'WebSocket retry failed',
-        error: error.runtimeType,
+        error: failure.runtimeType,
       );
       return;
     }
@@ -235,7 +301,7 @@ class BbxNotificationSocket {
     _log(
       BbxNotificationLogLevel.warning,
       'WebSocket unavailable',
-      error: error.runtimeType,
+      error: failure.runtimeType,
     );
   }
 
@@ -244,8 +310,7 @@ class BbxNotificationSocket {
       disconnect();
       throw error;
     }
-    _recordConnectionFailure(error);
-    _handleDisconnect();
+    _connectionFailure(const BbxConnectionFailure());
   }
 
   void disconnect() {
@@ -260,15 +325,15 @@ class BbxNotificationSocket {
     _log(BbxNotificationLogLevel.info, 'WebSocket manually disconnected');
   }
 
-  Future<void> reconnect() async {
+  Future<Result<void, BbxFailure>> reconnect() async {
     disconnect();
-    await connect();
+    return connect();
   }
 
   void dispose() {
     if (_disposed) return;
     _disposed = true;
     disconnect();
-    unawaited(_messageController.close());
+    unawaited(_eventController.close());
   }
 }

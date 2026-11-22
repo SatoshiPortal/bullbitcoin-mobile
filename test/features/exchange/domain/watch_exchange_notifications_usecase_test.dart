@@ -32,7 +32,7 @@ class _Keys extends Mock implements ExchangeApiKeyRepository {}
 class _MockSettings extends Mock implements Preferences {}
 
 NotificationMessage _message(NotificationMessageKind kind) =>
-    NotificationMessage(kind: kind, rawData: const {});
+    NotificationMessage(kind: kind);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

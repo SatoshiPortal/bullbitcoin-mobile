@@ -187,10 +187,6 @@ void main() {
         NotificationMessage(
           kind: NotificationMessageKind.recipient,
           event: 'VIRTUAL_IBAN_ACTIVATED',
-          rawData: const {
-            'type': 'recipient',
-            'event': 'VIRTUAL_IBAN_ACTIVATED',
-          },
         ),
       );
 

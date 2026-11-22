@@ -1,8 +1,8 @@
 /// Client for the Bull Bitcoin exchange API.
 ///
-/// [Bbx.open] returns the authenticated HTTP groups. Operations return a
-/// [Result] of owned values or a [BbxFailure]. HTTP wire codecs and the
-/// transport stay internal;
+/// [Bbx.open] returns the authenticated HTTP groups and the [Bbx.notifications]
+/// socket. Operations return a [Result] of owned values or a [BbxFailure].
+/// Wire JSON, protocol exceptions and foreign transport types stay internal;
 /// transport fakes and fixture codecs live in `bbx_api_testing.dart`.
 library;
 
@@ -13,7 +13,8 @@ export 'src/commcenter/announcement.dart';
 export 'src/commcenter/commcenter_api.dart';
 export 'src/commcenter/support_message.dart';
 export 'src/kyc/kyc_api.dart';
-export 'src/notifications/notification_socket.dart';
+export 'src/notifications/bbx_notification.dart';
+export 'src/notifications/notification_socket.dart' show BbxNotificationSocket;
 export 'src/order_triggers/dca.dart';
 export 'src/order_triggers/limit_order.dart';
 export 'src/order_triggers/order_triggers_api.dart' show OrderTriggersApi;

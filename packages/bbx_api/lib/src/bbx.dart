@@ -4,6 +4,8 @@ import 'package:bbx_api/src/bbx_transport.dart';
 import 'package:bbx_api/src/commcenter/commcenter_api.dart';
 import 'package:bbx_api/src/kyc/kyc_api.dart';
 import 'package:bbx_api/src/order_triggers/order_triggers_api.dart';
+import 'package:bbx_api/src/notifications/bbx_notification.dart';
+import 'package:bbx_api/src/notifications/notification_socket.dart';
 import 'package:bbx_api/src/orders/orders_api.dart';
 import 'package:bbx_api/src/prices/prices_api.dart';
 import 'package:bbx_api/src/recipients/recipients_api.dart';
@@ -20,11 +22,13 @@ import 'package:primitives/primitives.dart';
 /// from that read propagates unchanged.
 ///
 /// Owned values cross the API boundary; their wire JSON and parsers stay
-/// internal. See [CommcenterApi], [KycApi], [OrderTriggersApi],
+/// internal. See [notifications], [CommcenterApi], [KycApi], [OrderTriggersApi],
 /// [OrdersApi], [PricesApi], [RecipientsApi] and [UsersApi] for the supported
 /// capabilities.
 final class Bbx {
   final BbxTransport _transport;
+
+  final BbxNotificationSocket notifications;
 
   late final CommcenterApi commcenter = CommcenterApi(_transport);
   late final KycApi kyc = KycApi(_transport);
@@ -34,10 +38,10 @@ final class Bbx {
   late final RecipientsApi recipients = RecipientsApi(_transport);
   late final UsersApi users = UsersApi(_transport);
 
-  /// Wraps the transport. Internal: callers use
+  /// Wraps the transport and notification socket. Internal: callers use
   /// [Bbx.open] and tests use `package:bbx_api/bbx_api_testing.dart`.
   @internal
-  Bbx.fromTransport(this._transport);
+  Bbx.fromTransport(this._transport, {required this.notifications});
 
   /// The API at [endpoint], authenticated with the key [readActiveApiKey]
   /// returns for each request.
@@ -48,11 +52,23 @@ final class Bbx {
     required String endpoint,
     required Future<Result<String?, BbxFailure>> Function() readActiveApiKey,
     BbxTimeouts timeouts = const BbxTimeouts(),
+    BbxNotificationLog notificationLog = _ignoreNotificationLog,
   }) => Bbx.fromTransport(
     BbxTransport.open(
       endpoint: endpoint,
       readActiveApiKey: readActiveApiKey,
       timeouts: timeouts,
     ),
+    notifications: openBbxNotificationSocket(
+      baseUrl: endpoint,
+      readApiKey: readActiveApiKey,
+      log: notificationLog,
+    ),
   );
 }
+
+void _ignoreNotificationLog(
+  BbxNotificationLogLevel level,
+  String message, {
+  Type? error,
+}) {}

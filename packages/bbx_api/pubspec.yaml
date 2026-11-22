@@ -1,7 +1,8 @@
 name: bbx_api
 description: >-
   Pure-Dart client for the Bull Bitcoin exchange API: authenticated JSON-RPC
-  groups that publish owned values and Results, plus the notification socket.
+  groups and the notification socket, publishing owned values and Results while
+  keeping wire codecs and foreign transports out of the ordinary public API.
 publish_to: "none"
 version: 0.1.0
 

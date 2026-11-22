@@ -129,10 +129,7 @@ void main() {
     build: buildCubit,
     act: (cubit) async {
       notificationStream.add(
-        const NotificationMessage(
-          kind: NotificationMessageKind.limitOrder,
-          rawData: {},
-        ),
+        const NotificationMessage(kind: NotificationMessageKind.limitOrder),
       );
       await Future<void>.delayed(Duration.zero);
     },
@@ -147,10 +144,7 @@ void main() {
     build: buildCubit,
     act: (cubit) async {
       notificationStream.add(
-        const NotificationMessage(
-          kind: NotificationMessageKind.balance,
-          rawData: {},
-        ),
+        const NotificationMessage(kind: NotificationMessageKind.balance),
       );
       await Future<void>.delayed(Duration.zero);
     },
