@@ -62,6 +62,7 @@ Secrets
 |   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
 |   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
 `-- databaseKeys(module:)
+    |-- open(name:, file:, [existingSchemaVersion:]) -> Future<Result<QueryExecutor, DatabaseOpenFailure>>
     |-- getOrCreate(name:) -> DatabaseKey
     |-- get(name:) -> DatabaseKey
     `-- reset(name:) -> void

@@ -60,6 +60,8 @@ graph TD
   style label_editor stroke:#c2f687
   labels["labels"]
   style labels stroke:#a4c2d7
+  legacy_storage["legacy_storage"]
+  style legacy_storage stroke:#894488
   mempool["mempool"]
   style mempool stroke:#26e46e
   network["network"]
@@ -163,6 +165,7 @@ graph TD
   labels --> bull_payjoin
   labels --> primitives
   labels --> sync
+  legacy_storage --> primitives
   mempool --> bull_logger
   mempool --> bull_tor
   mempool --> primitives
@@ -237,6 +240,7 @@ graph TD
     file_system
     google_drive
     labels
+    legacy_storage
     mempool
     notifications
     novlang
