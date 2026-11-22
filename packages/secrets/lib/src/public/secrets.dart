@@ -273,7 +273,7 @@ final class Secrets {
   ///
   /// The module name is fixed in the handle; each operation names only a database within that module. Changing this API does not change the persisted key namespace.
   DatabaseKeys databaseKeys({required String module}) {
-    _requireKeySegment(module, 'module');
+    _requireDatabaseModule(module);
     return DatabaseKeys._(_databaseKeys, module);
   }
 
@@ -290,7 +290,7 @@ final class Secrets {
     required F deferred,
     required F unavailable,
   }) {
-    _requireKeySegment(module, 'module');
+    _requireDatabaseModule(module);
     _requireKeySegment(name, 'name');
     if (schema < 1) throw ArgumentError.value(schema, 'schema');
     return captureDatabaseWorkerOpener(
@@ -443,6 +443,13 @@ final class DatabaseKeys {
   Future<Result<void, SecretFailure>> reset({required String name}) async {
     _requireKeySegment(name, 'name');
     return _repository.reset(module: _module, name: name);
+  }
+}
+
+void _requireDatabaseModule(String module) {
+  _requireKeySegment(module, 'module');
+  if (module == inventoryModule) {
+    throw ArgumentError('The wallet inventory does not export database keys');
   }
 }
 

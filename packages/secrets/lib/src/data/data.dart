@@ -12,5 +12,6 @@ export 'database_worker.dart' show captureDatabaseWorkerOpener;
 export 'encrypted_database.dart' show openEncryptedDatabase;
 export 'exceptions.dart';
 export 'fss_datasource.dart' show FlutterSecureStorageDatasource;
+export 'inventory_store.dart' show inventoryModule;
 export 'models/key_model.dart' show KeyKind;
 export 'secret_repository.dart' show SecretRepository;

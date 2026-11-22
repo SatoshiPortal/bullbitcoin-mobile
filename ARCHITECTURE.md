@@ -460,6 +460,10 @@ Electrum also owns the declarations, generated rows and queries for `ElectrumSer
 
 The native flock sentinel is stable and independently opened per admission. Temporary connections close before exclusivity is released; runtime reacquires shared admission and revalidates. All resources register before publication. Failed or uncertain closure retains the admission in quarantine; Background Tasks returns retry after cleanup failure. The historical file and PIN entries cannot be retired by this slice. Platform durability and native lifecycle validation remain separate release gates.
 
+### Secrets inventory storage
+
+The schema owned by `packages/secrets` stores wallet definitions, derivation records, access views, credentials and the global access state. Its split-v1 participant imports raw schema-16 rows, the initial view and its access state under exclusive admission. Its receipt commits in the same transaction after row-by-row verification. Secret material and module keys stay in the OS keystore. The participant leaves the source and legacy access entries available for coordinated retirement after the complete manifest verifies.
+
 ### Wallet-independent chain operations
 
 Send and Payjoin consume the chain operations published by `sync` through `WalletConnectionPort`. The former `core/blockchain` adapters are removed. Electrum implements connection selection and fallback; Payjoin retains its script-based reconciliation for unrecognized transaction lookup replies, and Send retains authorization and presentation failure mapping.

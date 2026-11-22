@@ -134,7 +134,7 @@ onion-codegen:
 
 # Table-owner package paths in dependency order. Add an owner here when its
 # tables leave the app; its modular outputs must exist before the composer runs.
-DRIFT_OWNER_PACKAGES := packages/electrum packages/mempool packages/labels packages/preferences
+DRIFT_OWNER_PACKAGES := packages/secrets packages/electrum packages/mempool packages/labels packages/preferences
 BUILD_RUNNER_MEMBERS := features/access features/fees packages/fees features/announcements features/bitcoin_price features/network packages/sync packages/bull_payjoin packages/bull_pricer packages/swaps packages/rust_bindings packages/satoshifier features/signers features/recoverbull features/btc_map features/label_editor
 BUILD_RUNNER_WATCH_MEMBERS := features/fees packages/fees packages/bull_payjoin packages/bull_pricer packages/swaps
 
@@ -215,6 +215,10 @@ drift-migrations:
 	fvm dart run drift_dev make-migrations
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
+
+.PHONY: secrets-drift-migrations
+secrets-drift-migrations:
+	@(cd packages/secrets && fvm dart run drift_dev make-migrations)
 
 .PHONY: mempool-drift-migrations
 mempool-drift-migrations:
