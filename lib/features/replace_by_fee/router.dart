@@ -1,4 +1,6 @@
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:material_ui/material_ui.dart' show Scaffold, Center, Text;
+import 'package:bb_mobile/features/replace_by_fee/domain/replacement_target.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
@@ -21,7 +23,12 @@ class ReplaceByFeeRouter {
     name: ReplaceByFeeRoute.replaceByFeeFlow.name,
     path: ReplaceByFeeRoute.replaceByFeeFlow.path,
     builder: (context, state) {
-      final tx = state.extra! as WalletTransaction;
+      final tx = state.extra;
+      if (tx is! ReplacementTarget) {
+        return Scaffold(
+          body: Center(child: Text(context.loc.oopsSomethingWentWrong)),
+        );
+      }
 
       return BlocProvider(
         create: (_) => ReplaceByFeeCubit(

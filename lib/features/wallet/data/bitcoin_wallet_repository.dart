@@ -36,7 +36,6 @@ import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
-import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -330,7 +329,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   /// Verifies the stored transaction's wallet-owned input signatures against
   /// its watch-only descriptors (GHSA-6jp4-8v48-cc5v guard); no key material
   /// is loaded.
-  Future<TransactionSignatureStatus> getTransactionSignatureStatus({
+  Future<sync.SignatureCheck> getTransactionSignatureStatus({
     required String walletId,
     required String txid,
   }) async {
@@ -347,11 +346,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       Err(:final failure) => throw sync.WalletSnapshotException(failure),
     };
     return switch (await handle.tx.originalSignatures(txid)) {
-      Ok(value: sync.SignatureCheck.valid) => TransactionSignatureStatus.valid,
-      Ok(value: sync.SignatureCheck.invalid) =>
-        TransactionSignatureStatus.invalid,
-      Ok(value: sync.SignatureCheck.unverifiable) =>
-        TransactionSignatureStatus.unverifiable,
+      Ok(:final value) => value,
       Err(:final failure) => throw sync.WalletSnapshotException(failure),
     };
   }
