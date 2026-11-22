@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -91,7 +93,7 @@ class WalletDetailScreen extends StatelessWidget {
               child: Builder(
                 builder: (context) => BullPullableBody(
                   onRefresh: () async {
-                    BitcoinPriceFeature.refresh(context);
+                    unawaited(BitcoinPriceFeature.refresh(context));
                     final transactions = context.read<TransactionsCubit>();
                     transactions.deferReloads();
                     try {

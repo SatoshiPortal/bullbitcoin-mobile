@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
+import 'src/domain/bitcoin_price_failure.dart';
 import 'src/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'src/domain/usecases/get_price_history_usecase.dart';
 import 'src/domain/usecases/read_price_currency_usecase.dart';
@@ -64,7 +65,14 @@ final class _FixturePrices extends BitcoinPriceBloc {
       );
 
   @override
-  void add(BitcoinPriceEvent event) {}
+  Future<Result<void, BitcoinPriceFailure>> refresh({
+    bool onlyIfUnavailable = false,
+  }) async => const Ok(null);
+
+  @override
+  Future<Result<void, BitcoinPriceFailure>> quoteInCurrency(
+    String currency,
+  ) async => const Ok(null);
 }
 
 final class _FixturePreferences

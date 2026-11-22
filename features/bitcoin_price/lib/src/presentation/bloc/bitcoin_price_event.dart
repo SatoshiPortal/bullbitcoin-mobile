@@ -13,13 +13,21 @@ class BitcoinPriceStarted extends BitcoinPriceEvent {
 }
 
 class BitcoinPriceFetched extends BitcoinPriceEvent {
-  const BitcoinPriceFetched();
+  final bool onlyIfUnavailable;
+  final Completer<Result<void, BitcoinPriceFailure>>? completion;
+
+  const BitcoinPriceFetched({this.onlyIfUnavailable = false, this.completion});
 }
 
 class BitcoinPriceCurrencyChanged extends BitcoinPriceEvent {
   final String currencyCode;
 
-  const BitcoinPriceCurrencyChanged({required this.currencyCode});
+  final Completer<Result<void, BitcoinPriceFailure>>? completion;
+
+  const BitcoinPriceCurrencyChanged({
+    required this.currencyCode,
+    this.completion,
+  });
 }
 
 final class _BitcoinPriceAmountDisplayChanged extends BitcoinPriceEvent {

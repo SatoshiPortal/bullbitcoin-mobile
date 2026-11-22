@@ -23,48 +23,57 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
   int _request = 0;
 
-  Future<void> loadPriceHistory({String? currency}) async {
+  Future<Result<void, BitcoinPriceFailure>> loadPriceHistory({
+    String? currency,
+  }) async {
     final request = ++_request;
     emit(state.copyWith(isLoading: true, failure: null));
 
     final currencyResult = currency == null
         ? await _readPriceCurrencyUsecase.execute()
         : Ok<String, BitcoinPriceFailure>(currency);
-    if (isClosed || request != _request) return;
     final String selectedCurrency;
     switch (currencyResult) {
       case Ok(:final value):
         selectedCurrency = value;
       case Err(:final failure):
-        emit(state.copyWith(isLoading: false, failure: failure));
-        return;
+        if (!isClosed && request == _request) {
+          emit(state.copyWith(isLoading: false, failure: failure));
+        }
+        return Err(failure);
+    }
+
+    if (isClosed || request != _request) {
+      return const Err(PriceChartLoadFailure());
     }
 
     final history = await _getPriceHistoryUsecase.execute(
       currencyCode: selectedCurrency,
     );
-    if (isClosed || request != _request) return;
-    emit(switch (history) {
-      Ok(:final value) when value.length >= _minPoints => state.copyWith(
-        isLoading: false,
-        prices: value,
-        currency: selectedCurrency,
-        failure: null,
-      ),
-      // A single point is no chart.
-      Ok() => state.copyWith(
-        isLoading: false,
-        prices: [],
-        currency: selectedCurrency,
-        failure: const PriceChartLoadFailure(),
-      ),
-      Err(:final failure) => state.copyWith(
-        isLoading: false,
-        prices: [],
-        currency: selectedCurrency,
-        failure: failure,
-      ),
-    });
+    final chart = switch (history) {
+      Ok(:final value) when value.length < _minPoints =>
+        const Err<List<PricePoint>, BitcoinPriceFailure>(
+          PriceChartLoadFailure(),
+        ),
+      _ => history,
+    };
+    if (!isClosed && request == _request) {
+      emit(switch (chart) {
+        Ok(:final value) => state.copyWith(
+          isLoading: false,
+          prices: value,
+          currency: selectedCurrency,
+          failure: null,
+        ),
+        Err(:final failure) => state.copyWith(
+          isLoading: false,
+          prices: [],
+          currency: selectedCurrency,
+          failure: failure,
+        ),
+      });
+    }
+    return chart.map<void>((_) {});
   }
 
   void selectDataPoint(int? index) {
@@ -77,9 +86,9 @@ class PriceChartCubit extends Cubit<PriceChartState> {
     }
   }
 
-  Future<void> showChart([String? currency]) async {
+  Future<Result<void, BitcoinPriceFailure>> showChart([String? currency]) {
     emit(state.copyWith(showChart: true));
-    await loadPriceHistory(currency: currency);
+    return loadPriceHistory(currency: currency);
   }
 
   void hideChart() {

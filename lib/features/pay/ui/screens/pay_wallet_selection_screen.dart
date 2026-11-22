@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -28,7 +30,7 @@ class _PayWalletSelectionScreenState extends State<PayWalletSelectionScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final currency = context.read<PayBloc>().state.currency;
-      BitcoinPriceFeature.quoteInCurrency(context, currency.code);
+      unawaited(BitcoinPriceFeature.quoteInCurrency(context, currency.code));
     });
   }
 

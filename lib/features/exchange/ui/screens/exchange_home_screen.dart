@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
@@ -230,7 +232,9 @@ class ExchangeHomeScreen extends StatelessWidget {
                                   size: 24,
                                 ),
                                 onPressed: () {
-                                  BitcoinPriceFeature.showChart(context);
+                                  unawaited(
+                                    BitcoinPriceFeature.showChart(context),
+                                  );
                                 },
                               ),
                               BullSupportButton.icon(

@@ -71,12 +71,38 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   /// The currency whose price is being fetched by a currency change, so a
   /// burst of the same change waits for that one request instead of sending
   /// its own.
-  String? _currencyInFlight;
+  ({String code, Future<Result<void, BitcoinPriceFailure>> result})?
+  _currencyInFlight;
+  Future<Result<void, BitcoinPriceFailure>>? _startupInFlight;
 
   /// Counts currency changes, so only the latest one may publish its price:
   /// an answer for a currency the user has since left must not overwrite the
   /// newer one.
   int _currencyRequest = 0;
+
+  Future<Result<void, BitcoinPriceFailure>> refresh({
+    bool onlyIfUnavailable = false,
+  }) {
+    final completion = Completer<Result<void, BitcoinPriceFailure>>();
+    add(
+      BitcoinPriceFetched(
+        onlyIfUnavailable: onlyIfUnavailable,
+        completion: completion,
+      ),
+    );
+    return completion.future;
+  }
+
+  Future<Result<void, BitcoinPriceFailure>> quoteInCurrency(String currency) {
+    final completion = Completer<Result<void, BitcoinPriceFailure>>();
+    add(
+      BitcoinPriceCurrencyChanged(
+        currencyCode: currency,
+        completion: completion,
+      ),
+    );
+    return completion.future;
+  }
 
   @override
   Future<void> close() async {
@@ -89,6 +115,21 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceStarted event,
     Emitter<BitcoinPriceState> emit,
   ) async {
+    await _start(event.currency, emit);
+  }
+
+  Future<Result<void, BitcoinPriceFailure>> _start(
+    String? requestedCurrency,
+    Emitter<BitcoinPriceState> emit,
+  ) => _startupInFlight ??= _loadInitialPrice(requestedCurrency, emit)
+      .whenComplete(() {
+        _startupInFlight = null;
+      });
+
+  Future<Result<void, BitcoinPriceFailure>> _loadInitialPrice(
+    String? requestedCurrency,
+    Emitter<BitcoinPriceState> emit,
+  ) async {
     log.info('FiatCurrenciesStarted');
 
     emit(
@@ -99,7 +140,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     final String currency;
     switch (currencyResult) {
       case Ok(:final value):
-        currency = event.currency ?? value;
+        currency = requestedCurrency ?? value;
       case Err(:final failure):
         emit(
           state.copyWith(
@@ -108,7 +149,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
             loadingPrice: false,
           ),
         );
-        return;
+        return Err(failure);
     }
 
     // Kept even if the price fails below: neither needs the network, and the
@@ -125,7 +166,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
     // The currency changed while this was in flight: the price is for the
     // old one, and the change has fetched its own.
-    if (state.currency != currency) return;
+    if (state.currency != currency) return price.map<void>((_) {});
 
     switch (price) {
       case Ok(:final value):
@@ -148,12 +189,31 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           ),
         );
     }
+    return price.map<void>((_) {});
   }
 
   Future<void> _onFetched(
     BitcoinPriceFetched event,
     Emitter<BitcoinPriceState> emit,
   ) async {
+    final result = _fetchPrice(event.onlyIfUnavailable, emit);
+    event.completion?.complete(result);
+    await result;
+  }
+
+  Future<Result<void, BitcoinPriceFailure>> _fetchPrice(
+    bool onlyIfUnavailable,
+    Emitter<BitcoinPriceState> emit,
+  ) async {
+    if (onlyIfUnavailable && state.hasValidFiatRate) {
+      return const Ok(null);
+    }
+
+    final loadingPrice = _currencyInFlight?.result ?? _startupInFlight;
+    if (onlyIfUnavailable && state.loadingPrice && loadingPrice != null) {
+      return loadingPrice;
+    }
+
     log.info('BitcoinPriceFetched');
 
     final currency = state.currency;
@@ -162,15 +222,14 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     if (currency == null || state.availableCurrencies == null) {
       // Only a full load is deduplicated: one already running (start-up, or
       // an earlier pull) will deliver it.
-      if (state.loadingPrice) return;
-      return _onStarted(const BitcoinPriceStarted(), emit);
+      return loadingPrice ?? _start(null, emit);
     }
 
     final price = await _getBitcoinPriceUsecase.execute(currencyCode: currency);
 
     // The currency changed while this was in flight: the price is for the
     // old one, and the change has fetched its own.
-    if (state.currency != currency) return;
+    if (state.currency != currency) return price.map<void>((_) {});
 
     switch (price) {
       case Ok(:final value):
@@ -187,29 +246,40 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       case Err(:final failure):
         emit(state.copyWith(bitcoinPrice: null, failure: failure));
     }
+    return price.map<void>((_) {});
   }
 
   Future<void> _onCurrencyChanged(
     BitcoinPriceCurrencyChanged event,
     Emitter<BitcoinPriceState> emit,
   ) async {
-    // A burst of the same change shares the request already out. The price
-    // repository bounds how often the pricer is actually asked.
-    if (event.currencyCode == _currencyInFlight) return;
+    final currency = event.currencyCode;
+    final inFlight = _currencyInFlight;
+    final Future<Result<void, BitcoinPriceFailure>> result;
+    if (inFlight != null && inFlight.code == currency) {
+      result = inFlight.result;
+    } else {
+      result = _loadCurrencyPrice(currency, ++_currencyRequest, emit);
+      _currencyInFlight = (code: currency, result: result);
+    }
+    event.completion?.complete(result);
+    await result;
+  }
 
-    log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
-    _currencyInFlight = event.currencyCode;
-    final request = ++_currencyRequest;
-    bool isLatest() => request == _currencyRequest;
+  Future<Result<void, BitcoinPriceFailure>> _loadCurrencyPrice(
+    String currency,
+    int request,
+    Emitter<BitcoinPriceState> emit,
+  ) async {
+    log.info('BitcoinPriceCurrencyChanged to $currency');
 
     try {
       emit(state.copyWith(loadingPrice: true));
 
-      final currency = event.currencyCode;
       final price = await _getBitcoinPriceUsecase.execute(
         currencyCode: currency,
       );
-      if (!isLatest()) return;
+      if (request != _currencyRequest) return price.map<void>((_) {});
 
       emit(
         state.copyWith(
@@ -226,10 +296,11 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           startupFailed: false,
         ),
       );
+      return price.map<void>((_) {});
     } finally {
       // Only the latest request owns the marker: an earlier one finishing,
       // even for the same currency, must not end the sharing of the latest.
-      if (isLatest()) _currencyInFlight = null;
+      if (request == _currencyRequest) _currencyInFlight = null;
     }
   }
 }

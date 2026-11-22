@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bitcoin_price/src/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bitcoin_price/src/presentation/cubit/price_chart_cubit.dart';
 import 'package:bitcoin_price/src/ui/price_history_screen.dart';
@@ -8,6 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+
+import 'domain/bitcoin_price_failure.dart';
 
 import 'domain/usecases/get_bitcoin_price_usecase.dart';
 import 'domain/usecases/get_price_history_usecase.dart';
@@ -81,26 +82,24 @@ final class BitcoinPriceFeature {
   static List<String>? watchCurrencies(BuildContext context) =>
       context.select((BitcoinPriceBloc bloc) => bloc.state.availableCurrencies);
 
-  static void refresh(BuildContext context, {bool onlyIfUnavailable = false}) {
-    final bloc = context.read<BitcoinPriceBloc>();
-    if (onlyIfUnavailable &&
-        (bloc.state.hasValidFiatRate || bloc.state.loadingPrice)) {
-      return;
-    }
-    bloc.add(const BitcoinPriceFetched());
-  }
+  static Future<Result<void, BitcoinPriceFailure>> refresh(
+    BuildContext context, {
+    bool onlyIfUnavailable = false,
+  }) => context.read<BitcoinPriceBloc>().refresh(
+    onlyIfUnavailable: onlyIfUnavailable,
+  );
 
-  static void quoteInCurrency(BuildContext context, String currencyCode) =>
-      context.read<BitcoinPriceBloc>().add(
-        BitcoinPriceCurrencyChanged(currencyCode: currencyCode),
-      );
+  static Future<Result<void, BitcoinPriceFailure>> quoteInCurrency(
+    BuildContext context,
+    String currencyCode,
+  ) => context.read<BitcoinPriceBloc>().quoteInCurrency(currencyCode);
 
   static bool watchChartVisible(BuildContext context) =>
       context.select((PriceChartCubit cubit) => cubit.state.showChart);
 
-  static void showChart(BuildContext context) {
-    unawaited(context.read<PriceChartCubit>().showChart());
-  }
+  static Future<Result<void, BitcoinPriceFailure>> showChart(
+    BuildContext context,
+  ) => context.read<PriceChartCubit>().showChart();
 
   static void hideChart(BuildContext context) =>
       context.read<PriceChartCubit>().hideChart();
