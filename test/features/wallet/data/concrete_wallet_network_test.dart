@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/write.dart' show nativeWalletStoragePath;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' show SyncReason, WalletKey;
 import 'package:primitives/primitives.dart'
@@ -119,4 +121,30 @@ void main() {
       },
     );
   }
+
+  test('native storage keeps regtest and testnet identities distinct', () {
+    final regtest = _row(Network.bitcoinRegtest);
+    final testnet = _row(Network.bitcoinTestnet);
+    final regtestKey = WalletKey(
+      id: regtest.id,
+      network: regtest.network.shared,
+    );
+    final testnetKey = WalletKey(
+      id: testnet.id,
+      network: testnet.network.shared,
+    );
+    expect(regtestKey.network, BitcoinNetwork.regtest);
+    expect(
+      nativeWalletStoragePath('/wallets', regtestKey),
+      isNot(nativeWalletStoragePath('/wallets', testnetKey)),
+    );
+    expect(
+      Network.bitcoinRegtest.requireHistoricalTestnet,
+      throwsA(isA<UnsupportedNetworkException>()),
+    );
+    expect(
+      Network.liquidRegtest.requireHistoricalTestnet,
+      throwsA(isA<UnsupportedNetworkException>()),
+    );
+  });
 }
