@@ -3,6 +3,7 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 
 import 'dart:io';
 
+import 'package:access/setup.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
@@ -65,6 +66,15 @@ void main() {
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       locator.registerSingleton<RecoverBullFeature>(recovery);
+      final accessServices = GetIt.asNewInstance();
+      locator.registerSingleton(
+        AccessFeature.mount(
+          services: accessServices,
+          hasVerifiedBackup: () async => false,
+          onUnlocked: (_) {},
+          onBackUp: (_) async {},
+        ),
+      );
       final signerServices = GetIt.asNewInstance();
       locator.registerSingleton(
         SignersFeature.mount(
@@ -100,6 +110,8 @@ void main() {
         router.dispose();
         await quickActions.close();
         await recovery.dispose();
+        await locator.unregister<AccessFeature>();
+        await accessServices.reset();
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
         await locator.unregister<ExchangeFacade>();

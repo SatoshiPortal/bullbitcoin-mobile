@@ -1,3 +1,4 @@
+import 'package:access/setup.dart' show AccessLocalizations;
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:announcements/announcements.dart'
@@ -14,6 +15,7 @@ export 'package:bb_mobile/generated/l10n/localization.dart'
 // Keep the app on the standalone delegates across automatic regeneration.
 const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   AppLocalizations.delegate,
+  AccessLocalizations.delegate,
   AnnouncementsLocalizations.delegate,
   BitcoinPriceLocalizations.delegate,
   SignersLocalizations.delegate,

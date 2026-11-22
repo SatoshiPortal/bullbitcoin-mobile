@@ -507,12 +507,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "Разблокирай",
-  "appUnlockPinCheckError": "Не може да се заредят настройките за сигурност. Моля, рестартирайте приложението.",
-  "appUnlockPinVerifyError": "Не може да се провери вашият PIN. Моля, опитайте отново.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "Такса за услуга",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -719,10 +713,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "PIN за сигурност",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "Плащането е в процес",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -818,10 +808,6 @@
   "fundExchangeETransferLabelEmail": "Изпратете E-трансфер към този имейл адрес",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "pinCodeCreateButton": "Създайте PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "Режим тестнета",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1453,10 +1439,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "Управлявайте вашия PIN за сигурност",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "transactionSwapDescLnSendCompleted": "Плащането по Lightning е успешно изпратено! Вашият обмен вече е завършен.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -1838,10 +1820,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "Обработка",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "Възстановено",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -1949,10 +1927,6 @@
   "receiveSwapId": "ID за размяна",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "Създайте нов PIN",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "Задайте адресите на портфейла по подразбиране за автоматично теглене на биткойни",
   "@exchangeBitcoinWalletsDescription": {
@@ -2243,10 +2217,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "Продължи",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "Плати фактура",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2439,17 +2409,9 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "неуспешен опит",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "buyShouldBuyAtLeast": "Трябва да купите поне",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "Вашият PIN защитава достъпа до вашия портфейл и настройките. Дръжте го лесно запомнящ се",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "Корпоративен",
   "@payCorporate": {
@@ -2975,10 +2937,6 @@
   "onboardingScreenTitle": "Добре дошли",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
-  },
-  "pinCodeConfirmTitle": "Потвърдете нов PIN",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
   },
   "keyServerLabel": "Сървър за ключове ",
   "@keyServerLabel": {
@@ -3508,10 +3466,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "pinCodeRemoveButton": "Премахване на PIN за сигурност",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "payAddMemo": "Добави бележка (по избор)",
   "@payAddMemo": {
     "description": "Placeholder for memo input field"
@@ -3601,10 +3555,6 @@
   "coldcardStep14": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "PIN код",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "Брой сделки",
   "@exchangeStatisticsTradeCount": {
@@ -4121,10 +4071,6 @@
   "payInvalidAddress": "Невалиден адрес",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "неуспешни опити",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "Експортирай Vault",
   "@exportVaultButton": {
@@ -4850,10 +4796,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PIN-овете не съвпадат",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "autoswapRecipientWalletPlaceholderRequired": "Изберете Bitcoin портфейл *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
@@ -5417,10 +5359,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "Променете PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "Въведете защитен въпрос (10-40 символа)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -5457,10 +5395,6 @@
   "onboardingRecoverWalletButton": "Възстанови портфейла.",
   "@onboardingRecoverWalletButton": {
     "description": "Button label for recovering a wallet in onboarding"
-  },
-  "pinCodeCheckingStatus": "Проверка на състоянието на PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "coreSwapsLnSendFailedRefunding": "Обмяната ще бъде възстановена скоро.",
   "@coreSwapsLnSendFailedRefunding": {
@@ -5542,10 +5476,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "Аутентикация",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "Нисък",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -5583,14 +5513,6 @@
   "backupWalletSuccessTestButton": "Провери резервното копие",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "Настройване на вашия PIN код",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "Моля, завършете резервно копие на портфейла, преди да зададете PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "Трябва да увеличите таксата с поне 1 сат/байт спрямо оригиналната транзакция.",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -5856,10 +5778,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "Аутентикация",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "payNoRouteFound": "Няма маршрут за това плащане",
   "@payNoRouteFound": {
@@ -6161,18 +6079,6 @@
   "exchangeFileUploadClearAll": "Изчисти всичко",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
-  },
-  "appUnlockIncorrectPinError": "Грешен PIN. Моля, опитайте отново. ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "биткойн изпратен!",
   "@buyBitcoinSent": {
@@ -6571,10 +6477,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "==WEBLATE_PART==\nВъведете вашия PIN код за отключване",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "backupSettingsRevealing": "Разкриване...",
   "@backupSettingsRevealing": {
     "description": "Button text while revealing vault key"
@@ -6760,10 +6662,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "Потвърди",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid тестнет",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -6836,10 +6734,6 @@
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
-  },
-  "pinCodeLoading": "Зареждане",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "Име на получателя",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -7151,9 +7045,6 @@
   "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
   "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android",
-  "pinCodeSaveError": "Неуспешно запазване на вашия ПИН. Моля, опитайте отново.",
-  "pinCodeDeleteError": "Неуспешно изтриване на вашия ПИН. Моля, опитайте отново.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
   "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
   "@allSeedViewErrorFetch": {
@@ -8248,6 +8139,5 @@
   "permissionsTitle": "Разрешения",
   "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали",
   "wizardBackgroundTasksDescription": "Проверява плащания при затворено приложение.",
-  "wizardNotificationsDescription": "Разберете, когато пристигне плащане.",
-  "pinCodeLengthHint": "Въведете от {min} до {max} цифри"
+  "wizardNotificationsDescription": "Разберете, когато пристигне плащане."
 }

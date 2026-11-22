@@ -1,0 +1,114 @@
+{
+  "@@locale": "bg",
+  "oopsSomethingWentWrong": "Опа! Нещо се обърка",
+  "appUnlockButton": "Разблокирай",
+  "appUnlockPinCheckError": "Не може да се заредят настройките за сигурност. Моля, рестартирайте приложението.",
+  "appUnlockPinVerifyError": "Не може да се провери вашият PIN. Моля, опитайте отново.",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeSecurityPinTitle": "PIN за сигурност",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeCreateButton": "Създайте PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeManageTitle": "Управлявайте вашия PIN за сигурност",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeProcessing": "Обработка",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeCreateTitle": "Създайте нов PIN",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeContinue": "Продължи",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "appUnlockAttemptSingular": "неуспешен опит",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "pinCodeCreateDescription": "Вашият PIN защитава достъпа до вашия портфейл и настройките. Дръжте го лесно запомнящ се",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "Потвърдете нов PIN",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeRemoveButton": "Премахване на PIN за сигурност",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "appUnlockAttemptPlural": "неуспешни опити",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "pinCodeMismatchError": "PIN-овете не съвпадат",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeChangeButton": "Променете PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCheckingStatus": "Проверка на състоянието на PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeAuthentication": "Аутентикация",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeSettingUp": "Настройване на вашия PIN код",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "Моля, завършете резервно копие на портфейла, преди да зададете PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockScreenTitle": "Аутентикация",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockIncorrectPinError": "Грешен PIN. Моля, опитайте отново. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "==WEBLATE_PART==\nВъведете вашия PIN код за отключване",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "Започни резервно копиране",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeConfirm": "Потвърди",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Зареждане",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeSaveError": "Неуспешно запазване на вашия ПИН. Моля, опитайте отново.",
+  "pinCodeDeleteError": "Неуспешно изтриване на вашия ПИН. Моля, опитайте отново.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Въведете от {min} до {max} цифри"
+}

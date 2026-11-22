@@ -1,0 +1,117 @@
+{
+  "@@locale": "ko",
+  "appUnlockButton": "다운로드",
+  "appUnlockPinCheckError": "보안 설정을 불러올 수 없습니다. 앱을 다시 시작해 주세요.",
+  "appUnlockPinVerifyError": "PIN을 확인할 수 없습니다. 다시 시도해 주세요.",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeSecurityPinTitle": "보안 PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeCreateButton": "PIN 만들기",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeManageTitle": "보안 PIN 관리",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeProcessing": "제품정보",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeCreateTitle": "새 핀 만들기",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeContinue": "계속하기",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "appUnlockAttemptSingular": "실패 시도",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "pinCodeCreateDescription": "PIN은 지갑과 설정에 대한 액세스를 보호합니다. 기억해 주세요.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "새로운 핀을 확인",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeRemoveButton": "보안 PIN 제거",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "appUnlockAttemptPlural": "실패한 시도",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "pinCodeMismatchError": "PIN는 일치하지 않습니다",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "pinCodeChangeButton": "변화 PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCheckingStatus": "PIN 상태 확인",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeAuthentication": "회사연혁",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeSettingUp": "PIN 코드를 설정",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "PIN을 설정하기 전에 지갑 백업을 완료해 주세요",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockScreenTitle": "회사연혁",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockIncorrectPinError": "잘못된 PIN. 다시 시도하십시오. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "잠금을 해제하는 핀 코드를 입력",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "백업하기",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeConfirm": "제품정보",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "제품정보",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "{min}~{max}자리 숫자를 입력하세요"
+}

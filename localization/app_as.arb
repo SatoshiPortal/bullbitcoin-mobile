@@ -59,7 +59,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "backButton": "উভতি যাওক",
   "@backButton": {
     "description": "Generic back button label"
@@ -212,29 +211,12 @@
   "settingsScreenTitle": "ছেটিংছ",
   "testnetModeSettingsLabel": "Testnet মোড",
   "satsBitcoinUnitSettingsLabel": "sats ত প্ৰদৰ্শন কৰক",
-  "pinCodeSettingsLabel": "PIN কোড",
   "languageSettingsLabel": "ভাষা",
   "backupSettingsLabel": "Wallet বেকআপ",
   "fiatCurrencySettingsLabel": "Fiat মুদ্ৰা",
   "languageSettingsScreenTitle": "ভাষা",
   "settingsExchangeSettingsTitle": "Exchange ছেটিংছ",
   "settingsSecurityPinTitle": "নিৰাপত্তা PIN",
-  "pinCodeAuthentication": "প্ৰমাণীকৰণ",
-  "pinCodeCreateTitle": "নতুন PIN তৈয়াৰ কৰক",
-  "pinCodeCreateDescription": "আপোনাৰ PIN আপোনাৰ wallet আৰু ছেটিংছলৈ প্ৰৱেশ সুৰক্ষিত কৰে। ইয়াক মনত ৰখাব পৰাকৈ ছেট কৰক।",
-  "pinCodeConfirmTitle": "নতুন PIN নিশ্চিত কৰক",
-  "pinCodeMismatchError": "PIN মিলা নাই",
-  "pinCodeSecurityPinTitle": "নিৰাপত্তা PIN",
-  "pinCodeManageTitle": "আপোনাৰ নিৰাপত্তা PIN পৰিচালনা কৰক",
-  "pinCodeChangeButton": "PIN সলনি কৰক",
-  "pinCodeCreateButton": "PIN তৈয়াৰ কৰক",
-  "pinCodeRemoveButton": "নিৰাপত্তা PIN আঁতৰাওক",
-  "pinCodeContinue": "অব্যাহত ৰাখক",
-  "pinCodeConfirm": "নিশ্চিত কৰক",
-  "pinCodeLoading": "লোড হৈ আছে",
-  "pinCodeCheckingStatus": "PIN স্থিতি পৰীক্ষা কৰা হৈছে",
-  "pinCodeProcessing": "প্ৰক্ৰিয়া কৰা হৈছে",
-  "pinCodeSettingUp": "আপোনাৰ PIN কোড ছেট কৰা হৈছে",
   "settingsCurrencyTitle": "মুদ্ৰা",
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
@@ -1664,10 +1646,6 @@
   "@pinAuthenticationTitle": {
     "description": "AppBar title for create/confirm PIN screens"
   },
-  "appUnlockScreenTitle": "প্ৰমাণীকৰণ",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
-  },
   "pinCreateHeadline": "নতুন PIN সৃষ্টি কৰক",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
@@ -1696,36 +1674,6 @@
   "pinButtonConfirm": "নিশ্চিত কৰক",
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
-  },
-  "appUnlockEnterPinMessage": "আনলক কৰিবলৈ আপোনাৰ PIN কোড দিয়ক",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
-  "appUnlockIncorrectPinError": "ভুল PIN। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক। ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
-  "appUnlockAttemptSingular": "বিফল প্ৰচেষ্টা",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
-  "appUnlockAttemptPlural": "বিফল প্ৰচেষ্টাসমূহ",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
-  },
-  "appUnlockButton": "আনলক কৰক",
-  "appUnlockPinCheckError": "সুৰক্ষা ছেটিংছ লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি এপ্‌টো পুনৰাৰম্ভ কৰক।",
-  "appUnlockPinVerifyError": "আপোনাৰ PIN যাচাই কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
   },
   "pinStatusLoading": "লোড হৈ আছে",
   "@pinStatusLoading": {
@@ -6336,9 +6284,6 @@
   "onboardingAdvancedOptionsFooter": "আপুনি পিছত App Settings ত এই ছেটিংছ সলনি কৰিব পাৰে",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support ত সহায়ৰ সৈতে যোগাযোগ কৰক",
   "importWalletBitboxAndroidOnly": "BitBox কেৱল Android ত সমৰ্থিত",
-  "pinCodeSaveError": "আপোনাৰ PIN সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "pinCodeDeleteError": "আপোনাৰ PIN মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
   "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
   "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে: {error}",
@@ -7084,6 +7029,5 @@
   "permissionsTitle": "অনুমতি",
   "settingsSearchPermissionsKeywords": "জাননী|নেপথ্যৰ কাম|বেটাৰী|সতৰ্কবাণী",
   "wizardBackgroundTasksDescription": "এপ বন্ধ থাকিলেও পেমেণ্ট পৰীক্ষা কৰে।",
-  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।",
-  "pinCodeLengthHint": "{min}ৰ পৰা {max}টা অংক লিখক"
+  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।"
 }

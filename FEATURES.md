@@ -143,7 +143,11 @@ graph TB
     TX_HISTORY --> LABEL_EDITOR
     SETTINGS --> LABEL_EDITOR
     TOR[Tor<br/>Workspace Package]
-    PIN_CODE[Pin Code]
+    ACCESS[Access<br/>Workspace Feature]
+    ACCESS --> SECRETS
+    ACCESS --> BULL_UI
+    ACCESS --> PRIMITIVES
+    ACCESS --> BULL_LOGGER
     LABELS[Labels Package<br/>Label persistence, BIP-329 and frozen UTXOs]
     LABEL_EDITOR[Label Editor<br/>Notes, labels and BIP-329 files]
     SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
@@ -197,7 +201,6 @@ graph TB
     ANNOUNCEMENTS[Announcements<br/>Workspace Feature]
     CONSOLIDATION[Consolidation]
     ALL_SEED_VIEW[All Seed View]
-    APP_UNLOCK[App Unlock]
     AUTOSWAP[Autoswap]
     SP[Silent Payments]
     AUTOBUY[AutoBuy]
@@ -267,7 +270,7 @@ graph TB
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ADDRESS_MGMT -->|public revision stream| WALLETS
-    ALL_SEED_VIEW --> APP_UNLOCK
+    ALL_SEED_VIEW --> ACCESS
     ALL_SEED_VIEW --> SECRETS
     ALL_SEED_VIEW -->|public custody references| WALLETS
     CORE -->|wallet home composition| ANNOUNCEMENTS
@@ -275,6 +278,8 @@ graph TB
     ANNOUNCEMENTS --> PRIMITIVES
     APP_STARTUP --> WALLETS
     APP_STARTUP --> SECRETS
+    APP_STARTUP --> ACCESS
+    SETTINGS --> ACCESS
     APP_STARTUP --> LOGS
     AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
@@ -286,7 +291,7 @@ graph TB
     WALLETS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> SECRETS
-    BACKUPS --> APP_UNLOCK
+    BACKUPS --> ACCESS
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     WALLETS --> BTC_PRICE
@@ -344,7 +349,6 @@ graph TB
     PAY --> BULL_PAYJOIN
     PAY --> BTC_PRICE
     PAY --> TX_HISTORY
-    PIN_CODE --> CORE
     RECEIVE --> BULL_PAYJOIN
     RECEIVE -->|public targeted routine sync| WALLETS
     RECEIVE --> SETTINGS
@@ -476,7 +480,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -679,3 +683,7 @@ Send uses `sync.broadcastLiquidTransaction` for wallet-independent Liquid broadc
 The wallet module supplies inventory and protocol ports to the runtime in `sync`. Ark and Payjoin consumers pass exact wallet keys to the same runtime instance. The global foreground queue still orders native, swap and Silent Payments work; catalog metadata and presentation enrichment stay outside sync.
 
 Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
+
+## Access ownership
+
+`features/access` replaces PIN Code and App Unlock. App Startup reads PIN status through `Access`, Settings uses the mounted PIN route, and Backup and All Seed View consume the typed reauthentication gate. `AccessFeature.mount` contributes root and settings routes once before startup; the host supplies lazy backup eligibility and navigation callbacks. Secrets retains PIN and failed-attempt storage. Access publishes one failure family while preserving the distinct unlock and PIN-settings locked messages.

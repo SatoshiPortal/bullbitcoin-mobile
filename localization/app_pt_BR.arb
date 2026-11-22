@@ -427,12 +427,6 @@
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
   },
-  "appUnlockButton": "Desbloqueio",
-  "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
-  "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "importQrDeviceJadeStep7": "Se necessário, selecione \"Opções\" para alterar o tipo de endereço",
   "@importQrDeviceJadeStep7": {
     "description": "Jade instruction step 7"
@@ -645,10 +639,6 @@
   "@coreScreensExternalTransfer": {
     "description": "Title for external transfer action"
   },
-  "pinCodeSecurityPinTitle": "PIN de segurança",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "sharedWithBullBitcoin": "compartilhado com Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
@@ -828,10 +818,6 @@
   "transactionSwapDescLnSendDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "pinCodeCreateButton": "Criar PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "backupWalletSuccessTitle": "Backup concluído!",
   "@backupWalletSuccessTitle": {
@@ -1506,10 +1492,6 @@
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
   },
-  "pinCodeManageTitle": "Gerenciar seu PIN de segurança",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "broadcastSignedTxPasteHint": "Cole um PSBT ou transação HEX",
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
@@ -1864,10 +1846,6 @@
   "@payNoPayments": {
     "description": "Empty state message"
   },
-  "pinCodeProcessing": "Processamento",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "paySecurityAnswer": "Resposta de segurança",
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
@@ -2193,10 +2171,6 @@
   "sellCadBalance": "CADA Balanço",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "pinCodeCreateTitle": "Criar novo pino",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "receiveEnterHere": "Entre aqui...",
   "@receiveEnterHere": {
@@ -2551,17 +2525,9 @@
       }
     }
   },
-  "appUnlockAttemptSingular": "tentativa falhada",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "Digite seu PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "pinCodeContinue": "Continue",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
   },
   "swapTransferTo": "Swap para",
   "@swapTransferTo": {
@@ -2718,10 +2684,6 @@
   "sellIBAN": "IBAN",
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
-  },
-  "pinCodeCreateDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "testBackupRecoverWallet": "Recuperar Carteira",
   "@testBackupRecoverWallet": {
@@ -3141,10 +3103,6 @@
   "importQrDeviceSpecterStep8": "No seu dispositivo móvel, toque em Abrir Câmara",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
-  },
-  "pinCodeConfirmTitle": "Confirme o novo pino",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
   },
   "sellQrCode": "Código QR",
   "@sellQrCode": {
@@ -3883,10 +3841,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "pinCodeRemoveButton": "Remover PIN de Segurança",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "replaceByFeeOriginalTransactionTitle": "Transação original",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -4332,10 +4286,6 @@
   "closeDialogButton": "Fechar",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  },
-  "pinCodeSettingsLabel": "Código PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "transactionFeesTotalDeducted": "Esta é a taxa total deduzida do montante enviado",
   "@transactionFeesTotalDeducted": {
@@ -4978,10 +4928,6 @@
   "@buyInputMaxAmountError": {
     "description": "Maximum amount error message"
   },
-  "appUnlockAttemptPlural": "tentativas falhadas",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
-  },
   "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
   "@exchangeDcaAddressLabelBitcoin": {
     "description": "Label for Bitcoin address in DCA settings"
@@ -5456,10 +5402,6 @@
   "autoswapRecipientWalletPlaceholderRequired": "Selecione uma carteira Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
-  },
-  "pinCodeMismatchError": "PINs não correspondem",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
   },
   "sellCalculating": "Cálculo...",
   "@sellCalculating": {
@@ -6568,18 +6510,6 @@
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
-  "appUnlockIncorrectPinError": "PIN incorreto. Por favor, tente novamente. {failedAttempts} {attemptsWord}",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
   "payPayee": "Pagamento",
   "@payPayee": {
     "description": "Label for payee details"
@@ -6897,10 +6827,6 @@
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
-  "pinCodeChangeButton": "Mudar PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "sendScanBitcoinQRCode": "Digitalize qualquer código QR Bitcoin ou Lightning para pagar com bitcoin.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -7012,10 +6938,6 @@
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
   },
-  "pinCodeCheckingStatus": "Verificando o status PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
-  },
   "fundExchangeCrIbanCrcDescription": "Envie uma transferência bancária da sua conta bancária usando os detalhes abaixo ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
@@ -7091,14 +7013,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Tempo de criação Payjoin",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
-  },
-  "appUnlockEnterPinMessage": "Digite seu código do pino para desbloquear",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
-  "pinCodeAuthentication": "Autenticação",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
   },
   "payFeeBumpFailed": "Esboço de taxas falhou",
   "@payFeeBumpFailed": {
@@ -7200,14 +7114,6 @@
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
   },
-  "pinCodeSettingUp": "Configurando seu código PIN",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "Por favor, conclua um backup da carteira antes de definir um PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
-  },
   "dcaSetupTitle": "Definir Recorrer Comprar",
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
@@ -7243,10 +7149,6 @@
   "sellNetAmount": "Montante líquido",
   "@sellNetAmount": {
     "description": "Label for amount after fees"
-  },
-  "pinCodeConfirm": "Confirmação",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
   },
   "fundExchangeSpeiDescription": "Transferir fundos usando seu CLABE",
   "@fundExchangeSpeiDescription": {
@@ -7473,10 +7375,6 @@
   "importQrDeviceWalletName": "Nome da carteira",
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
-  },
-  "appUnlockScreenTitle": "Autenticação",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "receiveAddLabel": "Adicionar etiqueta",
   "@receiveAddLabel": {
@@ -7908,10 +7806,6 @@
   "payFirstNameHint": "Insira o primeiro nome",
   "@payFirstNameHint": {
     "description": "Hint for first name input"
-  },
-  "pinCodeLoading": "A carregar",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "sellNetworkError": "Erro de rede. Por favor, tente novamente",
   "@sellNetworkError": {
@@ -8976,9 +8870,6 @@
   "onboardingAdvancedOptionsFooter": "Você pode alterar essas configurações mais tarde nas configurações do aplicativo",
   "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "A BitBox só é compatível com Android",
-  "pinCodeSaveError": "Não foi possível salvar seu PIN. Por favor, tente novamente.",
-  "pinCodeDeleteError": "Não foi possível excluir seu PIN. Por favor, tente novamente.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
   "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
   "@importMnemonicEmptyLabelError": {
@@ -9660,6 +9551,5 @@
   "permissionsTitle": "Permissões",
   "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
   "wizardBackgroundTasksDescription": "Verifica pagamentos com o app fechado.",
-  "wizardNotificationsDescription": "Saiba quando um pagamento chegar.",
-  "pinCodeLengthHint": "Digite de {min} a {max} dígitos"
+  "wizardNotificationsDescription": "Saiba quando um pagamento chegar."
 }

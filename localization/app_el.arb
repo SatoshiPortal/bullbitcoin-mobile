@@ -375,12 +375,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "Unlock",
-  "appUnlockPinCheckError": "Αδυναμία φόρτωσης ρυθμίσεων ασφαλείας. Επανεκκινήστε την εφαρμογή.",
-  "appUnlockPinVerifyError": "Αδυναμία επαλήθευσης του PIN σας. Παρακαλώ δοκιμάστε ξανά.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "Υπηρεσία Fee",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -648,10 +642,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "Ασφάλεια PIN",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "Πληρωμή σε εξέλιξη",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -747,10 +737,6 @@
   "payPaymentInProgress": "Πληρωμή σε εξέλιξη!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "pinCodeCreateButton": "Δημιουργήστε PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1417,10 +1403,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "Διαχείριση του PIN ασφαλείας σας",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "Bitcoin Price",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -1832,10 +1814,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "Επεξεργασία επεξεργασίας",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "Υποχρηματοδοτούνται",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -1951,10 +1929,6 @@
   "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "Δημιουργήστε νέο pin",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "Ορίστε προεπιλεγμένο πορτοφόλι διευθύνσεις για αυτόματη απόσυρση Bitcoin.",
   "@exchangeBitcoinWalletsDescription": {
@@ -2294,10 +2268,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "Συνεχίστε να συνεχίζετε",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "Pay Invoice",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2528,10 +2498,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "αποτυχημένη απόπειρα",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "Εισάγετε το PIN σας",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
@@ -2539,10 +2505,6 @@
   "buyShouldBuyAtLeast": "Θα πρέπει να αγοράσετε τουλάχιστον",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "Το PIN σας προστατεύει την πρόσβαση στο πορτοφόλι και τις ρυθμίσεις σας. Κρατήστε το αξέχαστη.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "Εταιρική εταιρεία",
   "@payCorporate": {
@@ -3160,10 +3122,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "Επιβεβαίωση νέου pin",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -3748,10 +3706,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "pinCodeRemoveButton": "Αφαιρέστε PIN ασφαλείας",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "Αυτός είναι ο λογαριασμός μου",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -3865,10 +3819,6 @@
   "coldcardStep14": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "Κωδικός PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "Trade Count",
   "@exchangeStatisticsTradeCount": {
@@ -4450,10 +4400,6 @@
   "payInvalidAddress": "Ακυρωμένη διεύθυνση",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "αποτυχημένες απόπειρες",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "Εξαγωγή Vault",
   "@exportVaultButton": {
@@ -5240,10 +5186,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "Τα PIN δεν ταιριάζουν",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "sellUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
   "@sellUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -5867,10 +5809,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "Αλλαγή PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "Εισάγετε το ερώτημα ασφαλείας (10-40 χαρακτήρες)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -5923,10 +5861,6 @@
   "dcaConfirmAutoMessage": "Οι παραγγελίες αγοράς θα τοποθετηθούν αυτόματα ανά αυτές τις ρυθμίσεις. Μπορείτε να τα απενεργοποιήσετε οποιαδήποτε στιγμή.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "Ελέγξτε το καθεστώς PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "coreSwapsLnSendFailedRefunding": "Το Swap θα επιστραφεί σύντομα.",
   "@coreSwapsLnSendFailedRefunding": {
@@ -6000,10 +5934,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "Αναγνώριση",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "Χαμηλή",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -6029,14 +5959,6 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid διεύθυνση",
   "@exchangeBitcoinWalletsLiquidAddressLabel": {
     "description": "Label for Liquid address field in exchange Bitcoin wallets"
-  },
-  "pinCodeSettingUp": "Δημιουργία κωδικού PIN σας",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "Παρακαλώ ολοκληρώστε ένα αντίγραφο ασφαλείας πορτοφολιού πριν ορίσετε PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -6288,10 +6210,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "Αναγνώριση",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "Wallet Name",
   "@importQrDeviceWalletName": {
@@ -6627,18 +6545,6 @@
   "exchangeDcaHideSettings": "Κρυμμένες ρυθμίσεις",
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
-  },
-  "appUnlockIncorrectPinError": "Incorrect PIN. Παρακαλώ δοκιμάστε ξανά. ({failedAttempts} {attemptsWord})]",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "Bitcoin αποστέλλεται!",
   "@buyBitcoinSent": {
@@ -7093,10 +6999,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "Εισάγετε τον κωδικό PIN σας για να ξεκλειδώσετε",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "torSettingsTitle": "Οι ρυθμίσεις Tor",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -7289,10 +7191,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "Επιβεβαίωση",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -7369,10 +7267,6 @@
   "autoswapSelectWallet": "Επιλέξτε ένα πορτοφόλι Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "pinCodeLoading": "Φόρτωση Φόρου",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "Μαθητές Όνομα",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8960,9 +8854,6 @@
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
-  "pinCodeSaveError": "Αδυναμία αποθήκευσης PIN. Παρακαλώ δοκιμάστε ξανά.",
-  "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
   "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
   "@importMnemonicEmptyLabelError": {
@@ -9644,6 +9535,5 @@
   "permissionsTitle": "Άδειες",
   "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών",
   "wizardBackgroundTasksDescription": "Ελέγχει πληρωμές με κλειστή την εφαρμογή.",
-  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή.",
-  "pinCodeLengthHint": "Εισαγάγετε {min} έως {max} ψηφία"
+  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή."
 }

@@ -419,12 +419,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "ปลดล็อค",
-  "appUnlockPinCheckError": "ไม่สามารถโหลดการตั้งค่าความปลอดภัยได้ กรุณาเปิดแอปใหม่",
-  "appUnlockPinVerifyError": "ไม่สามารถยืนยัน PIN ของคุณได้ กรุณาลองอีกครั้ง",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "ค่าธรรมเนียมบริการ",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -718,10 +712,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "ความปลอดภัย",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "การชําระเงินในความคืบหน้า",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -841,10 +831,6 @@
   "fundExchangeETransferLabelEmail": "ส่งอีเมล E-ส่งอีเมลนี้",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "pinCodeCreateButton": "สร้าง PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "โหมดทดสอบ",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1630,10 +1616,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "การจัดการลายนิ้วมือของคุณ",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "ราคา",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -2113,10 +2095,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "การประมวลผลการประมวลผล",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "การคืนเงิน",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -2244,10 +2222,6 @@
   "receiveSwapId": "รหัส",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "สร้างเข็มใหม่",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "ตั้งค่าข้อความเริ่มต้นสําหรับการถอนเงินอัตโนมัติ.",
   "@exchangeBitcoinWalletsDescription": {
@@ -2627,10 +2601,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "อ่านต่อ",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "ใบแจ้งหนี้",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2915,10 +2885,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "พยายามที่จะล้มเหลว",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "ใส่ PIN ของคุณ",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
@@ -2926,10 +2892,6 @@
   "buyShouldBuyAtLeast": "คุณควรซื้ออย่างน้อย",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "ช่วยให้คุณสามารถเข้าถึงกระเป๋าสตางค์และการตั้งค่าของคุณ ลืม.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "องค์กรองค์กร",
   "@payCorporate": {
@@ -3641,10 +3603,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "ยืนยันเข็มใหม่",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "เซิร์ฟเวอร์ ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4330,10 +4288,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "pinCodeRemoveButton": "ลบรหัสผ่าน",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "นี่คือบัญชีของฉัน",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -4455,10 +4409,6 @@
   "coldcardStep14": "การทําธุรกรรมจะถูกนําเข้าในกระเป๋าสตางค์ Bitcoin.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "รหัส PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "ราคา",
   "@exchangeStatisticsTradeCount": {
@@ -5155,10 +5105,6 @@
   "payInvalidAddress": "ที่อยู่",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "พยายามที่จะล้มเหลว",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "การส่งออก",
   "@exportVaultButton": {
@@ -6084,10 +6030,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PINs ไม่จับคู่",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "autoswapRecipientWalletPlaceholderRequired": "เลือกกระเป๋าสตางค์ Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
@@ -6870,10 +6812,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "เปลี่ยน PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "ใส่คําถามด้านความปลอดภัย (10-40 ตัวอักษร)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -6926,10 +6864,6 @@
   "dcaConfirmAutoMessage": "ซื้อคําสั่งซื้อจะวางการตั้งค่าโดยอัตโนมัติ คุณสามารถปิดเวลาได้ตลอดเวลา.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "ตรวจสอบสถานะ PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "ใช้ {pinOrPassword}",
   "@usePasswordInsteadButton": {
@@ -7033,10 +6967,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "ข้อควรระวัง",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "อุณหภูมิต่ํา",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -7092,14 +7022,6 @@
   "backupWalletSuccessTestButton": "ทดสอบการสํารองข้อมูล",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "การตั้งค่ารหัส PIN ของคุณ",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "กรุณาสำรองข้อมูลกระเป๋าเงินก่อนตั้ง PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -7413,10 +7335,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "ข้อควรระวัง",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "ชื่อ",
   "@importQrDeviceWalletName": {
@@ -7808,18 +7726,6 @@
   "exchangeDcaHideSettings": "การตั้งค่า",
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
-  },
-  "appUnlockIncorrectPinError": "PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "Bitcoin!",
   "@buyBitcoinSent": {
@@ -8319,10 +8225,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "ใส่รหัสรหัสของคุณเพื่อปลดล็อค",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "torSettingsTitle": "ปุ่ม",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -8551,10 +8453,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "ยืนยัน",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "การทดสอบของเหลว",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -8647,10 +8545,6 @@
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
-  },
-  "pinCodeLoading": "โหลด",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "ชื่อ",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8848,9 +8742,6 @@
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
-  "pinCodeSaveError": "ไม่สามารถบันทึก PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
-  "pinCodeDeleteError": "ไม่สามารถลบ PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
   "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
   "@importMnemonicEmptyLabelError": {
@@ -9648,6 +9539,5 @@
   "permissionsTitle": "สิทธิ์",
   "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
   "wizardBackgroundTasksDescription": "ตรวจสอบการชำระเงินขณะปิดแอป",
-  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า",
-  "pinCodeLengthHint": "ป้อนตัวเลข {min} ถึง {max} หลัก"
+  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า"
 }

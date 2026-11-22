@@ -1,7 +1,6 @@
 enum SettingsRoute {
   settings('/settings'),
   search('search'),
-  pinCode('pin-code'),
   language('language'),
   backupSettings('backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),

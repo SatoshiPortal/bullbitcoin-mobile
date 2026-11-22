@@ -48,12 +48,12 @@ class BullPinPad extends StatefulWidget {
   static const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
   /// Three columns, four rows of outlined keys across the full width, wider
-  /// than tall: up to 56 tall, and at least 44 in a short window.
+  /// than tall: up to 56 tall, and at least 48 in a short window.
   static const grid = BullKeypadGrid(
     columns: 3,
     rows: 4,
     aspectRatio: 0.5,
-    minKeyHeight: 44,
+    minKeyHeight: 48,
     maxKeyHeight: 56,
     maxKeyWidth: 160,
     gap: 8,
@@ -215,6 +215,7 @@ class _DigitKey extends StatelessWidget {
     return BullKeyCap(
       enabled: enabled,
       onTap: () => onTap(digit),
+      semanticLabel: '$digit',
       height: metrics.keyHeight,
       fill: context.bull.transparent,
       borderColor: enabled
@@ -247,6 +248,7 @@ class _BackspaceKey extends StatelessWidget {
     return BullKeyCap(
       enabled: enabled,
       onTap: onTap,
+      semanticLabel: MaterialLocalizations.of(context).deleteButtonTooltip,
       height: metrics.keyHeight,
       fill: context.bull.transparent,
       suppressAnimation: true,
@@ -280,10 +282,13 @@ class _ScrambleKey extends StatelessWidget {
     final keypad = context.bullKeypad;
     return Tooltip(
       message: hint,
+      excludeFromSemantics: true,
       child: BullKeyCap(
         key: const Key('pinPadScrambleToggle'),
         enabled: enabled,
         onTap: onTap,
+        semanticLabel: hint,
+        toggled: active,
         height: metrics.keyHeight,
         fill: context.bull.transparent,
         suppressAnimation: true,

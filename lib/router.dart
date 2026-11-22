@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show SwapFacade;
 import 'package:preferences/preferences.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
-import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
@@ -206,13 +206,14 @@ class AppRouter {
       ExchangeRouter.authRoute(_exchangeConfig),
       ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
-      AppUnlockRouter.route,
+      ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(
         onOpenCoins: (context, wallet) =>
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
+        accessRoutes: locator<AccessFeature>().routes.settings,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,
         priceRoutes: locator<BitcoinPriceFeature>().routes,

@@ -419,12 +419,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "Unlock",
-  "appUnlockPinCheckError": "Güvenlik ayarları yüklenemedi. Lütfen uygulamayı yeniden başlatın.",
-  "appUnlockPinVerifyError": "PIN'iniz doğrulanamadı. Lütfen tekrar deneyin.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "Servis Ücreti",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -714,10 +708,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "Güvenlik PIN",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "İlerlemede Ödeme",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -837,10 +827,6 @@
   "fundExchangeETransferLabelEmail": "E-transferi bu e-postaya gönderin",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "pinCodeCreateButton": "PIN oluşturun",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1622,10 +1608,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "Güvenlik PINinizi Yönetin",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "Bitcoin Fiyatı",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -2105,10 +2087,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "İşleme",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "Yeniden finanse edildi",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -2236,10 +2214,6 @@
   "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "Yeni pin oluşturun",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "Otomatik Bitcoin geri çekilmeleri için varsayılan cüzdan adreslerini ayarlayın.",
   "@exchangeBitcoinWalletsDescription": {
@@ -2615,10 +2589,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "Devam etmeye devam et",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "Pay In bill",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2899,10 +2869,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "başarısız deneme başarısız deneme",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "PIN'inizi girin",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
@@ -2910,10 +2876,6 @@
   "buyShouldBuyAtLeast": "En azından satın almalısınız",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "PIN'iniz cüzdanınız ve ayarlarınıza erişimi korur. Onu unutulmaz tut.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "Kurumsal",
   "@payCorporate": {
@@ -3621,10 +3583,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "Yeni pin onaylayın",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4302,10 +4260,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "pinCodeRemoveButton": "Güvenlik PIN",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "Bu benim hesabım",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -4427,10 +4381,6 @@
   "coldcardStep14": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "PIN kodu",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "Trade Count",
   "@exchangeStatisticsTradeCount": {
@@ -5114,10 +5064,6 @@
   "payInvalidAddress": "Invalid address",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "başarısız girişimler başarısız oldu",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "Export Vault",
   "@exportVaultButton": {
@@ -6013,10 +5959,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PIN'ler eşleşmez",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "autoswapRecipientWalletPlaceholderRequired": "Bir Bitcoin cüzdanı seçin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
@@ -6795,10 +6737,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "PIN Change PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "Güvenlik sorusu (10-40 karakter)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -6851,10 +6789,6 @@
   "dcaConfirmAutoMessage": "Satın alma emirleri bu ayarlarda otomatik olarak yerleştirilir. Onları her zaman devre dışı bırakabilirsin.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "PIN statüsünü kontrol edin",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "Bunun yerine {pinOrPassword} kullan >>",
   "@usePasswordInsteadButton": {
@@ -6958,10 +6892,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "Kimlik Doğrulama",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "Low",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -7017,14 +6947,6 @@
   "backupWalletSuccessTestButton": "Test Backup",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "PIN kodunuzu yapılandırın",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "PIN ayarlamadan önce lütfen bir cüzdan yedeklemesi tamamlayın",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -7338,10 +7260,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "Kimlik Doğrulama",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "Cüzdan Adı",
   "@importQrDeviceWalletName": {
@@ -7729,18 +7647,6 @@
   "exchangeDcaHideSettings": "Gizle ayarları",
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
-  },
-  "appUnlockIncorrectPinError": "Incorrect PIN. Lütfen tekrar deneyin. {failedAttempts} {attemptsWord}",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "Bitcoin gönderdi!",
   "@buyBitcoinSent": {
@@ -8214,10 +8120,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "Kilit kodunuzu kilidini açmak için girin",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "torSettingsTitle": "Tor Ayarları",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -8442,10 +8344,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "Onay Onay Onay Onaylandı",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "Sıvı Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -8538,10 +8436,6 @@
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
-  },
-  "pinCodeLoading": "Yükleniyor",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8844,9 +8738,6 @@
   "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
   "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir",
-  "pinCodeSaveError": "PIN kodunuz kaydedilemedi. Lütfen tekrar deneyin.",
-  "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
   "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
   "@importMnemonicEmptyLabelError": {
@@ -9644,6 +9535,5 @@
   "permissionsTitle": "İzinler",
   "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
   "wizardBackgroundTasksDescription": "Uygulama kapalıyken ödemeleri kontrol eder.",
-  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun.",
-  "pinCodeLengthHint": "{min} ile {max} arasında rakam girin"
+  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun."
 }

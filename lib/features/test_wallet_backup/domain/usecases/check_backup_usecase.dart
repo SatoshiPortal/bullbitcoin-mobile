@@ -22,6 +22,12 @@ class CheckBackupUsecase {
     required this._backupStatus,
   });
 
+  /// An unavailable backup check never authorizes PIN creation.
+  Future<bool> hasVerifiedBackup() async => switch (await execute()) {
+    Ok(:final value) => value,
+    Err() => false,
+  };
+
   @useResult
   Future<Result<bool, TestWalletBackupFailure>> execute() async {
     try {
