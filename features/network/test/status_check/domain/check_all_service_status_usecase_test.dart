@@ -408,6 +408,32 @@ void main() {
     expect(result.lastChecked, isNotNull);
   });
 
+  test('a wallet read failure leaves embedded Tor status unknown', () async {
+    final electrum = _MockElectrumServers();
+    when(() => electrum.check(network: any(named: 'network')))
+        .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
+    final payjoinPolicy = _MockPayjoinPolicyAccess();
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
+    final tor = _MockTor();
+    final usecase = CheckAllServiceStatusUsecase(
+      electrumServers: electrum,
+      getIndexPrice: _FakeIndexPriceReader(fiatAmount: 70000).call,
+      payjoinPolicy: payjoinPolicy,
+      payjoinDiagnostics: _MockPayjoinDiagnostics(),
+      checkBitcoinFees: (_) async {},
+      isTorRequired: () async => const Err(_WalletReadFailure()),
+      checkServerConnection: () async => const Ok(false),
+      readTorPreferences: () async => _settings(useTorProxy: false),
+      tor: tor,
+    );
+
+    final result = await usecase.execute(network: NetworkEnv.mainnet);
+
+    expect(result.tor.status, ServiceStatus.unknown);
+    expect(result.bitcoinElectrum.status, ServiceStatus.online);
+    verifyNever(() => tor.embedded);
+  });
+
   test('reports only the failing Electrum probe as unknown when it throws an Exception', () async {
     final electrum = _MockElectrumServers();
     when(() => electrum.check(network: ElectrumServerNetwork.bitcoinMainnet))
@@ -487,6 +513,10 @@ void main() {
       throwsA(isA<StateError>()),
     );
   });
+}
+
+final class _WalletReadFailure extends Failure {
+  const _WalletReadFailure();
 }
 
 /// Send and the exchange switches ship on, so payjoin is unused only with all
