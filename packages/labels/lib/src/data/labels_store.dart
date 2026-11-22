@@ -93,9 +93,16 @@ final class LabelsStore {
               );
             } else if (token != null) {
               isolate = await _spawnLabelsWorker(
-                path,
-                existing,
-                token,
+                Secrets.databaseOpener<DatabaseOpenFailure>(
+                  module: 'labels',
+                  name: 'main',
+                  file: file,
+                  schema: 1,
+                  deferred: const DatabaseNotReady(),
+                  unavailable: const DatabaseFileUnavailable(
+                    DatabaseFileProblem.inaccessible,
+                  ),
+                )(existing),
                 sendStatus,
                 confirmation.sendPort,
               );
@@ -144,27 +151,14 @@ final class _StoreOpenException implements Exception {
 // Keep the spawn closure in a scope containing only transferable arguments.
 // Capturing the open() frame could capture its ReceivePort and live admission.
 Future<DriftIsolate> _spawnLabelsWorker(
-  String path,
-  bool existing,
-  RootIsolateToken token,
+  Future<Result<QueryExecutor, DatabaseOpenFailure>> Function() open,
   SendPort sendStatus,
   SendPort closed,
 ) => DriftIsolate.spawn(() {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(token);
   final notification = NativeCloseAcknowledgement(closed);
   return DatabaseConnection(
     LazyDatabase(() async {
-      final opened =
-          await Secrets(
-                scratchDirectory: () async =>
-                    throw UnsupportedError('Database-only capability'),
-              )
-              .databaseKeys(module: 'labels')
-              .open(
-                name: 'main',
-                file: File(path),
-                existingSchemaVersion: existing ? 1 : null,
-              );
+      final opened = await open();
       switch (opened) {
         case Ok(:final value):
           sendStatus.send(null);
