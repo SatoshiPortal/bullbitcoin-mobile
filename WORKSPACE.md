@@ -197,6 +197,8 @@ graph TD
   secrets --> bull_logger
   secrets --> rust_bindings
   secrets --> legacy_storage
+  signers --> secrets
+  signers --> legacy_storage
   signers --> bitbox_transport
   signers --> bull_logger
   signers --> bull_ui
@@ -209,9 +211,11 @@ graph TD
   swaps --> boltz_stream
   swaps --> primitives
   swaps --> secrets
+  sync --> legacy_storage
   sync --> rust_bindings
   sync --> bull_logger
   sync --> primitives
+  sync --> secrets
   subgraph features0 ["features"]
     access
     announcements
