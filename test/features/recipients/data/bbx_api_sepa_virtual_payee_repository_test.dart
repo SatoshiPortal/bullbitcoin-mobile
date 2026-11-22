@@ -116,7 +116,7 @@ void main() {
       expect(failure, isA<RecipientsUnexpectedFailure>());
       expect(
         failure.logMessage,
-        'BbxApiRpcException(code: -32602, apiCode: ERR_RCP_400)',
+        'BbxRpcFailure(code: -32602, apiCode: ERR_RCP_400)',
       );
     });
 

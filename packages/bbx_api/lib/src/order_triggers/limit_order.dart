@@ -1,5 +1,3 @@
-import 'package:bbx_api/src/bbx_api_exception.dart';
-import 'package:bbx_api/src/json.dart';
 import 'package:meta/meta.dart';
 
 /// A limit order as `api-ordertrigger` returns it, with the server's raw
@@ -39,24 +37,4 @@ class LimitOrder {
     this.executedOrderId,
     this.address,
   });
-
-  /// Throws a [BbxApiFormatException] naming the first invalid field.
-  factory LimitOrder.fromJson(Map<String, dynamic> json) => LimitOrder(
-    limitOrderId: read<String>(json['limitOrderId'], 'limitOrderId'),
-    limitOrderNumber: read<String?>(json['limitOrderNbr'], 'limitOrderNbr'),
-    fiatAmount: read<String>(json['fiatAmount'], 'fiatAmount'),
-    currencyCode: read<String>(json['currencyCode'], 'currencyCode'),
-    limitPrice: read<String>(json['limitPrice'], 'limitPrice'),
-    estimatedBtcAmount: read<String>(
-      json['estimatedBtcAmount'],
-      'estimatedBtcAmount',
-    ),
-    status: read<String>(json['status'], 'status'),
-    createdAt: read<String>(json['createdAt'], 'createdAt'),
-    expiresAt: read<String>(json['expiresAt'], 'expiresAt'),
-    executedAt: read<String?>(json['executedAt'], 'executedAt'),
-    cancelledAt: read<String?>(json['cancelledAt'], 'cancelledAt'),
-    executedOrderId: read<String?>(json['executedOrderId'], 'executedOrderId'),
-    address: read<String?>(json['address'], 'address'),
-  );
 }

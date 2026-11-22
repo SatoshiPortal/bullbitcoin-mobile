@@ -1,13 +1,14 @@
 /// Client for the Bull Bitcoin exchange API.
 ///
-/// Transport and wire models only. Callers configure the [Dio] client (base
-/// URL, timeouts, authentication) and map the wire models to their own types.
-/// [BbxNotificationSocket] is the notification websocket; the caller supplies
-/// the base URL and reads the API key.
+/// [Bbx.open] returns the authenticated HTTP groups. Operations return a
+/// [Result] of owned values or a [BbxFailure]. HTTP wire codecs and the
+/// transport stay internal;
+/// transport fakes and fixture codecs live in `bbx_api_testing.dart`.
 library;
 
-export 'src/bbx_api_client.dart';
-export 'src/bbx_api_exception.dart';
+export 'src/bbx.dart' show Bbx;
+export 'src/bbx_failure.dart';
+export 'src/bbx_timeouts.dart' show BbxTimeouts;
 export 'src/commcenter/announcement.dart';
 export 'src/commcenter/commcenter_api.dart';
 export 'src/commcenter/support_message.dart';
@@ -15,7 +16,8 @@ export 'src/kyc/kyc_api.dart';
 export 'src/notifications/notification_socket.dart';
 export 'src/order_triggers/dca.dart';
 export 'src/order_triggers/limit_order.dart';
-export 'src/order_triggers/order_triggers_api.dart';
+export 'src/order_triggers/order_triggers_api.dart' show OrderTriggersApi;
+export 'src/orders/order_limits.dart';
 export 'src/orders/order_stats.dart';
 export 'src/orders/order_summary.dart';
 export 'src/orders/orders_api.dart';

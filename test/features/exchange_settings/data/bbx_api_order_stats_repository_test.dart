@@ -2,14 +2,16 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';
-import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../exchange/data/bbx_api_test_http.dart';
 
 class _Http implements HttpClientAdapter {
   final Object? body;
@@ -37,9 +39,17 @@ class _Http implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-Dio _dio(_Http http) =>
-    Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-      ..httpClientAdapter = http;
+/// A repository whose client reads [readApiKey] before each request.
+BbxApiOrderStatsRepository _new(
+  HttpClientAdapter http, {
+  ReadExchangeApiKey? readApiKey,
+}) => BbxApiOrderStatsRepository(
+  api: bbxForTesting(
+    endpoint: testBbxEndpoint,
+    adapter: http,
+    readActiveApiKey: bbxCredentialRead(readApiKey),
+  ),
+);
 
 void main() {
   test('maps the bbx_api report to the order stats entity', () async {
@@ -67,9 +77,7 @@ void main() {
         },
       },
     });
-    final repository = BbxApiOrderStatsRepository(
-      api: BbxApiClient(_dio(http)),
-    );
+    final repository = _new(http);
 
     final stats = await repository.getOrderStats();
 
@@ -86,11 +94,9 @@ void main() {
 
   test('a missing API key is reported as ApiKeyNotFoundException', () async {
     final http = _Http(const {});
-    final dio = _dio(http);
-    addExchangeAuthentication(dio, () async => const Ok(null));
 
     await expectLater(
-      BbxApiOrderStatsRepository(api: BbxApiClient(dio)).getOrderStats(),
+      _new(http, readApiKey: () async => const Ok(null)).getOrderStats(),
       throwsA(isA<ApiKeyNotFoundException>()),
     );
     expect(http.calls, 0);
@@ -98,23 +104,19 @@ void main() {
 
   test('an unreadable API key is a credential failure', () async {
     final http = _Http(const {});
-    final dio = _dio(http);
-    addExchangeAuthentication(
-      dio,
-      () async => const Err(ExchangeApiKeyReadFailure()),
-    );
 
     await expectLater(
-      BbxApiOrderStatsRepository(api: BbxApiClient(dio)).getOrderStats(),
+      _new(
+        http,
+        readApiKey: () async => const Err(ExchangeApiKeyReadFailure()),
+      ).getOrderStats(),
       throwsA(isA<ExchangeCredentialUnavailableException>()),
     );
     expect(http.calls, 0);
   });
 
   test('a malformed response is a generic failure', () async {
-    final repository = BbxApiOrderStatsRepository(
-      api: BbxApiClient(_dio(_Http({'result': {}}))),
-    );
+    final repository = _new(_Http({'result': {}}));
     await expectLater(repository.getOrderStats(), throwsA(isA<Exception>()));
   });
 }

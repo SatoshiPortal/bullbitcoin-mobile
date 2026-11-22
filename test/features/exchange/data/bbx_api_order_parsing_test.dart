@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
-import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../core/exchange/order_json_fixture.dart';
 
 Order _parse(Map<String, dynamic> json) =>
-    orderFromBbxApi(bbx.OrderSummary.fromJson(json), isTestnet: false);
+    orderFromBbxApi(orderSummaryForTesting(json), isTestnet: false);
 
 void main() {
   group('orderFromBbxApi status parsing', () {
@@ -96,7 +96,7 @@ void main() {
     test('absent triggerType parses instead of throwing', () {
       final json = orderJsonFixture()..remove('triggerType');
 
-      expect(bbx.OrderSummary.fromJson(json).triggerType, isNull);
+      expect(orderSummaryForTesting(json).triggerType, isNull);
       expect(_parse(json), isA<BuyOrder>());
     });
 

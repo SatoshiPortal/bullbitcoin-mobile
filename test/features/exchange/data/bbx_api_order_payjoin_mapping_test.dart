@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
-import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Order _parse(Map<String, dynamic> json) =>
-    orderFromBbxApi(bbx.OrderSummary.fromJson(json), isTestnet: true);
+    orderFromBbxApi(orderSummaryForTesting(json), isTestnet: true);
 
 /// The exchange reports a payjoin on an order through two fields: `bip21URI`,
 /// the customer endpoint, and `payjoinDetails`, whose `txid` names the
@@ -131,7 +131,7 @@ void main() {
       String? liquidTransactionId,
       Map<String, dynamic>? payjoinDetails,
     }) {
-      final summary = bbx.OrderSummary.fromJson({
+      final summary = orderSummaryForTesting({
         ...orderJson(type: OrderType.sell, payjoinDetails: payjoinDetails),
         'bitcoinTransactionId': ?bitcoinTransactionId,
         'liquidTransactionId': ?liquidTransactionId,

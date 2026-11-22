@@ -9,7 +9,8 @@ import 'package:bb_mobile/features/recipients/domain/repositories/recipients_rep
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx, BbxTimeouts;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -43,21 +44,16 @@ void main() {
         final adapters = <(Environment, bool), FakeBbxHttp>{};
         for (final network in [Environment.mainnet, Environment.testnet]) {
           for (final timed in [true, false]) {
-            final timeout = timed ? const Duration(seconds: 30) : null;
             final http = FakeBbxHttp(error: DioExceptionType.connectionError);
-            final dio = Dio(
-              BaseOptions(
-                baseUrl: 'https://example.invalid',
-                connectTimeout: timeout,
-                sendTimeout: timeout,
-                receiveTimeout: timeout,
-              ),
-            )..httpClientAdapter = http;
             final suffix = timed ? '' : 'WithoutTimeout';
-            locator.registerSingleton(
-              BbxApiClient(dio),
+            locator.registerSingleton<Bbx>(
+              bbxForTesting(
+                endpoint: 'https://example.invalid',
+                adapter: http,
+                readActiveApiKey: bbxCredentialRead(null),
+                timeouts: timed ? BbxTimeouts.standard : const BbxTimeouts(),
+              ),
               instanceName: '${network.name}BbxApiClient$suffix',
-              dispose: (_) => dio.close(),
             );
             adapters[(network, timed)] = http;
           }

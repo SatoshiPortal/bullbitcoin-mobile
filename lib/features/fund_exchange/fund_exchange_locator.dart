@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/fund_exchange/data/url_launcher_external_link
 import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/data/funding_repository_impl.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:get_it/get_it.dart';
 
 class FundExchangeLocator {
@@ -39,14 +39,10 @@ class FundExchangeLocator {
     locator.registerLazySingleton<FundingRepository>(
       () => FundingRepositoryImpl(
         bullbitcoinFundingRepository: BbxApiFundingRepository(
-          api: locator<BbxApiClient>(
-            instanceName: 'mainnetBbxApiClientWithoutTimeout',
-          ),
+          api: locator<Bbx>(instanceName: 'mainnetBbxApiClientWithoutTimeout'),
         ),
         bullBitcoinTestnetFundingRepository: BbxApiFundingRepository(
-          api: locator<BbxApiClient>(
-            instanceName: 'testnetBbxApiClientWithoutTimeout',
-          ),
+          api: locator<Bbx>(instanceName: 'testnetBbxApiClientWithoutTimeout'),
         ),
         exchangeEnvironment: locator<ExchangeEnvironmentPort>(),
       ),

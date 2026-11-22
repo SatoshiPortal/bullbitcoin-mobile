@@ -28,7 +28,7 @@ import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.da
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:get_it/get_it.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -109,10 +109,10 @@ class ExchangeLocator {
         access: locator<ExchangeAccessRepository>(),
         expire: locator<ExpireExchangeSessionUsecase>(),
         mainnetAccountRepository: BbxApiAccountRepository(
-          locator<BbxApiClient>(instanceName: 'mainnetBbxApiClient'),
+          locator<Bbx>(instanceName: 'mainnetBbxApiClient'),
         ),
         testnetAccountRepository: BbxApiAccountRepository(
-          locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+          locator<Bbx>(instanceName: 'testnetBbxApiClient'),
         ),
       ),
     );

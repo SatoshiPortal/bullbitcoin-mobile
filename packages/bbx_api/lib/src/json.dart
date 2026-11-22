@@ -1,10 +1,10 @@
-import 'package:bbx_api/src/bbx_api_exception.dart';
+import 'package:bbx_api/src/bbx_format_exception.dart';
 
-/// Reads a wire value as [T], or throws a [BbxApiFormatException] naming
+/// Reads a wire value as [T], or throws a [BbxFormatException] naming
 /// [field] without quoting the value.
 T read<T>(Object? value, String field) {
   if (value is T) return value;
-  throw BbxApiFormatException('invalid $field');
+  throw BbxFormatException('invalid $field');
 }
 
 /// Reads an optional JSON array of objects; a missing array is empty.

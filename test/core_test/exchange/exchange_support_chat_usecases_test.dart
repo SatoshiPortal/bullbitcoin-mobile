@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_mes
 import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,7 +41,7 @@ class _Throwing implements HttpClientAdapter {
 
 void main() {
   group('BbxApiSupportChatRepository (the sanitization boundary)', () {
-    BbxApiSupportChatRepository repository(BbxApiClient api) =>
+    BbxApiSupportChatRepository repository(Bbx api) =>
         BbxApiSupportChatRepository(
           users: api.users,
           commcenter: api.commcenter,
@@ -56,13 +57,13 @@ void main() {
 
     test('maps a transport throw to a sanitized LoadAttachmentFailure '
         'keeping the raw reason for logs only', () async {
-      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-        ..httpClientAdapter = _Throwing(
-          Exception('network down at host=secret.internal'),
-        );
+      final api = bbxForTesting(
+        endpoint: testBbxEndpoint,
+        adapter: _Throwing(Exception('network down at host=secret.internal')),
+        readActiveApiKey: bbxCredentialRead(null),
+      );
 
-      final result = await repository(BbxApiClient(dio))
-          .getMessageAttachment('a1');
+      final result = await repository(api).getMessageAttachment('a1');
 
       final failure = (result as Err).failure;
       expect(failure, isA<LoadAttachmentFailure>());

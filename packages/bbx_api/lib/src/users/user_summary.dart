@@ -1,4 +1,3 @@
-import 'package:bbx_api/src/json.dart';
 import 'package:meta/meta.dart';
 
 /// The result of `getUserSummary`.
@@ -37,47 +36,6 @@ class UserSummary {
     this.payjoinReceiveEnabled = false,
     this.kycDocumentStatus,
   });
-
-  factory UserSummary.fromJson(Map<String, dynamic> json) {
-    final kyc = read<Map<String, dynamic>?>(
-      json['kycDocumentStatus'],
-      'kycDocumentStatus',
-    );
-    return UserSummary(
-      userNumber: read<num>(json['userNumber'], 'userNumber').toInt(),
-      userId: read<String?>(json['userId'], 'userId'),
-      groups: [
-        for (final group in read<List<dynamic>>(json['groups'], 'groups'))
-          read<String>(group, 'groups'),
-      ],
-      profile: UserProfile.fromJson(
-        read<Map<String, dynamic>>(json['profile'], 'profile'),
-      ),
-      email: read<String>(json['email'], 'email'),
-      balances: [
-        for (final balance in read<List<dynamic>>(json['balances'], 'balances'))
-          UserBalance.fromJson(read<Map<String, dynamic>>(balance, 'balances')),
-      ],
-      language: read<String?>(json['language'], 'language'),
-      currency: read<String?>(json['currency'], 'currency'),
-      dca: UserDca.fromJson(read<Map<String, dynamic>>(json['dca'], 'dca')),
-      autoBuy: UserAutoBuy.fromJson(
-        read<Map<String, dynamic>>(json['autoBuy'], 'autoBuy'),
-      ),
-      emailNotificationsEnabled:
-          read<bool?>(
-            json['emailNotificationsEnabled'],
-            'emailNotificationsEnabled',
-          ) ??
-          true,
-      payjoinReceiveEnabled:
-          read<bool?>(json['payjoinReceiveEnabled'], 'payjoinReceiveEnabled') ??
-          false,
-      kycDocumentStatus: kyc == null
-          ? null
-          : UserKycDocumentStatus.fromJson(kyc),
-    );
-  }
 }
 
 @immutable
@@ -86,11 +44,6 @@ class UserProfile {
   final String lastName;
 
   const UserProfile({required this.firstName, required this.lastName});
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-    firstName: read<String>(json['firstName'], 'firstName'),
-    lastName: read<String>(json['lastName'], 'lastName'),
-  );
 }
 
 @immutable
@@ -99,11 +52,6 @@ class UserBalance {
   final String currencyCode;
 
   const UserBalance({required this.amount, required this.currencyCode});
-
-  factory UserBalance.fromJson(Map<String, dynamic> json) => UserBalance(
-    amount: read<num>(json['amount'], 'amount').toDouble(),
-    currencyCode: read<String>(json['currencyCode'], 'currencyCode'),
-  );
 }
 
 /// The recurring buy settings, with the server's raw codes.
@@ -128,15 +76,6 @@ class UserDca {
     this.recipientType,
     this.currencyCode,
   });
-
-  factory UserDca.fromJson(Map<String, dynamic> json) => UserDca(
-    isActive: read<bool>(json['isActive'], 'isActive'),
-    frequency: read<String?>(json['frequency'], 'frequency'),
-    amount: read<num?>(json['amount'], 'amount')?.toDouble(),
-    address: read<String?>(json['address'], 'address'),
-    recipientType: read<String?>(json['recipientType'], 'recipientType'),
-    currencyCode: read<String?>(json['currencyCode'], 'currencyCode'),
-  );
 }
 
 @immutable
@@ -145,13 +84,6 @@ class UserAutoBuy {
   final UserAutoBuyAddresses addresses;
 
   const UserAutoBuy({required this.isActive, required this.addresses});
-
-  factory UserAutoBuy.fromJson(Map<String, dynamic> json) => UserAutoBuy(
-    isActive: read<bool>(json['isActive'], 'isActive'),
-    addresses: UserAutoBuyAddresses.fromJson(
-      read<Map<String, dynamic>>(json['addresses'], 'addresses'),
-    ),
-  );
 }
 
 @immutable
@@ -161,13 +93,6 @@ class UserAutoBuyAddresses {
   final String? liquid;
 
   const UserAutoBuyAddresses({this.bitcoin, this.lightning, this.liquid});
-
-  factory UserAutoBuyAddresses.fromJson(Map<String, dynamic> json) =>
-      UserAutoBuyAddresses(
-        bitcoin: read<String?>(json['bitcoin'], 'bitcoin'),
-        lightning: read<String?>(json['lightning'], 'lightning'),
-        liquid: read<String?>(json['liquid'], 'liquid'),
-      );
 }
 
 /// KYC document statuses as the server's codes (`ACCEPTED`, `UNDER_REVIEW`,
@@ -183,16 +108,6 @@ class UserKycDocumentStatus {
     required this.secureFileUpload,
     required this.documents,
   });
-
-  factory UserKycDocumentStatus.fromJson(Map<String, dynamic> json) =>
-      UserKycDocumentStatus(
-        secureFileUpload:
-            read<String?>(json['secureFileUpload'], 'secureFileUpload') ??
-            notUploaded,
-        documents: UserKycDocuments.fromJson(
-          read<Map<String, dynamic>>(json['documents'], 'documents'),
-        ),
-      );
 }
 
 @immutable
@@ -206,14 +121,4 @@ class UserKycDocuments {
     required this.proofOfResidence,
     required this.selfie,
   });
-
-  factory UserKycDocuments.fromJson(Map<String, dynamic> json) {
-    String status(String field) =>
-        read<String?>(json[field], field) ?? UserKycDocumentStatus.notUploaded;
-    return UserKycDocuments(
-      id: status('id'),
-      proofOfResidence: status('proofOfResidence'),
-      selfie: status('selfie'),
-    );
-  }
 }

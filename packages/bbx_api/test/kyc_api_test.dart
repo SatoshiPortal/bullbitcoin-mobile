@@ -2,23 +2,25 @@ import 'dart:convert';
 
 import 'package:bbx_api/bbx_api.dart';
 import 'package:dio/dio.dart';
+import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
-Future<void> _upload(Dio dio) => BbxApiClient(dio).kyc.uploadDocument(
-  fileBytes: const [1, 2, 3],
-  fileName: 'doc-1-ID.png',
-  idTypeCode: 'ID',
-  sourceDetail: 'secureUpload',
-);
+Future<Result<void, BbxFailure>> _upload(FakeHttp http) => bbx(http).kyc
+    .uploadDocument(
+      fileBytes: const [1, 2, 3],
+      fileName: 'doc-1-ID.png',
+      idTypeCode: 'ID',
+      sourceDetail: 'secureUpload',
+    );
 
 void main() {
   test('uploadDocument posts the file and the KYC request as multipart', () async {
-    final dio = FakeHttp.dio(body: {'result': <String, Object?>{}});
-    await _upload(dio);
+    final http = FakeHttp(body: {'result': <String, Object?>{}});
+    valueOf(await _upload(http));
 
-    final http = dio.httpClientAdapter as FakeHttp;
     final request = http.requests.single;
     expect(request.path, '/ak/api-kyc/upload');
     expect(request.method, 'POST');
@@ -50,7 +52,7 @@ void main() {
     {'result': 'ok'},
   ]) {
     test('$body is a success', () async {
-      await _upload(FakeHttp.dio(body: body));
+      valueOf(await _upload(FakeHttp(body: body)));
     });
   }
 
@@ -68,37 +70,36 @@ void main() {
     },
   ]) {
     test('$body is a rejection', () async {
-      await expectLater(
-        _upload(FakeHttp.dio(body: body)),
-        throwsA(isA<BbxApiRpcException>()),
+      expect(
+        await failedCall(_upload(FakeHttp(body: body))),
+        isA<BbxRpcFailure>(),
       );
     });
   }
 
   test('a result error that is null is not a rejection', () async {
-    await _upload(
-      FakeHttp.dio(
-        body: {
-          'result': {'error': null, 'errors': null},
-        },
+    valueOf(
+      await _upload(
+        FakeHttp(
+          body: {
+            'result': {'error': null, 'errors': null},
+          },
+        ),
       ),
     );
   });
 
   test('a body that is not an object is a format error', () async {
-    await expectLater(
-      _upload(FakeHttp.dio(body: 'OK')),
-      throwsA(isA<BbxApiFormatException>()),
+    expect(
+      await failedCall(_upload(FakeHttp(body: 'OK'))),
+      isA<BbxResponseFormatFailure>(),
     );
   });
 
-  test('a non-200 status throws its status', () async {
-    final dio = FakeHttp.dio(status: 204);
-    await expectLater(
-      _upload(dio),
-      throwsA(
-        isA<BbxApiHttpException>().having((e) => e.statusCode, 'status', 204),
-      ),
+  test('a non-200 status is an HTTP failure with its status', () async {
+    expect(
+      await failedCall(_upload(FakeHttp(status: 204))),
+      isA<BbxHttpFailure>().having((f) => f.status, 'status', 204),
     );
   });
 }

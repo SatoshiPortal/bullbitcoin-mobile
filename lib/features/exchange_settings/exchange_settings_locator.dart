@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/update_exchange_preferences_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 
@@ -30,9 +30,7 @@ class ExchangeSettingsLocator {
     for (final environment in ['mainnet', 'testnet']) {
       locator.registerLazySingleton<ExchangeKycRepository>(
         () => BbxApiKycRepository(
-          api: locator<BbxApiClient>(
-            instanceName: '${environment}BbxApiClient',
-          ),
+          api: locator<Bbx>(instanceName: '${environment}BbxApiClient'),
         ),
         instanceName: environment,
       );
@@ -41,9 +39,7 @@ class ExchangeSettingsLocator {
     for (final environment in ['mainnet', 'testnet']) {
       locator.registerLazySingleton<ExchangeOrderStatsRepository>(
         () => BbxApiOrderStatsRepository(
-          api: locator<BbxApiClient>(
-            instanceName: '${environment}BbxApiClient',
-          ),
+          api: locator<Bbx>(instanceName: '${environment}BbxApiClient'),
         ),
         instanceName: environment,
       );

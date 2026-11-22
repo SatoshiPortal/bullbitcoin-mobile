@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_status_mapper.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
@@ -9,15 +8,14 @@ import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
 /// [RecipientsRepository] for one environment on the `bbx_api` package.
 ///
-/// The `isTestnet` arguments are ignored: the [bbx.BbxApiClient] is bound to
+/// The `isTestnet` arguments are ignored: the [bbx.Bbx] is bound to
 /// one environment.
 class BbxApiRecipientsRepository implements RecipientsRepository {
-  final bbx.BbxApiClient _api;
+  final bbx.Bbx _api;
 
   BbxApiRecipientsRepository({required this._api});
 
@@ -29,11 +27,18 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
   }) => _guard(
     'create fiat recipient',
     RecipientsSaveFailure.new,
-    () async => _toRecipient(
-      await _api.recipients.createRecipientFiat(
-        _toNewRecipient(recipientDetails),
-      ),
-    ),
+    () async =>
+        (await _api.recipients.createRecipientFiat(
+              _toNewRecipient(recipientDetails),
+            ))
+            .map(_toRecipient)
+            .mapErr(
+              (failure) => _failure(
+                failure,
+                'create fiat recipient',
+                RecipientsSaveFailure.new,
+              ),
+            ),
   );
 
   @override
@@ -46,12 +51,21 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
   }) => _guard(
     'update Interac security details',
     RecipientsUnexpectedFailure.new,
-    () => _api.recipients.updateInteracSecurityDetails(
-      recipientId: recipientId,
-      email: email,
-      securityQuestion: securityQuestion,
-      securityAnswer: securityAnswer,
-    ),
+    () async =>
+        (await _api.recipients.updateInteracSecurityDetails(
+              recipientId: recipientId,
+              email: email,
+              securityQuestion: securityQuestion,
+              securityAnswer: securityAnswer,
+            ))
+            .map<void>((_) {})
+            .mapErr(
+              (failure) => _failure(
+                failure,
+                'update Interac security details',
+                RecipientsUnexpectedFailure.new,
+              ),
+            ),
   );
 
   @override
@@ -84,19 +98,15 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
       isOwner: isOwner,
       search: searchFilter,
     );
-    _logSkipped(result.skippedElements, 'recipient');
-
-    // A recipient this app build cannot represent must not fail the whole
-    // list: dropping one row is better than showing none.
-    final recipients = result.recipients
-        .map((r) => _skipUnusable(() => _toRecipient(r), 'recipient'))
-        .nonNulls
-        .expand((r) => _sepaRowsFor(r, recipientTypes))
-        .toList();
-    return (
-      recipients: recipients,
-      totalRecipients: result.totalElements.toInt(),
-    );
+    return result
+        .map((page) => _recipientsPage(page, recipientTypes))
+        .mapErr(
+          (failure) => _failure(
+            failure,
+            'list fiat recipients',
+            RecipientsLoadFailure.new,
+          ),
+        );
   });
 
   @override
@@ -106,7 +116,14 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
   }) => _guard(
     'check SINPE',
     RecipientsSinpeLookupFailure.new,
-    () => _api.recipients.checkSinpe(phoneNumber: phoneNumber),
+    () async => (await _api.recipients.checkSinpe(phoneNumber: phoneNumber))
+        .mapErr(
+          (failure) => _failure(
+            failure,
+            'check SINPE',
+            RecipientsSinpeLookupFailure.new,
+          ),
+        ),
   );
 
   @override
@@ -118,19 +135,15 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
     RecipientsCadBillerSearchFailure.new,
     () async {
       final result = await _api.recipients.listAplBillers(search: searchTerm);
-      _logSkipped(result.skippedElements, 'CAD biller');
-      return result.billers
-          .map(
-            (b) => _skipUnusable(
-              () => CadBiller.create(
-                payeeCode: b.payeeCode,
-                payeeName: b.payeeName,
-              ),
-              'CAD biller',
+      return result
+          .map(_cadBillers)
+          .mapErr(
+            (failure) => _failure(
+              failure,
+              'list CAD billers',
+              RecipientsCadBillerSearchFailure.new,
             ),
-          )
-          .nonNulls
-          .toList();
+          );
     },
   );
 
@@ -328,6 +341,44 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
     log.warning('Skipping $count unparseable $element elements');
   }
 
+  /// The recipients of [page], dropping the rows this build cannot represent.
+  static ({List<Recipient> recipients, int totalRecipients}) _recipientsPage(
+    bbx.FiatRecipientPage page,
+    List<RecipientType>? recipientTypes,
+  ) {
+    _logSkipped(page.skippedElements, 'recipient');
+
+    // A recipient this app build cannot represent must not fail the whole
+    // list: dropping one row is better than showing none.
+    final recipients = page.recipients
+        .map((r) => _skipUnusable(() => _toRecipient(r), 'recipient'))
+        .nonNulls
+        .expand((r) => _sepaRowsFor(r, recipientTypes))
+        .toList();
+    return (
+      recipients: recipients,
+      totalRecipients: page.totalElements.toInt(),
+    );
+  }
+
+  /// The CAD billers of [result], dropping the rows this build cannot
+  /// represent.
+  static List<CadBiller> _cadBillers(bbx.CadBillerSearch result) {
+    _logSkipped(result.skippedElements, 'CAD biller');
+    return result.billers
+        .map(
+          (b) => _skipUnusable(
+            () => CadBiller.create(
+              payeeCode: b.payeeCode,
+              payeeName: b.payeeName,
+            ),
+            'CAD biller',
+          ),
+        )
+        .nonNulls
+        .toList();
+  }
+
   /// The API returns one SEPA recipient for both payment routes, so this
   /// decides which route its row shows:
   /// - Regular SEPA requested, or no type filter: the regular row.
@@ -352,50 +403,64 @@ class BbxApiRecipientsRepository implements RecipientsRepository {
     return [recipient.withDetails(details.asConfidential())];
   }
 
-  /// Maps a failed call to a typed failure, logging the reason without the
-  /// request or response payload. [onApiFailure] builds the
-  /// operation-specific failure used for anything that is not a
-  /// connectivity problem.
+  /// Runs [call] and turns a domain-mapping exception into the operation
+  /// failure, logging only its type: its message can quote banking details.
+  /// An API failure is mapped by [_failure] inside [call].
   Future<Result<T, RecipientsFailure>> _guard<T>(
     String operation,
     RecipientsFailure Function([String?]) onApiFailure,
-    Future<T> Function() call,
+    Future<Result<T, RecipientsFailure>> Function() call,
   ) async {
     try {
-      return Ok(await call());
+      return await call();
     } on Exception catch (e) {
-      final refusal = exchangeAuthenticationException(e);
-      if (refusal != null) {
-        return Err(
-          refusal.isUnauthenticated
-              ? const RecipientsNotAuthenticatedFailure()
-              : onApiFailure('Exchange credential unavailable'),
-        );
-      }
-      switch (e) {
-        case bbx.BbxApiHttpException(:final statusCode):
-          log.warning('API refused to $operation — HTTP $statusCode');
-          return Err(onApiFailure());
-        case bbx.BbxApiRpcException(:final code):
-          // The error object can quote the rejected payload: keep its code.
-          log.warning(
-            'API refused to $operation — '
-            'JSON-RPC error code ${code ?? 'unknown'}',
-          );
-          return Err(onApiFailure());
-        case DioException(
-          type: DioExceptionType.connectionTimeout ||
-              DioExceptionType.sendTimeout ||
-              DioExceptionType.receiveTimeout ||
-              DioExceptionType.connectionError,
-        ):
-          log.warning('Could not reach the API to $operation: ${e.type}');
-          return const Err(RecipientsNetworkFailure());
-      }
       log.warning('Failed to $operation category=${e.runtimeType}');
       return Err(onApiFailure());
     }
   }
+
+  /// The failure for a failed call. A missing credential and an unreadable
+  /// one stay distinct, and an unreachable API keeps its own variant;
+  /// everything else is the operation's failure.
+  static RecipientsFailure _failure(
+    bbx.BbxFailure failure,
+    String operation,
+    RecipientsFailure Function([String?]) onApiFailure,
+  ) {
+    switch (failure) {
+      case bbx.BbxMissingCredentialFailure():
+        return const RecipientsNotAuthenticatedFailure();
+      case bbx.BbxCredentialUnavailableFailure():
+        return onApiFailure('Exchange credential unavailable');
+      case bbx.BbxHttpFailure(:final status):
+        log.warning('API refused to $operation — HTTP $status');
+        return onApiFailure();
+      case bbx.BbxRpcFailure(:final code):
+        // The error object can quote the rejected payload: keep its code.
+        log.warning(
+          'API refused to $operation — '
+          'JSON-RPC error code ${code ?? 'unknown'}',
+        );
+        return onApiFailure();
+      case bbx.BbxTimeoutFailure(:final kind):
+        log.warning(
+          'Could not reach the API to $operation: ${_timeoutName(kind)}',
+        );
+        return const RecipientsNetworkFailure();
+      case bbx.BbxConnectionFailure():
+        log.warning('Could not reach the API to $operation: connectionError');
+        return const RecipientsNetworkFailure();
+      default:
+        log.warning('Failed to $operation category=${failure.runtimeType}');
+        return onApiFailure();
+    }
+  }
+
+  static String _timeoutName(bbx.BbxTimeoutKind kind) => switch (kind) {
+    bbx.BbxTimeoutKind.connect => 'connectionTimeout',
+    bbx.BbxTimeoutKind.send => 'sendTimeout',
+    bbx.BbxTimeoutKind.receive => 'receiveTimeout',
+  };
 }
 
 /// The domain could not represent an element the API returned. Carries only

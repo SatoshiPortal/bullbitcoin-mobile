@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:bbx_api/bbx_api.dart';
-import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 const _limitOrder = {
   'limitOrderId': 'lo-1',
@@ -34,21 +34,21 @@ const _dca = {
   'address': 'bc1qaddress',
 };
 
-/// The JSON-RPC request sent through [dio], as the JSON text on the wire.
-String _sent(Dio dio) {
-  final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+/// The JSON-RPC request sent through [http], as the JSON text on the wire.
+String _sent(FakeHttp http) {
+  final request = http.requests.single;
   expect(request.path, '/ak/api-ordertrigger');
   expect(request.method, 'POST');
   return jsonEncode(request.data);
 }
 
 void main() {
-  late Dio dio;
+  late FakeHttp http;
   late OrderTriggersApi api;
 
   void answer(Object? body, {int status = 200}) {
-    dio = FakeHttp.dio(status: status, body: body);
-    api = BbxApiClient(dio).orderTriggers;
+    http = FakeHttp(status: status, body: body);
+    api = bbx(http).orderTriggers;
   }
 
   group('createDca', () {
@@ -57,16 +57,18 @@ void main() {
         'result': {'element': _dca},
       });
 
-      final dca = await api.createDca(
-        amount: 25.5,
-        currencyCode: 'CAD',
-        frequency: DcaFrequency.weekly,
-        recipientType: DcaRecipientType.bitcoinAddress,
-        address: 'bc1qaddress',
+      final dca = valueOf(
+        await api.createDca(
+          amount: 25.5,
+          currencyCode: 'CAD',
+          frequency: DcaFrequency.weekly,
+          recipientType: DcaRecipientType.bitcoinAddress,
+          address: 'bc1qaddress',
+        ),
       );
 
       expect(
-        _sent(dio),
+        _sent(http),
         '{"jsonrpc":"2.0","id":"1","method":"createDCA","params":{"element":'
         '{"amountStr":"25.5","currencyCode":"CAD","recurringFrequency":"WEEKLY",'
         '"recipientType":"OUT_BITCOIN_ADDRESS","address":"bc1qaddress"}}}',
@@ -87,15 +89,17 @@ void main() {
         'result': {'element': _dca},
       });
 
-      await api.createDca(
-        amount: 100,
-        currencyCode: 'EUR',
-        frequency: DcaFrequency.hourly,
-        recipientType: DcaRecipientType.lightningAddress,
-        address: 'sat@example.com',
+      valueOf(
+        await api.createDca(
+          amount: 100,
+          currencyCode: 'EUR',
+          frequency: DcaFrequency.hourly,
+          recipientType: DcaRecipientType.lightningAddress,
+          address: 'sat@example.com',
+        ),
       );
 
-      final params = jsonDecode(_sent(dio))['params']['element'] as Map;
+      final params = jsonDecode(_sent(http))['params']['element'] as Map;
       expect(params['amountStr'], '100.0');
       expect(params['recurringFrequency'], 'HOURLY');
       expect(params['recipientType'], 'OUT_LIGHTNING_ADDRESS');
@@ -117,15 +121,17 @@ void main() {
 
     test('a missing element or field is a format error', () async {
       answer({'result': <String, Object?>{}});
-      await expectLater(
-        api.createDca(
-          amount: 1,
-          currencyCode: 'CAD',
-          frequency: DcaFrequency.daily,
-          recipientType: DcaRecipientType.liquidAddress,
-          address: 'lq1',
+      expect(
+        await failedCall(
+          api.createDca(
+            amount: 1,
+            currencyCode: 'CAD',
+            frequency: DcaFrequency.daily,
+            recipientType: DcaRecipientType.liquidAddress,
+            address: 'lq1',
+          ),
         ),
-        throwsA(isA<BbxApiFormatException>()),
+        isA<BbxResponseFormatFailure>(),
       );
 
       answer({
@@ -133,20 +139,20 @@ void main() {
           'element': {..._dca}..remove('userId'),
         },
       });
-      await expectLater(
-        api.createDca(
-          amount: 1,
-          currencyCode: 'CAD',
-          frequency: DcaFrequency.daily,
-          recipientType: DcaRecipientType.liquidAddress,
-          address: 'lq1',
-        ),
-        throwsA(
-          isA<BbxApiFormatException>().having(
-            (e) => e.reason,
-            'reason',
-            'invalid userId',
+      expect(
+        await failedCall(
+          api.createDca(
+            amount: 1,
+            currencyCode: 'CAD',
+            frequency: DcaFrequency.daily,
+            recipientType: DcaRecipientType.liquidAddress,
+            address: 'lq1',
           ),
+        ),
+        isA<BbxResponseFormatFailure>().having(
+          (f) => f.reason,
+          'reason',
+          'invalid userId',
         ),
       );
     });
@@ -155,19 +161,19 @@ void main() {
       answer({
         'error': {'code': -32000, 'message': 'nope'},
       });
-      await expectLater(
-        api.createDca(
-          amount: 1,
-          currencyCode: 'CAD',
-          frequency: DcaFrequency.monthly,
-          recipientType: DcaRecipientType.bitcoinAddress,
-          address: 'bc1',
+      expect(
+        await failedCall(
+          api.createDca(
+            amount: 1,
+            currencyCode: 'CAD',
+            frequency: DcaFrequency.monthly,
+            recipientType: DcaRecipientType.bitcoinAddress,
+            address: 'bc1',
+          ),
         ),
-        throwsA(
-          isA<BbxApiRpcException>()
-              .having((e) => e.code, 'code', -32000)
-              .having((e) => e.message, 'message', 'nope'),
-        ),
+        isA<BbxRpcFailure>()
+            .having((f) => f.code, 'code', -32000)
+            .having((f) => f.message, 'message', 'nope'),
       );
     });
   });
@@ -180,10 +186,10 @@ void main() {
         },
       });
 
-      final orders = await api.listLimitOrders();
+      final orders = valueOf(await api.listLimitOrders());
 
       expect(
-        _sent(dio),
+        _sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"listLimitOrders","params":'
         '{"paginator":{"page":1,"pageSize":50},'
         '"sortBy":{"id":"createdAt","sort":"desc"}}}',
@@ -206,19 +212,19 @@ void main() {
 
     test('a missing element list is empty', () async {
       answer({'result': <String, Object?>{}});
-      expect(await api.listLimitOrders(), isEmpty);
+      expect(valueOf(await api.listLimitOrders()), isEmpty);
 
       answer({'result': <String, Object?>{}});
-      expect(await api.cancelAllLimitOrders(), isEmpty);
+      expect(valueOf(await api.cancelAllLimitOrders()), isEmpty);
     });
 
     test('getLimitOrder sends the old request', () async {
       answer({'result': _limitOrder});
 
-      final order = await api.getLimitOrder('lo-1');
+      final order = valueOf(await api.getLimitOrder('lo-1'));
 
       expect(
-        _sent(dio),
+        _sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"getLimitOrder","params":'
         '{"limitOrderId":"lo-1"}}',
       );
@@ -228,16 +234,18 @@ void main() {
     test('addLimitOrder sends the old request', () async {
       answer({'result': _limitOrder});
 
-      await api.addLimitOrder(
-        limitPrice: '90000.00',
-        fiatAmount: '100.00',
-        currencyCode: 'CAD',
-        estimatedBtcAmount: '0.00111111',
-        address: 'bc1qaddress',
+      valueOf(
+        await api.addLimitOrder(
+          limitPrice: '90000.00',
+          fiatAmount: '100.00',
+          currencyCode: 'CAD',
+          estimatedBtcAmount: '0.00111111',
+          address: 'bc1qaddress',
+        ),
       );
 
       expect(
-        _sent(dio),
+        _sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"addLimitOrder","params":'
         '{"element":{"limitPrice":"90000.00","fiatAmount":"100.00",'
         '"currencyCode":"CAD","estimatedBtcAmount":"0.00111111",'
@@ -248,10 +256,10 @@ void main() {
     test('cancelLimitOrder sends the old request', () async {
       answer({'result': _limitOrder});
 
-      await api.cancelLimitOrder('lo-1');
+      valueOf(await api.cancelLimitOrder('lo-1'));
 
       expect(
-        _sent(dio),
+        _sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"cancelLimitOrder","params":'
         '{"limitOrderId":"lo-1"}}',
       );
@@ -264,10 +272,10 @@ void main() {
         },
       });
 
-      final orders = await api.cancelAllLimitOrders();
+      final orders = valueOf(await api.cancelAllLimitOrders());
 
       expect(
-        _sent(dio),
+        _sent(http),
         '{"jsonrpc":"2.0","id":"0","method":"cancelAllLimitOrders",'
         '"params":{}}',
       );
@@ -281,7 +289,7 @@ void main() {
           ..remove('address'),
       });
 
-      final order = await api.getLimitOrder('lo-1');
+      final order = valueOf(await api.getLimitOrder('lo-1'));
 
       expect(order.limitOrderNumber, isNull);
       expect(order.address, isNull);
@@ -291,14 +299,12 @@ void main() {
       answer({
         'result': {..._limitOrder}..remove('status'),
       });
-      await expectLater(
-        api.getLimitOrder('lo-1'),
-        throwsA(
-          isA<BbxApiFormatException>().having(
-            (e) => e.reason,
-            'reason',
-            'invalid status',
-          ),
+      expect(
+        await failedCall(api.getLimitOrder('lo-1')),
+        isA<BbxResponseFormatFailure>().having(
+          (f) => f.reason,
+          'reason',
+          'invalid status',
         ),
       );
 
@@ -307,15 +313,15 @@ void main() {
           'elements': ['not an object'],
         },
       });
-      await expectLater(
-        api.listLimitOrders(),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.listLimitOrders()),
+        isA<BbxResponseFormatFailure>(),
       );
 
       answer({'result': 'not an object'});
-      await expectLater(
-        api.cancelLimitOrder('lo-1'),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.cancelLimitOrder('lo-1')),
+        isA<BbxResponseFormatFailure>(),
       );
     });
 
@@ -328,19 +334,19 @@ void main() {
         },
       });
 
-      await expectLater(
-        api.addLimitOrder(
-          limitPrice: '1.00',
-          fiatAmount: '1.00',
-          currencyCode: 'CAD',
-          estimatedBtcAmount: '0.00000001',
-          address: 'bc1',
+      expect(
+        await failedCall(
+          api.addLimitOrder(
+            limitPrice: '1.00',
+            fiatAmount: '1.00',
+            currencyCode: 'CAD',
+            estimatedBtcAmount: '0.00000001',
+            address: 'bc1',
+          ),
         ),
-        throwsA(
-          isA<BbxApiRpcException>()
-              .having((e) => e.code, 'code', -32000)
-              .having((e) => e.apiCode, 'apiCode', 'ERR_ORDTRG_LOMAX429'),
-        ),
+        isA<BbxRpcFailure>()
+            .having((f) => f.code, 'code', -32000)
+            .having((f) => f.apiCode, 'apiCode', 'ERR_ORDTRG_LOMAX429'),
       );
     });
 
@@ -353,11 +359,9 @@ void main() {
           },
         },
       });
-      await expectLater(
-        api.getLimitOrder('lo-1'),
-        throwsA(
-          isA<BbxApiRpcException>().having((e) => e.apiCode, 'apiCode', null),
-        ),
+      expect(
+        await failedCall(api.getLimitOrder('lo-1')),
+        isA<BbxRpcFailure>().having((f) => f.apiCode, 'apiCode', null),
       );
 
       answer({
@@ -366,27 +370,26 @@ void main() {
           'data': {'code': 'sat@example.com'},
         },
       });
-      await expectLater(
-        api.getLimitOrder('lo-1'),
-        throwsA(
-          isA<BbxApiRpcException>().having((e) => e.apiCode, 'apiCode', null),
-        ),
+      expect(
+        await failedCall(api.getLimitOrder('lo-1')),
+        isA<BbxRpcFailure>().having((f) => f.apiCode, 'apiCode', null),
       );
 
       answer({'error': 'nope'});
-      await expectLater(
-        api.getLimitOrder('lo-1'),
-        throwsA(
-          isA<BbxApiRpcException>()
-              .having((e) => e.code, 'code', null)
-              .having((e) => e.apiCode, 'apiCode', null),
-        ),
+      expect(
+        await failedCall(api.getLimitOrder('lo-1')),
+        isA<BbxRpcFailure>()
+            .having((f) => f.code, 'code', null)
+            .having((f) => f.apiCode, 'apiCode', null),
       );
     });
 
-    test('transport errors are rethrown unchanged', () async {
+    test('a refused status is an HTTP failure with its status', () async {
       answer({}, status: 401);
-      await expectLater(api.listLimitOrders(), throwsA(isA<DioException>()));
+      expect(
+        await failedCall(api.listLimitOrders()),
+        isA<BbxHttpFailure>().having((f) => f.status, 'status', 401),
+      );
     });
   });
 }

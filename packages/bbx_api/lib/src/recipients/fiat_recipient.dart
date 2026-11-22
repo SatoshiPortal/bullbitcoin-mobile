@@ -1,5 +1,3 @@
-import 'package:bbx_api/src/bbx_api_exception.dart';
-import 'package:bbx_api/src/json.dart';
 import 'package:meta/meta.dart';
 
 /// A fiat recipient as `api-recipients` returns it: the identity fields and
@@ -94,57 +92,6 @@ class FiatRecipient {
     this.documentId,
     this.documentType,
   });
-
-  /// Throws a [BbxApiFormatException] naming the first invalid field.
-  factory FiatRecipient.fromJson(Map<String, dynamic> json) {
-    String? text(String field) => read<String?>(json[field], field);
-    bool? flag(String field) => read<bool?>(json[field], field);
-    return FiatRecipient(
-      recipientId: read<String>(json['recipientId'], 'recipientId'),
-      userId: read<String>(json['userId'], 'userId'),
-      userNbr: read<int>(json['userNbr'], 'userNbr'),
-      isArchived: read<bool>(json['isArchived'], 'isArchived'),
-      createdAt: read<String>(json['createdAt'], 'createdAt'),
-      updatedAt: read<String>(json['updatedAt'], 'updatedAt'),
-      recipientTypeFiat: read<String>(
-        json['recipientTypeFiat'],
-        'recipientTypeFiat',
-      ),
-      label: text('label'),
-      isOwner: flag('isOwner'),
-      isDefault: flag('isDefault'),
-      email: text('email'),
-      name: text('name'),
-      securityQuestion: text('securityQuestion'),
-      securityAnswer: text('securityAnswer'),
-      payeeName: text('payeeName'),
-      payeeCode: text('payeeCode'),
-      payeeAccountNumber: text('payeeAccountNumber'),
-      institutionNumber: text('institutionNumber'),
-      transitNumber: text('transitNumber'),
-      accountNumber: text('accountNumber'),
-      defaultComment: text('defaultComment'),
-      iban: text('iban'),
-      isCorporate: flag('isCorporate'),
-      firstname: text('firstname'),
-      lastname: text('lastname'),
-      corporateName: text('corporateName'),
-      virtualPayeeStatus: text('virtualPayeeStatus'),
-      clabe: text('clabe'),
-      institutionCode: text('institutionCode'),
-      phone: text('phone'),
-      debitcard: text('debitcard'),
-      ownerName: text('ownerName'),
-      phoneNumber: text('phoneNumber'),
-      claveUniform: text('claveUniform'),
-      bankCode: text('bankCode'),
-      accountType: text('accountType'),
-      bankAccount: text('bankAccount'),
-      bankName: text('bankName'),
-      documentId: text('documentId'),
-      documentType: text('documentType'),
-    );
-  }
 }
 
 /// One page of fiat recipients.

@@ -570,7 +570,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 ### Exchange-Related Features
 
-- **Exchange, Exchange Settings, Default Wallets, Funding, Limit Orders and Recipients** use the `packages/bbx_api` workspace member for exchange operations. The pure-Dart SDK owns the JSON-RPC transport, wire models and notification socket and has no workspace dependencies.
+- **Exchange, Exchange Settings, Default Wallets, Funding, Limit Orders and Recipients** use the `packages/bbx_api` workspace member for exchange operations. `Bbx.open` provides the authenticated HTTP groups. Their operations publish owned values in `Result`s from `packages/primitives`. HTTP wire JSON and protocol exceptions stay internal. The package also provides the notification socket.
 
 - **Buy, Sell, Funding**: All depend on Exchange
 - **Recipients**: Depends on Exchange

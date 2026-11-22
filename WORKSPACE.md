@@ -95,6 +95,7 @@ graph TD
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
+  bbx_api --> primitives
   bitbox_transport --> rust_bindings
   bitcoin_price --> bull_logger
   bitcoin_price --> bull_pricer

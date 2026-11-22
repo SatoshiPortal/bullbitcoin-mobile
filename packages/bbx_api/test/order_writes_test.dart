@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:bbx_api/bbx_api.dart';
-import 'package:dio/dio.dart';
+import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 const _order = {
   'orderId': 'o-1',
@@ -50,9 +51,9 @@ Map<String, Object?> _reasons(List<Map<String, Object?>> limits) => {
 const _min = 'GREATER_THAN_OR_EQUAL';
 const _max = 'LESS_THAN_OR_EQUAL';
 
-/// The JSON-RPC request sent through [dio], as the JSON text on the wire.
-String _sent(Dio dio) {
-  final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+/// The JSON-RPC request sent through [http], as the JSON text on the wire.
+String _sent(FakeHttp http) {
+  final request = http.requests.single;
   expect(request.path, '/ak/api-orders');
   return jsonEncode(request.data);
 }
@@ -65,27 +66,29 @@ String _rpc(String method, Map<String, Object?> params) => jsonEncode({
 });
 
 void main() {
-  late Dio dio;
+  late FakeHttp http;
   late OrdersApi orders;
 
   void answer(Object? body, {int status = 200}) {
-    dio = FakeHttp.dio(status: status, body: body);
-    orders = BbxApiClient(dio).orders;
+    http = FakeHttp(status: status, body: body);
+    orders = bbx(http).orders;
   }
 
   setUp(() => answer({'result': _order}));
 
   group('createOrderBuy', () {
     test('sends the address and a fiat amount', () async {
-      final order = await orders.createOrderBuy(
-        fiatCurrency: 'CAD',
-        network: 'liquid',
-        isOwner: true,
-        address: 'lq1address',
-        fiatAmount: 5,
+      final order = valueOf(
+        await orders.createOrderBuy(
+          fiatCurrency: 'CAD',
+          network: 'liquid',
+          isOwner: true,
+          address: 'lq1address',
+          fiatAmount: 5,
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('createOrderBuy', {
           'fiatCurrency': 'CAD',
           'network': 'liquid',
@@ -98,15 +101,17 @@ void main() {
     });
 
     test('sends the bip21URI instead of the address, with sats', () async {
-      await orders.createOrderBuy(
-        fiatCurrency: 'EUR',
-        network: 'bitcoin',
-        isOwner: false,
-        bip21URI: 'bitcoin:bc1q?pj=https://payjo.in/s',
-        bitcoinAmount: 0.001,
+      valueOf(
+        await orders.createOrderBuy(
+          fiatCurrency: 'EUR',
+          network: 'bitcoin',
+          isOwner: false,
+          bip21URI: 'bitcoin:bc1q?pj=https://payjo.in/s',
+          bitcoinAmount: 0.001,
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('createOrderBuy', {
           'fiatCurrency': 'EUR',
           'network': 'bitcoin',
@@ -132,20 +137,22 @@ void main() {
           ),
           throwsArgumentError,
         );
-        expect((dio.httpClientAdapter as FakeHttp).requests, isEmpty);
+        expect(http.requests, isEmpty);
       });
     }
   });
 
   group('sellToBalance', () {
     test('omits usePayjoin when false', () async {
-      await orders.sellToBalance(
-        fiatCurrency: 'EUR',
-        bitcoinNetwork: 'bitcoin',
-        fiatAmount: 100,
+      valueOf(
+        await orders.sellToBalance(
+          fiatCurrency: 'EUR',
+          bitcoinNetwork: 'bitcoin',
+          fiatAmount: 100,
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('sellToBalance', {
           'fiatCurrency': 'EUR',
           'bitcoinNetwork': 'bitcoin',
@@ -155,14 +162,16 @@ void main() {
     });
 
     test('sends usePayjoin when true', () async {
-      await orders.sellToBalance(
-        fiatCurrency: 'CAD',
-        bitcoinNetwork: 'bitcoin',
-        usePayjoin: true,
-        bitcoinAmount: 0.01,
+      valueOf(
+        await orders.sellToBalance(
+          fiatCurrency: 'CAD',
+          bitcoinNetwork: 'bitcoin',
+          usePayjoin: true,
+          bitcoinAmount: 0.01,
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('sellToBalance', {
           'fiatCurrency': 'CAD',
           'bitcoinNetwork': 'bitcoin',
@@ -175,16 +184,18 @@ void main() {
 
   group('sellToRecipient', () {
     test('sends the recipient, processor, payjoin and description', () async {
-      await orders.sellToRecipient(
-        recipientId: 'r-1',
-        paymentProcessor: SepaPaymentProcessor.confidential,
-        bitcoinNetwork: 'bitcoin',
-        usePayjoin: true,
-        bitcoinAmount: 0.001,
-        paymentDescription: 'rent',
+      valueOf(
+        await orders.sellToRecipient(
+          recipientId: 'r-1',
+          paymentProcessor: SepaPaymentProcessor.confidential,
+          bitcoinNetwork: 'bitcoin',
+          usePayjoin: true,
+          bitcoinAmount: 0.001,
+          paymentDescription: 'rent',
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('sellToRecipient', {
           'recipientId': 'r-1',
           'paymentProcessor': 'CONFIDENTIAL_SEPA',
@@ -197,13 +208,15 @@ void main() {
     });
 
     test('omits what is not given', () async {
-      await orders.sellToRecipient(
-        recipientId: 'r-1',
-        bitcoinNetwork: 'lightning',
-        fiatAmount: 20,
+      valueOf(
+        await orders.sellToRecipient(
+          recipientId: 'r-1',
+          bitcoinNetwork: 'lightning',
+          fiatAmount: 20,
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('sellToRecipient', {
           'recipientId': 'r-1',
           'bitcoinNetwork': 'lightning',
@@ -213,25 +226,29 @@ void main() {
     });
 
     test('REGULAR_SEPA is the regular processor', () async {
-      await orders.sellToRecipient(
-        recipientId: 'r-1',
-        paymentProcessor: SepaPaymentProcessor.regular,
-        bitcoinNetwork: 'liquid',
-        fiatAmount: 20,
+      valueOf(
+        await orders.sellToRecipient(
+          recipientId: 'r-1',
+          paymentProcessor: SepaPaymentProcessor.regular,
+          bitcoinNetwork: 'liquid',
+          fiatAmount: 20,
+        ),
       );
-      expect(_sent(dio), contains('"paymentProcessor":"REGULAR_SEPA"'));
+      expect(_sent(http), contains('"paymentProcessor":"REGULAR_SEPA"'));
     });
   });
 
   group('createWithdrawalOrder', () {
     test('sends the amount, recipient and processor', () async {
-      await orders.createWithdrawalOrder(
-        fiatAmount: 50,
-        recipientId: 'r-2',
-        paymentProcessor: SepaPaymentProcessor.regular,
+      valueOf(
+        await orders.createWithdrawalOrder(
+          fiatAmount: 50,
+          recipientId: 'r-2',
+          paymentProcessor: SepaPaymentProcessor.regular,
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('createWithdrawalOrder', {
           'fiatAmount': 50.0,
           'recipientId': 'r-2',
@@ -241,14 +258,16 @@ void main() {
     });
 
     test('sends the Interac security details only together', () async {
-      await orders.createWithdrawalOrder(
-        fiatAmount: 50,
-        recipientId: 'r-2',
-        securityQuestion: 'q',
-        securityAnswer: 'a',
+      valueOf(
+        await orders.createWithdrawalOrder(
+          fiatAmount: 50,
+          recipientId: 'r-2',
+          securityQuestion: 'q',
+          securityAnswer: 'a',
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('createWithdrawalOrder', {
           'fiatAmount': 50.0,
           'recipientId': 'r-2',
@@ -260,13 +279,15 @@ void main() {
       );
 
       answer({'result': _order});
-      await orders.createWithdrawalOrder(
-        fiatAmount: 50,
-        recipientId: 'r-2',
-        securityQuestion: 'q',
+      valueOf(
+        await orders.createWithdrawalOrder(
+          fiatAmount: 50,
+          recipientId: 'r-2',
+          securityQuestion: 'q',
+        ),
       );
       expect(
-        _sent(dio),
+        _sent(http),
         _rpc('createWithdrawalOrder', {
           'fiatAmount': 50.0,
           'recipientId': 'r-2',
@@ -284,65 +305,51 @@ void main() {
       ),
     ]) {
       test('$method sends the order id and reads the result', () async {
-        final order = await call(orders);
-        expect(_sent(dio), _rpc(method, {'orderId': 'o-1'}));
+        final order = valueOf(await call(orders));
+        expect(_sent(http), _rpc(method, {'orderId': 'o-1'}));
         expect(order.orderId, 'o-1');
       });
 
       test('$method does not read order limits', () async {
         answer(_reasons([_limit(20, _min)]));
-        await expectLater(
-          call(orders),
-          throwsA(
-            isA<BbxApiRpcException>().having(
-              (e) => e,
-              'type',
-              isNot(isA<BbxApiOrderLimitException>()),
-            ),
-          ),
-        );
+        final failure = await failedCall(call(orders));
+        expect(failure, isA<BbxRpcFailure>());
+        expect(failure, isNot(isA<BbxOrderLimitFailure>()));
       });
     }
   });
 
   group('order rejections', () {
-    Future<OrderSummary> sell() => orders.sellToBalance(
+    Future<Result<OrderSummary, BbxFailure>> sell() => orders.sellToBalance(
       fiatCurrency: 'CAD',
       bitcoinNetwork: 'bitcoin',
       fiatAmount: 5,
     );
 
-    Matcher limit(
-      BbxApiOrderLimitBound bound,
-      double amount,
-      String currency,
-    ) => throwsA(
-      isA<BbxApiOrderLimitException>()
-          .having((e) => e.bound, 'bound', bound)
-          .having((e) => e.amount, 'amount', amount)
-          .having((e) => e.currency, 'currency', currency)
-          .having((e) => e.code, 'code', -32000),
-    );
+    Matcher limit(BbxOrderLimitBound bound, double amount, String currency) =>
+        isA<BbxOrderLimitFailure>()
+            .having((f) => f.bound, 'bound', bound)
+            .having((f) => f.amount, 'amount', amount)
+            .having((f) => f.currency, 'currency', currency)
+            .having((f) => f.code, 'code', -32000);
 
-    Matcher plain() => throwsA(
-      isA<BbxApiRpcException>()
-          .having((e) => e.runtimeType, 'type', BbxApiRpcException)
-          .having((e) => e.code, 'code', -32000),
-    );
+    Matcher plain() => isA<BbxRpcFailure>()
+        .having((f) => f.runtimeType, 'type', BbxRpcFailure)
+        .having((f) => f.code, 'code', -32000);
 
     test('aggregate minimums are the lowest one', () async {
       answer(_reasons([_limit('20', _min), _limit(50, _min)]));
-      await expectLater(
-        sell(),
-        limit(BbxApiOrderLimitBound.minimum, 20, 'CAD'),
+      expect(
+        await failedCall(sell()),
+        limit(BbxOrderLimitBound.minimum, 20, 'CAD'),
       );
     });
 
     test('aggregate maximums are the highest one', () async {
       answer(_reasons([_limit(1000, _max), _limit('3000.5', _max)]));
-      await expectLater(
-        sell(),
-        limit(BbxApiOrderLimitBound.maximum, 3000.5, 'CAD'),
+      expect(
+        await failedCall(sell()),
+        limit(BbxOrderLimitBound.maximum, 3000.5, 'CAD'),
       );
     });
 
@@ -355,9 +362,9 @@ void main() {
           },
         },
       });
-      await expectLater(
-        sell(),
-        limit(BbxApiOrderLimitBound.minimum, 10, 'EUR'),
+      expect(
+        await failedCall(sell()),
+        limit(BbxOrderLimitBound.minimum, 10, 'EUR'),
       );
     });
 
@@ -398,11 +405,11 @@ void main() {
     ]) {
       test('$name is a plain JSON-RPC error', () async {
         answer(body);
-        await expectLater(sell(), plain());
+        expect(await failedCall(sell()), plain());
       });
     }
 
-    test('ERR_ORD_CSRCP400 is the not-activated error', () async {
+    test('ERR_ORD_CSRCP400 is the not-activated failure', () async {
       answer({
         'error': {
           'code': -32603,
@@ -415,14 +422,14 @@ void main() {
           },
         },
       });
-      await expectLater(
-        orders.createWithdrawalOrder(fiatAmount: 5, recipientId: 'r'),
-        throwsA(
-          isA<BbxApiConfidentialSepaNotActivatedException>()
-              .having((e) => e.code, 'code', -32603)
-              .having((e) => e.apiCode, 'apiCode', 'ERR_ORD_CSRCP400')
-              .having((e) => e.toString(), 'text', isNot(contains('DE00'))),
+      expect(
+        await failedCall(
+          orders.createWithdrawalOrder(fiatAmount: 5, recipientId: 'r'),
         ),
+        isA<BbxConfidentialSepaInactiveFailure>()
+            .having((f) => f.code, 'code', -32603)
+            .having((f) => f.apiCode, 'apiCode', 'ERR_ORD_CSRCP400')
+            .having((f) => f.toString(), 'text', isNot(contains('DE00'))),
       );
     });
 
@@ -436,14 +443,12 @@ void main() {
           },
         },
       });
-      await expectLater(
-        sell(),
-        throwsA(
-          isA<BbxApiRpcException>().having(
-            (e) => e.apiCode,
-            'apiCode',
-            'ERR_ORD_PO404',
-          ),
+      expect(
+        await failedCall(sell()),
+        isA<BbxRpcFailure>().having(
+          (f) => f.apiCode,
+          'apiCode',
+          'ERR_ORD_PO404',
         ),
       );
 
@@ -455,38 +460,20 @@ void main() {
           },
         },
       });
-      await expectLater(
-        sell(),
-        throwsA(
-          isA<BbxApiRpcException>().having((e) => e.apiCode, 'apiCode', null),
-        ),
+      expect(
+        await failedCall(sell()),
+        isA<BbxRpcFailure>().having((f) => f.apiCode, 'apiCode', null),
       );
     });
 
-    test('limit errors do not quote the server message', () async {
-      answer(_reasons([_limit(20, _min)]));
-      await expectLater(
-        sell(),
-        throwsA(
-          isA<BbxApiOrderLimitException>()
-              .having((e) => e.message, 'message', null)
-              .having(
-                (e) => e.toString(),
-                'text',
-                isNot(contains('No valid payment options')),
-              ),
-        ),
-      );
-    });
-
-    test('a non-200 status is an HTTP error', () async {
+    test('a non-200 status is an HTTP failure', () async {
       answer({'result': _order}, status: 204);
-      await expectLater(sell(), throwsA(isA<BbxApiHttpException>()));
+      expect(await failedCall(sell()), isA<BbxHttpFailure>());
     });
 
-    test('a result that is not an object is a format error', () async {
+    test('a result that is not an object is a format failure', () async {
       answer({'result': null});
-      await expectLater(sell(), throwsA(isA<BbxApiFormatException>()));
+      expect(await failedCall(sell()), isA<BbxResponseFormatFailure>());
     });
   });
 }

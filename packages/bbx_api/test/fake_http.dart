@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
+import 'package:primitives/primitives.dart';
 
 /// Answers every request with [status] and [body], recording the requests.
 class FakeHttp implements HttpClientAdapter {
@@ -13,10 +16,6 @@ class FakeHttp implements HttpClientAdapter {
   final List<List<int>> bodies = [];
 
   FakeHttp({this.status = 200, this.body});
-
-  static Dio dio({int status = 200, Object? body}) =>
-      Dio(BaseOptions(baseUrl: 'https://api.test'))
-        ..httpClientAdapter = FakeHttp(status: status, body: body);
 
   @override
   Future<ResponseBody> fetch(
@@ -40,3 +39,24 @@ class FakeHttp implements HttpClientAdapter {
   @override
   void close({bool force = false}) {}
 }
+
+/// A credential read that finds [key], or no key when it is null.
+Future<Result<String?, BbxFailure>> okApiKey([
+  String? key = 'test-key',
+]) async => Ok<String?, BbxFailure>(key);
+
+/// A credential read that fails: the stored credential is unreadable.
+Future<Result<String?, BbxFailure>> failedApiKey() async =>
+    const Err(BbxCredentialUnavailableFailure());
+
+/// A [Bbx] over [http], presenting the key [readActiveApiKey] returns.
+Bbx bbx(
+  HttpClientAdapter http, {
+  Future<Result<String?, BbxFailure>> Function()? readActiveApiKey,
+  BbxTimeouts timeouts = const BbxTimeouts(),
+}) => bbxForTesting(
+  endpoint: 'https://api.test',
+  adapter: http,
+  readActiveApiKey: readActiveApiKey ?? okApiKey,
+  timeouts: timeouts,
+);

@@ -11,8 +11,6 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_rep
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
     as core_exchange;
 import 'package:bb_mobile/features/exchange/exchange_locator.dart'
@@ -20,8 +18,8 @@ import 'package:bb_mobile/features/exchange/exchange_locator.dart'
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:flutter/widgets.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
-import 'package:dio/dio.dart';
+import 'package:bbx_api/bbx_api.dart'
+    show Bbx, BbxCredentialUnavailableFailure, BbxFailure;
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -223,23 +221,32 @@ void main() {
             socket.listen((_) {});
           } else {
             request.response.headers.contentType = ContentType.json;
-            request.response.write('{}');
+            request.response.write(
+              jsonEncode({
+                'jsonrpc': '2.0',
+                'result': {'success': true},
+              }),
+            );
             await request.response.close();
           }
         });
         final baseUrl = 'http://127.0.0.1:${server.port}';
-        final client = Dio(BaseOptions(baseUrl: baseUrl));
-        addExchangeAuthentication(
-          client,
-          () => repository.readActiveApiKey(isTestnet: true),
-        );
+        // The app's credential read as the package's own failure family, as
+        // the composition root wires it.
+        Future<Result<String?, BbxFailure>> credential() async =>
+            switch (await repository.readActiveApiKey(isTestnet: true)) {
+              Ok(:final value) => Ok<String?, BbxFailure>(value),
+              Err() => const Err<String?, BbxFailure>(
+                BbxCredentialUnavailableFailure(),
+              ),
+            };
+        final api = Bbx.open(endpoint: baseUrl, readActiveApiKey: credential);
         final socket = BbxApiNotificationDatasource(
           baseUrl: baseUrl,
           readApiKey: () => repository.readActiveApiKey(isTestnet: true),
         );
         addTearDown(() async {
           socket.dispose();
-          client.close(force: true);
           for (final connection in sockets) {
             await connection.close();
           }
@@ -250,7 +257,14 @@ void main() {
           jsonEncode({'key': 'http-synthetic', 'isActive': true}),
           isTestnet: true,
         );
-        await client.get<void>('/probe');
+        // A harmless authenticated call: the stored credential must reach the
+        // server on this request.
+        final probeResult = await api.users.registerResponsibilityConsent();
+        expect(
+          probeResult is Ok<bool, BbxFailure> && probeResult.value,
+          isTrue,
+          reason: 'the HTTP probe must carry the stored credential',
+        );
         await storeCredential(
           jsonEncode({'key': 'socket-synthetic', 'isActive': true}),
           isTestnet: true,
@@ -259,15 +273,14 @@ void main() {
         expect(socket.isConnected, isTrue);
         socket.disconnect();
         probe.refuseReads = true;
-        await expectLater(
-          client.get<void>('/probe'),
-          throwsA(
-            isA<DioException>().having(
-              (e) => exchangeAuthenticationException(e)?.failure,
-              'storage refusal',
-              isA<ExchangeApiKeyReadFailure>(),
-            ),
+        expect(
+          await api.users.registerResponsibilityConsent(),
+          isA<Err>().having(
+            (r) => r.failure,
+            'storage refusal',
+            isA<BbxCredentialUnavailableFailure>(),
           ),
+          reason: 'an unreadable credential must not reach the network',
         );
         expect(keys, ['http-synthetic', 'socket-synthetic']);
       },
@@ -382,7 +395,7 @@ void main() {
               reason: 'preprod history read must succeed',
             );
             final recipients = await BbxApiRecipientsRepository(
-              api: locator<BbxApiClient>(instanceName: 'testnetBbxApiClient'),
+              api: locator<Bbx>(instanceName: 'testnetBbxApiClient'),
             ).listRecipients(isTestnet: true);
             expect(
               recipients is Ok,

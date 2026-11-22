@@ -4,6 +4,7 @@ import 'package:bbx_api/bbx_api.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 Map<String, Object?> _page(List<Object?> elements) => {
   'result': {'elements': elements},
@@ -12,10 +13,10 @@ Map<String, Object?> _page(List<Object?> elements) => {
 void main() {
   group('listMessages', () {
     test('asks api-commcenter for a page, newest first', () async {
-      final dio = FakeHttp.dio(body: _page([]));
-      await BbxApiClient(dio).commcenter.listMessages(page: 2, pageSize: 5);
+      final http = FakeHttp(body: _page([]));
+      valueOf(await bbx(http).commcenter.listMessages(page: 2, pageSize: 5));
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-commcenter');
       expect(
         jsonEncode(request.data),
@@ -26,10 +27,10 @@ void main() {
     });
 
     test('defaults to the first page of ten', () async {
-      final dio = FakeHttp.dio(body: _page([]));
-      await BbxApiClient(dio).commcenter.listMessages();
+      final http = FakeHttp(body: _page([]));
+      valueOf(await bbx(http).commcenter.listMessages());
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect((request.data as Map)['params']['paginator'], {
         'page': 1,
         'pageSize': 10,
@@ -37,44 +38,46 @@ void main() {
     });
 
     test('reads the messages and their attachments', () async {
-      final messages = await BbxApiClient(
-        FakeHttp.dio(
-          body: _page([
-            {
-              'messageId': 'm-1',
-              'text': 'Hello',
-              'fromUserId': 'u-1',
-              'toGroupCode': 'support',
-              'createdAt': '2026-11-20T10:00:00Z',
-              'updatedAt': 'not a date',
-              'attachments': [
-                null,
-                {
-                  'attachmentId': 'a-1',
-                  'fileName': 'a.png',
-                  'fileType': 'image/png',
-                  'fileSize': 3,
-                  'fileData': {
-                    'type': 'Buffer',
-                    'data': [1, 2, 3],
+      final messages = valueOf(
+        await bbx(
+          FakeHttp(
+            body: _page([
+              {
+                'messageId': 'm-1',
+                'text': 'Hello',
+                'fromUserId': 'u-1',
+                'toGroupCode': 'support',
+                'createdAt': '2026-11-20T10:00:00Z',
+                'updatedAt': 'not a date',
+                'attachments': [
+                  null,
+                  {
+                    'attachmentId': 'a-1',
+                    'fileName': 'a.png',
+                    'fileType': 'image/png',
+                    'fileSize': 3,
+                    'fileData': {
+                      'type': 'Buffer',
+                      'data': [1, 2, 3],
+                    },
+                    'createdAt': '2026-11-20T10:00:00Z',
                   },
-                  'createdAt': '2026-11-20T10:00:00Z',
-                },
-                {
-                  'attachmentId': 'a-2',
-                  'fileData': [4, 5],
-                },
-                {'attachmentId': 'a-3', 'fileData': 'AQID'},
-                {
-                  'attachmentId': 'a-4',
-                  'fileData': {'data': null},
-                },
-              ],
-            },
-            {'messageId': 'm-2'},
-          ]),
-        ),
-      ).commcenter.listMessages();
+                  {
+                    'attachmentId': 'a-2',
+                    'fileData': [4, 5],
+                  },
+                  {'attachmentId': 'a-3', 'fileData': 'AQID'},
+                  {
+                    'attachmentId': 'a-4',
+                    'fileData': {'data': null},
+                  },
+                ],
+              },
+              {'messageId': 'm-2'},
+            ]),
+          ),
+        ).commcenter.listMessages(),
+      );
 
       final [first, second] = messages;
       expect(first.messageId, 'm-1');
@@ -100,12 +103,11 @@ void main() {
     });
 
     test('a missing element list is empty', () async {
-      expect(
-        await BbxApiClient(FakeHttp.dio(body: {'result': <String, Object?>{}}))
-            .commcenter
+      final messages = valueOf(
+        await bbx(FakeHttp(body: {'result': <String, Object?>{}})).commcenter
             .listMessages(),
-        isEmpty,
       );
+      expect(messages, isEmpty);
     });
 
     for (final body in [
@@ -146,9 +148,9 @@ void main() {
       ]),
     ]) {
       test('$body is a format error', () async {
-        await expectLater(
-          BbxApiClient(FakeHttp.dio(body: body)).commcenter.listMessages(),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(bbx(FakeHttp(body: body)).commcenter.listMessages()),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
@@ -156,22 +158,24 @@ void main() {
 
   group('sendMessageToSupport', () {
     test('sends the text, source and base64 attachments', () async {
-      final dio = FakeHttp.dio(body: {'result': null});
-      await BbxApiClient(dio).commcenter.sendMessageToSupport(
-        text: 'Hi',
-        source: 'BULL Mobile',
-        attachments: const [
-          NewSupportAttachment(
-            fileName: 'a.png',
-            fileType: 'image/png',
-            fileSize: 3,
-            fileData: [1, 2, 3],
-          ),
-          NewSupportAttachment(fileData: []),
-        ],
+      final http = FakeHttp(body: {'result': null});
+      valueOf(
+        await bbx(http).commcenter.sendMessageToSupport(
+          text: 'Hi',
+          source: 'BULL Mobile',
+          attachments: const [
+            NewSupportAttachment(
+              fileName: 'a.png',
+              fileType: 'image/png',
+              fileSize: 3,
+              fileData: [1, 2, 3],
+            ),
+            NewSupportAttachment(fileData: []),
+          ],
+        ),
       );
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-commcenter');
       expect(
         jsonEncode(request.data),
@@ -184,34 +188,38 @@ void main() {
     });
 
     test('sends null attachments as null', () async {
-      final dio = FakeHttp.dio(body: {'result': null});
-      await BbxApiClient(dio).commcenter
-          .sendMessageToSupport(text: 'Hi', source: 'BULL Mobile');
+      final http = FakeHttp(body: {'result': null});
+      valueOf(
+        await bbx(http).commcenter
+            .sendMessageToSupport(text: 'Hi', source: 'BULL Mobile'),
+      );
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(
         jsonEncode((request.data as Map)['params']),
         '{"element":{"text":"Hi","source":"BULL Mobile","attachments":null}}',
       );
     });
 
-    test('a JSON-RPC error throws', () async {
-      await expectLater(
-        BbxApiClient(
-          FakeHttp.dio(
-            body: {
-              'error': {'code': 1},
-            },
-          ),
-        ).commcenter.sendMessageToSupport(text: 'Hi', source: 's'),
-        throwsA(isA<BbxApiRpcException>()),
+    test('a JSON-RPC error is a failure', () async {
+      final http = FakeHttp(
+        body: {
+          'error': {'code': 1},
+        },
+      );
+
+      expect(
+        await failedCall(
+          bbx(http).commcenter.sendMessageToSupport(text: 'Hi', source: 's'),
+        ),
+        isA<BbxRpcFailure>(),
       );
     });
   });
 
   group('getMessageAttachment', () {
     test('asks for the attachment by id', () async {
-      final dio = FakeHttp.dio(
+      final http = FakeHttp(
         body: {
           'result': {
             'attachmentId': 'a-1',
@@ -224,10 +232,11 @@ void main() {
           },
         },
       );
-      final attachment = await BbxApiClient(dio).commcenter
-          .getMessageAttachment('a-1');
+      final attachment = valueOf(
+        await bbx(http).commcenter.getMessageAttachment('a-1'),
+      );
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-commcenter');
       expect(
         jsonEncode(request.data),
@@ -256,13 +265,15 @@ void main() {
       (7, null),
     ]) {
       test('reads fileData $fileData as $bytes', () async {
-        final attachment = await BbxApiClient(
-          FakeHttp.dio(
-            body: {
-              'result': {'fileData': fileData},
-            },
-          ),
-        ).commcenter.getMessageAttachment('a');
+        final attachment = valueOf(
+          await bbx(
+            FakeHttp(
+              body: {
+                'result': {'fileData': fileData},
+              },
+            ),
+          ).commcenter.getMessageAttachment('a'),
+        );
         expect(attachment.fileData, bytes);
       });
     }
@@ -275,10 +286,11 @@ void main() {
       },
     ]) {
       test('$body is a format error', () async {
-        await expectLater(
-          BbxApiClient(FakeHttp.dio(body: body)).commcenter
-              .getMessageAttachment('a'),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(
+            bbx(FakeHttp(body: body)).commcenter.getMessageAttachment('a'),
+          ),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }

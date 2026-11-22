@@ -1,88 +1,87 @@
-import 'package:bbx_api/src/bbx_api_client.dart';
+import 'package:bbx_api/src/bbx_failure.dart';
+import 'package:bbx_api/src/bbx_transport.dart';
 import 'package:bbx_api/src/commcenter/announcement.dart';
+import 'package:bbx_api/src/commcenter/commcenter_wire.dart';
 import 'package:bbx_api/src/commcenter/support_message.dart';
 import 'package:bbx_api/src/json.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The `api-commcenter` endpoint.
-class CommcenterApi {
+final class CommcenterApi {
   static const endpoint = '/ak/api-commcenter';
 
-  final BbxApiClient _client;
+  final BbxTransport _transport;
 
-  CommcenterApi(this._client);
+  @internal
+  CommcenterApi(this._transport);
 
   /// One page of announcements, most recently updated first. A missing
   /// result or element list is empty.
-  Future<List<Announcement>> listAnnouncements({
+  Future<Result<List<Announcement>, BbxFailure>> listAnnouncements({
     int page = 1,
     int pageSize = 5,
-  }) async {
-    final result = read<Map<String, dynamic>?>(
-      await _client.call(
-        endpoint,
-        'listAnnouncements',
-        params: {
-          'paginator': {'pageSize': pageSize, 'page': page},
-          'sortBy': {'id': 'updatedAt', 'sort': 'desc'},
-        },
-      ),
-      'result',
-    );
-    if (result == null) return const [];
-    return readList(result['elements'], 'elements', Announcement.fromJson);
-  }
+  }) => _transport.request(
+    endpoint,
+    'listAnnouncements',
+    params: {
+      'paginator': {'pageSize': pageSize, 'page': page},
+      'sortBy': {'id': 'updatedAt', 'sort': 'desc'},
+    },
+    read: (result) {
+      final element = read<Map<String, dynamic>?>(result, 'result');
+      if (element == null) return const [];
+      return readList(element['elements'], 'elements', parseAnnouncement);
+    },
+  );
 
   /// One page of the user's support chat messages, newest first. A missing
   /// element list is empty; a missing result is a format error.
-  Future<List<SupportMessage>> listMessages({
+  Future<Result<List<SupportMessage>, BbxFailure>> listMessages({
     int page = 1,
     int pageSize = 10,
-  }) async {
-    final result = read<Map<String, dynamic>>(
-      await _client.call(
-        endpoint,
-        'listMessages',
-        params: {
-          'sortBy': {'id': 'createdAt', 'sort': 'desc'},
-          'paginator': {'page': page, 'pageSize': pageSize},
-        },
-      ),
-      'result',
-    );
-    return readList(result['elements'], 'elements', SupportMessage.fromJson);
-  }
+  }) => _transport.request(
+    endpoint,
+    'listMessages',
+    params: {
+      'sortBy': {'id': 'createdAt', 'sort': 'desc'},
+      'paginator': {'page': page, 'pageSize': pageSize},
+    },
+    read: (result) => readList(
+      read<Map<String, dynamic>>(result, 'result')['elements'],
+      'elements',
+      parseSupportMessage,
+    ),
+  );
 
   /// Sends [text] to support from [source]. A `null` [attachments] is sent
   /// as `null`.
-  Future<void> sendMessageToSupport({
+  Future<Result<void, BbxFailure>> sendMessageToSupport({
     required String text,
     required String source,
     List<NewSupportAttachment>? attachments,
-  }) async {
-    await _client.call(
-      endpoint,
-      'sendMessageToSupport',
-      params: {
-        'element': {
-          'text': text,
-          'source': source,
-          'attachments': attachments?.map((a) => a.toJson()).toList(),
-        },
+  }) => _transport.request(
+    endpoint,
+    'sendMessageToSupport',
+    params: {
+      'element': {
+        'text': text,
+        'source': source,
+        'attachments': attachments?.map(newSupportAttachmentToJson).toList(),
       },
-    );
-  }
+    },
+    read: (_) {},
+  );
 
   /// The attachment [attachmentId] with its file data. A missing result is a
   /// format error.
-  Future<SupportAttachment> getMessageAttachment(String attachmentId) async =>
-      SupportAttachment.fromJson(
-        read<Map<String, dynamic>>(
-          await _client.call(
-            endpoint,
-            'getMessageAttachment',
-            params: {'attachmentId': attachmentId},
-          ),
-          'result',
-        ),
-      );
+  Future<Result<SupportAttachment, BbxFailure>> getMessageAttachment(
+    String attachmentId,
+  ) => _transport.request(
+    endpoint,
+    'getMessageAttachment',
+    params: {'attachmentId': attachmentId},
+    read: (result) =>
+        parseSupportAttachment(read<Map<String, dynamic>>(result, 'result')),
+  );
 }

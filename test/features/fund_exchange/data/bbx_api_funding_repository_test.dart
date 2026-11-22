@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
@@ -12,7 +11,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdi
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
-import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -162,15 +161,14 @@ Map<String, Object?> _canonical(FundingDetails d) => switch (d) {
   },
 };
 
-Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
-  final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-    ..httpClientAdapter = http;
-  if (readApiKey != null) addExchangeAuthentication(dio, readApiKey);
-  return dio;
-}
-
 FundingRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
-    BbxApiFundingRepository(api: BbxApiClient(_dio(http, readApiKey: key)));
+    BbxApiFundingRepository(
+      api: bbxForTesting(
+        endpoint: testBbxEndpoint,
+        adapter: http,
+        readActiveApiKey: bbxCredentialRead(key),
+      ),
+    );
 
 /// The path and JSON text of each request.
 List<(String, String)> _sent(FakeBbxHttp http) => [
@@ -556,7 +554,7 @@ void main() {
       });
     }
 
-    test('the failures keep the old log messages', () async {
+    test('failure diagnostics keep codes and omit server text', () async {
       Future<String?> logMessage(FakeBbxHttp http) async => failureOf(
         await _new(http).getFundingDetails(fundingMethod: const RegularSepa()),
       ).logMessage;
@@ -570,11 +568,14 @@ void main() {
         await logMessage(FakeBbxHttp(error: DioExceptionType.badCertificate)),
         'Transport failure: badCertificate',
       );
-      // The JSON-RPC message, not the server's sentence, which can name the
+      // Only the JSON-RPC codes survive: the server's sentence can name the
       // user's IBAN.
+      final rpcMessage = await logMessage(
+        FakeBbxHttp(body: _rpcError('ERR_ORD_KYC400')),
+      );
       expect(
-        await logMessage(FakeBbxHttp(body: _rpcError('ERR_ORD_KYC400'))),
-        'Internal error',
+        rpcMessage,
+        'BbxRpcFailure(code: -32000, apiCode: ERR_ORD_KYC400)',
       );
     });
 

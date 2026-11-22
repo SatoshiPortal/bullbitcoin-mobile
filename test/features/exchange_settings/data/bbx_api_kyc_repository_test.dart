@@ -3,15 +3,16 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
-import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../exchange/data/bbx_api_test_http.dart';
 
 /// One sent request: path, content type and body, with the multipart
 /// boundary replaced by `BOUNDARY`.
@@ -65,15 +66,14 @@ class _UploadHttp implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
-  final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-    ..httpClientAdapter = http;
-  if (readApiKey != null) addExchangeAuthentication(dio, readApiKey);
-  return dio;
-}
-
 ExchangeKycRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
-    BbxApiKycRepository(api: BbxApiClient(_dio(http, readApiKey: key)));
+    BbxApiKycRepository(
+      api: bbxForTesting(
+        endpoint: testBbxEndpoint,
+        adapter: http,
+        readActiveApiKey: bbxCredentialRead(key),
+      ),
+    );
 
 Future<FileUploadResult> _upload(
   ExchangeKycRepository repository, {
@@ -182,7 +182,11 @@ void main() {
       expect(result.isSuccess, isFalse);
       expect(
         result.errorMessage,
-        'Failed to upload document: DioException(connectionTimeout, status: null)',
+        'Failed to upload document: BbxTimeoutFailure',
+      );
+      expect(
+        result.errorMessage,
+        isNot(contains('fixture-sensitive-upload-path')),
       );
     },
   );

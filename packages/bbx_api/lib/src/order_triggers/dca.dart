@@ -1,5 +1,3 @@
-import 'package:bbx_api/src/bbx_api_exception.dart';
-import 'package:bbx_api/src/json.dart';
 import 'package:meta/meta.dart';
 
 /// How often a recurring buy runs.
@@ -56,20 +54,4 @@ class Dca {
     required this.createdAt,
     required this.address,
   });
-
-  /// Throws a [BbxApiFormatException] naming the first invalid field.
-  factory Dca.fromJson(Map<String, dynamic> json) => Dca(
-    userId: read<String>(json['userId'], 'userId'),
-    userNbr: read<num>(json['userNbr'], 'userNbr').toInt(),
-    amountStr: read<String>(json['amountStr'], 'amountStr'),
-    currencyCode: read<String>(json['currencyCode'], 'currencyCode'),
-    recurringFrequency: read<String>(
-      json['recurringFrequency'],
-      'recurringFrequency',
-    ),
-    recipientType: read<String>(json['recipientType'], 'recipientType'),
-    nextRunAt: read<String>(json['nextRunAt'], 'nextRunAt'),
-    createdAt: read<String>(json['createdAt'], 'createdAt'),
-    address: read<String>(json['address'], 'address'),
-  );
 }

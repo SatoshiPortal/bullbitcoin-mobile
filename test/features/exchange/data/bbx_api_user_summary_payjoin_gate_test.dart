@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_summary_mapper.dart';
-import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 UserSummary _map(Map<String, dynamic> json) =>
-    userSummaryFromBbxApi(bbx.UserSummary.fromJson(json));
+    userSummaryFromBbxApi(userSummaryForTesting(json));
 
 /// The payjoin-with-the-exchange gate is server-side: the backend publishes
 /// `payjoinReceiveEnabled` on the user summary and every payjoin surface (buy
@@ -28,7 +28,7 @@ void main() {
     test('is false when the backend omits the field entirely', () {
       final json = summaryJson();
 
-      expect(bbx.UserSummary.fromJson(json).payjoinReceiveEnabled, isFalse);
+      expect(userSummaryForTesting(json).payjoinReceiveEnabled, isFalse);
       expect(
         _map(json).payjoinReceiveEnabled,
         isFalse,

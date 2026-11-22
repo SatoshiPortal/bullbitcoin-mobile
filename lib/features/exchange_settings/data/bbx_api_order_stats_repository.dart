@@ -1,24 +1,28 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:primitives/primitives.dart';
 
 /// Order statistics through the `bbx_api` package.
 class BbxApiOrderStatsRepository implements ExchangeOrderStatsRepository {
-  final bbx.BbxApiClient _api;
+  final bbx.Bbx _api;
 
   BbxApiOrderStatsRepository({required this._api});
 
   @override
   Future<OrderStatsResponse> getOrderStats() async {
-    try {
-      return _toEntity(await _api.orders.getOrderStats());
-    } catch (e, st) {
-      rethrowExchangeAuthentication(e, st);
-      if (e is ApiKeyException) rethrow;
-      throw Exception('Failed to get order stats: $e');
-    }
+    final result = await _api.orders.getOrderStats();
+    return switch (result) {
+      Ok(:final value) => _toEntity(value),
+      Err(failure: bbx.BbxMissingCredentialFailure()) =>
+        throw ApiKeyNotFoundException(),
+      Err(failure: bbx.BbxCredentialUnavailableFailure()) =>
+        throw const ExchangeCredentialUnavailableException(),
+      Err(:final failure) => throw Exception(
+        'Failed to get order stats: ${_describe(failure)}',
+      ),
+    };
   }
 
   static OrderStatsResponse _toEntity(bbx.OrderStatsReport report) {
@@ -54,4 +58,10 @@ class BbxApiOrderStatsRepository implements ExchangeOrderStatsRepository {
       asOf: report.asOf,
     );
   }
+
+  static String _describe(bbx.BbxFailure failure) => switch (failure) {
+    bbx.BbxRpcFailure(:final code, :final apiCode) =>
+      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
+    _ => failure.runtimeType.toString(),
+  };
 }

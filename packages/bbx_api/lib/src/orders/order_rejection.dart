@@ -1,4 +1,5 @@
-import 'package:bbx_api/src/bbx_api_exception.dart';
+import 'package:bbx_api/src/bbx_failure.dart';
+import 'package:bbx_api/src/rpc_error.dart';
 
 /// Reads the JSON-RPC [error] of an order creation.
 ///
@@ -7,15 +8,15 @@ import 'package:bbx_api/src/bbx_api_exception.dart';
 /// can be empty or hold no limit (group access denied, amount not positive),
 /// and the aggregate's legacy `data.details` is never read. Limits with mixed
 /// bounds or currencies, or a bound that is neither a minimum nor a maximum,
-/// give a plain [BbxApiRpcException].
-BbxApiRpcException orderRejection(Object error) {
-  final rpc = BbxApiRpcException.fromJson(error);
+/// give a plain [BbxRpcFailure].
+BbxFailure orderRejection(Object error) {
+  final rpc = bbxRpcFailure(error);
   final data = error is Map ? error['data'] : null;
   final dataMap = data is Map ? data : const <dynamic, dynamic>{};
 
   final apiError = dataMap['apiError'];
   if (apiError is Map && apiError['code'] == 'ERR_ORD_CSRCP400') {
-    return BbxApiConfidentialSepaNotActivatedException(
+    return BbxConfidentialSepaInactiveFailure(
       code: rpc.code,
       apiCode: rpc.apiCode,
     );
@@ -39,8 +40,8 @@ BbxApiRpcException orderRejection(Object error) {
     switch (operators.single) {
       case 'GREATER_THAN_OR_EQUAL':
         final min = limits.reduce((a, b) => a.amount <= b.amount ? a : b);
-        return BbxApiOrderLimitException(
-          bound: BbxApiOrderLimitBound.minimum,
+        return BbxOrderLimitFailure(
+          bound: BbxOrderLimitBound.minimum,
           amount: min.amount,
           currency: min.currency,
           code: rpc.code,
@@ -48,8 +49,8 @@ BbxApiRpcException orderRejection(Object error) {
         );
       case 'LESS_THAN_OR_EQUAL':
         final max = limits.reduce((a, b) => a.amount >= b.amount ? a : b);
-        return BbxApiOrderLimitException(
-          bound: BbxApiOrderLimitBound.maximum,
+        return BbxOrderLimitFailure(
+          bound: BbxOrderLimitBound.maximum,
           amount: max.amount,
           currency: max.currency,
           code: rpc.code,

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
-import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../core/exchange/order_json_fixture.dart';
@@ -71,7 +71,7 @@ const _orderTypes = [
 ];
 
 Order _new(Map<String, dynamic> json, {bool isTestnet = false}) =>
-    orderFromBbxApi(bbx.OrderSummary.fromJson(json), isTestnet: isTestnet);
+    orderFromBbxApi(orderSummaryForTesting(json), isTestnet: isTestnet);
 
 /// The entity's fields, including the nested objects that have no `==`.
 String _snapshot(Order order) {
@@ -160,7 +160,7 @@ void main() {
   );
 
   group('orderSummaryMatchesTxId', () {
-    final summary = bbx.OrderSummary.fromJson(
+    final summary = orderSummaryForTesting(
       orderJsonFixture(overrides: _allFields),
     );
 
@@ -174,7 +174,7 @@ void main() {
     }
 
     test('an order without payjoin details matches only its own txids', () {
-      final plain = bbx.OrderSummary.fromJson(orderJsonFixture());
+      final plain = orderSummaryForTesting(orderJsonFixture());
       expect(orderSummaryMatchesTxId(plain, 'pj-tx'), isFalse);
     });
   });

@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -31,20 +32,24 @@ class _Throwing implements HttpClientAdapter {
 }
 
 void main() {
-  BbxApiOrderRepository orders(BbxApiClient api) =>
+  BbxApiOrderRepository orders(Bbx api) =>
       BbxApiOrderRepository(api: api, isTestnet: true);
 
   test(
     'Dio-wrapped programming errors still propagate from order reads',
     () async {
-      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-        ..httpClientAdapter = _Throwing(
-          DioException(
-            requestOptions: RequestOptions(path: '/synthetic'),
-            error: StateError('synthetic programming defect'),
+      final repository = orders(
+        bbxForTesting(
+          endpoint: testBbxEndpoint,
+          adapter: _Throwing(
+            DioException(
+              requestOptions: RequestOptions(path: '/synthetic'),
+              error: StateError('synthetic programming defect'),
+            ),
           ),
-        );
-      final repository = orders(BbxApiClient(dio));
+          readActiveApiKey: bbxCredentialRead(null),
+        ),
+      );
       await expectLater(repository.getOrders(), throwsStateError);
       await expectLater(
         repository.getOrderByTxId('synthetic'),

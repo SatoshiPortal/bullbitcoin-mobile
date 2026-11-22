@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -1097,7 +1096,7 @@ void main() {
               (e) => e.toString(),
               'message',
               allOf(
-                contains('BbxApiRpcException(code: -1)'),
+                contains('BbxRpcFailure(code: -1)'),
                 isNot(contains('sat@example.com')),
               ),
             ),
@@ -1263,16 +1262,14 @@ void main() {
       await expectLater(
         create(FakeBbxHttp(body: _rpcError)),
         throwsA(
-          isA<Exception>()
-              .having((e) => e, 'type', isNot(isA<bbx.BbxApiException>()))
-              .having(
-                (e) => '$e',
-                'message',
-                allOf(
-                  contains('Failed to create DCA'),
-                  isNot(contains('sat@example.com')),
-                ),
-              ),
+          isA<Exception>().having(
+            (e) => '$e',
+            'message',
+            allOf(
+              contains('Failed to create DCA'),
+              isNot(contains('sat@example.com')),
+            ),
+          ),
         ),
       );
     });

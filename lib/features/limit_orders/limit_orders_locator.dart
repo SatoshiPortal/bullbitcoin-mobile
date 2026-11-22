@@ -17,17 +17,17 @@ import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order
 import 'package:bb_mobile/features/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:get_it/get_it.dart';
 
 final class LimitOrdersLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<LimitOrderRepository>(
       () => BbxApiLimitOrderRepository(
-        mainnet: locator<BbxApiClient>(
+        mainnet: locator<Bbx>(
           instanceName: 'mainnetBbxApiClientWithoutTimeout',
         ),
-        testnet: locator<BbxApiClient>(
+        testnet: locator<Bbx>(
           instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
         settingsRepository: locator<Preferences>(),

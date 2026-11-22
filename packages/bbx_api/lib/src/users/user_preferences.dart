@@ -19,12 +19,4 @@ class UserPreferences {
     this.autoBuyEnabled,
     this.emailNotifications,
   });
-
-  Map<String, String> toJson() => {
-    'LANGUAGE': ?language,
-    'DEFAULT_FIAT_CURRENCY_CODE': ?defaultFiatCurrencyCode,
-    'DCA_ENABLED': ?dcaEnabled,
-    'AUTO_BUY_ENABLED': ?autoBuyEnabled,
-    'EMAIL_NOTIFICATIONS': ?emailNotifications,
-  };
 }

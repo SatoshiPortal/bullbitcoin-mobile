@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/default_wallets/data/bbx_api_exchange_recipient_repository.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:get_it/get_it.dart';
 
 class DefaultWalletsLocator {
@@ -13,9 +13,7 @@ class DefaultWalletsLocator {
     for (final environment in ['mainnet', 'testnet']) {
       locator.registerLazySingleton<ExchangeRecipientRepository>(
         () => BbxApiExchangeRecipientRepository(
-          api: locator<BbxApiClient>(
-            instanceName: '${environment}BbxApiClient',
-          ),
+          api: locator<Bbx>(instanceName: '${environment}BbxApiClient'),
         ),
         instanceName: environment,
       );

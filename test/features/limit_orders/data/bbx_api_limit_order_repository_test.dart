@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/limit_orders/data/bbx_api_limit_order_reposit
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -80,7 +80,7 @@ void main() {
     settingsRepository: settings,
   );
 
-  BbxApiLimitOrderRepository withClient(BbxApiClient client) =>
+  BbxApiLimitOrderRepository withClient(Bbx client) =>
       BbxApiLimitOrderRepository(
         mainnet: client,
         testnet: client,

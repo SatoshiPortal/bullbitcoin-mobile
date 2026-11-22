@@ -24,7 +24,7 @@ import 'package:bb_mobile/features/recipients/data/recipients_repository_impl.da
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/sepa_virtual_payee_activation_cubit.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart' show Bbx;
 import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
@@ -41,33 +41,29 @@ class RecipientsLocator {
     locator.registerLazySingleton<RecipientsRepository>(
       () => RecipientsRepositoryImpl(
         bullbitcoinApiClient: BbxApiRecipientsRepository(
-          api: locator<BbxApiClient>(
-            instanceName: 'mainnetBbxApiClientWithoutTimeout',
-          ),
+          api: locator<Bbx>(instanceName: 'mainnetBbxApiClientWithoutTimeout'),
         ),
         bullBitcoinTestnetApiClient: BbxApiRecipientsRepository(
-          api: locator<BbxApiClient>(
-            instanceName: 'testnetBbxApiClientWithoutTimeout',
-          ),
+          api: locator<Bbx>(instanceName: 'testnetBbxApiClientWithoutTimeout'),
         ),
       ),
     );
     locator.registerLazySingleton<VirtualIbanRepository>(
       () => BbxApiVirtualIbanRepository(
-        mainnet: locator<BbxApiClient>(
+        mainnet: locator<Bbx>(
           instanceName: 'mainnetBbxApiClientWithoutTimeout',
         ),
-        testnet: locator<BbxApiClient>(
+        testnet: locator<Bbx>(
           instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
       ),
     );
     locator.registerLazySingleton<SepaVirtualPayeeRepository>(
       () => BbxApiSepaVirtualPayeeRepository(
-        mainnet: locator<BbxApiClient>(
+        mainnet: locator<Bbx>(
           instanceName: 'mainnetBbxApiClientWithoutTimeout',
         ),
-        testnet: locator<BbxApiClient>(
+        testnet: locator<Bbx>(
           instanceName: 'testnetBbxApiClientWithoutTimeout',
         ),
       ),

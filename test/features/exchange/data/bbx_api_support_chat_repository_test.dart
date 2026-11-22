@@ -2,19 +2,19 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
-import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'bbx_api_support_chat_repository_legacy.dart';
+import 'bbx_api_test_http.dart';
 
 /// Answers each JSON-RPC method with its body in [bodies], or throws [error].
 class _ChatHttp implements HttpClientAdapter {
@@ -92,18 +92,15 @@ const _rpcError = {
   'error': {'code': -32000, 'message': 'rejected'},
 };
 
-Dio _dio(HttpClientAdapter http, {ReadExchangeApiKey? readApiKey}) {
-  final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-    ..httpClientAdapter = http;
-  if (readApiKey != null) addExchangeAuthentication(dio, readApiKey);
-  return dio;
-}
-
 ExchangeSupportChatRepository _new(
   HttpClientAdapter http, {
   ReadExchangeApiKey? key,
 }) {
-  final api = BbxApiClient(_dio(http, readApiKey: key));
+  final api = bbxForTesting(
+    endpoint: testBbxEndpoint,
+    adapter: http,
+    readActiveApiKey: bbxCredentialRead(key),
+  );
   return BbxApiSupportChatRepository(
     users: api.users,
     commcenter: api.commcenter,

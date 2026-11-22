@@ -1,18 +1,16 @@
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_status_mapper.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
 /// [SepaVirtualPayeeRepository] on the `bbx_api` package.
 final class BbxApiSepaVirtualPayeeRepository
     implements SepaVirtualPayeeRepository {
-  final bbx.BbxApiClient _mainnet;
-  final bbx.BbxApiClient _testnet;
+  final bbx.Bbx _mainnet;
+  final bbx.Bbx _testnet;
 
   static const _pageSize = 50;
   static const _maxPages = 20;
@@ -28,12 +26,19 @@ final class BbxApiSepaVirtualPayeeRepository
     required bool isTestnet,
   }) async {
     try {
-      final payee = await _api(isTestnet).recipients
-          .activateSepaVirtualPayee(recipientId);
-      return Ok(_status(payee));
+      return (await _api(isTestnet).recipients
+              .activateSepaVirtualPayee(recipientId))
+          .map(_status)
+          .mapErr(
+            (failure) => _failureFrom(
+              failure,
+              'activate the virtual payee',
+              RecipientsUnexpectedFailure.new,
+            ),
+          );
     } on Exception catch (e, st) {
       return Err(
-        _failureFrom(
+        _unexpected(
           e,
           st,
           'activate the virtual payee',
@@ -55,25 +60,47 @@ final class BbxApiSepaVirtualPayeeRepository
           page: page,
           pageSize: _pageSize,
         );
-        for (final payee in result.payees) {
-          if (payee.recipientId != recipientId) continue;
-          final status = _status(payee);
-          if (status == SepaVirtualPayeeStatus.pending) {
-            // Listing reads the saved status. Activation is idempotent and
-            // refreshes an existing payee from Fiat Republic.
-            final refreshed = await recipients.activateSepaVirtualPayee(
-              recipientId,
+        switch (result) {
+          case Err(:final failure):
+            return Err(
+              _failureFrom(
+                failure,
+                'read the virtual payee status',
+                RecipientsLoadFailure.new,
+              ),
             );
-            return Ok(_status(refreshed));
-          }
-          return Ok(status);
+          case Ok(:final value):
+            for (final payee in value.payees) {
+              if (payee.recipientId != recipientId) continue;
+              final status = _status(payee);
+              if (status == SepaVirtualPayeeStatus.pending) {
+                // Listing reads the saved status. Activation is idempotent and
+                // refreshes an existing payee from Fiat Republic.
+                final refreshed = await recipients.activateSepaVirtualPayee(
+                  recipientId,
+                );
+                return switch (refreshed) {
+                  Ok(:final value) => Ok(_status(value)),
+                  Err(:final failure) => Err(
+                    _failureFrom(
+                      failure,
+                      'read the virtual payee status',
+                      RecipientsLoadFailure.new,
+                    ),
+                  ),
+                };
+              }
+              return Ok(status);
+            }
+            if (page * _pageSize >= value.totalElements.toInt()) {
+              return const Ok(null);
+            }
         }
-        if (page * _pageSize >= result.totalElements.toInt()) break;
       }
       return const Ok(null);
     } on Exception catch (e, st) {
       return Err(
-        _failureFrom(
+        _unexpected(
           e,
           st,
           'read the virtual payee status',
@@ -83,45 +110,65 @@ final class BbxApiSepaVirtualPayeeRepository
     }
   }
 
-  bbx.BbxApiClient _api(bool isTestnet) => isTestnet ? _testnet : _mainnet;
+  bbx.Bbx _api(bool isTestnet) => isTestnet ? _testnet : _mainnet;
 
   static SepaVirtualPayeeStatus _status(bbx.SepaVirtualPayee payee) =>
       sepaVirtualPayeeStatusFromApi(payee.virtualPayeeStatus);
 
   static RecipientsFailure _failureFrom(
+    bbx.BbxFailure failure,
+    String operation,
+    RecipientsFailure Function([String?]) onApiFailure,
+  ) {
+    switch (failure) {
+      case bbx.BbxMissingCredentialFailure():
+        return const RecipientsNotAuthenticatedFailure();
+      case bbx.BbxCredentialUnavailableFailure():
+        return onApiFailure('Exchange credential unavailable');
+      case bbx.BbxRpcFailure() || bbx.BbxHttpFailure():
+        final description = _describe(failure);
+        log.warning('API refused to $operation — $description');
+        return onApiFailure(description);
+      case bbx.BbxTimeoutFailure(:final kind):
+        log.warning(
+          'Could not reach the API to $operation: ${_timeoutName(kind)}',
+        );
+        return const RecipientsNetworkFailure();
+      case bbx.BbxConnectionFailure():
+        log.warning('Could not reach the API to $operation: connectionError');
+        return const RecipientsNetworkFailure();
+      default:
+        log.warning(
+          'Failed to $operation',
+          error: failure,
+          trace: StackTrace.current,
+        );
+        return onApiFailure();
+    }
+  }
+
+  /// The failure for an exception thrown while mapping a response the API
+  /// did send.
+  static RecipientsFailure _unexpected(
     Exception e,
     StackTrace st,
     String operation,
     RecipientsFailure Function([String?]) onApiFailure,
   ) {
-    final refusal = exchangeAuthenticationException(e);
-    if (refusal != null) {
-      return refusal.isUnauthenticated
-          ? const RecipientsNotAuthenticatedFailure()
-          : onApiFailure('Exchange credential unavailable');
-    }
-    switch (e) {
-      case bbx.BbxApiRpcException() || bbx.BbxApiHttpException():
-        final description = _describe(e);
-        log.warning('API refused to $operation — $description');
-        return onApiFailure(description);
-      case DioException(
-        type: DioExceptionType.connectionTimeout ||
-            DioExceptionType.sendTimeout ||
-            DioExceptionType.receiveTimeout ||
-            DioExceptionType.connectionError,
-      ):
-        log.warning('Could not reach the API to $operation: ${e.type}');
-        return const RecipientsNetworkFailure();
-    }
     log.warning('Failed to $operation', error: e, trace: st);
     return onApiFailure();
   }
 
+  static String _timeoutName(bbx.BbxTimeoutKind kind) => switch (kind) {
+    bbx.BbxTimeoutKind.connect => 'connectionTimeout',
+    bbx.BbxTimeoutKind.send => 'sendTimeout',
+    bbx.BbxTimeoutKind.receive => 'receiveTimeout',
+  };
+
   /// The JSON-RPC error message can quote account details: keep the codes.
-  static String _describe(Exception e) => switch (e) {
-    bbx.BbxApiRpcException(:final code, :final apiCode) =>
-      'BbxApiRpcException(code: $code, apiCode: $apiCode)',
-    _ => '$e',
+  static String _describe(bbx.BbxFailure failure) => switch (failure) {
+    bbx.BbxRpcFailure(:final code, :final apiCode) =>
+      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
+    _ => '$failure',
   };
 }

@@ -1,5 +1,3 @@
-import 'package:bbx_api/src/bbx_api_exception.dart';
-import 'package:bbx_api/src/json.dart';
 import 'package:meta/meta.dart';
 
 /// The user's virtual IBAN account, with the server's raw values. The bank
@@ -17,14 +15,6 @@ class VirtualIban {
     this.bankAddress,
     this.ibanCountry,
   });
-
-  /// Throws a [BbxApiFormatException] naming the first invalid field.
-  factory VirtualIban.fromJson(Map<String, dynamic> json) => VirtualIban(
-    iban: read<String?>(json['iban'], 'iban'),
-    bicCode: read<String?>(json['bicCode'], 'bicCode'),
-    bankAddress: read<String?>(json['bankAddress'], 'bankAddress'),
-    ibanCountry: read<String?>(json['ibanCountry'], 'ibanCountry'),
-  );
 }
 
 /// The virtual payee part of a SEPA recipient.
@@ -36,16 +26,6 @@ class SepaVirtualPayee {
   final String? virtualPayeeStatus;
 
   const SepaVirtualPayee({required this.recipientId, this.virtualPayeeStatus});
-
-  /// Throws a [BbxApiFormatException] naming the first invalid field.
-  factory SepaVirtualPayee.fromJson(Map<String, dynamic> json) =>
-      SepaVirtualPayee(
-        recipientId: read<String>(json['recipientId'], 'recipientId'),
-        virtualPayeeStatus: read<String?>(
-          json['virtualPayeeStatus'],
-          'virtualPayeeStatus',
-        ),
-      );
 }
 
 /// One page of the virtual payees of the user's SEPA recipients.

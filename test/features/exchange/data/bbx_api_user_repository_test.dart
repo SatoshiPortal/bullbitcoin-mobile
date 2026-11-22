@@ -197,7 +197,7 @@ void main() {
       expect(failure, isA<ExchangeUserSummaryUnavailableFailure>());
       expect(
         failure.logMessage,
-        'getUserSummary failed: BbxApiFormatException',
+        'getUserSummary failed: BbxResponseFormatFailure',
       );
     });
   });

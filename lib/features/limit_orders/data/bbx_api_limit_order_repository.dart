@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_draft.dart';
@@ -9,15 +8,14 @@ import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart
 import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
 typedef _Fallback = LimitOrdersFailure Function(String logMessage);
 
 /// [LimitOrderRepository] on the `bbx_api` package.
 final class BbxApiLimitOrderRepository implements LimitOrderRepository {
-  final bbx.BbxApiClient _mainnet;
-  final bbx.BbxApiClient _testnet;
+  final bbx.Bbx _mainnet;
+  final bbx.Bbx _testnet;
   final Preferences _settingsRepository;
 
   const BbxApiLimitOrderRepository({
@@ -30,17 +28,17 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
   Future<Result<List<LimitOrder>, LimitOrdersFailure>> listActive() => _guard(
     'list the active limit orders',
     LimitOrdersLoadFailure.new,
-    (api) async => (await api.orderTriggers.listLimitOrders())
-        .map(_toLimitOrder)
-        .where((order) => order.isActive)
-        .toList(),
+    (api) => api.orderTriggers.listLimitOrders(),
+    (orders) =>
+        orders.map(_toLimitOrder).where((order) => order.isActive).toList(),
   );
 
   @override
   Future<Result<LimitOrder, LimitOrdersFailure>> get(String id) => _guard(
     'read the limit order',
     LimitOrdersLoadFailure.new,
-    (api) async => _toLimitOrder(await api.orderTriggers.getLimitOrder(id)),
+    (api) => api.orderTriggers.getLimitOrder(id),
+    _toLimitOrder,
   );
 
   @override
@@ -49,31 +47,30 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
   ) => _guard(
     'create the limit order',
     LimitOrderCreationFailure.new,
-    (api) async => _toLimitOrder(
-      await api.orderTriggers.addLimitOrder(
-        limitPrice: draft.limitPrice.toStringAsFixed(2),
-        fiatAmount: draft.fiatAmount.toStringAsFixed(2),
-        currencyCode: draft.currencyCode,
-        estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
-        address: draft.address,
-      ),
+    (api) => api.orderTriggers.addLimitOrder(
+      limitPrice: draft.limitPrice.toStringAsFixed(2),
+      fiatAmount: draft.fiatAmount.toStringAsFixed(2),
+      currencyCode: draft.currencyCode,
+      estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
+      address: draft.address,
     ),
+    _toLimitOrder,
   );
 
   @override
   Future<Result<LimitOrder, LimitOrdersFailure>> cancel(String id) => _guard(
     'cancel the limit order',
     LimitOrderCancellationFailure.new,
-    (api) async => _toLimitOrder(await api.orderTriggers.cancelLimitOrder(id)),
+    (api) => api.orderTriggers.cancelLimitOrder(id),
+    _toLimitOrder,
   );
 
   @override
   Future<Result<List<LimitOrder>, LimitOrdersFailure>> cancelAll() => _guard(
     'cancel every limit order',
     LimitOrderCancellationFailure.new,
-    (api) async => (await api.orderTriggers.cancelAllLimitOrders())
-        .map(_toLimitOrder)
-        .toList(),
+    (api) => api.orderTriggers.cancelAllLimitOrders(),
+    (orders) => orders.map(_toLimitOrder).toList(),
   );
 
   @override
@@ -82,12 +79,9 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
   ) => _guard(
     'read the limit order rate',
     LimitOrdersLoadFailure.new,
-    (api) async => _toRate(
-      await api.prices.getUserRate(
-        fromCurrency: currencyCode,
-        toCurrency: 'BTC',
-      ),
-    ),
+    (api) =>
+        api.prices.getUserRate(fromCurrency: currencyCode, toCurrency: 'BTC'),
+    _toRate,
   );
 
   static LimitOrder _toLimitOrder(bbx.LimitOrder order) => LimitOrder(
@@ -121,10 +115,11 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
     );
   }
 
-  Future<Result<T, LimitOrdersFailure>> _guard<T>(
+  Future<Result<T, LimitOrdersFailure>> _guard<T, R>(
     String operation,
     _Fallback fallback,
-    Future<T> Function(bbx.BbxApiClient api) action,
+    Future<Result<R, bbx.BbxFailure>> Function(bbx.Bbx api) request,
+    T Function(R value) read,
   ) async {
     try {
       final settings = (await _settingsRepository.fetch()).fold(
@@ -140,52 +135,77 @@ final class BbxApiLimitOrderRepository implements LimitOrderRepository {
       final api = settings.environment.requireHistoricalTestnet()
           ? _testnet
           : _mainnet;
-      return Ok(await action(api));
+      return switch (await request(api)) {
+        Ok(:final value) => Ok(read(value)),
+        Err(:final failure) => Err(_failure(failure, operation, fallback)),
+      };
     } on Error {
       rethrow;
     } catch (e, st) {
-      final refusal = exchangeAuthenticationException(e);
-      if (refusal != null) {
-        return Err(
-          refusal.isUnauthenticated
-              ? const LimitOrdersAccountUnavailableFailure()
-              : fallback('Exchange credential unavailable'),
-        );
-      }
-      final description = _describe(e);
+      final description = e.runtimeType.toString();
       log.severe(
         message: 'Failed to $operation',
         error: description,
         trace: st,
       );
-      return Err(_mapFailure(e, description, fallback));
+      return Err(LimitOrdersUnexpectedFailure(description));
     }
   }
 
+  /// The failure for a failed call. A missing credential and an unreadable
+  /// one stay distinct; a missing one means the account is unavailable.
+  LimitOrdersFailure _failure(
+    bbx.BbxFailure failure,
+    String operation,
+    _Fallback fallback,
+  ) {
+    switch (failure) {
+      case bbx.BbxMissingCredentialFailure():
+        return const LimitOrdersAccountUnavailableFailure();
+      case bbx.BbxCredentialUnavailableFailure():
+        return fallback('Exchange credential unavailable');
+      case bbx.BbxFailure():
+        break;
+    }
+    final description = _describe(failure);
+    log.severe(
+      message: 'Failed to $operation',
+      error: description,
+      trace: StackTrace.current,
+    );
+    return _mapFailure(failure, description, fallback);
+  }
+
   static LimitOrdersFailure _mapFailure(
-    Object e,
+    bbx.BbxFailure failure,
     String description,
     _Fallback fallback,
-  ) => switch (e) {
-    DioException(response: Response(statusCode: 401)) =>
-      LimitOrdersAccountUnavailableFailure(description),
-    bbx.BbxApiRpcException(apiCode: 'ERR_ORDTRG_LOMAX429') =>
+  ) => switch (failure) {
+    bbx.BbxHttpFailure(status: 401) => LimitOrdersAccountUnavailableFailure(
+      description,
+    ),
+    bbx.BbxRpcFailure(apiCode: 'ERR_ORDTRG_LOMAX429') =>
       LimitOrdersMaximumActiveFailure(description),
-    bbx.BbxApiRpcException(apiCode: 'ERR_ORDTRG_LO404') =>
-      LimitOrderNotFoundFailure(description),
-    bbx.BbxApiRpcException(apiCode: 'ERR_ORDTRG_ADDR400') =>
+    bbx.BbxRpcFailure(apiCode: 'ERR_ORDTRG_LO404') => LimitOrderNotFoundFailure(
+      description,
+    ),
+    bbx.BbxRpcFailure(apiCode: 'ERR_ORDTRG_ADDR400') =>
       LimitOrderInvalidAddressFailure(description),
-    bbx.BbxApiException() => fallback(description),
+    bbx.BbxHttpFailure() ||
+    bbx.BbxRpcFailure() ||
+    bbx.BbxResponseFormatFailure() => fallback(description),
     _ => LimitOrdersUnexpectedFailure(description),
   };
 
   /// A JSON-RPC error message can quote the request, so only its codes are
   /// kept.
-  static String _describe(Object e) => switch (e) {
-    bbx.BbxApiRpcException(:final code, :final apiCode) =>
-      'BbxApiRpcException(code: $code, apiCode: $apiCode)',
-    DioException(:final type, :final response) =>
-      'DioException(${type.name}, status: ${response?.statusCode})',
-    _ => e.runtimeType.toString(),
+  static String _describe(bbx.BbxFailure failure) => switch (failure) {
+    bbx.BbxRpcFailure(:final code, :final apiCode) =>
+      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
+    bbx.BbxHttpFailure(:final status) => 'BbxHttpFailure(status: $status)',
+    bbx.BbxTimeoutFailure(:final kind) => 'BbxTimeoutFailure(${kind.name})',
+    bbx.BbxResponseFormatFailure(:final reason) =>
+      'BbxResponseFormatFailure($reason)',
+    _ => failure.runtimeType.toString(),
   };
 }

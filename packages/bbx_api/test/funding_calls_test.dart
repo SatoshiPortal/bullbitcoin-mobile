@@ -5,17 +5,18 @@ import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 void main() {
-  late Dio dio;
+  late FakeHttp http;
 
-  BbxApiClient answer(Object? body, {int status = 200}) {
-    dio = FakeHttp.dio(status: status, body: body);
-    return BbxApiClient(dio);
+  Bbx answer(Object? body, {int status = 200}) {
+    http = FakeHttp(status: status, body: body);
+    return bbx(http);
   }
 
   RequestOptions request(String path) {
-    final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+    final request = http.requests.single;
     expect(request.path, path);
     expect(request.method, 'POST');
     expect(request.headers['x-api-version'], isNull);
@@ -29,10 +30,12 @@ void main() {
     test('sends the bank, amount and callback and reads the link', () async {
       final api = answer({'result': 'https://pay.example/cop'}).orders;
 
-      final link = await api.getCopPaymentLink(
-        bankCode: 'BC01',
-        amount: 50000,
-        callbackUrl: 'https://app.example',
+      final link = valueOf(
+        await api.getCopPaymentLink(
+          bankCode: 'BC01',
+          amount: 50000,
+          callbackUrl: 'https://app.example',
+        ),
       );
 
       expect(
@@ -48,13 +51,15 @@ void main() {
       test('a result of $result is a format error', () async {
         final api = answer({'result': result}).orders;
 
-        await expectLater(
-          api.getCopPaymentLink(
-            bankCode: 'BC01',
-            amount: 1,
-            callbackUrl: 'https://app.example',
+        expect(
+          await failedCall(
+            api.getCopPaymentLink(
+              bankCode: 'BC01',
+              amount: 1,
+              callbackUrl: 'https://app.example',
+            ),
           ),
-          throwsA(isA<BbxApiFormatException>()),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
@@ -70,18 +75,18 @@ void main() {
         },
       }).orders;
 
-      await expectLater(
-        api.getCopPaymentLink(
-          bankCode: 'BC01',
-          amount: 1,
-          callbackUrl: 'https://app.example',
-        ),
-        throwsA(
-          isA<BbxApiRpcException>().having(
-            (e) => e.apiCode,
-            'apiCode',
-            'ERR_ORD_COP400',
+      expect(
+        await failedCall(
+          api.getCopPaymentLink(
+            bankCode: 'BC01',
+            amount: 1,
+            callbackUrl: 'https://app.example',
           ),
+        ),
+        isA<BbxRpcFailure>().having(
+          (f) => f.apiCode,
+          'apiCode',
+          'ERR_ORD_COP400',
         ),
       );
     });
@@ -96,8 +101,8 @@ void main() {
         },
       }).recipients;
 
-      final details = await api.getUserPaymentProcessorCode(
-        'IN_CAD_EMAIL_TRANSFER_APL',
+      final details = valueOf(
+        await api.getUserPaymentProcessorCode('IN_CAD_EMAIL_TRANSFER_APL'),
       );
 
       expect(
@@ -106,17 +111,21 @@ void main() {
         '"params":{"paymentProcessorCode":"IN_CAD_EMAIL_TRANSFER_APL",'
         '"bankCode":null,"amount":null,"callbackUrl":null}}',
       );
-      expect(details.element, {'code': 'ABC123', 'userNbr': 7});
-      expect(details.extraData, {'BENEFICIARY NAME': 'Bull Bitcoin'});
+      expect(details.code, 'ABC123');
+      expect(details.userNbr, '7');
+      expect(details.beneficiaryName, 'Bull Bitcoin');
     });
 
     test('missing objects are empty', () async {
       final api = answer({'result': <String, Object?>{}}).recipients;
 
-      final details = await api.getUserPaymentProcessorCode('IN_CAD_LOADHUB');
+      final details = valueOf(
+        await api.getUserPaymentProcessorCode('IN_CAD_LOADHUB'),
+      );
 
-      expect(details.element, isEmpty);
-      expect(details.extraData, isEmpty);
+      expect(details.isEmpty, isTrue);
+      expect(details.code, isNull);
+      expect(details.beneficiaryName, isNull);
     });
 
     for (final result in <Object?>[
@@ -128,9 +137,9 @@ void main() {
       test('a result of $result is a format error', () async {
         final api = answer({'result': result}).recipients;
 
-        await expectLater(
-          api.getUserPaymentProcessorCode('IN_CAD_LOADHUB'),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(api.getUserPaymentProcessorCode('IN_CAD_LOADHUB')),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
@@ -168,7 +177,7 @@ void main() {
         },
       }).recipients;
 
-      final list = await api.listInstitutionCodes(countryCode: 'co');
+      final list = valueOf(await api.listInstitutionCodes(countryCode: 'co'));
 
       expect(
         sent('/ak/api-recipients'),
@@ -199,7 +208,7 @@ void main() {
         },
       }).recipients;
 
-      final list = await api.listInstitutionCodes(countryCode: 'co');
+      final list = valueOf(await api.listInstitutionCodes(countryCode: 'co'));
 
       expect(list.institutions, isEmpty);
       expect(list.skippedElements, 1);
@@ -208,7 +217,7 @@ void main() {
     test('a missing element list is empty', () async {
       final api = answer({'result': <String, Object?>{}}).recipients;
 
-      final list = await api.listInstitutionCodes(countryCode: 'co');
+      final list = valueOf(await api.listInstitutionCodes(countryCode: 'co'));
 
       expect(list.institutions, isEmpty);
       expect(list.skippedElements, 0);
@@ -222,9 +231,9 @@ void main() {
       test('a result of $result is a format error', () async {
         final api = answer({'result': result}).recipients;
 
-        await expectLater(
-          api.listInstitutionCodes(countryCode: 'co'),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(api.listInstitutionCodes(countryCode: 'co')),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }

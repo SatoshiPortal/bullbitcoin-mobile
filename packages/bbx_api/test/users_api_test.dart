@@ -1,7 +1,9 @@
 import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 Map<String, Object?> _summary() => {
   'userNumber': 42,
@@ -37,10 +39,10 @@ Map<String, Object?> _summary() => {
 void main() {
   group('getUserSummary', () {
     test('calls api-users and reads the result', () async {
-      final dio = FakeHttp.dio(body: {'result': _summary()});
-      final summary = await BbxApiClient(dio).users.getUserSummary();
+      final http = FakeHttp(body: {'result': _summary()});
+      final summary = valueOf(await bbx(http).users.getUserSummary());
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-users');
       expect((request.data as Map)['method'], 'getUserSummary');
       expect((request.data as Map)['params'], isEmpty);
@@ -74,9 +76,9 @@ void main() {
         ..remove('emailNotificationsEnabled')
         ..remove('payjoinReceiveEnabled')
         ..remove('kycDocumentStatus');
-      final summary = await BbxApiClient(FakeHttp.dio(body: {'result': body}))
-          .users
-          .getUserSummary();
+      final summary = valueOf(
+        await bbx(FakeHttp(body: {'result': body})).users.getUserSummary(),
+      );
 
       if (summary == null) {
         fail('Expected a user summary with optional fields omitted');
@@ -87,45 +89,47 @@ void main() {
     });
 
     test('no result is null', () async {
-      final summary = await BbxApiClient(FakeHttp.dio(body: {'result': null}))
-          .users
-          .getUserSummary();
+      final summary = valueOf(
+        await bbx(FakeHttp(body: {'result': null})).users.getUserSummary(),
+      );
       expect(summary, isNull);
     });
 
     for (final field in ['userNumber', 'groups', 'profile', 'email', 'dca']) {
-      test('a missing $field is a format error', () async {
+      test('a missing $field is a format failure', () async {
         final body = _summary()..remove(field);
-        await expectLater(
-          BbxApiClient(FakeHttp.dio(body: {'result': body})).users
-              .getUserSummary(),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(
+            bbx(FakeHttp(body: {'result': body})).users.getUserSummary(),
+          ),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
 
-    test('a result that is not an object is a format error', () async {
-      await expectLater(
-        BbxApiClient(FakeHttp.dio(body: {'result': 'x'})).users
-            .getUserSummary(),
-        throwsA(isA<BbxApiFormatException>()),
+    test('a result that is not an object is a format failure', () async {
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: {'result': 'x'})).users.getUserSummary(),
+        ),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
 
   group('registerResponsibilityConsent', () {
     test('sends the method and reads success', () async {
-      final dio = FakeHttp.dio(
+      final http = FakeHttp(
         body: {
           'result': {'success': true},
         },
       );
       expect(
-        await BbxApiClient(dio).users.registerResponsibilityConsent(),
+        valueOf(await bbx(http).users.registerResponsibilityConsent()),
         isTrue,
       );
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-users');
       expect((request.data as Map)['method'], 'registerResponsibilityConsent');
     });
@@ -139,8 +143,10 @@ void main() {
     ]) {
       test('$result is not a success', () async {
         expect(
-          await BbxApiClient(FakeHttp.dio(body: {'result': result})).users
-              .registerResponsibilityConsent(),
+          valueOf(
+            await bbx(FakeHttp(body: {'result': result})).users
+                .registerResponsibilityConsent(),
+          ),
           isFalse,
         );
       });
@@ -149,16 +155,18 @@ void main() {
 
   group('saveUserPreferences', () {
     test('sends only the given preferences under their wire keys', () async {
-      final dio = FakeHttp.dio(body: {'result': null});
-      await BbxApiClient(dio).users.saveUserPreferences(
-        const UserPreferences(
-          language: 'en',
-          dcaEnabled: 'true',
-          emailNotifications: 'false',
+      final http = FakeHttp(body: {'result': null});
+      valueOf(
+        await bbx(http).users.saveUserPreferences(
+          const UserPreferences(
+            language: 'en',
+            dcaEnabled: 'true',
+            emailNotifications: 'false',
+          ),
         ),
       );
 
-      final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-users');
       expect((request.data as Map)['method'], 'saveUserPreferences');
       expect((request.data as Map)['params'], {
@@ -172,13 +180,15 @@ void main() {
 
     test('all preferences', () {
       expect(
-        const UserPreferences(
-          language: 'fr',
-          defaultFiatCurrencyCode: 'EUR',
-          dcaEnabled: 'false',
-          autoBuyEnabled: 'true',
-          emailNotifications: 'true',
-        ).toJson(),
+        userPreferencesJsonForTesting(
+          const UserPreferences(
+            language: 'fr',
+            defaultFiatCurrencyCode: 'EUR',
+            dcaEnabled: 'false',
+            autoBuyEnabled: 'true',
+            emailNotifications: 'true',
+          ),
+        ),
         {
           'LANGUAGE': 'fr',
           'DEFAULT_FIAT_CURRENCY_CODE': 'EUR',
@@ -189,16 +199,20 @@ void main() {
       );
     });
 
-    test('a JSON-RPC error throws', () async {
-      await expectLater(
-        BbxApiClient(
-          FakeHttp.dio(
-            body: {
-              'error': {'code': 1, 'message': 'no'},
-            },
-          ),
-        ).users.saveUserPreferences(const UserPreferences(language: 'en')),
-        throwsA(isA<BbxApiRpcException>()),
+    test('a JSON-RPC error is a failure', () async {
+      expect(
+        await failedCall(
+          bbx(
+            FakeHttp(
+              body: {
+                'error': {'code': 1, 'message': 'no'},
+              },
+            ),
+          ).users.saveUserPreferences(const UserPreferences(language: 'en')),
+        ),
+        isA<BbxRpcFailure>()
+            .having((f) => f.code, 'code', 1)
+            .having((f) => f.message, 'message', 'no'),
       );
     });
   });

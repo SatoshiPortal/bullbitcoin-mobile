@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:bbx_api/bbx_api.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 const _fiatRecipient = {
   'recipientId': 'r-1',
@@ -36,16 +38,16 @@ const _myRecipient = {
 };
 
 void main() {
-  late Dio dio;
+  late FakeHttp http;
   late RecipientsApi api;
 
   void answer(Object? body, {int status = 200}) {
-    dio = FakeHttp.dio(status: status, body: body);
-    api = BbxApiClient(dio).recipients;
+    http = FakeHttp(status: status, body: body);
+    api = bbx(http).recipients;
   }
 
   RequestOptions request() {
-    final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+    final request = http.requests.single;
     expect(request.path, '/ak/api-recipients');
     expect(request.method, 'POST');
     return request;
@@ -64,9 +66,11 @@ void main() {
         },
       });
 
-      final recipients = await api.listMyRecipients(
-        recipientTypes: ['OUT_BITCOIN_ADDRESS', 'OUT_LIGHTNING_ADDRESS'],
-        isDefault: true,
+      final recipients = valueOf(
+        await api.listMyRecipients(
+          recipientTypes: ['OUT_BITCOIN_ADDRESS', 'OUT_LIGHTNING_ADDRESS'],
+          isDefault: true,
+        ),
       );
 
       expect(
@@ -90,7 +94,7 @@ void main() {
     test('sends empty filters when none is given', () async {
       answer({'result': <String, Object?>{}});
 
-      expect(await api.listMyRecipients(), isEmpty);
+      expect(valueOf(await api.listMyRecipients()), isEmpty);
       expect(
         sent(),
         '{"jsonrpc":"2.0","id":"0","method":"listMyRecipients","params":'
@@ -108,9 +112,9 @@ void main() {
         },
       });
 
-      await expectLater(
-        api.listMyRecipients(),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.listMyRecipients()),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
@@ -121,11 +125,13 @@ void main() {
         'result': {'element': _myRecipient},
       });
 
-      final recipient = await api.createMyRecipient(
-        recipientType: 'OUT_LIGHTNING_ADDRESS',
-        address: 'sat@example.com',
-        isOwner: true,
-        isDefault: true,
+      final recipient = valueOf(
+        await api.createMyRecipient(
+          recipientType: 'OUT_LIGHTNING_ADDRESS',
+          address: 'sat@example.com',
+          isOwner: true,
+          isDefault: true,
+        ),
       );
 
       expect(
@@ -141,14 +147,16 @@ void main() {
     test('a result without an element is a format error', () async {
       answer({'result': <String, Object?>{}});
 
-      await expectLater(
-        api.createMyRecipient(
-          recipientType: 'OUT_BITCOIN_ADDRESS',
-          address: 'bc1q',
-          isOwner: true,
-          isDefault: true,
+      expect(
+        await failedCall(
+          api.createMyRecipient(
+            recipientType: 'OUT_BITCOIN_ADDRESS',
+            address: 'bc1q',
+            isOwner: true,
+            isDefault: true,
+          ),
         ),
-        throwsA(isA<BbxApiFormatException>()),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
@@ -159,11 +167,13 @@ void main() {
         'result': {'element': _myRecipient},
       });
 
-      await api.updateMyRecipient(
-        recipientId: 'r-2',
-        recipientType: 'OUT_BITCOIN_ADDRESS',
-        address: 'bc1q',
-        isDefault: false,
+      valueOf(
+        await api.updateMyRecipient(
+          recipientId: 'r-2',
+          recipientType: 'OUT_BITCOIN_ADDRESS',
+          address: 'bc1q',
+          isDefault: false,
+        ),
       );
 
       expect(
@@ -180,10 +190,12 @@ void main() {
         'result': {'element': _myRecipient},
       });
 
-      await api.updateMyRecipient(
-        recipientId: 'r-2',
-        recipientType: 'OUT_LIQUID_ADDRESS',
-        isOwner: false,
+      valueOf(
+        await api.updateMyRecipient(
+          recipientId: 'r-2',
+          recipientType: 'OUT_LIQUID_ADDRESS',
+          isOwner: false,
+        ),
       );
 
       expect(
@@ -203,15 +215,17 @@ void main() {
           'result': {'element': _fiatRecipient},
         });
 
-        final saved = await api.createRecipientFiat(
-          const NewSepaEurRecipient(
-            iban: 'DE89370400440532013000',
-            isCorporate: false,
-            firstname: 'Ada',
-            lastname: 'Lovelace',
-            label: 'Rent',
-            isOwner: true,
-            isDefault: false,
+        final saved = valueOf(
+          await api.createRecipientFiat(
+            const NewSepaEurRecipient(
+              iban: 'DE89370400440532013000',
+              isCorporate: false,
+              firstname: 'Ada',
+              lastname: 'Lovelace',
+              label: 'Rent',
+              isOwner: true,
+              isDefault: false,
+            ),
           ),
         );
 
@@ -250,14 +264,14 @@ void main() {
         },
       });
 
-      await expectLater(
-        api.createRecipientFiat(const NewSepaEurRecipient(iban: 'DE89')),
-        throwsA(
-          isA<BbxApiFormatException>().having(
-            (e) => e.reason,
-            'reason',
-            'invalid userNbr',
-          ),
+      expect(
+        await failedCall(
+          api.createRecipientFiat(const NewSepaEurRecipient(iban: 'DE89')),
+        ),
+        isA<BbxResponseFormatFailure>().having(
+          (f) => f.reason,
+          'reason',
+          'invalid userNbr',
         ),
       );
     });
@@ -356,7 +370,7 @@ void main() {
 
     for (final MapEntry(key: recipient, value: json) in payloads.entries) {
       test('${recipient.recipientTypeFiat} is sent as its flat fields', () {
-        expect(jsonEncode(recipient.toJson()), json);
+        expect(jsonEncode(newFiatRecipientJsonForTesting(recipient)), json);
       });
     }
   });
@@ -367,11 +381,13 @@ void main() {
         'result': {'element': _fiatRecipient},
       });
 
-      await api.updateInteracSecurityDetails(
-        recipientId: 'r-1',
-        email: 'a@example.com',
-        securityQuestion: null,
-        securityAnswer: null,
+      valueOf(
+        await api.updateInteracSecurityDetails(
+          recipientId: 'r-1',
+          email: 'a@example.com',
+          securityQuestion: null,
+          securityAnswer: null,
+        ),
       );
 
       expect(
@@ -384,19 +400,21 @@ void main() {
       expect(apiVersion(), '2.0.0');
     });
 
-    test('a JSON-RPC error is thrown', () async {
+    test('a JSON-RPC error is a failure', () async {
       answer({
         'error': {'code': -32602, 'message': 'bad answer'},
       });
 
-      await expectLater(
-        api.updateInteracSecurityDetails(
-          recipientId: 'r-1',
-          email: 'a@example.com',
-          securityQuestion: 'Q',
-          securityAnswer: 'A',
+      expect(
+        await failedCall(
+          api.updateInteracSecurityDetails(
+            recipientId: 'r-1',
+            email: 'a@example.com',
+            securityQuestion: 'Q',
+            securityAnswer: 'A',
+          ),
         ),
-        throwsA(isA<BbxApiRpcException>()),
+        isA<BbxRpcFailure>(),
       );
     });
   });
@@ -410,12 +428,14 @@ void main() {
         },
       });
 
-      final page = await api.listRecipientsFiat(
-        page: 2,
-        pageSize: 10,
-        recipientTypeFiat: ['SEPA_EUR'],
-        isOwner: true,
-        search: 'Ada',
+      final page = valueOf(
+        await api.listRecipientsFiat(
+          page: 2,
+          pageSize: 10,
+          recipientTypeFiat: ['SEPA_EUR'],
+          isOwner: true,
+          search: 'Ada',
+        ),
       );
 
       expect(
@@ -435,7 +455,7 @@ void main() {
         'result': {'totalElements': 0},
       });
 
-      final page = await api.listRecipientsFiat();
+      final page = valueOf(await api.listRecipientsFiat());
 
       expect(
         sent(),
@@ -458,7 +478,7 @@ void main() {
         },
       });
 
-      final page = await api.listRecipientsFiat();
+      final page = valueOf(await api.listRecipientsFiat());
 
       expect(page.recipients.map((r) => r.recipientId), ['r-1']);
       expect(page.skippedElements, 2);
@@ -472,14 +492,12 @@ void main() {
         },
       });
 
-      await expectLater(
-        api.listRecipientsFiat(),
-        throwsA(
-          isA<BbxApiFormatException>().having(
-            (e) => e.reason,
-            'reason',
-            'invalid totalElements',
-          ),
+      expect(
+        await failedCall(api.listRecipientsFiat()),
+        isA<BbxResponseFormatFailure>().having(
+          (f) => f.reason,
+          'reason',
+          'invalid totalElements',
         ),
       );
     });
@@ -487,9 +505,9 @@ void main() {
     test('a missing result is a format error', () async {
       answer({'result': null});
 
-      await expectLater(
-        api.listRecipientsFiat(),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.listRecipientsFiat()),
+        isA<BbxResponseFormatFailure>(),
       );
     });
 
@@ -498,9 +516,9 @@ void main() {
         'result': {'elements': 'none', 'totalElements': 0},
       });
 
-      await expectLater(
-        api.listRecipientsFiat(),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.listRecipientsFiat()),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
@@ -510,7 +528,7 @@ void main() {
       'result': {'elements': <Object?>[], 'totalElements': 0},
     });
 
-    await api.listRecipients(isOwner: false);
+    valueOf(await api.listRecipients(isOwner: false));
 
     expect(
       sent(),
@@ -526,7 +544,7 @@ void main() {
         'result': {'ownerName': 'Ada'},
       });
 
-      expect(await api.checkSinpe(phoneNumber: '88888888'), 'Ada');
+      expect(valueOf(await api.checkSinpe(phoneNumber: '88888888')), 'Ada');
       expect(
         sent(),
         '{"jsonrpc":"2.0","id":"0","method":"checkSinpe","params":'
@@ -538,9 +556,9 @@ void main() {
     test('a missing owner name is a format error', () async {
       answer({'result': <String, Object?>{}});
 
-      await expectLater(
-        api.checkSinpe(phoneNumber: '88888888'),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.checkSinpe(phoneNumber: '88888888')),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
@@ -556,7 +574,7 @@ void main() {
         },
       });
 
-      final search = await api.listAplBillers(search: 'hyd');
+      final search = valueOf(await api.listAplBillers(search: 'hyd'));
 
       expect(
         sent(),
@@ -572,7 +590,7 @@ void main() {
     test('a missing element list is empty', () async {
       answer({'result': <String, Object?>{}});
 
-      final search = await api.listAplBillers(search: 'hyd');
+      final search = valueOf(await api.listAplBillers(search: 'hyd'));
 
       expect(search.billers, isEmpty);
       expect(search.skippedElements, 0);
@@ -581,9 +599,9 @@ void main() {
     test('a missing result is a format error', () async {
       answer(<String, Object?>{});
 
-      await expectLater(
-        api.listAplBillers(search: 'hyd'),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.listAplBillers(search: 'hyd')),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
@@ -604,7 +622,9 @@ void main() {
         },
       });
 
-      final iban = await api.findVirtualIban();
+      final iban =
+          valueOf(await api.findVirtualIban()) ??
+          fail('Expected a virtual IBAN');
 
       expect(
         sent(),
@@ -613,10 +633,10 @@ void main() {
         '{"recipientTypeFiat":["SEPA_EUR_VIRTUAL_ACCOUNT"],"isOwner":true}}}',
       );
       expect(apiVersion(), '2.0.0');
-      expect(iban?.iban, 'FR76');
-      expect(iban?.bicCode, 'FIRPFRP2');
-      expect(iban?.bankAddress, 'Paris');
-      expect(iban?.ibanCountry, 'FR');
+      expect(iban.iban, 'FR76');
+      expect(iban.bicCode, 'FIRPFRP2');
+      expect(iban.bankAddress, 'Paris');
+      expect(iban.ibanCountry, 'FR');
     });
 
     for (final result in [
@@ -627,7 +647,7 @@ void main() {
       test('no virtual IBAN in $result is null', () async {
         answer({'result': result});
 
-        expect(await api.findVirtualIban(), isNull);
+        expect(valueOf(await api.findVirtualIban()), isNull);
       });
     }
   });
@@ -637,7 +657,7 @@ void main() {
       'result': {'element': <String, Object?>{}},
     });
 
-    final iban = await api.createVirtualIban();
+    final iban = valueOf(await api.createVirtualIban());
 
     expect(
       sent(),
@@ -655,7 +675,7 @@ void main() {
       },
     });
 
-    final payee = await api.activateSepaVirtualPayee('r-1');
+    final payee = valueOf(await api.activateSepaVirtualPayee('r-1'));
 
     expect(
       sent(),
@@ -679,7 +699,9 @@ void main() {
         },
       });
 
-      final page = await api.listSepaVirtualPayees(page: 2, pageSize: 50);
+      final page = valueOf(
+        await api.listSepaVirtualPayees(page: 2, pageSize: 50),
+      );
 
       expect(
         sent(),
@@ -704,9 +726,9 @@ void main() {
         },
       });
 
-      await expectLater(
-        api.listSepaVirtualPayees(page: 1, pageSize: 50),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(api.listSepaVirtualPayees(page: 1, pageSize: 50)),
+        isA<BbxResponseFormatFailure>(),
       );
     });
   });
@@ -723,28 +745,20 @@ void main() {
         },
       });
 
-      await expectLater(
-        api.findVirtualIban(),
-        throwsA(
-          isA<BbxApiRpcException>()
-              .having((e) => e.code, 'code', -32602)
-              .having((e) => e.apiCode, 'apiCode', 'ERR_RCP_PO404'),
-        ),
+      expect(
+        await failedCall(api.findVirtualIban()),
+        isA<BbxRpcFailure>()
+            .having((f) => f.code, 'code', -32602)
+            .having((f) => f.apiCode, 'apiCode', 'ERR_RCP_PO404'),
       );
     });
 
-    test('a status other than 200 is an HTTP error', () async {
+    test('a status other than 200 is an HTTP failure', () async {
       answer({'result': null}, status: 204);
 
-      await expectLater(
-        api.checkSinpe(phoneNumber: '1'),
-        throwsA(
-          isA<BbxApiHttpException>().having(
-            (e) => e.statusCode,
-            'statusCode',
-            204,
-          ),
-        ),
+      expect(
+        await failedCall(api.checkSinpe(phoneNumber: '1')),
+        isA<BbxHttpFailure>().having((f) => f.status, 'status', 204),
       );
     });
   });

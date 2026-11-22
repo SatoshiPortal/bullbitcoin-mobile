@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:primitives/generic_extensions.dart';
@@ -9,7 +10,6 @@ import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_mapper.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
 class _OrderRequestException implements Exception {
@@ -23,7 +23,7 @@ class _OrderRequestException implements Exception {
 
 /// [ExchangeOrderRepository] on the `bbx_api` package.
 class BbxApiOrderRepository implements ExchangeOrderRepository {
-  final bbx.BbxApiClient _api;
+  final bbx.Bbx _api;
   final bool _isTestnet;
 
   BbxApiOrderRepository({required this._api, required this._isTestnet});
@@ -31,7 +31,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   @override
   Future<Order> getOrder(String orderId) async {
     try {
-      return _toOrder(await _api.orders.getOrderSummary(orderId));
+      return _toOrder(await _required(_api.orders.getOrderSummary(orderId)));
     } catch (e, st) {
       rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to get order: ${_describe(e)}');
@@ -52,12 +52,6 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
 
       return Ok(_toOrder(summary));
     } on Exception catch (e) {
-      if (e case DioException(
-        error: final Error bug,
-        stackTrace: final trace,
-      )) {
-        Error.throwWithStackTrace(bug, trace);
-      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return refusal.isUnauthenticated
@@ -133,12 +127,6 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
 
       return Ok(orders);
     } on Exception catch (e) {
-      if (e case DioException(
-        error: final Error bug,
-        stackTrace: final trace,
-      )) {
-        Error.throwWithStackTrace(bug, trace);
-      }
       final refusal = exchangeAuthenticationException(e);
       if (refusal != null) {
         return refusal.isUnauthenticated
@@ -207,7 +195,7 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   @override
   Future<Map<String, dynamic>> getBuyLimits() async {
     try {
-      return await _api.orders.getBuyLimits();
+      return _limitsJson(await _required(_api.orders.getBuyLimits()));
     } catch (e, st) {
       rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to get buy limits: ${_describe(e)}');
@@ -217,12 +205,24 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   @override
   Future<Map<String, dynamic>> getSellLimits() async {
     try {
-      return await _api.orders.getSellLimits();
+      return _limitsJson(await _required(_api.orders.getSellLimits()));
     } catch (e, st) {
       rethrowExchangeAuthentication(e, st);
       throw Exception('Failed to get sell limits: ${_describe(e)}');
     }
   }
+
+  /// [ExchangeOrderRepository] predates the package owning the limits type and
+  /// still carries them as a JSON object, so they are unwrapped here.
+  static Map<String, dynamic> _limitsJson(bbx.OrderLimits limits) => {
+    'min': ?limits.minimum,
+    'max': ?limits.maximum,
+    if (limits.currencyLimits.isNotEmpty)
+      'limits': {
+        for (final currency in limits.currencyLimits)
+          currency.currencyCode: currency.values,
+      },
+  };
 
   @override
   Future<BuyOrder> placeBuyOrder({
@@ -379,7 +379,9 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> confirmBuyOrder(String orderId) async {
     try {
-      final order = _toOrder(await _api.orders.confirmOrderSummary(orderId));
+      final order = _toOrder(
+        await _required(_api.orders.confirmOrderSummary(orderId)),
+      );
       if (order is! BuyOrder) {
         throw UnexpectedOrderTypeException('BuyOrder');
       }
@@ -395,7 +397,9 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   @override
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId) async {
     try {
-      final order = _toOrder(await _api.orders.confirmOrderSummary(orderId));
+      final order = _toOrder(
+        await _required(_api.orders.confirmOrderSummary(orderId)),
+      );
       if (order is! WithdrawOrder) {
         throw UnexpectedOrderTypeException('WithdrawOrder');
       }
@@ -415,8 +419,9 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> accelerateBuyOrder(String orderId) async {
     try {
-      return _toOrder(await _api.orders.unbatchAndExpressOrder(orderId))
-          as BuyOrder;
+      return _toOrder(
+        await _required(_api.orders.unbatchAndExpressOrder(orderId)),
+      ) as BuyOrder;
     } on ApiKeyException {
       rethrow;
     } catch (e, st) {
@@ -435,21 +440,23 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   }) async {
     try {
       return _toDca(
-        await _api.orderTriggers.createDca(
-          amount: amount,
-          currencyCode: currency.code,
-          frequency: switch (frequency) {
-            DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
-            DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
-            DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
-            DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
-          },
-          recipientType: switch (network) {
-            DcaNetwork.bitcoin => bbx.DcaRecipientType.bitcoinAddress,
-            DcaNetwork.lightning => bbx.DcaRecipientType.lightningAddress,
-            DcaNetwork.liquid => bbx.DcaRecipientType.liquidAddress,
-          },
-          address: address,
+        await _required(
+          _api.orderTriggers.createDca(
+            amount: amount,
+            currencyCode: currency.code,
+            frequency: switch (frequency) {
+              DcaBuyFrequency.hourly => bbx.DcaFrequency.hourly,
+              DcaBuyFrequency.daily => bbx.DcaFrequency.daily,
+              DcaBuyFrequency.weekly => bbx.DcaFrequency.weekly,
+              DcaBuyFrequency.monthly => bbx.DcaFrequency.monthly,
+            },
+            recipientType: switch (network) {
+              DcaNetwork.bitcoin => bbx.DcaRecipientType.bitcoinAddress,
+              DcaNetwork.lightning => bbx.DcaRecipientType.lightningAddress,
+              DcaNetwork.liquid => bbx.DcaRecipientType.liquidAddress,
+            },
+            address: address,
+          ),
         ),
       );
     } catch (e, st) {
@@ -479,45 +486,77 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   );
 
   /// Runs an order creation [call] and turns the server's refusal into the
-  /// app's order exception. With [redactError], any other refusal keeps only
+  /// app's order exception. With [redactError], an RPC refusal keeps only
   /// its codes.
   static Future<bbx.OrderSummary> _placeOrder(
     String contextMessage,
-    Future<bbx.OrderSummary> Function() call, {
+    Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function() call, {
     bool redactError = false,
   }) async {
-    try {
-      return await call();
-    } on bbx.BbxApiRpcException catch (e) {
-      throw switch (e) {
-        bbx.BbxApiConfidentialSepaNotActivatedException() =>
-          const BullBitcoinApiConfidentialSepaNotActivatedException(),
-        bbx.BbxApiOrderLimitException(
-          bound: bbx.BbxApiOrderLimitBound.minimum,
+    final result = await call();
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(failure: bbx.BbxMissingCredentialFailure()) =>
+        throw const ExchangeAuthenticationException(),
+      Err(failure: bbx.BbxCredentialUnavailableFailure()) =>
+        throw const ExchangeCredentialUnavailableException(),
+      Err(failure: bbx.BbxConfidentialSepaInactiveFailure()) =>
+        throw const BullBitcoinApiConfidentialSepaNotActivatedException(),
+      Err(
+        failure: bbx.BbxOrderLimitFailure(
+          bound: bbx.BbxOrderLimitBound.minimum,
           :final amount,
           :final currency,
-        ) =>
-          BullBitcoinApiMinAmountException(
-            minAmount: amount,
-            currency: currency,
-          ),
-        bbx.BbxApiOrderLimitException(
-          bound: bbx.BbxApiOrderLimitBound.maximum,
-          :final amount,
-          :final currency,
-        ) =>
-          BullBitcoinApiMaxAmountException(
-            maxAmount: amount,
-            currency: currency,
-          ),
-        _ when redactError => BullBitcoinApiOrderException(
-          apiCode: e.apiCode,
-          rpcCode: e.code,
         ),
-        // The server's message can quote the request, so it is not kept.
-        _ => _OrderRequestException(contextMessage),
-      };
-    }
+      ) =>
+        throw BullBitcoinApiMinAmountException(
+          minAmount: amount,
+          currency: currency,
+        ),
+      Err(
+        failure: bbx.BbxOrderLimitFailure(
+          bound: bbx.BbxOrderLimitBound.maximum,
+          :final amount,
+          :final currency,
+        ),
+      ) =>
+        throw BullBitcoinApiMaxAmountException(
+          maxAmount: amount,
+          currency: currency,
+        ),
+      Err(failure: bbx.BbxRpcFailure(:final apiCode, :final code))
+          when redactError =>
+        throw BullBitcoinApiOrderException(apiCode: apiCode, rpcCode: code),
+      // The server's message can quote the request, so it is not kept. Other
+      // failures retain their safe transport or format classification.
+      Err(:final failure) => _throwRequest(
+        failure is bbx.BbxRpcFailure ? contextMessage : _describe(failure),
+        failure.origin,
+      ),
+    };
+  }
+
+  /// Compatibility boundary for repository contracts that predate [Result].
+  /// The transport itself only exposes failures as values.
+  static Future<T> _required<T>(Future<Result<T, bbx.BbxFailure>> call) async {
+    final result = await call;
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(failure: bbx.BbxMissingCredentialFailure()) =>
+        throw const ExchangeAuthenticationException(),
+      Err(failure: bbx.BbxCredentialUnavailableFailure()) =>
+        throw const ExchangeAuthenticationException(
+          ExchangeApiKeyReadFailure(),
+        ),
+      Err(:final failure) => _throwRequest(_describe(failure), failure.origin),
+    };
+  }
+
+  static Never _throwRequest(String message, StackTrace? origin) {
+    Error.throwWithStackTrace(
+      _OrderRequestException(message),
+      origin ?? StackTrace.current,
+    );
   }
 
   static bbx.SepaPaymentProcessor? _sepaPaymentProcessor(
@@ -529,12 +568,12 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   };
 
   Future<Order> _refresh(String orderId) async =>
-      _toOrder(await _api.orders.refreshOrderSummary(orderId));
+      _toOrder(await _required(_api.orders.refreshOrderSummary(orderId)));
 
   /// One page of orders. Elements the package could not read are logged and
   /// left out.
   Future<List<bbx.OrderSummary>> _listOrderSummaries() async {
-    final list = await _api.orders.listOrderSummaries();
+    final list = await _required(_api.orders.listOrderSummaries());
     for (final rejected in list.rejected) {
       log.severe(
         message: 'Error parsing order element',
@@ -551,9 +590,19 @@ class BbxApiOrderRepository implements ExchangeOrderRepository {
   /// A JSON-RPC error message can quote the request, so only its code is
   /// kept in exception messages.
   static String _describe(Object e) => switch (e) {
-    bbx.BbxApiRpcException(:final code) => 'BbxApiRpcException(code: $code)',
+    bbx.BbxRpcFailure(:final code) => 'BbxRpcFailure(code: $code)',
+    bbx.BbxTimeoutFailure(:final kind) =>
+      'DioException(${switch (kind) {
+        bbx.BbxTimeoutKind.connect => 'connectionTimeout',
+        bbx.BbxTimeoutKind.send => 'sendTimeout',
+        bbx.BbxTimeoutKind.receive => 'receiveTimeout',
+      }})',
+    bbx.BbxConnectionFailure() => 'DioException(connectionError)',
+    bbx.BbxBadCertificateFailure() => 'DioException(badCertificate)',
+    bbx.BbxHttpFailure(:final status) =>
+      'DioException(badResponse, status: $status)',
+    bbx.BbxRequestCancelledFailure() => 'DioException(cancel)',
     UnexpectedOrderTypeException() || _OrderRequestException() => e.toString(),
-    DioException(:final type) => 'DioException(${type.name})',
     _ => e.runtimeType.toString(),
   };
 }

@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
@@ -27,38 +25,35 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
   Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>>
   getMessages({int? page, int? pageSize}) async {
     try {
-      final userId = await _userId();
+      final userResult = await _users.getUserSummary();
+      final String? userId;
+      switch (userResult) {
+        case Ok(:final value):
+          userId = value?.userId;
+        case Err(failure: bbx.BbxRpcFailure()):
+          userId = null;
+        case Err(:final failure):
+          return Err(_failure(failure, LoadMessagesFailure.new, 'load'));
+      }
       if (userId == null) {
-        // No usable identity behind the key: the session is not good enough to read the thread, which is an auth problem rather than a transport one.
+        // No usable identity behind the key: the session is not good enough
+        // to read the thread, which is an auth problem rather than transport.
         log.warning('Support chat: user summary carries no user id');
         return const Err(NotAuthenticatedFailure());
       }
 
-      final messages = await _commcenter.listMessages(
+      final messagesResult = await _commcenter.listMessages(
         page: page ?? 1,
         pageSize: pageSize ?? 10,
       );
-      return Ok([for (final m in messages) _message(m, userId)]);
-    } on ApiKeyException catch (e, st) {
-      log.warning(
-        'Support chat: not authenticated',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return const Err(NotAuthenticatedFailure());
+      return switch (messagesResult) {
+        Ok(:final value) => Ok([for (final m in value) _message(m, userId)]),
+        Err(:final failure) => Err(
+          _failure(failure, LoadMessagesFailure.new, 'load'),
+        ),
+      };
     } catch (e, st) {
-      final refusal = exchangeAuthenticationException(e);
-      if (refusal != null) {
-        return refusal.isUnauthenticated
-            ? const Err(NotAuthenticatedFailure())
-            : const Err(LoadMessagesFailure('Exchange credential unavailable'));
-      }
-      log.warning(
-        'Failed to load support chat messages',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(LoadMessagesFailure('Load messages failed: ${e.runtimeType}'));
+      return Err(_unexpected(e, st, LoadMessagesFailure.new, 'load'));
     }
   }
 
@@ -68,7 +63,7 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
     List<SupportChatMessageAttachment>? attachments,
   }) async {
     try {
-      await _commcenter.sendMessageToSupport(
+      final result = await _commcenter.sendMessageToSupport(
         text: text,
         source: _source,
         attachments: attachments == null
@@ -84,27 +79,14 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
                     ),
               ],
       );
-      return const Ok(null);
-    } on ApiKeyException catch (e, st) {
-      log.warning(
-        'Support chat: not authenticated',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return const Err(NotAuthenticatedFailure());
+      return switch (result) {
+        Ok() => const Ok(null),
+        Err(:final failure) => Err(
+          _failure(failure, SendMessageFailure.new, 'send'),
+        ),
+      };
     } catch (e, st) {
-      final refusal = exchangeAuthenticationException(e);
-      if (refusal != null) {
-        return refusal.isUnauthenticated
-            ? const Err(NotAuthenticatedFailure())
-            : const Err(SendMessageFailure('Exchange credential unavailable'));
-      }
-      log.warning(
-        'Failed to send support chat message',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(SendMessageFailure('Send message failed: ${e.runtimeType}'));
+      return Err(_unexpected(e, st, SendMessageFailure.new, 'send'));
     }
   }
 
@@ -112,43 +94,56 @@ class BbxApiSupportChatRepository implements ExchangeSupportChatRepository {
   Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
   getMessageAttachment(String attachmentId) async {
     try {
-      final a = await _commcenter.getMessageAttachment(attachmentId);
-      return Ok(_attachment(a, messageId: a.messageId));
-    } on ApiKeyException catch (e, st) {
-      log.warning(
-        'Support chat: not authenticated',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return const Err(NotAuthenticatedFailure());
+      final result = await _commcenter.getMessageAttachment(attachmentId);
+      return switch (result) {
+        Ok(:final value) => Ok(_attachment(value, messageId: value.messageId)),
+        Err(:final failure) => Err(
+          _failure(failure, LoadAttachmentFailure.new, 'load attachment'),
+        ),
+      };
     } catch (e, st) {
-      final refusal = exchangeAuthenticationException(e);
-      if (refusal != null) {
-        return refusal.isUnauthenticated
-            ? const Err(NotAuthenticatedFailure())
-            : const Err(
-                LoadAttachmentFailure('Exchange credential unavailable'),
-              );
-      }
-      log.warning(
-        'Failed to load support chat attachment',
-        error: e.runtimeType,
-        trace: st,
-      );
       return Err(
-        LoadAttachmentFailure('Load attachment failed: ${e.runtimeType}'),
+        _unexpected(e, st, LoadAttachmentFailure.new, 'load attachment'),
       );
     }
   }
 
-  /// The user's id; `null` also when the server answers with a JSON-RPC
-  /// error, which counts as an empty result.
-  Future<String?> _userId() async {
-    try {
-      return (await _users.getUserSummary())?.userId;
-    } on bbx.BbxApiRpcException {
-      return null;
+  static ExchangeSupportChatFailure _failure(
+    bbx.BbxFailure failure,
+    ExchangeSupportChatFailure Function(String) onFailure,
+    String operation,
+  ) {
+    switch (failure) {
+      case bbx.BbxMissingCredentialFailure():
+        log.warning(
+          'Support chat: not authenticated',
+          error: failure.runtimeType,
+        );
+        return const NotAuthenticatedFailure();
+      case bbx.BbxCredentialUnavailableFailure():
+        return onFailure('Exchange credential unavailable');
+      default:
+        log.warning(
+          'Failed to $operation support chat data',
+          error: failure.runtimeType,
+        );
+        return onFailure('$operation failed: ${failure.runtimeType}');
     }
+  }
+
+  static ExchangeSupportChatFailure _unexpected(
+    Object e,
+    StackTrace st,
+    ExchangeSupportChatFailure Function(String) onFailure,
+    String operation,
+  ) {
+    if (e is Error) Error.throwWithStackTrace(e, st);
+    log.warning(
+      'Failed to $operation support chat data',
+      error: e.runtimeType,
+      trace: st,
+    );
+    return onFailure('$operation failed: ${e.runtimeType}');
   }
 
   /// A message not sent by [userId] is from support. Attachments without an

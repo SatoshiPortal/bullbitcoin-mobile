@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
@@ -21,53 +20,48 @@ import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_support_chat_repository.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
-import 'package:dio/dio.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:primitives/primitives.dart';
 import 'package:get_it/get_it.dart';
 
 class ExchangeLocator {
-  /// Authentication is attached to each existing client configuration.
-  /// Resolve the repository only when a request starts: registration precedes
-  /// repository registration, and no transport owns the credential repository.
-  static Dio _authenticatedClient(
+  /// Resolves the credential only when a request starts. The app retains key
+  /// custody; the package receives only this read capability.
+  static Future<Result<String?, bbx.BbxFailure>> _readActiveApiKey(
     GetIt locator, {
     required bool isTestnet,
-    Duration? timeout,
-  }) {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: isTestnet
-            ? ApiServiceConstants.bbApiTestUrl
-            : ApiServiceConstants.bbApiUrl,
-        connectTimeout: timeout,
-        receiveTimeout: timeout,
-        sendTimeout: timeout,
-      ),
+  }) async {
+    final result = await locator<ExchangeApiKeyRepository>().readActiveApiKey(
+      isTestnet: isTestnet,
     );
-    addExchangeAuthentication(
-      dio,
-      () => locator<ExchangeApiKeyRepository>().readActiveApiKey(
-        isTestnet: isTestnet,
-      ),
-    );
-    return dio;
+    return switch (result) {
+      Ok(:final value) => Ok(value),
+      Err() => const Err(bbx.BbxCredentialUnavailableFailure()),
+    };
   }
 
   static void registerDatasources(GetIt locator) {
     for (final isTestnet in [false, true]) {
       final environment = isTestnet ? 'testnet' : 'mainnet';
-      locator.registerLazySingleton<BbxApiClient>(
-        () => BbxApiClient(
-          _authenticatedClient(
-            locator,
-            isTestnet: isTestnet,
-            timeout: const Duration(seconds: 30),
-          ),
+      locator.registerLazySingleton<bbx.Bbx>(
+        () => bbx.Bbx.open(
+          endpoint: isTestnet
+              ? ApiServiceConstants.bbApiTestUrl
+              : ApiServiceConstants.bbApiUrl,
+          readActiveApiKey: () =>
+              _readActiveApiKey(locator, isTestnet: isTestnet),
+          timeouts: bbx.BbxTimeouts.standard,
         ),
         instanceName: '${environment}BbxApiClient',
       );
-      locator.registerLazySingleton<BbxApiClient>(
-        () => BbxApiClient(_authenticatedClient(locator, isTestnet: isTestnet)),
+      locator.registerLazySingleton<bbx.Bbx>(
+        () => bbx.Bbx.open(
+          endpoint: isTestnet
+              ? ApiServiceConstants.bbApiTestUrl
+              : ApiServiceConstants.bbApiUrl,
+          readActiveApiKey: () =>
+              _readActiveApiKey(locator, isTestnet: isTestnet),
+        ),
         instanceName: '${environment}BbxApiClientWithoutTimeout',
       );
       locator.registerLazySingleton<BbxApiNotificationDatasource>(
@@ -99,9 +93,7 @@ class ExchangeLocator {
     for (final environment in ['mainnet', 'testnet']) {
       locator.registerLazySingleton<ExchangeUserRepository>(
         () => BbxApiUserRepository(
-          api: locator<BbxApiClient>(
-            instanceName: '${environment}BbxApiClient',
-          ),
+          api: locator<bbx.Bbx>(instanceName: '${environment}BbxApiClient'),
         ),
         instanceName: '${environment}ExchangeUserRepository',
       );
@@ -111,9 +103,7 @@ class ExchangeLocator {
       final environment = isTestnet ? 'testnet' : 'mainnet';
       locator.registerLazySingleton<ExchangeOrderRepository>(
         () => BbxApiOrderRepository(
-          api: locator<BbxApiClient>(
-            instanceName: '${environment}BbxApiClient',
-          ),
+          api: locator<bbx.Bbx>(instanceName: '${environment}BbxApiClient'),
           isTestnet: isTestnet,
         ),
         instanceName: '${environment}ExchangeOrderRepository',
@@ -123,10 +113,9 @@ class ExchangeLocator {
     for (final environment in ['mainnet', 'testnet']) {
       locator.registerLazySingleton<ExchangeSupportChatRepository>(
         () => BbxApiSupportChatRepository(
-          users: locator<BbxApiClient>(
-            instanceName: '${environment}BbxApiClient',
-          ).users,
-          commcenter: locator<BbxApiClient>(
+          users: locator<bbx.Bbx>(instanceName: '${environment}BbxApiClient')
+              .users,
+          commcenter: locator<bbx.Bbx>(
             instanceName: '${environment}BbxApiClientWithoutTimeout',
           ).commcenter,
         ),

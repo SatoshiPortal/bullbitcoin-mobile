@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:bbx_api/bbx_api.dart';
-import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 const _rate = {
   'fromCurrency': 'CAD',
@@ -15,12 +15,12 @@ const _rate = {
 };
 
 void main() {
-  late Dio dio;
+  late FakeHttp http;
   late PricesApi api;
 
   void answer(Object? body) {
-    dio = FakeHttp.dio(body: body);
-    api = BbxApiClient(dio).prices;
+    http = FakeHttp(body: body);
+    api = bbx(http).prices;
   }
 
   test('getUserRate sends the old request and reads the element', () async {
@@ -28,9 +28,11 @@ void main() {
       'result': {'element': _rate},
     });
 
-    final rate = await api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC');
+    final rate = valueOf(
+      await api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC'),
+    );
 
-    final request = (dio.httpClientAdapter as FakeHttp).requests.single;
+    final request = http.requests.single;
     expect(request.path, '/public/price');
     expect(
       jsonEncode(request.data),
@@ -46,7 +48,9 @@ void main() {
   test('reads a rate returned as the result itself', () async {
     answer({'result': _rate});
 
-    final rate = await api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC');
+    final rate = valueOf(
+      await api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC'),
+    );
 
     expect(rate.userPrice, 12400000);
   });
@@ -56,7 +60,9 @@ void main() {
       'result': {'indexPrice': 1.5, 'userPrice': 2},
     });
 
-    final rate = await api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC');
+    final rate = valueOf(
+      await api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC'),
+    );
 
     expect(rate.fromCurrency, isNull);
     expect(rate.precision, isNull);
@@ -68,14 +74,12 @@ void main() {
       'result': {'indexPrice': 1},
     });
 
-    await expectLater(
-      api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC'),
-      throwsA(
-        isA<BbxApiFormatException>().having(
-          (e) => e.reason,
-          'reason',
-          'invalid userPrice',
-        ),
+    expect(
+      await failedCall(api.getUserRate(fromCurrency: 'CAD', toCurrency: 'BTC')),
+      isA<BbxResponseFormatFailure>().having(
+        (f) => f.reason,
+        'reason',
+        'invalid userPrice',
       ),
     );
   });

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -19,10 +18,14 @@ import 'package:bb_mobile/features/limit_orders/data/bbx_api_limit_order_reposit
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api.dart'
+    show Bbx, BbxFailure, BbxCredentialUnavailableFailure;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../features/exchange/data/bbx_api_test_http.dart';
 
 class _NoNetwork implements HttpClientAdapter {
   var sends = 0;
@@ -53,9 +56,8 @@ class _Settings extends Fake implements Preferences {
 }
 
 void main() {
-  late Dio dio;
   late _NoNetwork network;
-  late BbxApiClient api;
+  late Bbx api;
   late BbxApiUserRepository user;
   late BbxApiSupportChatRepository support;
   late BbxApiOrderRepository orders;
@@ -64,10 +66,16 @@ void main() {
   setUp(() {
     credential = const Ok(null);
     network = _NoNetwork();
-    dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-      ..httpClientAdapter = network;
-    addExchangeAuthentication(dio, () async => credential);
-    api = BbxApiClient(dio);
+    api = bbxForTesting(
+      endpoint: testBbxEndpoint,
+      adapter: network,
+      readActiveApiKey: () async => switch (credential) {
+        Ok(:final value) => Ok<String?, BbxFailure>(value),
+        Err() => const Err<String?, BbxFailure>(
+          BbxCredentialUnavailableFailure(),
+        ),
+      },
+    );
     user = BbxApiUserRepository(api: api);
     support = BbxApiSupportChatRepository(
       users: api.users,
@@ -77,7 +85,6 @@ void main() {
   });
   tearDown(() {
     expect(network.sends, 0);
-    dio.close();
   });
 
   for (final storageFailure in [false, true]) {

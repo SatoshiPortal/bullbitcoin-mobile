@@ -1,8 +1,8 @@
 import 'package:bbx_api/bbx_api.dart';
-import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 import 'fake_http.dart';
+import 'result_helpers.dart';
 
 Map<String, Object?> _order({String orderId = 'o-1'}) => {
   'orderId': orderId,
@@ -35,20 +35,18 @@ Map<String, Object?> _rpcError() => {
   'error': {'code': -1, 'message': 'no'},
 };
 
-FakeHttp _adapter(Dio dio) => dio.httpClientAdapter as FakeHttp;
-
 void main() {
   group('getOrderSummary', () {
     test('sends the order id and reads the wrapped element', () async {
-      final dio = FakeHttp.dio(
+      final http = FakeHttp(
         body: {
           'result': {'element': _order()},
         },
       );
-      final orders = BbxApiClient(dio).orders;
-      final order = await orders.getOrderSummary('o-1');
+      final orders = bbx(http).orders;
+      final order = valueOf(await orders.getOrderSummary('o-1'));
 
-      final request = _adapter(dio).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-orders');
       expect((request.data as Map)['method'], 'getOrderSummary');
       expect((request.data as Map)['params'], {'orderId': 'o-1'});
@@ -76,25 +74,28 @@ void main() {
     });
 
     test('reads an unwrapped result', () async {
-      final order = await BbxApiClient(
-        FakeHttp.dio(body: {'result': _order(orderId: 'o-2')}),
-      ).orders.getOrderSummary('o-2');
+      final order = valueOf(
+        await bbx(FakeHttp(body: {'result': _order(orderId: 'o-2')})).orders
+            .getOrderSummary('o-2'),
+      );
       expect(order.orderId, 'o-2');
     });
 
     test('omitted optional fields are null', () async {
-      final order = await BbxApiClient(
-        FakeHttp.dio(
-          body: {
-            'result': {
-              'orderId': 'o-3',
-              'orderType': 'Reward',
-              'orderNumber': 1,
-              'createdAt': '2026-11-20T10:00:00Z',
+      final order = valueOf(
+        await bbx(
+          FakeHttp(
+            body: {
+              'result': {
+                'orderId': 'o-3',
+                'orderType': 'Reward',
+                'orderNumber': 1,
+                'createdAt': '2026-11-20T10:00:00Z',
+              },
             },
-          },
-        ),
-      ).orders.getOrderSummary('o-3');
+          ),
+        ).orders.getOrderSummary('o-3'),
+      );
       expect(order.payinAmount, isNull);
       expect(order.payinCurrency, isNull);
       expect(order.orderStatus, isNull);
@@ -106,11 +107,12 @@ void main() {
 
     for (final field in ['orderId', 'orderType', 'orderNumber', 'createdAt']) {
       test('a missing $field is a format error', () async {
-        await expectLater(
-          BbxApiClient(FakeHttp.dio(body: {'result': _order()..remove(field)}))
-              .orders
-              .getOrderSummary('o-1'),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(
+            bbx(FakeHttp(body: {'result': _order()..remove(field)})).orders
+                .getOrderSummary('o-1'),
+          ),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
@@ -123,71 +125,76 @@ void main() {
       ('payjoinDetails', {'txid': 1}),
     ]) {
       test('an invalid $field is a format error', () async {
-        await expectLater(
-          BbxApiClient(
-            FakeHttp.dio(
-              body: {
-                'result': {..._order(), field: value},
-              },
-            ),
-          ).orders.getOrderSummary('o-1'),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(
+            bbx(
+              FakeHttp(
+                body: {
+                  'result': {..._order(), field: value},
+                },
+              ),
+            ).orders.getOrderSummary('o-1'),
+          ),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
 
     test('no result is a format error', () async {
-      await expectLater(
-        BbxApiClient(FakeHttp.dio(body: {'result': null})).orders
-            .getOrderSummary('o-1'),
-        throwsA(isA<BbxApiFormatException>()),
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: {'result': null})).orders.getOrderSummary('o-1'),
+        ),
+        isA<BbxResponseFormatFailure>(),
       );
     });
 
-    test('a JSON-RPC error throws', () async {
-      await expectLater(
-        BbxApiClient(FakeHttp.dio(body: _rpcError())).orders
-            .getOrderSummary('o-1'),
-        throwsA(isA<BbxApiRpcException>()),
+    test('a JSON-RPC error is a failure', () async {
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: _rpcError())).orders.getOrderSummary('o-1'),
+        ),
+        isA<BbxRpcFailure>(),
       );
     });
   });
 
   group('refreshOrderSummary', () {
     test('sends the order id and reads the result', () async {
-      final dio = FakeHttp.dio(body: {'result': _order()});
-      final orders = BbxApiClient(dio).orders;
-      final order = await orders.refreshOrderSummary('o-1');
+      final http = FakeHttp(body: {'result': _order()});
+      final orders = bbx(http).orders;
+      final order = valueOf(await orders.refreshOrderSummary('o-1'));
 
-      final request = _adapter(dio).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-orders');
       expect((request.data as Map)['method'], 'refreshOrderSummary');
       expect((request.data as Map)['params'], {'orderId': 'o-1'});
       expect(order.orderId, 'o-1');
     });
 
-    test('a JSON-RPC error throws', () async {
-      await expectLater(
-        BbxApiClient(FakeHttp.dio(body: _rpcError())).orders
-            .refreshOrderSummary('o-1'),
-        throwsA(isA<BbxApiRpcException>()),
+    test('a JSON-RPC error is a failure', () async {
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: _rpcError())).orders.refreshOrderSummary('o-1'),
+        ),
+        isA<BbxRpcFailure>(),
       );
     });
   });
 
   group('listOrderSummaries', () {
     test('asks for the newest page and reads every order', () async {
-      final dio = FakeHttp.dio(
+      final http = FakeHttp(
         body: {
           'result': {
             'elements': [_order(), _order(orderId: 'o-2')],
           },
         },
       );
-      final orders = BbxApiClient(dio).orders;
-      final list = await orders.listOrderSummaries();
+      final orders = bbx(http).orders;
+      final list = valueOf(await orders.listOrderSummaries());
 
-      final request = _adapter(dio).requests.single;
+      final request = http.requests.single;
       expect(request.path, '/ak/api-orders');
       expect((request.data as Map)['method'], 'listOrderSummaries');
       expect((request.data as Map)['params'], {
@@ -199,27 +206,31 @@ void main() {
     });
 
     test('a malformed element is rejected, not the whole list', () async {
-      final list = await BbxApiClient(
-        FakeHttp.dio(
-          body: {
-            'result': {
-              'elements': [
-                _order()..remove('orderId'),
-                'not an object',
-                _order(orderId: 'o-2'),
-              ],
+      final list = valueOf(
+        await bbx(
+          FakeHttp(
+            body: {
+              'result': {
+                'elements': [
+                  _order()..remove('orderId'),
+                  'not an object',
+                  _order(orderId: 'o-2'),
+                ],
+              },
             },
-          },
-        ),
-      ).orders.listOrderSummaries();
+          ),
+        ).orders.listOrderSummaries(),
+      );
       expect(list.orders.single.orderId, 'o-2');
       expect(list.rejected, hasLength(2));
+      expect(list.rejected, everyElement(isA<BbxResponseFormatFailure>()));
     });
 
     test('missing elements are an empty list', () async {
-      final list = await BbxApiClient(
-        FakeHttp.dio(body: {'result': <String, Object?>{}}),
-      ).orders.listOrderSummaries();
+      final list = valueOf(
+        await bbx(FakeHttp(body: {'result': <String, Object?>{}})).orders
+            .listOrderSummaries(),
+      );
       expect(list.orders, isEmpty);
       expect(list.rejected, isEmpty);
     });
@@ -231,18 +242,21 @@ void main() {
       },
     ]) {
       test('$body is a format error', () async {
-        await expectLater(
-          BbxApiClient(FakeHttp.dio(body: body)).orders.listOrderSummaries(),
-          throwsA(isA<BbxApiFormatException>()),
+        expect(
+          await failedCall(
+            bbx(FakeHttp(body: body)).orders.listOrderSummaries(),
+          ),
+          isA<BbxResponseFormatFailure>(),
         );
       });
     }
 
-    test('a JSON-RPC error throws', () async {
-      await expectLater(
-        BbxApiClient(FakeHttp.dio(body: _rpcError())).orders
-            .listOrderSummaries(),
-        throwsA(isA<BbxApiRpcException>()),
+    test('a JSON-RPC error is a failure', () async {
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: _rpcError())).orders.listOrderSummaries(),
+        ),
+        isA<BbxRpcFailure>(),
       );
     });
   });
@@ -252,32 +266,37 @@ void main() {
     ('getSellLimits', (OrdersApi o) => o.getSellLimits()),
   ]) {
     group(method, () {
-      test('returns the result object', () async {
-        final dio = FakeHttp.dio(
+      test('decodes owned limit values', () async {
+        final http = FakeHttp(
           body: {
-            'result': {'min': 10, 'max': 1000},
+            'result': {
+              'min': 10,
+              'max': 1000,
+              'unrecognizedFutureField': 'is ignored',
+              'limits': {
+                'CAD': [1, 2],
+              },
+            },
           },
         );
-        final orders = BbxApiClient(dio).orders;
-        expect(await call(orders), {'min': 10, 'max': 1000});
+        final orders = bbx(http).orders;
+        final limits = valueOf(await call(orders));
+        expect(limits.minimum, 10);
+        expect(limits.maximum, 1000);
+        expect(limits.currencyLimits, hasLength(1));
+        expect(limits.currencyLimits.single.currencyCode, 'CAD');
+        expect(limits.currencyLimits.single.values, [1, 2]);
 
-        final request = _adapter(dio).requests.single;
+        final request = http.requests.single;
         expect(request.path, '/ak/api-orders');
         expect((request.data as Map)['method'], method);
         expect((request.data as Map)['params'], isEmpty);
       });
 
-      test('no result is a format error', () async {
-        await expectLater(
-          call(BbxApiClient(FakeHttp.dio(body: {'result': null})).orders),
-          throwsA(isA<BbxApiFormatException>()),
-        );
-      });
-
-      test('a JSON-RPC error throws', () async {
-        await expectLater(
-          call(BbxApiClient(FakeHttp.dio(body: _rpcError())).orders),
-          throwsA(isA<BbxApiRpcException>()),
+      test('a JSON-RPC error is a failure', () async {
+        expect(
+          await failedCall(call(bbx(FakeHttp(body: _rpcError())).orders)),
+          isA<BbxRpcFailure>(),
         );
       });
     });

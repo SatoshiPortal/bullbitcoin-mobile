@@ -9,12 +9,14 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.da
 import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../data/bbx_api_test_http.dart';
 
 /// Throws [error] for every request, counting them.
 class _Throwing implements HttpClientAdapter {
@@ -89,9 +91,10 @@ void main() {
           ),
         );
         final repository = BbxApiOrderRepository(
-          api: BbxApiClient(
-            Dio(BaseOptions(baseUrl: 'https://$host'))
-              ..httpClientAdapter = transport,
+          api: bbxForTesting(
+            endpoint: 'https://$host',
+            adapter: transport,
+            readActiveApiKey: bbxCredentialRead(null),
           ),
           isTestnet: false,
         );

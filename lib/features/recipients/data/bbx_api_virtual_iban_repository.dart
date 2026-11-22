@@ -1,16 +1,14 @@
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
 /// [VirtualIbanRepository] on the `bbx_api` package.
 final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
-  final bbx.BbxApiClient _mainnet;
-  final bbx.BbxApiClient _testnet;
+  final bbx.Bbx _mainnet;
+  final bbx.Bbx _testnet;
 
   static const _optionNotAvailableCode = 'ERR_RCP_PO404';
   static const _euResidencyRequiredCode = 'ERR_RCP_400_001';
@@ -25,16 +23,20 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
     required bool isTestnet,
   }) async {
     try {
-      final iban = await _api(isTestnet).recipients.findVirtualIban();
-      return Ok(iban == null ? null : _toDomain(iban));
-    } on bbx.BbxApiRpcException catch (e, st) {
-      // The API refuses to list virtual IBANs to a user who has none yet and
-      // lacks the funding option, so this means "none". Creating it gives
-      // the real reason.
-      if (e.apiCode == _optionNotAvailableCode) return const Ok(null);
-      return Err(_failureFrom(e, st, 'find the virtual IBAN'));
+      final result = await _api(isTestnet).recipients.findVirtualIban();
+      return switch (result) {
+        Ok(:final value) => Ok(value == null ? null : _toDomain(value)),
+        // The API refuses to list virtual IBANs to a user who has none yet
+        // and lacks the funding option, so this means "none". Creating it
+        // gives the real reason.
+        Err(failure: bbx.BbxRpcFailure(apiCode: _optionNotAvailableCode)) =>
+          const Ok(null),
+        Err(:final failure) => Err(
+          _failureFrom(failure, 'find the virtual IBAN'),
+        ),
+      };
     } on Exception catch (e, st) {
-      return Err(_failureFrom(e, st, 'find the virtual IBAN'));
+      return Err(_unexpected(e, st, 'find the virtual IBAN'));
     }
   }
 
@@ -43,15 +45,17 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
     required bool isTestnet,
   }) async {
     try {
-      return Ok(
-        _toDomain(await _api(isTestnet).recipients.createVirtualIban()),
-      );
+      return (await _api(isTestnet).recipients.createVirtualIban())
+          .map(_toDomain)
+          .mapErr(
+            (failure) => _failureFrom(failure, 'create the virtual IBAN'),
+          );
     } on Exception catch (e, st) {
-      return Err(_failureFrom(e, st, 'create the virtual IBAN'));
+      return Err(_unexpected(e, st, 'create the virtual IBAN'));
     }
   }
 
-  bbx.BbxApiClient _api(bool isTestnet) => isTestnet ? _testnet : _mainnet;
+  bbx.Bbx _api(bool isTestnet) => isTestnet ? _testnet : _mainnet;
 
   static VirtualIban _toDomain(bbx.VirtualIban iban) =>
       VirtualIban.fromBankDetails(
@@ -62,21 +66,18 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
       );
 
   static RecipientsFailure _failureFrom(
-    Exception e,
-    StackTrace st,
+    bbx.BbxFailure failure,
     String operation,
   ) {
-    final refusal = exchangeAuthenticationException(e);
-    if (refusal != null) {
-      return refusal.isUnauthenticated
-          ? const RecipientsNotAuthenticatedFailure()
-          : const RecipientsUnexpectedFailure(
-              'Exchange credential unavailable',
-            );
-    }
-    switch (e) {
-      case bbx.BbxApiRpcException(:final apiCode):
-        final description = _describe(e);
+    switch (failure) {
+      case bbx.BbxMissingCredentialFailure():
+        return const RecipientsNotAuthenticatedFailure();
+      case bbx.BbxCredentialUnavailableFailure():
+        return const RecipientsUnexpectedFailure(
+          'Exchange credential unavailable',
+        );
+      case bbx.BbxRpcFailure(:final apiCode):
+        final description = _describe(failure);
         log.warning('API refused to $operation — $description');
         return switch (apiCode) {
           _optionNotAvailableCode =>
@@ -85,27 +86,49 @@ final class BbxApiVirtualIbanRepository implements VirtualIbanRepository {
             const RecipientsEuResidencyRequiredFailure(),
           _ => RecipientsUnexpectedFailure(description),
         };
-      case bbx.BbxApiHttpException():
-        final description = _describe(e);
+      case bbx.BbxHttpFailure():
+        final description = _describe(failure);
         log.warning('API refused to $operation — $description');
         return RecipientsUnexpectedFailure(description);
-      case DioException(
-        type: DioExceptionType.connectionTimeout ||
-            DioExceptionType.sendTimeout ||
-            DioExceptionType.receiveTimeout ||
-            DioExceptionType.connectionError,
-      ):
-        log.warning('Could not reach the API to $operation: ${e.type}');
+      case bbx.BbxTimeoutFailure(:final kind):
+        log.warning(
+          'Could not reach the API to $operation: ${_timeoutName(kind)}',
+        );
         return const RecipientsNetworkFailure();
+      case bbx.BbxConnectionFailure():
+        log.warning('Could not reach the API to $operation: connectionError');
+        return const RecipientsNetworkFailure();
+      default:
+        log.warning(
+          'Failed to $operation',
+          error: failure,
+          trace: StackTrace.current,
+        );
+        return const RecipientsUnexpectedFailure();
     }
+  }
+
+  /// The failure for an exception thrown while mapping a response the API
+  /// did send.
+  static RecipientsFailure _unexpected(
+    Exception e,
+    StackTrace st,
+    String operation,
+  ) {
     log.warning('Failed to $operation', error: e, trace: st);
     return const RecipientsUnexpectedFailure();
   }
 
+  static String _timeoutName(bbx.BbxTimeoutKind kind) => switch (kind) {
+    bbx.BbxTimeoutKind.connect => 'connectionTimeout',
+    bbx.BbxTimeoutKind.send => 'sendTimeout',
+    bbx.BbxTimeoutKind.receive => 'receiveTimeout',
+  };
+
   /// The JSON-RPC error message can quote account details: keep the codes.
-  static String _describe(Exception e) => switch (e) {
-    bbx.BbxApiRpcException(:final code, :final apiCode) =>
-      'BbxApiRpcException(code: $code, apiCode: $apiCode)',
-    _ => '$e',
+  static String _describe(bbx.BbxFailure failure) => switch (failure) {
+    bbx.BbxRpcFailure(:final code, :final apiCode) =>
+      'BbxRpcFailure(code: $code, apiCode: $apiCode)',
+    _ => '$failure',
   };
 }

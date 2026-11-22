@@ -8,12 +8,11 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchang
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:file_system/file_system.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/data/bbx_api_kyc_repository.dart';
 import 'package:bb_mobile/features/exchange_settings/data/bbx_api_order_stats_repository.dart';
-import 'package:bbx_api/bbx_api.dart' show BbxApiClient;
 import 'package:preferences/preferences.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:dio/dio.dart';
@@ -24,6 +23,8 @@ import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../features/exchange/data/bbx_api_test_http.dart';
 
 const _sensitive = 'synthetic-private-credential';
 
@@ -36,6 +37,20 @@ class _Settings extends Fake implements Preferences {
       currencyCode: 'CAD',
     ),
   );
+}
+
+/// Fails loudly if the transport is reached: a credential refusal stops the
+/// request before the network.
+class _NoRequest implements HttpClientAdapter {
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw StateError('No request expected');
+
+  @override
+  void close({bool force = false}) {}
 }
 
 class _Picker extends Fake implements FileSystem {
@@ -120,14 +135,14 @@ void main() {
     'an order action refuses unavailable credentials without reporting',
     () async {
       storage.scripted.add(Exception(_sensitive));
-      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
-      addTearDown(() => dio.close(force: true));
-      addExchangeAuthentication(
-        dio,
-        () => repository.readActiveApiKey(isTestnet: true),
-      );
       final orders = BbxApiOrderRepository(
-        api: BbxApiClient(dio),
+        api: bbxForTesting(
+          endpoint: testBbxEndpoint,
+          adapter: _NoRequest(),
+          readActiveApiKey: bbxCredentialRead(
+            () => repository.readActiveApiKey(isTestnet: true),
+          ),
+        ),
         isTestnet: true,
       );
       final operation = RefreshBuyOrderUsecase(
@@ -150,13 +165,15 @@ void main() {
 
   test('statistics credential refusal never invokes the reporter', () async {
     storage.scripted.add(Exception(_sensitive));
-    final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
-    addTearDown(() => dio.close(force: true));
-    addExchangeAuthentication(
-      dio,
-      () => repository.readActiveApiKey(isTestnet: true),
+    final stats = BbxApiOrderStatsRepository(
+      api: bbxForTesting(
+        endpoint: testBbxEndpoint,
+        adapter: _NoRequest(),
+        readActiveApiKey: bbxCredentialRead(
+          () => repository.readActiveApiKey(isTestnet: true),
+        ),
+      ),
     );
-    final stats = BbxApiOrderStatsRepository(api: BbxApiClient(dio));
     final operation = GetExchangeStatisticsUsecase(
       getOrderStatsUsecase: GetOrderStatsUsecase(
         mainnetRepository: stats,
@@ -173,13 +190,15 @@ void main() {
 
   test('document credential refusal never invokes the reporter', () async {
     storage.scripted.add(Exception(_sensitive));
-    final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
-    addTearDown(() => dio.close(force: true));
-    addExchangeAuthentication(
-      dio,
-      () => repository.readActiveApiKey(isTestnet: true),
+    final kyc = BbxApiKycRepository(
+      api: bbxForTesting(
+        endpoint: testBbxEndpoint,
+        adapter: _NoRequest(),
+        readActiveApiKey: bbxCredentialRead(
+          () => repository.readActiveApiKey(isTestnet: true),
+        ),
+      ),
     );
-    final kyc = BbxApiKycRepository(api: BbxApiClient(dio));
     final operation = UploadExchangeDocumentUsecase(
       fileSystem: _Picker(),
       uploadKycDocumentUsecase: UploadKycDocumentUsecase(
