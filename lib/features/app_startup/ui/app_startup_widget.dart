@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:access/access.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/router.dart';
@@ -70,7 +70,7 @@ class AppStartupListener extends StatelessWidget {
               current is AppStartupSuccess && previous != current,
           listener: (context, state) {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
-              AppRouter.router.go(AppUnlockRoute.appUnlock.path);
+              const AppUnlockRouteData().go(AppRouter.router);
             }
 
             if (state is AppStartupSuccess && !state.hasDefaultWallets) {

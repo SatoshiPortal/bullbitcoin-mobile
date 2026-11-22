@@ -162,6 +162,7 @@ void main() {
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoute = SettingsRouter.route(
+      accessRoutes: const [],
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
       priceRoutes: const [],
@@ -253,6 +254,7 @@ void main() {
     });
     final route =
         SettingsRouter.route(
+          accessRoutes: const [],
           appSettingsRoutes: const [],
           onBackupTestSucceeded: (_) {},
           priceRoutes: const [],

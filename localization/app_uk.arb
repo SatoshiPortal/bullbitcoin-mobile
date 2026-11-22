@@ -93,30 +93,12 @@
   "settingsScreenTitle": "Налаштування",
   "testnetModeSettingsLabel": "Режим тестування",
   "satsBitcoinUnitSettingsLabel": "Дисплей блок в сати",
-  "pinCodeSettingsLabel": "Поштовий індекс",
   "languageSettingsLabel": "Українська",
   "backupSettingsLabel": "Резервування стін",
   "fiatCurrencySettingsLabel": "Фіат валюта",
   "languageSettingsScreenTitle": "Українська",
   "settingsExchangeSettingsTitle": "Налаштування Exchange",
   "settingsSecurityPinTitle": "Безпека Pin",
-  "pinCodeAuthentication": "Аутентифікація",
-  "pinCodeCreateTitle": "Створення нового штифта",
-  "pinCodeCreateDescription": "Ваш PIN захищає доступ до вашого гаманця та налаштувань. Збережіть його незабутнім.",
-  "pinCodeConfirmTitle": "Підтвердити новий штифт",
-  "pinCodeMismatchError": "ПІНС не відповідає",
-  "pinCodeSecurityPinTitle": "Безпека PIN",
-  "pinCodeManageTitle": "Управління безпекою PIN",
-  "pinCodeChangeButton": "Зміна PIN",
-  "pinCodeCreateButton": "Створення PIN",
-  "pinCodeRemoveButton": "Видалення безпеки PIN",
-  "pinCodeContinue": "Продовжити",
-  "pinCodeConfirm": "Підтвердження",
-  "pinCodeLoading": "Завантаження",
-  "pinCodeCheckingStatus": "Перевірка стану PIN",
-  "pinCodeProcessing": "Переробка",
-  "pinCodeSettingUp": "Налаштування коду PIN",
-  "pinCodeBackupRequiredWarning": "Будь ласка, виконайте резервне копіювання гаманця перед встановленням PIN-коду",
   "settingsCurrencyTitle": "Ціна",
   "settingsAppSettingsTitle": "Налаштування додатків",
   "settingsTermsOfServiceTitle": "Умови надання послуг",
@@ -1042,9 +1024,6 @@
   "broadcastSignedTxFee": "Плей",
   "save": "Зберегти",
   "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
-  "appUnlockButton": "Розблокувати",
-  "appUnlockPinCheckError": "Не вдалося завантажити налаштування безпеки. Будь ласка, перезапустіть додаток.",
-  "appUnlockPinVerifyError": "Не вдалося перевірити ваш PIN. Будь ласка, спробуйте ще раз.",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
   "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",
@@ -1491,7 +1470,6 @@
   "exchangeLandingFeature1": "Купити Bitcoin прямо на самоктоди",
   "swapTransferTo": "Обмін на",
   "selectCoinsManuallyLabel": "Виберіть монети вручну",
-  "appUnlockAttemptSingular": "невдала спроба",
   "importQrDevicePassportStep2": "Введіть Ваш кошик",
   "buyExpressWithdrawalDesc": "Отримати Bitcoin миттєво після оплати",
   "importMnemonicImport": "Імпорт",
@@ -1927,7 +1905,6 @@
   "importQrDeviceKeystoneStep10": "Ваш Keystone тепер підключений і готовий до використання з BULL Wallet.",
   "payEnterAmountTitle": "Вхід",
   "payInvalidAddress": "Неоплатна адреса",
-  "appUnlockAttemptPlural": "невдалих спроб",
   "importQrDevicePassportStep6": "Виберіть \"Single-sig\"",
   "enterPinAgainMessage": "Введіть своє {pinOrPassword} знову, щоб продовжити.",
   "@enterPinAgainMessage": {
@@ -2420,7 +2397,6 @@
       }
     }
   },
-  "appUnlockScreenTitle": "Аутентифікація",
   "importQrDeviceWalletName": "Назва гаманця",
   "payNoRouteFound": "Не знайдено маршруту для цього платежу",
   "fundExchangeLabelBeneficiaryName": "Ім'я одержувача",
@@ -2502,17 +2478,6 @@
   "optionalPassphraseHint": "Додатковий Пасфрас",
   "importColdcardImporting": "Імпортування холодної картки гаманець ...",
   "exchangeDcaHideSettings": "Приховати налаштування",
-  "appUnlockIncorrectPinError": "Некоректний ПІН. Будь ласка, спробуйте знову. {failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
   "coreScreensPageNotFound": "Не знайдено",
   "importQrDeviceTitle": "Підключення {deviceName}",
   "@importQrDeviceTitle": {
@@ -2653,7 +2618,6 @@
   },
   "backupWalletPhysicalBackupTitle": "Фізична резервна копія",
   "psbtImDone": "Я зробив",
-  "appUnlockEnterPinMessage": "Введіть код шпильки для розблокування",
   "torSettingsTitle": "Налаштування Tor",
   "backupSettingsRevealing": "Відновлення ...",
   "payTotal": "Всього",
@@ -3304,9 +3268,6 @@
   "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
   "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android",
-  "pinCodeSaveError": "Не вдалося зберегти ваш PIN. Будь ласка, спробуйте ще раз.",
-  "pinCodeDeleteError": "Не вдалося видалити ваш PIN. Будь ласка, спробуйте ще раз.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
   "allSeedViewErrorFetch": "Не вдалося завантажити сіди. Будь ласка, спробуйте ще раз.",
   "@allSeedViewErrorFetch": {
@@ -3970,6 +3931,5 @@
   "permissionsTitle": "Дозволи",
   "settingsSearchPermissionsKeywords": "сповіщення|фонові завдання|батарея|оповіщення",
   "wizardBackgroundTasksDescription": "Перевіряє платежі, коли застосунок закрито.",
-  "wizardNotificationsDescription": "Дізнавайтеся про надходження платежів.",
-  "pinCodeLengthHint": "Введіть від {min} до {max} цифр"
+  "wizardNotificationsDescription": "Дізнавайтеся про надходження платежів."
 }

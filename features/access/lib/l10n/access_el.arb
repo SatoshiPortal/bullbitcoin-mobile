@@ -1,0 +1,117 @@
+{
+  "@@locale": "el",
+  "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "Αδυναμία φόρτωσης ρυθμίσεων ασφαλείας. Επανεκκινήστε την εφαρμογή.",
+  "appUnlockPinVerifyError": "Αδυναμία επαλήθευσης του PIN σας. Παρακαλώ δοκιμάστε ξανά.",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeSecurityPinTitle": "Ασφάλεια PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeCreateButton": "Δημιουργήστε PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeManageTitle": "Διαχείριση του PIN ασφαλείας σας",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeProcessing": "Επεξεργασία επεξεργασίας",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeCreateTitle": "Δημιουργήστε νέο pin",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeContinue": "Συνεχίστε να συνεχίζετε",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "appUnlockAttemptSingular": "αποτυχημένη απόπειρα",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "pinCodeCreateDescription": "Το PIN σας προστατεύει την πρόσβαση στο πορτοφόλι και τις ρυθμίσεις σας. Κρατήστε το αξέχαστη.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "Επιβεβαίωση νέου pin",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeRemoveButton": "Αφαιρέστε PIN ασφαλείας",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "appUnlockAttemptPlural": "αποτυχημένες απόπειρες",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "pinCodeMismatchError": "Τα PIN δεν ταιριάζουν",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeChangeButton": "Αλλαγή PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCheckingStatus": "Ελέγξτε το καθεστώς PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeAuthentication": "Αναγνώριση",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeSettingUp": "Δημιουργία κωδικού PIN σας",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "Παρακαλώ ολοκληρώστε ένα αντίγραφο ασφαλείας πορτοφολιού πριν ορίσετε PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockScreenTitle": "Αναγνώριση",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockIncorrectPinError": "Incorrect PIN. Παρακαλώ δοκιμάστε ξανά. ({failedAttempts} {attemptsWord})]",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Εισάγετε τον κωδικό PIN σας για να ξεκλειδώσετε",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "Ξεκινήστε το Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeConfirm": "Επιβεβαίωση",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Φόρτωση Φόρου",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "pinCodeSaveError": "Αδυναμία αποθήκευσης PIN. Παρακαλώ δοκιμάστε ξανά.",
+  "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Εισαγάγετε {min} έως {max} ψηφία"
+}

@@ -7,7 +7,7 @@ import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:access/access.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

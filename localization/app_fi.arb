@@ -25,30 +25,12 @@
   "settingsScreenTitle": "Asetukset",
   "testnetModeSettingsLabel": "Testnet-tila",
   "satsBitcoinUnitSettingsLabel": "Aseta määräyksikkö sat",
-  "pinCodeSettingsLabel": "PIN-koodi",
   "languageSettingsLabel": "Kieli",
   "backupSettingsLabel": "Lompakon varmuuskopio",
   "fiatCurrencySettingsLabel": "Fiat-valuutta",
   "languageSettingsScreenTitle": "Kieli",
   "settingsExchangeSettingsTitle": "Pörssin asetukset",
   "settingsSecurityPinTitle": "Turva-PIN",
-  "pinCodeAuthentication": "Tunnistautuminen",
-  "pinCodeCreateTitle": "Luo uusi PIN",
-  "pinCodeCreateDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistettavana.",
-  "pinCodeConfirmTitle": "Vahvista uusi PIN",
-  "pinCodeMismatchError": "PIN-koodit eivät täsmää",
-  "pinCodeSecurityPinTitle": "PIN",
-  "pinCodeManageTitle": "PIN-koodi",
-  "pinCodeChangeButton": "Vaihda PIN",
-  "pinCodeCreateButton": "Luo PIN",
-  "pinCodeRemoveButton": "Poista PIN",
-  "pinCodeContinue": "Jatka",
-  "pinCodeConfirm": "Vahvista",
-  "pinCodeLoading": "Ladataan",
-  "pinCodeCheckingStatus": "Tarkistetaan PIN-tilaa",
-  "pinCodeProcessing": "Käsitellään",
-  "pinCodeSettingUp": "PIN-koodin käyttöönotto",
-  "pinCodeBackupRequiredWarning": "Suorita lompakkosi varmuuskopiointi ennen PIN-koodin asettamista",
   "settingsCurrencyTitle": "Valuutta",
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
@@ -1166,7 +1148,6 @@
   "pinButtonCreate": "Luo PIN-koodi",
   "pinButtonRemove": "Poista PIN-koodi käytöstä",
   "pinAuthenticationTitle": "Tunnistautuminen",
-  "appUnlockScreenTitle": "Tunnistautuminen",
   "pinCreateHeadline": "Luo uusi PIN-koodi",
   "pinValidationError": "PIN-koodin vähimmäispituus on {minLength} numeroa",
   "@pinValidationError": {
@@ -1180,23 +1161,6 @@
   "pinConfirmHeadline": "Vahvista uusi PIN-koodi",
   "pinConfirmMismatchError": "PIN-koodit eivät täsmää",
   "pinButtonConfirm": "Vahvista",
-  "appUnlockEnterPinMessage": "Avaaminen vaatii PIN-koodin",
-  "appUnlockIncorrectPinError": "Väärä PIN-koodi. Yritä uudelleen. ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
-  "appUnlockAttemptSingular": "epäonnistunut yritys",
-  "appUnlockAttemptPlural": "epäonnistunutta yritystä",
-  "appUnlockButton": "Avaa",
-  "appUnlockPinCheckError": "Suojausasetusten lataaminen epäonnistui. Käynnistä sovellus uudelleen.",
-  "appUnlockPinVerifyError": "PIN-koodisi tarkistaminen epäonnistui. Yritä uudelleen.",
   "pinStatusLoading": "Ladataan",
   "pinStatusCheckingDescription": "Tarkistetaan PIN-koodia",
   "pinStatusProcessing": "Käsitellään",
@@ -3295,9 +3259,6 @@
   "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
   "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
-  "pinCodeSaveError": "PIN-koodia ei voitu tallentaa. Yritä uudelleen.",
-  "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
   "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
   "@allSeedViewErrorFetch": {
@@ -3961,6 +3922,5 @@
   "permissionsTitle": "Käyttöoikeudet",
   "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
   "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
-  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu.",
-  "pinCodeLengthHint": "Syötä {min}–{max} numeroa"
+  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu."
 }

@@ -1,0 +1,48 @@
+{
+  "@@locale": "fr",
+  "pinCodeAuthentication": "Authentification",
+  "pinCodeCreateTitle": "Créer un nouveau code PIN",
+  "pinCodeCreateDescription": "Votre code PIN protège l'accès à votre portefeuille et à vos paramètres. Gardez-le mémorisable.",
+  "pinCodeConfirmTitle": "Confirmer le nouveau code PIN",
+  "pinCodeMismatchError": "Les codes PIN ne correspondent pas",
+  "pinCodeSecurityPinTitle": "Code PIN de sécurité",
+  "pinCodeManageTitle": "Gérer votre code PIN de sécurité",
+  "pinCodeChangeButton": "Modifier le code PIN",
+  "pinCodeCreateButton": "Créer un code PIN",
+  "pinCodeRemoveButton": "Supprimer le code PIN de sécurité",
+  "pinCodeContinue": "Continuer",
+  "pinCodeConfirm": "Confirmer",
+  "pinCodeLoading": "Chargement",
+  "pinCodeCheckingStatus": "Vérification du statut du code PIN",
+  "pinCodeProcessing": "Traitement",
+  "pinCodeSettingUp": "Configuration de votre code PIN",
+  "pinCodeBackupRequiredWarning": "Veuillez effectuer une sauvegarde du portefeuille avant de définir un code PIN",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "appUnlockScreenTitle": "Authentification",
+  "appUnlockEnterPinMessage": "Entrez votre code PIN pour déverrouiller",
+  "appUnlockIncorrectPinError": "Code PIN incorrect. Veuillez réessayer. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockAttemptSingular": "tentative échouée",
+  "appUnlockAttemptPlural": "tentatives échouées",
+  "appUnlockButton": "Déverrouiller",
+  "appUnlockPinCheckError": "Impossible de charger les paramètres de sécurité. Veuillez redémarrer l'application.",
+  "appUnlockPinVerifyError": "Impossible de vérifier votre code PIN. Veuillez réessayer.",
+  "backupSettingsStartBackup": "Démarrer la sauvegarde",
+  "pinCodeSaveError": "Impossible d'enregistrer votre code PIN. Veuillez réessayer.",
+  "pinCodeDeleteError": "Impossible de supprimer votre code PIN. Veuillez réessayer.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "appUnlockTryAgainIn": "Trop de tentatives échouées. Réessayez dans {seconds} s.",
+  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
+  "pinCodeLengthHint": "Saisissez {min} à {max} chiffres",
+  "pinCodeShowPin": "Afficher le code PIN",
+  "pinCodeHidePin": "Masquer le code PIN"
+}

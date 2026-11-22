@@ -391,12 +391,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "إفتح",
-  "appUnlockPinCheckError": "تعذّر تحميل إعدادات الأمان. يرجى إعادة تشغيل التطبيق.",
-  "appUnlockPinVerifyError": "تعذّر التحقق من رمز PIN. يرجى المحاولة مرة أخرى.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "رسوم الخدمة",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -676,10 +670,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "Security PIN",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "الدفع في التقدم",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -779,10 +769,6 @@
   "payPaymentInProgress": "الدفع في التقدم!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "pinCodeCreateButton": "Create PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "نموذج الاختبار",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1502,10 +1488,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "إدارة جهاز الأمن الخاص بك",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "سعر الصرف",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -1967,10 +1949,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "المعالجة",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "مستردة",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -2090,10 +2068,6 @@
   "receiveSwapId": "بطاقة الهوية",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "إنشاء دبوس جديد",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "وضع عناوين المحفظة الافتراضية لسحبات (بيتكوين) التلقائية.",
   "@exchangeBitcoinWalletsDescription": {
@@ -2433,10 +2407,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "استمر",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "فاتورة الأجور",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2701,17 +2671,9 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "محاولة فاشلة",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "buyShouldBuyAtLeast": "يجب أن تشتري على الأقل",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "محفظتك تحمي الدخول إلى محفظتك و أماكنك أبقه مريم.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "الشركة",
   "@payCorporate": {
@@ -3384,10 +3346,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "دبوس جديد",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "موظف رئيسي ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4013,10 +3971,6 @@
       }
     }
   },
-  "pinCodeRemoveButton": "Remove Security PIN",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "هذا حسابي",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -4134,10 +4088,6 @@
   "coldcardStep14": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "رمز PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "الكونت التجاري",
   "@exchangeStatisticsTradeCount": {
@@ -4776,10 +4726,6 @@
   "payInvalidAddress": "العنوان غير الرسمي",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "محاولات فاشلة",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "قبو التصدير",
   "@exportVaultButton": {
@@ -5643,10 +5589,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PINS لا تطابق",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "sellUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
   "@sellUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -6349,10 +6291,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "Change PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "السؤال الأمني (10-40 شخص)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -6401,10 +6339,6 @@
   "dcaConfirmAutoMessage": "وستوضع أوامر الشراء تلقائياً في هذه الأماكن. يمكنك تعطيلها في أي وقت.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "التحقق من مركز PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "{pinOrPassword} instead >>",
   "@usePasswordInsteadButton": {
@@ -6504,10 +6438,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "التوثيق",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "منخفض",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -6545,14 +6475,6 @@
   "backupWalletSuccessTestButton": "احتياطي الاختبار",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "وضع رمز PIN الخاص بك",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "يرجى إكمال نسخة احتياطية للمحفظة قبل تعيين رمز PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -6846,10 +6768,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "التوثيق",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "اسم الجدار",
   "@importQrDeviceWalletName": {
@@ -7213,18 +7131,6 @@
   "exchangeDcaHideSettings": "أماكن الاختباء",
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
-  },
-  "appUnlockIncorrectPinError": "PIN غير صحيح. أرجوك حاول مرة أخرى ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "(بيتكوين) أرسل!",
   "@buyBitcoinSent": {
@@ -7699,10 +7605,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "أدخل رمز الدبابيس الخاص بك لفتح",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "torSettingsTitle": "تنظيمات التعذيب",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -7911,10 +7813,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "Confirm",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -7991,10 +7889,6 @@
   "autoswapSelectWallet": "اختيار محفظة بيتكوين",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "pinCodeLoading": "Loading",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "الاسم المستقبِل",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8876,9 +8770,6 @@
   "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
-  "pinCodeSaveError": "تعذر حفظ رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
-  "pinCodeDeleteError": "تعذر حذف رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
   "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
   "@importMnemonicEmptyLabelError": {
@@ -9677,6 +9568,5 @@
   "permissionsTitle": "الأذونات",
   "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
-  "wizardNotificationsDescription": "اعرف عند وصول دفعة.",
-  "pinCodeLengthHint": "أدخل من {min} إلى {max} أرقام"
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
 }

@@ -9,8 +9,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_requir
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
-import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_startup_pin_status_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart'
     show WidgetsBinding, WidgetsBindingObserver, AppLifecycleState;
@@ -26,7 +25,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     with WidgetsBindingObserver {
   AppStartupBloc({
     required this._resetAppDataUsecase,
-    required this._checkPinCodeExistsUsecase,
+    required this._getStartupPinStatusUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
     required this._initializeRequiredTorUsecase,
     required this._restoreMissingDefaultSecretUsecase,
@@ -37,7 +36,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   }
 
   final ResetAppDataUsecase _resetAppDataUsecase;
-  final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
+  final GetStartupPinStatusUsecase _getStartupPinStatusUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
@@ -118,19 +117,14 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     bool isPinCodeSet = false;
 
     if (doDefaultWalletsExist) {
-      switch (await _checkPinCodeExistsUsecase.execute()) {
+      switch (await _getStartupPinStatusUsecase.execute()) {
         case Ok(:final value):
           isPinCodeSet = value;
-        case Err(failure: AppUnlockKeychainLockedFailure()):
+        case Err(failure: AppStartupKeychainLockedFailure()):
           _waitForKeychainUnlock();
           return;
         case Err(:final failure):
-          log.severe(
-            message: 'PIN check failed at startup',
-            error: failure,
-            trace: StackTrace.current,
-          );
-          emit(const AppStartupState.failure(AppStartupPinCheckFailure()));
+          emit(AppStartupState.failure(failure));
           return;
       }
       // Other startup logic can be added here, e.g. payjoin sessions resume

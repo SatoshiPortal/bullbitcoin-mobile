@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
-import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
-import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
-import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
+import 'package:access/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -44,18 +42,18 @@ void main() {
       store.writesFail = true;
       expect(
         await SetPinCodeUsecase(accessKeychain: access).execute('replacement'),
-        isA<Err<Null, PinCodeFailure>>().having(
+        isA<Err<Null, AccessFailure>>().having(
           (r) => r.failure,
           'save',
-          isA<PinCodeSaveFailure>(),
+          isA<AccessPinSaveFailure>(),
         ),
       );
       expect(
         await DeletePinCodeUsecase(accessKeychain: access).execute(),
-        isA<Err<Null, PinCodeFailure>>().having(
+        isA<Err<Null, AccessFailure>>().having(
           (r) => r.failure,
           'delete',
-          isA<PinCodeDeleteFailure>(),
+          isA<AccessPinDeleteFailure>(),
         ),
       );
       expect(

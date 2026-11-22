@@ -133,6 +133,9 @@ class BullKeyCap extends StatelessWidget {
   /// across the shuffle and defeating it.
   final bool suppressAnimation;
 
+  final String? semanticLabel;
+  final bool? toggled;
+
   /// An outline around the key, if any.
   final Color? borderColor;
 
@@ -148,6 +151,8 @@ class BullKeyCap extends StatelessWidget {
     required this.child,
     this.suppressAnimation = false,
     this.fill,
+    this.semanticLabel,
+    this.toggled,
     this.borderColor,
     this.pressedColor,
   });
@@ -161,7 +166,7 @@ class BullKeyCap extends StatelessWidget {
       borderRadius: BorderRadius.circular(context.bullShapes.key),
       side: side,
     );
-    return Material(
+    final key = Material(
       // Zero duration: even in basic mode an enable/disable colour tween is an
       // extra frame of state history for a camera; there is no reason to
       // animate a key cap.
@@ -185,6 +190,18 @@ class BullKeyCap extends StatelessWidget {
           ),
         ),
       ),
+    );
+    final label = semanticLabel;
+    if (label == null) return key;
+    return Semantics(
+      label: label,
+      button: true,
+      enabled: enabled,
+      toggled: toggled,
+      focusable: enabled,
+      onTap: enabled ? onTap : null,
+      excludeSemantics: true,
+      child: key,
     );
   }
 }

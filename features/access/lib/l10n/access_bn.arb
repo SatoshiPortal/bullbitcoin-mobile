@@ -1,0 +1,117 @@
+{
+  "@@locale": "bn",
+  "appUnlockButton": "আনলক",
+  "appUnlockPinCheckError": "নিরাপত্তা সেটিংস লোড করা যাচ্ছে না। অ্যাপটি পুনরায় চালু করুন।",
+  "appUnlockPinVerifyError": "আপনার PIN যাচাই করা যাচ্ছে না। আবার চেষ্টা করুন।",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeSecurityPinTitle": "নিরাপত্তা PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeCreateButton": "PIN তৈরি করুন",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeManageTitle": "আপনার নিরাপত্তা PIN পরিচালনা করুন",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeProcessing": "প্রক্রিয়াকরণ",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeCreateTitle": "নতুন PIN তৈরি করুন",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeContinue": "অব্যাহত রাখুন",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "appUnlockAttemptSingular": "ব্যর্থ প্রচেষ্টা",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "pinCodeCreateDescription": "আপনার PIN আপনার ওয়ালেট এবং সেটিংসে প্রবেশ সুরক্ষিত করে। এটি মনে রাখার মতো রাখুন।",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "নতুন PIN নিশ্চিত করুন",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeRemoveButton": "নিরাপত্তা PIN সরান",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "appUnlockAttemptPlural": "ব্যর্থ প্রচেষ্টাগুলো",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "pinCodeMismatchError": "PIN মেলে না",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "pinCodeChangeButton": "PIN পরিবর্তন করুন",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCheckingStatus": "PIN স্ট্যাটাস যাচাই করা হচ্ছে",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeAuthentication": "প্রমাণীকরণ",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeSettingUp": "আপনার PIN কোড সেট আপ করা হচ্ছে",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "PIN সেট করার আগে অনুগ্রহ করে একটি ওয়ালেট ব্যাকআপ সম্পন্ন করুন",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockScreenTitle": "প্রমাণীকরণ",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockIncorrectPinError": "ভুল পিন। অনুগ্রহ করে পুনরায় চেষ্টা করুন। ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "আনলকের করতে আপনার পিন কোড লিখুন",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "ব্যাকআপ শুরু",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeConfirm": "নিশ্চিত করুন",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "লোড হচ্ছে",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeSaveError": "আপনার পিন সেভ করা যায়নি। আবার চেষ্টা করুন।",
+  "pinCodeDeleteError": "আপনার পিন মুছে ফেলা যায়নি। আবার চেষ্টা করুন।",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "{min} থেকে {max}টি সংখ্যা লিখুন"
+}

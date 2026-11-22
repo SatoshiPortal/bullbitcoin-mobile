@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:network/network.dart' show NetworkFeature;
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:electrum/electrum.dart' show ElectrumFailure;
 import 'package:electrum/setup.dart' show RegtestElectrumProfile;
@@ -25,7 +26,9 @@ import 'package:bb_mobile/features/transactions/public/transactions_facade.dart'
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
-import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
+import 'package:access/setup.dart' show AccessFeature;
+import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
@@ -49,7 +52,6 @@ import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
-import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -210,10 +212,18 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    PinCodeLocator.setup(locator);
+    locator.registerSingleton<AccessFeature>(
+      AccessFeature.mount(
+        services: locator,
+        hasVerifiedBackup: () =>
+            locator<CheckBackupUsecase>().hasVerifiedBackup(),
+        onUnlocked: (context) => context.goNamed(WalletRoute.walletHome.name),
+        onBackUp: (context) =>
+            context.pushNamed<void>(SettingsRoute.backupSettings.name),
+      ),
+    );
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
-    AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
     Bip85EntropyLocator.setup(

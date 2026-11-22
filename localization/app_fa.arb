@@ -926,12 +926,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "قفل باز",
-  "appUnlockPinCheckError": "بارگذاری تنظیمات امنیتی ناموفق بود. لطفاً برنامه را مجدداً راه‌اندازی کنید.",
-  "appUnlockPinVerifyError": "تأیید PIN شما ناموفق بود. لطفاً دوباره امتحان کنید.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "هزینه خدمات",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -1191,10 +1185,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "PIN امنیتی",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "پرداخت در پیشرفت",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -1278,10 +1268,6 @@
   "payPaymentInProgress": "پرداخت در پیشرفت!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "pinCodeCreateButton": "ایجاد PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "Testnet Mode",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1968,10 +1954,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "مدیریت PIN امنیتی",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "Bitcoin Price",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -2387,10 +2369,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "پردازش",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "بودجه مجدد",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -2498,10 +2476,6 @@
   "receiveSwapId": "تغییر شناسه ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "ایجاد پین جدید",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "آدرس های کیف پول پیش فرض را برای خروج خودکار بیت کوین تنظیم کنید.",
   "@exchangeBitcoinWalletsDescription": {
@@ -2813,10 +2787,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "ادامه",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "پرداخت صورتحساب",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -3037,17 +3007,9 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "تلاش شکست خورده",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "buyShouldBuyAtLeast": "حداقل باید خرید کنید",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "PIN شما از دسترسی به کیف پول و تنظیمات شما محافظت می کند. آن را به یاد ماندنی نگه دارید.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "شرکت های شرکتی",
   "@payCorporate": {
@@ -3659,10 +3621,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "تایید جدید پین",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4260,10 +4218,6 @@
       }
     }
   },
-  "pinCodeRemoveButton": "حذف PIN امنیتی",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "payAddMemo": "Add memo (اختیاری)",
   "@payAddMemo": {
     "description": "Placeholder for memo input field"
@@ -4373,10 +4327,6 @@
   "coldcardStep14": "این معامله در کیف پول Bitcoin بول وارد خواهد شد.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "کد PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "تجارت شمارش",
   "@exchangeStatisticsTradeCount": {
@@ -4957,10 +4907,6 @@
   "payInvalidAddress": "آدرس Invalid",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "تلاش های شکست خورده",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "صادرات Vault",
   "@exportVaultButton": {
@@ -5738,10 +5684,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PIN ها مطابقت ندارند",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "sellUnauthenticatedError": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
   "@sellUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -6372,10 +6314,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "تغییر PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "پرسش امنیتی (10-40 کاراکتر)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -6424,10 +6362,6 @@
   "dcaConfirmAutoMessage": "سفارش خرید به طور خودکار در هر این تنظیمات قرار می گیرد. شما می توانید آنها را در هر زمان غیرفعال کنید.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "بررسی وضعیت PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "استفاده از {pinOrPassword} به جای >>",
   "@usePasswordInsteadButton": {
@@ -6527,10 +6461,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "تایید اعتبار",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "پایین",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -6564,14 +6494,6 @@
   "backupWalletSuccessTestButton": "تست پشتیبان",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "تنظیم کد PIN خود",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "لطفاً قبل از تنظیم PIN، یک پشتیبان‌گیری از کیف پول انجام دهید",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "شما نیاز به افزایش نرخ هزینه با حداقل 1 نشست/vbyte در مقایسه با معامله اصلی",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -6849,10 +6771,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "تایید اعتبار",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "نام کیف پول",
   "@importQrDeviceWalletName": {
@@ -7186,18 +7104,6 @@
   "importColdcardImporting": "واردات کیف پول کارت سرد ...",
   "@importColdcardImporting": {
     "description": "Status while importing"
-  },
-  "appUnlockIncorrectPinError": "PIN اشتباه است. لطفاً دوباره تلاش کنید. ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "Bitcoin فرستاده!",
   "@buyBitcoinSent": {
@@ -7652,10 +7558,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "کد پین خود را وارد کنید تا باز شود",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "backupSettingsRevealing": "بازسازی ...",
   "@backupSettingsRevealing": {
     "description": "Button text while revealing vault key"
@@ -7856,10 +7758,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "تایید",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "تست نقدینگی",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -7928,10 +7826,6 @@
   "autoswapSelectWallet": "کیف پول Bitcoin را انتخاب کنید",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "pinCodeLoading": "بارگیری",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "نام اضطراری",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8872,9 +8766,6 @@
   "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
   "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
-  "pinCodeSaveError": "ذخیره پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
-  "pinCodeDeleteError": "حذف پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "نرخ ارز در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
   "importMnemonicEmptyLabelError": "برای وارد کردن عبارت بازیابی، برچسب الزامی است",
   "@importMnemonicEmptyLabelError": {
@@ -9674,6 +9565,5 @@
   "permissionsTitle": "مجوزها",
   "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
   "wizardBackgroundTasksDescription": "بررسی پرداخت‌ها وقتی برنامه بسته است.",
-  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید.",
-  "pinCodeLengthHint": "{min} تا {max} رقم وارد کنید"
+  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید."
 }

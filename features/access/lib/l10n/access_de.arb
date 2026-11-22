@@ -1,0 +1,48 @@
+{
+  "@@locale": "de",
+  "appUnlockButton": "Entsperren",
+  "appUnlockPinCheckError": "Sicherheitseinstellungen konnten nicht geladen werden. Bitte starten Sie die App neu.",
+  "appUnlockPinVerifyError": "Ihre PIN konnte nicht verifiziert werden. Bitte versuchen Sie es erneut.",
+  "pinCodeSecurityPinTitle": "Sicherheits-PIN",
+  "pinCodeCreateButton": "PIN erstellen",
+  "pinCodeManageTitle": "Sicherheits-PIN verwalten",
+  "pinCodeProcessing": "Wird verarbeitet",
+  "pinCodeCreateTitle": "Neue PIN erstellen",
+  "pinCodeContinue": "Fortfahren",
+  "appUnlockAttemptSingular": "fehlgeschlagen",
+  "pinCodeCreateDescription": "Ihre PIN schützt Ihre Wallet und Einstellungen vor Zugriff. Sie sollten sie sich leicht merken können.",
+  "pinCodeConfirmTitle": "Neue PIN bestätigen",
+  "pinCodeRemoveButton": "Sicherheits-PIN entfernen",
+  "appUnlockAttemptPlural": "fehlgeschlagene Versuche",
+  "pinCodeMismatchError": "PINs stimmen nicht überein.",
+  "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",
+  "pinCodeChangeButton": "PIN ändern",
+  "pinCodeCheckingStatus": "PIN-Status überprüfen",
+  "pinCodeSettingUp": "PIN-Code wird eingerichtet.",
+  "pinCodeBackupRequiredWarning": "Bitte schließen Sie eine Wallet-Sicherung ab, bevor Sie eine PIN festlegen.",
+  "appUnlockIncorrectPinError": "Falsche PIN. Bitte versuchen Sie es erneut. ({failedAttempts} {attemptsWord}).",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Geben Sie Ihren PIN-Code ein, um zu entsperren.",
+  "backupSettingsStartBackup": "Backup starten",
+  "pinCodeConfirm": "Bestätigen",
+  "pinCodeLoading": "Wird geladen",
+  "pinCodeAuthentication": "Authentifizierung",
+  "appUnlockScreenTitle": "Authentifizierung",
+  "pinCodeSaveError": "PIN konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+  "pinCodeDeleteError": "PIN konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "pinCodeNotSetError": "Es wurde kein PIN-Code festgelegt.",
+  "appUnlockTryAgainIn": "Zu viele fehlgeschlagene Versuchen Sie. Versuchen Sie es in {seconds} s erneut.",
+  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen",
+  "pinCodeLengthHint": "Gib {min} bis {max} Ziffern ein",
+  "pinCodeShowPin": "PIN anzeigen",
+  "pinCodeHidePin": "PIN verbergen"
+}

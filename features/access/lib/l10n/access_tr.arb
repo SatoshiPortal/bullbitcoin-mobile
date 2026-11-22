@@ -1,0 +1,117 @@
+{
+  "@@locale": "tr",
+  "appUnlockButton": "Unlock",
+  "appUnlockPinCheckError": "Güvenlik ayarları yüklenemedi. Lütfen uygulamayı yeniden başlatın.",
+  "appUnlockPinVerifyError": "PIN'iniz doğrulanamadı. Lütfen tekrar deneyin.",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeSecurityPinTitle": "Güvenlik PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeCreateButton": "PIN oluşturun",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeManageTitle": "Güvenlik PINinizi Yönetin",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeProcessing": "İşleme",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeCreateTitle": "Yeni pin oluşturun",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeContinue": "Devam etmeye devam et",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "appUnlockAttemptSingular": "başarısız deneme başarısız deneme",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "pinCodeCreateDescription": "PIN'iniz cüzdanınız ve ayarlarınıza erişimi korur. Onu unutulmaz tut.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "Yeni pin onaylayın",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeRemoveButton": "Güvenlik PIN",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "appUnlockAttemptPlural": "başarısız girişimler başarısız oldu",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "pinCodeMismatchError": "PIN'ler eşleşmez",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "pinCodeChangeButton": "PIN Change PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCheckingStatus": "PIN statüsünü kontrol edin",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeAuthentication": "Kimlik Doğrulama",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeSettingUp": "PIN kodunuzu yapılandırın",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "PIN ayarlamadan önce lütfen bir cüzdan yedeklemesi tamamlayın",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockScreenTitle": "Kimlik Doğrulama",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockIncorrectPinError": "Incorrect PIN. Lütfen tekrar deneyin. {failedAttempts} {attemptsWord}",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Kilit kodunuzu kilidini açmak için girin",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeConfirm": "Onay Onay Onay Onaylandı",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Yükleniyor",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeSaveError": "PIN kodunuz kaydedilemedi. Lütfen tekrar deneyin.",
+  "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "{min} ile {max} arasında rakam girin"
+}

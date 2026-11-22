@@ -419,12 +419,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "다운로드",
-  "appUnlockPinCheckError": "보안 설정을 불러올 수 없습니다. 앱을 다시 시작해 주세요.",
-  "appUnlockPinVerifyError": "PIN을 확인할 수 없습니다. 다시 시도해 주세요.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "서비스 요금",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -722,10 +716,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "보안 PIN",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "결제 진행",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -845,10 +835,6 @@
   "fundExchangeETransferLabelEmail": "이 이메일에 E-transfer 보내기",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "pinCodeCreateButton": "PIN 만들기",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "Testnet 형태",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1634,10 +1620,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "보안 PIN 관리",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "Bitcoin 가격",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -2121,10 +2103,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "제품정보",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "결제하기",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -2252,10 +2230,6 @@
   "receiveSwapId": "스왑 ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "새 핀 만들기",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "자동 Bitcoin 인출을위한 기본 지갑 주소를 설정합니다.",
   "@exchangeBitcoinWalletsDescription": {
@@ -2635,10 +2609,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "계속하기",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "지불 청구서",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2927,10 +2897,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "실패 시도",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "PIN을 입력하세요",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
@@ -2938,10 +2904,6 @@
   "buyShouldBuyAtLeast": "당신은 적어도 사야한다",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "PIN은 지갑과 설정에 대한 액세스를 보호합니다. 기억해 주세요.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "회사연혁",
   "@payCorporate": {
@@ -3653,10 +3615,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "새로운 핀을 확인",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "키 서버 ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4346,10 +4304,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "pinCodeRemoveButton": "보안 PIN 제거",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "내 계정",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -4475,10 +4429,6 @@
   "coldcardStep14": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "PIN 부호",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "회사연혁",
   "@exchangeStatisticsTradeCount": {
@@ -5175,10 +5125,6 @@
   "payInvalidAddress": "잘못된 주소",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "실패한 시도",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "수출 볼트",
   "@exportVaultButton": {
@@ -6108,10 +6054,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PIN는 일치하지 않습니다",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "autoswapRecipientWalletPlaceholderRequired": "Bitcoin 지갑 선택 *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
@@ -6894,10 +6836,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "변화 PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "보안 질문을 입력 (10-40 문자)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -6950,10 +6888,6 @@
   "dcaConfirmAutoMessage": "주문은 이 설정에 따라 자동으로 배치됩니다. 언제든지 비활성화 할 수 있습니다.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "PIN 상태 확인",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "{pinOrPassword} 대신 >>",
   "@usePasswordInsteadButton": {
@@ -7057,10 +6991,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "회사연혁",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "이름 *",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -7116,14 +7046,6 @@
   "backupWalletSuccessTestButton": "시험 백업",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "PIN 코드를 설정",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "PIN을 설정하기 전에 지갑 백업을 완료해 주세요",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -7437,10 +7359,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "회사연혁",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "지갑 이름",
   "@importQrDeviceWalletName": {
@@ -7832,18 +7750,6 @@
   "exchangeDcaHideSettings": "설정 숨기기",
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
-  },
-  "appUnlockIncorrectPinError": "잘못된 PIN. 다시 시도하십시오. ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "비트코인 전송!",
   "@buyBitcoinSent": {
@@ -8347,10 +8253,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "잠금을 해제하는 핀 코드를 입력",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "torSettingsTitle": "Tor 설정",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -8579,10 +8481,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "제품정보",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "액체 Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -8675,10 +8573,6 @@
   "autoswapRecipientWalletRequired": "* 이름",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
-  },
-  "pinCodeLoading": "제품정보",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "이름 *",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8872,9 +8766,6 @@
   "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
-  "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
-  "pinCodeDeleteError": "PIN을 삭제할 수 없습니다. 다시 시도해 주세요.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "환율을 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
   "importMnemonicEmptyLabelError": "니모닉을 가져오려면 레이블이 필요합니다",
   "@importMnemonicEmptyLabelError": {
@@ -9674,6 +9565,5 @@
   "permissionsTitle": "권한",
   "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
   "wizardBackgroundTasksDescription": "앱이 닫혀 있어도 결제를 확인합니다.",
-  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다.",
-  "pinCodeLengthHint": "{min}~{max}자리 숫자를 입력하세요"
+  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다."
 }
