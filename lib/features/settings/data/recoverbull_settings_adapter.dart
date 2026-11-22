@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 
 import '../domain/regtest_recoverbull_profile.dart';
-import '../domain/settings_entity.dart';
 
 /// Settings owns environment selection, proxy preference and the legacy row.
 final class RecoverBullSettingsAdapter
@@ -16,8 +14,8 @@ final class RecoverBullSettingsAdapter
         RecoverBullRoutePort,
         RecoverBullEnvironmentPort,
         RecoverBullLegacySettingsPort {
-  final SettingsRepository _settings;
-  final SqliteDatabase _database;
+  final Preferences _settings;
+  final RecoverBullPreferences _preferences;
   final EmbeddedTor _embedded;
   final Tor _tor;
   final RegtestRecoverBullProfile? regtestProfile;
@@ -27,7 +25,7 @@ final class RecoverBullSettingsAdapter
 
   RecoverBullSettingsAdapter(
     this._settings,
-    this._database,
+    this._preferences,
     this._embedded,
     this._tor, {
     this.regtestProfile,
@@ -44,7 +42,10 @@ final class RecoverBullSettingsAdapter
   Future<bool> _runtimeIsCurrent() async {
     if (_closed) return false;
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return !_closed && _matchesRuntime(settings);
     } on Exception {
       return false;
@@ -54,7 +55,10 @@ final class RecoverBullSettingsAdapter
   @override
   Future<Result<BitcoinNetwork, RecoverBullFailure>> currentNetwork() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }
@@ -68,7 +72,10 @@ final class RecoverBullSettingsAdapter
   @override
   Future<Result<LegacyBackupSettings, RecoverBullFailure>> read() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }
@@ -81,14 +88,21 @@ final class RecoverBullSettingsAdapter
           ),
         );
       }
-      final row = await _database.managers.recoverbull
-          .filter((f) => f.id(1))
-          .getSingleOrNull();
-      if (row == null) return const Err(VaultStorageFailure());
+      final stored = await _preferences.read();
+      final RecoverBullServerPreference? preference;
+      switch (stored) {
+        case Ok(:final value):
+          preference = value;
+        case Err(failure: PreferencesInvalidFailure()):
+          return const Err(VaultInvalidFailure());
+        case Err():
+          return const Err(VaultStorageFailure());
+      }
+      if (preference == null) return const Err(VaultStorageFailure());
       return Ok(
         LegacyBackupSettings(
-          server: Uri.parse(row.url),
-          permissionGranted: row.isPermissionGranted,
+          server: preference.server,
+          permissionGranted: preference.permissionGranted,
         ),
       );
     } on FormatException {
@@ -139,7 +153,10 @@ final class RecoverBullSettingsAdapter
       if (_closed) {
         return const Err(VaultCancelledFailure());
       }
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_matchesRuntime(settings)) {
         return const Err(VaultContextChangedFailure());
       }

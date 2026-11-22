@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -14,11 +13,14 @@ import 'package:meta/meta.dart';
 /// error.
 @useResult
 Future<Result<Environment, ExchangeFailure>> readExchangeEnvironment(
-  SettingsRepository settingsRepository,
+  Preferences settingsRepository,
   ExchangeFailure Function([String? logMessage]) onFailure,
 ) async {
   try {
-    final environment = (await settingsRepository.fetch()).environment;
+    final environment = ((await settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    )).environment;
     if (!exchangeNetworkAvailable(environment)) {
       log.info('Exchange capability unavailable network=${environment.name}');
       return const Err(ExchangeUnsupportedNetworkFailure());

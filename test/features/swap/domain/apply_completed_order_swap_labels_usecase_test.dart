@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
@@ -22,13 +22,13 @@ class _MockMarkApplied extends Mock
 class _MockWalletTransactions extends Mock
     implements WalletTransactionRepository {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 void main() {
   late _MockGetOrders getOrders;
   late _MockMarkApplied markApplied;
   late _MockWalletTransactions walletTransactions;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late ApplyCompletedOrderSwapLabelsUsecase usecase;
   final now = DateTime.utc(2026, 8, 5, 12);
 
@@ -42,7 +42,7 @@ void main() {
     getOrders = _MockGetOrders();
     markApplied = _MockMarkApplied();
     walletTransactions = _MockWalletTransactions();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     usecase = ApplyCompletedOrderSwapLabelsUsecase(
       getOrders,
       markApplied,

@@ -1,12 +1,10 @@
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
-import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
-import 'package:bb_mobile/features/labels/locator.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 
 import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
+import 'package:bb_mobile/features/settings/data/electrum/electrum_core_locator.dart';
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
@@ -18,6 +16,7 @@ import 'package:drift/native.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:labels/setup.dart';
 import 'package:secrets/secrets.dart';
 
 class _NativeTor implements TorNativeInitializer {
@@ -52,7 +51,6 @@ void main() {
       services.registerLazySingleton<Secrets>(
         () => Secrets(scratchDirectory: () async => directory.path),
       );
-      await SettingsLocator.registerDatasources(services);
       await SettingsLocator.registerRepositories(services);
       // Replace native initialization through the published host seam; keep
       // the real backend, repository and owner registrations.
@@ -62,13 +60,17 @@ void main() {
       expect(nativeTor.calls, 1);
       TorLocator.registerRepositories(services);
       TorLocator.registerUsecases(services);
-      await ElectrumLocator.registerDatasources(services);
-      ElectrumLocator.registerRepositories(services);
-      ElectrumLocator.registerPorts(services);
+      setupElectrum(services);
       await WalletLocator.registerDatasources(services);
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);
-      LabelsLocator.registerPorts(services);
+      final walletSync = WalletLocator.syncAccess(services);
+      setupLabels(
+        services,
+        database: database,
+        sync: walletSync.foreground,
+        openWallet: walletSync.openWallet,
+      );
       // Wallet's native runtime requires the Payjoin owner's reservation port.
       PayjoinSetup.setup(
         services,
@@ -76,7 +78,6 @@ void main() {
         '${directory.path}/payjoin.sqlite',
         startRecovery: false,
       );
-      ElectrumSettingsLocator.setup(services);
       wallet.WalletLocator.setup(services);
 
       expect(services.isRegistered<EmbeddedTor>(), isFalse);

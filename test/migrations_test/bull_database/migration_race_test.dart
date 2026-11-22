@@ -100,7 +100,7 @@ void main() {
               expect(preference.startAmountsInFiat, isTrue);
             }
 
-            final labels = await relaunch.select(relaunch.labels).get();
+            final labels = await relaunch.select(relaunch.labelsTable).get();
             expect(labels, hasLength(_labelCount));
             await relaunch.close();
           }

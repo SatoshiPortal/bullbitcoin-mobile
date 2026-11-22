@@ -20,6 +20,8 @@ dependencies:
   flutter:
     sdk: flutter
   primitives:
+  file_system:
+  google_drive:
   secrets:
   bull_logger:
   bull_tor:
@@ -28,12 +30,7 @@ dependencies:
   screen_privacy:
   flutter_bloc: ^9.1.1
   go_router: ^18.1.4
-  file_picker: ^13.3.3
   gif: ^2.3.0
-  googleapis: ^19.0.0
-  google_sign_in: ^6.3.0
-  google_sign_in_platform_interface: ^2.5.0
-  googleapis_auth: ^2.3.7
   http: ^1.2.2
   flutter_localizations:
     sdk: flutter
@@ -49,6 +46,7 @@ dependencies:
       ref: 293b0d709f6c7775180f775c6a5fe99a39f175ce
 
 dev_dependencies:
+  file_picker: ^13.3.3
   build_runner: ^2.10.4
   drift_dev: ^2.35.3
   sqlite3: ^3.5.2

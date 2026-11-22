@@ -1,12 +1,15 @@
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:sync/sync.dart'
+    show
+        WalletConnectionPort,
+        SyncUnrecognizedReplyFailure,
+        bitcoinTransactionKnown;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -15,8 +18,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
 
   final WalletRepository _wallets;
   final WalletTransactionRepository _transactions;
-  final BdkBitcoinBlockchainDatasource _blockchain;
-  final ElectrumServersPort _servers;
+  final WalletConnectionPort _connections;
   final WalletFacade? _spendWallet;
   // Pacing between two wallet syncs of [_reconcileWallet]; tests shorten it.
   final Duration reconcileDelay;
@@ -24,8 +26,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   const AppPayjoinTransactionAdapter(
     this._wallets,
     this._transactions,
-    this._blockchain,
-    this._servers, {
+    this._connections, {
     this._spendWallet,
     this.reconcileDelay = const Duration(seconds: 5),
   });
@@ -67,43 +68,41 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
       (failure) =>
           throw Exception('Payjoin wallet unavailable: ${failure.runtimeType}'),
     );
-    final bool isKnownRemotely;
-    try {
-      isKnownRemotely = await _servers.runWithFallback<bool>(
-        network: ElectrumServerNetwork.fromNetworkEnv(
-          wallet.network.environment,
-          isLiquid: false,
-        ),
-        operation: (connection) => _blockchain.isTransactionKnown(
-          transactionId,
-          connection: connection,
-        ),
-        // Another server would word its reply the same way; surface it.
-        isTransient: (e) =>
-            e is Exception && e is! UnrecognizedElectrumReplyException,
-      );
-    } on UnrecognizedElectrumReplyException {
-      // A server we cannot classify (Electrum Personal Server, bitcoind
-      // without txindex): take the slow road of a script-based wallet sync
-      // and read the wallet copy, instead of failing every lookup. A sync
-      // can join a pass that started before the broadcast, so an absence is
-      // only trusted after a second pass.
-      for (var pass = 1; pass <= 2; pass++) {
-        final transaction = await _transactions.getWalletTransaction(
-          transactionId,
-          walletId: walletId,
-          sync: true,
+    final result = await _connections.run(
+      network: Network.fromEnvironment(
+        environment: wallet.network.environment,
+        isLiquid: false,
+      ).bitcoin,
+      operation: (connection) =>
+          bitcoinTransactionKnown(transactionId, connection),
+      mayRetry: (failure) => failure is! SyncUnrecognizedReplyFailure,
+    );
+    switch (result) {
+      case Ok(:final value):
+        if (value) {
+          unawaited(_reconcileWallet(walletId, transactionId));
+        }
+        return value;
+      case Err(failure: SyncUnrecognizedReplyFailure()):
+        // A server we cannot classify (Electrum Personal Server, bitcoind
+        // without txindex): take the slow road of a script-based wallet sync
+        // and read the wallet copy, instead of failing every lookup. A sync
+        // can join a pass that started before the broadcast, so an absence is
+        // only trusted after a second pass.
+        for (var pass = 1; pass <= 2; pass++) {
+          final transaction = await _transactions.getWalletTransaction(
+            transactionId,
+            walletId: walletId,
+            sync: true,
+          );
+          if (transaction != null) return true;
+        }
+        return false;
+      case Err(:final failure):
+        throw Exception(
+          'Payjoin transaction lookup failed: ${failure.logCode}',
         );
-        if (transaction != null) return true;
-      }
-      return false;
     }
-    if (isKnownRemotely) {
-      // Let the wallet catch up so balances and history show the transaction
-      // the payjoin session is about to report.
-      unawaited(_reconcileWallet(walletId, transactionId));
-    }
-    return isKnownRemotely;
   }
 
   /// Syncs until the wallet holds [transactionId], a few times at most: one

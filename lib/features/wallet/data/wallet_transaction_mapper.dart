@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.d
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 
 class WalletTransactionMapper {
   static WalletTransactionModel fromEntity(

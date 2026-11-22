@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullText, BullKeyboardActions, BullInputText, Gap, BullTypographyX;
 
 /// The thresholds fit in a few digits, so their fields stay narrow.
 const _fieldWidth = 140.0;
@@ -156,7 +155,8 @@ class _PayjoinAdvancedSettingsScreenState
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsPayjoinAdvancedTitle)),
       body: SafeArea(
-        child: BBKeyboardActions(
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Padding(
@@ -194,7 +194,7 @@ class _PayjoinAdvancedSettingsScreenState
                     ),
                   ),
                   const Gap(24),
-                  BBText(
+                  BullText(
                     context.loc.settingsPayjoinServersTitle,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
@@ -204,7 +204,7 @@ class _PayjoinAdvancedSettingsScreenState
                   // Every server is both a directory and a relay; a request
                   // never uses the same domain for both.
                   for (final server in PayjoinConstants.serverUrls)
-                    BBText(server.toString(), style: context.bullType.body),
+                    BullText(server.toString(), style: context.bullType.body),
                 ],
               ),
             ),
@@ -243,14 +243,14 @@ class _ThresholdField extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(
+                  BullText(
                     title,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const Gap(4),
-                  BBText(
+                  BullText(
                     description,
                     style: context.bullType.caption.copyWith(
                       color: context.appColors.onSurfaceVariant,
@@ -266,7 +266,7 @@ class _ThresholdField extends StatelessWidget {
         ),
         if (error != null) ...[
           const Gap(4),
-          BBText(
+          BullText(
             error,
             style: context.bullType.label
                 .copyWith(fontWeight: FontWeight.w400)

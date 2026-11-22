@@ -3,7 +3,7 @@ import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'dart:io' show exit;
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullDialog, BullPickerChip, BullPickerItem;

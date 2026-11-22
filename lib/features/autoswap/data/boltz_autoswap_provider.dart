@@ -1,16 +1,16 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
@@ -22,11 +22,11 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final RecordPendingSwapLockupUsecase _recordPendingLockup;
   final DropPendingSwapLockupUsecase _dropPendingLockup;
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final GetReceiveAddressUsecase _getReceiveAddress;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const BoltzAutoswapProvider(
     this._getSwapLimitsAndFees,
@@ -45,7 +45,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   @override
   Future<Result<String, AutoswapFailure>> execute(AutoSwap settings) async {
     try {
-      final environment = (await _settingsRepository.fetch()).environment;
+      final environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(environment: environment)) {
         case Ok(:final value):
@@ -141,7 +144,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         walletId: liquidWallet.id,
         address: swap.paymentAddress,
         amountSat: swap.paymentAmount,
-        feeRate: const RelativeFee(25),
+        feeRate: NetworkFeeRelayPolicy.minRelay,
       );
       final String pset;
       switch (preparation) {
@@ -240,7 +243,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       walletId: walletId,
       address: address,
       amountSat: amountSat,
-      feeRate: const RelativeFee(25),
+      feeRate: NetworkFeeRelayPolicy.minRelay,
     );
     final String pset;
     switch (preparation) {

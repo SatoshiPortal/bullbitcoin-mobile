@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DeviceConfig {
-  final SignerDeviceEntity device;
+  final SignerDevice device;
   final String Function(BuildContext) getName;
   final String Function(BuildContext) getInstructionsTitle;
   final List<String> Function(BuildContext) getInstructions;
@@ -15,9 +15,9 @@ class DeviceConfig {
     required this.getInstructions,
   });
 
-  static final Map<SignerDeviceEntity, DeviceConfig> configs = {
-    SignerDeviceEntity.jade: DeviceConfig(
-      device: SignerDeviceEntity.jade,
+  static final Map<SignerDevice, DeviceConfig> configs = {
+    SignerDevice.jade: DeviceConfig(
+      device: SignerDevice.jade,
       getName: (context) => context.loc.importQrDeviceJadeName,
       getInstructionsTitle: (context) =>
           context.loc.importQrDeviceJadeInstructionsTitle,
@@ -34,8 +34,8 @@ class DeviceConfig {
         context.loc.importQrDeviceJadeStep10,
       ],
     ),
-    SignerDeviceEntity.krux: DeviceConfig(
-      device: SignerDeviceEntity.krux,
+    SignerDevice.krux: DeviceConfig(
+      device: SignerDevice.krux,
       getName: (context) => context.loc.importQrDeviceKruxName,
       getInstructionsTitle: (context) =>
           context.loc.importQrDeviceKruxInstructionsTitle,
@@ -48,8 +48,8 @@ class DeviceConfig {
         context.loc.importQrDeviceKruxStep6,
       ],
     ),
-    SignerDeviceEntity.keystone: DeviceConfig(
-      device: SignerDeviceEntity.keystone,
+    SignerDevice.keystone: DeviceConfig(
+      device: SignerDevice.keystone,
       getName: (context) => context.loc.importQrDeviceKeystoneName,
       getInstructionsTitle: (context) =>
           context.loc.importQrDeviceKeystoneInstructionsTitle,
@@ -66,8 +66,8 @@ class DeviceConfig {
         context.loc.importQrDeviceKeystoneStep10,
       ],
     ),
-    SignerDeviceEntity.passport: DeviceConfig(
-      device: SignerDeviceEntity.passport,
+    SignerDevice.passport: DeviceConfig(
+      device: SignerDevice.passport,
       getName: (context) => context.loc.importQrDevicePassportName,
       getInstructionsTitle: (context) =>
           context.loc.importQrDevicePassportInstructionsTitle,
@@ -83,8 +83,8 @@ class DeviceConfig {
         context.loc.importQrDevicePassportStep9,
       ],
     ),
-    SignerDeviceEntity.seedsigner: DeviceConfig(
-      device: SignerDeviceEntity.seedsigner,
+    SignerDevice.seedsigner: DeviceConfig(
+      device: SignerDevice.seedsigner,
       getName: (context) => context.loc.importQrDeviceSeedsignerName,
       getInstructionsTitle: (context) =>
           context.loc.importQrDeviceSeedsignerInstructionsTitle,
@@ -101,8 +101,8 @@ class DeviceConfig {
         context.loc.importQrDeviceSeedsignerStep10,
       ],
     ),
-    SignerDeviceEntity.specter: DeviceConfig(
-      device: SignerDeviceEntity.specter,
+    SignerDevice.specter: DeviceConfig(
+      device: SignerDevice.specter,
       getName: (context) => context.loc.importQrDeviceSpecterName,
       getInstructionsTitle: (context) =>
           context.loc.importQrDeviceSpecterInstructionsTitle,

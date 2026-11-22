@@ -1,24 +1,30 @@
+import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
+import 'package:network/setup.dart' show NetworkLocalizations;
 import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+import 'package:mempool/mempool.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_announcements_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -104,16 +110,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Widget build(BuildContext context) {
     Device.init(context);
 
-    return MultiBlocProvider(
+    final app = MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
         BlocProvider(
           create: (_) =>
               locator<AppStartupBloc>()..add(const AppStartupStarted()),
-        ),
-        BlocProvider(
-          create: (_) =>
-              locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
@@ -183,8 +185,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           : AppThemeType.light;
                   }
 
-                  return RepositoryProvider<MempoolUrlBuilder>.value(
-                    value: locator<MempoolUrlBuilder>(),
+                  return RepositoryProvider<MempoolLinks>.value(
+                    value: locator<Mempool>().links,
                     child: MaterialApp.router(
                       title: 'BullBitcoin Wallet',
                       debugShowCheckedModeBanner: kDebugMode,
@@ -192,8 +194,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       theme: AppTheme.themeData(appThemeType),
                       locale: language?.locale,
                       localizationsDelegates: [
+                        NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
+                        NovlangAnnouncementsLocalizationsDelegate(
+                          novlangPolicy,
+                        ),
+                        NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
                         ...novlangLocalizationsDelegates(novlangPolicy),
                         LogsLocalizations.delegate,
+                        NetworkLocalizations.delegate,
                         BtcMapFeature.localizationsDelegate,
                         NovlangQuickActionsLocalizationsDelegate(
                           novlangPolicy,
@@ -242,5 +250,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
       ),
     );
+    return locator<BitcoinPriceFeature>().providePrices(child: app);
   }
 }

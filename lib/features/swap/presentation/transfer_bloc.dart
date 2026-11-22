@@ -14,7 +14,9 @@ import 'package:primitives/primitives.dart'
     show
         BitcoinTransactionRecipient,
         BitcoinUnit,
+        ConvertAmount,
         Err,
+        FormatAmount,
         NetworkEnv,
         Ok,
         Result,
@@ -30,15 +32,12 @@ import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -47,7 +46,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -86,12 +85,12 @@ part 'transfer_state.dart';
 part 'transfer_bloc.freezed.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   TransferBloc({
     required this._getSettingsUsecase,
     this._getSwapAmountQuotesUsecase,
     required this._getWalletsUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._feeEstimates,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
     required this._prepareLiquidSendUsecase,
@@ -169,9 +168,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetSwapAmountQuotesUsecase? _getSwapAmountQuotesUsecase;
   Timer? _amountQuoteTimer;
   int? _preparingAmountGeneration;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final AppFeeEstimates _feeEstimates;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
@@ -238,7 +237,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   ) async {
     emit(state.copyWith(isStarting: true));
     try {
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (_getSwapAmountQuotesUsecase != null) {
         add(const TransferAmountQuotesRequested());
         _amountQuoteTimer ??= Timer.periodic(const Duration(minutes: 1), (_) {
@@ -252,8 +254,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         exchangeRateResult,
       ) = await (
         _getWalletsUsecase.execute(),
-        _getNetworkFeesUsecase.execute(isLiquid: true),
-        _getNetworkFeesUsecase.execute(isLiquid: false),
+        _feeEstimates.execute(isLiquid: true),
+        _feeEstimates.execute(isLiquid: false),
         _getSwapExchangeRateUsecase.execute(
           currencyCode: settings.currencyCode,
         ),
@@ -2853,7 +2855,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         .listen((result) => add(TransferEvent.orderSwapUpdated(result)));
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
   // Mirrors SendCubit's adoption. The shared modal sees an identical
   // [FeeModalSnapshot] / action surface regardless of whether it's
   // mounted by send or swap; differences in state-field naming and

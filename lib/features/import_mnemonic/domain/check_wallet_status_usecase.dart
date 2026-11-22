@@ -1,16 +1,16 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
@@ -24,7 +24,7 @@ class CheckWalletStatusUsecase {
     this._bitcoinWalletRepository,
     this._secrets,
   );
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ElectrumServersPort _serversPort;
   final BitcoinWalletRepository _bitcoinWalletRepository;
   final Secrets _secrets;
@@ -41,7 +41,10 @@ class CheckWalletStatusUsecase {
     final Network network;
     final Map<primitives.ScriptType, Descriptors> descriptors;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       network = Network.fromEnvironment(
         environment: settings.environment.networkEnv,
         isLiquid: false,

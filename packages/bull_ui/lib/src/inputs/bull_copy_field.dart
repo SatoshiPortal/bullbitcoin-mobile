@@ -1,4 +1,5 @@
 import '../buttons/bull_field_action.dart';
+import '../data_display/bull_value_viewer.dart';
 
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -9,8 +10,7 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-/// A read-only value with a copy button — the kit's take on
-/// `core/widgets/inputs/copy_input.dart`, without its value modal.
+/// A read-only value with an optional clipboard value override.
 ///
 /// [copiedMessage] (shown in a [BullSnackBar] after a copy) comes translated
 /// from the caller. The copy button is named by [copyLabel], or Material's
@@ -28,7 +28,23 @@ class BullCopyField extends StatelessWidget {
     this.overflow,
     this.label,
     this.backgroundColor,
-  });
+  }) : viewLabel = null,
+       viewTitle = null;
+
+  /// Shows a shortened value with named actions to view and copy it in full.
+  const BullCopyField.withView({
+    super.key,
+    required this.text,
+    required this.copiedMessage,
+    required String this.viewLabel,
+    required String this.viewTitle,
+    this.copyLabel,
+    this.clipboardText,
+    this.label,
+    this.backgroundColor,
+  }) : onCopy = null,
+       maxLines = 1,
+       overflow = TextOverflow.ellipsis;
 
   /// The value shown.
   final String text;
@@ -54,31 +70,77 @@ class BullCopyField extends StatelessWidget {
   final String? label;
   final Color? backgroundColor;
 
+  final String? viewLabel;
+  final String? viewTitle;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     final toCopy = clipboardText ?? text;
     final heading = label;
+    final title = viewTitle;
+    final detailLabel = viewLabel;
+    final copyName =
+        copyLabel ?? MaterialLocalizations.of(context).copyButtonLabel;
+    final valueText = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text(
+        text,
+        style: context.bullType.body.copyWith(
+          fontWeight: FontWeight.w500,
+          color: colors.secondary,
+        ),
+        maxLines: maxLines,
+        overflow: overflow,
+      ),
+    );
+    void showDetail() {
+      if (title == null) return;
+      BullValueViewer.showDetail(
+        context,
+        data: text,
+        title: title,
+        copyLabel: copyName,
+        copiedMessage: copiedMessage,
+        clipboardText: toCopy,
+        additionalActions: (dialogContext) => [
+          BullValueViewer.actionButton(
+            icon: Icons.close,
+            label: MaterialLocalizations.of(dialogContext).closeButtonLabel,
+            onTap: () => Navigator.of(dialogContext).pop(),
+          ),
+        ],
+      );
+    }
+
     final value = Row(
       children: [
         const Gap(15),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              text,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: colors.secondary),
-              maxLines: maxLines,
-              overflow: overflow,
-            ),
-          ),
+          child: title == null || text.isEmpty
+              ? valueText
+              : InkWell(
+                  excludeFromSemantics: true,
+                  onTap: showDetail,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: BullSpacing.xxl,
+                    ),
+                    child: valueText,
+                  ),
+                ),
         ),
+        if (detailLabel != null && text.isNotEmpty) ...[
+          BullFieldAction(
+            label: detailLabel,
+            icon: Icons.visibility_outlined,
+            onPressed: showDetail,
+          ),
+          const Gap(BullSpacing.xxs),
+        ],
         if (toCopy.isNotEmpty)
           BullFieldAction(
-            label:
-                copyLabel ?? MaterialLocalizations.of(context).copyButtonLabel,
+            label: copyName,
             icon: Icons.copy_sharp,
             onPressed:
                 onCopy ??

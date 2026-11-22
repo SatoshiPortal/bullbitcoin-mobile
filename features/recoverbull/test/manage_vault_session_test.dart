@@ -4,7 +4,7 @@ import 'package:bull_recoverbull/src/domain/repositories/backup_metadata_reposit
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/key_server_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/key_server_session_repository.dart';
-import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_and_store_vault_usecase.dart';
@@ -131,7 +131,7 @@ final class _Metadata extends Fake implements BackupMetadataRepository {
 
 final class _Monitoring extends Fake implements AttemptMonitoringRepository {}
 
-final class _Files extends Fake implements VaultFileRepository {}
+final class _Files extends Fake implements FileSystem {}
 
 final class _Drive extends Fake implements GoogleDriveRepository {}
 

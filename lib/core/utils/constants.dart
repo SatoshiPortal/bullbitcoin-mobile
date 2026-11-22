@@ -1,3 +1,4 @@
+import 'package:electrum/setup.dart' show ElectrumDefaultEndpoints;
 import 'package:material_ui/material_ui.dart';
 
 class Device {
@@ -48,13 +49,6 @@ class ApiServiceConstants {
   static const publicMempoolUrlPath = 'mempool.space'; // note: not used
   static const testnetMempoolUrlPath = 'mempool.space/testnet';
 
-  // Mempool fee endpoints. The precise endpoint returns sub-1 sat/vByte
-  // rates as decimals (rounded to 0.001 by mempool); the recommended one
-  // returns rounded integers and is only used as a fallback for older
-  // self-hosted servers that don't expose the precise route.
-  static const mempoolPreciseFeesPath = '/api/v1/fees/precise';
-  static const mempoolRecommendedFeesPath = '/api/v1/fees/recommended';
-
   // Liquid mempool
   static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
   static const bbLiquidMempoolTestnetUrlPath = 'liquid.bullbitcoin.com/testnet';
@@ -63,20 +57,18 @@ class ApiServiceConstants {
   static const publicLiquidMempoolTestnetUrl =
       'https://liquid.network/testnet'; // note: not used
 
-  // Bitcoin Electrum servers
-  static const fulcrumElectrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
-  static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
-  static const publicElectrumUrl =
-      'ssl://bitcoin-mainnet.blockstream.info:50002';
+  // Historical migrations reference these defaults.
+  static const fulcrumElectrumUrl = ElectrumDefaultEndpoints.fulcrumElectrumUrl;
+  static const bbElectrumUrl = ElectrumDefaultEndpoints.bbElectrumUrl;
+  static const publicElectrumUrl = ElectrumDefaultEndpoints.publicElectrumUrl;
   static const publicElectrumTestUrl =
-      'ssl://bitcoin-testnet.blockstream.info:50002';
-
-  // Liquid Electrum servers - lwk does not accept ssl:// prefix
-  static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
+      ElectrumDefaultEndpoints.publicElectrumTestUrl;
+  static const bbLiquidElectrumUrlPath =
+      ElectrumDefaultEndpoints.bbLiquidElectrumUrlPath;
   static const publicLiquidElectrumUrlPath =
-      'elements-mainnet.blockstream.info:50002';
+      ElectrumDefaultEndpoints.publicLiquidElectrumUrlPath;
   static const publicliquidElectrumTestUrlPath =
-      'elements-testnet.blockstream.info:50002';
+      ElectrumDefaultEndpoints.publicliquidElectrumTestUrlPath;
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
@@ -102,7 +94,6 @@ class ApiServiceConstants {
 }
 
 class LocatorInstanceNameConstants {
-  static const secureStorageDatasource = 'secureStorageDatasource';
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';

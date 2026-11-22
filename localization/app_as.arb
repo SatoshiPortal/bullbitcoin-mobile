@@ -116,7 +116,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "উচ্চ স্টপ গেপ মূল্যবোধে চিংক্ৰনাইজেচন সময় উল্লেখযোগ্যভাৱে বঢ়াই দিয়ে। চিংক্ৰনাইজেচন সম্পূৰ্ণ নোহোৱালৈকে এপটো ফৰগ্ৰাউণ্ডত খোলা ৰাখক — পটভূমিত ৰাখিলে ই বাধাগ্ৰস্ত হ'ব পাৰে।",
   "wizardSkipButton": "এৰি যাওক",
   "wizardPageIndicator": "পৃষ্ঠা {current} / {total}",
   "wizardNextButton": "পৰৱৰ্তী",
@@ -260,64 +259,15 @@
   "walletDetailsSignerLabel": "Signer",
   "walletDetailsSignerDeviceLabel": "Signer ডিভাইচ",
   "walletDetailsSignerDeviceNotSupported": "সমৰ্থিত নহয়",
-  "mempoolSettingsTitle": "Mempool চাৰ্ভাৰ",
   "mempoolSettingsDescription": "বিভিন্ন নেটৱৰ্কৰ বাবে কাষ্টম mempool চাৰ্ভাৰ কনফিগাৰ কৰক। প্ৰতিটো নেটৱৰ্কে ব্লক এক্সপ্লোৰাৰ আৰু মাচুল অনুমানৰ বাবে নিজৰ চাৰ্ভাৰ ব্যৱহাৰ কৰিব পাৰে।",
-  "mempoolSettingsDefaultServer": "ডিফল্ট চাৰ্ভাৰ",
-  "mempoolSettingsCustomServer": "কাষ্টম চাৰ্ভাৰ",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
-  "mempoolCustomServerAdd": "কাষ্টম চাৰ্ভাৰ যোগ কৰক",
   "mempoolCustomServerDelete": "মচক",
-  "mempoolCustomServerDeleteTitle": "কাষ্টম চাৰ্ভাৰ মচিব?",
-  "mempoolCustomServerDeleteMessage": "আপুনি নিশ্চিতভাৱে এই কাষ্টম mempool চাৰ্ভাৰ মচিব বিচাৰে? পৰিৱৰ্তে ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰা হ'ব।",
   "mempoolCustomServerUrl": "চাৰ্ভাৰ URL",
-  "mempoolCustomServerUrlEmpty": "অনুগ্ৰহ কৰি এটা চাৰ্ভাৰ URL দিয়ক",
   "mempoolCustomServerSaveSuccess": "কাষ্টম চাৰ্ভাৰ সফলভাৱে সংৰক্ষণ হৈছে",
-  "mempoolCustomServerBottomSheetDescription": "আপোনাৰ কাষ্টম mempool চাৰ্ভাৰৰ URL দিয়ক। সংৰক্ষণৰ আগতে চাৰ্ভাৰ যাচাই কৰা হ'ব।",
-  "mempoolServerStatusOnline": "অনলাইন",
-  "mempoolServerStatusOffline": "অফলাইন",
-  "mempoolServerStatusChecking": "পৰীক্ষা কৰা হৈছে...",
   "mempoolServerStatusUnknown": "অজ্ঞাত",
-  "mempoolCustomServerSaveFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
-  "mempoolCustomServerInfoDescription": "Mempool চাৰ্ভাৰসমূহ মাচুল অনুমান আৰু লেনদেন বিৱৰণ চাওঁতে ব্লক এক্সপ্লোৰাৰ খোলাৰ বাবে ব্যৱহাৰ কৰা হয়।",
-  "mempoolCustomServerUseSsl": "SSL ব্যৱহাৰ কৰক",
-  "mempoolCustomServerSslAutoDetected": "(স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা হৈছে)",
-  "mempoolCustomServerSslHelpText": "স্থানীয় (.local, ব্যক্তিগত IP) আৰু Tor (.onion) চাৰ্ভাৰৰ বাবে SSL সাধাৰণতে অক্ষম। পাব্লিক IP আৰু ডমেইনে SSL ব্যৱহাৰ কৰিব লাগে।",
-  "mempoolErrorSameAsDefault": "এই URL ডিফল্ট চাৰ্ভাৰৰ দৰেই। অনুগ্ৰহ কৰি এটা ভিন্ন URL ব্যৱহাৰ কৰক।",
-  "mempoolErrorConnectionTimeout": "সংযোগৰ সময় শেষ হৈছে। চাৰ্ভাৰটো লেহেমীয়া বা অপ্ৰাপ্য হ'ব পাৰে।",
-  "mempoolErrorHostNotFound": "এই চাৰ্ভাৰ বিচাৰি পোৱা নগ'ল। অনুগ্ৰহ কৰি URL পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorConnectionFailed": "চাৰ্ভাৰৰ সৈতে সংযোগ কৰিবলৈ অক্ষম। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorNotMempoolServer": "এই URL এটা mempool চাৰ্ভাৰ নহয় যেন লাগিছে। অনুগ্ৰহ কৰি ঠিকনা যাচাই কৰক।",
-  "mempoolErrorServerUnavailable": "চাৰ্ভাৰ উপলব্ধ নহয়। পিছত পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorServerError": "চাৰ্ভাৰত ভুল হৈছে। পিছত পুনৰ চেষ্টা কৰক।",
-  "mempoolErrorInvalidResponse": "চাৰ্ভাৰে অবৈধ সঁহাৰি দিছে।",
-  "mempoolErrorInvalidUrl": "অমান্য চাৰ্ভাৰ URL। এটা বৈধ ডমেইন বা IP ঠিকনা দিয়ক।",
-  "mempoolErrorSaveServerFailed": "চাৰ্ভাৰ সংৰক্ষণ কৰিবলৈ বিফল হৈছে",
-  "@mempoolErrorSaveServerFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "mempoolErrorLoadFailed": "Mempool চাৰ্ভাৰ ডেটা লোড কৰিবলৈ বিফল হৈছে",
-  "@mempoolErrorLoadFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "mempoolErrorDeleteFailed": "কাষ্টম চাৰ্ভাৰ মচিবলৈ বিফল হৈছে",
-  "@mempoolErrorDeleteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "walletSettingsImportWalletTitle": "Wallet আমদানি কৰক",
   "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্ৰচাৰ কৰক",
   "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
@@ -349,18 +299,11 @@
   "exchangeReferralsApplyToJoinMessage": "কাৰ্যক্ৰমত যোগ দিবলৈ ইয়াত আবেদন কৰক",
   "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
   "exchangeRecipientsTitle": "প্ৰাপকসমূহ",
-  "exchangeRecipientsComingSoon": "প্ৰাপকসমূহ - শীঘ্ৰে আহিছে",
-  "exchangeLogoutComingSoon": "লগ আউট - শীঘ্ৰে আহিছে",
-  "exchangeLegacyTransactionsTitle": "Legacy লেনদেনসমূহ",
-  "exchangeLegacyTransactionsComingSoon": "Legacy লেনদেনসমূহ - শীঘ্ৰে আহিছে",
   "exchangeFileUploadTitle": "সুৰক্ষিত ফাইল আপলোড",
   "exchangeFileUploadDocumentTitle": "যিকোনো দস্তাবেজ আপলোড কৰক",
   "exchangeFileUploadInstructions": "যদি আপুনি আন কোনো দস্তাবেজ পঠিওৱাৰ প্ৰয়োজন হয়, ইয়াত আপলোড কৰক।",
   "exchangeFileUploadButton": "আপলোড কৰক",
   "exchangeFileUploadSuccess": "ফাইল সফলভাৱে আপলোড হৈছে",
-  "exchangeAccountTitle": "Exchange একাউন্ট",
-  "exchangeAccountSettingsTitle": "Exchange একাউন্ট ছেটিংছ",
-  "exchangeAccountComingSoon": "এই সুবিধা শীঘ্ৰে আহিছে।",
   "exchangeBitcoinWalletsTitle": "ডিফল্ট Bitcoin Wallets",
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin ঠিকনা",
   "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN ঠিকনা)",
@@ -1979,299 +1922,6 @@
   "autoswapTriggerBalanceError": "সৰ্বোচ্চ বেলেঞ্চ লক্ষ্য বেলেঞ্চৰ কমেও ২গুণ হ'ব লাগিব",
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when maximum balance is less than 2x the target balance"
-  },
-  "bitboxErrorPermissionDenied": "BitBox ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ USB অনুমতি প্ৰয়োজন।",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
-  "bitboxErrorNoDevicesFound": "কোনো BitBox ডিভাইচ পোৱা নগ'ল। আপোনাৰ ডিভাইচ চালু আছে আৰু USB ৰ যোগেদি সংযুক্ত আছে নে নাই নিশ্চিত কৰক।",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
-  "bitboxErrorMultipleDevicesFound": "একাধিক BitBox ডিভাইচ পোৱা গৈছে। অনুগ্ৰহ কৰি কেৱল এটা ডিভাইচ সংযুক্ত আছে নে নাই নিশ্চিত কৰক।",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
-  "bitboxErrorDeviceNotFound": "BitBox ডিভাইচ পোৱা নগ'ল।",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
-  "bitboxErrorConnectionTypeNotInitialized": "সংযোগৰ ধৰণ আৰম্ভ কৰা হোৱা নাই।",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
-  },
-  "bitboxErrorDeviceNotPaired": "ডিভাইচ পেয়াৰ কৰা হোৱা নাই। অনুগ্ৰহ কৰি প্ৰথমে পেয়াৰিং প্ৰক্ৰিয়া সম্পন্ন কৰক।",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
-  },
-  "bitboxErrorHandshakeFailed": "সুৰক্ষিত সংযোগ স্থাপন কৰিবলৈ ব্যৰ্থ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
-  },
-  "bitboxErrorOperationTimeout": "কাৰ্য সময় শেষ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
-  "bitboxErrorConnectionFailed": "BitBox ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ ব্যৰ্থ হৈছে। অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক।",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
-  "bitboxErrorInvalidResponse": "BitBox ডিভাইচৰ পৰা অবৈধ সঁহাৰি। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
-  },
-  "bitboxErrorOperationCancelled": "কাৰ্য বাতিল কৰা হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
-  },
-  "bitboxActionUnlockDeviceTitle": "BitBox ডিভাইচ আনলক কৰক",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
-  },
-  "bitboxActionPairDeviceTitle": "BitBox ডিভাইচ পেয়াৰ কৰক",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
-  },
-  "bitboxActionImportWalletTitle": "BitBox ৱালেট আমদানি কৰক",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
-  },
-  "bitboxActionSignTransactionTitle": "লেনদেনত স্বাক্ষৰ কৰক",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
-  },
-  "bitboxActionVerifyAddressTitle": "BitBox ত ঠিকনা যাচাই কৰক",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
-  "bitboxActionUnlockDeviceButton": "ডিভাইচ আনলক কৰক",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
-  },
-  "bitboxActionPairDeviceButton": "পেয়াৰিং আৰম্ভ কৰক",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
-  },
-  "bitboxActionImportWalletButton": "আমদানি আৰম্ভ কৰক",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
-  },
-  "bitboxActionSignTransactionButton": "স্বাক্ষৰ আৰম্ভ কৰক",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
-  },
-  "bitboxActionVerifyAddressButton": "ঠিকনা যাচাই কৰক",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
-  "bitboxActionUnlockDeviceProcessing": "ডিভাইচ আনলক কৰি আছে",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "bitboxActionPairDeviceProcessing": "ডিভাইচ পেয়াৰ কৰি আছে",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
-  },
-  "bitboxActionImportWalletProcessing": "ৱালেট আমদানি কৰি আছে",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
-  },
-  "bitboxActionSignTransactionProcessing": "লেনদেনত স্বাক্ষৰ কৰি আছে",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
-  },
-  "bitboxActionVerifyAddressProcessing": "BitBox ত ঠিকনা দেখুৱাই আছে...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
-  },
-  "bitboxActionUnlockDeviceSuccess": "ডিভাইচ সফলতাৰে আনলক হৈছে",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
-  },
-  "bitboxActionPairDeviceSuccess": "ডিভাইচ সফলতাৰে পেয়াৰ হৈছে",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxActionImportWalletSuccess": "ৱালেট সফলতাৰে আমদানি হৈছে",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
-  "bitboxActionSignTransactionSuccess": "লেনদেন সফলতাৰে স্বাক্ষৰিত হৈছে",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
-  },
-  "bitboxActionVerifyAddressSuccess": "ঠিকনা সফলতাৰে যাচাই হৈছে",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
-  "bitboxActionUnlockDeviceSuccessSubtext": "আপোনাৰ BitBox ডিভাইচ এতিয়া আনলক হৈছে আৰু ব্যৱহাৰৰ বাবে প্ৰস্তুত।",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
-  "bitboxActionPairDeviceSuccessSubtext": "আপোনাৰ BitBox ডিভাইচ এতিয়া পেয়াৰ হৈছে আৰু ব্যৱহাৰৰ বাবে প্ৰস্তুত।",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
-  },
-  "bitboxActionImportWalletSuccessSubtext": "আপোনাৰ BitBox ৱালেট সফলতাৰে আমদানি হৈছে।",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "আপোনাৰ লেনদেন সফলতাৰে স্বাক্ষৰিত হৈছে।",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "ঠিকনাটো আপোনাৰ BitBox ডিভাইচত যাচাই হৈছে।",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
-  },
-  "bitboxActionUnlockDeviceProcessingSubtext": "অনুগ্ৰহ কৰি BitBox ডিভাইচত আপোনাৰ পাছৱৰ্ড দিয়ক...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "অনুগ্ৰহ কৰি আপোনাৰ BitBox ডিভাইচত পেয়াৰিং কোড যাচাই কৰক...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "আপোনাৰ ৱাচ-অনলি ৱালেট ছেটআপ কৰি আছে...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "অনুগ্ৰহ কৰি আপোনাৰ BitBox ডিভাইচত লেনদেন নিশ্চিত কৰক...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "অনুগ্ৰহ কৰি আপোনাৰ BitBox ডিভাইচত ঠিকনা নিশ্চিত কৰক।",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
-  },
-  "bitboxScreenConnectDevice": "আপোনাৰ BitBox ডিভাইচ সংযোগ কৰক",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
-  },
-  "bitboxScreenScanning": "ডিভাইচ বিচাৰি আছে",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
-  "bitboxScreenConnecting": "BitBox ৰ সৈতে সংযোগ কৰি আছে",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
-  },
-  "bitboxScreenPairingCode": "পেয়াৰিং কোড",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
-  },
-  "bitboxScreenEnterPassword": "পাছৱৰ্ড দিয়ক",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "bitboxScreenVerifyAddress": "ঠিকনা যাচাই কৰক",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenActionFailed": "{action} ব্যৰ্থ হৈছে",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "bitboxScreenConnectSubtext": "নিশ্চিত কৰক যে আপোনাৰ BitBox02 আনলক হৈছে আৰু USB ৰ যোগেদি সংযুক্ত আছে।",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
-  "bitboxScreenScanningSubtext": "আপোনাৰ BitBox ডিভাইচ বিচাৰি আছে...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
-  },
-  "bitboxScreenConnectingSubtext": "সুৰক্ষিত সংযোগ স্থাপন কৰি আছে...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
-  "bitboxScreenPairingCodeSubtext": "এই কোডটো আপোনাৰ BitBox02 স্ক্ৰীণৰ সৈতে মিলে নে নাই যাচাই কৰক, তাৰপিছত ডিভাইচত নিশ্চিত কৰক।",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
-  },
-  "bitboxScreenEnterPasswordSubtext": "অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি BitBox ডিভাইচত আপোনাৰ পাছৱৰ্ড দিয়ক।",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
-  "bitboxScreenVerifyAddressSubtext": "এই ঠিকনাটো আপোনাৰ BitBox02 স্ক্ৰীণৰ সৈতে তুলনা কৰক",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
-  },
-  "bitboxScreenUnknownError": "অজ্ঞাত ত্ৰুটি ঘটিছে",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
-  "bitboxScreenWaitingConfirmation": "BitBox02 ত নিশ্চিতকৰণৰ অপেক্ষা কৰি আছে...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
-  },
-  "bitboxScreenAddressToVerify": "যাচাই কৰিবলৈ ঠিকনা:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
-  "bitboxScreenVerifyOnDevice": "অনুগ্ৰহ কৰি আপোনাৰ BitBox ডিভাইচত এই ঠিকনা যাচাই কৰক",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
-  "bitboxScreenWalletTypeLabel": "ৱালেটৰ ধৰণ:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
-  },
-  "bitboxScreenSelectWalletType": "ৱালেটৰ ধৰণ বাছনি কৰক",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
-  },
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - পৰামৰ্শযোগ্য",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
-  },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 সমস্যা সমাধান",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "প্ৰথমে নিশ্চিত কৰক যে আপোনাৰ BitBox02 ডিভাইচটো আপোনাৰ ফোনৰ USB পৰ্টত সংযুক্ত আছে। যদি আপোনাৰ ডিভাইচটো তথাপিও এপৰ সৈতে সংযুক্ত নহয়, তেন্তে তলত দিয়া পদক্ষেপসমূহ চেষ্টা কৰক:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
-  },
-  "bitboxScreenTroubleshootingStep1": "নিশ্চিত কৰক যে আপোনাৰ BitBox ত সৰ্বশেষ firmware ইনষ্টল কৰা আছে।",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
-  "bitboxScreenTroubleshootingStep2": "নিশ্চিত কৰক যে আপোনাৰ ফোনত USB অনুমতি সক্ষম কৰা আছে।",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
-  "bitboxScreenTroubleshootingStep3": "BitBox02 ডিভাইচটো আনপ্লাগ কৰি পুনৰ সংযুক্ত কৰি পুনৰাৰম্ভ কৰক।",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
-  },
-  "bitboxScreenTryAgainButton": "পুনৰ চেষ্টা কৰক",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
-  },
-  "bitboxScreenManagePermissionsButton": "এপ অনুমতি পৰিচালনা কৰক",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
-  },
-  "bitboxScreenNeedHelpButton": "সহায় লাগিব নেকি?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
   },
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
@@ -4461,127 +4111,9 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "psbtFlowSignTransaction": "লেনদেনত স্বাক্ষৰ কৰক",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
-  "psbtFlowInstructions": "নিৰ্দেশনা",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
-  "psbtFlowDone": "মই সম্পন্ন কৰিলোঁ",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
-  "psbtFlowPartProgress": "অংশ {current} / {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSpecterTitle": "Specter নিৰ্দেশনা",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "psbtFlowColdcardTitle": "Coldcard Q নিৰ্দেশনা",
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
-  },
-  "psbtFlowTurnOnDevice": "আপোনাৰ {device} ডিভাইচ চালু কৰক",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickScan": "Scan ক্লিক কৰক",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
-  "psbtFlowScanQrShown": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
-  "psbtFlowTroubleScanningTitle": "স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
-  },
-  "psbtFlowIncreaseBrightness": "আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
-  },
-  "psbtFlowMoveLaser": "QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
-  "psbtFlowMoveBack": "আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
-  "psbtFlowReviewTransaction": "আপোনাৰ {device} ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSelectSeed": "আপোনাৰ {device} ত লেনদেনটো আমদানি হোৱাৰ পিছত, আপুনি যি seed দিয়ে স্বাক্ষৰ কৰিব বিচাৰে সেয়া বাছনি কৰক।",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSignTransactionOnDevice": "আপোনাৰ {device} ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowDeviceShowsQr": "{device} এ তেতিয়া আপোনাক নিজৰ QR code দেখুৱাব।",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickDone": "Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
-  "psbtFlowScanDeviceQr": "Bull Bitcoin wallet এ আপোনাক {device} ৰ QR code স্কেন কৰিবলৈ ক'ব। স্কেন কৰক।",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowTransactionImported": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
-  "psbtFlowReadyToBroadcast": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
   },
   "hwConnectTitle": "Hardware Wallet সংযোগ কৰক",
   "@hwConnectTitle": {
@@ -4618,254 +4150,6 @@
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
-  },
-  "kruxInstructionsTitle": "Krux নিৰ্দেশনা",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
-  },
-  "kruxStep1": "আপোনাৰ Krux ডিভাইচত লগিন কৰক",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
-  "kruxStep2": "Sign ক্লিক কৰক",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
-  },
-  "kruxStep3": "PSBT ক্লিক কৰক",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
-  },
-  "kruxStep4": "Load from camera ক্লিক কৰক",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
-  },
-  "kruxStep5": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
-  },
-  "kruxStep6": "স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
-  },
-  "kruxStep7": "   - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
-  "kruxStep8": "   - QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
-  },
-  "kruxStep9": "   - আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
-  },
-  "kruxStep10": "আপোনাৰ Krux ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "kruxStep11": "আপোনাৰ Krux ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
-  "kruxStep12": "Krux এ তেতিয়া আপোনাক নিজৰ QR code দেখুৱাব।",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
-  "kruxStep13": "Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
-  },
-  "kruxStep14": "Bull Bitcoin wallet এ আপোনাক Krux ৰ QR code স্কেন কৰিবলৈ ক'ব। স্কেন কৰক।",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
-  "kruxStep15": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
-  "kruxStep16": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
-  "keystoneInstructionsTitle": "Keystone নিৰ্দেশনা",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
-  },
-  "keystoneStep1": "আপোনাৰ Keystone ডিভাইচত লগিন কৰক",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep2": "Scan ক্লিক কৰক",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
-  "keystoneStep3": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
-  "keystoneStep4": "স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
-  },
-  "keystoneStep5": "   - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
-  "keystoneStep6": "   - QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
-  "keystoneStep7": "   - আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
-  "keystoneStep8": "আপোনাৰ Keystone ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "keystoneStep9": "আপোনাৰ Keystone ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
-  },
-  "keystoneStep10": "Keystone এ তেতিয়া আপোনাক নিজৰ QR code দেখুৱাব।",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
-  },
-  "keystoneStep11": "Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
-  "keystoneStep12": "Bull Bitcoin wallet এ আপোনাক Keystone ৰ QR code স্কেন কৰিবলৈ ক'ব। স্কেন কৰক।",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
-  "keystoneStep13": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
-  },
-  "keystoneStep14": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
-  },
-  "passportInstructionsTitle": "Foundation Passport নিৰ্দেশনা",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
-  },
-  "passportStep1": "আপোনাৰ Passport ডিভাইচত লগিন কৰক",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "passportStep2": "Sign with QR Code ক্লিক কৰক",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
-  "passportStep3": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "passportStep4": "স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
-  },
-  "passportStep5": "   - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "passportStep6": "   - QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
-  "passportStep7": "   - আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
-  },
-  "passportStep8": "আপোনাৰ Passport ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
-  },
-  "passportStep9": "আপোনাৰ Passport ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
-  "passportStep10": "Passport এ তেতিয়া আপোনাক নিজৰ QR code দেখুৱাব।",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
-  "passportStep11": "Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
-  },
-  "passportStep12": "Bull Bitcoin wallet এ আপোনাক Passport ৰ QR code স্কেন কৰিবলৈ ক'ব। স্কেন কৰক।",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
-  "passportStep13": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
-  },
-  "passportStep14": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
-  "seedsignerInstructionsTitle": "SeedSigner নিৰ্দেশনা",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
-  "seedsignerStep1": "আপোনাৰ SeedSigner ডিভাইচ চালু কৰক",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
-  "seedsignerStep2": "Scan ক্লিক কৰক",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
-  "seedsignerStep3": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
-  "seedsignerStep4": "স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
-  "seedsignerStep5": "   - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
-  "seedsignerStep6": "   - QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
-  "seedsignerStep7": "   - আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
-  "seedsignerStep8": "আপোনাৰ SeedSigner ত লেনদেনটো আমদানি হোৱাৰ পিছত, আপুনি যি seed দিয়ে স্বাক্ষৰ কৰিব বিচাৰে সেয়া বাছনি কৰক।",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
-  },
-  "seedsignerStep9": "গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক, আৰু আপোনাৰ SeedSigner ত স্বাক্ষৰ নিশ্চিত কৰক।",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
-  },
-  "seedsignerStep10": "SeedSigner এ তেতিয়া আপোনাক নিজৰ QR code দেখুৱাব।",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
-  },
-  "seedsignerStep11": "Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
-  "seedsignerStep12": "Bull Bitcoin wallet এ আপোনাক SeedSigner ৰ QR code স্কেন কৰিবলৈ ক'ব। স্কেন কৰক।",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "seedsignerStep13": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
-  },
-  "seedsignerStep14": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "connectHardwareWalletTitle": "Hardware Wallet সংযোগ কৰক",
   "@connectHardwareWalletTitle": {
@@ -4966,70 +4250,6 @@
   "coldcardStep15": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
-  },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT নিৰ্দেশনা",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
-  "jadeStep1": "আপোনাৰ Jade ডিভাইচত লগিন কৰক",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
-  "jadeStep2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
-  },
-  "jadeStep3": "\"Scan QR\" বিকল্পটো বাছনি কৰক",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
-  },
-  "jadeStep4": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
-  "jadeStep5": "স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
-  "jadeStep6": "   - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
-  },
-  "jadeStep7": "   - QR code টো স্থিৰ আৰু মাজত ধৰক",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
-  },
-  "jadeStep8": "   - আপোনাৰ ডিভাইচটো ওচৰলৈ বা আঁতৰলৈ লৰাই চেষ্টা কৰক",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
-  },
-  "jadeStep9": "আপোনাৰ Jade ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
-  "jadeStep10": "আপোনাৰ Jade ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "jadeStep11": "Jade এ তেতিয়া আপোনাক নিজৰ QR code দেখুৱাব।",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
-  "jadeStep12": "Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
-  "jadeStep13": "Bull Bitcoin wallet এ আপোনাক Jade ৰ QR code স্কেন কৰিবলৈ ক'ব। স্কেন কৰক।",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
-  },
-  "jadeStep14": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
-  "jadeStep15": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু! আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব আৰু পুঁজিবোৰ পঠোৱা হ'ব।",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "importWalletTitle": "নতুন wallet যোগ কৰক",
   "@importWalletTitle": {
@@ -5311,43 +4531,6 @@
   "exportTransactionsInvalidDateRange": "আৰম্ভণিৰ তাৰিখ শেষৰ তাৰিখৰ আগত হ'ব লাগিব",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
-  },
-  "bip329LabelsTitle": "BIP329 Labels",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
-  "bip329LabelsHeading": "BIP329 Labels আমদানি/ৰপ্তানি",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "bip329LabelsDescription": "BIP329 মানক বিন্যাস ব্যৱহাৰ কৰি wallet লেবেল আমদানি বা ৰপ্তানি কৰক।",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
-  },
-  "bip329LabelsImportButton": "লেবেল আমদানি কৰক",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
-  "bip329LabelsExportButton": "লেবেল ৰপ্তানি কৰক",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "bip329LabelsExportSuccess": "লেবেলবোৰ সফলভাৱে ৰপ্তানি কৰা হৈছে",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
-  },
-  "bip329LabelsImportSuccessSingular": "১টা লেবেল আমদানি কৰা হৈছে",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
-  "bip329LabelsImportSuccessPlural": "{count}টা লেবেল আমদানি কৰা হৈছে",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "broadcastSignedTxTitle": "লেনদেন প্ৰচাৰ কৰক",
   "@broadcastSignedTxTitle": {
@@ -6406,42 +5589,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "electrumTitle": "Electrum চাৰ্ভাৰ ছেটিংছ",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
-  "electrumNetworkLiquid": "Liquid",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
-  "electrumAdvancedOptions": "উন্নত বিকল্পসমূহ",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
-  "electrumAddCustomServer": "কাষ্টম চাৰ্ভাৰ যোগ কৰক",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
-  "electrumCloseTooltip": "বন্ধ কৰক",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
-  "electrumServerUrlHint": "{network} {environment} চাৰ্ভাৰ URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
@@ -6449,245 +5596,6 @@
   "electrumTestnet": "Testnet",
   "@electrumTestnet": {
     "description": "Testnet environment label"
-  },
-  "electrumEmptyFieldError": "এই ক্ষেত্ৰখন খালী থাকিব নোৱাৰে",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
-  "electrumLiquidSslInfo": "কোনো protocol নিৰ্দিষ্ট কৰিব নালাগে, SSL স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰ কৰা হ'ব।",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
-  "electrumAddServer": "চাৰ্ভাৰ যোগ কৰক",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
-  "electrumEnableSsl": "SSL সক্ৰিয় কৰক",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
-  "electrumProtocolError": "protocol (ssl:// বা tcp://) অন্তৰ্ভুক্ত নকৰিব।",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
-  },
-  "electrumFormatError": "host:port ফৰ্মেট ব্যৱহাৰ কৰক (যেনে, example.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
-  },
-  "electrumBitcoinServerInfo": "চাৰ্ভাৰৰ ঠিকনা এই ফৰ্মেটত দিয়ক: host:port (যেনে, example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
-  "electrumStopGap": "Stop Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
-  "electrumTimeout": "Timeout (ছেকেণ্ড)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
-  "electrumRetryCount": "পুনৰ চেষ্টাৰ সংখ্যা",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
-  "electrumValidateDomain": "ডমেইন যাচাই কৰক",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
-  },
-  "electrumStopGapEmptyError": "Stop Gap খালী থাকিব নোৱাৰে",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
-  },
-  "electrumInvalidNumberError": "এটা বৈধ সংখ্যা দিয়ক",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
-  "electrumStopGapNegativeError": "Stop Gap ঋণাত্মক হ'ব নোৱাৰে",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
-  },
-  "electrumStopGapTooHighError": "Stop Gap বেছি বেছি বলে মনে হয়। (সৰ্বোচ্চ {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "Timeout খালী থাকিব নোৱাৰে",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumTimeoutPositiveError": "Timeout ধনাত্মক হ'ব লাগিব",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "electrumTimeoutTooHighError": "Timeout বেছি বেছি বলে মনে হয়। (সৰ্বোচ্চ {maxTimeout} ছেকেণ্ড)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumRetryCountEmptyError": "পুনৰ চেষ্টাৰ সংখ্যা খালী থাকিব নোৱাৰে",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "electrumRetryCountNegativeError": "পুনৰ চেষ্টাৰ সংখ্যা ঋণাত্মক হ'ব নোৱাৰে",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
-  "electrumTimeoutWarning": "আপোনাৰ timeout ({timeoutValue} ছেকেণ্ড) এই Stop Gap ৰ বাবে প্ৰস্তাৱিত মানৰ ({recommended} ছেকেণ্ড) তলত আছে।",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidStopGapError": "অবৈধ Stop Gap মান: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidTimeoutError": "অবৈধ Timeout মান: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidRetryError": "অবৈধ পুনৰ চেষ্টাৰ সংখ্যাৰ মান: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSaveFailedError": "উন্নত বিকল্পসমূহ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "electrumUnknownError": "এটা ত্ৰুটি ঘটিছে",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
-  },
-  "electrumReset": "পুনৰাৰম্ভ কৰক",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
-  "electrumConfirm": "নিশ্চিত কৰক",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
-  "electrumDeleteServerTitle": "কাষ্টম চাৰ্ভাৰ মচক",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
-  },
-  "electrumDeletePrivacyNotice": "গোপনীয়তাৰ জাননী:\n\nআপোনাৰ নিজৰ node ব্যৱহাৰ কৰাটো নিশ্চিত কৰে যে কোনো তৃতীয় পক্ষই আপোনাৰ IP ঠিকনা আপোনাৰ লেনদেনৰ সৈতে সংযুক্ত কৰিব নোৱাৰে। আপোনাৰ শেষ কাষ্টম চাৰ্ভাৰ মচি আপুনি BullBitcoin চাৰ্ভাৰৰ সৈতে সংযোগ কৰিব।\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
-  "electrumDeleteConfirmation": "আপুনি নিশ্চিতভাৱে এই চাৰ্ভাৰটো মচিব বিচাৰেনে?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumCancel": "বাতিল",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
-  "electrumDelete": "মচক",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
-  "electrumDefaultServers": "ডিফল্ট চাৰ্ভাৰসমূহ",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
-  "electrumDefaultServersInfo": "আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ, কাষ্টম চাৰ্ভাৰ কনফিগাৰ কৰা হ'লে ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰা নহয়।",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
-  "electrumCustomServers": "কাষ্টম চাৰ্ভাৰসমূহ",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
-  },
-  "electrumDragToReorder": "(অগ্ৰাধিকাৰ সলনি কৰিবলৈ দীৰ্ঘ-প্ৰেছ কৰি টানক)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "electrumLoadFailedError": "চাৰ্ভাৰসমূহ লোড কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "electrumSavePriorityFailedError": "চাৰ্ভাৰৰ অগ্ৰাধিকাৰ সংৰক্ষণ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
-  "electrumAddFailedError": "কাষ্টম চাৰ্ভাৰ যোগ কৰিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
-  "electrumDeleteFailedError": "কাষ্টম চাৰ্ভাৰ মচিবলৈ ব্যৰ্থ হৈছে",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
-  "electrumServerAlreadyExists": "এই চাৰ্ভাৰ ইতিমধ্যে আছে",
-  "electrumServerUnreachable": "ছাৰ্ভাৰটো নাগাল পোৱা নগ’ল। ঠিকনাটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
-  "electrumPrivacyNoticeTitle": "গোপনীয়তাৰ জাননী",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
-  "electrumPrivacyNoticeContent1": "গোপনীয়তাৰ জাননী: আপোনাৰ নিজৰ node ব্যৱহাৰ কৰাটো নিশ্চিত কৰে যে কোনো তৃতীয় পক্ষই আপোনাৰ IP ঠিকনা আপোনাৰ লেনদেনৰ সৈতে সংযুক্ত কৰিব নোৱাৰে।",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeContent2": "অৱশ্যে, যদি আপুনি আপোনাৰ Transaction ID বা Recipient Details পৃষ্ঠাত ক্লিক কৰি mempool ৰ জৰিয়তে লেনদেন চায়, তেন্তে এই তথ্য BullBitcoin লৈ জনা হ'ব।",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeCancel": "বাতিল",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
-  },
-  "electrumPrivacyNoticeSave": "সংৰক্ষণ কৰক",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
-  },
-  "electrumServerNotUsed": "ব্যৱহাৰ নহয়",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
-  "electrumServerOnline": "অনলাইন",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
-  "electrumServerOffline": "অফলাইন",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "addressViewNoAddressesFound": "কোনো ঠিকনা পোৱা নগ'ল",
   "@addressViewNoAddressesFound": {
@@ -6711,240 +5619,6 @@
   "appStartupContactSupportButton": "সহায়ৰ সৈতে যোগাযোগ কৰক",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
-  },
-  "ledgerImportTitle": "Ledger Wallet আমদানি কৰক",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
-  "ledgerSignTitle": "লেনদেনত চহি কৰক",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
-  },
-  "ledgerVerifyTitle": "Ledger-ত ঠিকনা যাচাই কৰক",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
-  },
-  "ledgerImportButton": "আমদানি আৰম্ভ কৰক",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
-  "ledgerSignButton": "চহি আৰম্ভ কৰক",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
-  },
-  "ledgerVerifyButton": "ঠিকনা যাচাই কৰক",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
-  },
-  "ledgerProcessingImport": "Wallet আমদানি কৰা হৈছে",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
-  },
-  "ledgerProcessingSign": "লেনদেনত চহি কৰা হৈছে",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
-  },
-  "ledgerProcessingVerify": "Ledger-ত ঠিকনা দেখুওৱা হৈছে...",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
-  },
-  "ledgerSuccessImportTitle": "Wallet সফলভাৱে আমদানি হৈছে",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
-  },
-  "ledgerSuccessSignTitle": "লেনদেন সফলভাৱে স্বাক্ষৰিত হৈছে",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
-  },
-  "ledgerSuccessVerifyTitle": "Ledger-ত ঠিকনা যাচাই কৰা হৈছে...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
-  },
-  "ledgerSuccessImportDescription": "আপোনাৰ Ledger wallet সফলভাৱে আমদানি হৈছে।",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
-  },
-  "ledgerSuccessSignDescription": "আপোনাৰ লেনদেন সফলভাৱে স্বাক্ষৰিত হৈছে।",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
-  },
-  "ledgerSuccessVerifyDescription": "আপোনাৰ Ledger ডিভাইচত ঠিকনা যাচাই হৈছে।",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
-  },
-  "ledgerProcessingImportSubtext": "আপোনাৰ watch-only wallet ছেট আপ কৰা হৈছে...",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
-  },
-  "ledgerProcessingSignSubtext": "অনুগ্ৰহ কৰি আপোনাৰ Ledger ডিভাইচত লেনদেন নিশ্চিত কৰক...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
-  },
-  "ledgerProcessingVerifySubtext": "অনুগ্ৰহ কৰি আপোনাৰ Ledger ডিভাইচত ঠিকনা নিশ্চিত কৰক।",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
-  },
-  "ledgerConnectTitle": "আপোনাৰ Ledger ডিভাইচ সংযোগ কৰক",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
-  "ledgerScanningTitle": "ডিভাইচ বিচাৰি আছে",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
-  },
-  "ledgerConnectingMessage": "{deviceName}-ৰ সৈতে সংযোগ কৰা হৈছে",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerActionFailedMessage": "{action} বিফল হৈছে",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerInstructionsIos": "আপোনাৰ Ledger আনলক হৈ আছে আৰু Bitcoin app খোলা আছে আৰু Bluetooth সামৰ্থ্য কৰা আছে নিশ্চিত কৰক।",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
-  },
-  "ledgerInstructionsAndroidUsb": "আপোনাৰ Ledger আনলক হৈ আছে আৰু Bitcoin app খোলা আছে নিশ্চিত কৰক আৰু USB-ৰ জৰিয়তে সংযোগ কৰক।",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
-  },
-  "ledgerInstructionsAndroidDual": "আপোনাৰ Ledger আনলক হৈ আছে আৰু Bitcoin app খোলা আছে আৰু Bluetooth সামৰ্থ্য কৰা আছে নিশ্চিত কৰক।",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
-  "ledgerScanningMessage": "ওচৰৰ Ledger ডিভাইচ বিচাৰি আছে...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
-  },
-  "ledgerConnectingSubtext": "সুৰক্ষিত সংযোগ স্থাপন কৰা হৈছে...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
-  },
-  "ledgerErrorPermissionDenied": "Ledger ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ ব্লুটুথ অনুমতি প্ৰয়োজন।",
-  "ledgerErrorNoDevicesFound": "কোনো Ledger ডিভাইচ পোৱা নগ'ল। আপোনাৰ ডিভাইচটো চালু আছে আৰু ব্লুটুথ সক্ষম আছে বুলি নিশ্চিত কৰক।",
-  "ledgerErrorMultipleDevicesFound": "একাধিক Ledger ডিভাইচ পোৱা গ'ল। অনুগ্ৰহ কৰি ওচৰত কেৱল এটা ডিভাইচ থকাটো নিশ্চিত কৰক।",
-  "ledgerErrorDeviceNotFound": "Ledger ডিভাইচ পোৱা নগ'ল।",
-  "ledgerErrorDeviceMismatch": "ডিভাইচৰ অমিল ধৰা পৰিছে।",
-  "ledgerErrorInvalidPsbt": "অবৈধ PSBT ফৰ্মেট ধৰা পৰিছে।",
-  "ledgerErrorMissingDerivationPath": "ডেৰিভেশ্যন পাথ প্ৰয়োজন",
-  "ledgerErrorMissingScriptType": "স্ক্ৰিপ্ট প্ৰকাৰ প্ৰয়োজন",
-  "ledgerErrorDeviceBusy": "আন এটা প্ৰগ্ৰামে আপোনাৰ Ledger ব্যৱহাৰ কৰি আছে। অনুগ্ৰহ কৰি ইয়াক বন্ধ কৰক (উদাহৰণস্বৰূপে, Ledger Live) আৰু পুনৰ চেষ্টা কৰক।",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "কোনো Ledger সংযোগ উপলব্ধ নাই",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
-  },
-  "ledgerErrorRejectedByUser": "Ledger ডিভাইচত ব্যৱহাৰকাৰীয়ে লেনদেন প্ৰত্যাখ্যান কৰিছে।",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
-  "ledgerErrorDeviceLocked": "Ledger ডিভাইচ লক হৈ আছে। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচ আনলক কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "অনুগ্ৰহ কৰি আপোনাৰ Ledger ডিভাইচত Bitcoin app খোলক আৰু পুনৰ চেষ্টা কৰক।",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
-  },
-  "ledgerErrorMissingPsbt": "চহিৰ বাবে PSBT আৱশ্যক",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
-  },
-  "ledgerErrorMissingAddress": "যাচাইৰ বাবে ঠিকনা আৱশ্যক",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
-  },
-  "ledgerButtonTryAgain": "পুনৰ চেষ্টা কৰক",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "ledgerButtonManagePermissions": "এপ্প অনুমতি পৰিচালনা কৰক",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
-  },
-  "ledgerButtonNeedHelp": "সহায় লাগেনে?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
-  },
-  "ledgerVerifyAddressLabel": "যাচাই কৰিবলগীয়া ঠিকনা:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
-  },
-  "ledgerWalletTypeLabel": "Wallet-ৰ ধৰণ:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
-  },
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
-  },
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - প্ৰস্তাৱিত",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
-  },
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
-  },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
-  },
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - পুৰণি ফৰ্মেট",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
-  },
-  "ledgerWalletTypeSelectTitle": "Wallet-ৰ ধৰণ বাছক",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
-  "ledgerSuccessAddressVerified": "ঠিকনা সফলভাৱে যাচাই হৈছে!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
-  },
-  "ledgerHelpTitle": "Ledger সমস্যা সমাধান",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
-  },
-  "ledgerHelpSubtitle": "প্ৰথমে, নিশ্চিত কৰক আপোনাৰ Ledger ডিভাইচ আনলক হৈ আছে আৰু Bitcoin app খোলা আছে। ডিভাইচটো এপ্পৰ সৈতে এতিয়াও সংযোগ নহলে, তলৰ পদক্ষেপসমূহ চেষ্টা কৰক:",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
-  },
-  "ledgerHelpStep1": "আপোনাৰ Ledger ডিভাইচ পুনৰ আৰম্ভ কৰক।",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep2": "নিশ্চিত কৰক আপোনাৰ ফোনত Bluetooth চলি আছে আৰু অনুমতি দিয়া হৈছে।",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep3": "নিশ্চিত কৰক আপোনাৰ Ledger-ত Bluetooth চলি আছে।",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep4": "নিশ্চিত কৰক আপুনি Ledger Live-ৰ পৰা Bitcoin app-ৰ শেহতীয়া সংস্কৰণ ইনষ্টল কৰিছে।",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep5": "নিশ্চিত কৰক আপোনাৰ Ledger ডিভাইচত শেহতীয়া firmware ব্যৱহাৰ হৈছে, Ledger Live desktop app ব্যৱহাৰ কৰি firmware আপডেট কৰিব পাৰিব।",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
   },
   "ledgerDefaultWalletLabel": "Ledger Wallet",
   "@ledgerDefaultWalletLabel": {
@@ -6985,14 +5659,6 @@
   "exchangeFeatureUnifiedHistory": "• একত্ৰিত লেনদেনৰ ইতিহাস",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  },
-  "priceChartFetchingHistory": "মূল্যৰ ইতিহাস আনা হৈছে...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
-  "priceChartFailedToLoad": "মূল্যৰ ইতিহাস লোড কৰিবলৈ বিফল হৈছে",
-  "@priceChartFailedToLoad": {
-    "description": "Error message shown when price history fails to load"
   },
   "priceFailedToLoad": "মূল্য লোড কৰিবলৈ বিফল হৈছে",
   "@priceFailedToLoad": {
@@ -7362,31 +6028,6 @@
   "@save": {
     "description": "Generic save button label"
   },
-  "statusCheckTitle": "সেৱাৰ স্থিতি",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "statusCheckLastChecked": "শেষবাৰ পৰীক্ষা কৰা হৈছিল: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "statusCheckOnline": "অনলাইন",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
-  "statusCheckOffline": "অফলাইন",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
-  "statusCheckUnknown": "অজ্ঞাত",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "torSettingsTitle": "Tor ছেটিংছ",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -7394,75 +6035,6 @@
   "torSettingsEnableProxy": "Tor Proxy সামৰ্থ্য কৰক",
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "torSettingsPortNumber": "Port নম্বৰ",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "torSettingsPortValidationEmpty": "অনুগ্ৰহ কৰি এটা port নম্বৰ দিয়ক",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
-  "torSettingsPortValidationInvalid": "অনুগ্ৰহ কৰি এটা বৈধ নম্বৰ দিয়ক",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
-  },
-  "torSettingsPortValidationRange": "Port 1 আৰু 65535-ৰ মাজত হ'ব লাগিব",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "torSettingsSaveButton": "সংৰক্ষণ কৰক",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
-  "torSettingsConnectionStatus": "সংযোগৰ স্থিতি",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
-  "torSettingsStatusConnected": "সাজু",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
-  "torSettingsStatusConnecting": "সংযোগ কৰা হৈছে...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
-  "torSettingsStatusDisconnected": "বিচ্ছিন্ন",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
-  "torSettingsStatusUnknown": "স্থিতি অজ্ঞাত",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
-  "torSettingsDescConnected": "Tor proxy চলি আছে আৰু সাজু",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
-  },
-  "torSettingsDescConnecting": "Tor সংযোগ স্থাপন কৰা হৈছে",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
-  "torSettingsDescDisconnected": "Tor proxy চলি নাই",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "withdrawSuccessTitle": "উত্তোলন আৰম্ভ হৈছে",
   "@withdrawSuccessTitle": {
@@ -7604,39 +6176,6 @@
   "coreScreensConfirmButton": "নিশ্চিত কৰক",
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
-  },
-  "systemLabelSwaps": "Swap",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
-  "systemLabelAutoSwap": "স্বয়ংক্ৰিয় Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
-  "systemLabelSelfSpend": "নিজৰ খৰচ",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
-  "systemLabelExchangeBuy": "ক্ৰয়",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
-  },
-  "systemLabelExchangeSell": "বিক্ৰয়",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
-  "labelDeleteFailed": "\"{label}\" মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "লগআউট নিশ্চিত কৰক",
   "@logoutConfirmationTitle": {
@@ -7814,7 +6353,6 @@
   "pinCodeDeleteError": "আপোনাৰ PIN মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হাৰ উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰাই চেষ্টা কৰক।",
-  "priceChartLoadFailed": "মূল্য চাৰ্ট ডেটা লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰাই চেষ্টা কৰক।",
   "mempoolErrorUnexpected": "অপ্ৰত্যাশিত ভুল হৈছে",
   "mempoolErrorUpdateSettingsFailed": "ছেটিংছ আপডেট কৰিবলৈ বিফল হৈছে: {error}",
   "@mempoolErrorUpdateSettingsFailed": {
@@ -8118,46 +6656,6 @@
   "nfcError": "NFC ত্ৰুটি: {error}",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallet swap ৰ বাবে ব্যৱহাৰ কৰিব নোৱাৰি।",
   "sendErrorInvoiceExpired": "এই invoice ৰ মেয়াদ উত্তীৰ্ণ হৈছে। প্ৰাপকৰ পৰা এটা নতুন invoice বিচাৰক।",
-  "psbtFlowSignViaNfc": "NFC ৰ জৰিয়তে স্বাক্ষৰ কৰক",
-  "psbtFlowSignViaNfcSheetTitle": "PSBT NFC ৰ জৰিয়তে পঠিয়াবলৈ আপোনাৰ {deviceName} টেপ কৰক",
-  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q নিৰ্দেশনা",
-  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 নিৰ্দেশনা",
-  "psbtFlowColdcardQStep1": "আপোনাৰ Coldcard Q ডিভাইচত লগইন কৰক",
-  "psbtFlowColdcardQStep2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "psbtFlowColdcardQStep3": "আপোনাৰ পছন্দৰ স্বাক্ষৰ পদ্ধতি বাছনি কৰক:",
-  "psbtFlowColdcardQStep4": "QR code ৰ বাবে:",
-  "psbtFlowColdcardQStep5": "   - আপোনাৰ Coldcard Q ত \"Scan any QR code\" বাছনি কৰক",
-  "psbtFlowColdcardQStep6": "   - Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
-  "psbtFlowColdcardQStep7": "   - স্কেন কৰিবলৈ সমস্যা হ'লে:",
-  "psbtFlowColdcardQStep8": "     - আপোনাৰ ডিভাইচৰ স্ক্ৰীনৰ উজ্জ্বলতা বঢ়াওক",
-  "psbtFlowColdcardQStep9": "     - QR code ৰ ওপৰেদি ৰঙা লেজাৰটো ওপৰ-তললৈ লৰাওক",
-  "psbtFlowColdcardQStep10": "     - আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
-  "psbtFlowColdcardQStep11": "NFC ৰ বাবে:",
-  "psbtFlowColdcardQStep12": "   - আপোনাৰ Coldcard Q ত \"Ready to Sign\" বাছনি কৰক, তাৰপিছত NFC বুটাম টেপ কৰক",
-  "psbtFlowColdcardQStep13": "   - আপোনাৰ ফোন Coldcard Q ত টেপ কৰক",
-  "psbtFlowColdcardQStep14": "   - PSBT স্থানান্তৰ হোৱালৈ অপেক্ষা কৰক",
-  "psbtFlowColdcardQStep15": "আপোনাৰ Coldcard Q ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "psbtFlowColdcardQStep16": "আপোনাৰ Coldcard Q ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "psbtFlowColdcardQStep17": "Coldcard Q এ তেতিয়া এটা স্বাক্ষৰিত লেনদেনৰ QR code দেখুৱাব বা NFC স্থানান্তৰৰ বাবে সাজু হ'ব।",
-  "psbtFlowColdcardQStep18": "যদি আপুনি QR ৰে স্বাক্ষৰ কৰিছে, Bull Bitcoin wallet ত \"মই সম্পন্ন কৰিলোঁ\" ক্লিক কৰক।",
-  "psbtFlowColdcardQStep19": "Bull Bitcoin wallet এ আপোনাক স্বাক্ষৰিত লেনদেনৰ QR code স্কেন কৰিবলৈ বা ইয়াক ৰিচিভ কৰিবলৈ NFC ব্যৱহাৰ কৰিবলৈ ক'ব।",
-  "psbtFlowColdcardQStep20": "   - QR ৰ বাবে: Coldcard Q ত থকা QR code স্কেন কৰক",
-  "psbtFlowColdcardQStep21": "   - NFC ৰ বাবে: আপোনাৰ ফোন Coldcard Q ত টেপ কৰক",
-  "psbtFlowColdcardQStep22": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "psbtFlowColdcardQStep23": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু। আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব।",
-  "psbtFlowColdcardMk4Step1": "আপোনাৰ Coldcard Mk4 ডিভাইচত লগইন কৰক",
-  "psbtFlowColdcardMk4Step2": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "psbtFlowColdcardMk4Step3": "আপোনাৰ Coldcard Mk4 ত \"Ready to Sign\" বাছনি কৰক, তাৰপিছত নম্বৰ 3 বুটাম টেপ কৰক",
-  "psbtFlowColdcardMk4Step4": "আপোনাৰ ফোন Coldcard Mk4 ত টেপ কৰক",
-  "psbtFlowColdcardMk4Step5": "PSBT স্থানান্তৰ হোৱালৈ অপেক্ষা কৰক",
-  "psbtFlowColdcardMk4Step6": "আপোনাৰ Coldcard Mk4 ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
-  "psbtFlowColdcardMk4Step7": "আপোনাৰ Coldcard Mk4 ত লেনদেনত স্বাক্ষৰ কৰিবলৈ বুটামবোৰ ক্লিক কৰক।",
-  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 এ তেতিয়া স্বাক্ষৰিত লেনদেনটো NFC স্থানান্তৰৰ বাবে সাজু কৰিব।",
-  "psbtFlowColdcardMk4Step9": "Bull Bitcoin wallet ত, প্ৰচাৰ স্ক্ৰীনত NFC টেপ কৰক।",
-  "psbtFlowColdcardMk4Step10": "স্বাক্ষৰিত লেনদেনটো ৰিচিভ কৰিবলৈ আপোনাৰ ফোন Coldcard Mk4 ত টেপ কৰক।",
-  "psbtFlowColdcardMk4Step11": "লেনদেনটো Bull Bitcoin wallet ত আমদানি কৰা হ'ব।",
-  "psbtFlowColdcardMk4Step12": "Bull Bitcoin wallet ত লেনদেনৰ বিৱৰণ পৰীক্ষা কৰক।",
-  "psbtFlowColdcardMk4Step13": "এতিয়া প্ৰচাৰ কৰিবলৈ সাজু। আপুনি প্ৰচাৰ ক্লিক কৰামাত্ৰে, লেনদেনটো Bitcoin নেটৱৰ্কত প্ৰকাশিত হ'ব।",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "স্বাক্ষৰিত লেনদেনটো NFC ৰ জৰিয়তে ৰিচিভ কৰিবলৈ আপোনাৰ Coldcard টেপ কৰক",
@@ -8192,7 +6690,6 @@
   "importColdcardMk4Step10": "\"Scan NFC\" বুটাম ক্লিক কৰক",
   "importColdcardMk4Step11": "ফোনৰ NFC Coldcard ৰ NFC ৰ ওপৰত থওক",
   "importColdcardMk4Step12": "এয়াই সম্পন্ন!",
-  "noteVisibleToSenderNotice": "এই টোকা আপোনাৰ QR বা invoice ৰ প্ৰাপকক দেখা যাব।",
   "viewerAddressTab": "ঠিকনা",
   "viewerPaymentUriTab": "পৰিশোধ URI",
   "transactionSwapOpenWithin24h": "আপোনাৰ swap সম্পূৰ্ণ কৰিবলৈ 24 ঘণ্টাৰ ভিতৰত এপটো খোলক।",
@@ -8307,18 +6804,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "1 sat/vB তকৈ কম হাৰৰ লেনদেন নিশ্চিত হ'বলৈ বেছি সময় ল'ব পাৰে আৰু সকলো node লৈ প্ৰচাৰিত নহ'বও পাৰে।",
   "sendBelowMinFeeRateError": "ফি হাৰ কমেও 0.1 sat/vB হ'ব লাগিব।",
-  "bitboxErrorBluetoothPermissionDenied": "আপোনাৰ BitBox02 Nova ৰ সৈতে সংযোগ কৰিবলৈ Bluetooth অনুমতিৰ প্ৰয়োজন।",
-  "bitboxErrorBluetoothUnavailable": "Bluetooth উপলব্ধ নাই। Bluetooth অন কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "bitboxErrorNoBleDevicesFound": "ওচৰত কোনো BitBox02 Nova পোৱা নগ'ল। Bluetooth পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
-  "bitboxErrorMultipleBleDevicesFound": "একাধিক BitBox02 Nova ডিভাইচ পোৱা গৈছে। ওচৰত কেৱল এটা ৰাখি পুনৰ চেষ্টা কৰক।",
-  "bitboxErrorOperationFailed": "BitBox কাৰ্য বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "bitboxScreenConnectSubtextBluetooth": "নিশ্চিত কৰক যে আপোনাৰ BitBox02 Nova আনলক আছে আৰু Bluetooth সক্ষম কৰা আছে।",
-  "bitboxScreenScanningSubtextBluetooth": "আপোনাৰ ওচৰৰ BitBox02 Nova বিচাৰি আছোঁ...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova সমস্যা সমাধান",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "যদি আপোনাৰ ডিভাইচ এতিয়াও এপটোৰ সৈতে সংযোগ নহয়, তলৰবোৰ চেষ্টা কৰক:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "নিশ্চিত কৰক যে Bluetooth অন আছে আৰু এই এপৰ বাবে অনুমতি দিয়া আছে।",
-  "bitboxScreenTroubleshootingBluetoothStep2": "নিশ্চিত কৰক যে আপোনাৰ BitBox02 Nova ত Bluetooth সক্ষম কৰা আছে।",
-  "bitboxScreenTroubleshootingBluetoothStep3": "আপোনাৰ BitBox02 Nova পুনৰ আৰম্ভ কৰক আৰু পুনৰ সংযোগ কৰাৰ চেষ্টা কৰক।",
   "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -8348,7 +6833,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin দাবীত্যাগ",
   "settingsPayjoinAdvancedTitle": "Payjoin ৰ উন্নত ছেটিংছ",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "আপোনাৰ Liquid স্বয়ংক্ৰিয়ভাৱে Bitcoin-লৈ ৰূপান্তৰ কৰা হয়।",
   "addressViewErrorWalletNotFound": "এই ৱালেট বিচাৰি পোৱা নগল।",
   "addressViewErrorLoadFailed": "আপোনাৰ ঠিকনাসমূহ লোড কৰিব পৰা নগল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "coreSwapsStatusNotStarted": "আৰম্ভ হোৱা নাই",
@@ -8363,19 +6847,6 @@
   "coreSwapsStatusUnknown": "অজ্ঞাত",
   "sendSwapExpiredTitle": "অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে",
   "sendSwapExpiredMessage": "কোনো ধন পঠোৱাৰ আগতেই এই অৰ্ডাৰৰ ম্যাদ উত্তীৰ্ণ হৈছে। আপোনাৰ wallet ৰ পৰা কিছুও পঠোৱা হোৱা নাই।",
-  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
-  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
-  "torSettingsBootstrapProgress": "সংযোগ কৰি আছে… {percent}%",
-  "torSettingsEmbeddedTitle": "অন্তৰ্নিহিত Tor",
-  "torSettingsEmbeddedDescription": "অন্তৰ্নিহিত Tor ব্যৱহাৰ কৰে RecoverBull আৰু Bitcoin Electrum-ৰ .onion ছাৰ্ভাৰসমূহে। এপৰ বাকী ট্ৰেফিক পোনপটীয়াকৈয়ে থাকে।",
-  "torSettingsTransportMode": "সংযোগৰ পদ্ধতি",
-  "torSettingsModeAutomatic": "স্বয়ংক্ৰিয়",
-  "torSettingsModeDirect": "পোনপটীয়া",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
-  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
-  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
-  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
   "settingsScreenPrivacyTitle": "স্ক্ৰীন গোপনীয়তা",
   "settingsScreenPrivacyDisabledMessage": "এতিয়া সংবেদনশীল স্ক্ৰীনত স্ক্ৰীনশ্বট লোৱাৰ অনুমতি আছে",
   "settingsSearchHint": "ছেটিংছ সন্ধান কৰক",
@@ -8410,11 +6881,7 @@
   "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
-  "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে",
   "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "psbtFlowInvalidPsbtError": "এই লেনদেন পঢ়িব পৰা নগ'ল। উভতি গৈ ইয়াক পুনৰ সৃষ্টি কৰক।",
-  "psbtFlowQrEncodingError": "এই লেনদেনক QR ক'ডলৈ ৰূপান্তৰ কৰিব পৰা নগ'ল।",
   "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
@@ -8446,15 +6913,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "সেই ফাইল প্ৰকাৰ গ্ৰহণ কৰা নহয়। আন এটা বাছনি কৰক।",
   "exchangeSettingsErrorDocumentUnreadable": "সেই ফাইলটো পঢ়িব পৰা নগ'ল। আন এটা বাছনি কৰক।",
   "exchangeSettingsErrorUploadingDocument": "নথিখন আপল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "labelsErrorNoteTooLong": "টোকা {max} আখৰতকৈ বেছি হ'ব নোৱাৰে",
-  "labelsErrorNoteForbiddenCharacter": "টোকাত {character} আখৰটো থাকিব নোৱাৰে",
-  "labelsErrorFileTooLarge": "এই ফাইলটো অতি ডাঙৰ। লেবেল ফাইল {max} তকৈ সৰু হ'ব লাগিব।",
-  "labelsErrorFileUnreadable": "এইটো BIP-329 লেবেল ফাইল যেন নালাগে। আপুনি শুদ্ধ ফাইল বাছিছে নে চাওক।",
-  "labelsErrorFileEmpty": "এই ফাইলত আমদানি কৰিবলৈ কোনো লেবেল নাই।",
-  "labelsErrorExportFailed": "আপোনাৰ লেবেলবোৰ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "labelsErrorFileReservedName": "এই ফাইলে এপ্পে সংৰক্ষিত কৰা লেবেল নাম ব্যৱহাৰ কৰে। ফাইলত নাম সলনি কৰি পুনৰ চেষ্টা কৰক।",
-  "labelsErrorNoteForbiddenWhitespace": "টোকাত লাইন ব্ৰেক বা টেব থাকিব নোৱাৰে",
-  "labelsErrorFileInvalidEntry": "সেই ফাইলৰ কিছুমান প্ৰবিষ্টি পঢ়িব পৰা নগ'ল। ফাইলটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsErrorLoadFailed": "আপোনাৰ প্ৰাপকসকলক ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsErrorSaveFailed": "এই প্ৰাপকজনক সংৰক্ষণ কৰিব পৰা নগ'ল। তথ্য পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsErrorSinpeLookupFailed": "আমি এই ফোন নম্বৰটো সত্যাপন কৰিব নোৱাৰিলোঁ। ইয়াক পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
@@ -8632,11 +7090,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
   "settingsDarkModeTitle": "আন্ধাৰ ম'ড",
   "settingsSourceCodeTitle": "উৎস ক'ড",
-  "torSettingsStatusNoInternetOrBlocked": "ইণ্টাৰনেট নাই বা নেটৱৰ্ক সেন্সৰ কৰা",
-  "torSettingsDescNoInternetOrBlocked": "এই নেটৱৰ্কত ইণ্টাৰনেট নাই, বা ই Tor অৱৰোধ কৰে।",
   "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।",
-  "serverEncrypted": "এনক্ৰিপ্ট কৰা",
-  "serverUnencrypted": "এনক্ৰিপ্ট নকৰা",
   "backgroundTasksTitle": "নেপথ্যৰ কাম",
   "blockedInSystemSettings": "ছিষ্টেম ছেটিংছত অৱৰুদ্ধ",
   "notificationsBlockedMessage": "ছিষ্টেম ছেটিংছত জাননী অৱৰুদ্ধ কৰা আছে।",

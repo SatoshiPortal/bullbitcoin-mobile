@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
+        BullAmountScope,
         BullFadingLinearProgress,
         BullQuickActionBar,
         BullShapesX,
@@ -18,7 +20,6 @@ class WalletCard extends StatelessWidget {
     required this.balanceSat,
     this.onTap,
     this.isSyncing = false,
-    this.fiatCurrency,
   });
 
   final Color tagColor;
@@ -27,7 +28,6 @@ class WalletCard extends StatelessWidget {
   final int balanceSat;
   final bool isSyncing;
   final void Function()? onTap;
-  final String? fiatCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -135,13 +135,21 @@ class WalletCard extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerRight,
-          child: CurrencyText(
-            balanceSat,
-            showFiat: showFiat,
-            fiatCurrency: fiatCurrency,
-            style: style,
-            color: color,
-          ),
+          child: showFiat
+              ? FiatAmountText.quote(
+                  balanceSat,
+                  hideAmounts:
+                      BullAmountScope.maybeOf(context)?.snapshot.hideAmounts ??
+                      true,
+                  style: style,
+                  color: color,
+                )
+              : BullAmount.signedSats(
+                  balanceSat,
+                  interactive: false,
+                  style: style,
+                  color: color,
+                ),
         ),
       ),
     ],

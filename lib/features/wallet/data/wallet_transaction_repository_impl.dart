@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
@@ -9,11 +9,11 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final SyncWalletValuesDatasource _values;
   final Future<void> Function(WalletMetadataModel) _synchronize;
 
@@ -62,6 +62,10 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     return transactions.firstOrNull;
   }
 
+  Future<List<Label>> _fetchLabels(String reference) async =>
+      (await _labelsFacade.fetch(reference: reference))
+          .fold((labels) => labels, (_) => const <Label>[]);
+
   Future<List<WalletTransaction>> _getWalletTransactions({
     required List<WalletModel> walletModels,
     String? txId,
@@ -85,9 +89,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             final (inputs, outputs, labels) = await (
               Future.wait(
                 walletTransactionModel.inputs.map((inputModel) async {
-                  final inputLabels = await _labelsFacade.fetchByReference(
-                    inputModel.labelRef,
-                  );
+                  final inputLabels = await _fetchLabels(inputModel.labelRef);
                   return TransactionInputMapper.toEntity(
                     inputModel,
                     labels: inputLabels.map((label) => label.label).toList(),
@@ -96,15 +98,11 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               ),
               Future.wait(
                 walletTransactionModel.outputs.map((outputModel) async {
-                  final outputLabels = await _labelsFacade.fetchByReference(
-                    outputModel.labelRef,
-                  );
+                  final outputLabels = await _fetchLabels(outputModel.labelRef);
                   final outputModelAddress = outputModel.address;
                   final addressLabels = <Label>[];
                   if (outputModelAddress != null) {
-                    final rows = await _labelsFacade.fetchByReference(
-                      outputModelAddress,
-                    );
+                    final rows = await _fetchLabels(outputModelAddress);
                     addressLabels.addAll(rows);
                   }
 
@@ -116,7 +114,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   );
                 }),
               ),
-              _labelsFacade.fetchByReference(walletTransactionModel.txId),
+              _fetchLabels(walletTransactionModel.txId),
             ).wait;
 
             return WalletTransactionMapper.toEntity(

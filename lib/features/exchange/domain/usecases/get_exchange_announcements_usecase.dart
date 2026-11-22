@@ -3,8 +3,7 @@ import '../exchange_access.dart';
 
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
@@ -15,7 +14,7 @@ import 'package:meta/meta.dart';
 class GetExchangeAnnouncementsUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeAccessRepository _access;
 
   const GetExchangeAnnouncementsUsecase({

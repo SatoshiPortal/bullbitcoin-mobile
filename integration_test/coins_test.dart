@@ -7,15 +7,14 @@ import 'package:primitives/primitives.dart' as primitives show Network;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/frozen_utxos_freeze_store.dart';
+import 'package:labels/storage.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -89,7 +88,7 @@ Future<void> main({bool isInitialized = false}) async {
         documentsDirectory: dir.path,
         catalog: const _NoCatalog(),
         reservedAddresses: const _NoReserved(),
-        freezes: FrozenUtxosFreezeStore(sqlite: db),
+        freezes: FrozenUtxosFreezeStore(database: db),
         inputReservations: _NoInputReservations(),
         connections: const _NoConnections(),
       );

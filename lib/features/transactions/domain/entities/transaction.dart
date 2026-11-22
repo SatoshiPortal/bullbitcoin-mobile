@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -27,7 +27,7 @@ sealed class Transaction with _$Transaction {
       orderSwap?.canonicalWalletTransactionId ??
       payjoin?.txId ??
       order?.transactionId;
-  primitives.Network? get _explorerNetwork {
+  primitives.Network? get explorerNetwork {
     final walletNetwork = walletTransaction?.network;
     if (walletNetwork != null) return walletNetwork.shared;
     final origin = swap;
@@ -70,7 +70,7 @@ sealed class Transaction with _$Transaction {
   }
 
   bool get supportsPublicExplorer {
-    final network = _explorerNetwork;
+    final network = explorerNetwork;
     return network != null &&
         primitives.NetworkCapabilities.supports(
           network,
@@ -78,7 +78,7 @@ sealed class Transaction with _$Transaction {
         );
   }
 
-  bool get isTestnet => switch (_explorerNetwork?.env) {
+  bool get isTestnet => switch (explorerNetwork?.env) {
     primitives.NetworkEnv.mainnet => false,
     primitives.NetworkEnv.testnet => true,
     _ => throw StateError('Transaction has no historical explorer network'),

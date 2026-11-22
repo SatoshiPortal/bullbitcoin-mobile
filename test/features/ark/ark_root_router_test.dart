@@ -1,8 +1,11 @@
+import 'package:fees_feature/fees_feature.dart' show FeesFeature;
+
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkFacade, ArkAccountId;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -10,10 +13,20 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTopBar;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:network/network.dart';
+import 'package:preferences/preferences.dart';
 import 'package:secrets/secrets.dart';
+
+class PricePreferences extends Mock
+    implements
+        ActiveEnvironmentReader,
+        AmountDisplayPreferencesReader,
+        RuntimeDisplayPreferencesReader {}
 
 class Exchange extends Mock implements ExchangeFacade {}
 
@@ -47,18 +60,72 @@ void main() {
       locator.registerSingleton<ExchangeFacade>(exchange);
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       locator.registerSingleton<RecoverBullFeature>(recovery);
+      final signerServices = GetIt.asNewInstance();
+      locator.registerSingleton(
+        SignersFeature.mount(
+          services: signerServices,
+          writeNfc: (_, _, _, _) async {},
+        ),
+      );
+      final networkServices = GetIt.asNewInstance();
+      locator.registerSingleton(
+        NetworkFeature.mount(
+          services: networkServices,
+          bindings: (
+            readDefaultNetwork: () async => const Ok(null),
+            readEnvironment: () async =>
+                throw StateError('Unexpected environment read'),
+            readMempoolEnvironment: () async =>
+                throw StateError('Unexpected Mempool environment read'),
+            checkBitcoinFees: (_) async {},
+            isTorRequired: () async => false,
+            readTorPreferences: () async =>
+                throw StateError('Unexpected Tor read'),
+            saveTorProxy: ({required enabled, required port}) async => false,
+            saveTorMode: (_) async => const Ok(null),
+          ),
+        ),
+      );
+      locator.registerSingleton(
+        FeesFeature.mount(fees: () => throw StateError('Unexpected fees read')),
+      );
+      final preferences = PricePreferences();
+      locator.registerSingleton(
+        BitcoinPriceFeature.mount(
+          environment: preferences,
+          amountDisplay: preferences,
+          display: preferences,
+        ),
+      );
       final router = AppRouter.router;
       addTearDown(() async {
         router.dispose();
         await quickActions.close();
         await recovery.dispose();
+        await locator.unregister<SignersFeature>();
+        await signerServices.reset();
         await locator.unregister<ExchangeFacade>();
         await locator.unregister<QuickActionsCubit>();
         await locator.unregister<RecoverBullFeature>();
+        await locator.unregister<NetworkFeature>();
+        await locator.unregister<FeesFeature>();
+        await locator.unregister<BitcoinPriceFeature>();
+        await networkServices.reset();
         directory.deleteSync(recursive: true);
       });
       // Exercise the actual production route configuration, not a test GoRouter.
       expect(router.configuration.findMatch(Uri.parse('/ark')).isError, false);
+      expect(
+        router.namedLocation('torSettings'),
+        '/settings/app-settings/tor-settings',
+      );
+      expect(
+        router.configuration
+            .findMatch(Uri.parse('/bitcoin-fee-source'))
+            .isError,
+        false,
+      );
+      expect(router.namedLocation('priceHistory'), '/settings/price-history');
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

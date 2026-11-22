@@ -1,7 +1,7 @@
 @Tags(['golden'])
 library;
 
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -19,7 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:swaps/swaps.dart';
 
 class _Receive extends Mock implements ReceiveBloc {}
@@ -33,7 +33,7 @@ Wallet _wallet({
   String name = 'Savings',
   bool liquid = false,
   bool empty = false,
-  SignerDeviceEntity? hardware,
+  SignerDevice? hardware,
 }) => Wallet(
   origin: name,
   label: name,
@@ -55,9 +55,9 @@ ReceiveState _state(String name) {
     liquid: liquid,
     empty: name == 'advanced-empty',
     hardware: name == 'advanced-ledger'
-        ? SignerDeviceEntity.ledgerNanoX
+        ? SignerDevice.ledgerNanoX
         : name == 'advanced-bitbox'
-        ? SignerDeviceEntity.bitbox02
+        ? SignerDevice.bitbox02
         : null,
   );
   final date = DateTime.utc(2026, 11, 19);

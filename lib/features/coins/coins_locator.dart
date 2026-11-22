@@ -1,3 +1,6 @@
+import 'package:preferences/preferences.dart'
+    show AmountDisplayPreferencesReader;
+import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -9,8 +12,9 @@ import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart'
 import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/load_coin_label_filters_usecase.dart';
 
 class CoinsLocator {
   static void setup(GetIt locator) {
@@ -37,6 +41,9 @@ class CoinsLocator {
     // Cubit — built per route with the target wallet id.
     locator.registerFactoryParam<CoinsCubit, String, void>(
       (walletId, _) => CoinsCubit(
+        watchAmountDisplayUsecase: WatchCoinsAmountDisplayUsecase(
+          locator<AmountDisplayPreferencesReader>(),
+        ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletFacade>(),
         ),
@@ -45,7 +52,7 @@ class CoinsLocator {
         freezeUtxosUsecase: locator<FreezeUtxosUsecase>(),
         unfreezeUtxosUsecase: locator<UnfreezeUtxosUsecase>(),
         refreshCoinsUsecase: locator<RefreshCoinsUsecase>(),
-        labelsFacade: locator<LabelsFacade>(),
+        loadCoinLabelFilters: LoadCoinLabelFiltersUsecase(locator<Labels>()),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:

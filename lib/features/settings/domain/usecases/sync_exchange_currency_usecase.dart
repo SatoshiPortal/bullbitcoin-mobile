@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -13,7 +12,7 @@ import 'package:meta/meta.dart';
 /// one. Skips silently when the user is signed out or the currency is not
 /// offered on the exchange — the app-side setting is already saved either way.
 class SyncExchangeCurrencyUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
 
@@ -32,7 +31,10 @@ class SyncExchangeCurrencyUsecase {
 
     final Environment environment;
     try {
-      environment = (await _settingsRepository.fetch()).environment;
+      environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
     } on Error {
       rethrow;
     } catch (e, st) {

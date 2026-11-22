@@ -1,15 +1,15 @@
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
+import 'package:preferences/storage.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SqliteDatabase database;
-  late SettingsDatasource datasource;
+  late PreferencesDao datasource;
 
   setUp(() async {
     database = SqliteDatabase(NativeDatabase.memory());
-    datasource = SettingsDatasource(sqlite: database);
+    datasource = PreferencesDao(database);
     await database.customStatement(
       "UPDATE settings SET environment = 'testnet', "
       'is_superuser = 1, is_dev_mode_enabled = 1 WHERE id = 1',
@@ -48,6 +48,25 @@ void main() {
     expect(settings.environment.name, 'mainnet');
     expect(settings.isDevModeEnabled, isFalse);
   });
+
+  for (final environment in ['testnet', 'regtest']) {
+    test('revoking superuser restores mainnet from $environment', () async {
+      await database.customStatement(
+        'UPDATE settings SET environment = ? WHERE id = 1',
+        [environment],
+      );
+      await datasource.setIsSuperuser(false);
+
+      final settings = await datasource.fetch();
+      expect(settings.environment.name, 'mainnet');
+      expect(settings.isSuperuser, isFalse);
+      expect(settings.isDevModeEnabled, isFalse);
+
+      final row = await database.managers.settings.getSingle();
+      expect(row.environment, 'mainnet');
+      expect(row.isDevModeEnabled, isFalse);
+    });
+  }
 
   test('an authorized testnet read does not rewrite settings', () async {
     final settings = await datasource.fetch();

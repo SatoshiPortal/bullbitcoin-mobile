@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/features/buy/domain/validate_buy_destination_usecase.dart';
@@ -6,9 +7,8 @@ import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/watch_buy_bitcoin_unit_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +34,7 @@ part 'buy_state.dart';
 class BuyBloc extends Bloc<BuyEvent, BuyState> {
   BuyBloc({
     ValidateBuyDestinationUsecase? validateDestination,
+    WatchBuyBitcoinUnitUsecase? watchBitcoinUnitUsecase,
     required this._syncBuyReceiptUsecase,
     required this._loadBuyContextUsecase,
     required this._confirmBuyOrderUsecase,
@@ -45,6 +47,14 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   }) : _validateDestination =
            validateDestination ?? ValidateBuyDestinationUsecase(),
        super(const BuyState()) {
+    on<_BuyDisplayBitcoinUnitChanged>((event, emit) {
+      emit(state.copyWith(displayBitcoinUnit: event.unit));
+    });
+    _displayBitcoinUnitSubscription = watchBitcoinUnitUsecase?.execute().listen(
+      (unit) {
+        if (!isClosed) add(BuyEvent.displayBitcoinUnitChanged(unit));
+      },
+    );
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
     on<_BuyCurrencyInputChanged>(_onCurrencyInputChanged);
@@ -65,6 +75,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   }
 
   final ValidateBuyDestinationUsecase _validateDestination;
+  late final StreamSubscription<BitcoinUnit?>? _displayBitcoinUnitSubscription;
   int _destinationGeneration = 0;
   int _orderCreationGeneration = 0;
 
@@ -536,6 +547,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   Future<void> close() async {
     ++_orderCreationGeneration;
     _quoteScheduler.dispose();
+    await _displayBitcoinUnitSubscription?.cancel();
     await _cancelAbandonedPayjoin(state.buyOrder);
     return super.close();
   }

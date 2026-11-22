@@ -1,0 +1,94 @@
+{
+  "systemLabelAutoSwap": "Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} ετικέτες εισαγόμενων",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "Αγοράστε αγορά αγορά",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "1 ετικέτα εισαγόμενα",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "Πώληση",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "Μη μπορώ να διαγράψουμε «{label}». Παρακαλώ δοκιμάστε ξανά.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Εισάγετε εδώ...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "Σημειώσεις",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "Payjoinin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "Οι ετικέτες που εξάγονται επιτυχώς",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "Εξοικονομήστε",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 ετικέτες",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "Εισαγωγή/Εξαγωγή Ετικετών BIP329",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsExportButton": "Εξάγει ετικέτες",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "Περάστε τον εαυτό σας",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "Εισαγόμενες ή εξαγωγικές ετικέτες χρησιμοποιώντας την τυποποιημένη μορφή BIP329.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "noteVisibleToSenderNotice": "Αυτή η σημείωση θα είναι ορατή στον παραλήπτη του QR ή του invoice σας.",
+  "labelsErrorNoteTooLong": "Η σημείωση δεν πρέπει να υπερβαίνει τους {max} χαρακτήρες",
+  "labelsErrorNoteForbiddenCharacter": "Η σημείωση δεν μπορεί να περιέχει τον χαρακτήρα {character}",
+  "labelsErrorFileTooLarge": "Αυτό το αρχείο είναι πολύ μεγάλο. Τα αρχεία ετικετών πρέπει να είναι μικρότερα από {max}.",
+  "labelsErrorFileUnreadable": "Αυτό δεν μοιάζει με αρχείο ετικετών BIP-329. Ελέγξτε ότι επιλέξατε το σωστό αρχείο.",
+  "labelsErrorFileEmpty": "Αυτό το αρχείο δεν περιέχει ετικέτες για εισαγωγή.",
+  "labelsErrorExportFailed": "Δεν ήταν δυνατή η αποθήκευση των ετικετών σας. Δοκιμάστε ξανά.",
+  "labelsErrorFileReservedName": "Αυτό το αρχείο χρησιμοποιεί όνομα ετικέτας που δεσμεύει η εφαρμογή. Μετονομάστε το στο αρχείο και δοκιμάστε ξανά.",
+  "labelsErrorNoteForbiddenWhitespace": "Η σημείωση δεν μπορεί να περιέχει αλλαγές γραμμής ή στηλοθέτες",
+  "labelsErrorFileInvalidEntry": "Ορισμένες καταχωρίσεις αυτού του αρχείου δεν μπόρεσαν να διαβαστούν. Ελέγξτε το αρχείο και δοκιμάστε ξανά."
+}

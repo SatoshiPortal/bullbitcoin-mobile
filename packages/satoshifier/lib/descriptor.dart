@@ -1,4 +1,5 @@
 import 'package:bip32_keys/bip32_keys.dart';
+import 'package:primitives/primitives.dart' show XpubType;
 import 'package:satoshifier/satoshifier.dart';
 import 'package:satoshifier/utils/descriptor_checksum.dart';
 
@@ -154,12 +155,8 @@ class Descriptor {
   /// ExtendedPubkey.parse would reject, and this check is not the place to
   /// narrow that.
   static void _checkKeyNetworkMatchesPath(String xpub, Network pathNetwork) {
-    final XpubType keyType;
-    try {
-      keyType = XpubType.fromString(xpub);
-    } catch (_) {
-      return;
-    }
+    final keyType = XpubType.tryFromPrefix(xpub);
+    if (keyType == null) return;
     if (Network.fromXpubType(keyType).isMainnet != pathNetwork.isMainnet) {
       throw FormatException(
         'Key-origin coin type and extended key disagree on the network',

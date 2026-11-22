@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 
@@ -19,13 +19,17 @@ class SetSettingsExchangeAccessUsecase {
     bool Function()? isIOS,
   }) : _isIOS = isIOS ?? (() => Platform.isIOS);
   final ExchangeFacade _exchange;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   final bool Function() _isIOS;
 
   Future<Result<void, SettingsFailure>> execute(bool enabled) async {
     if (enabled && _isIOS()) {
       try {
-        if ((await _settings.fetch()).isSuperuser != true) {
+        if (((await _settings.fetch()).fold(
+              (value) => value,
+              (failure) => throw Exception('Preferences read failed'),
+            )).isSuperuser !=
+            true) {
           return const Err(SettingsExchangeSyncFailure());
         }
       } on Exception {

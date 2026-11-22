@@ -58,7 +58,7 @@ class SwapDataMigrations extends Table {
 
 /// The engine's own database. The app injects the [QueryExecutor] (file
 /// location, WAL/busy-timeout pragmas, cross-isolate sharing are the app's
-/// platform concerns) so this package stays pure Dart.
+/// platform concerns); schema and row persistence remain owned by the engine.
 @DriftDatabase(tables: [Swaps, SwapDataMigrations])
 class BoltzSwapsDatabase extends _$BoltzSwapsDatabase {
   static const String name = 'boltz_swaps';

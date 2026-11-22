@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/ark_background_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:drift/drift.dart' show Value;

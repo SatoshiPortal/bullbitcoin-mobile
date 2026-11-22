@@ -11,15 +11,14 @@ void main() {
     test(
       'fee URL selection stays outside the datasource exception boundary',
       () {
-        final datasourceSource = File('lib/core/fees/data/fees_datasource.dart')
-            .readAsStringSync();
-        final repositorySource = File(
-          'lib/features/fees/data/fees_repository_impl.dart',
+        final datasourceSource = File(
+          'packages/fees/lib/src/data/mempool_fees_datasource.dart',
         ).readAsStringSync();
+        final capabilitySource = File('packages/fees/lib/src/fees.dart')
+            .readAsStringSync();
 
-        expect(repositorySource, contains('customServer.fullUrl'));
-        expect(repositorySource, contains('defaultServer.fullUrl'));
-        expect(repositorySource, contains('baseUrl:'));
+        expect(capabilitySource, contains('.servers.activeBase('));
+        expect(capabilitySource, contains('baseUrl:'));
         expect(datasourceSource, isNot(contains('server.fullUrl')));
         expect(
           datasourceSource,

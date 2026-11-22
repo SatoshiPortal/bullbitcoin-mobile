@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:signers/signers.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -141,7 +141,7 @@ void main() {
     when(() => getWallet.execute('wallet-1')).thenAnswer(
       (_) async => _wallet(
         Network.liquidTestnet,
-        signerDevice: SignerDeviceEntity.ledgerNanoX,
+        signerDevice: SignerDevice.ledgerNanoX,
       ),
     );
 
@@ -161,7 +161,7 @@ void main() {
   });
 }
 
-Wallet _wallet(Network network, {SignerDeviceEntity? signerDevice}) => Wallet(
+Wallet _wallet(Network network, {SignerDevice? signerDevice}) => Wallet(
   origin: 'wallet-1',
   network: network,
   xpubFingerprint: '00000000',

@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
@@ -187,10 +187,6 @@ void main() {
         NotificationMessage(
           kind: NotificationMessageKind.recipient,
           event: 'VIRTUAL_IBAN_ACTIVATED',
-          rawData: const {
-            'type': 'recipient',
-            'event': 'VIRTUAL_IBAN_ACTIVATED',
-          },
         ),
       );
 

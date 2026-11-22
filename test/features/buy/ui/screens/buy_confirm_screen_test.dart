@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
@@ -18,7 +17,6 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullCountdown, BullShimmerLine;
@@ -30,8 +28,6 @@ import 'package:mocktail/mocktail.dart';
 class _MockBuyBloc extends Mock implements BuyBloc {}
 
 class _MockExchangeCubit extends Mock implements ExchangeCubit {}
-
-class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
@@ -50,22 +46,11 @@ void main() {
     double textScale = 1,
   }) async {
     final bloc = _MockBuyBloc();
-    final settings = _MockSettingsCubit();
     final states = StreamController<BuyState>.broadcast();
     addTearDown(states.close);
-    var state = initial;
+    var state = initial.copyWith(displayBitcoinUnit: BitcoinUnit.sats);
     when(() => bloc.state).thenAnswer((_) => state);
     when(() => bloc.stream).thenAnswer((_) => states.stream);
-    when(() => settings.state).thenReturn(
-      const SettingsState(
-        storedSettings: SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-        ),
-      ),
-    );
-    when(() => settings.stream).thenAnswer((_) => const Stream.empty());
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
@@ -77,10 +62,7 @@ void main() {
         localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
-          providers: [
-            BlocProvider<BuyBloc>.value(value: bloc),
-            BlocProvider<SettingsCubit>.value(value: settings),
-          ],
+          providers: [BlocProvider<BuyBloc>.value(value: bloc)],
           child: const BuyConfirmScreen(),
         ),
       ),
@@ -89,8 +71,8 @@ void main() {
     return (
       bloc: bloc,
       update: (next) {
-        state = next;
-        states.add(next);
+        state = next.copyWith(displayBitcoinUnit: BitcoinUnit.sats);
+        states.add(state);
       },
     );
   }
@@ -179,12 +161,12 @@ void main() {
         ),
       );
       final bloc = _MockBuyBloc();
-      final settings = _MockSettingsCubit();
       final exchange = _MockExchangeCubit();
       final states = StreamController<BuyState>.broadcast();
       addTearDown(states.close);
       var state = const BuyState(
         isStarted: true,
+        displayBitcoinUnit: BitcoinUnit.sats,
         userSummary: user,
         amountInput: '100',
         currencyInput: 'CAD',
@@ -193,8 +175,8 @@ void main() {
         bitcoinAddressInput: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
       );
       void update(BuyState next) {
-        state = next;
-        states.add(next);
+        state = next.copyWith(displayBitcoinUnit: BitcoinUnit.sats);
+        states.add(state);
       }
 
       when(() => bloc.state).thenAnswer((_) => state);
@@ -210,16 +192,6 @@ void main() {
           state.copyWith(isCreatingOrder: false, buyOrder: null, failure: null),
         );
       });
-      when(() => settings.state).thenReturn(
-        const SettingsState(
-          storedSettings: SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-          ),
-        ),
-      );
-      when(() => settings.stream).thenAnswer((_) => const Stream.empty());
       when(() => exchange.state)
           .thenReturn(const ExchangeState(userSummary: user));
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
@@ -240,10 +212,7 @@ void main() {
       addTearDown(router.dispose);
       await tester.pumpWidget(
         MultiBlocProvider(
-          providers: [
-            BlocProvider<SettingsCubit>.value(value: settings),
-            BlocProvider<ExchangeCubit>.value(value: exchange),
-          ],
+          providers: [BlocProvider<ExchangeCubit>.value(value: exchange)],
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.themeData(AppThemeType.light),

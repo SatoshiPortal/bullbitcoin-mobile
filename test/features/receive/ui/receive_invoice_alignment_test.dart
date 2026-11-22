@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -13,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:swaps/swaps.dart';
 
 class _Receive extends Mock implements ReceiveBloc {}
@@ -115,13 +113,13 @@ void main() {
       await _mount(tester, destination: destination);
       final context = tester.element(find.byType(ReceiveLnInfoDetails));
       final loc = context.loc;
-      final link = find.byType(DisclosureLink);
+      final link = find.byType(BullDisclosureLink);
       if (destination.isBitcoin) {
         expect(link, findsNothing);
         return;
       }
       expect(link, findsOneWidget);
-      final disclosure = tester.widget<DisclosureLink>(link);
+      final disclosure = tester.widget<BullDisclosureLink>(link);
       expect(
         disclosure.label,
         'Payments will be converted to Liquid L-BTC (not BTC). Learn more.',
@@ -129,8 +127,8 @@ void main() {
       expect(disclosure.semanticLabel, loc.liquidRiskDisclosureSemanticLabel);
       await tester.tap(link);
       await tester.pumpAndSettle();
-      final sheet = tester.widget<DisclosureBottomSheet>(
-        find.byType(DisclosureBottomSheet),
+      final sheet = tester.widget<BullDisclosureSheet>(
+        find.byType(BullDisclosureSheet),
       );
       expect(sheet.title, loc.liquidRiskDisclosureTitle);
       expect(sheet.body, loc.liquidRiskDisclosureBody);
@@ -141,7 +139,7 @@ void main() {
     tester,
   ) async {
     await _mount(tester);
-    final values = find.byType(CurrencyText);
+    final values = find.byType(BullAmount);
     expect(values, findsNWidgets(3));
     final right = tester.getTopRight(values.first).dx;
     expect(tester.getTopRight(values.at(1)).dx, right);
@@ -195,7 +193,7 @@ void main() {
     expect(identifier.overflow, TextOverflow.ellipsis);
     final sheetValues = find.descendant(
       of: find.byType(ReceiveLnFeesDetails),
-      matching: find.byType(CurrencyText),
+      matching: find.byType(BullAmount),
     );
     for (final element in sheetValues.evaluate()) {
       expect(tester.getTopRight(find.byWidget(element.widget)).dx, 310);

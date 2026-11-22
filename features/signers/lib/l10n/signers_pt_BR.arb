@@ -1,0 +1,1021 @@
+{
+  "bitboxScreenNeedHelpButton": "Precisas de ajuda?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "psbtFlowClickScan": "Clique em Digitalizar",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "kruxStep3": "Clique em PSBT",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "passportStep1": "Entre no seu dispositivo de Passaporte",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "bitboxErrorMultipleDevicesFound": "Múltiplos dispositivos BitBox encontrados. Certifique-se de que apenas um dispositivo está conectado.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "jadeStep13": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Jade. Analisa-o.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "ledgerImportButton": "Importação de início",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxScreenTroubleshootingStep2": "Certifique-se de que seu telefone tem permissões USB habilitadas.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "ledgerButtonNeedHelp": "Precisas de ajuda?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "bitboxActionPairDeviceProcessing": "Dispositivo de emparelhamento",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "kruxStep7": "   - Aumente o brilho da tela em seu dispositivo",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "O Jade irá então mostrar-lhe o seu próprio código QR.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "ledgerActionFailedMessage": "{action}",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "jadeStep8": "   - Tente mover seu dispositivo mais perto ou mais longe",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "bitboxActionPairDeviceButton": "Iniciar emparelhamento",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "seedsignerStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no SeedSigner. Analisa-o.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "seedsignerStep1": "Ligue o dispositivo SeedSigner",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerHelpStep3": "Certifique-se de que seu Ledger tem Bluetooth ligado.",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "ledgerVerifyTitle": "Verificar endereço no Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "bitboxScreenConnectingSubtext": "Estabelecer uma ligação segura...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "Sua carteira BitBox foi importada com sucesso.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "jadeStep7": "   - Mantenha o código QR estável e centralizado",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "keystoneStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "ledgerProcessingSign": "Transação de Assinatura",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "psbtFlowPartProgress": "Parte {current} de {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyButton": "Verificar endereço",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "jadeStep6": "   - Aumente o brilho da tela em seu dispositivo",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "passportStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Passaporte. Analisa-o.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "psbtFlowScanDeviceQr": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no {device}. Analisa-o.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "A transação será importada na carteira Bull Bitcoin.",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "kruxStep14": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Krux. Analisa-o.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "seedsignerStep5": "   - Aumente o brilho da tela em seu dispositivo",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Digite sua senha no dispositivo BitBox para continuar.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportInstructionsTitle": "Instruções do passaporte da Fundação",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "Carteira importada com sucesso",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "ledgerSuccessVerifyTitle": "Verificando endereço no Ledger...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "bitboxErrorOperationCancelled": "A operação foi cancelada. Por favor, tente novamente.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "psbtFlowIncreaseBrightness": "Aumentar o brilho da tela em seu dispositivo",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "psbtFlowReviewTransaction": "Uma vez que a transação é importada em seu {device}, revise o endereço de destino e o valor.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "jadeInstructionsTitle": "Blockstream Jade PSBT Instruções",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "ledgerErrorDeviceLocked": "O dispositivo Ledger está bloqueado. Por favor, desbloqueie o dispositivo e tente novamente.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerSuccessSignDescription": "Sua transação foi assinada com sucesso.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "Legado (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerHelpStep1": "Reinicie seu dispositivo Ledger.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerConnectingSubtext": "Estabelecer uma ligação segura...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "ledgerHelpStep4": "Certifique-se de ter instalado a versão mais recente do aplicativo Bitcoin de Ledger Live.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "bitboxErrorDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "A montar a tua carteira só de relógio...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "jadeStep15": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "kruxStep15": "A transação será importada na carteira Bull Bitcoin.",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "psbtFlowInstructions": "Instruções",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxActionUnlockDeviceTitle": "Desbloquear dispositivo BitBox",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "bitboxScreenTroubleshootingStep1": "Certifique-se de que tem o firmware mais recente instalado na sua BitBox.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionImportWalletTitle": "Importação BitBox Carteira",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "bitboxScreenVerifyAddressSubtext": "Compare este endereço com o seu ecrã BitBox02",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "psbtFlowTroubleScanningTitle": "Se você tiver problemas de digitalização:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Verifique o código de emparelhamento no seu dispositivo BitBox...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "ledgerVerifyAddressLabel": "Endereço para verificar:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "seedsignerStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "kruxStep5": "Digitalizar o código QR mostrado na carteira Bull",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "jadeStep1": "Entre no seu dispositivo Jade",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "kruxStep2": "Clique em Sinalizar",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "bitboxScreenTroubleshootingTitle": "Solução de problemas do BitBox02",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep16": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "seedsignerInstructionsTitle": "Instruções do SeedSigner",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxErrorConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "psbtFlowDone": "Estou acabado",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "A montar a tua carteira só de relógio...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "seedsignerStep3": "Digitalizar o código QR mostrado na carteira Bull",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "psbtFlowMoveBack": "Tente mover seu dispositivo de volta um pouco",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep4": "Se você tiver problemas de digitalização:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "passportStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "ledgerWalletTypeLabel": "Tipo de carteira:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "bitboxActionImportWalletProcessing": "Carteira de importação",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "ledgerWalletTypeSegwitDescription": "Nativo SegWit - Recomendado",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "keystoneStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "keystoneStep2": "Clique em Digitalizar",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerHelpTitle": "Resolução de problemas do Ledger",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "ledgerSuccessAddressVerified": "Endereço verificado com sucesso!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "kruxStep10": "Uma vez que a transação é importada em seu Krux, revise o endereço de destino e o valor.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "ledgerInstructionsIos": "Certifique-se de que seu Ledger está desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "bitboxErrorDeviceNotFound": "Dispositivo BitBox não encontrado.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "bitboxScreenNestedSegwitBip49": "Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "psbtFlowSpecterTitle": "Instruções de espectro",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorHandshakeFailed": "Falhou para estabelecer uma ligação segura. Por favor, tente novamente.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep5": "   - Aumente o brilho da tela em seu dispositivo",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "ledgerScanningMessage": "Procurando dispositivos Ledger nas proximidades...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "psbtFlowSelectSeed": "Uma vez que a transação é importada em seu {device}, você deve selecionar a semente que deseja assinar com.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "kruxStep11": "Clique nos botões para assinar a transação no seu Krux.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "kruxStep9": "   - Tente mover seu dispositivo para trás um pouco",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "passportStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "keystoneStep8": "Uma vez que a transação é importada em seu Keystone, revise o endereço de destino e o valor.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "passportStep2": "Clique em assinar com o código QR",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "ledgerHelpStep2": "Certifique-se de que seu telefone tem Bluetooth ligado e permitido.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionVerifyAddressTitle": "Verificar o endereço no BitBox",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "keystoneStep9": "Clique nos botões para assinar a transação em seu Keystone.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Formato antigo",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Por favor, abra o aplicativo Bitcoin em seu dispositivo Ledger e tente novamente.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "seedsignerStep9": "Revise o endereço de destino e o valor, e confirme a assinatura no SeedSigner.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "psbtFlowSignTransaction": "Transação de assinatura",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "receiveQRCode": "Código QR",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "ledgerSuccessVerifyDescription": "O endereço foi verificado no seu dispositivo Ledger.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "keystoneStep13": "A transação será importada na carteira Bull Bitcoin.",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "ledgerConnectingMessage": "Conectando a {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxActionImportWalletSuccess": "Carteira importada com sucesso",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "Começar a assinar",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep10": "Clique nos botões para assinar a transação no seu Jade.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "ledgerConnectTitle": "Conecte seu dispositivo Ledger",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "kruxStep13": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "bitboxScreenConnecting": "Ligação ao BitBox",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "jadeStep14": "A transação será importada na carteira Bull Bitcoin.",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "bitboxScreenUnknownError": "O erro desconhecido ocorreu",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowScanQrShown": "Digitalizar o código QR mostrado na carteira Bull",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "seedsignerStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "keystoneInstructionsTitle": "Instruções de Keystone",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "kruxStep4": "Clique em Carregar da câmera",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "psbtFlowTransactionImported": "A transação será importada na carteira Bull Bitcoin.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "ledgerSuccessImportDescription": "Sua carteira Ledger foi importada com sucesso.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Por favor, confirme o endereço do seu dispositivo BitBox.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "bitboxActionUnlockDeviceButton": "Desbloquear dispositivo",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "psbtFlowClickDone": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxScreenVerifyOnDevice": "Por favor, verifique este endereço no seu dispositivo BitBox",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "seedsignerStep2": "Clique em Digitalizar",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "bitboxErrorOperationTimeout": "A operação acabou. Por favor, tente novamente.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Digite sua senha no dispositivo BitBox...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "O endereço foi verificado no seu dispositivo BitBox.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "ledgerInstructionsAndroidUsb": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e conectá-lo via USB.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "psbtFlowSignTransactionOnDevice": "Clique nos botões para assinar a transação no seu {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxActionSignTransactionSuccess": "Transação assinada com sucesso",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerHelpStep5": "Certifique-se de que O dispositivo Ledger está usando o firmware mais recente, você pode atualizar o firmware usando o aplicativo de desktop Ledger Live.",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "bitboxScreenTryAgainButton": "Tente novamente",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Dispositivo desbloqueado Com sucesso",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "keystoneStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Keystone. Analisa-o.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "seedsignerStep7": "   - Tente mover seu dispositivo para trás um pouco",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "psbtFlowTurnOnDevice": "Ligue o dispositivo {device}",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerButtonManagePermissions": "Gerenciar Permissões de Aplicativos",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "keystoneStep7": "   - Tente mover seu dispositivo para trás um pouco",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "seedsignerStep8": "Uma vez que a transação é importada em seu SeedSigner, você deve selecionar a semente que deseja assinar.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "jadeStep5": "Se você tiver problemas de digitalização:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "ledgerWalletTypeNestedSegwit": "Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "bitboxActionPairDeviceSuccess": "Dispositivo emparelhado com sucesso",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "passportStep3": "Digitalizar o código QR mostrado na carteira Bull",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep3": "Selecione \"Scan QR\" opção",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep3": "Reinicie seu dispositivo BitBox02 desconectando e reconectando-o.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "ledgerImportTitle": "Carteira de LED de importação",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "ledgerErrorRejectedByUser": "A transação foi rejeitada pelo usuário no dispositivo Ledger.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "ledgerErrorDeviceBusy": "Outro programa está usando o seu Ledger. Por favor, feche-o (por exemplo, o Ledger Live) e tente novamente.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "Não há conexão Ledger disponível",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "passportStep10": "O Passaporte irá então mostrar-lhe o seu próprio código QR.",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "bitboxActionVerifyAddressButton": "Verificar endereço",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Nativo SegWit - Recomendado",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "seedsignerStep10": "O SeedSigner irá então mostrar-lhe o seu próprio código QR.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "Por favor, confirme a transação no seu dispositivo Ledger...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "bitboxScreenWaitingConfirmation": "À espera da confirmação de BitBox02...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxScreenScanningSubtext": "À procura do seu dispositivo BitBox...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Por favor, confirme a transação no seu dispositivo BitBox...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Tipo de conexão não inicializado.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerProcessingVerify": "Mostrando endereço no Ledger...",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "kruxStep6": "Se você tiver problemas de digitalização:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "jadeStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxErrorNoDevicesFound": "Nenhum dispositivo BitBox encontrado. Certifique-se de que seu dispositivo está ligado e conectado via USB.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "jadeStep2": "Adicionar uma senha se você tiver um (opcional)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "bitboxScreenWalletTypeLabel": "Tipo de carteira:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "keystoneStep1": "Entre no seu dispositivo Keystone",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "Digitalizar o código QR mostrado na carteira Bull",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "Transação de Sinais",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "keystoneStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "passportStep8": "Uma vez que a transação é importada no seu Passaporte, revise o endereço de destino e o valor.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeSelectTitle": "Selecione a carteira Tipo",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxActionImportWalletButton": "Importação de início",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "bitboxScreenScanning": "Digitalização de Dispositivos",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "ledgerSuccessSignTitle": "Transação assinada com sucesso",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "ledgerScanningTitle": "Digitalização de Dispositivos",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionPairDeviceTitle": "Dispositivo de BitBox de par",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "bitboxScreenEnterPassword": "Digite a senha",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "kruxStep12": "O Krux irá então mostrar-lhe o seu próprio código QR.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "passportStep7": "   - Tente mover seu dispositivo para trás um pouco",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "keystoneStep10": "O Keystone irá então mostrar-lhe o seu próprio código QR.",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "kruxStep1": "Entre no seu dispositivo Krux",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "jadeStep4": "Digitalizar o código QR mostrado na carteira Bull",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "PSBT é necessário para assinar",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "bitboxScreenSelectWalletType": "Selecione a carteira Tipo",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "kruxInstructionsTitle": "Instruções de Krux",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "bitboxScreenManagePermissionsButton": "Gerenciar Permissões de Aplicativos",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "A transação será importada na carteira Bull Bitcoin.",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "ledgerHelpSubtitle": "Primeiro, certifique-se de que o dispositivo Ledger está desbloqueado e o aplicativo Bitcoin é aberto. Se o dispositivo ainda não se conectar com o aplicativo, tente o seguinte:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "bitboxScreenActionFailed": "{action}",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerProcessingImport": "Carteira de importação",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "psbtFlowMoveLaser": "Mova o laser vermelho para cima e para baixo sobre o código QR",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "bitboxScreenPairingCode": "Código de Emparelhamento",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "passportStep4": "Se você tiver problemas de digitalização:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "ledgerErrorMissingAddress": "O endereço é necessário para verificação",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "ledgerButtonTryAgain": "Tente novamente",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Desbloquear dispositivo",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "Se você tiver problemas de digitalização:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "bitboxScreenAddressToVerify": "Endereço para verificar:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxScreenConnectDevice": "Conecte seu dispositivo BitBox",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "bitboxErrorPermissionDenied": "As permissões USB são necessárias para se conectar a dispositivos BitBox.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "ledgerErrorPermissionDenied": "São necessárias permissões de Bluetooth para conectar aos dispositivos Ledger.",
+  "ledgerErrorNoDevicesFound": "Nenhum dispositivo Ledger encontrado. Verifique se o seu dispositivo está ligado e com o Bluetooth ativado.",
+  "ledgerErrorMultipleDevicesFound": "Vários dispositivos Ledger encontrados. Certifique-se de que apenas um dispositivo esteja por perto.",
+  "ledgerErrorDeviceNotFound": "Dispositivo Ledger não encontrado.",
+  "ledgerErrorDeviceMismatch": "Incompatibilidade de dispositivo detectada.",
+  "ledgerErrorInvalidPsbt": "Formato PSBT inválido detectado.",
+  "ledgerErrorMissingDerivationPath": "O caminho de derivação é obrigatório",
+  "ledgerErrorMissingScriptType": "O tipo de script é obrigatório",
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "Seu dispositivo BitBox agora está emparelhado e pronto para usar.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "ledgerProcessingVerifySubtext": "Por favor, confirme o endereço no seu dispositivo Ledger.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "Sua transação foi assinada com sucesso.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "Primeiro, certifique-se de que seu dispositivo BitBox02 está conectado à sua porta USB do telefone. Se o dispositivo ainda não se conectar com o aplicativo, tente o seguinte:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "ledgerInstructionsAndroidDual": "Certifique-se de que seu Ledger está desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "seedsignerStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "passportStep5": "   - Aumente o brilho da tela em seu dispositivo",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "Certifique-se de que seu BitBox02 está desbloqueado e conectado via USB.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "Resposta inválida do dispositivo BitBox. Por favor, tente novamente.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "bitboxActionSignTransactionButton": "Começar a assinar",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "jadeStep9": "Uma vez que a transação é importada em seu Jade, revise o endereço de destino e o valor.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "Seu dispositivo BitBox agora está desbloqueado e pronto para usar.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "passportStep9": "Clique nos botões para assinar a transação no seu Passaporte.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "bitboxActionVerifyAddressSuccess": "Endereço Verificado com sucesso",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "ledgerSignTitle": "Transação de Sinais",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "bitboxScreenPairingCodeSubtext": "Verifique se este código corresponde à sua tela BitBox02 e, em seguida, confirme no dispositivo.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "bitboxScreenVerifyAddress": "Verificar endereço",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "psbtFlowDeviceShowsQr": "O {device} irá então mostrar-lhe o seu próprio código QR.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "psbtFlowSignViaNfc": "Assinar via NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Aproxime seu {deviceName} para enviar o PSBT via NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Instruções do Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Instruções do Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Faça login no seu dispositivo Coldcard Q",
+  "psbtFlowColdcardQStep2": "Adicionar uma senha se você tiver um (opcional)",
+  "psbtFlowColdcardQStep3": "Escolha o método de assinatura de sua preferência:",
+  "psbtFlowColdcardQStep4": "Para código QR:",
+  "psbtFlowColdcardQStep5": "   - Selecione \"Escanear qualquer código QR\" no seu Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - Escaneie o código QR exibido na carteira Bull",
+  "psbtFlowColdcardQStep7": "   - Se tiver dificuldade para escanear:",
+  "psbtFlowColdcardQStep8": "     - Aumente o brilho da tela do seu dispositivo",
+  "psbtFlowColdcardQStep9": "     - Mova o laser vermelho para cima e para baixo sobre o código QR",
+  "psbtFlowColdcardQStep10": "     - Tente afastar um pouco o seu dispositivo",
+  "psbtFlowColdcardQStep11": "Para NFC:",
+  "psbtFlowColdcardQStep12": "   - Selecione \"Pronto para assinar\" no seu Coldcard Q e, em seguida, toque no botão NFC",
+  "psbtFlowColdcardQStep13": "   - Aproxime seu celular do Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Aguarde a transferência do PSBT",
+  "psbtFlowColdcardQStep15": "Depois que a transação for importada no seu Coldcard Q, revise o endereço de destino e o valor.",
+  "psbtFlowColdcardQStep16": "Clique nos botões para assinar a transação no seu Coldcard Q.",
+  "psbtFlowColdcardQStep17": "O Coldcard Q vai então exibir um código QR da transação assinada ou preparar a transferência por NFC.",
+  "psbtFlowColdcardQStep18": "Se você assinou com QR, clique em \"Estou feito\" na carteira Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "A carteira Bull Bitcoin vai pedir para você escanear o código QR da transação assinada ou usar NFC para recebê-la.",
+  "psbtFlowColdcardQStep20": "   - Para QR: escaneie o código QR no Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Para NFC: aproxime seu celular do Coldcard Q",
+  "psbtFlowColdcardQStep22": "A transação assinada será importada na carteira Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Agora está pronta para ser transmitida. Assim que você clicar em transmitir, a transação será publicada na rede Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Faça login no seu dispositivo Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Adicionar uma senha se você tiver um (opcional)",
+  "psbtFlowColdcardMk4Step3": "Selecione \"Pronto para assinar\" no seu Coldcard Mk4 e, em seguida, toque no botão número 3",
+  "psbtFlowColdcardMk4Step4": "Aproxime seu celular do Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Aguarde a transferência do PSBT",
+  "psbtFlowColdcardMk4Step6": "Depois que a transação for importada no seu Coldcard Mk4, revise o endereço de destino e o valor.",
+  "psbtFlowColdcardMk4Step7": "Clique nos botões para assinar a transação no seu Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "O Coldcard Mk4 vai então preparar a transação assinada para transferência por NFC.",
+  "psbtFlowColdcardMk4Step9": "Na carteira Bull Bitcoin, toque em NFC na tela de transmissão.",
+  "psbtFlowColdcardMk4Step10": "Aproxime seu celular do Coldcard Mk4 para receber a transação assinada.",
+  "psbtFlowColdcardMk4Step11": "A transação assinada será importada na carteira Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Revise os detalhes da transação na carteira Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Agora está pronta para ser transmitida. Assim que você clicar em transmitir, a transação será publicada na rede Bitcoin.",
+  "bitboxErrorBluetoothPermissionDenied": "É necessária permissão de Bluetooth para conectar ao seu BitBox02 Nova.",
+  "bitboxErrorBluetoothUnavailable": "O Bluetooth está indisponível. Ative o Bluetooth e tente novamente.",
+  "bitboxErrorNoBleDevicesFound": "Nenhum BitBox02 Nova encontrado nas proximidades. Verifique o Bluetooth e tente novamente.",
+  "bitboxErrorMultipleBleDevicesFound": "Vários dispositivos BitBox02 Nova encontrados. Mantenha apenas um por perto e tente novamente.",
+  "bitboxErrorOperationFailed": "Falha na operação do BitBox. Tente novamente.",
+  "bitboxScreenConnectSubtextBluetooth": "Certifique-se de que seu BitBox02 Nova está desbloqueado e o Bluetooth está habilitado.",
+  "bitboxScreenScanningSubtextBluetooth": "Procurando seu BitBox02 Nova nas proximidades...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Solução de problemas do BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Se o seu dispositivo ainda não conectar com o aplicativo, tente o seguinte:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Certifique-se de que o Bluetooth está ligado e permitido para este aplicativo.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Certifique-se de que o Bluetooth está habilitado no seu BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Reinicie o seu BitBox02 Nova e tente conectar novamente.",
+  "psbtFlowInvalidPsbtError": "Não foi possível ler esta transação. Volte e crie-a novamente.",
+  "psbtFlowQrEncodingError": "Não foi possível converter esta transação em um código QR."
+}

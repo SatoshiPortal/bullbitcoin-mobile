@@ -396,21 +396,9 @@
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
   },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
-  },
   "mempoolSettingsDescription": "Alag-alag networks ke liye custom mempool servers set karo. Har network apna server block explorer aur fee estimation ke liye use kar sakta hai.",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
-  },
-  "mempoolSettingsDefaultServer": "Default Server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
-  "mempoolSettingsCustomServer": "Custom Server",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "@mempoolNetworkBitcoinMainnet": {
@@ -428,118 +416,21 @@
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
   },
-  "mempoolCustomServerAdd": "Custom Server Jodo",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
-  },
   "mempoolCustomServerDelete": "Delete Karo",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "mempoolCustomServerDeleteTitle": "Custom Server Delete Karen?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
-  "mempoolCustomServerDeleteMessage": "Kya aap sach mein is custom mempool server ko delete karna chahte hain? Iske badle default server use hoga.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "mempoolCustomServerUrl": "Server URL",
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
-  "mempoolCustomServerUrlEmpty": "Kripaya ek server URL darj karo",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
-  },
   "mempoolCustomServerSaveSuccess": "Custom server safaltapurvak save ho gaya",
   "@mempoolCustomServerSaveSuccess": {
     "description": "Success message when custom server is saved"
   },
-  "mempoolCustomServerBottomSheetDescription": "Apne custom mempool server ka URL darj karo. Save karne se pehle server verify kiya jaayega.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
-  },
-  "mempoolServerStatusOnline": "Online",
-  "@mempoolServerStatusOnline": {
-    "description": "Status label when mempool server is online"
-  },
-  "mempoolServerStatusOffline": "Offline",
-  "@mempoolServerStatusOffline": {
-    "description": "Status label when mempool server is offline"
-  },
-  "mempoolServerStatusChecking": "Check ho raha hai...",
-  "@mempoolServerStatusChecking": {
-    "description": "Status label when checking mempool server status"
-  },
   "mempoolServerStatusUnknown": "Pata Nahi",
   "@mempoolServerStatusUnknown": {
     "description": "Status label when mempool server status is unknown"
-  },
-  "mempoolCustomServerSaveFailed": "Server save karna fail ho gaya",
-  "@mempoolCustomServerSaveFailed": {
-    "description": "Error message when saving custom mempool server fails"
-  },
-  "mempoolCustomServerInfoDescription": "Mempool servers fee estimation aur transaction details dekhte waqt block explorer kholne ke liye upyog hote hain.",
-  "@mempoolCustomServerInfoDescription": {
-    "description": "Info text explaining what mempool servers are used for"
-  },
-  "mempoolCustomServerUseSsl": "SSL Upyog Karo",
-  "@mempoolCustomServerUseSsl": {
-    "description": "Label for SSL toggle in custom server settings"
-  },
-  "mempoolCustomServerSslAutoDetected": "(Auto-detect hua)",
-  "@mempoolCustomServerSslAutoDetected": {
-    "description": "Label shown when SSL setting was auto-detected"
-  },
-  "mempoolCustomServerSslHelpText": "Local (.local, private IPs) aur Tor (.onion) servers ke liye, SSL aam taur par band hota hai. Public IPs aur domains ke liye SSL chahiye.",
-  "@mempoolCustomServerSslHelpText": {
-    "description": "Help text explaining when to use SSL for mempool servers"
-  },
-  "mempoolErrorSameAsDefault": "Yeh URL default server jaisa hi hai. Kripaya alag URL use karo.",
-  "@mempoolErrorSameAsDefault": {
-    "description": "Error when user tries to set a custom server URL that matches the default"
-  },
-  "mempoolErrorConnectionTimeout": "Connection ka waqt khatam ho gaya. Server dheema ya pahunch se bahar ho sakta hai.",
-  "@mempoolErrorConnectionTimeout": {
-    "description": "Error when connection to mempool server times out"
-  },
-  "mempoolErrorHostNotFound": "Yeh server nahi mil raha. Kripaya URL check karo aur phir try karo.",
-  "@mempoolErrorHostNotFound": {
-    "description": "Error when mempool server hostname cannot be resolved"
-  },
-  "mempoolErrorConnectionFailed": "Server se connect nahi ho pa raha. Apna network connection check karo aur phir try karo.",
-  "@mempoolErrorConnectionFailed": {
-    "description": "Error when connection to mempool server fails"
-  },
-  "mempoolErrorNotMempoolServer": "Yeh URL mempool server lagta nahi. Kripaya address verify karo.",
-  "@mempoolErrorNotMempoolServer": {
-    "description": "Error when URL is not a valid mempool server"
-  },
-  "mempoolErrorServerUnavailable": "Server abhi available nahi hai. Baad mein phir try karo.",
-  "@mempoolErrorServerUnavailable": {
-    "description": "Error when mempool server is unavailable (502/503)"
-  },
-  "mempoolErrorServerError": "Server mein error aayi. Baad mein phir try karo.",
-  "@mempoolErrorServerError": {
-    "description": "Error when mempool server returns 500 error"
-  },
-  "mempoolErrorInvalidResponse": "Server ne galat response diya.",
-  "mempoolErrorInvalidUrl": "Amanya server URL. Ek manya domain ya IP pata darj karein.",
-  "@mempoolErrorInvalidResponse": {
-    "description": "Error when mempool server returns an invalid response"
-  },
-  "mempoolErrorSaveServerFailed": "Server save karna fail ho gaya",
-  "@mempoolErrorSaveServerFailed": {
-    "description": "Error when saving mempool server fails"
-  },
-  "mempoolErrorLoadFailed": "Mempool server data load karna fail ho gaya",
-  "@mempoolErrorLoadFailed": {
-    "description": "Error when loading mempool server data fails"
-  },
-  "mempoolErrorDeleteFailed": "Custom server delete karna fail ho gaya",
-  "@mempoolErrorDeleteFailed": {
-    "description": "Error when deleting custom mempool server fails"
   },
   "walletSettingsImportWalletTitle": "Wallet Import Karo",
   "@walletSettingsImportWalletTitle": {
@@ -647,22 +538,6 @@
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
   },
-  "exchangeRecipientsComingSoon": "Recipients - Jald Aane Wala Hai",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
-  "exchangeLogoutComingSoon": "Log Out - Jald Aane Wala Hai",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
-  },
-  "exchangeLegacyTransactionsTitle": "Legacy Transactions",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
-  "exchangeLegacyTransactionsComingSoon": "Legacy Transactions - Jald Aane Wala Hai",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "exchangeFileUploadTitle": "Secure File Upload",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -682,18 +557,6 @@
   "exchangeFileUploadSuccess": "File safaltapurvak upload ho gayi",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "exchangeAccountTitle": "Exchange Account",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
-  "exchangeAccountSettingsTitle": "Exchange Account Settings",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
-  "exchangeAccountComingSoon": "Yeh feature jald aane wala hai.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "exchangeBitcoinWalletsTitle": "Default Bitcoin Wallets",
   "@exchangeBitcoinWalletsTitle": {
@@ -3841,299 +3704,6 @@
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when maximum balance is less than 2x the target balance"
   },
-  "bitboxErrorPermissionDenied": "BitBox devices connect karne ke liye USB permissions zaroori hain.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
-  "bitboxErrorNoDevicesFound": "Koi BitBox device nahi mila. Dhyan rakho ki device on aur USB se connected ho.",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
-  "bitboxErrorMultipleDevicesFound": "Multiple BitBox devices mile. Kripya sirf ek device connect karo.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
-  "bitboxErrorDeviceNotFound": "BitBox device nahi mila.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
-  "bitboxErrorConnectionTypeNotInitialized": "Connection type initialize nahi hua.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
-  },
-  "bitboxErrorDeviceNotPaired": "Device pair nahi hua. Pehle pairing process complete karo.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
-  },
-  "bitboxErrorHandshakeFailed": "Secure connection establish nahi ho payi. Phir try karo.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
-  },
-  "bitboxErrorOperationTimeout": "Operation timeout ho gayi. Phir try karo.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
-  "bitboxErrorConnectionFailed": "BitBox device se connect nahi ho paya. Apna connection check karo.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
-  "bitboxErrorInvalidResponse": "BitBox device se invalid response. Phir try karo.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
-  },
-  "bitboxErrorOperationCancelled": "Operation cancel hua. Phir try karo.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
-  },
-  "bitboxActionUnlockDeviceTitle": "BitBox Device Unlock Karo",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
-  },
-  "bitboxActionPairDeviceTitle": "BitBox Device Pair Karo",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
-  },
-  "bitboxActionImportWalletTitle": "BitBox Wallet Import Karo",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
-  },
-  "bitboxActionSignTransactionTitle": "Transaction Sign Karo",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
-  },
-  "bitboxActionVerifyAddressTitle": "BitBox Pe Address Verify Karo",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
-  "bitboxActionUnlockDeviceButton": "Device Unlock Karo",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
-  },
-  "bitboxActionPairDeviceButton": "Pairing Shuru Karo",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
-  },
-  "bitboxActionImportWalletButton": "Import Shuru Karo",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
-  },
-  "bitboxActionSignTransactionButton": "Signing Shuru Karo",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
-  },
-  "bitboxActionVerifyAddressButton": "Address Verify Karo",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
-  "bitboxActionUnlockDeviceProcessing": "Device Unlock Ho Raha Hai",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "bitboxActionPairDeviceProcessing": "Device Pair Ho Raha Hai",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
-  },
-  "bitboxActionImportWalletProcessing": "Wallet Import Ho Raha Hai",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
-  },
-  "bitboxActionSignTransactionProcessing": "Transaction Sign Ho Raha Hai",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
-  },
-  "bitboxActionVerifyAddressProcessing": "BitBox pe address dikha raha hai...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
-  },
-  "bitboxActionUnlockDeviceSuccess": "Device Kamyabi Se Unlock Hua",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
-  },
-  "bitboxActionPairDeviceSuccess": "Device Kamyabi Se Pair Hua",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxActionImportWalletSuccess": "Wallet Kamyabi Se Import Hua",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
-  "bitboxActionSignTransactionSuccess": "Transaction Kamyabi Se Sign Hua",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
-  },
-  "bitboxActionVerifyAddressSuccess": "Address Kamyabi Se Verify Hua",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
-  "bitboxActionUnlockDeviceSuccessSubtext": "Aapka BitBox device ab unlock hai aur use ke liye ready hai.",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
-  "bitboxActionPairDeviceSuccessSubtext": "Aapka BitBox device ab pair ho gaya aur use ke liye ready hai.",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
-  },
-  "bitboxActionImportWalletSuccessSubtext": "Aapka BitBox wallet kamyabi se import ho gaya.",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "Aapki transaction kamyabi se sign ho gayi.",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "Address aapke BitBox device pe verify ho gaya.",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
-  },
-  "bitboxActionUnlockDeviceProcessingSubtext": "BitBox device pe apna password daalo...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "Aapke BitBox device pe pairing code verify karo...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "Aapka watch-only wallet set up ho raha hai...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "Aapke BitBox device pe transaction confirm karo...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "Aapke BitBox device pe address confirm karo.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
-  },
-  "bitboxScreenConnectDevice": "Apna BitBox Device Connect Karo",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
-  },
-  "bitboxScreenScanning": "Devices Dhoondh Rahe Hain",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
-  "bitboxScreenConnecting": "BitBox Se Connect Ho Raha Hai",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
-  },
-  "bitboxScreenPairingCode": "Pairing Code",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
-  },
-  "bitboxScreenEnterPassword": "Password Daalo",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "bitboxScreenVerifyAddress": "Address Verify Karo",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenActionFailed": "{action} Fail Hua",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "bitboxScreenConnectSubtext": "Dhyan rakho ki BitBox02 unlock hai aur USB se connected hai.",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
-  "bitboxScreenScanningSubtext": "Aapka BitBox device dhoondh rahe hain...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
-  },
-  "bitboxScreenConnectingSubtext": "Secure connection ban rahi hai...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
-  "bitboxScreenPairingCodeSubtext": "Verify karo ki yeh code aapke BitBox02 screen se match karta hai, phir device pe confirm karo.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
-  },
-  "bitboxScreenEnterPasswordSubtext": "Aage badhne ke liye BitBox device pe apna password daalo.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
-  "bitboxScreenVerifyAddressSubtext": "Is address ko apne BitBox02 screen se compare karo",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
-  },
-  "bitboxScreenUnknownError": "Anjaan error aaya",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
-  "bitboxScreenWaitingConfirmation": "BitBox02 pe confirmation ka intezaar hai...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
-  },
-  "bitboxScreenAddressToVerify": "Verify karne wala address:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
-  "bitboxScreenVerifyOnDevice": "Kripya is address ko apne BitBox device pe verify karo",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
-  "bitboxScreenWalletTypeLabel": "Wallet Type:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
-  },
-  "bitboxScreenSelectWalletType": "Wallet Type Chuniye",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
-  },
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommend Kiya Gaya",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
-  },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "Pehle, dhyan rakho ki BitBox02 device aapke phone USB port se connected hai. Agar device abhi bhi app se connect na ho, toh yeh try karo:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
-  },
-  "bitboxScreenTroubleshootingStep1": "Dhyan rakho ki BitBox pe latest firmware install hai.",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
-  "bitboxScreenTroubleshootingStep2": "Dhyan rakho ki phone pe USB permissions enable hain.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
-  "bitboxScreenTroubleshootingStep3": "BitBox02 device unplug aur reconnect karke restart karo.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
-  },
-  "bitboxScreenTryAgainButton": "Phir Try Karo",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
-  },
-  "bitboxScreenManagePermissionsButton": "App Permissions Manage Karo",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
-  },
-  "bitboxScreenNeedHelpButton": "Madad Chahiye?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
-  },
   "bitboxScreenDefaultWalletLabel": "BitBox Wallet",
   "@bitboxScreenDefaultWalletLabel": {
     "description": "Default label for imported BitBox wallet"
@@ -6326,127 +5896,9 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "psbtFlowSignTransaction": "Transaction sign karo",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
-  "psbtFlowInstructions": "Instructions",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
-  "psbtFlowDone": "Ho gaya",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
-  "psbtFlowPartProgress": "Part {current} of {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSpecterTitle": "Specter Instructions",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "psbtFlowColdcardTitle": "Coldcard Q Instructions",
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
-  },
-  "psbtFlowTurnOnDevice": "Apna {device} device on karo",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickScan": "Scan click karo",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
-  "psbtFlowScanQrShown": "Bull wallet mein dikha QR code scan karo",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
-  "psbtFlowTroubleScanningTitle": "Agar scan karne mein dikkat aa rahi hai:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
-  },
-  "psbtFlowIncreaseBrightness": "Apne device ki screen brightness badhaao",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
-  },
-  "psbtFlowMoveLaser": "Red laser ko QR code ke upar neeche ghumao",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
-  "psbtFlowMoveBack": "Device ko thoda peeche le jaane ki koshish karo",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
-  "psbtFlowReviewTransaction": "Jab transaction aapke {device} mein import ho jaye, destination address aur amount review karo.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSelectSeed": "Jab transaction aapke {device} mein import ho jaye, woh seed select karo jisse sign karna hai.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSignTransactionOnDevice": "Apne {device} pe transaction sign karne ke liye buttons click karo.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowDeviceShowsQr": "{device} phir aapko apna QR code dikhayega.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickDone": "Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
-  "psbtFlowScanDeviceQr": "Bull Bitcoin wallet aapko {device} ka QR code scan karne ko bolega. Scan karo.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowTransactionImported": "Transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
-  "psbtFlowReadyToBroadcast": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
   },
   "hwConnectTitle": "Hardware Wallet Connect Karo",
   "@hwConnectTitle": {
@@ -6483,254 +5935,6 @@
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
-  },
-  "kruxInstructionsTitle": "Krux Instructions",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
-  },
-  "kruxStep1": "Apne Krux device mein login karo",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
-  "kruxStep2": "Sign click karo",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
-  },
-  "kruxStep3": "PSBT click karo",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
-  },
-  "kruxStep4": "Load from camera click karo",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
-  },
-  "kruxStep5": "Bull wallet mein dikha QR code scan karo",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
-  },
-  "kruxStep6": "Agar scan karne mein dikkat aa rahi hai:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
-  },
-  "kruxStep7": "   - Apne device ki screen brightness badhaao",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
-  "kruxStep8": "   - Red laser ko QR code ke upar neeche ghumao",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
-  },
-  "kruxStep9": "   - Device ko thoda peeche le jaane ki koshish karo",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
-  },
-  "kruxStep10": "Jab transaction Krux mein import ho jaye, destination address aur amount review karo.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "kruxStep11": "Krux pe transaction sign karne ke liye buttons click karo.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
-  "kruxStep12": "Krux phir aapko apna QR code dikhayega.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
-  "kruxStep13": "Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
-  },
-  "kruxStep14": "Bull Bitcoin wallet aapko Krux ka QR code scan karne ko bolega. Scan karo.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
-  "kruxStep15": "Transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
-  "kruxStep16": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
-  "keystoneInstructionsTitle": "Keystone Instructions",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
-  },
-  "keystoneStep1": "Apne Keystone device mein login karo",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep2": "Scan click karo",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
-  "keystoneStep3": "Bull wallet mein dikha QR code scan karo",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
-  "keystoneStep4": "Agar scan karne mein dikkat aa rahi hai:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
-  },
-  "keystoneStep5": "   - Apne device ki screen brightness badhaao",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
-  "keystoneStep6": "   - Red laser ko QR code ke upar neeche ghumao",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
-  "keystoneStep7": "   - Device ko thoda peeche le jaane ki koshish karo",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
-  "keystoneStep8": "Jab transaction Keystone mein import ho jaye, destination address aur amount review karo.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "keystoneStep9": "Keystone pe transaction sign karne ke liye buttons click karo.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
-  },
-  "keystoneStep10": "Keystone phir aapko apna QR code dikhayega.",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
-  },
-  "keystoneStep11": "Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
-  "keystoneStep12": "Bull Bitcoin wallet aapko Keystone ka QR code scan karne ko bolega. Scan karo.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
-  "keystoneStep13": "Transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
-  },
-  "keystoneStep14": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
-  },
-  "passportInstructionsTitle": "Foundation Passport Instructions",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
-  },
-  "passportStep1": "Apne Passport device mein login karo",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "passportStep2": "Sign with QR Code click karo",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
-  "passportStep3": "Bull wallet mein dikha QR code scan karo",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "passportStep4": "Agar scan karne mein dikkat aa rahi hai:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
-  },
-  "passportStep5": "   - Apne device ki screen brightness badhaao",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "passportStep6": "   - Red laser ko QR code ke upar neeche ghumao",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
-  "passportStep7": "   - Device ko thoda peeche le jaane ki koshish karo",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
-  },
-  "passportStep8": "Jab transaction Passport mein import ho jaye, destination address aur amount review karo.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
-  },
-  "passportStep9": "Passport pe transaction sign karne ke liye buttons click karo.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
-  "passportStep10": "Passport phir aapko apna QR code dikhayega.",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
-  "passportStep11": "Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
-  },
-  "passportStep12": "Bull Bitcoin wallet aapko Passport ka QR code scan karne ko bolega. Scan karo.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
-  "passportStep13": "Transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
-  },
-  "passportStep14": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
-  "seedsignerInstructionsTitle": "SeedSigner Instructions",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
-  "seedsignerStep1": "Apna SeedSigner device on karo",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
-  "seedsignerStep2": "Scan click karo",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
-  "seedsignerStep3": "Bull wallet mein dikha QR code scan karo",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
-  "seedsignerStep4": "Agar scan karne mein dikkat aa rahi hai:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
-  "seedsignerStep5": "   - Apne device ki screen brightness badhaao",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
-  "seedsignerStep6": "   - Red laser ko QR code ke upar neeche ghumao",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
-  "seedsignerStep7": "   - Device ko thoda peeche le jaane ki koshish karo",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
-  "seedsignerStep8": "Jab transaction SeedSigner mein import ho jaye, woh seed select karo jisse sign karna hai.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
-  },
-  "seedsignerStep9": "Destination address aur amount review karo, aur SeedSigner pe signing confirm karo.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
-  },
-  "seedsignerStep10": "SeedSigner phir aapko apna QR code dikhayega.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
-  },
-  "seedsignerStep11": "Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
-  "seedsignerStep12": "Bull Bitcoin wallet aapko SeedSigner ka QR code scan karne ko bolega. Scan karo.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "seedsignerStep13": "Transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
-  },
-  "seedsignerStep14": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "connectHardwareWalletTitle": "Hardware Wallet Connect Karo",
   "@connectHardwareWalletTitle": {
@@ -6831,70 +6035,6 @@
   "coldcardStep15": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
-  },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT Instructions",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
-  "jadeStep1": "Apne Jade device mein login karo",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
-  "jadeStep2": "Agar passphrase hai toh add karo (optional)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
-  },
-  "jadeStep3": "\"Scan QR\" option select karo",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
-  },
-  "jadeStep4": "Bull wallet mein dikha QR code scan karo",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
-  "jadeStep5": "Agar scan karne mein dikkat aa rahi hai:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
-  "jadeStep6": "   - Apne device ki screen brightness badhaao",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
-  },
-  "jadeStep7": "   - QR code ko beech mein sthir rakho",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
-  },
-  "jadeStep8": "   - Device ko paas ya door le jaane ki koshish karo",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
-  },
-  "jadeStep9": "Jab transaction Jade mein import ho jaye, destination address aur amount review karo.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
-  "jadeStep10": "Jade pe transaction sign karne ke liye buttons click karo.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "jadeStep11": "Jade phir aapko apna QR code dikhayega.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
-  "jadeStep12": "Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
-  "jadeStep13": "Bull Bitcoin wallet aapko Jade ka QR code scan karne ko bolega. Scan karo.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
-  },
-  "jadeStep14": "Transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
-  "jadeStep15": "Ab broadcast ke liye ready hai! Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi aur paisa bhej diya jayega.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "importWalletTitle": "Naya wallet add karo",
   "@importWalletTitle": {
@@ -7180,43 +6320,6 @@
   "exportTransactionsInvalidDateRange": "Shuru ki taareekh khatam ki taareekh se pehle honi chahiye",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
-  },
-  "bip329LabelsTitle": "BIP329 Labels",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
-  "bip329LabelsHeading": "BIP329 Labels Import aur Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "bip329LabelsDescription": "BIP329 standard format use karke wallet labels import ya export karo.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
-  },
-  "bip329LabelsImportButton": "Labels Import Karo",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
-  "bip329LabelsExportButton": "Labels Export Karo",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "bip329LabelsExportSuccess": "Labels kamyabi se export hue",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
-  },
-  "bip329LabelsImportSuccessSingular": "1 label import hua",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
-  "bip329LabelsImportSuccessPlural": "{count} labels import hue",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "broadcastSignedTxTitle": "Transaction Broadcast Karo",
   "@broadcastSignedTxTitle": {
@@ -8279,42 +7382,6 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "electrumTitle": "Electrum Server Settings",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
-  "electrumNetworkLiquid": "Liquid",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
-  "electrumAdvancedOptions": "Advanced Options",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
-  "electrumAddCustomServer": "Custom Server Add Karo",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
-  "electrumCloseTooltip": "Band karo",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
@@ -8322,245 +7389,6 @@
   "electrumTestnet": "Testnet",
   "@electrumTestnet": {
     "description": "Testnet environment label"
-  },
-  "electrumEmptyFieldError": "Ye field khali nahi reh sakta",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
-  "electrumLiquidSslInfo": "Koi protocol specify nahi karna chahiye, SSL automatically use hoga.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
-  "electrumAddServer": "Server Add Karo",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
-  "electrumEnableSsl": "SSL Enable Karo",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
-  "electrumProtocolError": "Protocol mat include karo (ssl:// ya tcp://).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
-  },
-  "electrumFormatError": "host:port format use karo (jaise, example.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
-  },
-  "electrumBitcoinServerInfo": "Server address is format mein enter karo: host:port (jaise, example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
-  "electrumStopGap": "Stop Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
-  "electrumTimeout": "Timeout (seconds)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
-  "electrumRetryCount": "Retry Count",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
-  "electrumValidateDomain": "Domain Validate Karo",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
-  },
-  "electrumStopGapEmptyError": "Stop Gap khali nahi reh sakta",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
-  },
-  "electrumInvalidNumberError": "Valid number enter karo",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
-  "electrumStopGapNegativeError": "Stop Gap negative nahi ho sakta",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
-  },
-  "electrumStopGapTooHighError": "Stop Gap bahut zyada lag raha hai. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "Timeout khali nahi reh sakta",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumTimeoutPositiveError": "Timeout positive hona chahiye",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "electrumTimeoutTooHighError": "Timeout bahut zyada lag raha hai. (Max. {maxTimeout} seconds)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumRetryCountEmptyError": "Retry Count khali nahi reh sakta",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "electrumRetryCountNegativeError": "Retry Count negative nahi ho sakta",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
-  },
-  "electrumTimeoutWarning": "Aapka timeout ({timeoutValue} seconds) is Stop Gap ke liye recommended value ({recommended} seconds) se kam hai.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidStopGapError": "Stop Gap ki value galat hai: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidTimeoutError": "Timeout ki value galat hai: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidRetryError": "Retry Count ki value galat hai: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSaveFailedError": "Advanced options save karne mein fail",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "electrumUnknownError": "Koi error aaya",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
-  },
-  "electrumReset": "Reset",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
-  "electrumConfirm": "Confirm",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
-  "electrumDeleteServerTitle": "Custom Server Delete Karo",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
-  },
-  "electrumDeletePrivacyNotice": "Privacy Notice:\n\nApna node use karna ensure karta hai ki koi third party aapke IP address ko aapke transactions se link nahi kar sakta. Apna aakhiri custom server delete karne par, aap BullBitcoin server se connect ho jayenge.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
-  "electrumDeleteConfirmation": "Kya aap sach mein is server ko delete karna chahte hain?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumCancel": "Cancel",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
-  "electrumDelete": "Delete",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
-  "electrumDefaultServers": "Default Servers",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
-  "electrumDefaultServersInfo": "Aapki privacy protect karne ke liye, default servers tab use nahi hote jab custom servers configure hain.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
-  "electrumCustomServers": "Custom Servers",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
-  },
-  "electrumDragToReorder": "(Priority badalne ke liye long press karke drag karo)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "electrumLoadFailedError": "Servers load karne mein fail",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "electrumSavePriorityFailedError": "Server priority save karne mein fail",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
-  "electrumAddFailedError": "Custom server add karne mein fail",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
-  "electrumDeleteFailedError": "Custom server delete karne mein fail",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
-  "electrumServerAlreadyExists": "Ye server pehle se exist karta hai",
-  "electrumServerUnreachable": "Server tak nahi pahuncha ja saka. Pata jaanchein aur punah prayas karein.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
-  "electrumPrivacyNoticeTitle": "Privacy Notice",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
-  "electrumPrivacyNoticeContent1": "Privacy Notice: Apna node use karna ensure karta hai ki koi third party aapke IP address ko aapke transactions se link nahi kar sakta.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeContent2": "Lekin, agar aap apne Transaction ID ya Recipient Details page par click karke mempool se transactions dekhte hain, toh ye information BullBitcoin ko pata chalegi.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
-  "electrumPrivacyNoticeCancel": "Cancel",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
-  },
-  "electrumPrivacyNoticeSave": "Save",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
-  },
-  "electrumServerNotUsed": "Use Nahi Ho Raha",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "addressViewNoAddressesFound": "Koi address nahi mila",
   "@addressViewNoAddressesFound": {
@@ -8585,240 +7413,6 @@
   "appStartupContactSupportButton": "Support se Contact Karo",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
-  },
-  "ledgerImportTitle": "Ledger Wallet Import Karo",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
-  "ledgerSignTitle": "Transaction Sign Karo",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
-  },
-  "ledgerVerifyTitle": "Ledger Par Address Verify Karo",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
-  },
-  "ledgerImportButton": "Import Shuru Karo",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
-  "ledgerSignButton": "Sign Karna Shuru Karo",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
-  },
-  "ledgerVerifyButton": "Address Verify Karo",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
-  },
-  "ledgerProcessingImport": "Wallet Import Ho Raha Hai",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
-  },
-  "ledgerProcessingSign": "Transaction Sign Ho Raha Hai",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
-  },
-  "ledgerProcessingVerify": "Ledger par address dikha raha hai...",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
-  },
-  "ledgerSuccessImportTitle": "Wallet Successfully Import Hua",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
-  },
-  "ledgerSuccessSignTitle": "Transaction Successfully Sign Hua",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
-  },
-  "ledgerSuccessVerifyTitle": "Ledger par address verify ho raha hai...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
-  },
-  "ledgerSuccessImportDescription": "Aapka Ledger wallet successfully import ho gaya.",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
-  },
-  "ledgerSuccessSignDescription": "Aapka transaction successfully sign ho gaya.",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
-  },
-  "ledgerSuccessVerifyDescription": "Address aapke Ledger device par verify ho gaya.",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
-  },
-  "ledgerProcessingImportSubtext": "Aapka watch-only wallet setup ho raha hai...",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
-  },
-  "ledgerProcessingSignSubtext": "Kripya apne Ledger device par transaction confirm karo...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
-  },
-  "ledgerProcessingVerifySubtext": "Kripya apne Ledger device par address confirm karo.",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
-  },
-  "ledgerConnectTitle": "Apna Ledger Device Connect Karo",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
-  "ledgerScanningTitle": "Devices Dhoondh Raha Hai",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
-  },
-  "ledgerConnectingMessage": "{deviceName} se connect ho raha hai",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerActionFailedMessage": "{action} Fail Hua",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerInstructionsIos": "Ensure karo ki aapka Ledger unlock hai, Bitcoin app khula hai aur Bluetooth enable hai.",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
-  },
-  "ledgerInstructionsAndroidUsb": "Ensure karo ki aapka Ledger unlock hai, Bitcoin app khula hai aur use USB se connect karo.",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
-  },
-  "ledgerInstructionsAndroidDual": "Ensure karo ki aapka Ledger unlock hai, Bitcoin app khula hai aur Bluetooth enable hai.",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
-  "ledgerScanningMessage": "Aas paas Ledger devices dhoondh raha hai...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
-  },
-  "ledgerConnectingSubtext": "Secure connection establish ho raha hai...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
-  },
-  "ledgerErrorPermissionDenied": "Ledger device se connect karne ke liye Bluetooth permissions zaroori hain.",
-  "ledgerErrorNoDevicesFound": "Koi Ledger device nahi mila. Sunishchit karein ki aapka device on hai aur Bluetooth enabled hai.",
-  "ledgerErrorMultipleDevicesFound": "Kai Ledger devices mile. Kripya sunishchit karein ki paas mein sirf ek hi device ho.",
-  "ledgerErrorDeviceNotFound": "Ledger device nahi mila.",
-  "ledgerErrorDeviceMismatch": "Device mismatch detect hua.",
-  "ledgerErrorInvalidPsbt": "Invalid PSBT format detect hua.",
-  "ledgerErrorMissingDerivationPath": "Derivation path zaroori hai",
-  "ledgerErrorMissingScriptType": "Script type zaroori hai",
-  "ledgerErrorDeviceBusy": "Koi doosra program aapke Ledger ka use kar raha hai. Kripya use band karo (jaise ki Ledger Live) aur dobara try karo.",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "Koi Ledger connection available nahi hai",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
-  },
-  "ledgerErrorRejectedByUser": "Transaction Ledger device par user ne reject kiya.",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
-  "ledgerErrorDeviceLocked": "Ledger device lock hai. Kripya apna device unlock karke dobara try karo.",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "Kripya apne Ledger device par Bitcoin app kholo aur dobara try karo.",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
-  },
-  "ledgerErrorMissingPsbt": "Sign karne ke liye PSBT zaruri hai",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
-  },
-  "ledgerErrorMissingAddress": "Verification ke liye address zaruri hai",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
-  },
-  "ledgerButtonTryAgain": "Dobara Try Karo",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "ledgerButtonManagePermissions": "App Permissions Manage Karo",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
-  },
-  "ledgerButtonNeedHelp": "Help Chahiye?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
-  },
-  "ledgerVerifyAddressLabel": "Verify karne wala address:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
-  },
-  "ledgerWalletTypeLabel": "Wallet Type:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
-  },
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
-  },
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommend Kiya Gaya",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
-  },
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
-  },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
-  },
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - Purana format",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
-  },
-  "ledgerWalletTypeSelectTitle": "Wallet Type Select Karo",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
-  "ledgerSuccessAddressVerified": "Address successfully verify hua!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
-  },
-  "ledgerHelpTitle": "Ledger Troubleshooting",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
-  },
-  "ledgerHelpSubtitle": "Pehle, ensure karo ki aapka Ledger device unlock hai aur Bitcoin app khula hai. Agar device app se connect nahi ho raha, toh ye try karo:",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
-  },
-  "ledgerHelpStep1": "Apna Ledger device restart karo.",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep2": "Ensure karo ki aapke phone mein Bluetooth on hai aur permitted hai.",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep3": "Ensure karo ki aapke Ledger mein Bluetooth on hai.",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep4": "Ensure karo ki aapne Ledger Live se Bitcoin app ka latest version install kiya hai.",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
-  },
-  "ledgerHelpStep5": "Ensure karo ki aapka Ledger device latest firmware use kar raha hai, aap Ledger Live desktop app se firmware update kar sakte hain.",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
   },
   "ledgerDefaultWalletLabel": "Ledger Wallet",
   "@ledgerDefaultWalletLabel": {
@@ -8859,14 +7453,6 @@
   "exchangeFeatureUnifiedHistory": "• Sabhi transactions ek hi jagah dekho",
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
-  },
-  "priceChartFetchingHistory": "Price History fetch ho raha hai...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
-  "priceChartFailedToLoad": "Price history load karne mein fail",
-  "@priceChartFailedToLoad": {
-    "description": "Error message shown when price history fails to load"
   },
   "priceFailedToLoad": "Price load karne mein fail",
   "@priceFailedToLoad": {
@@ -9236,31 +7822,6 @@
   "@save": {
     "description": "Generic save button label"
   },
-  "statusCheckTitle": "Service Status",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "statusCheckLastChecked": "Aakhiri baar check hua: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
-  "statusCheckUnknown": "Unknown",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "torSettingsTitle": "Tor Settings",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -9268,75 +7829,6 @@
   "torSettingsEnableProxy": "Tor Proxy Enable Karo",
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "torSettingsPortNumber": "Port Number",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "torSettingsPortValidationEmpty": "Kripya ek port number enter karo",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
-  "torSettingsPortValidationInvalid": "Kripya ek valid number enter karo",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
-  },
-  "torSettingsPortValidationRange": "Port 1 aur 65535 ke beech hona chahiye",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "torSettingsSaveButton": "Save",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
-  },
-  "torSettingsConnectionStatus": "Connection Status",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
-  "torSettingsStatusConnected": "Taiyaar",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
-  "torSettingsStatusConnecting": "Connect ho raha hai...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
-  "torSettingsStatusDisconnected": "Disconnected",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
-  "torSettingsStatusUnknown": "Status Unknown",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
-  "torSettingsDescConnected": "Tor proxy chal raha hai aur ready hai",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
-  },
-  "torSettingsDescConnecting": "Tor connection establish ho raha hai",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
-  "torSettingsDescDisconnected": "Tor proxy nahi chal raha",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "withdrawSuccessTitle": "Withdrawal Shuru Hua",
   "@withdrawSuccessTitle": {
@@ -9478,39 +7970,6 @@
   "coreScreensConfirmButton": "Confirm",
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
-  },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
-  },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
-  "systemLabelSelfSpend": "Self Spend",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
-  "systemLabelExchangeBuy": "Buy",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
-  },
-  "systemLabelExchangeSell": "Sell",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
-  "labelDeleteFailed": "\"{label}\" delete karne mein asmarth. Kripya dobara try karo.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "Logout Confirm Karo",
   "@logoutConfirmationTitle": {
@@ -10472,10 +8931,6 @@
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
   },
-  "electrumStopGapHighWarning": "High stop gap values sync time ko kaafi badha deti hain. Sync poora hone tak app ko foreground mein khula rakhein — app ko background mein daalne se yeh ruk sakta hai.",
-  "@electrumStopGapHighWarning": {
-    "description": "Warning shown when the user enters a Stop Gap larger than 1000"
-  },
   "errorReportingProgramDescriptionP1": "Hamare error reporting program mein contribute karke Bull ko behtar banane mein hamari madad karein.",
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
@@ -10693,7 +9148,6 @@
   "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Vinimay dar anuplabdh hai. Kripya baad mein punah prayas karein.",
-  "priceChartLoadFailed": "Mulya chart data load nahi ho saka. Kripya punah prayas karein.",
   "mempoolErrorUnexpected": "Ek unexpected error aayi",
   "@mempoolErrorUnexpected": {
     "description": "Generic unexpected error message"
@@ -11004,46 +9458,6 @@
   "nfcError": "NFC error: {error}",
   "sendErrorHardwareWalletCannotSwap": "Hardware wallets ko swaps ke liye use nahi kiya ja sakta.",
   "sendErrorInvoiceExpired": "Ye invoice khatam ho gaya. Praaptakarta se nayi invoice maango.",
-  "psbtFlowSignViaNfc": "NFC Se Sign Karo",
-  "psbtFlowSignViaNfcSheetTitle": "PSBT NFC se bhejne ke liye apna {deviceName} tap karo",
-  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Instructions",
-  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
-  "psbtFlowColdcardQStep1": "Apne Coldcard Q device mein login karo",
-  "psbtFlowColdcardQStep2": "Agar passphrase hai toh add karo (optional)",
-  "psbtFlowColdcardQStep3": "Apna pasandida signing method chuno:",
-  "psbtFlowColdcardQStep4": "QR code ke liye:",
-  "psbtFlowColdcardQStep5": "   - Apne Coldcard Q par \"Scan any QR code\" select karo",
-  "psbtFlowColdcardQStep6": "   - Bull wallet mein dikha QR code scan karo",
-  "psbtFlowColdcardQStep7": "   - Agar scan karne mein dikkat aa rahi hai:",
-  "psbtFlowColdcardQStep8": "     - Apne device ki screen brightness badhaao",
-  "psbtFlowColdcardQStep9": "     - Red laser ko QR code ke upar neeche ghumao",
-  "psbtFlowColdcardQStep10": "     - Device ko thoda peeche le jaane ki koshish karo",
-  "psbtFlowColdcardQStep11": "NFC ke liye:",
-  "psbtFlowColdcardQStep12": "   - Apne Coldcard Q par \"Ready to Sign\" select karo, phir NFC button tap karo",
-  "psbtFlowColdcardQStep13": "   - Apna phone Coldcard Q ke paas tap karo",
-  "psbtFlowColdcardQStep14": "   - PSBT transfer hone ka wait karo",
-  "psbtFlowColdcardQStep15": "Jab transaction Coldcard Q mein import ho jaye, destination address aur amount review karo.",
-  "psbtFlowColdcardQStep16": "Coldcard Q pe transaction sign karne ke liye buttons click karo.",
-  "psbtFlowColdcardQStep17": "Coldcard Q phir signed transaction ka QR code dikhayega ya NFC transfer prepare karega.",
-  "psbtFlowColdcardQStep18": "Agar QR se sign kiya hai, toh Bull Bitcoin wallet mein \"Ho gaya\" click karo.",
-  "psbtFlowColdcardQStep19": "Bull Bitcoin wallet aapko signed transaction ka QR code scan karne ya NFC use karke receive karne ko bolega.",
-  "psbtFlowColdcardQStep20": "   - QR ke liye: Coldcard Q par dikha QR code scan karo",
-  "psbtFlowColdcardQStep21": "   - NFC ke liye: apna phone Coldcard Q ke paas tap karo",
-  "psbtFlowColdcardQStep22": "Signed transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "psbtFlowColdcardQStep23": "Ab broadcast ke liye ready hai. Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi.",
-  "psbtFlowColdcardMk4Step1": "Apne Coldcard Mk4 device mein login karo",
-  "psbtFlowColdcardMk4Step2": "Agar passphrase hai toh add karo (optional)",
-  "psbtFlowColdcardMk4Step3": "Apne Coldcard Mk4 par \"Ready to Sign\" select karo, phir number 3 button tap karo",
-  "psbtFlowColdcardMk4Step4": "Apna phone Coldcard Mk4 ke paas tap karo",
-  "psbtFlowColdcardMk4Step5": "PSBT transfer hone ka wait karo",
-  "psbtFlowColdcardMk4Step6": "Jab transaction Coldcard Mk4 mein import ho jaye, destination address aur amount review karo.",
-  "psbtFlowColdcardMk4Step7": "Coldcard Mk4 pe transaction sign karne ke liye buttons click karo.",
-  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 phir signed transaction ko NFC transfer ke liye prepare karega.",
-  "psbtFlowColdcardMk4Step9": "Bull Bitcoin wallet mein, broadcast screen par NFC tap karo.",
-  "psbtFlowColdcardMk4Step10": "Signed transaction receive karne ke liye apna phone Coldcard Mk4 ke paas tap karo.",
-  "psbtFlowColdcardMk4Step11": "Signed transaction Bull Bitcoin wallet mein import ho jayegi.",
-  "psbtFlowColdcardMk4Step12": "Bull Bitcoin wallet mein transaction details review karo.",
-  "psbtFlowColdcardMk4Step13": "Ab broadcast ke liye ready hai. Jaise hi broadcast click karoge, transaction Bitcoin network pe publish ho jayegi.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Signed transaction NFC se receive karne ke liye apna Coldcard tap karo",
@@ -11094,7 +9508,6 @@
   "viewerCopyLink": "Link copy karo",
   "transactionViewerTitle": "Transaction ID",
   "invoiceViewerTitle": "Invoice",
-  "noteVisibleToSenderNotice": "Ye note aapke QR ya invoice ke praaptakarta ko dikhega.",
   "viewerAddressTab": "Address",
   "viewerPaymentUriTab": "Payment URI",
   "transactionSwapOpenWithin24h": "Apna swap poora karne ke liye 24 ghante ke andar app kholo.",
@@ -11210,18 +9623,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions confirm hone mein zyada time le sakte hain aur sabhi nodes tak propagate nahi ho sakte.",
   "sendBelowMinFeeRateError": "Fee rate kam se kam 0.1 sat/vB honi chahiye.",
-  "bitboxErrorBluetoothPermissionDenied": "Apne BitBox02 Nova se connect karne ke liye Bluetooth permission zaroori hai.",
-  "bitboxErrorBluetoothUnavailable": "Bluetooth uplabdh nahi hai. Bluetooth on karo aur phir try karo.",
-  "bitboxErrorNoBleDevicesFound": "Aas paas koi BitBox02 Nova nahi mila. Bluetooth check karo aur phir try karo.",
-  "bitboxErrorMultipleBleDevicesFound": "Multiple BitBox02 Nova devices mile. Sirf ek device paas rakho aur phir try karo.",
-  "bitboxErrorOperationFailed": "BitBox operation fail ho gaya. Kripya phir try karo.",
-  "bitboxScreenConnectSubtextBluetooth": "Dhyan rakho ki BitBox02 Nova unlock hai aur Bluetooth enable hai.",
-  "bitboxScreenScanningSubtextBluetooth": "Aapka BitBox02 Nova aas paas dhoondh rahe hain...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Troubleshooting",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Agar aapka device abhi bhi app se connect nahi ho raha, toh yeh try karo:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Dhyan rakho ki Bluetooth on hai aur is app ke liye permitted hai.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "Dhyan rakho ki aapke BitBox02 Nova pe Bluetooth enable hai.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "Apna BitBox02 Nova restart karo aur phir se connect karne ki koshish karo.",
   "sendErrorInsufficientBalanceFrozenHint": "Itna spendable balance nahi hai — {amount} frozen hai. Ise use karne ke liye Coins manage karein mein coins unfreeze karo.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -11251,7 +9652,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin Disclaimer",
   "settingsPayjoinAdvancedTitle": "Advanced Payjoin Settings",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Aapka Liquid apne aap Bitcoin mein badal diya jata hai.",
   "addressViewErrorWalletNotFound": "Yah wallet nahi mil saka.",
   "addressViewErrorLoadFailed": "Aapke address load nahi ho sake. Kripya phir se koshish karein.",
   "coreSwapsStatusNotStarted": "Shuru nahi hua",
@@ -11266,19 +9666,6 @@
   "coreSwapsStatusUnknown": "Agyaat",
   "sendSwapExpiredTitle": "Order Khatam Ho Gaya",
   "sendSwapExpiredMessage": "Koi bhi rashi bheje jaane se pehle hi yeh order khatam ho gaya. Aapke wallet se kuch bhi nahi bheja gaya.",
-  "torSettingsStatusCensored": "Connection filtered lag raha hai",
-  "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
-  "torSettingsBootstrapProgress": "Connect ho raha hai… {percent}%",
-  "torSettingsEmbeddedTitle": "Embedded Tor",
-  "torSettingsEmbeddedDescription": "Embedded Tor ka istemal RecoverBull aur Bitcoin Electrum ke .onion servers karte hain. App ka baaki traffic seedha rehta hai.",
-  "torSettingsTransportMode": "Connection ka tarika",
-  "torSettingsModeAutomatic": "Automatic",
-  "torSettingsModeDirect": "Direct",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Pehle seedha Tor connection try karta hai, aur agar network Tor ko block karta lage to Snowflake istemal karta hai.",
-  "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
-  "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
-  "torSettingsActiveTransport": "Active transport: {transport}",
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "settingsScreenPrivacyDisabledMessage": "Ab sanvedansheel screen par screenshot lene ki anumati hai",
   "settingsSearchHint": "Settings khojein",
@@ -11313,11 +9700,7 @@
   "exchangeSupportChatLoadMessagesError": "Sandesh load nahi ho sake. Kripya punah prayas karein.",
   "exchangeSupportChatSendMessageError": "Aapka sandesh nahi bheja ja saka. Kripya punah prayas karein.",
   "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
-  "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
-  "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain",
   "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
-  "psbtFlowInvalidPsbtError": "Yah transaction padha nahi ja saka. Wapas jaakar ise phir se banaayein.",
-  "psbtFlowQrEncodingError": "Is transaction ko QR code mein convert nahi kiya ja saka.",
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
@@ -11349,15 +9732,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Woh file type accept nahin hai. Dusri chunein.",
   "exchangeSettingsErrorDocumentUnreadable": "Woh file padhi nahin ja saki. Dusri chunein.",
   "exchangeSettingsErrorUploadingDocument": "Document upload nahin ho saka. Kripya dobara koshish karein.",
-  "labelsErrorNoteTooLong": "Note {max} aksharon se adhik nahin hona chahiye",
-  "labelsErrorNoteForbiddenCharacter": "Note mein {character} varn nahin ho sakta",
-  "labelsErrorFileTooLarge": "Yah file bahut badi hai. Label files {max} se chhoti honi chahiye.",
-  "labelsErrorFileUnreadable": "Yah BIP-329 label file nahin lagti. Janchein ki aapne sahi file chuni hai.",
-  "labelsErrorFileEmpty": "Is file mein import karne ke liye koi label nahin hai.",
-  "labelsErrorExportFailed": "Aapke label save nahin ho sake. Kripya phir se prayas karein.",
-  "labelsErrorFileReservedName": "Yah file app dwara aarakshit label naam ka upyog karti hai. File mein iska naam badlein aur phir se prayas karein.",
-  "labelsErrorNoteForbiddenWhitespace": "Note mein line break ya tab nahin ho sakte",
-  "labelsErrorFileInvalidEntry": "Us file ki kuch entries padhi nahin ja sakin. File janchein aur phir se prayas karein.",
   "recipientsErrorLoadFailed": "Aapke recipients load nahin ho sake. Kripya phir se prayas karein.",
   "recipientsErrorSaveFailed": "Yah recipient save nahin ho saka. Kripya jaankari janchein aur phir se prayas karein.",
   "recipientsErrorSinpeLookupFailed": "Hum is phone number ki pushti nahin kar sake. Kripya ise janchein aur phir se prayas karein.",
@@ -11535,11 +9909,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai.",
   "settingsDarkModeTitle": "Dark mode",
   "settingsSourceCodeTitle": "Source code",
-  "torSettingsStatusNoInternetOrBlocked": "Internet nahin hai ya network censored hai",
-  "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai.",
   "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka.",
-  "serverEncrypted": "Encrypted",
-  "serverUnencrypted": "Encrypted nahi",
   "backgroundTasksTitle": "Background kaam",
   "blockedInSystemSettings": "System settings mein blocked",
   "notificationsBlockedMessage": "Notifications system settings mein blocked hain.",

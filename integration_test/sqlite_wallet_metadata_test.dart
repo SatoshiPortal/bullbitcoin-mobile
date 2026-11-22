@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show ScriptType;
+
 import 'initialization_result.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';

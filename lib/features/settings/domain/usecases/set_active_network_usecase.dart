@@ -1,15 +1,14 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:electrum/setup.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 /// The developer-network selector uses this authorization and persistence boundary.
 class SetActiveNetworkUsecase {
-  final SettingsRepository _settingsRepository;
-  final ElectrumSettingsFacade _electrumSettings;
+  final Preferences _settingsRepository;
+  final ElectrumDefaultsProvisioner _electrumSettings;
 
   const SetActiveNetworkUsecase({
     required this._settingsRepository,
@@ -32,19 +31,20 @@ class SetActiveNetworkUsecase {
     }
     // Returning to mainnet must remain possible after developer mode is lost.
     if (network != NetworkEnv.mainnet) {
-      try {
-        final settings = await _settingsRepository.fetch();
-        if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
-          log.warning(
-            'Network selection refused network=${network.name} category=developerMode',
-          );
-          return const Err(SettingsConsentFailure());
-        }
-      } on Exception {
-        log.warning('Network selection refused category=settingsRead');
-        return const Err(SettingsStorageFailure());
+      switch (await _settingsRepository.fetch()) {
+        case Err():
+          log.warning('Network selection refused category=settingsRead');
+          return const Err(SettingsStorageFailure());
+        case Ok(:final value):
+          if (value.isSuperuser != true || value.isDevModeEnabled != true) {
+            log.warning(
+              'Network selection refused network=${network.name} category=developerMode',
+            );
+            return const Err(SettingsConsentFailure());
+          }
       }
     }
+
     if (network == NetworkEnv.regtest) {
       if (await _electrumSettings.prepareForegroundStorage(network)
           case Err()) {
@@ -54,15 +54,16 @@ class SetActiveNetworkUsecase {
         return Err(SettingsNetworkUnavailableFailure(network));
       }
       // Preparation can yield; consent may have been revoked in the meantime.
-      try {
-        final current = await _settingsRepository.fetch();
-        if (current.isSuperuser != true || current.isDevModeEnabled != true) {
-          return const Err(SettingsConsentFailure());
-        }
-      } on Exception {
-        return const Err(SettingsStorageFailure());
+      switch (await _settingsRepository.fetch()) {
+        case Err():
+          return const Err(SettingsStorageFailure());
+        case Ok(:final value):
+          if (value.isSuperuser != true || value.isDevModeEnabled != true) {
+            return const Err(SettingsConsentFailure());
+          }
       }
     }
+
     final result = await _settingsRepository.setEnvironment(environment);
     return result.fold(
       (_) {

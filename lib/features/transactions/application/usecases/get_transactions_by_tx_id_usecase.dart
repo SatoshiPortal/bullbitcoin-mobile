@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -21,7 +21,7 @@ import 'package:primitives/primitives.dart';
 // For payjoins, two transactions can exist for the same txId, just as with wallet transactions,
 // there can be an incoming and an outgoing transaction for the same payjoin and so the same txId.
 class GetTransactionsByTxIdUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
@@ -44,7 +44,10 @@ class GetTransactionsByTxIdUsecase {
     String txId,
   ) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment;
       if (environment.networkEnv == NetworkEnv.regtest) {
         final transactions = await _walletTransactionRepository

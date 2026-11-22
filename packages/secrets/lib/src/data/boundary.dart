@@ -7,12 +7,14 @@ import 'package:secrets/src/domain/domain.dart';
 
 /// The package's one `try/catch`: an exception becomes a [SecretFailure] here and nowhere else.
 ///
-/// Called by the two repositories only, so `public/` never catches. Two rules live in the table: a sealed keystore is never an absence, and no foreign message travels — anything this package did not raise is reported by type ([describeSafely]).
+/// Called by data-layer repositories and the owner keychain transport, so `public/` never catches. Two rules live in the table: a sealed keystore is never an absence, and no foreign message travels — anything this package did not raise is reported by type ([describeSafely]).
 ///
 /// [orElse] names the failure an unrecognised `Exception` becomes; it is the repository method's category — a read, a write, a delete, a derivation — not a message.
 Future<Result<T, SecretFailure>> boundary<T>(
   Future<T> Function() body, {
   required SecretFailure Function(String) orElse,
+  // Owner keychain consumers retain their own diagnostic and deduplication policy.
+  bool reportFailure = true,
 }) async {
   try {
     return Ok(await body());
@@ -20,7 +22,7 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return Err(SecretAlreadyExistsFailure(e.id));
   } on KeystoreLockedException catch (e) {
     // Must not collapse into not-found: callers read that as "the seed is gone" and may offer destructive recovery.
-    log.warning('Keystore locked: ${e.message}');
+    if (reportFailure) log.warning('Keystore locked: ${e.message}');
     return Err(KeystoreLockedFailure(e.message));
   } on ModuleKeyCorruptException catch (e, st) {
     // Names the storage key, never a value. Nothing was overwritten.
@@ -44,7 +46,9 @@ Future<Result<T, SecretFailure>> boundary<T>(
   } on Exception catch (e, st) {
     // An unrecognised `Exception` becomes the caller's category. Only the type travels.
     final safe = describeSafely(e);
-    log.severe(message: 'secrets: operation failed', error: safe, trace: st);
+    if (reportFailure) {
+      log.severe(message: 'secrets: operation failed', error: safe, trace: st);
+    }
     return Err(orElse(safe));
   } on Error catch (e, st) {
     // An `Error` is a programmer bug and keeps propagating to the crash report (AGENTS.md, rule 11) — but not with a message this package did not write: a library's Error can quote its input. The type and the stack trace leave; the text does not.
@@ -54,7 +58,9 @@ Future<Result<T, SecretFailure>> boundary<T>(
   } catch (e, st) {
     // Neither an `Exception` nor an `Error`: a generated binding can throw a plain class (bull_sdk's `BoltzError`) that carries a foreign message. Treated like an unrecognised `Exception`: the caller's category, by type.
     final safe = describeSafely(e);
-    log.severe(message: 'secrets: operation failed', error: safe, trace: st);
+    if (reportFailure) {
+      log.severe(message: 'secrets: operation failed', error: safe, trace: st);
+    }
     return Err(orElse(safe));
   }
 }

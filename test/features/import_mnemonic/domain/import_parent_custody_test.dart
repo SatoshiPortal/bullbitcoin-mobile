@@ -3,23 +3,18 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    hide Language;
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
@@ -31,31 +26,31 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:sync/sync.dart' show SyncReason;
+import 'package:sync/sync.dart' show SyncReason, SyncFailure, WalletKey;
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Swaps extends Mock implements SwapStore {}
-
-class _Bdk extends Fake implements BdkWalletDatasource {}
-
-class _Lwk extends Fake implements LwkWalletDatasource {}
 
 class _Native extends Fake implements WalletNativeLifecycle {
   Future<void> Function()? beforeCreate;
   int creates = 0;
   @override
-  Future<void> prepareCreate(WalletMetadataModel metadata) async {}
+  Future<Result<void, SyncFailure>> prepareCreate(WalletKey key) async =>
+      const Ok(null);
   @override
-  Future<void> create(WalletMetadataModel metadata) async {
+  Future<Result<void, SyncFailure>> create(WalletKey key) async {
     creates++;
     await beforeCreate?.call();
+    return const Ok(null);
   }
 
   @override
-  Future<void> delete(WalletMetadataModel metadata) async {}
+  Future<Result<void, SyncFailure>> delete(WalletKey key) async =>
+      const Ok(null);
   @override
-  Future<void> catalogDeleted(WalletMetadataModel metadata) async {}
+  Future<Result<void, SyncFailure>> catalogDeleted(WalletKey key) async =>
+      const Ok(null);
 }
 
 class _Values extends Fake implements SyncWalletValuesDatasource {
@@ -134,8 +129,7 @@ void main() {
     repository = WalletRepository(
       native: native,
       walletMetadataDatasource: metadata,
-      bdkWalletDatasource: _Bdk(),
-      lwkWalletDatasource: _Lwk(),
+      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
         _, {
@@ -150,10 +144,12 @@ void main() {
     );
     settings = _Settings();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     importer = ImportWalletUsecase(

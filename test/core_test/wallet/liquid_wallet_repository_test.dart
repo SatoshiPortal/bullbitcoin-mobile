@@ -14,14 +14,17 @@ import 'package:sync/sync.dart'
         UnsignedSpend,
         WalletKey,
         WalletRevision;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:sync/sync.dart' as sync;
+import 'package:sync/testing.dart';
+import 'package:rust_bindings/lwk.dart' as lwk;
+import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
@@ -33,7 +36,13 @@ import 'package:mocktail/mocktail.dart';
 class _MockMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
-class _MockLwkDatasource extends Mock implements LwkWalletDatasource {}
+class _Spender extends Mock implements WalletSpender {}
+
+class _Sdk extends Mock implements BullSdkApi {}
+
+class _Pset extends Mock implements lwk.PartiallySignedElementsTransaction {}
+
+class _Transaction extends Mock implements lwk.LiquidTransaction {}
 
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
@@ -44,7 +53,10 @@ void main() {
   const first = (txId: 'first', vout: 0);
   const second = (txId: 'second', vout: 1);
   const fee = RelativeFee(25);
-  late _MockLwkDatasource lwk;
+  late _Spender spender;
+  late sync.Wallet wallet;
+  late int walletOpens;
+  final sdk = _Sdk();
   late _MockValues values;
   late _MockFrozenDatasource frozen;
   late LiquidWalletRepository repository;
@@ -52,6 +64,17 @@ void main() {
   late FakeSecureStoragePlatform store;
 
   setUpAll(() {
+    BullSdk.initMock(api: sdk);
+    registerFallbackValue(
+      WalletKey(id: walletId, network: LiquidNetwork.testnet),
+    );
+    registerFallbackValue(
+      sync.LiquidSpendRequest(
+        address: 'recipient',
+        amountSat: 1,
+        fee: sync.SpendFeeRate(25),
+      ),
+    );
     registerFallbackValue(
       const WalletModel.publicLwk(
         id: walletId,
@@ -62,18 +85,29 @@ void main() {
     registerFallbackValue(fee);
   });
 
-  setUp(() {
+  tearDownAll(BullSdk.dispose);
+
+  setUp(() async {
     final metadata = _MockMetadataDatasource();
-    lwk = _MockLwkDatasource();
+    spender = _Spender();
+    walletOpens = 0;
+    reset(sdk);
     values = _MockValues();
     frozen = _MockFrozenDatasource();
     store = FakeSecureStoragePlatform()..install();
     final scratch = Directory.systemTemp.createTempSync('ben-liquid-test-');
     addTearDown(() => scratch.deleteSync(recursive: true));
+    wallet = await testWallet(
+      key: WalletKey(id: walletId, network: LiquidNetwork.testnet),
+      spender: spender,
+    );
     repository = LiquidWalletRepository(
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => scratch.path),
-      lwkWalletDatasource: lwk,
+      wallet: (_) async {
+        walletOpens++;
+        return Ok(wallet);
+      },
       walletValuesDatasource: values,
       freezesDatasource: frozen,
       // The address check needs lwk's native library; these tests cover
@@ -107,16 +141,8 @@ void main() {
         inputs: const [],
       ),
     );
-    when(
-      () => lwk.buildPset(
-        wallet: any(named: 'wallet'),
-        address: any(named: 'address'),
-        feeRate: any(named: 'feeRate'),
-        amountSat: any(named: 'amountSat'),
-        drain: any(named: 'drain'),
-        selectedInputs: any(named: 'selectedInputs'),
-      ),
-    ).thenAnswer((_) async => built);
+    when(() => spender.build(any(), any(), any()))
+        .thenAnswer((_) async => built);
   });
 
   Future<Result<String, WalletFailure>> build({Set<Outpoint>? selected}) =>
@@ -129,17 +155,29 @@ void main() {
       );
 
   Set<Outpoint>? builtInputs() =>
-      verify(
-            () => lwk.buildPset(
-              wallet: any(named: 'wallet'),
-              address: 'recipient',
-              feeRate: fee,
-              amountSat: 10000,
-              drain: false,
-              selectedInputs: captureAny(named: 'selectedInputs'),
-            ),
-          ).captured.single
-          as Set<Outpoint>?;
+      (verify(() => spender.build(any(), any(), captureAny())).captured.single
+              as sync.LiquidSpendRequest)
+          .selected;
+
+  for (final drain in <bool?>[null, false]) {
+    test(
+      'refuses a missing amount when drain is $drain before opening a wallet',
+      () async {
+        final result = await repository.buildPset(
+          walletId: walletId,
+          address: 'recipient',
+          feeRate: fee,
+          drain: drain,
+        );
+        expect(
+          (result as Err<String, WalletFailure>).failure,
+          isA<WalletTransactionBuildFailure>(),
+        );
+        expect(walletOpens, 0);
+        verifyZeroInteractions(spender);
+      },
+    );
+  }
 
   test('passes exactly the selected outpoints to the builder', () async {
     expect(await build(selected: {second}), isA<Ok<String, WalletFailure>>());
@@ -157,24 +195,39 @@ void main() {
       (await build(selected: {}) as Err<String, WalletFailure>).failure,
       isA<WalletSelectedInputsUnavailableFailure>(),
     );
-    verifyNever(
-      () => lwk.buildPset(
-        wallet: any(named: 'wallet'),
-        address: any(named: 'address'),
-        feeRate: any(named: 'feeRate'),
-        amountSat: any(named: 'amountSat'),
-        drain: any(named: 'drain'),
-        selectedInputs: any(named: 'selectedInputs'),
-      ),
-    );
+    verifyZeroInteractions(spender);
   });
 
   test('does not sign a PSET that spends a newly frozen coin', () async {
     when(() => frozen.getFrozenOutpoints())
         .thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
-    when(() => lwk.getPsetInputs('pset')).thenReturn({first});
+    final pset = _Pset();
+    final transaction = _Transaction();
+    when(
+      () => sdk.lwkApiTransactionPartiallySignedElementsTransactionFromString(
+        psetString: 'cHNldP8=',
+      ),
+    ).thenReturn(pset);
+    when(pset.extractTx).thenReturn(transaction);
+    when(transaction.txid).thenReturn('ab' * 32);
+    when(transaction.version).thenReturn(2);
+    when(transaction.lockTime).thenReturn(0);
+    when(transaction.vsize).thenReturn(BigInt.one);
+    when(transaction.weight).thenReturn(BigInt.one);
+    when(transaction.fee).thenReturn(BigInt.zero);
+    when(transaction.getInputs).thenReturn(const [
+      lwk.TxInput(
+        txid: 'first',
+        vout: 0,
+        scriptSig: '',
+        sequence: 0,
+        witness: [],
+        isPegin: false,
+      ),
+    ]);
+    when(transaction.getOutputs).thenReturn([]);
     await expectLater(
-      repository.signPset(pset: 'pset', walletId: walletId),
+      repository.signPset(pset: 'cHNldP8=', walletId: walletId),
       throwsA(isA<NoSpendableUtxoException>()),
     );
     expect(store.reads, 0);

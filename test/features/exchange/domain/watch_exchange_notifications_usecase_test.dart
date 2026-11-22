@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
@@ -30,10 +29,10 @@ class _Access extends Mock implements ExchangeAccessRepository {}
 
 class _Keys extends Mock implements ExchangeApiKeyRepository {}
 
-class _MockSettings extends Mock implements SettingsRepository {}
+class _MockSettings extends Mock implements Preferences {}
 
 NotificationMessage _message(NotificationMessageKind kind) =>
-    NotificationMessage(kind: kind, rawData: const {});
+    NotificationMessage(kind: kind);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -70,10 +69,12 @@ void main() {
     });
     settings = _MockSettings();
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     messages = StreamController<NotificationMessage>.broadcast();
@@ -204,7 +205,8 @@ void main() {
     'sign-out started during the environment read opens no socket',
     () async {
       final environment = Completer<SettingsEntity>();
-      when(settings.fetch).thenAnswer((_) => environment.future);
+      when(settings.fetch)
+          .thenAnswer((_) => (environment.future).then((value) => Ok(value)));
       var epoch = 1;
       when(() => access.epoch).thenAnswer((_) => epoch);
       final connection = build().connect();
@@ -311,10 +313,12 @@ void main() {
     'regtest disconnects without opening either historical socket',
     () async {
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(repository.disconnect).thenReturn(null);

@@ -1,19 +1,19 @@
+import 'dart:async';
+
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/coins_entry_subtitle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_amount.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
@@ -21,6 +21,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullDisclosureLink,
         BullPullableBody,
         BullShapesX,
         BullShimmerBox,
@@ -92,9 +93,7 @@ class WalletDetailScreen extends StatelessWidget {
               child: Builder(
                 builder: (context) => BullPullableBody(
                   onRefresh: () async {
-                    context.read<BitcoinPriceBloc>().add(
-                      const BitcoinPriceFetched(),
-                    );
+                    unawaited(BitcoinPriceFeature.refresh(context));
                     final transactions = context.read<TransactionsCubit>();
                     transactions.deferReloads();
                     try {
@@ -113,6 +112,8 @@ class WalletDetailScreen extends StatelessWidget {
                         ),
                         eyeToggle: const EyeToggle(),
                         fiatBalance: HomeFiatBalance(
+                          onCurrencyChanged:
+                              SettingsFacade.changeDisplayCurrency,
                           balanceSat: balanceSat.toInt(),
                         ),
                         syncingIndicator: const TxsSyncingIndicator(),
@@ -133,12 +134,13 @@ class WalletDetailScreen extends StatelessWidget {
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                          child: DisclosureLink(
+                          child: BullDisclosureLink(
                             label: context.loc.walletLiquidRiskDisclosureLabel,
                             semanticLabel:
                                 context.loc.liquidRiskDisclosureSemanticLabel,
                             title: context.loc.liquidRiskDisclosureTitle,
                             body: context.loc.liquidRiskDisclosureBody,
+                            closeLabel: context.loc.closeDialogButton,
                           ),
                         ),
                       ),

@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
@@ -114,13 +114,11 @@ void main() {
       );
       await access.enable();
       when(settings.execute).thenAnswer(
-        (_) async => const Ok(
-          SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.btc,
-            currencyCode: 'CAD',
-          ),
-        ),
+        (_) async => const Ok((
+          environment: Environment.testnet,
+          exchangeTestnetBasicAuthUsername: null,
+          exchangeTestnetBasicAuthPassword: null,
+        )),
       );
       when(() => cubit.state).thenReturn(const ExchangeState());
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());

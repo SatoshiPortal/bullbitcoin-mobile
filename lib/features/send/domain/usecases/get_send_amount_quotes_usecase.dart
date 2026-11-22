@@ -1,12 +1,11 @@
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart';
 
 class GetSendAmountQuotesUsecase {
-  final GetSettingsUsecase _settings;
+  final Preferences _settings;
   final IndexPricesReader _read;
 
   const GetSendAmountQuotesUsecase({
@@ -19,7 +18,10 @@ class GetSendAmountQuotesUsecase {
   execute() async {
     final SettingsEntity settings;
     try {
-      settings = await _settings.execute();
+      settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (error) {
       return Err(SendUnexpectedFailure('$error'));
     }

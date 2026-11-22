@@ -1,3 +1,7 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:swaps/src/data/boltz_api.dart';
@@ -7,11 +11,10 @@ import 'package:test/test.dart';
 
 class _MockRowStore extends Mock implements SwapRowStore {}
 
-class _MockSecretStore extends Mock implements SecretStore {}
-
 class _MockWebSocket extends Mock implements BoltzWebSocket {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late List<_MockWebSocket> opened;
   late BoltzDatasource boltz;
 
@@ -22,7 +25,7 @@ void main() {
       url: 'boltz.test',
       boltzStore: SwapStorage(
         rows: _MockRowStore(),
-        secrets: _MockSecretStore(),
+        secrets: ReproKeychainBackend().capability,
       ),
       webSocketFactory: (url, {onDone, onError}) {
         final socket = _MockWebSocket();

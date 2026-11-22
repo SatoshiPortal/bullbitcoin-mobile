@@ -81,6 +81,7 @@ jobs:
             .dart_tool/build
             **/*.g.dart
             **/*.freezed.dart
+            **/*.drift.dart
             **/*.mocks.dart
             **/*.gen.dart
             **/*.gr.dart

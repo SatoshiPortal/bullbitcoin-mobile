@@ -1,11 +1,10 @@
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok;
+    show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -19,7 +18,7 @@ import 'package:secrets/testing.dart';
 class _MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -127,7 +126,8 @@ void main() {
       // The swap key itself is FFI-bound and unreachable from a unit test,
       // so what is pinned is its input.
       bool? askedIsDefault;
-      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => Ok(settings));
       when(
         () => walletRepository.importWallet(
           parent: any(named: 'parent'),
@@ -187,7 +187,7 @@ void main() {
         peak = peak > inFlight ? peak : inFlight;
         await Future<void>.delayed(const Duration(milliseconds: 20));
         inFlight--;
-        return settings;
+        return Ok(settings);
       });
       failCreateWalletWith(
         const WalletAlreadyExistsException('existing-wallet-id'),
@@ -232,7 +232,8 @@ void main() {
         await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
-      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => Ok(settings));
       failCreateWalletWith(
         const WalletAlreadyExistsException('existing-wallet-id'),
       );
@@ -257,7 +258,7 @@ void main() {
         // words finished first and built its wallet on this seed. This
         // import created the entry, but it is not an orphan any more.
         when(() => settingsRepository.fetch())
-            .thenAnswer((_) async => settings);
+            .thenAnswer((_) async => Ok(settings));
         when(() => walletRepository.getWallets()).thenAnswer(
           (_) async => Ok<List<Wallet>, WalletFailure>([
             Wallet(
@@ -297,7 +298,7 @@ void main() {
       'retains a newly imported secret after native provisioning fails',
       () async {
         when(() => settingsRepository.fetch())
-            .thenAnswer((_) async => settings);
+            .thenAnswer((_) async => Ok(settings));
         failCreateWalletWith(Exception('electrum unreachable'));
 
         final result = await usecase.execute(

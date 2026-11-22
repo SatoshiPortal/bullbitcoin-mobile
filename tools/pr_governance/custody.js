@@ -7,15 +7,6 @@
 
 const MARKER = '<!-- bull-custody-review -->';
 
-// The app's own secure key-value store predates packages/secrets and keeps the PIN and
-// preferences in the same OS keystore; it refuses the package's key prefixes
-// (`Secrets.reservedKeyPrefixes`). These files may import the plugin; any other importer is new.
-const FSS_IMPORTERS_ALLOWED = new Set([
-  'lib/core/storage/storage_locator.dart',
-  'lib/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart',
-  'test/core_test/storage/secure_storage_reserved_keys_test.dart',
-]);
-
 const inSecrets = (path) => path.startsWith('packages/secrets/');
 const isDart = (path) => path.endsWith('.dart');
 // The bindings packages must never reach package:secrets (`bindings-secrets` below, enforced on resolved
@@ -35,7 +26,7 @@ const RULES = [
   },
   {
     id: 'fss-import',
-    applies: (path) => isDart(path) && !inSecrets(path) && !FSS_IMPORTERS_ALLOWED.has(path),
+    applies: (path) => isDart(path) && !inSecrets(path),
     // The URI, not the `import` keyword: a directive may be split across lines or conditional.
     matches: (text) => /['"]package:flutter_secure_storage/.test(text),
     why: 'reaches the OS keystore that holds the seeds from outside packages/secrets',
@@ -62,7 +53,7 @@ const RULES = [
   },
   {
     id: 'fss-dependency',
-    applies: (path) => isPubspec(path) && path !== 'packages/secrets/pubspec.yaml' && path !== 'pubspec.yaml',
+    applies: (path) => isPubspec(path) && path !== 'packages/secrets/pubspec.yaml',
     matches: (text) => /^\s*flutter_secure_storage(_[a-z_]+)?\s*:/.test(text),
     why: 'adds a dependency on the keystore plugin outside packages/secrets',
   },
@@ -130,7 +121,7 @@ function commentBody({ findings, uninspected }, { hadComment = false } = {}) {
     '### Custody review',
     '',
     findings.length > 0
-      ? 'This pull request touches the boundary around users\' seeds. Could you explain, in a reply, why each change below is needed? A maintainer reviews it before merge, and a safer route usually exists: `package:secrets/secrets.dart` is the only supported way to reach seed material, and the app\'s own secure store is `KeyValueStorageDatasource`.'
+      ? 'This pull request touches the boundary around users\' seeds. Could you explain, in a reply, why each change below is needed? A maintainer reviews it before merge, and a safer route usually exists: `package:secrets/secrets.dart` is the only supported way to reach seed material. Closed owner-scoped keychain capabilities serve access, exchange, Silent Payments and swaps.'
       : 'Custody inspection is incomplete. No custody finding was identified in the inspected changes.',
     '',
   ];
@@ -147,4 +138,4 @@ function commentBody({ findings, uninspected }, { hadComment = false } = {}) {
   return lines.join('\n');
 }
 
-module.exports = { MARKER, FSS_IMPORTERS_ALLOWED, RULES, reviewFiles, reviewTree, commentBody };
+module.exports = { MARKER, RULES, reviewFiles, reviewTree, commentBody };

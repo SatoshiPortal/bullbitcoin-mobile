@@ -1,0 +1,9 @@
+{
+  "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",
+  "bitcoinPriceExchangeRateUnavailable": "Kiwango cha ubadilishaji hakipatikani. Tafadhali jaribu tena baadaye.",
+  "priceChartLoadFailed": "Data ya chati ya bei haikuweza kupakiwa. Tafadhali jaribu tena.",
+  "fiatCurrencySettingsLabel": "Sarafu ya kawaida",
+  "currencySettingsDefaultFiatCurrencyLabel": "Sarafu ya kawaida chaguo-msingi",
+  "retry": "Jaribu Tena",
+  "priceChartFetchingHistory": "Inapata Historia ya Bei..."
+}

@@ -4,8 +4,9 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
@@ -13,7 +14,7 @@ import 'package:drift/drift.dart';
 
 class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
   final SqliteDatabase _database;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final StreamController<AutoSwap> _controller =
       StreamController<AutoSwap>.broadcast();
 
@@ -56,8 +57,10 @@ class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
   Stream<AutoSwap> watchAutoSwapParams() => _controller.stream;
 
   Future<int> _environmentRowId() async {
-    final environment =
-        (await _settingsRepository.fetch()).environment.networkEnv;
+    final environment = ((await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    )).environment.networkEnv;
     final network = switch (environment) {
       NetworkEnv.mainnet => BitcoinNetwork.mainnet,
       NetworkEnv.testnet => BitcoinNetwork.testnet,

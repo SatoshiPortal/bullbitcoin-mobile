@@ -17,7 +17,6 @@ import 'package:sync/sync.dart'
 import '../domain/wallet_spend_failure.dart';
 
 import 'package:sync/sync.dart' show validateAddress;
-import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 
 import 'dart:typed_data';
 
@@ -25,17 +24,16 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
     show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
@@ -45,17 +43,16 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Secrets _secrets;
   final ArkFundingSigningGuard _arkFundingGuard;
-  final BdkWalletDatasource _bdkWallet;
+  final Future<Result<sync.Wallet, SyncFailure>> Function(WalletKey) _wallet;
   final SyncWalletValuesDatasource _values;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
     required this._secrets,
     required this._arkFundingGuard,
-    required BdkWalletDatasource bdkWalletDatasource,
+    required this._wallet,
     required SyncWalletValuesDatasource walletValuesDatasource,
-  }) : _bdkWallet = bdkWalletDatasource,
-       _values = walletValuesDatasource;
+  }) : _values = walletValuesDatasource;
 
   /// Sync's writer admits the spend, then builds once on a wallet opened for
   /// the build, excluding the freezes and other sessions' reservations it
@@ -93,19 +90,38 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         return const Err(WalletSelectedInputsUnavailableFailure());
       }
 
-      final built = await _bdkWallet.buildPsbt(
-        wallet: WalletModel.fromMetadata(metadata),
-        recipients: recipients.map(_recipientModelFromEntity).toList(),
-        networkFee: networkFee,
-        unspendable: unspendable,
-        selected: selected
-            ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
-            .toList(),
-        selectedOnly: selectedOnly,
-        // Default to RBF-enabled, matching BDK's own default sequence
-        // (0xFFFFFFFD).
-        replaceByFee: replaceByFee ?? true,
-      );
+      final sync.BitcoinSpendRequest request;
+      try {
+        request = sync.BitcoinSpendRequest(
+          recipients: [
+            for (final recipient in recipients)
+              sync.SpendRecipient(
+                recipient.address,
+                amountSat: recipient.amountSat?.value.toInt(),
+              ),
+          ],
+          fee: switch (networkFee) {
+            AbsoluteFee(:final sats) => sync.SpendAbsoluteFee(sats),
+            RelativeFee(:final satPerKwu) => sync.SpendFeeRate(satPerKwu),
+          },
+          selected: selected == null
+              ? null
+              : [
+                  for (final coin in selected)
+                    (txId: coin.txId, vout: coin.vout),
+                ],
+          selectedOnly: selectedOnly,
+          replaceable: replaceByFee ?? true,
+          exclude: {...?unspendable},
+        );
+      } on ArgumentError {
+        return const Err(WalletTransactionBuildFailure('spend_refused'));
+      }
+      final key = WalletKey(id: metadata.id, network: metadata.network.shared);
+      final built = switch (await _wallet(key)) {
+        Ok(:final value) => await value.tx.build(request),
+        Err(:final failure) => Err<UnsignedSpend, SyncFailure>(failure),
+      };
       return switch (built) {
         Ok(:final value) => Ok(value.encoded),
         Err(:final failure) => Err(
@@ -251,13 +267,14 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
   @override
   Future<int> getTxSize({required String psbt}) async {
-    final txSize = await _bdkWallet.decodeTxSize(psbt);
-    return txSize;
+    return sync.decodeBitcoinPsbt(psbt).vsize;
   }
 
   Future<int> getTxFeeAmount({required String psbt}) async {
-    final feeAbsolute = await _bdkWallet.getFeeAmount(psbt);
-    return feeAbsolute;
+    return switch (sync.bitcoinPsbtFee(psbt)) {
+      Ok(:final value) => value,
+      Err() => throw const FormatException('PSBT fee unknown'),
+    };
   }
 
   @override
@@ -273,25 +290,24 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     if (!metadata.isBitcoin) {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
-    final amounts = await _bdkWallet.getRecipientAmounts(
-      psbt,
-      recipients.map(_recipientModelFromEntity).toList(),
-      network: metadata.network,
-    );
+    final amounts = switch (await sync.bitcoinRecipientAmounts(
+      psbt: psbt,
+      network: metadata.network.bitcoin,
+      recipients: [
+        for (final recipient in recipients)
+          (
+            address: recipient.address,
+            amountSat: recipient.amountSat?.value.toInt(),
+          ),
+      ],
+    )) {
+      Ok(:final value) => value,
+      Err(failure: sync.SyncInvalidTransactionFailure()) =>
+        throw const FormatException('Not a PSBT'),
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
     return amounts.map(Sats.fromInt).toList();
   }
-
-  BitcoinTransactionRecipientModel _recipientModelFromEntity(
-    BitcoinTransactionRecipient recipient,
-  ) => switch (recipient.amountSat) {
-    final amount? => BitcoinTransactionRecipientModel.fixed(
-      address: recipient.address,
-      fixedAmountSat: amount.value.toInt(),
-    ),
-    null => BitcoinTransactionRecipientModel.remainder(
-      address: recipient.address,
-    ),
-  };
 
   Future<int> getAmountSentToAddress({
     required String psbt,
@@ -305,11 +321,16 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     if (!metadata.isBitcoin) {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
-    return await _bdkWallet.getAmountSentToAddress(
-      psbt,
-      address,
-      network: metadata.network,
-    );
+    return switch (await sync.bitcoinRecipientAmounts(
+      psbt: psbt,
+      network: metadata.network.bitcoin,
+      recipients: [(address: address, amountSat: null)],
+    )) {
+      Ok(:final value) => value.single,
+      Err(failure: sync.SyncInvalidTransactionFailure()) =>
+        throw const FormatException('Not a PSBT'),
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
@@ -317,18 +338,32 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String internalDescriptor,
     required Network network,
     required ElectrumConnection electrumServer,
-  }) {
-    return _bdkWallet.dryScan(
+  }) async {
+    final scanned = await sync.prescanBitcoinWallet(
       externalDescriptor: externalDescriptor,
       internalDescriptor: internalDescriptor,
-      network: network,
-      electrumServer: electrumServer,
+      network: network.bitcoin,
+      connection: sync.WalletConnection(
+        url: electrumServer.url,
+        socks5: electrumServer.socks5,
+        timeout: Duration(seconds: electrumServer.effectiveTimeout),
+        retry: electrumServer.retry,
+        stopGap: electrumServer.stopGap,
+        validateDomain: electrumServer.validateDomain,
+      ),
     );
+    return switch (scanned) {
+      Ok(:final value) => (
+        satoshis: value.confirmedSat,
+        transactions: value.transactions,
+      ),
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
   }
 
   /// Verifies the stored transaction's wallet-owned input signatures against
   /// its watch-only descriptors (GHSA-6jp4-8v48-cc5v guard); no key material
-  /// is loaded. See [BdkWalletDatasource.verifyTransactionInputSignatures].
+  /// is loaded.
   Future<TransactionSignatureStatus> getTransactionSignatureStatus({
     required String walletId,
     required String txid,
@@ -340,11 +375,19 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     if (!metadata.isBitcoin) {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
-    final wallet = WalletModel.fromMetadata(metadata);
-    return _bdkWallet.verifyTransactionInputSignatures(
-      txid: txid,
-      wallet: wallet,
-    );
+    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
+    final handle = switch (await _wallet(key)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
+    return switch (await handle.tx.originalSignatures(txid)) {
+      Ok(value: sync.SignatureCheck.valid) => TransactionSignatureStatus.valid,
+      Ok(value: sync.SignatureCheck.invalid) =>
+        TransactionSignatureStatus.invalid,
+      Ok(value: sync.SignatureCheck.unverifiable) =>
+        TransactionSignatureStatus.unverifiable,
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
   }
 
   /// A replacement of [txid] built by sync's writer, only on an original
@@ -356,10 +399,15 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required RelativeFee newFeeRate,
   }) async {
     final metadata = await _metadataFor(walletId);
-    return _bdkWallet.createUnsignedReplaceByFeePsbt(
-      wallet: WalletModel.fromMetadata(metadata),
-      txid: txid,
-      feeRate: newFeeRate,
-    );
+    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
+    return switch (await _wallet(key)) {
+      Ok(:final value) => value.tx.bump(
+        sync.BumpFeeRequest(
+          txid: txid,
+          fee: sync.SpendFeeRate(newFeeRate.satPerKwu),
+        ),
+      ),
+      Err(:final failure) => Err(failure),
+    };
   }
 }

@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -15,11 +14,11 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
@@ -43,7 +42,7 @@ void main() {
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
   });
 
   test(
@@ -51,8 +50,8 @@ void main() {
     () async {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.regtest);
-      when(settingsRepository.fetch).thenAnswer((_) async => settings);
-      final labels = _MockLabelsFacade();
+      when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
+      final labels = _MockLabels();
       final refresh = RefreshBuyOrderUsecase(
         mainnetExchangeOrderRepository: mainnet,
         testnetExchangeOrderRepository: testnet,
@@ -149,7 +148,7 @@ void main() {
     test('uses the testnet repository on testnet', () async {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.testnet);
-      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
       when(() => testnet.refreshBuyOrder('order-1'))
           .thenAnswer((_) async => _MockBuyOrder());
 
@@ -162,7 +161,7 @@ void main() {
   });
 
   group('ConfirmBuyOrderUsecase', () {
-    late _MockLabelsFacade labels;
+    late _MockLabels labels;
 
     ConfirmBuyOrderUsecase build() => ConfirmBuyOrderUsecase(
       mainnetExchangeOrderRepository: mainnet,
@@ -172,7 +171,7 @@ void main() {
     );
 
     setUp(() {
-      labels = _MockLabelsFacade();
+      labels = _MockLabels();
       when(() => labels.store(any()))
           .thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
     });

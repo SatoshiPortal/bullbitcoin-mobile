@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:file_system/file_system.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -29,25 +29,30 @@ final class ExchangeDocumentUploaded extends UploadExchangeDocumentOutcome {
 /// an explicit short-circuit and holds no `try/catch` of its own except around
 /// the shared upload use-case, which still throws.
 class UploadExchangeDocumentUsecase {
-  final DocumentPickerPort _documentPicker;
+  final FileSystem _fileSystem;
   final UploadKycDocumentUsecase _uploadKycDocumentUsecase;
 
   const UploadExchangeDocumentUsecase({
-    required this._documentPicker,
+    required this._fileSystem,
     required this._uploadKycDocumentUsecase,
   });
 
   @useResult
   Future<Result<UploadExchangeDocumentOutcome, ExchangeSettingsFailure>>
   execute({String? userId}) async {
-    final picked = await _documentPicker.pick(
+    final picked = await _fileSystem.pick(
       allowedExtensions: FileToUpload.allowedExtensions,
     );
 
     final PickedDocument? document;
     switch (picked) {
       case Err(:final failure):
-        return Err(failure);
+        log.warning('Document picker failed', error: failure.logMessage);
+        return Err(
+          ExchangeSettingsUnexpectedFailure(
+            'pickFiles failed: ${failure.logMessage}',
+          ),
+        );
       case Ok(:final value):
         document = value;
     }
@@ -56,14 +61,29 @@ class UploadExchangeDocumentUsecase {
       return const Ok(ExchangeDocumentPickCancelled());
     }
 
-    final rejection = _reject(document);
-    if (rejection != null) {
-      return Err(rejection);
+    final List<int> bytes;
+    switch (await _fileSystem.read(
+      document,
+      maxBytes: FileToUpload.maxFileSizeBytes,
+    )) {
+      case Err(:final failure):
+        if (failure is FileSystemTooLargeFailure) {
+          return const Err(ExchangeSettingsDocumentTooLargeFailure());
+        }
+        log.warning(
+          'Selected document could not be read',
+          error: failure.logMessage,
+        );
+        return const Err(ExchangeSettingsDocumentUnreadableFailure());
+      case Ok(:final value):
+        bytes = value;
     }
-
-    final bytes = document.bytes;
-    if (bytes == null) {
-      return const Err(ExchangeSettingsDocumentUnreadableFailure());
+    if (bytes.isEmpty) {
+      return const Err(ExchangeSettingsDocumentEmptyFailure());
+    }
+    final extension = document.extension?.toLowerCase() ?? '';
+    if (!FileToUpload.allowedExtensions.contains(extension)) {
+      return const Err(ExchangeSettingsDocumentTypeNotAllowedFailure());
     }
 
     // Mirrors the filename BB-Exchange expects for a secure upload.
@@ -99,32 +119,5 @@ class UploadExchangeDocumentUsecase {
         ),
       );
     }
-  }
-
-  /// The exchange's own limits, expressed as sanitized failures the
-  /// presentation layer translates.
-  ExchangeSettingsFailure? _reject(PickedDocument document) {
-    final bytes = document.bytes;
-    // No bytes at all means the picker could not read the file; an empty
-    // byte list means the file itself is empty. Different user advice.
-    if (bytes == null) {
-      return const ExchangeSettingsDocumentUnreadableFailure();
-    }
-    if (bytes.isEmpty) {
-      return const ExchangeSettingsDocumentEmptyFailure();
-    }
-
-    if (document.sizeBytes > FileToUpload.maxFileSizeBytes) {
-      return const ExchangeSettingsDocumentTooLargeFailure();
-    }
-
-    // Lowercased here rather than trusting the adapter, so the rule holds for
-    // any DocumentPickerPort implementation.
-    final extension = document.extension?.toLowerCase() ?? '';
-    if (!FileToUpload.allowedExtensions.contains(extension)) {
-      return const ExchangeSettingsDocumentTypeNotAllowedFailure();
-    }
-
-    return null;
   }
 }

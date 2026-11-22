@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 //
 // Every test drives the real `getTransactions` against an offline, in-process
 // bdk wallet, so they cover `listOutput()` -> keychain -> `isChange` -> the
-// amount. Setup mirrors bdk_wallet_datasource_test.dart: a fixed BIP84 testnet
+// amount. Setup mirrors bitcoin_spend_test.dart: a fixed BIP84 testnet
 // wallet seeded with hand-crafted raw transactions, path_provider mocked to a
 // temp directory. `setUp` funds the wallet; each test then applies its own
 // spend of that funding so the scenarios don't double-spend each other.

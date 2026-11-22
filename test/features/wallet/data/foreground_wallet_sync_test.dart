@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
@@ -12,24 +13,21 @@ import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_u
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Wallet;
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -48,15 +46,11 @@ class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
 
 class _Descriptor extends Mock implements satoshifier.Descriptor {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 class _Catalog extends Mock implements WalletCatalogPort {}
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
-
-class _Bdk extends Mock implements BdkWalletDatasource {}
-
-class _Lwk extends Mock implements LwkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -98,10 +92,10 @@ void main() {
   );
   registerFallbackValue(WalletModel.fromMetadata(row));
   registerFallbackValue(row);
+  registerFallbackValue(WalletCatalogPortImpl.keyFromMetadata(row));
   late Directory directory;
   late _Policy policy;
   late _Metadata metadata;
-  late _Bdk bdk;
   late _Values values;
   late WalletRepository repository;
   late ForegroundWalletSync bridge;
@@ -110,7 +104,6 @@ void main() {
     directory = Directory.systemTemp.createTempSync('foreground-sync-');
     policy = _Policy();
     metadata = _Metadata();
-    bdk = _Bdk();
     values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
     when(() => metadata.store(any())).thenAnswer((_) async {});
@@ -134,8 +127,7 @@ void main() {
     );
     repository = WalletRepository(
       walletMetadataDatasource: metadata,
-      bdkWalletDatasource: bdk,
-      lwkWalletDatasource: _Lwk(),
+      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: bridge.synchronize,
       isSyncing: bridge.isSyncing,
@@ -200,14 +192,15 @@ void main() {
         when(() => metadata.fetch(id)).thenAnswer((_) async => local);
         when(() => metadata.fetchAll()).thenAnswer((_) async => [remaining]);
         final native = _Native();
-        when(() => native.delete(any())).thenAnswer((_) async {});
-        when(() => native.catalogDeleted(any())).thenAnswer((_) async {});
+        when(() => native.delete(any()))
+            .thenAnswer((_) async => const Ok(null));
+        when(() => native.catalogDeleted(any()))
+            .thenAnswer((_) async => const Ok(null));
         when(() => metadata.delete(id)).thenAnswer((_) async {});
         final guardedRepository = WalletRepository(
           native: native,
           walletMetadataDatasource: metadata,
-          bdkWalletDatasource: bdk,
-          lwkWalletDatasource: _Lwk(),
+          wallet: (_) async => throw StateError('no native access expected'),
           walletValuesDatasource: values,
           synchronize: bridge.synchronize,
           isSyncing: bridge.isSyncing,
@@ -469,8 +462,7 @@ void main() {
       final requests = <(bool, bool)>[];
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,
-        bdkWalletDatasource: bdk,
-        lwkWalletDatasource: _Lwk(),
+        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize: (
           metadata, {
@@ -641,11 +633,13 @@ void main() {
       final native = _Native();
       when(() => native.prepareCreate(any())).thenAnswer((_) async {
         verifyNever(() => metadata.insert(any()));
+        return const Ok(null);
       });
       when(() => native.create(any())).thenAnswer((_) async {
         verify(() => metadata.insert(any())).called(1);
         verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
         provisioned = true;
+        return const Ok(null);
       });
       var synchronized = false;
       final originalBalance = await values.getBalance(
@@ -660,8 +654,7 @@ void main() {
       final importing = WalletRepository(
         native: native,
         walletMetadataDatasource: metadata,
-        bdkWalletDatasource: bdk,
-        lwkWalletDatasource: _Lwk(),
+        wallet: (_) async => throw StateError('no native access expected'),
         walletValuesDatasource: values,
         synchronize:
             (

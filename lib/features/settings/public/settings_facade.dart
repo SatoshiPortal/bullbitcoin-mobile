@@ -11,10 +11,12 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 
-export '../domain/settings_entity.dart';
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
+export '../ui/widgets/superuser_tap_unlocker.dart' show SuperuserTapUnlocker;
+export '../ui/widgets/translation_warning_bottom_sheet.dart'
+    show TranslationWarningBottomSheet;
 export 'payjoin_disclaimer_dialog.dart';
 export '../reporting_setup.dart' show refreshReportingConsent;
 export '../background_setup.dart' show setupBackgroundPreferences;
@@ -23,12 +25,29 @@ part '../ui/amount_preferences_binder.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {
+  /// Captures the active environment when a new account journey starts.
+  static NetworkEnv? networkOf(BuildContext context) => context.select(
+    (SettingsCubit cubit) => cubit.state.environment?.networkEnv,
+  );
+
   static Future<void> toggleAmountVisibility(BuildContext context) async {
     final cubit = context.read<SettingsCubit>();
     final settings = cubit.state.storedSettings;
     if (settings == null) return;
     await cubit.toggleHideAmounts(!(settings.hideAmounts ?? true));
   }
+
+  static Future<void> setAmountsHidden(BuildContext context, bool hide) async {
+    final cubit = context.read<SettingsCubit>();
+    final settings = cubit.state.storedSettings;
+    if (settings == null) return;
+    await cubit.toggleHideAmounts(hide);
+  }
+
+  static Future<void> changeDisplayCurrency(
+    BuildContext context,
+    String currencyCode,
+  ) => context.read<SettingsCubit>().changeCurrency(currencyCode);
 
   static Widget amountScope({
     required Widget child,

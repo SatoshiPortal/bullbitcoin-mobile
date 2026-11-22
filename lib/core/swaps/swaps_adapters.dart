@@ -1,15 +1,13 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:preferences/preferences.dart' as settings;
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
@@ -20,7 +18,7 @@ import 'package:sync/sync.dart';
 
 /// Opens the engine's own database file. Same platform choices as the app
 /// database (documents dir, WAL, busy timeout, cross-isolate sharing) — the
-/// package itself stays pure Dart and just takes the executor.
+/// engine receives the configured executor from composition.
 QueryExecutor openBoltzSwapsDbConnection() {
   return driftDatabase(
     name: swaps.BoltzSwapsDatabase.name,
@@ -58,35 +56,6 @@ class AppSwapsLog implements swaps.SwapsLog {
 
   @override
   Future<void> flush() => log.flush();
-}
-
-/// Platform secure storage behind the engine's secret-store contract,
-/// limited to the engine's own `swap_` entries: the shared keychain also
-/// holds wallet seeds, the PIN and exchange credentials, none of which the
-/// engine may read.
-class SecureSecretStore implements swaps.SecretStore {
-  final KeyValueStorageDatasource<String> _secure;
-
-  SecureSecretStore(this._secure);
-
-  static const _prefix = 'swap_';
-
-  String _scoped(String key) {
-    if (!key.startsWith(_prefix)) {
-      throw ArgumentError.value(key, 'key', 'outside the swap secret scope');
-    }
-    return key;
-  }
-
-  @override
-  Future<void> write(String key, String value) =>
-      _secure.saveValue(key: _scoped(key), value: value);
-
-  @override
-  Future<String?> read(String key) async => _secure.getValue(_scoped(key));
-
-  @override
-  Future<void> delete(String key) => _secure.deleteValue(_scoped(key));
 }
 
 /// The app's electrum selection/fallback seam, unchanged: custom-if-set else
@@ -139,7 +108,7 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
 /// wallet call, never a third-party explorer.
 class AppLockupChain implements swaps.LockupChain {
   final WalletConnectionPort _connections;
-  final SettingsRepository? _settingsRepository;
+  final Preferences? _settingsRepository;
 
   AppLockupChain(this._connections, {this._settingsRepository});
 
@@ -188,7 +157,10 @@ class AppLockupChain implements swaps.LockupChain {
       final repository = _settingsRepository;
       if (repository == null) throw const swaps.SwapsAuthorizationFailure();
       try {
-        final settings = await repository.fetch();
+        final settings = (await repository.fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        );
         if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
           throw const swaps.SwapsAuthorizationFailure();
         }

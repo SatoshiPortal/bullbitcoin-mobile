@@ -23,6 +23,43 @@ void main() {
       expect(selected, 'Frozen');
     });
 
+    testWidgets('displays translated labels and selects by value', (
+      tester,
+    ) async {
+      String? selected;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSegmented(
+            items: const {'regular', 'confidential'},
+            labelBuilder: (value) =>
+                value == 'confidential' ? 'Virement confidentiel' : value,
+            height: BullSpacing.xxl,
+            onSelected: (value) => selected = value,
+          ),
+        ),
+      );
+
+      expect(find.text('regular'), findsOneWidget);
+      expect(find.text('confidential'), findsNothing);
+      final translated = find.text('Virement confidentiel');
+      final segment = find.ancestor(
+        of: translated,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.button == true,
+        ),
+      );
+      expect(segment, findsOneWidget);
+      final input = find.ancestor(
+        of: translated,
+        matching: find.byType(InkWell),
+      );
+      expect(tester.getSize(input).shortestSide, greaterThanOrEqualTo(48));
+
+      await tester.tap(translated);
+      await tester.pumpAndSettle();
+      expect(selected, 'confidential');
+    });
+
     testWidgets('does not select a disabled segment', (tester) async {
       String? selected;
       await tester.pumpWidget(

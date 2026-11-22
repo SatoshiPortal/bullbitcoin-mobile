@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/swap_route_setting_repository.dart';
@@ -11,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockSwapRouteSettingRepository extends Mock
     implements SwapRouteSettingRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettingsEntity extends Mock implements SettingsEntity {}
 
@@ -29,7 +28,8 @@ void main() {
         .thenAnswer((_) async => const Ok(true));
     when(() => routeSettings.getRouteOverride())
         .thenAnswer((_) async => const Ok(SwapRouteOverride.boltzOnly));
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => Ok(settings));
     when(() => settings.isDevModeEnabled).thenReturn(true);
     usecase = GetSwapRouteSettingsUsecase(
       swapRouteSettingRepository: routeSettings,

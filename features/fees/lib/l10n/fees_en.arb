@@ -1,0 +1,10 @@
+{
+  "settingsTitle": "Bitcoin fee source",
+  "electrumLabel": "Electrum",
+  "mempoolLabel": "Mempool",
+  "electrumDescription": "Estimates from your configured Electrum server.",
+  "mempoolDescription": "Estimates from your configured Mempool server.",
+  "loadError": "Could not load the fee source.",
+  "saveError": "Could not save this choice. Your previous source is still active.",
+  "retry": "Retry"
+}

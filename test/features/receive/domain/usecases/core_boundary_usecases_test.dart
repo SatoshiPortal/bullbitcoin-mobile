@@ -1,11 +1,12 @@
+import 'package:primitives/primitives.dart' show ScriptType;
+
 import '../../../../fake_index_price_reader.dart';
 
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -26,7 +27,7 @@ class _Reporter extends Mock implements LoggerReporter {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class _MockGetReceiveAddressUsecase extends Mock
     implements GetReceiveAddressUsecase {}
@@ -110,7 +111,7 @@ void main() {
   group('GetReceiveSettingsUsecase', () {
     test('converts a throw into a sanitized failure', () async {
       final inner = _MockGetSettingsUsecase();
-      when(() => inner.execute()).thenThrow(Exception(_rawReason));
+      when(() => inner.fetch()).thenThrow(Exception(_rawReason));
 
       final result = await GetReceiveSettingsUsecase(inner).execute();
 
@@ -125,11 +126,13 @@ void main() {
 
     test('forwards the settings on success', () async {
       final inner = _MockGetSettingsUsecase();
-      when(() => inner.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+      when(() => inner.fetch()).thenAnswer(
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
 
@@ -146,11 +149,13 @@ void main() {
 
     setUp(() {
       getSettings = _MockGetSettingsUsecase();
-      when(getSettings.execute).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+      when(getSettings.fetch).thenAnswer(
+        (_) async => Ok(
+          SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       getIndexPrice = FakeIndexPriceReader(fiatAmount: 100000);
@@ -204,7 +209,7 @@ void main() {
     });
 
     test('converts a settings throw into a sanitized failure', () async {
-      when(getSettings.execute).thenThrow(Exception(_rawReason));
+      when(getSettings.fetch).thenThrow(Exception(_rawReason));
 
       final result = await usecase.execute();
 

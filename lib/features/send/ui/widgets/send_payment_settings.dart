@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Shared mono/multi settings content. The owner applies each change and owns

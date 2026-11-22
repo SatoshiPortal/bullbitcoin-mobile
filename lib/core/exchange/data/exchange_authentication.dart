@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:primitives/primitives.dart';
-import 'package:dio/dio.dart';
 
 /// A transport capability, wired by the composition root, with no key cache.
 typedef ReadExchangeApiKey =
@@ -21,28 +20,20 @@ final class ExchangeAuthenticationException implements Exception {
       : 'Exchange credential unavailable';
 }
 
-/// Dio wraps interceptor refusals. Repositories translate only this known case.
+/// The refusal [error] is, or null when it is not one.
+///
+/// A refusal is thrown directly by the repositories that predate `Result`; the
+/// transport itself reports credential failures as values.
 ExchangeAuthenticationException? exchangeAuthenticationException(Object error) {
   if (error is ExchangeAuthenticationException) return error;
-  if (error case DioException(
-    error: final ExchangeAuthenticationException refusal,
-  )) {
-    return refusal;
-  }
   return null;
 }
 
 /// Compatibility for existing throwing repository contracts. New Result-based
-/// contracts translate the refusal into their own failure family instead.
+/// contracts translate the failure into their own failure family instead.
 void rethrowExchangeAuthentication(Object error, StackTrace trace) {
   if (error is Error) {
     Error.throwWithStackTrace(error, error.stackTrace ?? StackTrace.current);
-  }
-  if (error case DioException(
-    error: final Error bug,
-    stackTrace: final trace,
-  )) {
-    Error.throwWithStackTrace(bug, trace);
   }
   if (error is ExchangeCredentialUnavailableException) {
     Error.throwWithStackTrace(error, trace);

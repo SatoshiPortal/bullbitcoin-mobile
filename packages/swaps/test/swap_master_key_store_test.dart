@@ -1,3 +1,7 @@
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+
+import 'support/real_swap_backends.dart';
+
 import 'package:primitives/primitives.dart' show NetworkEnv;
 
 import 'dart:async';
@@ -12,27 +16,24 @@ import 'package:test/test.dart';
 
 class _MockRowStore extends Mock implements SwapRowStore {}
 
-class _MemorySecretStore implements SecretStore {
-  final values = <String, String>{};
+class _MemoryKeychain extends ReproKeychainBackend {
   final held = <String, Completer<void>>{};
   var readsFail = false;
 
   @override
-  Future<void> write(String key, String value) async => values[key] = value;
-
-  @override
-  Future<String?> read(String key) async {
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
     await held[key]?.future;
     if (readsFail) throw StateError('keychain unavailable');
     return values[key];
   }
-
-  @override
-  Future<void> delete(String key) async => values.remove(key);
 }
 
 void main() {
-  late _MemorySecretStore secrets;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late _MemoryKeychain secrets;
   late BoltzDatasource boltz;
 
   const key = DerivedSwapMasterKey(
@@ -45,11 +46,14 @@ void main() {
   );
 
   setUp(() {
-    secrets = _MemorySecretStore();
+    secrets = _MemoryKeychain();
     boltz = BoltzDatasource(
       environment: NetworkEnv.mainnet,
       url: 'boltz.test',
-      boltzStore: SwapStorage(rows: _MockRowStore(), secrets: secrets),
+      boltzStore: SwapStorage(
+        rows: _MockRowStore(),
+        secrets: secrets.capability,
+      ),
     );
   });
 

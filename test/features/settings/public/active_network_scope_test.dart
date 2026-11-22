@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 import 'dart:async';

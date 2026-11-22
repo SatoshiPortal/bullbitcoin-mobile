@@ -1,26 +1,25 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
-import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_qr_bottom_sheet.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullInvoiceViewer,
         BullButton,
         BullCountdown,
+        BullCopyField,
+        BullPaymentPreparationView,
         BullShimmerLine,
         BullSnackBar,
         BullText,
@@ -39,7 +38,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
           : null,
     );
     if (preparation != null) {
-      return PaymentPreparationView(
+      return BullPaymentPreparationView(
         title: context.loc.sellPleasePayInvoice,
         detailLabels: [
           context.loc.sellDepositAddress,
@@ -131,7 +130,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
               if (order == null)
                 const BullShimmerLine()
               else
-                CopyInput(
+                BullCopyField(
+                  copyLabel: context.loc.copyDialogButton,
+                  copiedMessage: context.loc.copiedToClipboard,
                   text: bitcoinUnit == BitcoinUnit.btc
                       ? FormatAmount.btc(order.payinAmount)
                       : FormatAmount.sats(
@@ -151,7 +152,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
               ),
               const Gap(16),
               if (recipient != null)
-                SellPayoutDetailsV2(recipient: recipient)
+                SellPayoutDetails(recipient: recipient)
               else
                 _buildDetailRow(
                   context,
@@ -322,7 +323,12 @@ class SellReceivePaymentScreen extends StatelessWidget {
         : order.sellPayinAddress ?? '';
 
     return order.payinMethod == OrderPaymentMethod.lnInvoice
-        ? InvoiceViewer(fullText)
+        ? BullInvoiceViewer(
+            fullText,
+            title: context.loc.invoiceViewerTitle,
+            copyLabel: context.loc.viewerTapToCopy,
+            copiedMessage: context.loc.copiedToClipboard,
+          )
         : AddressViewer(fullText);
   }
 }

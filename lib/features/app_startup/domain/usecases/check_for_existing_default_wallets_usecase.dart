@@ -1,18 +1,24 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart'
-    show Err, Fingerprint, NetworkCapabilities, NetworkCapability, Ok, Result;
+    show
+        Err,
+        Fingerprint,
+        NetworkCapabilities,
+        NetworkCapability,
+        Ok,
+        Result,
+        ScriptType;
 import 'package:secrets/secrets.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletRepository _walletRepository;
   final Secrets _secrets;
 
@@ -26,8 +32,6 @@ class CheckForExistingDefaultWalletsUsecase {
   Future<Result<bool, AppStartupFailure>> execute() async {
     try {
       return await _check();
-    } on KeychainLockedException {
-      return const Err(AppStartupKeychainLockedFailure());
     } on Object catch (e, st) {
       log.severe(
         message: 'Default wallet check failed at startup',
@@ -39,7 +43,10 @@ class CheckForExistingDefaultWalletsUsecase {
   }
 
   Future<Result<bool, AppStartupFailure>> _check() async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final environment = settings.environment;
 
     List<Wallet> defaultWallets;

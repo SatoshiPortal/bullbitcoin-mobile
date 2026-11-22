@@ -2,11 +2,9 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/widgets/transaction_details_page.dart';
-import 'package:bb_mobile/features/buy/ui/buy_router.dart';
-import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
+import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
+import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_label_policy.dart';
@@ -19,7 +17,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_descripti
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_status_label.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +28,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullShimmerLine,
         BullSnackBar,
+        BullTransactionDetailsPage,
         Gap;
 import 'package:go_router/go_router.dart';
 
@@ -91,7 +90,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     final orderSwap = tx?.orderSwap;
     final isChainSwap = tx?.isChainSwap ?? false;
 
-    return TransactionDetailsPage(
+    return BullTransactionDetailsPage(
       title: isOngoingSwap == true
           ? (isChainSwap
                 ? context.loc.transactionDetailTransferProgress
@@ -183,7 +182,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ? null
                 : () async {
                     final cubit = context.read<TransactionDetailsCubit>();
-                    final saved = await LabelEntryBottomSheet.label(
+                    final saved = await LabelEditor.label(
                       context,
                       title: context.loc.transactionNoteAddTitle,
                       suggestionsFuture: cubit.fetchDistinctLabels(),

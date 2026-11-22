@@ -8,10 +8,9 @@ import 'presentation/internal_ark_transfer_cubit.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as settings_domain;
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
+import 'package:preferences/preferences.dart' as settings_domain;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -19,7 +18,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -37,7 +36,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
@@ -198,7 +197,7 @@ class SwapLocator {
         locator<GetOrderSwapsAwaitingLabelsUsecase>(),
         locator<MarkOrderSwapLabelsAppliedUsecase>(),
         locator<WalletTransactionRepository>(),
-        locator<LabelsFacade>(),
+        locator<Labels>(),
       ),
     );
     locator.registerLazySingleton<RefreshOrderSwapsUsecase>(
@@ -218,20 +217,20 @@ class SwapLocator {
     );
     locator.registerFactory<GetSwapExchangeRateUsecase>(
       () => GetSwapExchangeRateUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
     locator.registerFactory<GetSwapRouteUsecase>(
       () => GetSwapRouteUsecase(
         swapRouteSettingRepository: locator<SwapRouteSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
       ),
     );
     locator.registerFactory<GetSwapRouteSettingsUsecase>(
       () => GetSwapRouteSettingsUsecase(
         swapRouteSettingRepository: locator<SwapRouteSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
       ),
     );
     locator.registerFactory<SetSwapExchangeFallbackUsecase>(
@@ -244,13 +243,13 @@ class SwapLocator {
     locator.registerFactory<GetSwapServerUsecase>(
       () => GetSwapServerUsecase(
         swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
       ),
     );
     locator.registerFactory<SetSwapServerUsecase>(
       () => SetSwapServerUsecase(
         swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.SettingsRepository>(),
+        settingsRepository: locator<settings_domain.Preferences>(),
         swapEngineSwitcher: locator<SwapEngineSwitcher>(),
         swapStore: locator<SwapStore>(),
       ),
@@ -368,12 +367,12 @@ class SwapLocator {
     locator.registerFactory<TransferBloc>(
       () => TransferBloc(
         getSwapAmountQuotesUsecase: GetSwapAmountQuotesUsecase(
-          settings: locator<GetSettingsUsecase>(),
+          settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        feeEstimates: locator<AppFeeEstimates>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
         validateBitcoinSelectionUsecase:
             locator<ValidateBitcoinSelectionUsecase>(),

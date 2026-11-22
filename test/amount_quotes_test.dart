@@ -1,14 +1,13 @@
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_amount_quotes_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Settings extends Mock implements GetSettingsUsecase {}
+class _Settings extends Mock implements Preferences {}
 
 void main() {
   final at = DateTime.utc(2026, 11, 19, 14, 32);
@@ -17,11 +16,13 @@ void main() {
       'amount quote boundaries capture $environment and preserve the quote time',
       () async {
         final settings = _Settings();
-        when(settings.execute).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: environment,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
+        when(settings.fetch).thenAnswer(
+          (_) async => Ok(
+            SettingsEntity(
+              environment: environment,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+            ),
           ),
         );
         final networks = <BitcoinNetwork>[];

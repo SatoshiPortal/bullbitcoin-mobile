@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bitcoin_price/testing.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_ui/bull_ui.dart' show BullPickerChip;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -13,8 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
-
-class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
 
 SettingsState _settingsState({bool revokeSpFailed = false}) => SettingsState(
   storedSettings: const SettingsEntity(
@@ -36,15 +34,11 @@ Widget _buildPage({required SettingsCubit settingsCubit}) => MaterialApp(
   home: Builder(
     builder: (context) {
       Device.init(context);
-      final price = _MockBitcoinPriceBloc();
-      when(() => price.state).thenReturn(
-        const BitcoinPriceState(availableCurrencies: ['USD', 'CAD']),
-      );
-      when(() => price.stream).thenAnswer((_) => const Stream.empty());
+
       return MultiBlocProvider(
         providers: [
           BlocProvider<SettingsCubit>.value(value: settingsCubit),
-          BlocProvider<BitcoinPriceBloc>.value(value: price),
+          BitcoinPriceFixture.prices(availableCurrencies: const ['USD', 'CAD']),
         ],
         child: const AppSettingsScreen(),
       );

@@ -9,8 +9,8 @@ import 'package:sync/sync.dart'
         SyncInvalidAddressFailure,
         SyncNoSpendableInputsFailure,
         SyncProtectedInputsFailure;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:fees/fees.dart';
+import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
@@ -26,7 +26,8 @@ import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 class LiquidWalletRepository implements LiquidSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Secrets _secrets;
-  final LwkWalletDatasource _lwkWallet;
+  final Future<Result<sync.Wallet, SyncFailure>> Function(sync.WalletKey)
+  _wallet;
   final SyncWalletValuesDatasource _values;
   final SyncFreezesDatasource _freezes;
 
@@ -39,13 +40,12 @@ class LiquidWalletRepository implements LiquidSendPort {
   LiquidWalletRepository({
     required this._walletMetadataDatasource,
     required this._secrets,
-    required LwkWalletDatasource lwkWalletDatasource,
+    required this._wallet,
     required SyncWalletValuesDatasource walletValuesDatasource,
     required SyncFreezesDatasource freezesDatasource,
     Future<Result<void, SyncFailure>> Function(String address, Network network)?
     validateAddress,
-  }) : _lwkWallet = lwkWalletDatasource,
-       _values = walletValuesDatasource,
+  }) : _values = walletValuesDatasource,
        _freezes = freezesDatasource,
        _validateAddress = validateAddress ?? sync_read.validateAddress;
 
@@ -76,14 +76,25 @@ class LiquidWalletRepository implements LiquidSendPort {
       if (selectedInputs != null && selectedInputs.isEmpty) {
         return const Err(WalletSelectedInputsUnavailableFailure());
       }
-      final built = await _lwkWallet.buildPset(
-        wallet: WalletModel.fromMetadata(metadata),
-        address: address,
-        amountSat: amountSat,
-        feeRate: feeRate,
-        drain: drain ?? false,
-        selectedInputs: selectedInputs,
+      final sync.LiquidSpendRequest request;
+      try {
+        request = sync.LiquidSpendRequest(
+          address: address,
+          amountSat: drain == true ? null : amountSat,
+          fee: sync.SpendFeeRate(feeRate.satPerKwu),
+          selected: selectedInputs,
+        );
+      } on ArgumentError {
+        return const Err(WalletTransactionBuildFailure('spend_refused'));
+      }
+      final key = sync.WalletKey(
+        id: metadata.id,
+        network: metadata.network.shared,
       );
+      final built = switch (await _wallet(key)) {
+        Ok(:final value) => await value.tx.build(request),
+        Err(:final failure) => Err<sync.UnsignedSpend, SyncFailure>(failure),
+      };
       return switch (built) {
         Ok(:final value) => Ok(value.encoded),
         Err(:final failure) => Err(switch (failure) {
@@ -106,8 +117,10 @@ class LiquidWalletRepository implements LiquidSendPort {
   }
 
   Future<(int, int)> getPsetSizeAndAbsoluteFees({required String pset}) async {
-    final (size, fees) = await _lwkWallet.decodeAbsoluteFeesFromPset(pset);
-    return (size, fees);
+    return switch (await sync.liquidPsetFees(pset)) {
+      Ok(:final value) => (value.discountedVsize, value.feeSat),
+      Err(:final failure) => throw WalletSnapshotException(failure),
+    };
   }
 
   Future<int> getLbtcUtxoCount({required String walletId}) async {
@@ -141,12 +154,27 @@ class LiquidWalletRepository implements LiquidSendPort {
     if (!metadata.isLiquid) {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
-    return switch (await _lwkWallet.consolidate(
-      wallet: WalletModel.fromMetadata(metadata),
-      feeRate: feeRate,
-      highUtxoThreshold: highUtxoThreshold,
-      maximumInputs: maximumInputs,
-    )) {
+    final sync.ConsolidationRequest request;
+    try {
+      request = sync.ConsolidationRequest(
+        fee: sync.SpendFeeRate(feeRate.satPerKwu),
+        highUtxoThreshold: highUtxoThreshold,
+        maximumInputs: maximumInputs,
+      );
+    } on ArgumentError {
+      throw const WalletSnapshotException(sync.SyncSpendRefusedFailure());
+    }
+    final key = sync.WalletKey(
+      id: metadata.id,
+      network: metadata.network.shared,
+    );
+    final result = switch (await _wallet(key)) {
+      Ok(:final value) => await value.tx.consolidate(request),
+      Err(:final failure) => Err<List<sync.UnsignedSpend>, SyncFailure>(
+        failure,
+      ),
+    };
+    return switch (result) {
       Ok(:final value) => [for (final spend in value) spend.encoded],
       Err(:final failure) => throw WalletSnapshotException(failure),
     };
@@ -157,8 +185,16 @@ class LiquidWalletRepository implements LiquidSendPort {
     required String walletId,
   }) async {
     final frozen = await _frozenOutpoints();
-    if (frozen.isNotEmpty &&
-        _lwkWallet.getPsetInputs(pset).any(frozen.contains)) {
+    final inputs = frozen.isEmpty
+        ? <Outpoint>{}
+        : switch (sync.decodeLiquidPset(pset)) {
+            Ok(:final value) => {
+              for (final input in value.inputs)
+                (txId: input.txid, vout: input.vout),
+            },
+            Err(:final failure) => throw WalletSnapshotException(failure),
+          };
+    if (inputs.any(frozen.contains)) {
       throw NoSpendableUtxoException(
         'The transaction spends a frozen Liquid coin',
       );
@@ -209,15 +245,17 @@ class LiquidWalletRepository implements LiquidSendPort {
     if (!metadata.isLiquid) {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
-    final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
-      network: metadata.network,
+    final key = sync.WalletKey(
       id: metadata.id,
+      network: metadata.network.shared,
     );
-    return await _lwkWallet.getAmountSentToAddress(
-      pset,
-      address,
-      wallet: wallet,
-    );
+    final wallet = switch (await _wallet(key)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw WalletSnapshotException(failure),
+    };
+    return switch (await wallet.tx.liquidAmountToAddress(pset, address)) {
+      Ok(:final value) => value.toInt(),
+      Err(:final failure) => throw WalletSnapshotException(failure),
+    };
   }
 }

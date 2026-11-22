@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:primitives/primitives.dart' show Err;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
@@ -7,9 +8,9 @@ import 'dart:math';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sync/sync.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
@@ -22,7 +23,7 @@ class WalletAddressRepository {
   final WalletNativeLifecycle? _native;
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SyncWalletValuesDatasource _values;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   WalletAddressRepository({
     this._native,
@@ -52,7 +53,12 @@ class WalletAddressRepository {
     late ({String address, int index}) issued;
     for (var attempt = 0; ; attempt++) {
       try {
-        issued = await native.receive(metadata, advance: advance);
+        issued = WalletCatalogPortImpl.value(
+          await native.receive(
+            WalletCatalogPortImpl.keyFromMetadata(metadata),
+            advance: advance,
+          ),
+        );
         if (attempt > 0) {
           log.fine('Receive writer recovered retries=$attempt');
         }
@@ -73,7 +79,8 @@ class WalletAddressRepository {
         case Err()) {
       throw const InvalidWalletAddressException();
     }
-    final labels = await _labelsFacade.fetchByReference(issued.address);
+    final labels = (await _labelsFacade.fetch(reference: issued.address))
+        .fold((labels) => labels, (_) => const <Label>[]);
     return WalletAddressMapper.toEntity(
       WalletAddressModel(
         walletId: walletId,
@@ -99,7 +106,14 @@ class WalletAddressRepository {
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
 
-    final issued = await _native?.issuedReceiveIndex(walletMetadata);
+    final native = _native;
+    final issued = native == null
+        ? null
+        : WalletCatalogPortImpl.value(
+            await native.issuedReceiveIndex(
+              WalletCatalogPortImpl.keyFromMetadata(walletMetadata),
+            ),
+          );
     final from =
         fromIndex ??
         max(
@@ -191,7 +205,8 @@ class WalletAddressRepository {
 
     final result = <WalletAddress>[];
     for (var model in enrichedAddresses) {
-      final labels = await _labelsFacade.fetchByReference(model.address);
+      final labels = (await _labelsFacade.fetch(reference: model.address))
+          .fold((labels) => labels, (_) => const <Label>[]);
       final entity = WalletAddressMapper.toEntity(model, labels: labels);
       result.add(entity);
     }
@@ -281,7 +296,8 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final labels = await _labelsFacade.fetchByReference(address);
+    final labels = (await _labelsFacade.fetch(reference: address))
+        .fold((labels) => labels, (_) => const <Label>[]);
     return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
   }
 }

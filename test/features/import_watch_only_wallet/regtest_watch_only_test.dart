@@ -1,6 +1,6 @@
 import 'package:bip32_keys/bip32_keys.dart'
     show changeVersionBytes, Slip132Format;
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -79,7 +79,7 @@ void main() {
       WatchOnlyWalletEntity.parse(
         descriptor,
         selectedNetwork: Network.bitcoinRegtest,
-        signerDevice: SignerDeviceEntity.seedsigner,
+        signerDevice: SignerDevice.seedsigner,
       ),
       throwsFormatException,
     );
@@ -95,7 +95,7 @@ void main() {
       expect(entity.pubkey, tpub);
       final hardwareScanned = await WatchOnlyWalletEntity.parse(
         tpub,
-        signerDevice: SignerDeviceEntity.seedsigner,
+        signerDevice: SignerDevice.seedsigner,
       );
       expect(
         () => hardwareScanned.captureNetwork(Network.bitcoinRegtest),

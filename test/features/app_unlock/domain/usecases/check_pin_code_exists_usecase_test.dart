@@ -1,25 +1,28 @@
+import 'dart:io';
+
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
-import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
-class MockPinCodeRepository extends Mock implements PinCodeRepository {}
 
 void main() {
-  late MockPinCodeRepository pinCodeRepository;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late FakeSecureStoragePlatform storage;
   late CheckPinCodeExistsUsecase usecase;
 
   setUp(() {
-    pinCodeRepository = MockPinCodeRepository();
-    usecase = CheckPinCodeExistsUsecase(pinCodeRepository: pinCodeRepository);
+    storage = FakeSecureStoragePlatform()..install();
+    usecase = CheckPinCodeExistsUsecase(
+      accessKeychain: Secrets(
+        scratchDirectory: () async => Directory.systemTemp.path,
+      ).accessKeychain,
+    );
   });
 
   test('returns Ok(true) when pin code is set', () async {
-    when(() => pinCodeRepository.isPinCodeSet())
-        .thenAnswer((_) async => const Ok(true));
+    storage.entries['securityKey'] = 'synthetic';
 
     final result = await usecase.execute();
 
@@ -28,9 +31,6 @@ void main() {
   });
 
   test('returns Ok(false) when pin code is not set', () async {
-    when(() => pinCodeRepository.isPinCodeSet())
-        .thenAnswer((_) async => const Ok(false));
-
     final result = await usecase.execute();
 
     expect(result, isA<Ok<bool, AppUnlockFailure>>());
@@ -40,9 +40,7 @@ void main() {
   test(
     'returns Err(AppUnlockPinCheckFailure) when repository fails — no raw leak',
     () async {
-      when(() => pinCodeRepository.isPinCodeSet()).thenAnswer(
-        (_) async => const Err(PinCodeUnexpectedFailure('raw storage error')),
-      );
+      storage.scripted.add(Exception('raw storage error'));
 
       final result = await usecase.execute();
 
@@ -57,8 +55,7 @@ void main() {
   test(
     'maps a keychain-locked repository failure without losing its type',
     () async {
-      when(() => pinCodeRepository.isPinCodeSet())
-          .thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
+      storage.locked = true;
 
       final result = await usecase.execute();
 

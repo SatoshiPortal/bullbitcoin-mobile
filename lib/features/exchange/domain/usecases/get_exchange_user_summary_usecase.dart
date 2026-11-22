@@ -2,8 +2,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
 /// Legacy throwing adapter over [ExchangeUserRepository].
@@ -15,7 +14,7 @@ import 'package:primitives/primitives.dart';
 class GetExchangeUserSummaryUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetExchangeUserSummaryUsecase({
     required this._mainnetExchangeUserRepository,
@@ -29,7 +28,10 @@ class GetExchangeUserSummaryUsecase {
     // surface as one, not as a raw exception. Type only in the message.
     final SettingsEntity settings;
     try {
-      settings = await _settingsRepository.fetch();
+      settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } on Error {
       rethrow;
     } catch (e) {

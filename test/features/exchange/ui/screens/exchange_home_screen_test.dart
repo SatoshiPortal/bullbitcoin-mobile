@@ -1,7 +1,9 @@
+import 'package:bitcoin_price/bitcoin_price.dart'
+    show BitcoinPriceLocalizations;
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -16,9 +18,6 @@ import 'package:mocktail/mocktail.dart';
 
 class _ExchangeCubit extends MockCubit<ExchangeState>
     implements ExchangeCubit {}
-
-class _PriceChartCubit extends MockCubit<PriceChartState>
-    implements PriceChartCubit {}
 
 class _AutoBuy extends Mock implements AutoBuyFacade {}
 
@@ -40,19 +39,21 @@ Future<void> _expectExitLeadsHome(
 ) async {
   final cubit = _ExchangeCubit();
   when(() => cubit.state).thenReturn(state);
-  final chart = _PriceChartCubit();
-  when(() => chart.state).thenReturn(const PriceChartState());
+
   var exits = 0;
   await tester.pumpWidget(
     MultiBlocProvider(
       providers: [
         BlocProvider<ExchangeCubit>.value(value: cubit),
-        BlocProvider<PriceChartCubit>.value(value: chart),
+        BitcoinPriceFixture.chart(),
       ],
       child: MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         locale: const Locale('en'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          BitcoinPriceLocalizations.delegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: ExchangeHomeScreen(
@@ -71,7 +72,6 @@ Future<void> _expectExitLeadsHome(
   expect(exits, 1);
   await tester.pumpWidget(const SizedBox.shrink());
   await cubit.close();
-  await chart.close();
 }
 
 void main() {
@@ -89,7 +89,10 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            BitcoinPriceLocalizations.delegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: ExchangeHomeScreen(
@@ -125,7 +128,10 @@ void main() {
           child: MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
             locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: const [
+              BitcoinPriceLocalizations.delegate,
+              ...AppLocalizations.localizationsDelegates,
+            ],
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: ExchangeHomeScreen(
@@ -163,18 +169,20 @@ void main() {
     final cubit = _ExchangeCubit();
     when(() => cubit.state)
         .thenReturn(const ExchangeState(userSummary: _summary));
-    final chart = _PriceChartCubit();
-    when(() => chart.state).thenReturn(const PriceChartState());
+
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
           BlocProvider<ExchangeCubit>.value(value: cubit),
-          BlocProvider<PriceChartCubit>.value(value: chart),
+          BitcoinPriceFixture.chart(),
         ],
         child: MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            BitcoinPriceLocalizations.delegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: ExchangeHomeScreen(
@@ -206,7 +214,6 @@ void main() {
     }
     await tester.pumpWidget(const SizedBox.shrink());
     await cubit.close();
-    await chart.close();
   });
 
   group('every Trade state leads back to Wallet Home', () {

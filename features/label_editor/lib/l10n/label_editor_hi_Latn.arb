@@ -1,0 +1,95 @@
+{
+  "@@locale": "hi_Latn",
+  "receiveSave": "Save Karo",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "receiveEnterHere": "Yahan likho...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsTitle": "BIP329 Labels",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Labels Import aur Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "BIP329 standard format use karke wallet labels import ya export karo.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "Labels Import Karo",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "Labels Export Karo",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "Labels kamyabi se export hue",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "bip329LabelsImportSuccessSingular": "1 label import hua",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} labels import hue",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "Self Spend",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "Buy",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "Sell",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "\"{label}\" delete karne mein asmarth. Kripya dobara try karo.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noteVisibleToSenderNotice": "Ye note aapke QR ya invoice ke praaptakarta ko dikhega.",
+  "labelsErrorNoteTooLong": "Note {max} aksharon se adhik nahin hona chahiye",
+  "labelsErrorNoteForbiddenCharacter": "Note mein {character} varn nahin ho sakta",
+  "labelsErrorFileTooLarge": "Yah file bahut badi hai. Label files {max} se chhoti honi chahiye.",
+  "labelsErrorFileUnreadable": "Yah BIP-329 label file nahin lagti. Janchein ki aapne sahi file chuni hai.",
+  "labelsErrorFileEmpty": "Is file mein import karne ke liye koi label nahin hai.",
+  "labelsErrorExportFailed": "Aapke label save nahin ho sake. Kripya phir se prayas karein.",
+  "labelsErrorFileReservedName": "Yah file app dwara aarakshit label naam ka upyog karti hai. File mein iska naam badlein aur phir se prayas karein.",
+  "labelsErrorNoteForbiddenWhitespace": "Note mein line break ya tab nahin ho sakte",
+  "labelsErrorFileInvalidEntry": "Us file ki kuch entries padhi nahin ja sakin. File janchein aur phir se prayas karein."
+}

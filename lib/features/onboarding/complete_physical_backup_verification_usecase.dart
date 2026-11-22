@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 
 import 'package:primitives/primitives.dart';
 
 class CompletePhysicalBackupVerificationUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   CompletePhysicalBackupVerificationUsecase({
     required this._walletRepository,
@@ -15,7 +15,10 @@ class CompletePhysicalBackupVerificationUsecase {
 
   Future<void> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final defaultWallets = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: settings.environment,

@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Mnemonic;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Ok, ScriptType;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 

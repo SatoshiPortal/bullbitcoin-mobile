@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -17,10 +16,10 @@ import 'package:primitives/primitives.dart';
 
 class LoadBuyContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final AppFeeEstimates _feeEstimates;
   final IndexPriceReader _getIndexPrice;
 
   const LoadBuyContextUsecase({
@@ -28,7 +27,7 @@ class LoadBuyContextUsecase {
     required this._getSettingsUsecase,
     required this._getWalletsUsecase,
     required this._getReceiveAddressUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._feeEstimates,
     required this._getIndexPrice,
   });
 
@@ -41,7 +40,10 @@ class LoadBuyContextUsecase {
   userSummaryAndSettings() async {
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return Ok((userSummary: userSummary, settings: settings));
     } catch (e, st) {
       log.severe(
@@ -86,7 +88,7 @@ class LoadBuyContextUsecase {
     required bool isLiquid,
   }) async {
     try {
-      return Ok(await _getNetworkFeesUsecase.execute(isLiquid: isLiquid));
+      return Ok(await _feeEstimates.execute(isLiquid: isLiquid));
     } catch (e, st) {
       log.severe(
         message: 'Failed to load the network fees',
@@ -106,7 +108,10 @@ class LoadBuyContextUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the buy price',

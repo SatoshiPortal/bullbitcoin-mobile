@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
@@ -17,7 +16,7 @@ class _Access extends Mock implements ExchangeAccessRepository {}
 
 class _Account extends Mock implements ExchangeAccountRepository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Expire extends Mock implements ExpireExchangeSessionUsecase {}
 
@@ -41,10 +40,12 @@ void main() {
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
     when(() => access.epoch).thenAnswer((_) => epoch);
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.btc,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(
@@ -134,10 +135,12 @@ void main() {
 
   test('testnet uses the testnet account repository', () async {
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.btc,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(

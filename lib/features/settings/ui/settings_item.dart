@@ -9,18 +9,17 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:network/network.dart';
+import 'package:fees_feature/fees_feature.dart' show FeesNavigation;
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
-import 'package:bb_mobile/features/labels/router.dart';
-import 'package:bb_mobile/features/mempool_settings/router.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
-import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
@@ -55,6 +54,7 @@ enum SettingsItemId {
   swapRestore,
   electrum,
   mempool,
+  feeSource,
   testnetMode,
   seedViewer,
   bip85,
@@ -90,6 +90,7 @@ const walletSettingsItemOrder = [
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
   SettingsItemId.mempool,
+  SettingsItemId.feeSource,
   SettingsItemId.broadcastTransaction,
 ];
 
@@ -209,6 +210,7 @@ List<SettingsItem> buildSettingsItems({
   required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
+  final feeSourceTitle = FeesNavigation.settingsTitle(localization.localeName);
   final arkTitle = arkLocalizationsForLanguage(localization.localeName).title;
   final rootSection = localization.settingsScreenTitle;
   final backupSection = localization.settingsBackupTitle;
@@ -295,7 +297,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsLabelsButton,
       ),
       icon: Icons.sell,
-      open: (context) => context.push(LabelsRouter.route.path),
+      open: LabelEditor.open,
       keywords: _keywords(
         localization.settingsSearchLabelsKeywords,
         english.settingsSearchLabelsKeywords,
@@ -359,8 +361,7 @@ List<SettingsItem> buildSettingsItems({
           localization.settingsAccountSettingsTitle,
         ),
         icon: Icons.account_circle_outlined,
-        open: (context) =>
-            context.pushNamed(SettingsRoute.exchangeSettings.name),
+        open: (context) => context.pushNamed(ExchangeSettingsRoute.home.name),
         keywords: [
           localization.settingsAccountSettingsTitle,
           english.settingsAccountSettingsTitle,
@@ -394,7 +395,8 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsServiceStatusTitle,
       ),
       icon: Icons.monitor_heart,
-      open: (context) => context.pushNamed(StatusCheckRoute.serviceStatus.name),
+      open: (context) =>
+          NetworkNavigation.open(context, section: NetworkSection.status),
       keywords: _keywords(
         localization.settingsSearchServicesStatusKeywords,
         english.settingsSearchServicesStatusKeywords,
@@ -547,7 +549,7 @@ List<SettingsItem> buildSettingsItems({
       ),
       icon: Icons.hub,
       open: (context) =>
-          context.pushNamed(ElectrumSettingsRoute.electrumSettings.name),
+          NetworkNavigation.open(context, section: NetworkSection.electrum),
       keywords: _keywords(
         localization.settingsSearchElectrumKeywords,
         english.settingsSearchElectrumKeywords,
@@ -563,12 +565,22 @@ List<SettingsItem> buildSettingsItems({
         localization.bitcoinSettingsMempoolServerTitle,
       ),
       icon: Icons.memory,
-      open: (context) => context.pushNamed(MempoolSettingsRoute.name),
+      open: (context) =>
+          NetworkNavigation.open(context, section: NetworkSection.mempool),
       keywords: _keywords(
         localization.settingsSearchMempoolKeywords,
         english.settingsSearchMempoolKeywords,
         [english.bitcoinSettingsMempoolServerTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.feeSource,
+      section: SettingsItemSection.wallet,
+      title: feeSourceTitle,
+      path: path(SettingsItemSection.wallet, feeSourceTitle),
+      icon: Icons.tune,
+      open: FeesNavigation.openSettings,
+      keywords: [FeesNavigation.settingsTitle('en'), 'Electrum', 'Mempool'],
     ),
     if (isSuperuser)
       SettingsItem(
@@ -690,7 +702,7 @@ List<SettingsItem> buildSettingsItems({
       path: path(SettingsItemSection.app, localization.torSettingsTitle),
       icon: Icons.vpn_lock,
       open: (context) =>
-          context.pushNamed(const TorSettingsFacade().settingsRouteName),
+          NetworkNavigation.open(context, section: NetworkSection.tor),
       keywords: _keywords(
         localization.settingsSearchTorKeywords,
         english.settingsSearchTorKeywords,
@@ -836,6 +848,7 @@ List<SettingsItem> buildSettingsItems({
       SettingsItemId.ark => NetworkCapability.ark,
       SettingsItemId.sp => NetworkCapability.silentPayments,
       SettingsItemId.mempool ||
+      SettingsItemId.feeSource ||
       SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,
       _ => null,
     };

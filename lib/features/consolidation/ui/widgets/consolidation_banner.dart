@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
+import 'package:bull_ui/bull_ui.dart' show BullAlertCard;
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_banner_cubit.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -53,7 +53,7 @@ class _ConsolidationBannerView extends StatelessWidget {
           if (!required) return const SizedBox.shrink();
           return Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: ConsolidationRequiredCard(
+            child: BullAlertCard(
               title: showWalletName
                   ? context.loc.consolidationRequiredTitleNamed(
                       wallet.displayLabel(context),

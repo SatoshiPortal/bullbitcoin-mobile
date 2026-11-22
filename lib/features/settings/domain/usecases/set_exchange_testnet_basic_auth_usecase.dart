@@ -1,19 +1,19 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:meta/meta.dart';
 
 class SetExchangeTestnetBasicAuthUsecase {
-  final SettingsRepository _settingsRepository;
+  final ExchangeTestnetBasicAuthPreferences _preferences;
 
-  const SetExchangeTestnetBasicAuthUsecase({required this._settingsRepository});
+  const SetExchangeTestnetBasicAuthUsecase({required this._preferences});
 
   @useResult
   Future<Result<void, SettingsFailure>> execute({
     String? username,
     String? password,
   }) async {
-    final result = await _settingsRepository.setExchangeTestnetBasicAuth(
+    final result = await _preferences.setExchangeTestnetBasicAuth(
       username: username,
       password: password,
     );

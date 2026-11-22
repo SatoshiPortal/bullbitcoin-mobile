@@ -1,14 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
@@ -20,24 +19,86 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchang
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:dio/dio.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../features/exchange/data/bbx_api_test_http.dart';
 import '../../features/limit_orders/limit_order_fixtures.dart'
     show userSummary, limitOrderRate;
 
 class _Summary extends Mock implements GetExchangeUserSummaryUsecase {}
 
-class _Api extends Mock implements BullbitcoinApiDatasource {}
+/// Throws [error] for every request, as a failing transport.
+class _Throwing implements HttpClientAdapter {
+  final Object error;
 
-class _Settings extends Fake implements SettingsRepository {
+  _Throwing(this.error);
+
   @override
-  Future<SettingsEntity> fetch() async => const SettingsEntity(
-    environment: Environment.testnet,
-    bitcoinUnit: BitcoinUnit.btc,
-    currencyCode: 'CAD',
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw error;
+
+  @override
+  void close({bool force = false}) {}
+}
+
+/// A refusal of the user summary call.
+sealed class _Refusal {
+  const _Refusal();
+}
+
+/// The credential read found no key: the user is signed out.
+final class _MissingKey extends _Refusal {
+  const _MissingKey();
+}
+
+/// The credential read failed: the key is stored but unreadable.
+final class _UnreadableKey extends _Refusal {
+  const _UnreadableKey();
+}
+
+/// The transport threw [error].
+final class _Thrown extends _Refusal {
+  final Object error;
+
+  const _Thrown(this.error);
+
+  bool get isProgrammerError => error is Error;
+}
+
+BbxApiUserRepository _users(_Refusal refusal) => BbxApiUserRepository(
+  api: bbxForTesting(
+    endpoint: testBbxEndpoint,
+    adapter: _Throwing(switch (refusal) {
+      _Thrown(:final error) => error,
+      // Never reached: a credential refusal stops the request first.
+      _ => StateError('no request expected'),
+    }),
+    readActiveApiKey: switch (refusal) {
+      _MissingKey() => bbxCredentialRead(() async => const Ok(null)),
+      _UnreadableKey() => bbxCredentialRead(
+        () async => const Err(ExchangeApiKeyReadFailure()),
+      ),
+      _Thrown() => bbxCredentialRead(null),
+    },
+  ),
+);
+
+class _Settings extends Fake implements Preferences {
+  @override
+  Future<Result<SettingsEntity, PreferencesFailure>> fetch() async => Ok(
+    const SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'CAD',
+    ),
   );
 }
 
@@ -78,11 +139,11 @@ void main() {
     ),
   );
 
-  for (final refusal in [
-    const ExchangeAuthenticationException(),
-    const ExchangeAuthenticationException(ExchangeApiKeyReadFailure()),
-    Exception('unexpected server reply'),
-    StateError('programmer bug'),
+  for (final (label, refusal) in <(String, _Refusal)>[
+    ('a missing key', const _MissingKey()),
+    ('an unreadable key', const _UnreadableKey()),
+    ('a foreign exception', _Thrown(Exception('unexpected server reply'))),
+    ('a programmer error', _Thrown(StateError('programmer bug'))),
   ]) {
     for (final name in [
       'limit orders',
@@ -92,10 +153,8 @@ void main() {
       'preferences',
       'upload status',
     ]) {
-      test('$name classifies ${refusal.runtimeType}: $refusal', () async {
-        final api = _Api();
-        when(api.getUserSummary).thenThrow(refusal);
-        final repo = ExchangeUserRepositoryImpl(bullbitcoinApiDatasource: api);
+      test('$name classifies $label', () async {
+        final repo = _users(refusal);
         final summary = GetExchangeUserSummaryUsecase(
           mainnetExchangeUserRepository: repo,
           testnetExchangeUserRepository: repo,
@@ -131,22 +190,21 @@ void main() {
             getExchangeUserSummaryUsecase: summary,
           ).execute(),
         };
-        if (refusal is Error) {
+        if (refusal is _Thrown && refusal.isProgrammerError) {
           await expectLater(pending, throwsStateError);
+          noReport();
+        } else if (refusal is _MissingKey || refusal is _UnreadableKey) {
+          expect(await pending, isA<Err>());
           noReport();
         } else {
           expect(await pending, isA<Err>());
-          if (refusal is ExchangeAuthenticationException) {
-            noReport();
-          } else {
-            verify(
-              () => logger.severe(
-                message: any(named: 'message'),
-                error: any(named: 'error'),
-                trace: any(named: 'trace'),
-              ),
-            ).called(1);
-          }
+          verify(
+            () => logger.severe(
+              message: any(named: 'message'),
+              error: any(named: 'error'),
+              trace: any(named: 'trace'),
+            ),
+          ).called(1);
         }
       });
     }
@@ -262,9 +320,7 @@ void main() {
         when(defaults.getDefaultWallets).thenThrow(refusal);
         when(read.execute).thenThrow(refusal);
         when(wallets.execute).thenAnswer((_) async => const Ok([]));
-        final repo = ExchangeUserRepositoryImpl(
-          bullbitcoinApiDatasource: _Api(),
-        );
+        final repo = _users(_Thrown(StateError('no request expected')));
         final pending = name == 'limit orders'
             ? LoadLimitOrderCreationUsecase(
                 summary,

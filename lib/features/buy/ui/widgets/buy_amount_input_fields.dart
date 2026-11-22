@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -160,15 +160,6 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           color: context.appColors.outline,
                         ),
                       ),
-                      // CurrencyText(
-                      //   amountSat ?? 0,
-                      //   showFiat: !isFiatCurrencyInput,
-                      //   style: context.font.bodyMedium?.copyWith(
-                      //     color: context.colour.outline,
-                      //   ),
-                      //   fiatCurrency: currency.code,
-                      //   fiatAmount: !isFiatCurrencyInput ? fiatAmount : null,
-                      // ),
                       // Text(
                       //   ' approx.',
                       //   style: context.font.bodyMedium?.copyWith(

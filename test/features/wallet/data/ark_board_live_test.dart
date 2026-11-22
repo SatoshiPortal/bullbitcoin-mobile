@@ -19,10 +19,9 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -149,7 +148,7 @@ void main() {
         arkFundingDatabasePath: '${appDirectory.path}/ark-funding.sqlite',
         initializeArkFunding: true,
       );
-      final settings = locator<SettingsRepository>();
+      final settings = locator<Preferences>();
       _ok(await settings.setIsSuperuser(true), 'superuser');
       _ok(await settings.setIsDevMode(true), 'developer mode');
       _ok(await settings.setEnvironment(Environment.regtest), 'environment');

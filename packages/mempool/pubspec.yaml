@@ -1,0 +1,26 @@
+name: mempool
+description: Mempool server configuration, validation, and explorer links.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_logger:
+  bull_tor:
+  dio: ^5.9.0
+  drift: ^2.35.4
+  meta: ^1.17.0
+  primitives:
+
+dev_dependencies:
+  build_runner: ^2.10.4
+  drift_dev: ^2.35.3
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4

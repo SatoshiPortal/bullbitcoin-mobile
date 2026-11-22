@@ -1,0 +1,51 @@
+import 'package:signers/src/signer_device.dart';
+import 'package:signers/src/ledger/domain/entities/ledger_device_entity.dart';
+import 'package:signers/src/ledger/domain/ledger_failure.dart';
+import 'package:primitives/primitives.dart' show Result, ScriptType;
+import 'package:meta/meta.dart';
+
+abstract interface class LedgerDeviceRepository {
+  @useResult
+  Future<Result<List<LedgerDeviceEntity>, LedgerFailure>> scanDevices({
+    SignerDevice? deviceType,
+  });
+
+  @useResult
+  Future<Result<void, LedgerFailure>> connectDevice(LedgerDeviceEntity device);
+
+  @useResult
+  Future<Result<String, LedgerFailure>> getMasterFingerprint(
+    LedgerDeviceEntity device,
+  );
+
+  @useResult
+  Future<Result<String, LedgerFailure>> getXpub(
+    LedgerDeviceEntity device, {
+    required String derivationPath,
+    required ScriptType scriptType,
+  });
+
+  @useResult
+  Future<Result<String, LedgerFailure>> signPsbt(
+    LedgerDeviceEntity device, {
+    required String psbt,
+    required String derivationPath,
+    required ScriptType scriptType,
+  });
+
+  @useResult
+  Future<Result<bool, LedgerFailure>> verifyAddress(
+    LedgerDeviceEntity device, {
+    required String address,
+    required String derivationPath,
+    required ScriptType scriptType,
+  });
+
+  @useResult
+  Future<Result<void, LedgerFailure>> disconnectConnection(
+    LedgerDeviceEntity device,
+  );
+
+  @useResult
+  Future<Result<void, LedgerFailure>> dispose();
+}

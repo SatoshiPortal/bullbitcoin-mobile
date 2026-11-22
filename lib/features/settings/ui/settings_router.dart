@@ -1,4 +1,4 @@
-import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox, Widget;
+import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
@@ -16,6 +16,9 @@ import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/pay/public/pay_facade.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/permissions_screen.dart';
@@ -27,19 +30,13 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:network/network.dart' show NetworkFeature;
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
-import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
+import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
@@ -47,7 +44,7 @@ import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:swaps/swaps.dart';
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
@@ -55,29 +52,23 @@ export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
   static GoRoute route({
-    required Widget Function(BuildContext) buildPriceHistory,
+    required List<RouteBase> priceRoutes,
+    required void Function(BuildContext) onBackupTestSucceeded,
+    required List<RouteBase> appSettingsRoutes,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
-      child: const AllSettingsScreen(),
+    builder: (context, state) => AllSettingsScreen(
+      watchServiceHealth: WatchSettingsServiceHealthUsecase(
+        locator<NetworkFeature>().status,
+      ).execute,
     ),
     routes: [
-      GoRoute(
-        name: SettingsRoute.priceHistory.name,
-        path: SettingsRoute.priceHistory.path,
-        builder: (context, state) => buildPriceHistory(context),
-      ),
+      ...priceRoutes,
       GoRoute(
         name: SettingsRoute.search.name,
         path: SettingsRoute.search.path,
         builder: (context, state) => const SettingsSearchScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeAccount.name,
-        path: SettingsRoute.exchangeAccount.path,
-        builder: (context, state) => const ExchangeAccountScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAccess.name,
@@ -91,7 +82,7 @@ class SettingsRouter {
               queryParameters: {'from': 'settings'},
             ),
             onOpenAccount: () =>
-                context.pushNamed(SettingsRoute.exchangeSettings.name),
+                context.pushNamed(ExchangeSettingsRoute.home.name),
             onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
@@ -102,45 +93,26 @@ class SettingsRouter {
         builder: (context, state) =>
             QuickActionsSettingsScreen(cubit: locator<QuickActionsCubit>()),
       ),
-      GoRoute(
-        name: SettingsRoute.exchangeSettings.name,
-        path: SettingsRoute.exchangeSettings.path,
-
-        builder: (context, state) => ExchangeSessionListener(
-          listenWhen: (previous, current) => previous && !current,
-          listener: (context, state) {
-            // Redirect to landing page if the user logged out
-            context.goNamed(ExchangeRoute.exchangeLanding.name);
-          },
-          child: const ExchangeSettingsScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeSecurity.name,
-        path: SettingsRoute.exchangeSecurity.path,
-        builder: (context, state) => const ExchangeSecurityScreen(),
-      ),
       DefaultWalletsRouter.route,
-      ...ExchangeSettingsRouter.routes,
-      GoRoute(
-        name: SettingsRoute.exchangeTransactions.name,
-        path: SettingsRoute.exchangeTransactions.path,
-        builder: (context, state) => const ExchangeTransactionsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeLegacyTransactions.name,
-        path: SettingsRoute.exchangeLegacyTransactions.path,
-        builder: (context, state) => const ExchangeLegacyTransactionsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeReferrals.name,
-        path: SettingsRoute.exchangeReferrals.path,
-        builder: (context, state) => const ExchangeReferralsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeLogout.name,
-        path: SettingsRoute.exchangeLogout.path,
-        builder: (context, state) => const ExchangeLogoutScreen(),
+      ...ExchangeSettingsRouter.routes(
+        ExchangeSettingsRouterConfig(
+          isSuperuser: (context) =>
+              context.select(
+                (SettingsCubit cubit) => cubit.state.isSuperuser,
+              ) ??
+              false,
+          isTestnet: (context) => switch (context.select(
+            (SettingsCubit cubit) => cubit.state.environment,
+          )) {
+            null || Environment.regtest => null,
+            final environment => environment.requireHistoricalTestnet(),
+          },
+          onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
+          onOpenTransactions: (context) =>
+              context.pushNamed(TransactionsRoute.exchangeTransactions.name),
+          onOpenDefaultWallets: (context) =>
+              context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.walletSettings.name,
@@ -193,7 +165,7 @@ class SettingsRouter {
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
         routes: [
-          TorSettingsRouter.route,
+          ...appSettingsRoutes,
           GoRoute(
             name: SettingsRoute.permissions.name,
             path: SettingsRoute.permissions.path,
@@ -216,7 +188,7 @@ class SettingsRouter {
         builder: (context, state) => const BackupSettingsScreen(),
         routes: [
           BackupSettingsSettingsRouter.route,
-          TestWalletBackupRouter.route,
+          TestWalletBackupRouter.route(onTestSucceeded: onBackupTestSucceeded),
         ],
       ),
       // A wallet is always reached from its own screen (wallet home → gear),

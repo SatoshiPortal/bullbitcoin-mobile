@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
@@ -11,9 +11,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Err, Ok, Result;
+    show BitcoinNetwork, BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
@@ -48,7 +47,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 class _MockGetReceiveSwapLimitsUsecase extends Mock
     implements GetReceiveSwapLimitsUsecase {}
 
-class _MockSettings extends Mock implements GetSettingsUsecase {}
+class _MockSettings extends Mock implements Preferences {}
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
@@ -531,11 +530,13 @@ void main() {
         'regtest Lightning uses Boltz preset=$preset warm=$warm without an Exchange order',
         () async {
           final inner = _MockSettings();
-          when(() => inner.execute()).thenAnswer(
-            (_) async => SettingsEntity(
-              environment: preset ? Environment.mainnet : Environment.regtest,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'USD',
+          when(() => inner.fetch()).thenAnswer(
+            (_) async => Ok(
+              SettingsEntity(
+                environment: preset ? Environment.mainnet : Environment.regtest,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
             ),
           );
           final selected = _testWallet(network: Network.bitcoinRegtest);
@@ -659,11 +660,13 @@ void main() {
 
   test('Liquid regtest is admitted and reaches the Liquid wallet lookup', () async {
     final inner = _MockSettings();
-    when(() => inner.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => inner.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     final selected = _testWallet(network: Network.bitcoinRegtest);

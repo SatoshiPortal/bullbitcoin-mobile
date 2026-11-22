@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_card.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/localizations.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
@@ -22,8 +22,6 @@ class _MockWalletBloc extends Mock implements WalletBloc {}
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
-class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
-
 SettingsState _settingsState({
   required bool isSuperuser,
   bool isDevModeEnabled = true,
@@ -40,7 +38,6 @@ SettingsState _settingsState({
 Widget _buildCards({
   required _MockWalletBloc walletBloc,
   required _MockSettingsCubit settingsCubit,
-  required _MockBitcoinPriceBloc bitcoinPriceBloc,
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
   return MaterialApp(
@@ -55,7 +52,7 @@ Widget _buildCards({
       providers: [
         BlocProvider<WalletBloc>.value(value: walletBloc),
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
-        BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+        BitcoinPriceFixture.prices(),
       ],
       child: SettingsFacade.amountScope(
         navigatorKey: navigatorKey,
@@ -68,7 +65,6 @@ Widget _buildCards({
 Widget _buildCardsRouter({
   required _MockWalletBloc walletBloc,
   required _MockSettingsCubit settingsCubit,
-  required _MockBitcoinPriceBloc bitcoinPriceBloc,
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
   final router = GoRouter(
@@ -81,7 +77,7 @@ Widget _buildCardsRouter({
           providers: [
             BlocProvider<WalletBloc>.value(value: walletBloc),
             BlocProvider<SettingsCubit>.value(value: settingsCubit),
-            BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+            BitcoinPriceFixture.prices(),
           ],
           child: SettingsFacade.amountScope(
             navigatorKey: navigatorKey,
@@ -110,7 +106,7 @@ Widget _buildCardsRouter({
 void _stubBlocs({
   required _MockWalletBloc walletBloc,
   required _MockSettingsCubit settingsCubit,
-  required _MockBitcoinPriceBloc bitcoinPriceBloc,
+
   required WalletState walletState,
   required SettingsState settingsState,
 }) {
@@ -118,19 +114,15 @@ void _stubBlocs({
   when(() => walletBloc.stream).thenAnswer((_) => const Stream.empty());
   when(() => settingsCubit.state).thenReturn(settingsState);
   when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
-  when(() => bitcoinPriceBloc.state).thenReturn(const BitcoinPriceState());
-  when(() => bitcoinPriceBloc.stream).thenAnswer((_) => const Stream.empty());
 }
 
 void main() {
   late _MockWalletBloc walletBloc;
   late _MockSettingsCubit settingsCubit;
-  late _MockBitcoinPriceBloc bitcoinPriceBloc;
 
   setUp(() {
     walletBloc = _MockWalletBloc();
     settingsCubit = _MockSettingsCubit();
-    bitcoinPriceBloc = _MockBitcoinPriceBloc();
   });
 
   Future<void> pumpCards(
@@ -143,7 +135,7 @@ void main() {
     _stubBlocs(
       walletBloc: walletBloc,
       settingsCubit: settingsCubit,
-      bitcoinPriceBloc: bitcoinPriceBloc,
+
       walletState: WalletState(
         isSpWalletSetup: isSpWalletSetup,
         isSpFeatureEnabled: isSpFeatureEnabled,
@@ -154,11 +146,7 @@ void main() {
       ),
     );
     await tester.pumpWidget(
-      _buildCards(
-        walletBloc: walletBloc,
-        settingsCubit: settingsCubit,
-        bitcoinPriceBloc: bitcoinPriceBloc,
-      ),
+      _buildCards(walletBloc: walletBloc, settingsCubit: settingsCubit),
     );
     await tester.pump();
   }
@@ -239,7 +227,7 @@ void main() {
       _stubBlocs(
         walletBloc: walletBloc,
         settingsCubit: settingsCubit,
-        bitcoinPriceBloc: bitcoinPriceBloc,
+
         walletState: const WalletState(
           isSpWalletSetup: true,
           isSpFeatureEnabled: true,
@@ -248,11 +236,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        _buildCardsRouter(
-          walletBloc: walletBloc,
-          settingsCubit: settingsCubit,
-          bitcoinPriceBloc: bitcoinPriceBloc,
-        ),
+        _buildCardsRouter(walletBloc: walletBloc, settingsCubit: settingsCubit),
       );
       await tester.pump();
 

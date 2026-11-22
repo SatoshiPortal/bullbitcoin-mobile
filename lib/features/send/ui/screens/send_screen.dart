@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
+import 'package:signers/signers.dart';
+import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
+
 import '../../../coins/public/coins_facade.dart' show CoinsRoute;
 import '../widgets/send_leave_payment_dialog.dart';
 import '../widgets/send_grouped_address.dart';
@@ -13,21 +17,20 @@ import '../../domain/send_custom_fee_policy.dart';
 
 import '../widgets/send_ark_routing_actions.dart';
 
-import 'package:primitives/primitives.dart' show BitcoinUnit, Sats;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, FormatAmount, Sats;
 
 import 'dart:math' as math;
-
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
     show AddressViewer, FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
-import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
+import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -36,21 +39,12 @@ import 'package:bb_mobile/core/utils/payment_request.dart'
     show Bip21PaymentRequest, BitcoinPaymentRequest;
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
@@ -67,6 +61,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAlertCard,
+        BullAmount,
+        BullKeyboardActions,
         BullAdvancedOptionsLink,
         BullFieldAction,
         BullIcons,
@@ -768,7 +765,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             foregroundColor: context.appColors.primary,
           ),
           Expanded(
-            child: BBKeyboardActions(
+            child: BullKeyboardActions(
+              doneText: context.loc.doneButton,
               disableScroll: true,
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
@@ -1125,11 +1123,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.end,
                                         children: [
-                                          CurrencyText(
+                                          BullAmount.signedSats(
                                             amountSat,
-                                            showFiat: false,
                                             color: context.appColors.textMuted,
                                             style: context.bullType.body,
+                                            interactive: false,
                                           ),
                                           if (totalQuote case final quote?)
                                             Text(
@@ -1148,9 +1146,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     Column(
                                       children: [
                                         const Gap(32),
-                                        CurrencyText(
+                                        BullAmount.signedSats(
                                           state.effectiveAmountSat,
-                                          showFiat: false,
                                           interactive: true,
                                           style: context.bullType.display,
                                           color: context.appColors.text,
@@ -1265,20 +1262,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   BullBorderedTile(
                                     onTap: () async {
                                       final cubit = context.read<SendCubit>();
-                                      final saved =
-                                          await LabelEntryBottomSheet.label(
-                                            context,
-                                            title: context
-                                                .loc
-                                                .transactionNoteAddTitle,
-                                            initialValue: state.label.isEmpty
-                                                ? null
-                                                : state.label,
-                                            hint:
-                                                context.loc.transactionNoteHint,
-                                            suggestionsFuture: cubit
-                                                .fetchDistinctLabels(),
-                                          );
+                                      final saved = await LabelEditor.label(
+                                        context,
+                                        title:
+                                            context.loc.transactionNoteAddTitle,
+                                        initialValue: state.label.isEmpty
+                                            ? null
+                                            : state.label,
+                                        hint: context.loc.transactionNoteHint,
+                                        suggestionsFuture: cubit
+                                            .fetchDistinctLabels(),
+                                      );
                                       if (saved == null || !context.mounted) {
                                         return;
                                       }
@@ -1325,7 +1319,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   ),
                                   if (state.consolidationRequired) ...[
                                     const Gap(16),
-                                    ConsolidationRequiredCard(
+                                    BullAlertCard(
                                       title: context
                                           .loc
                                           .consolidationRequiredTitle,
@@ -1761,7 +1755,7 @@ class ConfirmSendButton extends StatelessWidget {
 ///
 /// Reads directly from [SendState] — all data (amount, address, fees) is
 /// already available after [createTransaction] + [signTransaction].
-/// Uses [CommonOnchainSendInfoSection] for the layout, same as Liquid.
+/// Uses [OnchainSendInfoSection] for the layout, same as Liquid.
 class _OnchainTransactionReview extends StatelessWidget {
   const _OnchainTransactionReview();
 
@@ -1780,9 +1774,8 @@ class _OnchainTransactionReview extends StatelessWidget {
         label: state.label,
         formattedAbsoluteFees: state.formattedAbsoluteFees,
         feePriorityTitle: state.selectedFeeOption.title(),
-        amountBuilder: (amountSat) => CurrencyText(
+        amountBuilder: (amountSat) => BullAmount.signedSats(
           amountSat,
-          showFiat: false,
           interactive: true,
           style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.secondary,
@@ -1852,9 +1845,10 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CommonOnchainSendInfoSection(
+        OnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
-          receiveWalletLabel: paymentRequestAddress,
+          addressBuilder: (style, color) =>
+              AddressViewer(paymentRequestAddress, style: style, color: color),
           formattedBitcoinAmount: formattedBitcoinAmount,
           formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
               ? ''
@@ -1862,6 +1856,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: feeSelectionRowLabel(
             context,
+            ui: appFeeUi,
             selection: selectedFeeOption,
             customFee: customFee,
             fastestLabel: context.loc.sendFastFee,
@@ -1912,9 +1907,8 @@ class _SelectedCoinsDetails extends StatelessWidget {
           color: context.appColors.secondary,
           textAlign: TextAlign.end,
         ),
-        CurrencyText(
+        BullAmount.signedSats(
           totalSat,
-          showFiat: false,
           interactive: true,
           style: context.bullType.caption,
           color: context.appColors.secondary,
@@ -1929,6 +1923,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
   final selected = await BullBottomSheet.show<String>(
     context: context,
     child: FeeOptionsModal(
+      ui: appFeeUi,
       viewState: sendCubit,
       actions: sendCubit,
       defaultAbsoluteCustomFee: false,
@@ -1952,7 +1947,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
 /// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
 /// using [TransactionReviewView] (which requires a [ReviewableTransaction]), this
 /// widget reads directly from [SendState] and delegates to
-/// [CommonOnchainSendInfoSection].
+/// [OnchainSendInfoSection].
 class _LiquidOnchainSendInfoSection extends StatelessWidget {
   const _LiquidOnchainSendInfoSection();
 
@@ -1984,9 +1979,10 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CommonOnchainSendInfoSection(
+        OnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
-          receiveWalletLabel: paymentRequestAddress,
+          addressBuilder: (style, color) =>
+              AddressViewer(paymentRequestAddress, style: style, color: color),
           formattedBitcoinAmount: formattedBitcoinAmount,
           formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
               ? ''
@@ -2170,9 +2166,8 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  CurrencyText(
+                  BullAmount.signedSats(
                     sendAmountSat,
-                    showFiat: false,
                     interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
@@ -2190,9 +2185,8 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  CurrencyText(
+                  BullAmount.signedSats(
                     receiveAmountSat,
-                    showFiat: false,
                     interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
@@ -2209,9 +2203,8 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               title: context.loc.sendSendNetworkFee,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: CurrencyText(
+                child: BullAmount.signedSats(
                   networkFee,
-                  showFiat: false,
                   interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
@@ -2228,9 +2221,8 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               title: context.loc.sendTransferFee,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: CurrencyText(
+                child: BullAmount.signedSats(
                   swapFee,
-                  showFiat: false,
                   interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
@@ -2276,11 +2268,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
-          CurrencyText(
+          BullAmount.signedSats(
             amt,
-            showFiat: false,
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.secondary,
+            interactive: false,
           ),
         ],
       ),
@@ -2316,13 +2308,13 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                     color: context.appColors.onSurfaceVariant,
                   ),
                   const Spacer(),
-                  CurrencyText(
+                  BullAmount.signedSats(
                     total,
-                    showFiat: false,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                     color: context.appColors.secondary,
+                    interactive: false,
                   ),
                   const Gap(4),
                   Icon(
@@ -2493,9 +2485,8 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: .end,
               children: [
-                CurrencyText(
+                BullAmount.signedSats(
                   sendAmount,
-                  showFiat: false,
                   interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
@@ -2512,9 +2503,8 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  CurrencyText(
+                  BullAmount.signedSats(
                     receiveAmount,
-                    showFiat: false,
                     interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
@@ -2531,9 +2521,8 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  CurrencyText(
+                  BullAmount.signedSats(
                     absoluteFees,
-                    showFiat: false,
                     interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
@@ -2553,11 +2542,10 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               title: context.loc.sendTransferFee,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: CurrencyText(
+                child: BullAmount.signedSats(
                   (orderSwap.order!.payinAmountSat -
                           orderSwap.order!.payoutAmountSat)
                       .toInt(),
-                  showFiat: false,
                   interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
@@ -3088,26 +3076,27 @@ class ShowPsbtButton extends StatelessWidget {
     );
 
     final signerDevice = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
+      (SendCubit cubit) => cubit.state.selectedWallet?.signerDevice,
     );
 
     return BullButton.primary(
       label: context.loc.sendShowPsbt,
-      onPressed: () {
-        // The PSBT route and the broadcast after signing take the wallet
-        // itself, not the send screen's view of it.
+      onPressed: () async {
+        // Retain the original wallet and unsigned transaction through handoff.
         final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
           SendWalletBitcoin(:final wallet) => wallet,
           _ => null,
         };
-        context.pushNamed(
-          PsbtFlowRoutes.show.name,
-          extra: (
-            psbt: unsignedPsbt,
-            signerDevice: signerDevice,
-            wallet: wallet,
-          ),
+        if (unsignedPsbt == null) return;
+        final result = await SignersNavigation.showPsbt(
+          context,
+          psbt: unsignedPsbt,
+          signerDevice: signerDevice,
         );
+        if (result == PsbtHandoffResult.readyToReadSignedTransaction &&
+            context.mounted) {
+          await SendPsbtHandoff.of(context)(context, unsignedPsbt, wallet);
+        }
       },
     );
   }
@@ -3137,16 +3126,21 @@ class SignLedgerButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
-        if (unsignedPsbt == null) return;
+        final wallet = context.read<SendCubit>().state.selectedWallet;
+        if (unsignedPsbt == null ||
+            wallet == null ||
+            derivationPath == null ||
+            scriptType == null) {
+          return;
+        }
 
-        final result = await context.pushNamed<String>(
-          LedgerRoute.ledgerSignTransaction.name,
-          extra: LedgerRouteParams(
-            psbt: unsignedPsbt,
-            derivationPath: derivationPath,
-            requestedDeviceType: deviceType,
-            scriptType: scriptType,
-          ),
+        final result = await SignersNavigation.signLedger(
+          context,
+          network: wallet.network.environment,
+          psbt: unsignedPsbt,
+          derivationPath: derivationPath,
+          requestedDeviceType: deviceType,
+          scriptType: scriptType,
         );
 
         if (result != null && context.mounted) {
@@ -3189,16 +3183,21 @@ class SignBitBoxButton extends StatelessWidget {
     return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
-        if (unsignedPsbt == null) return;
+        final wallet = context.read<SendCubit>().state.selectedWallet;
+        if (unsignedPsbt == null ||
+            wallet == null ||
+            derivationPath == null ||
+            scriptType == null) {
+          return;
+        }
 
-        final result = await context.pushNamed<String>(
-          BitBoxRoute.bitboxSignTransaction.name,
-          extra: BitBoxRouteParams(
-            psbt: unsignedPsbt,
-            derivationPath: derivationPath,
-            requestedDeviceType: deviceType,
-            scriptType: scriptType,
-          ),
+        final result = await SignersNavigation.signBitBox(
+          context,
+          network: wallet.network.environment,
+          psbt: unsignedPsbt,
+          derivationPath: derivationPath,
+          requestedDeviceType: deviceType,
+          scriptType: scriptType,
         );
 
         if (result != null && context.mounted) {

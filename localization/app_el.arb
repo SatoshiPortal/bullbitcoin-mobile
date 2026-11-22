@@ -6,10 +6,6 @@
   "backupWarningLoseReasonKeystore": "Η συσκευή σας ακυρώνει το keystore όταν αλλάζετε την οθόνη κλειδώματος ή τον έλεγχο ταυτότητας της συσκευής",
   "backupWarningLoseReasonCloudRestore": "Επαναφορά της συσκευής σας από αντίγραφο ασφαλείας στο cloud",
   "backupWarningNoRecovery": "Δεν υπάρχει τρόπος να ανακτήσετε το πορτοφόλι σας χωρίς αντίγραφο ασφαλείας.",
-  "bitboxErrorMultipleDevicesFound": "Πολλαπλές συσκευές BitBox βρέθηκαν. Παρακαλούμε βεβαιωθείτε ότι μόνο μία συσκευή είναι συνδεδεμένη.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
   "payTransactionBroadcast": "Πράξη μετάδοσης",
   "@payTransactionBroadcast": {
     "description": "Success message after broadcasting"
@@ -46,18 +42,6 @@
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
   },
-  "torSettingsPortHint": "905050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "Ο χρόνος πρέπει να είναι θετικός",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "bitboxScreenNeedHelpButton": "Χρειάζεστε βοήθεια?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
-  },
   "sellSendPaymentAboveMax": "Προσπαθείτε να πουλήσετε πάνω από το μέγιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -65,10 +49,6 @@
   "payPayinAmount": "Ποσό Payin",
   "@payPayinAmount": {
     "description": "Label for amount user pays in"
-  },
-  "jadeStep13": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Jade. Βάλτε το.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
   },
   "payInstitutionNumber": "Ίδρυμα Αριθμός",
   "@payInstitutionNumber": {
@@ -90,17 +70,9 @@
   "@sendSendNetworkFee": {
     "description": "Label for network fee on send side of swap"
   },
-  "psbtFlowClickScan": "Κάντε κλικ",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
   "sellInstitutionNumber": "Ίδρυμα Αριθμός",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
-  },
-  "mempoolSettingsCustomServer": "Προσαρμοσμένος διακομιστής",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "fundExchangeMethodRegularSepa": "Τακτικό SEPA",
   "@fundExchangeMethodRegularSepa": {
@@ -118,10 +90,6 @@
   "@importQrDeviceKruxStep3": {
     "description": "Krux instruction step 3"
   },
-  "passportStep1": "Συνδεθείτε στη συσκευή διαβατηρίου σας",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "sellAdvancedOptions": "Προχωρημένες επιλογές",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -129,10 +97,6 @@
   "exchangeFileUploadSuccess": "File που αναρτήθηκε με επιτυχία",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "Εξοικονομήστε",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "Αυτός είναι ο λογαριασμός κάποιου άλλου",
   "@withdrawOwnershipOtherAccount": {
@@ -145,10 +109,6 @@
   "receiveGenerateAddress": "Generate New Address",
   "@receiveGenerateAddress": {
     "description": "Button to create new on-chain address"
-  },
-  "kruxStep3": "Κάντε κλικ στο PSBT",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "hwColdcardQ": "Coldcard Q",
   "@hwColdcardQ": {
@@ -180,11 +140,6 @@
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
-  "electrumServerAlreadyExists": "Αυτός ο server υπάρχει ήδη",
-  "electrumServerUnreachable": "Ο διακομιστής δεν είναι προσβάσιμος. Ελέγξτε τη διεύθυνση και δοκιμάστε ξανά.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
   "sellPaymentMethod": "Μέθοδος πληρωμής",
   "@sellPaymentMethod": {
     "description": "Section for selecting how to receive fiat"
@@ -208,10 +163,6 @@
   "sellSendPaymentExchangeRate": "Συναλλαγματική ισοτιμία",
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
-  },
-  "systemLabelAutoSwap": "Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
   },
   "fundExchangeSinpeTitle": "SINPE Transfer",
   "@fundExchangeSinpeTitle": {
@@ -246,10 +197,6 @@
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
   },
-  "bitboxScreenTroubleshootingStep2": "Βεβαιωθείτε ότι το τηλέφωνό σας έχει ενεργοποιήσει δικαιώματα USB.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Επιλέξτε ένα επιτόκιο χρέωσης",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -270,10 +217,6 @@
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "kruxStep7": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
   "exchangeStatisticsBuySellRatio": "Buy/Sell Case",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
@@ -286,17 +229,9 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "jadeStep11": "Ο Jade θα σας δείξει τον δικό του κωδικό QR.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
   "buyConfirmExternalWallet": "Εξωτερικό Bitcoin πορτοφόλι",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "bitboxActionPairDeviceProcessing": "Paiing Device",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
   },
   "exchangeCurrencyDropdownTitle": "Επιλέξτε νόμισμα",
   "@exchangeCurrencyDropdownTitle": {
@@ -329,10 +264,6 @@
   "dcaLightningAddressInvalidError": "Παρακαλώ εισάγετε μια έγκυρη διεύθυνση Lightning",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "ledgerButtonNeedHelp": "Χρειάζεστε βοήθεια?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
   },
   "backupInstruction4": "Μην κάνετε ψηφιακά αντίγραφα του backup σας. Γράψτε το σε ένα κομμάτι χαρτί ή χαραγμένο στο μέταλλο.",
   "@backupInstruction4": {
@@ -378,10 +309,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "electrumTitle": "Electrum Server Guidelines",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
   "importQrDeviceJadeStep7": "Εάν χρειαστεί, επιλέξτε \"Επιλογές\" για να αλλάξετε τον τύπο διευθύνσεων",
   "@importQrDeviceJadeStep7": {
     "description": "Jade instruction step 7"
@@ -407,14 +334,6 @@
   "swapInsufficientFunds": "Ανεπαρκή κεφάλαια",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "ledgerImportButton": "Ξεκινήστε την εισαγωγή",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
-  "bitboxActionPairDeviceButton": "Ξεκινήστε Paiing",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
   },
   "importQrDeviceSpecterName": "Πουτερ",
   "@importQrDeviceSpecterName": {
@@ -498,10 +417,6 @@
   "@fundExchangeCrIbanCrcPaymentDescriptionHelp": {
     "description": "Help text explaining payment description is the transfer code"
   },
-  "jadeStep8": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πιο κοντά ή πιο μακριά",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
-  },
   "payNotLoggedIn": "Όχι αγκάλιασε",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
@@ -529,15 +444,6 @@
   "coreWalletTransactionStatusPending": "Pending",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
-  },
-  "ledgerActionFailedMessage": "{action} Failed",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeLabelBankAccountCountry": "Τράπεζα λογαριασμού χώρα",
   "@fundExchangeLabelBankAccountCountry": {
@@ -625,25 +531,9 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "Για να λάβετε ανθρώπινη υποστήριξη, πρέπει πρώτα να συνδεθείτε στον λογαριασμό σας Bull Bitcoin. Είναι 100% δωρεάν και δεν απαιτείται KYC, μόνο μια διεύθυνση email.",
-  "seedsignerStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο SeedSigner. Βάλτε το.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
   "buyAboveMaxAmountError": "Προσπαθείτε να αγοράσετε πάνω από το μέγιστο ποσό.",
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
-  },
-  "electrumTimeoutWarning": "Τα χρονικά σας ({timeoutValue} δευτερόλεπτα) είναι χαμηλότερα από τη συνιστώμενη αξία ({recommended} δευτερόλεπτα) για αυτό το Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
   },
   "sendShowPsbt": "Show PSBT",
   "@sendShowPsbt": {
@@ -660,10 +550,6 @@
   "hwJade": "Blockstream Jade",
   "@hwJade": {
     "description": "Name of Blockstream Jade hardware wallet"
-  },
-  "keystoneStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
   },
   "exchangeStatisticsTitle": "Στατιστικά",
   "@exchangeStatisticsTitle": {
@@ -718,14 +604,6 @@
   "@payNetworkFees": {
     "description": "Label for network fees amount"
   },
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenConnectingSubtext": "Δημιουργία ασφαλούς σύνδεσης...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
   "receiveShareAddress": "Κοινή διεύθυνση",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
@@ -733,10 +611,6 @@
   "payAboveMaxAmountError": "Το μέγιστο ποσό που μπορείτε να πληρώσετε με αυτό το πορτοφόλι είναι {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
-  },
-  "jadeStep7": "   Κρατήστε τον κωδικό QR σταθερό και επικεντρωμένο",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
   },
   "sendCouldNotBuildTransaction": "Δεν θα μπορούσε να δημιουργήσει συναλλαγές",
   "@sendCouldNotBuildTransaction": {
@@ -754,10 +628,6 @@
   "@fundExchangeSinpeWarningNoBitcoin": {
     "description": "Bold warning text at start of bitcoin warning message"
   },
-  "ledgerHelpStep3": "Βεβαιωθείτε ότι το Ledger σας έχει μετατραπεί Bluetooth.",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
-  },
   "coreSwapsChainFailedRefunding": "Η ανταλλαγή θα επιστραφεί σύντομα.",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
@@ -769,10 +639,6 @@
   "sellKYCRejected": "Η επαλήθευση της KYC απέρριψε",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
-  },
-  "electrumNetworkLiquid": "Υγρό",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
   },
   "buyBelowMinAmountError": "Προσπαθείτε να αγοράσετε κάτω από το ελάχιστο ποσό.",
   "@buyBelowMinAmountError": {
@@ -790,14 +656,6 @@
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
   },
-  "bitboxActionImportWalletSuccessSubtext": "Το πορτοφόλι σας BitBox έχει εισαχθεί με επιτυχία.",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
-  "electrumEmptyFieldError": "Αυτό το πεδίο δεν μπορεί να είναι άδειο",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
   "transactionStatusPaymentInProgress": "Πληρωμή σε εξέλιξη",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -813,10 +671,6 @@
   "sellLoadingGeneric": "Φόρισμα...",
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
-  },
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
   },
   "bip85Mnemonic": "Mnemonic",
   "@bip85Mnemonic": {
@@ -834,18 +688,6 @@
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
   },
-  "psbtFlowPartProgress": "Μέρος {current} του {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
   "receiveShareInvoice": "Share Invoice",
   "@receiveShareInvoice": {
     "description": "Button to share invoice"
@@ -862,10 +704,6 @@
   "@importWatchOnlyYpub": {
     "description": "Label for ypub import method"
   },
-  "ledgerVerifyTitle": "Verify Address on Ledger",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
-  },
   "exchangeDcaNetworkBitcoin": "Bitcoin Network",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -873,10 +711,6 @@
   "autoswapWarningTitle": "Το Autoswap ενεργοποιείται με τις ακόλουθες ρυθμίσεις:",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
-  },
-  "seedsignerStep1": "Μετατρέψτε τη συσκευή SeedSigner",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
   },
   "coreScreensReceiveNetworkFeeLabel": "Λήψη δικτύου Fee",
   "@coreScreensReceiveNetworkFeeLabel": {
@@ -917,14 +751,6 @@
   "payPaymentInProgress": "Πληρωμή σε εξέλιξη!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "ledgerProcessingSign": "Υπογραφή συναλλαγής",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
-  },
-  "jadeStep6": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
   },
   "pinCodeCreateButton": "Δημιουργήστε PIN",
   "@pinCodeCreateButton": {
@@ -978,10 +804,6 @@
   "payPayoutMethod": "Μέθοδος πληρωμής",
   "@payPayoutMethod": {
     "description": "Label for payout method section"
-  },
-  "ledgerVerifyButton": "Verify Address",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
   },
   "sendErrorSwapFeesNotLoaded": "Τα τέλη Swap δεν φορτώνονται",
   "@sendErrorSwapFeesNotLoaded": {
@@ -1046,10 +868,6 @@
   "@replaceByFeeCustomFeeTitle": {
     "description": "Title for custom fee input section"
   },
-  "kruxStep14": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Krux. Βάλτε το.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
   "payAvailableBalance": "Διαθέσιμο: {amount}",
   "@payAvailableBalance": {
     "description": "Label showing available wallet balance",
@@ -1091,10 +909,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "passportStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο διαβατήριο. Βάλτε το.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
   "paySelectRecipient": "Επιλέξτε παραλήπτη παραλήπτη",
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
@@ -1115,29 +929,13 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "bitboxScreenEnterPasswordSubtext": "Παρακαλούμε εισάγετε τον κωδικό πρόσβασής σας στη συσκευή BitBox για να συνεχίσετε.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "Ανοίξτε την κάμερα",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
   },
-  "passportStep11": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
-  },
   "sendSwapId": "Swap ID",
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
-  },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
   },
   "fundExchangeAccountTitle": "Χρηματοδότηση του λογαριασμού σας",
   "@fundExchangeAccountTitle": {
@@ -1162,10 +960,6 @@
   "okButton": "ΕΝΤΆΞΕΙ",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "passportStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
   },
   "importQrDeviceKeystoneStep3": "Πατήστε το *** (τρεις κουκίδες) στην κορυφαία γωνία",
   "@importQrDeviceKeystoneStep3": {
@@ -1203,10 +997,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Έτοιμο",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "Σημείωση",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1214,10 +1004,6 @@
   "payLightningNetwork": "Δίκτυο Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "ledgerSuccessVerifyTitle": "Καθορίζοντας τη διεύθυνση στο Ledger...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
   },
   "payCorporateNameHint": "Εισάγετε εταιρικό όνομα",
   "@payCorporateNameHint": {
@@ -1235,17 +1021,9 @@
   "@sellAccountName": {
     "description": "Label for bank account holder name"
   },
-  "statusCheckUnknown": "Άγνωστο",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "logSettingsLogsTitle": "Logs",
   "@logSettingsLogsTitle": {
     "description": "Title for the logs section in settings"
-  },
-  "psbtFlowReadyToBroadcast": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
   },
   "sendErrorLiquidWalletRequired": "Το υγρό πορτοφόλι πρέπει να χρησιμοποιηθεί για ένα υγρό για την εναλλαγή κεραυνών",
   "@sendErrorLiquidWalletRequired": {
@@ -1267,10 +1045,6 @@
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
   "sellKYCApproved": "KYC ενέκρινε",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
@@ -1278,14 +1052,6 @@
   "buyKYCLevel": "KYC Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο Επίπεδο",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
-  },
-  "passportInstructionsTitle": "Ίδρυμα Passport Οδηγίες",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
-  },
-  "ledgerSuccessImportTitle": "Το Wallet παρουσίασε με επιτυχία",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
   },
   "physicalBackupTitle": "Φυσικό backup",
   "@physicalBackupTitle": {
@@ -1310,10 +1076,6 @@
   "totalFeeLabel": "Total Fee",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Εισάγετε το URL του προσαρμοσμένου διακομιστή mempool σας. Ο διακομιστής θα επικυρωθεί πριν από την αποταμίευση.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "Προσπαθείτε να πουλήσετε κάτω από το ελάχιστο ποσό που μπορεί να πωληθεί με αυτό το πορτοφόλι.",
   "@sellBelowMinAmountError": {
@@ -1375,15 +1137,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} ετικέτες εισαγόμενων",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "Από",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1391,10 +1144,6 @@
   "sendTransactionBuilt": "Η έτοιμη συναλλαγή",
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
-  },
-  "bitboxErrorOperationCancelled": "Η επιχείρηση ακυρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
   },
   "withdrawConfirmCard": "Card",
   "@withdrawConfirmCard": {
@@ -1452,10 +1201,6 @@
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
   },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT Οδηγίες Οδηγίες Οδηγίες",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
   "scanNfcButton": "Scan NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -1468,10 +1213,6 @@
         "type": "String"
       }
     }
-  },
-  "systemLabelExchangeBuy": "Αγοράστε αγορά αγορά",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "sendRecipientAddress": "Η διεύθυνση του Recipient",
   "@sendRecipientAddress": {
@@ -1513,10 +1254,6 @@
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
   },
-  "electrumAddCustomServer": "Προσθήκη Custom Server",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
-  },
   "rbfSatsPerVbyte": "sats/vB",
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
@@ -1551,17 +1288,9 @@
   "@importWatchOnlyImport": {
     "description": "Button label to import watch-only wallet"
   },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
-  },
   "sellSendPaymentFeePriority": "Προτεραιότητα",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
-  },
-  "bitboxActionSignTransactionProcessing": "Υπογραφή συναλλαγής",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
   },
   "sellWalletBalance": "Balance: {amount}",
   "@sellWalletBalance": {
@@ -1624,10 +1353,6 @@
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
   },
-  "ledgerErrorDeviceLocked": "Η συσκευή Ledger είναι κλειδωμένη. Παρακαλώ ξεκλειδώστε τη συσκευή σας και δοκιμάστε ξανά.",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
-  },
   "importQrDeviceSeedsignerStep5": "Επιλέξτε \"Single Sig\", στη συνέχεια επιλέξτε τον προτιμώμενο τύπο σεναρίων σας (εκείνοι ιθαγενείς Segwit αν δεν είναι σίγουροι).",
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
@@ -1684,10 +1409,6 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "bip329LabelsImportSuccessSingular": "1 ετικέτα εισαγόμενα",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
   "payBillerName": "Biller Name",
   "@payBillerName": {
     "description": "Label for biller name field"
@@ -1742,10 +1463,6 @@
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
   },
-  "ledgerHelpStep4": "Βεβαιωθείτε ότι έχετε εγκαταστήσει την τελευταία έκδοση της εφαρμογής Bitcoin από το Ledger Live.",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
-  },
   "broadcastSignedTxBroadcast": "Broadcast",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -1757,10 +1474,6 @@
   "hwChooseDevice": "Επιλέξτε το πορτοφόλι υλικού που θέλετε να συνδέσετε",
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
-  },
-  "torSettingsConnectionStatus": "Κατάσταση σύνδεσης",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
   },
   "backupInstruction1": "Αν χάσετε 12 λέξεις αντίγραφα ασφαλείας, δεν θα είστε σε θέση να ανακτήσετε την πρόσβαση στο Bitcoin Wallet.",
   "@backupInstruction1": {
@@ -1782,10 +1495,6 @@
   "exchangeStatisticsAveragePrice": "Μέση τιμή",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
-  },
-  "ledgerSuccessSignDescription": "Η συναλλαγή σας έχει υπογραφεί με επιτυχία.",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
   },
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
@@ -1860,10 +1569,6 @@
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
   },
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
   "transactionDetailTransferProgress": "Πρόοδος ανταλλαγής",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
@@ -1913,14 +1618,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "Παρακαλώ εισάγετε έναν αριθμό λιμένα",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
-  "ledgerHelpStep1": "Restart τη συσκευή Ledger σας.",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
-  },
   "swapAvailableBalance": "Διαθέσιμο ισοζύγιο",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -1928,14 +1625,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "ledgerConnectingSubtext": "Δημιουργία ασφαλούς σύνδεσης...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
-  },
-  "electrumPrivacyNoticeCancel": "Ακύρωση",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "Το Swap δεν έχει ακόμη οριστικοποιηθεί.",
   "@coreSwapsLnSendPending": {
@@ -1965,10 +1654,6 @@
   "receiveGenerateInvoice": "Generate Invoice",
   "@receiveGenerateInvoice": {
     "description": "Button to create Lightning invoice"
-  },
-  "kruxStep8": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
   },
   "coreScreensFeeDeductionExplanation": "Αυτό είναι το συνολικό ποσό που αφαιρείται από το ποσό που αποστέλλεται",
   "@coreScreensFeeDeductionExplanation": {
@@ -2019,10 +1704,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Τα Ταμεία θα προστεθούν στην ισορροπία λογαριασμού σας.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2047,10 +1728,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Legacy Transactions",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Μην δείξετε ξανά αυτή την προειδοποίηση.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -2058,10 +1735,6 @@
   "sellInsufficientBalance": "Ανεπαρκή ισορροπία πορτοφολιού",
   "@sellInsufficientBalance": {
     "description": "Error when wallet lacks funds"
-  },
-  "mempoolCustomServerDeleteMessage": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτόν τον προσαρμοσμένο διακομιστή mempool; Ο προεπιλεγμένος server θα χρησιμοποιηθεί αντ 'αυτού.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
   "@coldcardStep6": {
@@ -2119,17 +1792,9 @@
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
-  "kruxStep15": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "jadeStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "confirmButton": "Επιβεβαίωση",
   "@confirmButton": {
@@ -2138,10 +1803,6 @@
   "payActualFee": "Πραγματική Fee",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate Domain",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "Βεβαιωθείτε ότι η συσκευή σας ενημερώνεται στο τελευταίο firmware",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2162,10 +1823,6 @@
   "sendSigningFailed": "Η εγγραφή απέτυχε",
   "@sendSigningFailed": {
     "description": "Error during hardware wallet signing"
-  },
-  "bitboxErrorDeviceNotPaired": "Συσκευή που δεν συνδυάζονται. Παρακαλούμε να ολοκληρώσετε πρώτα τη διαδικασία ζευγαρώματος.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
   },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
@@ -2251,10 +1908,6 @@
   "@payCoinjoinInProgress": {
     "description": "Status during CoinJoin process"
   },
-  "ledgerProcessingImportSubtext": "Δημιουργήστε το πορτοφόλι σας μόνο ρολόι...",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
-  },
   "digitalCopyLabel": "Ψηφιακό αντίγραφο",
   "@digitalCopyLabel": {
     "description": "Label for digital copy (with X mark)"
@@ -2278,10 +1931,6 @@
   "paySecurityAnswerHint": "Εισάγετε την απάντηση ασφαλείας",
   "@paySecurityAnswerHint": {
     "description": "Hint for security answer input"
-  },
-  "bitboxActionImportWalletTitle": "Εισαγωγή BitBox Wallet",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
   },
   "backupSettingsError": "Error",
   "@backupSettingsError": {
@@ -2327,15 +1976,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Invalid Retry Κόμη αξία: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Επιλέξτε Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2348,10 +1988,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "Αριθμός λιμένων",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "Εισάγετε όνομα παραλήπτη",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2359,10 +1995,6 @@
   "backupWalletPhysicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },
-  "electrumReset": "Επαναφορά",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
   },
   "payInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
   "@payInsufficientBalanceError": {
@@ -2372,21 +2004,9 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "psbtFlowInstructions": "Οδηγίες",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
-  "systemLabelExchangeSell": "Πώληση",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "Υψηλή προειδοποίηση",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "Το Stop Gap δεν μπορεί να είναι αρνητικό",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "Αποστολή αποστολής",
   "@walletButtonSend": {
@@ -2396,17 +2016,9 @@
   "@importColdcardInstructionsStep9": {
     "description": "ImportColdcardQ: Ninth instruction step"
   },
-  "bitboxScreenTroubleshootingStep1": "Βεβαιωθείτε ότι έχετε το τελευταίο firmware εγκατεστημένο στο BitBox σας.",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
   "backupSettingsExportVault": "Εξαγωγή Vault",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
-  },
-  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
   },
   "autoswapInfoSettingsButton": "Ρυθμίσεις Configure",
   "@autoswapInfoSettingsButton": {
@@ -2436,19 +2048,6 @@
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
   },
-  "labelDeleteFailed": "Μη μπορώ να διαγράψουμε «{label}». Παρακαλώ δοκιμάστε ξανά.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "kruxStep16": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
   "buyVerifyIdentity": "Ενισχύστε την ταυτότητα",
   "@buyVerifyIdentity": {
     "description": "Button to start KYC process"
@@ -2456,18 +2055,6 @@
   "exchangeDcaCancelDialogConfirmButton": "Ναι, απενεργοποιημένη",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "Διεύθυνση URL διακομιστή {network} {environment}",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "Εισάγετε διεύθυνση ηλεκτρονικού ταχυδρομείου",
   "@payEmailHint": {
@@ -2480,10 +2067,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Η Google θα σας ζητήσει να μοιραστείτε προσωπικές πληροφορίες με αυτή την εφαρμογή.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "bitboxScreenVerifyAddressSubtext": "Συγκρίνετε αυτή τη διεύθυνση με την οθόνη BitBox02",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
   },
   "importQrDeviceSeedsignerStep9": "Εισάγετε μια ετικέτα για το πορτοφόλι SeedSigner και την εισαγωγή βρύσης",
   "@importQrDeviceSeedsignerStep9": {
@@ -2559,14 +2142,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Επιθυμήθηκε να φορτώσει διακομιστές ",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "ledgerVerifyAddressLabel": "Διεύθυνση επαλήθευσης:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Εφαρμογή ηλεκτρονικού ταχυδρομείου",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2582,10 +2157,6 @@
   "receiveLiquidConfirmationMessage": "Θα επιβεβαιωθεί σε λίγα δευτερόλεπτα",
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
-  },
-  "jadeStep1": "Συνδεθείτε στη συσκευή Jade",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "exchangeAuthOk": "ΕΝΤΆΞΕΙ",
   "@exchangeAuthOk": {
@@ -2611,17 +2182,9 @@
   "@exchangeKycLight": {
     "description": "Light KYC level label"
   },
-  "seedsignerInstructionsTitle": "Δείτε τις οδηγίες SeedSigner",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
   "exchangeAmountInputValidationEmpty": "Παρακαλώ εισάγετε ένα ποσό",
   "@exchangeAmountInputValidationEmpty": {
     "description": "Validation message when amount field is empty"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "Ελέγξτε τον κώδικα ζευγαρώματος στη συσκευή BitBox σας...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
   },
   "backupInstruction3": "Όποιος έχει πρόσβαση στο 12ο αντίγραφο ασφαλείας μπορεί να κλέψει τα bitcoins σας. Κρύψε το καλά.",
   "@backupInstruction3": {
@@ -2639,10 +2202,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "Προχωρημένες επιλογές",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "testedStatus": "Tested",
   "@testedStatus": {
     "description": "Status text indicating backup has been tested"
@@ -2659,10 +2218,6 @@
   "@payFilterPayments": {
     "description": "Button to filter payment list"
   },
-  "electrumCancel": "Ακύρωση",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
   "exchangeFileUploadButton": "Ανυψώστε την αναβάθμιση",
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
@@ -2670,10 +2225,6 @@
   "payCopied": "Συναντήστε!",
   "@payCopied": {
     "description": "Success message after copying"
-  },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
   },
   "broadcastSignedTxPushTxButton": "PushTxx",
   "@broadcastSignedTxPushTxButton": {
@@ -2686,10 +2237,6 @@
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
-  },
-  "kruxStep2": "Click Sign",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "fundExchangeArsBankTransferDescription": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις ακριβείς λεπτομέρειες της τράπεζας της Αργεντινής παρακάτω.",
   "@fundExchangeArsBankTransferDescription": {
@@ -2718,10 +2265,6 @@
   "pinProtectionDescription": "Το PIN σας προστατεύει την πρόσβαση στο πορτοφόλι και τις ρυθμίσεις σας. Κρατήστε το αξέχαστη.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "kruxStep5": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
   },
   "backupSettingsLabelsButton": "Ετικέτες",
   "@backupSettingsLabelsButton": {
@@ -2815,10 +2358,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "seedsignerStep11": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
   "transactionDetailLabelPayjoinStatus": "Payjoin status",
   "@transactionDetailLabelPayjoinStatus": {
     "description": "Label for payjoin status"
@@ -2863,10 +2402,6 @@
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "bitboxErrorConnectionFailed": "Επιθυμήθηκε να συνδεθεί με τη συσκευή BitBox. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
   "exchangeFileUploadDocumentTitle": "Μετάβαση οποιουδήποτε εγγράφου",
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
@@ -2902,14 +2437,6 @@
   "payBumpFee": "Bump Fee",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "Δημιουργήστε το πορτοφόλι σας μόνο ρολόι...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "psbtFlowDone": "Έχω κάνει",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
   },
   "sendEstimatedDelivery": "Εκτιμώμενη παράδοση - ",
   "@sendEstimatedDelivery": {
@@ -2971,10 +2498,6 @@
   "fundExchangeWarningConfirmation": "Επιβεβαιώνω ότι δεν μου ζητείται να αγοράσω Bitcoin από κάποιον άλλο.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "mempoolCustomServerDeleteTitle": "Διαγράψτε Custom Server?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
   },
   "confirmSendTitle": "Επιβεβαίωση αποστολής",
   "@confirmSendTitle": {
@@ -3081,10 +2604,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Exchange Account Ρυθμίσεις",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "Ανεβαίνετε μέχρι {maxFiles} αρχεία. Επιτρέπονται μορφές: PDF, JPG, PNG, GIF, HEIC. Μέγιστη μέγεθος αρχείου: 10MB ανά αρχείο.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3097,10 +2616,6 @@
   "broadcastSignedTxTitle": "Broadcast Transaction",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
-  },
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - Προτεινόμενη",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
   },
   "exchangeAccountInfoFirstNameLabel": "Πρώτο όνομα",
   "@exchangeAccountInfoFirstNameLabel": {
@@ -3130,17 +2645,9 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "Σταματήστε το χάσμα",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "Ραδιοτηλεόραση συναλλαγή...",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
-  },
-  "bip329LabelsImportButton": "Σημειώσεις",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
   },
   "exchangeFileUploadAllSuccess": "Όλα τα αρχεία που μεταφορτώνονται με επιτυχία",
   "@exchangeFileUploadAllSuccess": {
@@ -3161,10 +2668,6 @@
   "copyDialogButton": "Αντιγραφή",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
-  },
-  "bitboxActionImportWalletProcessing": "Εισαγωγή του Wallet",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
   },
   "swapConfirmTransferTitle": "Επιβεβαίωση ανταλλαγής",
   "@swapConfirmTransferTitle": {
@@ -3189,10 +2692,6 @@
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin διεύθυνση Bitcoin",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
-  },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "sendTransferFee": "Τέλος ανταλλαγής",
   "@sendTransferFee": {
@@ -3222,10 +2721,6 @@
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "sellErrorLoadUtxos": "Απέτυχε να φορτώσει UTXOs: {error}",
   "@sellErrorLoadUtxos": {
     "description": "Error message when loading UTXOs fails",
@@ -3243,24 +2738,6 @@
   "importColdcardInstructionsStep5": "Επιλέξτε \"Export Wallet\"",
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
-  },
-  "electrumStopGapTooHighError": "Το Stop Gap φαίνεται πολύ υψηλό. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Το Timeout φαίνεται πολύ υψηλό. (Max. {maxTimeout} δευτερόλεπτα)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
   },
   "sellInstantPayments": "Instant πληρωμές",
   "@sellInstantPayments": {
@@ -3290,10 +2767,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "passportStep6": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
   "importQrDeviceSpecterStep8": "Στην κινητή σας συσκευή, πατήστε Open Camera",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
@@ -3306,21 +2779,9 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "electrumDragToReorder": "(Long Press to drag and Change Prior)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "keystoneStep4": "Αν έχετε πρόβλημα σάρωση:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
-  },
   "sendCustomFeeRate": "Custom Fee rate",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
-  },
-  "ledgerHelpTitle": "Ledger Troubleshooting",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
   },
   "swapErrorAmountExceedsMaximum": "Ποσό υπερβαίνει το μέγιστο ποσό ανταλλαγής",
   "@swapErrorAmountExceedsMaximum": {
@@ -3370,17 +2831,9 @@
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
   },
-  "exchangeAccountTitle": "Exchange Account",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
   "swapProgressCompleted": "Η ανταλλαγή ολοκληρώθηκε",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
-  },
-  "keystoneStep2": "Κάντε κλικ",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
   },
   "sendContinue": "Συνεχίστε να συνεχίζετε",
   "@sendContinue": {
@@ -3423,14 +2876,6 @@
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "exchangeRecipientsComingSoon": "Μαθητές - Έρχεται σύντομα",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
-  "ledgerWalletTypeLabel": "Wallet Type:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
   },
   "bip85ExperimentalWarning": "Experimental\nΚλείστε τα μονοπάτια στέρησης σας χειροκίνητα",
   "@bip85ExperimentalWarning": {
@@ -3480,15 +2925,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "Invalid Stop Τιμή του χάσματος: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "Μόνο χρήση για μεγαλύτερες συναλλαγές άνω των €30.000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3529,10 +2965,6 @@
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
   },
-  "keystoneStep6": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
   "walletDeletionErrorGeneric": "Επιθυμούμενοι να διαγράψετε το πορτοφόλι, παρακαλώ δοκιμάστε ξανά.",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
@@ -3544,10 +2976,6 @@
   "sellNoInvoiceData": "Δεν υπάρχουν διαθέσιμα δεδομένα τιμολογίων",
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "ledgerInstructionsIos": "Βεβαιωθείτε ότι το Ledger σας είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που ανοίγεται και το Bluetooth επιτρέπει.",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
   },
   "replaceByFeeScreenTitle": "Αντικαταστήστε με αμοιβή",
   "@replaceByFeeScreenTitle": {
@@ -3589,10 +3017,6 @@
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
-  "passportStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
   "settingsCurrencyTitle": "Νόμισμα νόμισμα",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -3624,10 +3048,6 @@
   "@logoutConfirmationDescription": {
     "description": "Description text for logout confirmation bottom sheet"
   },
-  "ledgerSuccessAddressVerified": "Η διεύθυνση επαληθεύεται με επιτυχία!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
-  },
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
@@ -3635,15 +3055,6 @@
   "sendSats": "καθόταν",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "Ακυρωμένη αξία Timeout: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Limited",
   "@exchangeKycLevelLimited": {
@@ -3672,14 +3083,6 @@
   "receivePaymentNormally": "Λήψη πληρωμής κανονικά",
   "@receivePaymentNormally": {
     "description": "Option to receive payment without payjoin if it fails"
-  },
-  "kruxStep10": "Μόλις η συναλλαγή εισαχθεί στο Krux, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "bitboxErrorHandshakeFailed": "Απέτυχε να δημιουργήσει ασφαλή σύνδεση. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
   },
   "sellKYCRequired": "KYC επαλήθευση απαιτείται",
   "@sellKYCRequired": {
@@ -3765,10 +3168,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Payjoinin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "ΚαλώςWelcome",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -3813,14 +3212,6 @@
   "@sellGoHome": {
     "description": "Button to go to home screen"
   },
-  "keystoneStep8": "Μόλις η συναλλαγή εισαχθεί στο Keystone, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "psbtFlowSpecterTitle": "Οδηγίες",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "importMnemonicChecking": "Ελέγξτε...",
   "@importMnemonicChecking": {
     "description": "Status while checking wallet type"
@@ -3844,14 +3235,6 @@
   "autoswapInfoRemindLater": "Μου θυμίζω αργότερα",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
-  },
-  "bitboxErrorDeviceNotFound": "Η συσκευή BitBox δεν βρέθηκε.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
-  "ledgerScanningMessage": "Κοιτάζοντας για συσκευές Ledger κοντά...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
   },
   "sellInsufficientBalanceError": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πώλησης.",
   "@sellInsufficientBalanceError": {
@@ -3877,10 +3260,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Default Server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Παρακολουθήστε μια διεύθυνση πληρωμής ή τιμολόγιο",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3904,10 +3283,6 @@
   "exchangeKycLevelLight": "Φως",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Οι ετικέτες που εξάγονται επιτυχώς",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Η πιο αργή επιλογή, αλλά μπορεί να γίνει μέσω online banking (3-4 εργάσιμες ημέρες)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -3945,10 +3320,6 @@
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
   },
-  "mempoolCustomServerAdd": "Προσθήκη Custom Server",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
-  },
   "sendHighFeeWarningDescription": "Η συνολική αμοιβή είναι {feePercent}% του ποσού που στέλνετε",
   "@sendHighFeeWarningDescription": {
     "description": "Warning message showing fee as percentage of send amount",
@@ -3977,10 +3348,6 @@
   "importWatchOnlyUnknown": "Άγνωστο",
   "@importWatchOnlyUnknown": {
     "description": "Default value when signing device is unknown"
-  },
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
   },
   "payContinue": "Συνεχίστε να συνεχίζετε",
   "@payContinue": {
@@ -4056,17 +3423,9 @@
   "@sendFeeRateTooHigh": {
     "description": "Warning for excessive fee"
   },
-  "ledgerHelpStep2": "Βεβαιωθείτε ότι το τηλέφωνό σας έχει μετατραπεί Bluetooth και επιτρέπεται.",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
-  },
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Ο κωδικός μεταφοράς σας.",
   "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
     "description": "Help text explaining payment description is the transfer code"
-  },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
   },
   "buyPayoutMethod": "Μέθοδος πληρωμής",
   "@buyPayoutMethod": {
@@ -4075,10 +3434,6 @@
   "exchangeAmountInputTitle": "Εισάγετε το ποσό",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "Κλείστε κοντά",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "Εισάγετε IBAN",
   "@payIbanHint": {
@@ -4138,10 +3493,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "keystoneStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
   "sendSelectCoinsManually": "Επιλέξτε νομίσματα",
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
@@ -4149,10 +3500,6 @@
   "importMnemonicEmpty": "Έμφαση",
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
-  },
-  "electrumBitcoinServerInfo": "Διεύθυνση διακομιστή σε μορφή: host:port (π.χ., παράδειγμα.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
   },
   "sendErrorInsufficientBalanceForSwap": "Όχι αρκετή ισορροπία για να πληρώσει αυτή την ανταλλαγή μέσω της Liquid και όχι εντός ορίων ανταλλαγής για να πληρώσει μέσω Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -4198,10 +3545,6 @@
   "@coreScreensNetworkFeesLabel": {
     "description": "Label for network fees field"
   },
-  "kruxStep9": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
-  },
   "sendReceiveNetworkFee": "Λήψη δικτύου Fee",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
@@ -4226,10 +3569,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "Δεν χρησιμοποιείται",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "payDebitCardNumber": "Debit Card Number",
   "@payDebitCardNumber": {
     "description": "Label for debit card number field"
@@ -4238,21 +3577,9 @@
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
   },
-  "kruxStep11": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Krux σας.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
   "payExternalWalletDescription": "Πληρώστε από ένα άλλο πορτοφόλι Bitcoin",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
-  },
-  "electrumRetryCountEmptyError": "Το Retry Count δεν μπορεί να είναι άδειο",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "Παρακαλώ ανοίξτε την εφαρμογή Bitcoin στη συσκευή Ledger σας και δοκιμάστε ξανά.",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
   },
   "physicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@physicalBackupTag": {
@@ -4270,14 +3597,6 @@
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
   },
-  "torSettingsDescConnecting": "Δημιουργία σύνδεση Tor",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - Παλαιότερη μορφή",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
-  },
   "exchangeAccountInfoVerificationNotVerified": "Δεν επαληθεύεται",
   "@exchangeAccountInfoVerificationNotVerified": {
     "description": "Status label for not verified verification level"
@@ -4289,10 +3608,6 @@
   "payDebitCardNumberHint": "Εισάγετε τον αριθμό χρεωστικής κάρτας",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
-  },
-  "seedsignerStep9": "Ελέγξτε τη διεύθυνση προορισμού και το ποσό, και επιβεβαιώστε την εγγραφή στο SeedSigner σας.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
   },
   "logoutButton": "Logout",
   "@logoutButton": {
@@ -4339,10 +3654,6 @@
       }
     }
   },
-  "torSettingsPortValidationInvalid": "Παρακαλώ εισάγετε έναν έγκυρο αριθμό",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
-  },
   "sellBankTransfer": "Τράπεζα Μεταφοράς",
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
@@ -4382,10 +3693,6 @@
   "transactionSwapProgressFundsClaimed": "Ταμεία\nΑπαιτείται",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
-  },
-  "keystoneStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
   },
   "receiveGenerationFailed": "Επιθυμήθηκε να δημιουργήσει {type}",
   "@receiveGenerationFailed": {
@@ -4457,10 +3764,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "passportStep2": "Κάντε κλικ στην εγγραφή QR Code",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
   "pinCodeRemoveButton": "Αφαιρέστε PIN ασφαλείας",
   "@pinCodeRemoveButton": {
     "description": "Button label to remove the security PIN"
@@ -4488,10 +3791,6 @@
   "coreSwapsLnSendFailed": "Σουβάλι.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "keystoneStep9": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Keystone σας.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
   },
   "totalFeesLabel": "Σύνολο τελών",
   "@totalFeesLabel": {
@@ -4639,10 +3938,6 @@
   "@payPaymentDetails": {
     "description": "Section header for payment information"
   },
-  "bitboxActionVerifyAddressTitle": "Verify Address on BitBox",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
   "psbtSignTransaction": "Sign συναλλαγής",
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
@@ -4655,14 +3950,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxActionImportWalletSuccess": "Το Wallet παρουσίασε με επιτυχία",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
-  "ledgerSignButton": "Ξεκινήστε εγγραφή",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
   },
   "payFromAnotherWallet": "Πληρώστε από ένα άλλο πορτοφόλι Bitcoin",
   "@payFromAnotherWallet": {
@@ -4680,10 +3967,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "jadeStep14": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
   "payCorporateName": "Εταιρικό όνομα",
   "@payCorporateName": {
     "description": "Label for corporate name field"
@@ -4700,10 +3983,6 @@
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
   },
-  "kruxStep13": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
-  },
   "payBitcoinPrice": "Bitcoin Price",
   "@payBitcoinPrice": {
     "description": "Label for Bitcoin exchange rate"
@@ -4716,10 +3995,6 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "electrumDeleteFailedError": "Επιθυμήθηκε να διαγράψει το προσαρμοσμένο διακομιστή[X30XX]",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -4731,10 +4006,6 @@
   "payRBFEnabled": "RBF επέτρεψε",
   "@payRBFEnabled": {
     "description": "Status when RBF is enabled"
-  },
-  "ledgerSuccessVerifyDescription": "Η διεύθυνση έχει επαληθευτεί στη συσκευή Ledger σας.",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
   },
   "bip85Title": "BIP85 προσδιοριστικές εντροπίες",
   "@bip85Title": {
@@ -4755,10 +4026,6 @@
   "sendSwapInProgressBitcoin": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "Διαγράψτε Custom Server",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "Selfie με ID",
   "@buySelfie": {
@@ -4828,10 +4095,6 @@
   "@importColdcardMultisigPrompt": {
     "description": "Additional instruction for multisig"
   },
-  "psbtFlowSignTransaction": "Sign συναλλαγής",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
   "payAllPayments": "Όλες οι πληρωμές",
   "@payAllPayments": {
     "description": "Filter option to show all"
@@ -4877,15 +4140,6 @@
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
   },
-  "ledgerConnectingMessage": "Συνδέοντας το {deviceName}",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeFileUploadUploading": "Ανεβαίωση...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
@@ -4893,10 +4147,6 @@
   "buyConfirmAwaitingConfirmation": "Περιμένοντας επιβεβαίωση ",
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
-  },
-  "torSettingsSaveButton": "Εξοικονομήστε",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
   },
   "allSeedViewShowSeedsButton": "Show Seeds",
   "@allSeedViewShowSeedsButton": {
@@ -4952,18 +4202,6 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "jadeStep10": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Jade σας.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "bitboxScreenUnknownError": "Το άγνωστο λάθος συνέβη",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
-  "electrumPrivacyNoticeTitle": "Δήλωση απορρήτου",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
   "receiveLiquid": "Υγρό",
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
@@ -4995,10 +4233,6 @@
   "payTimeoutError": "Εποχή πληρωμής. Παρακαλούμε ελέγξτε το status",
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
-  },
-  "kruxStep4": "Κάντε κλικ Φόρτρα από κάμερα",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
   },
   "sellErrorRecalculateFees": "Απέτυχε να υπολογίσει τα τέλη: {error}",
   "@sellErrorRecalculateFees": {
@@ -5108,14 +4342,6 @@
   "@onboardingCreateWalletButtonLabel": {
     "description": "The label for the button to create a wallet from the onboarding screen"
   },
-  "bitboxScreenVerifyOnDevice": "Παρακαλούμε επαληθεύστε αυτή τη διεύθυνση στη συσκευή BitBox σας",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
-  "ledgerConnectTitle": "Συνδέστε τη Συσκευή Ledger σας",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
   "withdrawAmountTitle": "Mdraw fiat",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
@@ -5193,10 +4419,6 @@
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
-  "bitboxScreenConnecting": "Συνδέοντας με το BitBox",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
-  },
   "importQrDeviceSeedsignerStep10": "Εγκατάσταση ολοκληρωμένη",
   "@importQrDeviceSeedsignerStep10": {
     "description": "SeedSigner instruction step 10"
@@ -5216,15 +4438,6 @@
   "fundExchangeLabelClabe": "CLABE",
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
-  },
-  "statusCheckLastChecked": "Τελευταία έλεγχος: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
   },
   "sellPayoutAmount": "Ποσό πληρωμής",
   "@sellPayoutAmount": {
@@ -5290,10 +4503,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "Παρακαλούμε εισάγετε τον κωδικό πρόσβασής σας στη συσκευή BitBox...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
   "sellWhichWalletQuestion": "Ποιο πορτοφόλι θέλετε να πουλήσετε από?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
@@ -5305,10 +4514,6 @@
   "receiveFixedAmount": "Ποσο Ποσό Ποσο",
   "@receiveFixedAmount": {
     "description": "Required amount field"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "Η διεύθυνση έχει επαληθευτεί στη συσκευή BitBox σας.",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
   },
   "exchangeFileUploadAddMoreFiles": "Προσθέστε περισσότερα αρχεία",
   "@exchangeFileUploadAddMoreFiles": {
@@ -5350,23 +4555,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "seedsignerStep6": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
-  "ledgerHelpStep5": "Βεβαιωθείτε σας Η συσκευή Ledger χρησιμοποιεί το τελευταίο firmware, μπορείτε να ενημερώσετε το firmware χρησιμοποιώντας την εφαρμογή επιτραπέζιου υπολογιστή Ledger Live.",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
-  },
-  "torSettingsPortDisplay": "Λιμάνι: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Αριθμός διαμετακόμισης",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5406,10 +4594,6 @@
   "sendSlowPaymentWarningDescription": "Bitcoin swaps θα χρειαστεί χρόνος για να επιβεβαιωθεί.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "Παρακαλούμε επιβεβαιώστε τη διεύθυνση στη συσκευή BitBox σας.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
   },
   "pinConfirmHeadline": "Επιβεβαίωση νέου pin",
   "@pinConfirmHeadline": {
@@ -5455,10 +4639,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "Αποσυνδεδεδεμένοι",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "Ακυρώστε Bitcoin Recurring Buy?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5470,10 +4650,6 @@
   "fundExchangeSinpeLabelRecipientName": "Μαθητές Όνομα",
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
-  },
-  "keystoneInstructionsTitle": "Keystone Οδηγίες",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
   },
   "hwLedger": "Ledger",
   "@hwLedger": {
@@ -5491,17 +4667,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Απέτυχε να σώσει την προτεραιότητα του διακομιστή ",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
   "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
-  },
-  "bitboxActionVerifyAddressProcessing": "Παρουσιάζοντας διεύθυνση στο BitBox...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
   },
   "sendTypeSwap": "Swap",
   "@sendTypeSwap": {
@@ -5510,10 +4678,6 @@
   "sendErrorAmountExceedsMaximum": "Ποσό υπερβαίνει το μέγιστο ποσό ανταλλαγής",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
-  },
-  "bitboxActionSignTransactionSuccess": "Η συναλλαγή που υπογράφηκε με επιτυχία",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
   },
   "exchangeStatisticsBuyStats": "Αγοράστε στατιστικά",
   "@exchangeStatisticsBuyStats": {
@@ -5544,10 +4708,6 @@
   "importColdcardTitle": "Connect Coldcard Q Q Q Q",
   "@importColdcardTitle": {
     "description": "AppBar title for Coldcard Q import"
-  },
-  "ledgerSuccessImportDescription": "Το πορτοφόλι σας Ledger έχει εισαχθεί με επιτυχία.",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
   },
   "pinStatusProcessing": "Επεξεργασία επεξεργασίας",
   "@pinStatusProcessing": {
@@ -5581,10 +4741,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 ετικέτες",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -5597,17 +4753,9 @@
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
   },
-  "bitboxActionUnlockDeviceButton": "Unlock Device",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
-  },
   "payNetworkError": "Σφάλμα δικτύου. Παρακαλώ δοκιμάστε ξανά",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "Ένα λάθος συνέβη",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "Ποιο πορτοφόλι θέλετε να πληρώσετε από?",
   "@payWhichWallet": {
@@ -5646,10 +4794,6 @@
   "payCancelPayment": "Ακύρωση πληρωμής",
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
-  },
-  "ledgerInstructionsAndroidUsb": "Βεβαιωθείτε σας Το Ledger είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που άνοιξε και την συνδέει μέσω USB.",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
   },
   "onboardingOwnYourMoney": "Το δικό σας χρήμα",
   "@onboardingOwnYourMoney": {
@@ -5692,10 +4836,6 @@
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
   },
-  "bitboxScreenTryAgainButton": "Δοκιμάστε ξανά",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
-  },
   "exchangeStatisticsNoData": "Καμία στατιστική δεν είναι διαθέσιμη",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5737,10 +4877,6 @@
   "@addressCardUnusedLabel": {
     "description": "Label indicating an address has not been used"
   },
-  "bitboxActionUnlockDeviceSuccess": "Συσκευή Unlocked Με επιτυχία",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
-  },
   "receivePayjoinInProgress": "Payjoin σε πρόοδο",
   "@receivePayjoinInProgress": {
     "description": "Status message when a payjoin transaction is in progress"
@@ -5770,10 +4906,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "Default Servers",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Ανακαλύψτε το Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -5795,10 +4927,6 @@
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
   },
-  "bitboxErrorOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
   "receiveLightning": "Lightning",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
@@ -5806,10 +4934,6 @@
   "sendRecipientAddressOrInvoice": "Η διεύθυνση ή το τιμολόγιο",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Παρακαλώ εισάγετε ένα URL server",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Keystone",
   "@importQrDeviceKeystoneName": {
@@ -5839,15 +4963,6 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "Μετατρέψτε τη συσκευή σας {device}",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsKeyServer": "Key Server ",
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
@@ -5856,10 +4971,6 @@
   "@connectHardwareWalletColdcardQ": {
     "description": "Coldcard Q hardware wallet option"
   },
-  "seedsignerStep2": "Κάντε κλικ",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "addressCardIndexLabel": "Index: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
@@ -5867,10 +4978,6 @@
   "dcaSetupContinue": "Συνεχίστε να συνεχίζετε",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "Χρησιμοποιήστε το host: τη μορφή τουport (π.χ., παράδειγμα.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "buyConfirmYouPay": "Πληρώνετε",
   "@buyConfirmYouPay": {
@@ -5944,10 +5051,6 @@
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
   },
-  "keystoneStep7": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
   "coreSwapsChainExpired": "Η ανταλλαγή έληξε",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
@@ -5989,10 +5092,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "Για την προστασία της ιδιωτικής ζωής σας, οι προεπιλεγμένοι διακομιστές δεν χρησιμοποιούνται όταν διαμορφώνονται προσαρμοσμένες διακομιστές.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Μέθοδος πληρωμής",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6000,18 +5099,6 @@
   "payPriceRefreshIn": "Η τιμή θα ανανεωθεί ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "passportStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "jadeStep5": "Αν έχετε πρόβλημα σάρωση:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
-  "electrumProtocolError": "Μην συμπεριλάβετε πρωτόκολλο (ssl Reef ή tcIU).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "Δεν υπάρχει χρόνος να περιμένουμε ή να αποτύχει το payjoin στο πλευρό του αποστολέα?",
   "@receivePayjoinFailQuestion": {
@@ -6048,14 +5135,6 @@
   "payNotLoggedInDescription": "Δεν είστε συνδεδεμένοι. Παρακαλούμε συνδεθείτε για να συνεχίσετε να χρησιμοποιείτε το χαρακτηριστικό πληρωμής.",
   "@payNotLoggedInDescription": {
     "description": "Description for not logged in state"
-  },
-  "bitboxScreenTroubleshootingStep3": "Επαναφέρετε τη συσκευή BitBox02 από το unplugging και την επανασύνδεση.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
   "fundExchangeErrorTitleOrdPo404": "Η επιλογή πληρωμής δεν είναι διαθέσιμη",
@@ -6097,10 +5176,6 @@
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
   },
-  "electrumAddServer": "Add Server",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
   "addressViewCopyAddress": "Αντίγραφο διεύθυνση αντιγραφής",
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
@@ -6140,10 +5215,6 @@
         "type": "int"
       }
     }
-  },
-  "exchangeLegacyTransactionsComingSoon": "Legacy Transactions Έρχεται σύντομα",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
   },
   "buyProofOfAddress": "Απόδειξη της Διεύθυνσης",
   "@buyProofOfAddress": {
@@ -6185,14 +5256,6 @@
   "@sellTitle": {
     "description": "AppBar title for sell screen"
   },
-  "keystoneStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Keystone. Βάλτε το.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
-  "ledgerErrorRejectedByUser": "Η συναλλαγή απορρίφθηκε από τον χρήστη στη συσκευή Ledger.",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
   "payFeeRate": "Fee rate",
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
@@ -6217,14 +5280,6 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "passportStep10": "Το διαβατήριο θα σας δείξει τον δικό του κωδικό QR.",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
-  "electrumStopGapEmptyError": "Το Stop Gap δεν μπορεί να είναι άδειο",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
-  },
   "typeLabel": "Τύπος: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
@@ -6232,10 +5287,6 @@
   "buyInputInsufficientBalance": "Ανεπαρκή ισορροπία",
   "@buyInputInsufficientBalance": {
     "description": "Insufficient balance info card title"
-  },
-  "ledgerProcessingSignSubtext": "Παρακαλούμε επιβεβαιώστε τη συναλλαγή στη συσκευή Ledger σας...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
   },
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
@@ -6252,10 +5303,6 @@
   "payScanQRCode": "Scan QR Κώδικα κώδικα",
   "@payScanQRCode": {
     "description": "Button text to open QR code scanner for payment"
-  },
-  "seedsignerStep10": "Ο SeedSigner θα σας δείξει τον δικό του κωδικό QR.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
   },
   "psbtInstructions": "Οδηγίες",
   "@psbtInstructions": {
@@ -6313,10 +5360,6 @@
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
-  "seedsignerStep7": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
   "sendAmount": "Ποσο Ποσό Ποσο",
   "@sendAmount": {
     "description": "Label for the transaction amount"
@@ -6332,10 +5375,6 @@
   "dcaConfirmAmount": "Ποσο Ποσό Ποσο",
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
-  },
-  "seedsignerStep8": "Μόλις η συναλλαγή εισαχθεί στο SeedSigner, θα πρέπει να επιλέξετε τον σπόρο με τον οποίο επιθυμείτε να εγγραφείτε.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
   },
   "sellSendPaymentPriceRefresh": "Η τιμή θα ανανεωθεί ",
   "@sellSendPaymentPriceRefresh": {
@@ -6356,10 +5395,6 @@
   "receiveInvoiceExpired": "Το Invoice έληξε",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
-  },
-  "ledgerButtonManagePermissions": "Διαχείριση των εκπομπών",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
   },
   "autoswapMinimumThresholdErrorSats": "Το κατώτατο όριο ισορροπίας είναι {amount} sats",
   "@autoswapMinimumThresholdErrorSats": {
@@ -6394,10 +5429,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Προτεινόμενη",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
   "fundExchangeSpeiSubtitle": "Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
@@ -6413,10 +5444,6 @@
   "appStartupContactSupportButton": "Υποστήριξη επικοινωνίας",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
-  },
-  "bitboxScreenWaitingConfirmation": "Περιμένοντας την επιβεβαίωση στο BitBox02...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
   },
   "receiveFeeExplanation": "Αυτό το τέλος θα αφαιρεθεί από το ποσό που αποστέλλεται",
   "@receiveFeeExplanation": {
@@ -6443,17 +5470,9 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "Άγνωστη κατάσταση",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Επιβεβαίωση Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Log Out - Έρχεται σύντομα",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Συνολικός όγκος συναλλαγών",
   "@exchangeStatisticsTotalVolume": {
@@ -6507,10 +5526,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Επιθυμήθηκε να προσθέσει προσαρμοσμένο διακομιστή ",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "Τέλη ανταλλαγής",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6527,18 +5542,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bitboxActionPairDeviceSuccess": "Device Paied με επιτυχία",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές BitBox. Βεβαιωθείτε ότι η συσκευή σας τροφοδοτείται και συνδέεται μέσω USB.",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
-  "torSettingsStatusConnecting": "Συνδέοντας...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
@@ -6546,10 +5549,6 @@
   "backupSettingsLabel": "Wallet backup",
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
-  },
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
   },
   "fundExchangeJurisdictionMexico": "Μεξικό",
   "@fundExchangeJurisdictionMexico": {
@@ -6562,10 +5561,6 @@
   "coreSwapsActionClose": "Κλείστε κοντά",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
-  },
-  "kruxStep6": "Αν έχετε πρόβλημα σάρωση:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
   },
   "autoswapMaximumFeeError": "Μέγιστη αμοιβή είναι {threshold}%",
   "@autoswapMaximumFeeError": {
@@ -6580,10 +5575,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "ledgerProcessingVerify": "Παρουσιάζοντας διεύθυνση στο Ledger...",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
-  },
   "coreScreensFeePriorityLabel": "Προτεραιότητα",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
@@ -6591,14 +5582,6 @@
   "coreScreensLogsTitle": "Logs",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "bip329LabelsHeading": "Εισαγωγή/Εξαγωγή Ετικετών BIP329",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "jadeStep2": "Προσθέστε ένα παθητικό εάν έχετε ένα (προαιρετικό)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "coldcardStep4": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@coldcardStep4": {
@@ -6676,14 +5659,6 @@
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
   },
-  "keystoneStep1": "Συνδεθείτε στη συσκευή Keystone",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "backupKeyWarningMessage": "Προειδοποίηση: Να είστε προσεκτικοί όπου εξοικονομείτε το κλειδί ασφαλείας.",
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
@@ -6695,10 +5670,6 @@
   "exchangeAuthErrorMessage": "Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
-  },
-  "bitboxActionSignTransactionTitle": "Υπογραφή συναλλαγής",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
   },
   "logSettingsErrorLoadingMessage": "Error φόρτωσης logs: ",
   "@logSettingsErrorLoadingMessage": {
@@ -6720,10 +5691,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "Δήλωση απορρήτου:\n\nΧρησιμοποιώντας το δικό σας κόμβο διασφαλίζει ότι κανένα τρίτο μέρος δεν μπορεί να συνδέσει τη διεύθυνση IP σας με τις συναλλαγές σας. Με την διαγραφή του τελευταίου προσαρμοσμένου server σας, θα συνδεθείτε με έναν server BullBitcoin.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "Κάθε εβδομάδα",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -6739,10 +5706,6 @@
   "settingsThemeTitle": "Theme",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "jadeStep3": "Επιλέξτε \"Scan QR\" επιλογή",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "dcaSetupFundAccount": "Χρηματοδότηση του λογαριασμού σας",
   "@dcaSetupFundAccount": {
@@ -6800,10 +5763,6 @@
   "@confirmLogoutTitle": {
     "description": "Dialog title for logout confirmation"
   },
-  "ledgerWalletTypeSelectTitle": "Επιλέξτε Wallet Τύπος τύπου Type Type",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
   "swapTransferCompletedMessage": "Ουάου, περιμένατε! Η ανταλλαγή ολοκληρώθηκε με επιτυχία.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
@@ -6815,10 +5774,6 @@
   "exchangeFileUploadSelectFiles": "Επιλέξτε αρχεία",
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
-  },
-  "electrumDelete": "Διαγράψτε",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
   },
   "sendCoinControl": "Έλεγχος νομισμάτων",
   "@sendCoinControl": {
@@ -6836,10 +5791,6 @@
   "@payProcessingPayment": {
     "description": "Loading message while payment is being processed"
   },
-  "ledgerImportTitle": "Import Ledger Wallet",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
   "exchangeDcaFrequencyMonth": "μήνα",
   "@exchangeDcaFrequencyMonth": {
     "description": "DCA frequency unit: month"
@@ -6851,22 +5802,6 @@
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
-  },
-  "bitboxScreenScanning": "Scanning for Devices",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
-  "statusCheckTitle": "Service status",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "ledgerHelpSubtitle": "Πρώτον, βεβαιωθείτε ότι η συσκευή Ledger σας ξεκλειδώνεται και η εφαρμογή Bitcoin είναι ανοιχτή. Εάν η συσκευή σας εξακολουθεί να μην συνδεθεί με την εφαρμογή, δοκιμάστε τα εξής:",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
-  },
-  "bitboxActionImportWalletButton": "Ξεκινήστε την εισαγωγή",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
   },
   "fundExchangeLabelSwiftCode": "Κωδικός SWIFT",
   "@fundExchangeLabelSwiftCode": {
@@ -6932,14 +5867,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "Εξάγει ετικέτες",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "jadeStep4": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "payBillerNameValue": "Επιλέξτε όνομα Biller",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -6971,10 +5898,6 @@
   "paySecurityQuestionHint": "Εισάγετε το ερώτημα ασφαλείας (10-40 χαρακτήρες)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
-  },
-  "ledgerErrorMissingPsbt": "Το PSBT απαιτείται για την υπογραφή",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
   },
   "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub ήscriptor",
   "@importWatchOnlyPasteHint": {
@@ -7061,10 +5984,6 @@
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
-  "kruxInstructionsTitle": "Οδηγίες Krux",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
-  },
   "paySinpeNumeroComprobante": "Αριθμός αναφοράς",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -7072,14 +5991,6 @@
   "backupSettingsViewVaultKey": "Δείτε Vault Key Key Key",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
-  },
-  "ledgerErrorDeviceBusy": "Ένα άλλο πρόγραμμα χρησιμοποιεί το Ledger σας. Παρακαλώ κλείστε το (για παράδειγμα το Ledger Live) και δοκιμάστε ξανά.",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "No Ledger σύνδεση διαθέσιμη",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
   },
   "buyNetworkFeeExplanation": "Το τέλος του δικτύου Bitcoin θα αφαιρεθεί από το ποσό που λαμβάνετε και συλλέγονται από τους ανθρακωρύχους Bitcoin",
   "@buyNetworkFeeExplanation": {
@@ -7175,15 +6086,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "bitboxScreenActionFailed": "{action} Failed",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupScheduleMessage": "Οι αγορές Bitcoin θα τοποθετηθούν αυτόματα ανά αυτό το πρόγραμμα.",
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
@@ -7196,25 +6098,13 @@
   "@payFee": {
     "description": "Label for fee"
   },
-  "systemLabelSelfSpend": "Περάστε τον εαυτό σας",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
   "swapProgressRefundMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
   },
-  "passportStep4": "Αν έχετε πρόβλημα σάρωση:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
-  },
   "dcaConfirmContinue": "Συνεχίστε να συνεχίζετε",
   "@dcaConfirmContinue": {
     "description": "Continue button on DCA confirmation"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
   },
   "paySecureBitcoinWallet": "Secure Bitcoin πορτοφόλι",
   "@paySecureBitcoinWallet": {
@@ -7232,17 +6122,9 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
-  "bitboxActionVerifyAddressButton": "Verify Address",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
   "importColdcardInstructionsStep7": "Στην κινητή συσκευή σας, πατήστε \"ανοιχτή κάμερα\"",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "Πρώτον, βεβαιωθείτε ότι η συσκευή BitBox02 συνδέεται με το κινητό σας USB. Εάν η συσκευή σας εξακολουθεί να μην συνδεθεί με την εφαρμογή, δοκιμάστε τα εξής:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
   },
   "securityWarningTitle": "Προειδοποίηση ασφαλείας",
   "@securityWarningTitle": {
@@ -7264,25 +6146,13 @@
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
   },
-  "bitboxScreenAddressToVerify": "Διεύθυνση επαλήθευσης:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
   "payConfirmPayment": "Επιβεβαίωση πληρωμών",
   "@payConfirmPayment": {
     "description": "Button text to confirm and execute payment"
   },
-  "bitboxErrorPermissionDenied": "Τα δικαιώματα USB απαιτούνται για τη σύνδεση με συσκευές BitBox.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
   "recoveryPhraseTitle": "Γράψτε τη φράση ανάκτησης\nστη σωστή τάξη",
   "@recoveryPhraseTitle": {
     "description": "Title instructing user to write down recovery phrase"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "Παρακαλούμε επιβεβαιώστε τη συναλλαγή στη συσκευή BitBox σας...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
   },
   "sellConfirmPayment": "Επιβεβαίωση πληρωμής",
   "@sellConfirmPayment": {
@@ -7353,21 +6223,9 @@
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
   },
-  "electrumConfirm": "Επιβεβαίωση",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
-  "bitboxActionPairDeviceSuccessSubtext": "Η συσκευή BitBox σας είναι τώρα συνδυασμένη και έτοιμη να χρησιμοποιήσει.",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
-  },
   "coreScreensSendNetworkFeeLabel": "Στείλε δίκτυο Fee",
   "@coreScreensSendNetworkFeeLabel": {
     "description": "Label for send network fee field"
-  },
-  "bitboxScreenScanningSubtext": "Κοιτάζοντας τη συσκευή BitBox σας...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
   },
   "sellOrderFailed": "Επιθυμήθηκε να τοποθετήσει την παραγγελία πώλησης",
   "@sellOrderFailed": {
@@ -7400,10 +6258,6 @@
   "dcaConfirmNetworkBitcoin": "Bitcoin",
   "@dcaConfirmNetworkBitcoin": {
     "description": "Bitcoin network label"
-  },
-  "seedsignerStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
@@ -7441,22 +6295,6 @@
   "settingsSuperuserModeUnlockedMessage": "Η λειτουργία Superuser ξεκλειδώθηκε!",
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
-  },
-  "bitboxErrorConnectionTypeNotInitialized": "Ο τύπος σύνδεσης που δεν έχει οριστικοποιηθεί.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
-  },
-  "ledgerErrorPermissionDenied": "Απαιτούνται άδειες Bluetooth για τη σύνδεση με συσκευές Ledger.",
-  "ledgerErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές Ledger. Βεβαιωθείτε ότι η συσκευή σας είναι ενεργοποιημένη και το Bluetooth ενεργό.",
-  "ledgerErrorMultipleDevicesFound": "Βρέθηκαν πολλές συσκευές Ledger. Βεβαιωθείτε ότι υπάρχει μόνο μία συσκευή κοντά.",
-  "ledgerErrorDeviceNotFound": "Η συσκευή Ledger δεν βρέθηκε.",
-  "ledgerErrorDeviceMismatch": "Εντοπίστηκε ασυμφωνία συσκευής.",
-  "ledgerErrorInvalidPsbt": "Εντοπίστηκε μη έγκυρη μορφή PSBT.",
-  "ledgerErrorMissingDerivationPath": "Απαιτείται διαδρομή παραγώγησης",
-  "ledgerErrorMissingScriptType": "Απαιτείται τύπος σεναρίου",
-  "ledgerProcessingVerifySubtext": "Παρακαλούμε επιβεβαιώστε τη διεύθυνση στη συσκευή Ledger σας.",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
   },
   "buyViewDetails": "Δείτε λεπτομέρειες",
   "@buyViewDetails": {
@@ -7507,25 +6345,13 @@
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
-  "ledgerInstructionsAndroidDual": "Βεβαιωθείτε ότι το Ledger σας είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που ανοίγεται και το Bluetooth επιτρέπει.",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
   "defaultWalletsLabel": "Default Wallets",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
   },
-  "jadeStep9": "Μόλις η συναλλαγή εισάγεται στο Jade, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
   "receiveAddLabel": "Add Label",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
-  },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
   },
   "dcaConfirmFrequencyHourly": "Κάθε ώρα",
   "@dcaConfirmFrequencyHourly": {
@@ -7543,10 +6369,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "Η συναλλαγή σας έχει υπογραφεί με επιτυχία.",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
   },
   "transactionStatusTransferExpired": "Η ανταλλαγή έληξε",
   "@transactionStatusTransferExpired": {
@@ -7614,14 +6436,6 @@
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
   },
-  "passportStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "bitboxScreenConnectSubtext": "Βεβαιωθείτε ότι το BitBox02 σας ξεκλειδώνεται και συνδέεται μέσω USB.",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
   "payOwnerName": "Ιδιοκτήτης όνομα",
   "@payOwnerName": {
     "description": "Label for owner name field"
@@ -7642,10 +6456,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxErrorInvalidResponse": "Ακυρωμένη απάντηση από τη συσκευή BitBox. Παρακαλώ δοκιμάστε ξανά.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
   },
   "payAdvancedOptions": "Προχωρημένες επιλογές",
   "@payAdvancedOptions": {
@@ -7687,10 +6497,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "Εισάγετε έναν έγκυρο αριθμό",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "Επιβεβαιώθηκε",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -7709,10 +6515,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "electrumRetryCount": "Retry Count",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
@@ -7721,10 +6523,6 @@
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
   },
-  "jadeStep12": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
   "payFilterByType": "Φίλτρο τύπου",
   "@payFilterByType": {
     "description": "Label for type filter dropdown"
@@ -7732,10 +6530,6 @@
   "importMnemonicImporting": "Εισαγωγή...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "Εισαγόμενες ή εξαγωγικές ετικέτες χρησιμοποιώντας την τυποποιημένη μορφή BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletImportanceWarning": "Χωρίς ένα αντίγραφο ασφαλείας, θα χάσετε τελικά την πρόσβαση στα χρήματά σας. Είναι εξαιρετικά σημαντικό να κάνετε ένα αντίγραφο ασφαλείας.",
   "@backupWalletImportanceWarning": {
@@ -7756,10 +6550,6 @@
   "importWatchOnlyScriptType": "Script Type",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "Custom Servers",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Σουβάλι",
   "@transactionStatusSwapFailed": {
@@ -7826,21 +6616,9 @@
   "@sendErrorBalanceTooLowForMinimum": {
     "description": "Error when balance is below minimum required for swap"
   },
-  "electrumTimeout": "Timeout (δεύτεροι)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "Θέση",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "Απέτυχε να σώσει προηγμένες επιλογές",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "bitboxScreenWalletTypeLabel": "Wallet Type:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
   },
   "importQrDeviceKruxStep6": "Αυτό είναι!",
   "@importQrDeviceKruxStep6": {
@@ -7893,10 +6671,6 @@
   "coreScreensPageNotFound": "Page δεν βρέθηκε",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "passportStep8": "Μόλις η συναλλαγή εισαχθεί στο διαβατήριό σας, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
   },
   "importQrDeviceTitle": "Connect {deviceName}",
   "@importQrDeviceTitle": {
@@ -7960,10 +6734,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "Κανένα πρωτόκολλο δεν πρέπει να καθορίζεται, το SSL θα χρησιμοποιείται αυτόματα.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "Συσκευή συνδεδεμένες",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -7989,10 +6759,6 @@
   "@swapTotalFees": {
     "description": "Total fees label"
   },
-  "keystoneStep11": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
   "scanningCompletedMessage": "Η σάρωση ολοκληρώθηκε",
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
@@ -8008,10 +6774,6 @@
   "buyUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
-  },
-  "bitboxActionSignTransactionButton": "Ξεκινήστε εγγραφή",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
   },
   "sendEnterAbsoluteFee": "Εισαγάγετε απόλυτο τέλος σε καθούς",
   "@sendEnterAbsoluteFee": {
@@ -8029,10 +6791,6 @@
   "@payPayee": {
     "description": "Label for payee details"
   },
-  "exchangeAccountComingSoon": "Αυτό το χαρακτηριστικό έρχεται σύντομα.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
-  },
   "sellInProgress": "Πουλήστε στην πρόοδο...",
   "@sellInProgress": {
     "description": "Message for sell in progress"
@@ -8040,10 +6798,6 @@
   "sendSwapInProgressInvoice": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Το τιμολόγιο θα πληρωθεί σε λίγα δευτερόλεπτα.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
-  },
-  "electrumRetryCountNegativeError": "Το Retry Count δεν μπορεί να είναι αρνητικό",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
   },
   "importQrDeviceJadeStep4": "Επιλέξτε \"Επιλογές\" από το κύριο μενού",
   "@importQrDeviceJadeStep4": {
@@ -8101,19 +6855,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "passportStep9": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο διαβατήριό σας.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
-  "electrumDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον server;\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Επιλέξτε έναν τύπο πορτοφολιού για εισαγωγή",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8163,17 +6904,9 @@
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
   },
-  "kruxStep12": "Το Krux θα σας δείξει τον δικό του κωδικό QR.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
   "buyInputMinAmountError": "Θα πρέπει να αγοράσετε τουλάχιστον",
   "@buyInputMinAmountError": {
     "description": "Minimum amount error message"
-  },
-  "ledgerScanningTitle": "Scanning for Devices",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
   },
   "payInstitutionCode": "Κώδικας",
   "@payInstitutionCode": {
@@ -8183,10 +6916,6 @@
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
   },
-  "bitboxActionUnlockDeviceSuccessSubtext": "Η συσκευή BitBox σας είναι τώρα απελευθερωμένη και έτοιμη να χρησιμοποιήσει.",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
   "payShareInvoice": "Share Invoice",
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
@@ -8195,22 +6924,6 @@
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
   },
-  "bitboxScreenEnterPassword": "Εισάγετε το Password Password",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "keystoneStep10": "Το Keystone θα σας δείξει τον δικό του κωδικό QR.",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
-  },
-  "ledgerSuccessSignTitle": "Η συναλλαγή που υπογράφηκε με επιτυχία",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
-  },
-  "electrumPrivacyNoticeContent1": "Δήλωση απορρήτου: Χρησιμοποιώντας το δικό σας κόμβο διασφαλίζει ότι κανένα τρίτο μέρος δεν μπορεί να συνδέσει τη διεύθυνση IP σας, με τις συναλλαγές σας.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
-  },
   "fundExchangeWarningTactic3": "Λένε ότι εργάζονται για το χρέος ή τη συλλογή φόρων",
   "@fundExchangeWarningTactic3": {
     "description": "Third scammer tactic warning"
@@ -8218,10 +6931,6 @@
   "payCoinjoinFailed": "Το CoinJoin απέτυχε",
   "@payCoinjoinFailed": {
     "description": "Error when CoinJoin fails"
-  },
-  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
   },
   "buyKYCLevel2": "Επίπεδο 2 - Ενίσχυση",
   "@buyKYCLevel2": {
@@ -8243,10 +6952,6 @@
   "toLabel": "Για να",
   "@toLabel": {
     "description": "Label for destination address in transaction details"
-  },
-  "passportStep7": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
   },
   "sendConfirm": "Επιβεβαίωση",
   "@sendConfirm": {
@@ -8283,10 +6988,6 @@
   "sellInteracTransfer": "Μεταφορά χρημάτων μέσω email",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
-  },
-  "bitboxScreenPairingCodeSubtext": "Η επαλήθευση αυτού του κώδικα ταιριάζει με την οθόνη BitBox02, στη συνέχεια επιβεβαιώνει στη συσκευή.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
   },
   "pinConfirmMismatchError": "Τα PIN δεν ταιριάζουν",
   "@pinConfirmMismatchError": {
@@ -8357,10 +7058,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "kruxStep1": "Συνδεθείτε στη συσκευή Krux σας",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "dcaUseDefaultLightningAddress": "Χρησιμοποιήστε την προεπιλεγμένη διεύθυνση Lightning μου.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -8420,17 +7117,9 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "bitboxActionVerifyAddressSuccess": "Απευθυνόμενη με επιτυχία",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
   "psbtImDone": "Έχω κάνει",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
-  },
-  "bitboxScreenSelectWalletType": "Επιλέξτε Wallet Τύπος τύπου Type Type",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
   },
   "appUnlockEnterPinMessage": "Εισάγετε τον κωδικό PIN σας για να ξεκλειδώσετε",
   "@appUnlockEnterPinMessage": {
@@ -8460,10 +7149,6 @@
   "@payCompleted": {
     "description": "Title for payment completed screen"
   },
-  "bitboxScreenManagePermissionsButton": "Διαχείριση των εκπομπών",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
-  },
   "sellKYCPending": "KYC επαλήθευση εν αναμονή",
   "@sellKYCPending": {
     "description": "Message when verification in progress"
@@ -8471,10 +7156,6 @@
   "buyGetConfirmedFaster": "Αποκτήστε το επιβεβαίωσε πιο γρήγορα",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "electrumEnableSsl": "Enable SSL SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
   },
   "payCustomFee": "Custom Fee",
   "@payCustomFee": {
@@ -8499,10 +7180,6 @@
   "payUnsupportedInvoiceType": "Μη υποστηριζόμενος τύπος τιμολογίου",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
-  },
-  "seedsignerStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
   },
   "swapProgressPendingMessage": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορεί να χρειαστούν λίγο χρόνο για να επιβεβαιωθούν. Μπορείτε να επιστρέψετε στην αρχική οθόνη και να περιμένετε.",
   "@swapProgressPendingMessage": {
@@ -8576,18 +7253,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Το λιμάνι πρέπει να είναι μεταξύ 1 και 65535",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "Το Timeout δεν μπορεί να είναι άδειο",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "Ωστόσο, Εάν βλέπετε συναλλαγές μέσω mempool κάνοντας κλικ στην σελίδα ID ή αναληπτικών λεπτομερειών, αυτές οι πληροφορίες θα είναι γνωστές στο BullBitcoin.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "Ταυτότητα επαληθευμένη",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -8595,10 +7260,6 @@
   "importColdcardScanPrompt": "Βάλτε τον κωδικό QR από το Coldcard Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor proxy τρέχει και είναι έτοιμο",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "Κατακρυπτόμενος Vault",
   "@backupSettingsEncryptedVault": {
@@ -8612,17 +7273,9 @@
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
   },
-  "bitboxScreenPairingCode": "Paiing Code",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
-  },
   "fundExchangeSpeiDescription": "Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE",
   "@fundExchangeSpeiDescription": {
     "description": "Description for SPEI transfer method"
-  },
-  "ledgerProcessingImport": "Εισαγωγή του Wallet",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
   },
   "coldcardStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@coldcardStep15": {
@@ -8631,10 +7284,6 @@
   "comingSoonDefaultMessage": "Αυτή η λειτουργία είναι σήμερα υπό ανάπτυξη και θα είναι διαθέσιμη σύντομα.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "ledgerErrorMissingAddress": "Η διεύθυνση απαιτείται για επαλήθευση",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
   },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
@@ -8672,14 +7321,6 @@
   "@pinCodeConfirm": {
     "description": "Button label to confirm PIN entry"
   },
-  "bitboxActionUnlockDeviceProcessing": "Unlocking Device",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "seedsignerStep4": "Αν έχετε πρόβλημα σάρωση:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -8687,18 +7328,6 @@
   "payBitcoinOnChain": "Bitcoin on-chain",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor proxy δεν τρέχει",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "ledgerButtonTryAgain": "Δοκιμάστε ξανά",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
   },
   "buyInstantPaymentWallet": "Instant Payment πορτοφόλι",
   "@buyInstantPaymentWallet": {
@@ -8740,14 +7369,6 @@
   "@receiveDescription": {
     "description": "Optional memo field"
   },
-  "bitboxScreenVerifyAddress": "Verify Address",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenConnectDevice": "Συνδέστε τη Συσκευή BitBox σας",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
-  },
   "amountRequestedLabel": "Ποσό που απαιτείται: {amount}",
   "@amountRequestedLabel": {
     "description": "Shows the requested amount to send",
@@ -8784,10 +7405,6 @@
   "fundExchangeCrIbanUsdLabelRecipientName": "Μαθητές Όνομα",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN USD transfer"
-  },
-  "ledgerSignTitle": "Υπογραφή συναλλαγής",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
   },
   "importWatchOnlyCancel": "Ακύρωση",
   "@importWatchOnlyCancel": {
@@ -8919,15 +7536,6 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "psbtFlowScanDeviceQr": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο {device}. Βάλτε το.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailedMessage": "Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.",
   "@exchangeAuthLoginFailedMessage": {
     "description": "Message shown when exchange login fails"
@@ -8977,15 +7585,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "psbtFlowReviewTransaction": "Μόλις η συναλλαγή εισάγεται στο {device}, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAmountReceived": "Ποσό που λαμβάνεται",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -8993,10 +7592,6 @@
   "howToDecideBackupText1": "Ένας από τους πιο συνηθισμένους τρόπους που οι άνθρωποι χάνουν το Bitcoin τους είναι επειδή χάνουν το φυσικό αντίγραφο ασφαλείας. Ο καθένας που βρίσκει το φυσικό σας αντίγραφο ασφαλείας θα είναι σε θέση να πάρει όλο το Bitcoin σας. Αν είστε πολύ σίγουροι ότι μπορείτε να το κρύψετε καλά και ποτέ να το χάσετε, είναι μια καλή επιλογή.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "psbtFlowIncreaseBrightness": "Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
   },
   "transactionLabelReceiveAmount": "Αποδεχόμενο ποσό",
   "@transactionLabelReceiveAmount": {
@@ -9124,10 +7719,6 @@
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
   },
-  "psbtFlowTroubleScanningTitle": "Αν έχετε πρόβλημα σάρωση:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
-  },
   "fundExchangeCanadaPostStep1": "1. Πηγαίνετε σε οποιαδήποτε τοποθεσία Canada Post",
   "@fundExchangeCanadaPostStep1": {
     "description": "Step 1 for Canada Post payment process"
@@ -9238,10 +7829,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "priceChartFetchingHistory": "Κερδίζοντας ιστορία τιμών...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "autoswapTriggerAtBalanceInfoText": "Το Autoswap θα προκαλέσει όταν η ισορροπία σας υπερβαίνει αυτή τη μέγιστη ισορροπία.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
@@ -9253,10 +7840,6 @@
   "transactionDetailLabelToWallet": "To πορτοφόλι",
   "@transactionDetailLabelToWallet": {
     "description": "Label for destination wallet"
-  },
-  "psbtFlowMoveBack": "Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
   },
   "autoswapWarningCardTitle": "Autoswap είναι ενεργοποιημένη",
   "@autoswapWarningCardTitle": {
@@ -9285,15 +7868,6 @@
   "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος επιβεβαιώθηκε. Διεκδικείτε τώρα τα κεφάλαια για να ολοκληρώσετε τη ανταλλαγή σας.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
-  },
-  "psbtFlowSelectSeed": "Μόλις η συναλλαγή εισαχθεί στο {device}, θα πρέπει να επιλέξετε τον σπόρο με τον οποίο επιθυμείτε να εγγραφείτε.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "transactionSwapDescChainRefundable": "Η ανταλλαγή θα επιστραφεί. Τα κεφάλαιά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescChainRefundable": {
@@ -9505,10 +8079,6 @@
   "@fundExchangeOnlineBillPaymentDescription": {
     "description": "Description of how online bill payment works and timeframe"
   },
-  "psbtFlowTransactionImported": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
   "testBackupGoogleDriveSignIn": "Θα πρέπει να εγγραφείτε στο Google Drive",
   "@testBackupGoogleDriveSignIn": {
     "description": "Progress screen title when fetching from Google Drive"
@@ -9563,10 +8133,6 @@
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
-  "psbtFlowScanQrShown": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
   "testBackupErrorInvalidFile": "Avalid περιεχόμενο περιεχόμενο αρχείου",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -9599,10 +8165,6 @@
   "@leaveYourPhone": {
     "description": "Middle part of privacy assurance message"
   },
-  "psbtFlowClickDone": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
   "transactionDetailLabelAddressNotes": "Αναφορά σημειώσεις",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -9630,15 +8192,6 @@
   "testBackupCreatedAt": "Δημιουργήθηκε στο:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "psbtFlowSignTransactionOnDevice": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο {device}.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "transactionLabelSendNetworkFees": "Να στείλετε τέλη δικτύου",
   "@transactionLabelSendNetworkFees": {
@@ -10091,22 +8644,9 @@
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "psbtFlowMoveLaser": "Μετακινήστε το κόκκινο λέιζερ πάνω και κάτω από τον κωδικό QR",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
   "chooseVaultLocationTitle": "Επιλέξτε χώρο θύλακα",
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
-  },
-  "psbtFlowDeviceShowsQr": "Το {device} θα σας δείξει τον δικό του κωδικό QR.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "testBackupEncryptedVaultTitle": "Αποκρυπτωμένο θησαυροφυλάκιο",
   "@testBackupEncryptedVaultTitle": {
@@ -10252,7 +8792,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Οι υψηλές τιμές stop gap αυξάνουν σημαντικά τον χρόνο συγχρονισμού. Διατηρήστε την εφαρμογή ανοιχτή στο προσκήνιο μέχρι να ολοκληρωθεί ο συγχρονισμός — η μετακίνηση στο παρασκήνιο μπορεί να τον διακόψει.",
   "wizardSkipButton": "Παράλειψη",
   "wizardPageIndicator": "ΣΕΛΙΔΑ {current} / {total}",
   "wizardNextButton": "Επόμενο",
@@ -10453,8 +8992,6 @@
   "pinCodeDeleteError": "Αδυναμία διαγραφής PIN. Παρακαλώ δοκιμάστε ξανά.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
-  "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά.",
-  "mempoolErrorInvalidUrl": "Μη έγκυρη διεύθυνση URL διακομιστή. Εισαγάγετε έγκυρο domain ή διεύθυνση IP.",
   "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -10741,26 +9278,7 @@
   "swapRescueWalletHint": "Επιλέξτε πορτοφόλι",
   "swapRescueButton": "Επαναφορά",
   "swapRescueSuccess": "Η ανταλλαγή επαναφέρθηκε — θα συνεχιστεί τώρα",
-  "mempoolServerStatusOnline": "Σε λειτουργία",
-  "mempoolServerStatusOffline": "Εκτός λειτουργίας",
-  "mempoolServerStatusChecking": "Έλεγχος...",
   "mempoolServerStatusUnknown": "Άγνωστο",
-  "mempoolCustomServerSaveFailed": "Αποτυχία αποθήκευσης διακομιστή",
-  "mempoolCustomServerInfoDescription": "Οι διακομιστές mempool χρησιμοποιούνται για την εκτίμηση τελών και το άνοιγμα του block explorer κατά την προβολή λεπτομερειών συναλλαγής.",
-  "mempoolCustomServerUseSsl": "Χρήση SSL",
-  "mempoolCustomServerSslAutoDetected": "(Αυτόματος εντοπισμός)",
-  "mempoolCustomServerSslHelpText": "Για τοπικούς διακομιστές (.local, ιδιωτικές IP) και διακομιστές Tor (.onion), το SSL είναι συνήθως απενεργοποιημένο. Οι δημόσιες IP και τα domains θα πρέπει να χρησιμοποιούν SSL.",
-  "mempoolErrorSameAsDefault": "Αυτό το URL είναι ίδιο με τον προεπιλεγμένο διακομιστή. Χρησιμοποιήστε διαφορετικό URL.",
-  "mempoolErrorConnectionTimeout": "Η σύνδεση έληξε. Ο διακομιστής μπορεί να είναι αργός ή μη προσβάσιμος.",
-  "mempoolErrorHostNotFound": "Δεν είναι δυνατή η εύρεση αυτού του διακομιστή. Ελέγξτε το URL και δοκιμάστε ξανά.",
-  "mempoolErrorConnectionFailed": "Αδυναμία σύνδεσης με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο δίκτυο και δοκιμάστε ξανά.",
-  "mempoolErrorNotMempoolServer": "Αυτό το URL δεν φαίνεται να είναι διακομιστής mempool. Επαληθεύστε τη διεύθυνση.",
-  "mempoolErrorServerUnavailable": "Ο διακομιστής δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
-  "mempoolErrorServerError": "Ο διακομιστής αντιμετώπισε σφάλμα. Δοκιμάστε ξανά αργότερα.",
-  "mempoolErrorInvalidResponse": "Ο διακομιστής επέστρεψε μη έγκυρη απόκριση.",
-  "mempoolErrorSaveServerFailed": "Αποτυχία αποθήκευσης διακομιστή",
-  "mempoolErrorLoadFailed": "Αποτυχία φόρτωσης δεδομένων διακομιστή mempool",
-  "mempoolErrorDeleteFailed": "Αποτυχία διαγραφής προσαρμοσμένου διακομιστή",
   "receivePayjoinNoUtxos": "Λάβετε πρώτα κεφάλαια για να το ενεργοποιήσετε.\nΑπαιτούνται UTXOs για να χρησιμοποιήσετε το payjoin.",
   "payViewReceipt": "Προβολή απόδειξης",
   "paySinpeReceipt": "Απόδειξη SINPE",
@@ -10793,46 +9311,6 @@
   "sendCoordinatingPayjoinTransaction": "Συντονισμός συναλλαγής Payjoin.",
   "sendErrorInvoiceExpired": "Αυτό το invoice έχει λήξει. Ζητήστε ένα νέο invoice από τον παραλήπτη.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Σκεφτείτε να χρηματοδοτήσετε το Instant Payments για να κάνετε μικρότερες πληρωμές.",
-  "psbtFlowSignViaNfc": "Υπογραφή μέσω NFC",
-  "psbtFlowSignViaNfcSheetTitle": "Πλησιάστε το {deviceName} σας για να στείλετε το PSBT μέσω NFC",
-  "psbtFlowColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
-  "psbtFlowColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
-  "psbtFlowColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
-  "psbtFlowColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
-  "psbtFlowColdcardQStep3": "Επιλέξτε την προτιμώμενη μέθοδο υπογραφής:",
-  "psbtFlowColdcardQStep4": "Για κωδικό QR:",
-  "psbtFlowColdcardQStep5": "   - Επιλέξτε «Scan any QR code» στο Coldcard Q σας",
-  "psbtFlowColdcardQStep6": "   - Σαρώστε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
-  "psbtFlowColdcardQStep7": "   - Αν αντιμετωπίζετε πρόβλημα με τη σάρωση:",
-  "psbtFlowColdcardQStep8": "     - Αυξήστε τη φωτεινότητα της οθόνης της συσκευής σας",
-  "psbtFlowColdcardQStep9": "     - Μετακινήστε το κόκκινο λέιζερ πάνω-κάτω πάνω από τον κωδικό QR",
-  "psbtFlowColdcardQStep10": "     - Δοκιμάστε να απομακρύνετε λίγο τη συσκευή σας",
-  "psbtFlowColdcardQStep11": "Για NFC:",
-  "psbtFlowColdcardQStep12": "   - Επιλέξτε «Ready to Sign» στο Coldcard Q σας και μετά πατήστε το κουμπί NFC",
-  "psbtFlowColdcardQStep13": "   - Πλησιάστε το τηλέφωνό σας στο Coldcard Q",
-  "psbtFlowColdcardQStep14": "   - Περιμένετε να μεταφερθεί το PSBT",
-  "psbtFlowColdcardQStep15": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Q σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
-  "psbtFlowColdcardQStep16": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Q σας.",
-  "psbtFlowColdcardQStep17": "Το Coldcard Q θα εμφανίσει τότε έναν κωδικό QR της υπογεγραμμένης συναλλαγής ή θα προετοιμάσει τη μεταφορά μέσω NFC.",
-  "psbtFlowColdcardQStep18": "Αν υπογράψατε με QR, πατήστε «I'm done» στο πορτοφόλι Bull Bitcoin.",
-  "psbtFlowColdcardQStep19": "Το πορτοφόλι Bull Bitcoin θα σας ζητήσει να σαρώσετε τον κωδικό QR της υπογεγραμμένης συναλλαγής ή να χρησιμοποιήσετε NFC για να τη λάβετε.",
-  "psbtFlowColdcardQStep20": "   - Για QR: σαρώστε τον κωδικό QR στο Coldcard Q",
-  "psbtFlowColdcardQStep21": "   - Για NFC: πλησιάστε το τηλέφωνό σας στο Coldcard Q",
-  "psbtFlowColdcardQStep22": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
-  "psbtFlowColdcardQStep23": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
-  "psbtFlowColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
-  "psbtFlowColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
-  "psbtFlowColdcardMk4Step3": "Επιλέξτε «Ready to Sign» στο Coldcard Mk4 σας και μετά πατήστε το κουμπί με τον αριθμό 3",
-  "psbtFlowColdcardMk4Step4": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4",
-  "psbtFlowColdcardMk4Step5": "Περιμένετε να μεταφερθεί το PSBT",
-  "psbtFlowColdcardMk4Step6": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Mk4 σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
-  "psbtFlowColdcardMk4Step7": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Mk4 σας.",
-  "psbtFlowColdcardMk4Step8": "Το Coldcard Mk4 θα προετοιμάσει τότε την υπογεγραμμένη συναλλαγή για μεταφορά μέσω NFC.",
-  "psbtFlowColdcardMk4Step9": "Στο πορτοφόλι Bull Bitcoin, πατήστε NFC στην οθόνη μετάδοσης.",
-  "psbtFlowColdcardMk4Step10": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4 για να λάβετε την υπογεγραμμένη συναλλαγή.",
-  "psbtFlowColdcardMk4Step11": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step12": "Ελέγξτε τις λεπτομέρειες της συναλλαγής στο πορτοφόλι Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step13": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Πλησιάστε το Coldcard σας για να λάβετε την υπογεγραμμένη συναλλαγή μέσω NFC",
@@ -10877,11 +9355,9 @@
   "fundExchangeCopGeneratePaymentLink": "Δημιουργία συνδέσμου πληρωμής",
   "fundExchangeCopRedirectMessage": "Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.",
   "fundExchangeCopOpenPaymentLink": "Άνοιγμα συνδέσμου πληρωμής",
-  "priceChartFailedToLoad": "Αποτυχία φόρτωσης ιστορικού τιμών",
   "priceFailedToLoad": "Αποτυχία φόρτωσης τιμής",
   "statusScreenTryAgain": "Δοκιμάστε ξανά",
   "statusScreenContinue": "Συνέχεια",
-  "noteVisibleToSenderNotice": "Αυτή η σημείωση θα είναι ορατή στον παραλήπτη του QR ή του invoice σας.",
   "viewerAddressTab": "Διεύθυνση",
   "viewerPaymentUriTab": "URI πληρωμής",
   "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
@@ -10903,18 +9379,6 @@
   "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
   "sendSubSatVbyteWarning": "Οι συναλλαγές κάτω από 1 sat/vB ενδέχεται να χρειαστούν περισσότερο χρόνο για επιβεβαίωση και μπορεί να μην διαδοθούν σε όλους τους κόμβους.",
   "sendBelowMinFeeRateError": "Ο ρυθμός τέλους πρέπει να είναι τουλάχιστον 0.1 sat/vB.",
-  "bitboxErrorBluetoothPermissionDenied": "Απαιτείται άδεια Bluetooth για τη σύνδεση με το BitBox02 Nova σας.",
-  "bitboxErrorBluetoothUnavailable": "Το Bluetooth δεν είναι διαθέσιμο. Ενεργοποιήστε το Bluetooth και δοκιμάστε ξανά.",
-  "bitboxErrorNoBleDevicesFound": "Δεν βρέθηκε κοντινό BitBox02 Nova. Ελέγξτε το Bluetooth και δοκιμάστε ξανά.",
-  "bitboxErrorMultipleBleDevicesFound": "Βρέθηκαν πολλαπλές συσκευές BitBox02 Nova. Κρατήστε μόνο μία κοντά και δοκιμάστε ξανά.",
-  "bitboxErrorOperationFailed": "Η λειτουργία BitBox απέτυχε. Δοκιμάστε ξανά.",
-  "bitboxScreenConnectSubtextBluetooth": "Βεβαιωθείτε ότι το BitBox02 Nova σας είναι ξεκλείδωτο και ότι το Bluetooth είναι ενεργοποιημένο.",
-  "bitboxScreenScanningSubtextBluetooth": "Αναζήτηση του BitBox02 Nova σας σε κοντινή απόσταση...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "Αντιμετώπιση προβλημάτων BitBox02 Nova",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Αν η συσκευή σας εξακολουθεί να μη συνδέεται με την εφαρμογή, δοκιμάστε τα εξής:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο και επιτρέπεται για αυτή την εφαρμογή.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο στο BitBox02 Nova σας.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "Επανεκκινήστε το BitBox02 Nova σας και δοκιμάστε να συνδεθείτε ξανά.",
   "sendErrorInsufficientBalanceFrozenHint": "Δεν υπάρχει αρκετό διαθέσιμο υπόλοιπο — {amount} είναι παγωμένα. Ξεπαγώστε νομίσματα στη Διαχείριση νομισμάτων για να τα χρησιμοποιήσετε.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -10944,7 +9408,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Ενημέρωση για το Payjoin",
   "settingsPayjoinAdvancedTitle": "Σύνθετες ρυθμίσεις Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Το Liquid σας ανταλλάσσεται αυτόματα σε Bitcoin.",
   "addressViewErrorWalletNotFound": "Δεν βρέθηκε αυτό το πορτοφόλι.",
   "addressViewErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των διευθύνσεών σας. Δοκιμάστε ξανά.",
   "coreSwapsStatusNotStarted": "Δεν ξεκίνησε",
@@ -10959,19 +9422,6 @@
   "coreSwapsStatusUnknown": "Άγνωστο",
   "sendSwapExpiredTitle": "Η παραγγελία έληξε",
   "sendSwapExpiredMessage": "Αυτή η παραγγελία έληξε προτού σταλούν χρήματα. Δεν στάλθηκε τίποτα από το πορτοφόλι σας.",
-  "torSettingsStatusCensored": "Η σύνδεση φαίνεται φιλτραρισμένη",
-  "torSettingsDescCensored": "Το Tor δεν μπόρεσε να φτάσει στο δίκτυο. Αυτό συνήθως σημαίνει ότι η σύνδεση φιλτράρεται.",
-  "torSettingsBootstrapProgress": "Σύνδεση… {percent}%",
-  "torSettingsEmbeddedTitle": "Ενσωματωμένο Tor",
-  "torSettingsEmbeddedDescription": "Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion. Η υπόλοιπη κίνηση της εφαρμογής παραμένει άμεση.",
-  "torSettingsTransportMode": "Μέθοδος σύνδεσης",
-  "torSettingsModeAutomatic": "Αυτόματα",
-  "torSettingsModeDirect": "Άμεση",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Δοκιμάζει πρώτα άμεση σύνδεση Tor και χρησιμοποιεί το Snowflake αν το δίκτυο φαίνεται να μπλοκάρει το Tor.",
-  "torSettingsModeDirectDescription": "Συνδέεται απευθείας στο δίκτυο Tor, χωρίς pluggable transport.",
-  "torSettingsModeSnowflakeDescription": "Χρησιμοποιεί εθελοντικούς διαμεσολαβητές Snowflake για πρόσβαση στο Tor από φιλτραρισμένο δίκτυο.",
-  "torSettingsActiveTransport": "Ενεργή μεταφορά: {transport}",
   "settingsScreenPrivacyTitle": "Απόρρητο οθόνης",
   "settingsScreenPrivacyDisabledMessage": "Τα στιγμιότυπα οθόνης επιτρέπονται πλέον σε ευαίσθητες οθόνες",
   "settingsSearchHint": "Αναζήτηση ρυθμίσεων",
@@ -11006,11 +9456,7 @@
   "exchangeSupportChatLoadMessagesError": "Δεν ήταν δυνατή η φόρτωση των μηνυμάτων. Δοκιμάστε ξανά.",
   "exchangeSupportChatSendMessageError": "Δεν ήταν δυνατή η αποστολή του μηνύματός σας. Δοκιμάστε ξανά.",
   "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά.",
-  "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
-  "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα",
   "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "psbtFlowInvalidPsbtError": "Αυτή η συναλλαγή δεν μπόρεσε να διαβαστεί. Επιστρέψτε και δημιουργήστε την ξανά.",
-  "psbtFlowQrEncodingError": "Αυτή η συναλλαγή δεν μπόρεσε να μετατραπεί σε κωδικό QR.",
   "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
@@ -11042,15 +9488,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Αυτός ο τύπος αρχείου δεν γίνεται δεκτός. Επιλέξτε άλλο.",
   "exchangeSettingsErrorDocumentUnreadable": "Δεν ήταν δυνατή η ανάγνωση αυτού του αρχείου. Επιλέξτε άλλο.",
   "exchangeSettingsErrorUploadingDocument": "Δεν ήταν δυνατή η μεταφόρτωση του εγγράφου. Παρακαλώ δοκιμάστε ξανά.",
-  "labelsErrorNoteTooLong": "Η σημείωση δεν πρέπει να υπερβαίνει τους {max} χαρακτήρες",
-  "labelsErrorNoteForbiddenCharacter": "Η σημείωση δεν μπορεί να περιέχει τον χαρακτήρα {character}",
-  "labelsErrorFileTooLarge": "Αυτό το αρχείο είναι πολύ μεγάλο. Τα αρχεία ετικετών πρέπει να είναι μικρότερα από {max}.",
-  "labelsErrorFileUnreadable": "Αυτό δεν μοιάζει με αρχείο ετικετών BIP-329. Ελέγξτε ότι επιλέξατε το σωστό αρχείο.",
-  "labelsErrorFileEmpty": "Αυτό το αρχείο δεν περιέχει ετικέτες για εισαγωγή.",
-  "labelsErrorExportFailed": "Δεν ήταν δυνατή η αποθήκευση των ετικετών σας. Δοκιμάστε ξανά.",
-  "labelsErrorFileReservedName": "Αυτό το αρχείο χρησιμοποιεί όνομα ετικέτας που δεσμεύει η εφαρμογή. Μετονομάστε το στο αρχείο και δοκιμάστε ξανά.",
-  "labelsErrorNoteForbiddenWhitespace": "Η σημείωση δεν μπορεί να περιέχει αλλαγές γραμμής ή στηλοθέτες",
-  "labelsErrorFileInvalidEntry": "Ορισμένες καταχωρίσεις αυτού του αρχείου δεν μπόρεσαν να διαβαστούν. Ελέγξτε το αρχείο και δοκιμάστε ξανά.",
   "recipientsErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των παραληπτών σας. Δοκιμάστε ξανά.",
   "recipientsErrorSaveFailed": "Δεν ήταν δυνατή η αποθήκευση αυτού του παραλήπτη. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
   "recipientsErrorSinpeLookupFailed": "Δεν μπορέσαμε να επαληθεύσουμε αυτόν τον αριθμό τηλεφώνου. Ελέγξτε τον και δοκιμάστε ξανά.",
@@ -11228,11 +9665,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
   "settingsDarkModeTitle": "Σκούρα λειτουργία",
   "settingsSourceCodeTitle": "Πηγαίος κώδικας",
-  "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
-  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
-  "serverEncrypted": "Κρυπτογραφημένο",
-  "serverUnencrypted": "Μη κρυπτογραφημένο",
   "backgroundTasksTitle": "Εργασίες στο παρασκήνιο",
   "blockedInSystemSettings": "Αποκλείστηκε στις ρυθμίσεις συστήματος",
   "notificationsBlockedMessage": "Οι ειδοποιήσεις έχουν αποκλειστεί στις ρυθμίσεις συστήματος.",

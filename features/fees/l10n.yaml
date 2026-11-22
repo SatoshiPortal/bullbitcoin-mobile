@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: fees_en.arb
+output-localization-file: fees_localizations.dart
+output-class: FeesLocalizations
+output-dir: lib/generated/l10n
+untranslated-messages-file: untranslated-messages.txt

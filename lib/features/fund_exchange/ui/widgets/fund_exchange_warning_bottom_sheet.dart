@@ -1,0 +1,195 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_scam_warning_card.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullText,
+        BullButton,
+        BullFadingLinearProgress,
+        BullShapesX,
+        Gap,
+        BullTypographyX;
+
+class FundExchangeWarningBottomSheet extends StatefulWidget {
+  const FundExchangeWarningBottomSheet({super.key});
+
+  @override
+  State<FundExchangeWarningBottomSheet> createState() =>
+      _FundExchangeWarningBottomSheetState();
+}
+
+class _FundExchangeWarningBottomSheetState
+    extends State<FundExchangeWarningBottomSheet> {
+  bool _hasConfirmedNoCoercion = false;
+  late StreamSubscription<FundExchangeState> _blocSubscription;
+  bool _isLoading = false;
+  FundExchangeFailure? _submitConsentFailure;
+
+  @override
+  void initState() {
+    super.initState();
+    _blocSubscription = context.read<FundExchangeBloc>().stream.listen((state) {
+      if (!mounted) return;
+      final isLoading =
+          state.isSubmittingScamWarningConsent ||
+          state.isLoadingFundingDetails ||
+          state.isLoadingFundingInstitutions;
+      if (isLoading != _isLoading) {
+        setState(() => _isLoading = isLoading);
+      }
+      if (state.submitScamWarningConsentFailure != _submitConsentFailure) {
+        setState(
+          () => _submitConsentFailure = state.submitScamWarningConsentFailure,
+        );
+      }
+      // Close the bottom sheet once the API call triggered after consent
+      // completes (successfully or with an error). The parent route's listeners
+      // handle onward navigation.
+      final dataReady =
+          state.fundingDetails != null || state.fundingInstitutions != null;
+      final dataError =
+          state.getFundingDetailsFailure != null ||
+          state.listFundingInstitutionsFailure != null;
+      if (dataReady || dataError) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _blocSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // The sheet is opened with `isScrollControlled: true`, so it may grow to
+    // the full screen height. The warning content scrolls while the consent
+    // checkbox and the continue button stay pinned below it, so the primary
+    // action is always reachable regardless of screen size or locale text
+    // length.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        BullFadingLinearProgress(
+          height: 3,
+          trigger: _isLoading,
+          backgroundColor: context.appColors.surface,
+          foregroundColor: context.appColors.primary,
+        ),
+        Flexible(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: context.appColors.tertiary,
+                  child: Icon(
+                    Icons.shield_outlined,
+                    size: 28,
+                    color: context.appColors.onSurface,
+                  ),
+                ),
+                const Gap(8.0),
+                BullText(
+                  context.loc.fundExchangeWarningTitle,
+                  style: context.bullType.headline,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(4.0),
+                BullText(
+                  context.loc.fundExchangeWarningDescription,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(16.0),
+                const FundExchangeScamWarningCard(),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          // `useSafeArea` on the modal only pads the top (status bar); the
+          // bottom system padding (iOS home indicator, Android gesture bar)
+          // is left to the content, so add it here to keep the continue
+          // button out of the system gesture zone when the sheet is full
+          // height. There is no text field in this sheet, so the keyboard
+          // inset is not needed.
+          padding: EdgeInsets.fromLTRB(
+            16.0,
+            16.0,
+            16.0,
+            MediaQuery.paddingOf(context).bottom + 16.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CheckboxListTile(
+                tileColor: context.appColors.secondaryFixedDim,
+                contentPadding: const EdgeInsets.all(8.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
+                ),
+                value: _hasConfirmedNoCoercion,
+                onChanged: _isLoading
+                    ? null
+                    : (value) {
+                        if (value == null) return;
+                        setState(() {
+                          _hasConfirmedNoCoercion = value;
+                        });
+                      },
+                title: BullText(
+                  context.loc.fundExchangeWarningConfirmation,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              const Gap(16.0),
+              if (_submitConsentFailure != null) ...[
+                BullText(
+                  // Through the sealed extension, not a hardcoded key, so the
+                  // sheet cannot drift from the failure's own message.
+                  _submitConsentFailure!.toTranslated(context),
+                  style: context.bullType.body,
+                  color: theme.colorScheme.error,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(8.0),
+              ],
+              BullButton.primary(
+                label: context.loc.fundExchangeContinueButton,
+                onPressed: (!_hasConfirmedNoCoercion || _isLoading)
+                    ? null
+                    : () {
+                        if (_hasConfirmedNoCoercion) {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.scamWarningConsentSubmitted(),
+                          );
+                        }
+                      },
+              ),
+              const Gap(8.0),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

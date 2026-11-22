@@ -6,10 +6,6 @@
   "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
   "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
   "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
-  "bitboxErrorMultipleDevicesFound": "Birçok BitBox cihazı bulundu. Lütfen sadece bir cihazın bağlantılı olmasını sağlayın.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
   "payTransactionBroadcast": "İşlem Yayınları",
   "@payTransactionBroadcast": {
     "description": "Success message after broadcasting"
@@ -50,18 +46,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "Zamanout pozitif olmalıdır",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "bitboxScreenNeedHelpButton": "Yardıma mı ihtiyacınız var?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
-  },
   "sellSendPaymentAboveMax": "Bu cüzdanla satılabilecek maksimum miktarın üzerinde satmaya çalışıyorsunuz.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -77,10 +61,6 @@
   "transactionDetailLabelTransactionFee": "İşlem Ücreti",
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
-  },
-  "jadeStep13": "Bull Bitcoin cüzdanı, Jade'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
   },
   "transactionSwapDescLnSendPending": "Değişiminiz başlatılmıştır. Paralarınızı kilitlemek için on zincir işlemi yayınlıyoruz.",
   "@transactionSwapDescLnSendPending": {
@@ -114,17 +94,9 @@
   "@exchangeDcaUnableToGetConfig": {
     "description": "Error message when DCA configuration cannot be retrieved"
   },
-  "psbtFlowClickScan": "Click Scan",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
   "sellInstitutionNumber": "Kurum Numarası",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
-  },
-  "mempoolSettingsCustomServer": "Özel Sunucu",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "fundExchangeMethodRegularSepa": "Düzenli SEPAPA",
   "@fundExchangeMethodRegularSepa": {
@@ -142,10 +114,6 @@
   "@importQrDeviceKruxStep3": {
     "description": "Krux instruction step 3"
   },
-  "passportStep1": "Pasaport cihazınıza giriş",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "sellAdvancedOptions": "Gelişmiş seçenekler",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -153,10 +121,6 @@
   "exchangeFileUploadSuccess": "Dosya başarıyla yüklendi",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "Kaydet",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "Bu başka birinin hesabı",
   "@withdrawOwnershipOtherAccount": {
@@ -169,10 +133,6 @@
   "receiveGenerateAddress": "Genrate New Address",
   "@receiveGenerateAddress": {
     "description": "Button to create new on-chain address"
-  },
-  "kruxStep3": "Click PSBT",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "hwColdcardQ": "Coldcard Q",
   "@hwColdcardQ": {
@@ -204,11 +164,6 @@
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
-  "electrumServerAlreadyExists": "Bu sunucu zaten var",
-  "electrumServerUnreachable": "Sunucuya ulaşılamıyor. Adresi kontrol edip tekrar deneyin.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
   "sellPaymentMethod": "Ödeme Yöntemi",
   "@sellPaymentMethod": {
     "description": "Section for selecting how to receive fiat"
@@ -236,10 +191,6 @@
   "sellSendPaymentExchangeRate": "Değişim oranı",
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
-  },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
   },
   "fundExchangeSinpeTitle": "SINPE Transfer Transfer",
   "@fundExchangeSinpeTitle": {
@@ -286,10 +237,6 @@
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
   },
-  "bitboxScreenTroubleshootingStep2": "Telefonunuzun USB izinlerine izin verdiğinden emin olun.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Lütfen bir ücret oranını seçin",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -314,10 +261,6 @@
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "kruxStep7": "   - Cihazınızda ekran parlaklığı artırmak",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
   "exchangeStatisticsBuySellRatio": "Buy/Sell Oran",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
@@ -330,17 +273,9 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "jadeStep11": "Jade size kendi QR kodunu gösterecektir.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
   "buyConfirmExternalWallet": "Dış Bitcoin cüzdanı",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "bitboxActionPairDeviceProcessing": "Pairing Device",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
   },
   "exchangeCurrencyDropdownTitle": "Para Seç",
   "@exchangeCurrencyDropdownTitle": {
@@ -373,10 +308,6 @@
   "dcaLightningAddressInvalidError": "Lütfen geçerli bir Lightning adresi girin",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "ledgerButtonNeedHelp": "Yardıma mı ihtiyacınız var?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
   },
   "backupInstruction4": "Yedeklemenizin dijital kopyalarını yapmayın. Bir kağıda yazın veya metale kazın.",
   "@backupInstruction4": {
@@ -422,10 +353,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "electrumTitle": "Electrum Server Ayarları",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
   "importQrDeviceJadeStep7": "Gerekirse, adresi türü değiştirmek için \"ops\" seçeneğini seçin",
   "@importQrDeviceJadeStep7": {
     "description": "Jade instruction step 7"
@@ -451,14 +378,6 @@
   "swapInsufficientFunds": "Yetersiz bakiye",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "ledgerImportButton": "Başlayın",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
-  "bitboxActionPairDeviceButton": "Başlangıç",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
   },
   "importQrDeviceSpecterName": "Specter",
   "@importQrDeviceSpecterName": {
@@ -546,10 +465,6 @@
   "@testBackupWriteDownPhrase": {
     "description": "Main instruction header for physical backup screen"
   },
-  "jadeStep8": "   - Cihazınızı daha yakın veya daha fazla hareket etmeye çalışın",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
-  },
   "payNotLoggedIn": "Logged In",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
@@ -581,15 +496,6 @@
   "coreWalletTransactionStatusPending": "Pending",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
-  },
-  "ledgerActionFailedMessage": "{action} Başarısız",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeLabelBankAccountCountry": "Banka hesabı ülke",
   "@fundExchangeLabelBankAccountCountry": {
@@ -673,25 +579,9 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "Canlı destek almak için önce Bull Bitcoin hesabınıza giriş yapmanız gerekir. Tamamen ücretsizdir ve KYC gerekmez, sadece bir e-posta adresi yeterlidir.",
-  "seedsignerStep12": "Bull Bitcoin cüzdanı, SeedSigner'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
   "buyAboveMaxAmountError": "Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.",
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
-  },
-  "electrumTimeoutWarning": "Saatiniz ({timeoutValue} saniye) bu Dur Gap için önerilen değerden ({recommended} saniye) daha düşük.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
   },
   "sendShowPsbt": "Göster PSBT",
   "@sendShowPsbt": {
@@ -708,10 +598,6 @@
   "hwJade": "Blockstream Jade",
   "@hwJade": {
     "description": "Name of Blockstream Jade hardware wallet"
-  },
-  "keystoneStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
   },
   "exchangeStatisticsTitle": "İstatistikler İstatistik",
   "@exchangeStatisticsTitle": {
@@ -780,14 +666,6 @@
   "@payNetworkFees": {
     "description": "Label for network fees amount"
   },
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenConnectingSubtext": "Güvenli bağlantı kurmak...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
   "receiveShareAddress": "Share Address",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
@@ -799,10 +677,6 @@
   "sharedWithBullBitcoin": "bull Bitcoin ile paylaşılan.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
-  },
-  "jadeStep7": "   - QR kodunu sürekli tutun ve merkezied",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
   },
   "sendCouldNotBuildTransaction": "İşlem Yapıyamadı",
   "@sendCouldNotBuildTransaction": {
@@ -820,10 +694,6 @@
   "@fundExchangeSinpeWarningNoBitcoin": {
     "description": "Bold warning text at start of bitcoin warning message"
   },
-  "ledgerHelpStep3": "Ledger’in Bluetooth’un ortaya çıktığını emin olun.",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
-  },
   "coreSwapsChainFailedRefunding": "Takas kısa süre içinde iade edilecek.",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
@@ -835,10 +705,6 @@
   "sellKYCRejected": "APC doğrulama reddedildi",
   "@sellKYCRejected": {
     "description": "Error when verification fails"
-  },
-  "electrumNetworkLiquid": "Sıvı",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
   },
   "buyBelowMinAmountError": "Minimum miktarın altında satın almaya çalışıyorsunuz.",
   "@buyBelowMinAmountError": {
@@ -856,14 +722,6 @@
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
   },
-  "bitboxActionImportWalletSuccessSubtext": "BitBox cüzdanınız başarıyla ithal edilmiştir.",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
-  "electrumEmptyFieldError": "Bu alan boş olamaz",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
   "transactionStatusPaymentInProgress": "İlerlemede Ödeme",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -880,10 +738,6 @@
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
   },
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
-  },
   "bip85Mnemonic": "Mnemonik",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -899,18 +753,6 @@
   "fundExchangeBankTransferWireTitle": "Banka transferi (tel)",
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
-  },
-  "psbtFlowPartProgress": "Bölüm {current} / {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
   },
   "receiveShareInvoice": "Share In bill",
   "@receiveShareInvoice": {
@@ -936,10 +778,6 @@
   "@importWatchOnlyYpub": {
     "description": "Label for ypub import method"
   },
-  "ledgerVerifyTitle": "Adresi Ledger",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
-  },
   "exchangeDcaNetworkBitcoin": "Bitcoin Network",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -947,10 +785,6 @@
   "autoswapWarningTitle": "Autoswap aşağıdaki ayarlarla etkinleştirilir:",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
-  },
-  "seedsignerStep1": "SeedSigner cihazınızı açın",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
   },
   "backupWalletHowToDecideBackupLosePhysical": "İnsanların Bitcoin’i kaybetmesinin en yaygın yollarından biri, fiziksel yedeklemeyi kaybederler. Fiziksel yedeklemenizi bulan herhangi biri tüm Bitcoin'inizi alabilir. Onu iyi saklayabileceğinize ve asla kaybetmeme çok eminseniz, iyi bir seçenek.",
   "@backupWalletHowToDecideBackupLosePhysical": {
@@ -1003,14 +837,6 @@
   "payPaymentInProgress": "İlerlemede Ödeme!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "ledgerProcessingSign": "Kayıt İşlemleri",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
-  },
-  "jadeStep6": "   - Cihazınızda ekran parlaklığı artırmak",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
   },
   "fundExchangeETransferLabelEmail": "E-transferi bu e-postaya gönderin",
   "@fundExchangeETransferLabelEmail": {
@@ -1080,10 +906,6 @@
   "payPayoutMethod": "Payout yöntemi",
   "@payPayoutMethod": {
     "description": "Label for payout method section"
-  },
-  "ledgerVerifyButton": "Verify Address",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
   },
   "sendErrorSwapFeesNotLoaded": "Swap ücretleri yüklenmez",
   "@sendErrorSwapFeesNotLoaded": {
@@ -1160,10 +982,6 @@
   "@replaceByFeeCustomFeeTitle": {
     "description": "Title for custom fee input section"
   },
-  "kruxStep14": "Bull Bitcoin cüzdanı, Krux'taki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
   "payAvailableBalance": "Var: {amount}",
   "@payAvailableBalance": {
     "description": "Label showing available wallet balance",
@@ -1205,10 +1023,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
   "paySelectRecipient": "Alıcıyı seçin",
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
@@ -1229,29 +1043,13 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "bitboxScreenEnterPasswordSubtext": "Please enter your password on the BitBox device to keep.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "Kamerayı açın",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
   },
-  "passportStep11": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
-  },
   "sendSwapId": "Swap ID",
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
-  },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
   },
   "fundExchangeAccountTitle": "Hesabınızı finanse edin",
   "@fundExchangeAccountTitle": {
@@ -1281,15 +1079,6 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "psbtFlowScanDeviceQr": "Bull Bitcoin cüzdanı, QR kodunu {device} taramanızı isteyecektir. Bunu yorumlayın.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailedMessage": "Bir hata oluştu, lütfen tekrar giriş yapmaya çalışın.",
   "@exchangeAuthLoginFailedMessage": {
     "description": "Message shown when exchange login fails"
@@ -1297,10 +1086,6 @@
   "okButton": "TAMAM TAMAM",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "passportStep13": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
   },
   "importQrDeviceKeystoneStep3": "Tap the - (üç dots) in the top-right köşesinde",
   "@importQrDeviceKeystoneStep3": {
@@ -1346,10 +1131,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Hazır",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "Not",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1357,10 +1138,6 @@
   "payLightningNetwork": "Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "ledgerSuccessVerifyTitle": "Ledger'de adresleme ...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
   },
   "payCorporateNameHint": "Şirket adı girin",
   "@payCorporateNameHint": {
@@ -1382,10 +1159,6 @@
   "@sellAccountName": {
     "description": "Label for bank account holder name"
   },
-  "statusCheckUnknown": "Bilinmeyen",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "howToDecideVaultLocationText2": "Özel bir yer, seçtiğiniz yere bağlı olarak çok daha güvenli olabilir. Ayrıca yedekleme dosyasını kaybetmemek veya yedekleme dosyasınınızın depolandığı cihazı kaybetmekten emin olmalısınız.",
   "@howToDecideVaultLocationText2": {
     "description": "Second paragraph explaining custom location benefits"
@@ -1397,10 +1170,6 @@
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Bu eşsiz hesap numarası sadece sizin için yaratıldı",
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
-  },
-  "psbtFlowReadyToBroadcast": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
   },
   "sendErrorLiquidWalletRequired": "Sıvı cüzdan, yıldırım değişimi için sıvı kullanılmalıdır",
   "@sendErrorLiquidWalletRequired": {
@@ -1422,10 +1191,6 @@
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep5": "   - Cihazınızda ekran parlaklığı artırmak",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
   "transactionSwapDescLnReceiveExpired": "Bu değişim sona erdi. Gönderilen herhangi bir fon otomatik olarak göndericiye iade edilecektir.",
   "@transactionSwapDescLnReceiveExpired": {
     "description": "Description for expired Lightning receive swap"
@@ -1433,14 +1198,6 @@
   "sellKYCApproved": "APC onaylandı",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "passportInstructionsTitle": "Vakıf Pasaport Kuralları",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
-  },
-  "ledgerSuccessImportTitle": "Cüzdan Başarılı Bir Şekilde Üretildi",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
   },
   "physicalBackupTitle": "Fiziksel yedekleme",
   "@physicalBackupTitle": {
@@ -1469,10 +1226,6 @@
   "totalFeeLabel": "Toplam Ücret",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Özel mempool sunucunuzun URL'sini girin. Sunucu tasarruf etmeden önce onaylanacaktır.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "Bu cüzdanla satılabilecek minimum miktarın altında satmaya çalışıyorsunuz.",
   "@sellBelowMinAmountError": {
@@ -1538,15 +1291,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} ithal edilen etiketler",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "From",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1554,10 +1298,6 @@
   "sendTransactionBuilt": "İşlem hazır",
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
-  },
-  "bitboxErrorOperationCancelled": "Operasyon iptal edildi. Lütfen tekrar deneyin.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
   },
   "withdrawConfirmCard": "Kart Kartı",
   "@withdrawConfirmCard": {
@@ -1624,10 +1364,6 @@
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
   },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT Talimatlar",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
   "scanNfcButton": "Scan NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -1645,10 +1381,6 @@
       }
     }
   },
-  "systemLabelExchangeBuy": "Satın Al Satın Al",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
-  },
   "sendRecipientAddress": "Recipient's address",
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
@@ -1656,15 +1388,6 @@
   "exchangeAmountInputValidationInsufficient": "Yeterli bakiye",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
-  },
-  "psbtFlowReviewTransaction": "İşlem sizin {device}'inizde ithal edildikten sonra, varış adresini ve miktarı gözden geçirin.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "broadcastSignedTxCameraButton": "Kamera",
   "@broadcastSignedTxCameraButton": {
@@ -1702,17 +1425,9 @@
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
-  "psbtFlowIncreaseBrightness": "Cihazınızda ekran parlaklığı artırmak",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
-  },
   "payCoinjoinCompleted": "CoinJoin tamamlandı",
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
-  },
-  "electrumAddCustomServer": "Add private Server",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
   },
   "rbfSatsPerVbyte": "satmak/vB",
   "@rbfSatsPerVbyte": {
@@ -1756,17 +1471,9 @@
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
   },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
-  },
   "sellSendPaymentFeePriority": "Ücret Önceliği",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
-  },
-  "bitboxActionSignTransactionProcessing": "Kayıt İşlemleri",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
   },
   "sellWalletBalance": "Denge: {amount}",
   "@sellWalletBalance": {
@@ -1836,10 +1543,6 @@
   "walletDeletionConfirmationCancelButton": "Cancel",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "ledgerErrorDeviceLocked": "Ledger cihazı kilitlidir. Lütfen cihazınızı açın ve tekrar deneyin.",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
   },
   "importQrDeviceSeedsignerStep5": "\"Single Sig\" seçeneğini seçin, sonra tercih edilen senaryo türünü seçin (daha emin değilseniz Yerli Segwit).",
   "@importQrDeviceSeedsignerStep5": {
@@ -1911,10 +1614,6 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "bip329LabelsImportSuccessSingular": "1 etiket ithal edildi",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
   "payBillerName": "Biller Name",
   "@payBillerName": {
     "description": "Label for biller name field"
@@ -1973,10 +1672,6 @@
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
   },
-  "ledgerHelpStep4": "Bitcoin uygulamasının son versiyonunu Ledger Live'dan yükledikten emin olun.",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
-  },
   "broadcastSignedTxBroadcast": "Yayın Yayın Yayını",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2003,10 +1698,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "Bağlantı Durumu",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "12 kelime yedeklemenizi kaybederseniz, Bitcoin Wallet'e erişmek mümkün olmayacaktır.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -2027,10 +1718,6 @@
   "exchangeStatisticsAveragePrice": "Ortalama fiyat",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
-  },
-  "ledgerSuccessSignDescription": "İşleminiz başarıyla imzalanmıştır.",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
   },
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
@@ -2109,10 +1796,6 @@
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
   },
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
   "transactionDetailTransferProgress": "Takas İlerlemesi",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
@@ -2176,14 +1859,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "Lütfen bir port numarası girin",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
-  "ledgerHelpStep1": "Ledger cihazınızı yeniden başlatın.",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
-  },
   "swapAvailableBalance": "Mevcut denge dengesi",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -2191,14 +1866,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Ödeme Açıklama",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "ledgerConnectingSubtext": "Güvenli bağlantı kurmak...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
-  },
-  "electrumPrivacyNoticeCancel": "Cancel",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "Swap henüz başlangıç değildir.",
   "@coreSwapsLnSendPending": {
@@ -2228,10 +1895,6 @@
   "receiveGenerateInvoice": "Genrate In bill",
   "@receiveGenerateInvoice": {
     "description": "Button to create Lightning invoice"
-  },
-  "kruxStep8": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
   },
   "coreScreensFeeDeductionExplanation": "Bu, gönderilen miktarın toplam ücretidir",
   "@coreScreensFeeDeductionExplanation": {
@@ -2290,10 +1953,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". Fonlar hesap bakiyenize eklenecektir.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2330,10 +1989,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Miras İşlemleri",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Bu uyarıyı tekrar göstermeyin.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -2345,10 +2000,6 @@
   "recoverWalletButton": "Recover Cüzdan",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "Bu özel mempool sunucuyu silmek istediğinizden emin misiniz? Varsayılan sunucu bunun yerine kullanılacaktır.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Cihazınızda ekran parlaklığı artırmak",
   "@coldcardStep6": {
@@ -2406,10 +2057,6 @@
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
-  "kruxStep15": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
   "exchangeStatisticsVolume": "Cilt",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
@@ -2417,10 +2064,6 @@
   "fundExchangeETransferLabelSecretQuestion": "Gizli soru",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "jadeStep15": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "confirmButton": "Onay Onay Onay Onaylandı",
   "@confirmButton": {
@@ -2433,10 +2076,6 @@
   "payActualFee": "Actual Fee",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate Domain",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "Cihazınızın en son donanıma güncel olduğundan emin olun",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2457,10 +2096,6 @@
   "sendSigningFailed": "İmzalama başarısız oldu",
   "@sendSigningFailed": {
     "description": "Error during hardware wallet signing"
-  },
-  "bitboxErrorDeviceNotPaired": "Cihaz çiftleştirilmedi. Lütfen ilk önce çiftleşme sürecini tamamlamak.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
   },
   "transferIdLabel": "Transfer ID",
   "@transferIdLabel": {
@@ -2558,10 +2193,6 @@
   "@testBackupAllWordsSelected": {
     "description": "Message shown when user has selected all 12 words"
   },
-  "ledgerProcessingImportSubtext": "Saat-sadece cüzdanınızı kurmak...",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
-  },
   "digitalCopyLabel": "Dijital kopya",
   "@digitalCopyLabel": {
     "description": "Label for digital copy (with X mark)"
@@ -2585,10 +2216,6 @@
   "paySecurityAnswerHint": "Güvenlik cevabı girin",
   "@paySecurityAnswerHint": {
     "description": "Hint for security answer input"
-  },
-  "bitboxActionImportWalletTitle": "İthalat BitBox Wallet",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
   },
   "backupSettingsError": "Hata hatası",
   "@backupSettingsError": {
@@ -2634,15 +2261,6 @@
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
   },
-  "electrumInvalidRetryError": "Invalid Retry Sayı değeri: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "Network Select Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2663,10 +2281,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "Port Number",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "Alıcı adı girin",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2679,10 +2293,6 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "electrumReset": "Reset",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "payInsufficientBalanceError": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
   "@payInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
@@ -2691,21 +2301,9 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "psbtFlowInstructions": "Talimatlar",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
-  "systemLabelExchangeSell": "Sat Satış Sat",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "Yüksek ücret uyarı uyarısı",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "Dur Gap negatif olamaz",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "Send Send Send Gönder",
   "@walletButtonSend": {
@@ -2715,17 +2313,9 @@
   "@importColdcardInstructionsStep9": {
     "description": "ImportColdcardQ: Ninth instruction step"
   },
-  "bitboxScreenTroubleshootingStep1": "BitBox'da yüklü en son bilgisayarınız olduğundan emin olun.",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
   "backupSettingsExportVault": "Export Vault",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
-  },
-  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
   },
   "autoswapInfoSettingsButton": "Configure ayarları",
   "@autoswapInfoSettingsButton": {
@@ -2755,34 +2345,9 @@
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
   },
-  "labelDeleteFailed": "\"{label}'ı silemez. Lütfen tekrar deneyin.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "kruxStep16": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
   "exchangeDcaCancelDialogConfirmButton": "Evet, deactivate",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} Sunucu URL'si",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "E-posta adresi girin",
   "@payEmailHint": {
@@ -2795,10 +2360,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google, bu uygulama ile kişisel bilgileri paylaşmanızı isteyecektir.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "bitboxScreenVerifyAddressSubtext": "BitBox02 ekran ile bu adresi karşılaştırın",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
   },
   "importQrDeviceSeedsignerStep9": "SeedSigner cüzdanınız için bir etiket girin ve Import",
   "@importQrDeviceSeedsignerStep9": {
@@ -2878,14 +2439,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Sunucuları yüklemek için başarısız oldu ",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "ledgerVerifyAddressLabel": "Doğrulama Adresi:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "E-posta Bildirimleri",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2902,10 +2455,6 @@
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
   },
-  "jadeStep1": "Jade cihazınıza giriş",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
   "exchangeAuthOk": "TAMAM TAMAM",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -2913,10 +2462,6 @@
   "settingsSecurityPinTitle": "Güvenlik Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "psbtFlowTroubleScanningTitle": "Bir sorun taramanız varsa:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
   },
   "importQrDeviceJadeStep9": "Cihazınızda gördüğünüz QR kodunu tara.",
   "@importQrDeviceJadeStep9": {
@@ -2938,17 +2483,9 @@
   "@exchangeKycLight": {
     "description": "Light KYC level label"
   },
-  "seedsignerInstructionsTitle": "SeedSigner Talimatlar",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
   "exchangeAmountInputValidationEmpty": "Lütfen bir miktar girin",
   "@exchangeAmountInputValidationEmpty": {
     "description": "Validation message when amount field is empty"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "Lütfen BitBox cihazınızdaki çift kodu doğrulayın...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
   },
   "backupInstruction3": "12 kelime yedeklemenize erişimli herhangi biri bitcoinlerinizi çalabilir. İyi bir şekilde Gizlen.",
   "@backupInstruction3": {
@@ -2969,10 +2506,6 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
-  },
-  "electrumAdvancedOptions": "Gelişmiş Seçenekler",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
   },
   "autoswapWarningCardSubtitle": "Bir takas, Instant Payments bakiyenizin 0.02 BTC'yi aştığını tetiklenecektir.",
   "@autoswapWarningCardSubtitle": {
@@ -2998,10 +2531,6 @@
   "@payFilterPayments": {
     "description": "Button to filter payment list"
   },
-  "electrumCancel": "Cancel",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
   "exchangeFileUploadButton": "Download",
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
@@ -3014,10 +2543,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
   "broadcastSignedTxPushTxButton": "PushTx",
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
@@ -3029,10 +2554,6 @@
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE kullanarak Transfer Kolonleri",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
-  },
-  "kruxStep2": "Click Sign",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "fundExchangeArsBankTransferDescription": "Aşağıdaki tam Arjantin banka bilgilerini kullanarak banka hesabınızdan bir banka transfer gönderin.",
   "@fundExchangeArsBankTransferDescription": {
@@ -3061,10 +2582,6 @@
   "pinProtectionDescription": "PIN'iniz cüzdanınız ve ayarlarınıza erişimi korur. Onu unutulmaz tut.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "kruxStep5": "Bull cüzdanında gösterilen QR kodu",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
   },
   "backupSettingsLabelsButton": "Etiketler",
   "@backupSettingsLabelsButton": {
@@ -3178,10 +2695,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "seedsignerStep11": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
   "transactionDetailLabelPayjoinStatus": "Payjoin statüsü",
   "@transactionDetailLabelPayjoinStatus": {
     "description": "Label for payjoin status"
@@ -3230,10 +2743,6 @@
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "bitboxErrorConnectionFailed": "BitBox cihazına bağlanmak için başarısız oldu. Lütfen bağlantınızı kontrol edin.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
   "exchangeFileUploadDocumentTitle": "Herhangi bir belge yükleme",
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
@@ -3269,14 +2778,6 @@
   "payBumpFee": "Bump Fee",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "Saat-sadece cüzdanınızı kurmak...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "psbtFlowDone": "Ben yaptım",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
   },
   "exchangeHomeDepositButton": "Deposit",
   "@exchangeHomeDepositButton": {
@@ -3354,10 +2855,6 @@
   "fundExchangeWarningConfirmation": "Bitcoin'i başka biri tarafından satın almamı istemediğimi doğrulıyorum.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
   },
   "confirmSendTitle": "Onay Gönder",
   "@confirmSendTitle": {
@@ -3478,10 +2975,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Exchange Hesap Ayarları",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "{maxFiles} dosyalarına yük. İzinli formatlar: PDF, JPG, GIF, HEIC. Maksimum dosya büyüklüğü: dosya başına 10MB.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3498,10 +2991,6 @@
   "backupWalletVaultProviderTakeYourTime": "Zamanınızı alın",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
-  },
-  "ledgerWalletTypeSegwitDescription": "Yerli SegWit - Önerilen",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
   },
   "exchangeAccountInfoFirstNameLabel": "İlk adı",
   "@exchangeAccountInfoFirstNameLabel": {
@@ -3539,17 +3028,9 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "Dur Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "Yayınlama işlemi...",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
-  },
-  "bip329LabelsImportButton": "İthalat Etiketler",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
   },
   "exchangeFileUploadAllSuccess": "Tüm dosyalar başarıyla yüklendi",
   "@exchangeFileUploadAllSuccess": {
@@ -3574,10 +3055,6 @@
   "copyDialogButton": "Kopya kopya",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
-  },
-  "bitboxActionImportWalletProcessing": "İthalat",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
   },
   "swapConfirmTransferTitle": "Takası Onayla",
   "@swapConfirmTransferTitle": {
@@ -3606,10 +3083,6 @@
   "transactionDetailLabelExchangeRate": "Değişim oranı",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "sendTransferFee": "Takas Ücreti",
   "@sendTransferFee": {
@@ -3647,10 +3120,6 @@
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep3": "Bull cüzdanında gösterilen QR kodu",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "sellErrorLoadUtxos": "UTXOs'u yüklemek için başarısız oldu: {error}",
   "@sellErrorLoadUtxos": {
     "description": "Error message when loading UTXOs fails",
@@ -3669,31 +3138,9 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "Dur Gap çok yüksek görünüyor. (Max. {maxStopGap}",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "Zamanout çok yüksek görünüyor. (Max. {maxTimeout} saniyeler)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "Anında ödeme",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
-  },
-  "priceChartFetchingHistory": "Fetching Price History...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
   },
   "sellDone": "Done",
   "@sellDone": {
@@ -3719,10 +3166,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "passportStep6": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
   "importQrDeviceSpecterStep8": "Mobil cihazınızda, Open Camera",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
@@ -3735,14 +3178,6 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "electrumDragToReorder": "(Danışman ve değişim önceliği değiştirmek için uzun basın)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "keystoneStep4": "Bir sorun taramanız varsa:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
-  },
   "autoswapTriggerAtBalanceInfoText": "Autoswap, bakiyenizin bu maksimum dengenin üzerinde gittiğinde tetiklenecektir.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
@@ -3754,10 +3189,6 @@
   "sendCustomFeeRate": "Özel Ücret Puanı",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
-  },
-  "ledgerHelpTitle": "Ledger Troubleshooting",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
   },
   "swapErrorAmountExceedsMaximum": "Maliyet maksimum takas miktarı aşıyor",
   "@swapErrorAmountExceedsMaximum": {
@@ -3803,10 +3234,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "psbtFlowMoveBack": "Cihazınızı biraz geri hareket etmeye çalışın",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
   "exchangeReferralsContactSupportMessage": "Tavsiye programımız hakkında bilgi edinmek için iletişim desteği",
   "@exchangeReferralsContactSupportMessage": {
     "description": "Message prompting users to contact support about the referral program"
@@ -3815,17 +3242,9 @@
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
   },
-  "exchangeAccountTitle": "Değişim Hesabı",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
   "swapProgressCompleted": "Takas tamamlandı",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
-  },
-  "keystoneStep2": "Click Scan",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
   },
   "sendContinue": "Devam etmeye devam et",
   "@sendContinue": {
@@ -3877,14 +3296,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "Recipients - Yakında Geliyor",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
-  "ledgerWalletTypeLabel": "Cüzdan Türü:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
-  },
   "bip85ExperimentalWarning": "Deneysel\nTürleme yollarınızı manuel olarak yedekleme",
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"
@@ -3932,15 +3343,6 @@
   "hwPassport": "Vakıf Pasaportu",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
-  },
-  "electrumInvalidStopGapError": "Invalid Stop Gap değeri: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
   "@fundExchangeMethodRegularSepaSubtitle": {
@@ -3990,10 +3392,6 @@
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
   },
-  "keystoneStep6": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
   "walletDeletionErrorGeneric": "Cüzdanı silmek için başarısız oldu, lütfen tekrar deneyin.",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
@@ -4005,10 +3403,6 @@
   "sellNoInvoiceData": "Hiçbir fatura verileri mevcut",
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "ledgerInstructionsIos": "Ledger'inizin Bitcoin uygulaması açıldı ve Bluetooth etkinleştirildiğinden emin olun.",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
   },
   "replaceByFeeScreenTitle": "Taksitle",
   "@replaceByFeeScreenTitle": {
@@ -4058,10 +3452,6 @@
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
-  "passportStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
   "settingsCurrencyTitle": "Para",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -4077,15 +3467,6 @@
   "onboardingPhysicalBackupDescription": "Cüzdanınızı 12 kelime ile yeniden keşfedin.",
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
-  },
-  "psbtFlowSelectSeed": "İşlem sizin {device}'inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusLoading": "Yükleniyor",
   "@pinStatusLoading": {
@@ -4106,10 +3487,6 @@
   "@logoutConfirmationDescription": {
     "description": "Description text for logout confirmation bottom sheet"
   },
-  "ledgerSuccessAddressVerified": "Adres doğrulama başarıyla!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
-  },
   "fundExchangeCrIbanUsdLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
@@ -4117,15 +3494,6 @@
   "sendSats": "satrançlar",
   "@sendSats": {
     "description": "Unit label for satoshis"
-  },
-  "electrumInvalidTimeoutError": "Invalid Timeout değeri: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "exchangeKycLevelLimited": "Sınırlı",
   "@exchangeKycLevelLimited": {
@@ -4158,14 +3526,6 @@
   "receivePaymentNormally": "Normalde ödeme alın",
   "@receivePaymentNormally": {
     "description": "Option to receive payment without payjoin if it fails"
-  },
-  "kruxStep10": "İşlem Krux'inizde ithal edildiğinde, varış adresini ve miktarı gözden geçirin.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "bitboxErrorHandshakeFailed": "Güvenli bağlantı kurmak için başarısız oldu. Lütfen tekrar deneyin.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
   },
   "sellKYCRequired": "KAB doğrulama Gerekli",
   "@sellKYCRequired": {
@@ -4269,10 +3629,6 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "Hoşgeldiniz Welcome Welcome Hoşgeldiniz",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
@@ -4313,14 +3669,6 @@
   "@sellGoHome": {
     "description": "Button to go to home screen"
   },
-  "keystoneStep8": "İşlem Anahtar taşınızda ithal edildiğinde, varış adresini ve miktarı gözden geçirin.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "psbtFlowSpecterTitle": "Specter Talimatlar",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "importMnemonicChecking": "Checking...",
   "@importMnemonicChecking": {
     "description": "Status while checking wallet type"
@@ -4348,14 +3696,6 @@
   "autoswapInfoRemindLater": "Beni daha sonra Remind",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
-  },
-  "bitboxErrorDeviceNotFound": "BitBox cihazı bulunamadı.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
-  "ledgerScanningMessage": "Yakınlarda Ledger cihazları arıyorsunuz...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
   },
   "sellInsufficientBalanceError": "Seçilen cüzdanda bu satış siparişini tamamlamak için yeterli bir denge.",
   "@sellInsufficientBalanceError": {
@@ -4385,10 +3725,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Varsayılan Server Server",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Bir ödeme adresi veya fatura",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -4412,10 +3748,6 @@
   "exchangeKycLevelLight": "Işık Işığı",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Etiketler başarıyla ihraç etti",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Slowest seçenek, ancak online bankacılık (3-4 iş günleri) ile yapılabilir",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -4465,10 +3797,6 @@
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
   },
-  "mempoolCustomServerAdd": "Add private Server",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
-  },
   "sendHighFeeWarningDescription": "Toplam ücret {feePercent}% of the amount you are send",
   "@sendHighFeeWarningDescription": {
     "description": "Warning message showing fee as percentage of send amount",
@@ -4497,10 +3825,6 @@
   "importWatchOnlyUnknown": "Bilinmeyen",
   "@importWatchOnlyUnknown": {
     "description": "Default value when signing device is unknown"
-  },
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
   },
   "payContinue": "Devam etmeye devam et",
   "@payContinue": {
@@ -4593,10 +3917,6 @@
   "@sendFeeRateTooHigh": {
     "description": "Warning for excessive fee"
   },
-  "ledgerHelpStep2": "Telefonunuzun Bluetooth'in döndü ve izin verildiğinden emin olun.",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
-  },
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Transfer kodunuz.",
   "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
     "description": "Help text explaining payment description is the transfer code"
@@ -4609,10 +3929,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "Payout yöntemi",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4620,10 +3936,6 @@
   "exchangeAmountInputTitle": "Girin",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "Close",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "Gir IBAN",
   "@payIbanHint": {
@@ -4695,10 +4007,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "keystoneStep5": "   - Cihazınızda ekran parlaklığı artırmak",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
   "sendSelectCoinsManually": "Paraları manuel olarak seçin",
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
@@ -4706,10 +4014,6 @@
   "importMnemonicEmpty": "Boş boş",
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
-  },
-  "electrumBitcoinServerInfo": "Formda sunucu adresi girin: host:port (e.g., example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
   },
   "sendErrorInsufficientBalanceForSwap": "Bu değişimi sıvı ile ödemek için yeterli bir denge değil ve Bitcoin üzerinden ödemek için takas sınırları içinde değil.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -4751,10 +4055,6 @@
   "@coreScreensNetworkFeesLabel": {
     "description": "Label for network fees field"
   },
-  "kruxStep9": "   - Cihazınızı biraz geri taşımayı deneyin",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
-  },
   "sendReceiveNetworkFee": "Ağ Ücreti Al",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
@@ -4787,10 +4087,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "Kullanılmıyor",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Fiziksel yedekleme: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4807,10 +4103,6 @@
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
   },
-  "kruxStep11": "Krux'inizde işlemi imzalamak için düğmeleri tıklayın.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
   "exchangeSupportChatEmptyState": "Henüz mesajlar yok. Bir sohbete başlayın!",
   "@exchangeSupportChatEmptyState": {
     "description": "Message shown when there are no chat messages"
@@ -4818,14 +4110,6 @@
   "payExternalWalletDescription": "Başka bir Bitcoin cüzdanından ödeme",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
-  },
-  "electrumRetryCountEmptyError": "Retry Count boş olamaz",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "Lütfen Bitcoin uygulamasını Ledger cihazınızda açın ve tekrar deneyin.",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
   },
   "physicalBackupTag": "Güvensiz (zamanınızı alın)",
   "@physicalBackupTag": {
@@ -4842,14 +4126,6 @@
   "swapExternalAddressHint": "Dış cüzdan adresi girin",
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
-  },
-  "torSettingsDescConnecting": "Kurmak Tor bağlantısı",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - Yaşlı format",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
   },
   "appleICloudProvider": "Apple",
   "@appleICloudProvider": {
@@ -4874,10 +4150,6 @@
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Şifreli ton: ",
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
-  },
-  "seedsignerStep9": "Hedef adresi ve miktarı gözden geçirin ve SeedSigner'inizin imzasını onaylayın.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
   },
   "logoutButton": "Logout",
   "@logoutButton": {
@@ -4923,10 +4195,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "Lütfen geçerli bir sayı girin",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "Banka Transfer",
   "@sellBankTransfer": {
@@ -4975,10 +4243,6 @@
   "transactionSwapProgressFundsClaimed": "Fonlar\nDavalı",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
-  },
-  "keystoneStep13": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
   },
   "receiveGenerationFailed": "{type} üretmek için başarısız oldu",
   "@receiveGenerationFailed": {
@@ -5054,10 +4318,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "passportStep2": "Click Sign with QR Code",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
   "pinCodeRemoveButton": "Güvenlik PIN",
   "@pinCodeRemoveButton": {
     "description": "Button label to remove the security PIN"
@@ -5089,10 +4349,6 @@
   "coreSwapsLnSendFailed": "Swap başarısız oldu.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "keystoneStep9": "Anahtar taşınızda işlemi imzalamak için düğmeleri tıklayın.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
   },
   "totalFeesLabel": "Toplam ücret Toplam ücretleri",
   "@totalFeesLabel": {
@@ -5254,10 +4510,6 @@
   "@payPaymentDetails": {
     "description": "Section header for payment information"
   },
-  "bitboxActionVerifyAddressTitle": "BitBox'da Adres Verify",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
   "psbtSignTransaction": "Kayıt işlemi",
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
@@ -5271,17 +4523,9 @@
       }
     }
   },
-  "bitboxActionImportWalletSuccess": "Cüzdan Başarılı Bir Şekilde Üretildi",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
   "nextButton": "Sonraki",
   "@nextButton": {
     "description": "Button label to go to next step"
-  },
-  "ledgerSignButton": "Start Signing",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
   },
   "payFromAnotherWallet": "Başka bir Bitcoin cüzdanından ödeme",
   "@payFromAnotherWallet": {
@@ -5303,10 +4547,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "jadeStep14": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
   "payCorporateName": "Kurumsal Adı",
   "@payCorporateName": {
     "description": "Label for corporate name field"
@@ -5326,10 +4566,6 @@
   "customLocationRecommendationText": "laf dosyasını kaybetmeyeceksiniz ve telefonunuzu kaybederseniz hala erişilebilir olacaktır.",
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
-  },
-  "kruxStep13": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
   },
   "transactionSwapInfoRefundableTransfer": "Bu takas birkaç saniye içinde otomatik olarak iade edilecektir. İade edilmezse \"Takas İadesini Yeniden Dene\" düğmesine tıklayarak manuel iade deneyebilirsiniz.",
   "@transactionSwapInfoRefundableTransfer": {
@@ -5356,10 +4592,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Özel sunucuyu silmek için başarısız oldu ",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -5375,10 +4607,6 @@
   "takeYourTimeTag": "Zamanınızı alın",
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
-  },
-  "ledgerSuccessVerifyDescription": "Adres Ledger cihazınızda doğrulandı.",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
   },
   "bip85Title": "BIP85 Deterministik Entropiler",
   "@bip85Title": {
@@ -5399,10 +4627,6 @@
   "sendSwapInProgressBitcoin": "Değişim devam ediyor. Bitcoin işlemleri onaylarken alabilir. Eve dönebilir ve bekleyebilirsin.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "Delete Custom Server",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "ID ile Selfie",
   "@buySelfie": {
@@ -5484,10 +4708,6 @@
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
   },
-  "psbtFlowSignTransaction": "Kayıt işlemi",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
   "payAllPayments": "Tüm Ödemeler",
   "@payAllPayments": {
     "description": "Filter option to show all"
@@ -5541,15 +4761,6 @@
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
   },
-  "ledgerConnectingMessage": "{deviceName}",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeFileUploadUploading": "Yükleniyor...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
@@ -5557,10 +4768,6 @@
   "buyConfirmAwaitingConfirmation": "Bekleyen bir onay ",
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
-  },
-  "torSettingsSaveButton": "Kaydet",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
   },
   "allSeedViewShowSeedsButton": "Show Seeds",
   "@allSeedViewShowSeedsButton": {
@@ -5636,18 +4843,6 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "jadeStep10": "Jade üzerinde işlemi imzalamak için düğmeleri tıklayın.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "bitboxScreenUnknownError": "Bilinmeyen hata meydana geldi",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
-  "electrumPrivacyNoticeTitle": "Gizlilik Bildirimi",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
   "receiveLiquid": "Sıvı",
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
@@ -5668,10 +4863,6 @@
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
   },
-  "psbtFlowTransactionImported": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
   "translationWarningDismissButton": "Got It Got It",
   "@translationWarningDismissButton": {
     "description": "Button to dismiss the translation warning"
@@ -5687,10 +4878,6 @@
   "payTimeoutError": "Ödeme süresi. Lütfen durumu kontrol edin",
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
-  },
-  "kruxStep4": "Kameradan Yük",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
   },
   "sellErrorRecalculateFees": "Ücretleri yeniden hesaplamak için başarısız oldu: {error}",
   "@sellErrorRecalculateFees": {
@@ -5795,14 +4982,6 @@
   "@onboardingCreateWalletButtonLabel": {
     "description": "The label for the button to create a wallet from the onboarding screen"
   },
-  "bitboxScreenVerifyOnDevice": "Lütfen bu adresi BitBox cihazınızda doğrulayın",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
-  "ledgerConnectTitle": "Ledger Cihazınızı Bağlayın",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
   "withdrawAmountTitle": "Withdraw fiat",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
@@ -5888,10 +5067,6 @@
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
-  "bitboxScreenConnecting": "BitBox'a bağlanın",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
-  },
   "transactionLabelServerNetworkFees": "Server Network Fees",
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
@@ -5919,15 +5094,6 @@
   "fundExchangeLabelClabe": "CLABE",
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
-  },
-  "statusCheckLastChecked": "Son kontrol: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
   },
   "backupWalletVaultProviderQuickEasy": "Hızlı ve kolay",
   "@backupWalletVaultProviderQuickEasy": {
@@ -6011,10 +5177,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "Lütfen şifrenizi BitBox cihazına girin...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
   "sellWhichWalletQuestion": "Hangi cüzdandan satmak istiyorsunuz?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
@@ -6030,10 +5192,6 @@
   "receiveFixedAmount": "$",
   "@receiveFixedAmount": {
     "description": "Required amount field"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "Adres BitBox cihazınızda doğrulandı.",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
   },
   "transactionSwapDescLnSendPaid": "On zincir işleminiz yayınlandı. 1 onayından sonra, Lightning ödeme gönderilir.",
   "@transactionSwapDescLnSendPaid": {
@@ -6079,23 +5237,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "seedsignerStep6": "   - Kırmızı lazeri yukarı ve QR kodunun üzerinden taşıyın",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
-  "ledgerHelpStep5": "Emin olun Ledger cihazı en son bilgisayarı kullanıyor, Ledger Live masaüstü uygulamasını kullanarak bilgisayarı güncelleyebilirsiniz.",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
-  },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "Transit Numarası",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -6124,10 +5265,6 @@
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
   },
-  "psbtFlowScanQrShown": "Bull cüzdanında gösterilen QR kodu",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
   "testBackupErrorInvalidFile": "Invalid file content",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -6143,10 +5280,6 @@
   "sendSlowPaymentWarningDescription": "Bitcoin takasları onay için zaman alacaktır.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "Lütfen BitBox cihazınızdaki adresi onaylayın.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
   },
   "pinConfirmHeadline": "Yeni pin onaylayın",
   "@pinConfirmHeadline": {
@@ -6200,10 +5333,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "Ayrıştırma",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "Bitcoin Recurring Buy?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -6215,10 +5344,6 @@
   "fundExchangeSinpeLabelRecipientName": "Recipient Name",
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
-  },
-  "keystoneInstructionsTitle": "Keystone Talimatları",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
   },
   "hwLedger": "Ledger",
   "@hwLedger": {
@@ -6244,17 +5369,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Sunucu önceliklerini kurtarmak için başarısız oldu ",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
   "globalDefaultLiquidWalletLabel": "Anında ödeme",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
-  },
-  "bitboxActionVerifyAddressProcessing": "BitBox'da adres göstermek...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
   },
   "sendTypeSwap": "Swap",
   "@sendTypeSwap": {
@@ -6263,10 +5380,6 @@
   "sendErrorAmountExceedsMaximum": "Maliyet maksimum takas miktarı aşıyor",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
-  },
-  "bitboxActionSignTransactionSuccess": "İşlem Başarılı Bir Şekilde İmzalandı",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
   },
   "exchangeStatisticsBuyStats": "İstatistikler satın alın",
   "@exchangeStatisticsBuyStats": {
@@ -6288,10 +5401,6 @@
   "importColdcardTitle": "Connect Coldcard Q Q",
   "@importColdcardTitle": {
     "description": "AppBar title for Coldcard Q import"
-  },
-  "ledgerSuccessImportDescription": "Ledger cüzdanınız başarıyla ithal edildi.",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
   },
   "pinStatusProcessing": "İşleme",
   "@pinStatusProcessing": {
@@ -6325,10 +5434,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Etiketler",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "Bir Bitcoin cüzdanı seçin *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -6341,17 +5446,9 @@
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
   },
-  "bitboxActionUnlockDeviceButton": "Unlock Device Device",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
-  },
   "payNetworkError": "Ağ hatası. Lütfen tekrar deneyin",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "Bir hata oluştu",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "Hangi cüzdan ödeme yapmak istiyorsunuz?",
   "@payWhichWallet": {
@@ -6394,10 +5491,6 @@
   "payCancelPayment": "Cancel Payment",
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
-  },
-  "ledgerInstructionsAndroidUsb": "Emin olun Ledger, Bitcoin uygulaması açıldı ve USB üzerinden bağlanır.",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
   },
   "onboardingOwnYourMoney": "Kendi Paranı Kendi Paranız",
   "@onboardingOwnYourMoney": {
@@ -6444,10 +5537,6 @@
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
   },
-  "bitboxScreenTryAgainButton": "Tekrar tekrar deneyin",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
-  },
   "exchangeStatisticsNoData": "Mevcut istatistikler mevcut değildir",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -6485,17 +5574,9 @@
       }
     }
   },
-  "psbtFlowClickDone": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
   "addressCardUnusedLabel": "Kullanılmamış",
   "@addressCardUnusedLabel": {
     "description": "Label indicating an address has not been used"
-  },
-  "bitboxActionUnlockDeviceSuccess": "Device Unlocked Başarılı bir şekilde başarılı bir şekilde",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
   },
   "receivePayjoinInProgress": "Payjoin in Progress",
   "@receivePayjoinInProgress": {
@@ -6530,10 +5611,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "Varsayılan Servers",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Recover Cüzdan",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -6563,10 +5640,6 @@
   "@screenshotLabel": {
     "description": "Label for screenshot (with X mark)"
   },
-  "bitboxErrorOperationTimeout": "Operasyon zamanı çıktı. Lütfen tekrar deneyin.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
   "receiveLightning": "Lightning",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
@@ -6574,10 +5647,6 @@
   "sendRecipientAddressOrInvoice": "Recipient'in adresi veya fatura",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Lütfen bir sunucu URL girin",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Keystone",
   "@importQrDeviceKeystoneName": {
@@ -6615,15 +5684,6 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "{device} cihazınızı açın",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsKeyServer": "Key Server ",
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
@@ -6632,10 +5692,6 @@
   "@connectHardwareWalletColdcardQ": {
     "description": "Coldcard Q hardware wallet option"
   },
-  "seedsignerStep2": "Click Scan",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "addressCardIndexLabel": "Index: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
@@ -6643,10 +5699,6 @@
   "dcaSetupContinue": "Devam etmeye devam et",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "Host:port format (e.g., örneğin.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "Bu ücretler gönderilen miktartan silinecektir",
   "@transactionFeesDeductedFrom": {
@@ -6671,15 +5723,6 @@
   "testBackupCreatedAt": "Oluşturun:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "psbtFlowSignTransactionOnDevice": "İşlemi {device} cihazınızda imzalamak için düğmelere tıklayın.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "transactionStatusPending": "Pending",
   "@transactionStatusPending": {
@@ -6754,10 +5797,6 @@
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
   },
-  "keystoneStep7": "   - Cihazınızı biraz geri taşımayı deneyin",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
   "coreSwapsChainExpired": "Takasın süresi doldu",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
@@ -6794,10 +5833,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "Gizliliğinizi korumak için, varsayılan sunucular özel sunucular yapılandırıldığında kullanılmaz.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "Payout yöntemi",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6805,18 +5840,6 @@
   "payPriceRefreshIn": "Fiyat yenilenecek ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "passportStep3": "Bull cüzdanında gösterilen QR kodu",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "jadeStep5": "Bir sorun taramanız varsa:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
-  "electrumProtocolError": "Protokol dahil etmeyin (ssl http veya tcp http).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "Kiracının tarafında beklemek veya parajoin başarısız oldu mu?",
   "@receivePayjoinFailQuestion": {
@@ -6862,14 +5885,6 @@
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "bitboxScreenTroubleshootingStep3": "BitBox02 cihazınızı dövme ve yeniden bağlantı kurarak yeniden başlatın.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
-  },
   "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
   "fundExchangeErrorTitleOrdPo404": "Ödeme Seçeneği Kullanılamıyor",
   "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
@@ -6914,10 +5929,6 @@
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
   },
-  "electrumAddServer": "Add Server",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
   "addressViewCopyAddress": "Copy Address",
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
@@ -6961,10 +5972,6 @@
         "type": "int"
       }
     }
-  },
-  "exchangeLegacyTransactionsComingSoon": "Miras İşlemleri - Yakında Geliyor",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
   },
   "backupWalletInstructionNoDigitalCopies": "Yedeklemenizin dijital kopyalarını yapmayın. Bir kağıda yazın veya metale kazın.",
   "@backupWalletInstructionNoDigitalCopies": {
@@ -7018,14 +6025,6 @@
   "@transactionListToday": {
     "description": "Date label for today's transactions"
   },
-  "keystoneStep12": "Bull Bitcoin cüzdanı, Anahtarstone üzerindeki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
-  "ledgerErrorRejectedByUser": "İşlem, Ledger cihazı üzerindeki kullanıcı tarafından reddedildi.",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
   "payFeeRate": "Ücret Ücreti",
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
@@ -7058,17 +6057,9 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "passportStep10": "Pasaport daha sonra size kendi QR kodunu gösterecektir.",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
   "transactionDetailLabelAmountSent": "Gönderilen miktar",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "Dur Gap boş olamaz",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "Tipi: ",
   "@typeLabel": {
@@ -7077,10 +6068,6 @@
   "buyInputInsufficientBalance": "Yeterli bakiye",
   "@buyInputInsufficientBalance": {
     "description": "Insufficient balance info card title"
-  },
-  "ledgerProcessingSignSubtext": "Lütfen işlemi Ledger cihazınızda onaylayın...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
   },
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
@@ -7097,10 +6084,6 @@
   "payScanQRCode": "Scan QR Kod Kodu",
   "@payScanQRCode": {
     "description": "Button text to open QR code scanner for payment"
-  },
-  "seedsignerStep10": "TohumSigner size kendi QR kodunu gösterecektir.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
   },
   "psbtInstructions": "Talimatlar",
   "@psbtInstructions": {
@@ -7181,10 +6164,6 @@
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
-  "seedsignerStep7": "   - Cihazınızı biraz geri taşımayı deneyin",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
   "sendAmount": "$",
   "@sendAmount": {
     "description": "Label for the transaction amount"
@@ -7200,10 +6179,6 @@
   "dcaConfirmAmount": "$",
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
-  },
-  "seedsignerStep8": "İşlem SeedSigner'inizde ithal edildikten sonra, imzalamak istediğiniz tohumu seçmelisiniz.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
   },
   "sellSendPaymentPriceRefresh": "Fiyat yenilenecek ",
   "@sellSendPaymentPriceRefresh": {
@@ -7228,10 +6203,6 @@
   "receiveInvoiceExpired": "Fatura süresi doldu",
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
-  },
-  "ledgerButtonManagePermissions": "Uygulama İzinleri Yönetin",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
   },
   "autoswapMinimumThresholdErrorSats": "Asgari denge eşi {amount} sats",
   "@autoswapMinimumThresholdErrorSats": {
@@ -7266,10 +6237,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "bitboxScreenSegwitBip84Subtitle": "Yerli SegWit - Önerilen",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
   "fundExchangeSpeiSubtitle": "CLABE kullanarak transfer fonları",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
@@ -7289,10 +6256,6 @@
   "appStartupContactSupportButton": "İletişim Desteği",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
-  },
-  "bitboxScreenWaitingConfirmation": "BitBox02'de onay için bekleyin...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
   },
   "howToDecideVaultLocationText1": "Google veya Apple gibi bulut depolama sağlayıcıları Bitcoin'e erişimi olmayacak çünkü şifreleme şifresi çok güçlü. Sadece Bitcoin'e anahtar sunucu ile birlikte çalıştıkları olası bir durumda erişebilirler ( Şifre parolanızı depolayan online hizmet). Anahtar sunucu hiç hackleniyorsa, Bitcoin'iniz Google veya Apple bulut ile risk altında olabilir.",
   "@howToDecideVaultLocationText1": {
@@ -7323,17 +6286,9 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "Durum Bilinmeyen",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Log Out - Yakında Geliyor",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
@@ -7387,10 +6342,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Özel sunucu eklemek için başarısız oldu ",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "Takas ücretleri",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -7411,18 +6362,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bitboxActionPairDeviceSuccess": "Device Paired Başarılı Bir Şekilde",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxErrorNoDevicesFound": "BitBox cihazları bulunamadı. Cihazınızın USB aracılığıyla ve bağlantılı olduğundan emin olun.",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
-  "torSettingsStatusConnecting": "Connecting...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
@@ -7435,10 +6374,6 @@
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
-  },
   "fundExchangeJurisdictionMexico": "Meksika",
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
@@ -7450,10 +6385,6 @@
   "coreSwapsActionClose": "Close",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
-  },
-  "kruxStep6": "Bir sorun taramanız varsa:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
   },
   "autoswapMaximumFeeError": "En yüksek ücret eşi {threshold}%",
   "@autoswapMaximumFeeError": {
@@ -7476,10 +6407,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "ledgerProcessingVerify": "Ledger'e hitap etmek...",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
-  },
   "coreScreensFeePriorityLabel": "Ücret Önceliği",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
@@ -7491,14 +6418,6 @@
   "testBackupErrorWalletMismatch": "Backup mevcut cüzdanla eşleşmez",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "bip329LabelsHeading": "BIP329 Etiketler Import /Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "jadeStep2": "Bir tane varsa bir geçiş ekleyin (isteğen)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "coldcardStep4": "Bull cüzdanında gösterilen QR kodu",
   "@coldcardStep4": {
@@ -7599,14 +6518,6 @@
       }
     }
   },
-  "keystoneStep1": "Keystone cihazınıza giriş",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep3": "Bull cüzdanında gösterilen QR kodu",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "backupKeyWarningMessage": "Uyarı: Yedek anahtarını nereden kurtardığınızı dikkatli olun.",
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
@@ -7618,10 +6529,6 @@
   "exchangeAuthErrorMessage": "Bir hata oluştu, lütfen tekrar giriş yapmaya çalışın.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
-  },
-  "bitboxActionSignTransactionTitle": "Kayıt İşlemleri",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
   },
   "testBackupGoogleDrivePrivacyPart3": "telefonunuzu bırakın ve ",
   "@testBackupGoogleDrivePrivacyPart3": {
@@ -7647,10 +6554,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "Gizlilik Bildirimi:\n\nKendi düğümünü kullanarak, üçüncü tarafın IP adresinizi işlemlerinizle bağlayabileceğini garanti eder. Son özel sunucunuzu silerek, bir BullBitcoin sunucusuna bağlanacaksınız.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "Her hafta her hafta",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -7674,10 +6577,6 @@
   "exchangeSupportChatYesterday": "Dün",
   "@exchangeSupportChatYesterday": {
     "description": "Label for yesterday in date formatting"
-  },
-  "jadeStep3": "\"Scan QR\" seçeneği seçin",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "dcaSetupFundAccount": "Hesabınızı finanse edin",
   "@dcaSetupFundAccount": {
@@ -7757,10 +6656,6 @@
   "@confirmLogoutTitle": {
     "description": "Dialog title for logout confirmation"
   },
-  "ledgerWalletTypeSelectTitle": "Cüzdan seçin Tipi Tipi Tipi Tipi",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
   "swapTransferCompletedMessage": "Vay, bekledin! Takas başarıyla tamamlandı.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
@@ -7772,10 +6667,6 @@
   "exchangeFileUploadSelectFiles": "Files Select",
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
-  },
-  "electrumDelete": "Delete",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
   },
   "testBackupGoogleDrivePrivacyPart4": "asla ",
   "@testBackupGoogleDrivePrivacyPart4": {
@@ -7797,10 +6688,6 @@
   "@payProcessingPayment": {
     "description": "Loading message while payment is being processed"
   },
-  "ledgerImportTitle": "Import Ledger Wallet",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
   "exchangeDcaFrequencyMonth": "ay",
   "@exchangeDcaFrequencyMonth": {
     "description": "DCA frequency unit: month"
@@ -7813,29 +6700,13 @@
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
   },
-  "bitboxScreenScanning": "Cihazlar için Tarama",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
   "howToDecideBackupTitle": "Nasıl karar verilir",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
   },
-  "statusCheckTitle": "Hizmet Durumu",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "ledgerHelpSubtitle": "İlk olarak, Ledger cihazınızın açık olduğundan ve Bitcoin uygulaması açılır. Cihazınız hala uygulama ile bağlantı yapmazsa, aşağıdakileri deneyin:",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
-  },
   "savingToDevice": "Cihazınıza tasarruf edin.",
   "@savingToDevice": {
     "description": "Message shown when saving to device"
-  },
-  "bitboxActionImportWalletButton": "Başlayın",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
   },
   "fundExchangeLabelSwiftCode": "SWIFT kodu",
   "@fundExchangeLabelSwiftCode": {
@@ -7920,14 +6791,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "İhracat Etiketler",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "jadeStep4": "Bull cüzdanında gösterilen QR kodu",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "payBillerNameValue": "Seçilmiş Biller Name",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7963,10 +6826,6 @@
   "paySecurityQuestionHint": "Güvenlik sorusu (10-40 karakter)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
-  },
-  "ledgerErrorMissingPsbt": "PSBT imzalanması için gereklidir",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
   },
   "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub veya tanımlayıcı",
   "@importWatchOnlyPasteHint": {
@@ -8075,10 +6934,6 @@
   "@testBackupDoNotShare": {
     "description": "Warning header about keeping recovery phrase secret"
   },
-  "kruxInstructionsTitle": "Krux Talimatlar",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
-  },
   "paySinpeNumeroComprobante": "Referans numarası",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -8086,14 +6941,6 @@
   "backupSettingsViewVaultKey": "Manzara Anahtar Anahtar Anahtar Anahtar",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
-  },
-  "ledgerErrorDeviceBusy": "Başka bir program Ledger'ınızı kullanıyor. Lütfen onu kapatın (örneğin, Ledger Live) ve tekrar deneyin.",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "No Ledger bağlantısı mevcut",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
   },
   "testBackupSuccessButton": "Got it Got it",
   "@testBackupSuccessButton": {
@@ -8227,15 +7074,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "bitboxScreenActionFailed": "{action} Başarısız",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupScheduleMessage": "Bitcoin alışverişleri bu program için otomatik olarak yerleştirilir.",
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
@@ -8252,17 +7090,9 @@
   "@payFee": {
     "description": "Label for fee"
   },
-  "systemLabelSelfSpend": "Kendin Kendi Harcamasını Kendin Kendin Kendin Kendin",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
   "swapProgressRefundMessage": "Takasta bir hata oluştu. İadeniz işleniyor.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
-  },
-  "passportStep4": "Bir sorun taramanız varsa:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
   },
   "dcaConfirmContinue": "Devam etmeye devam et",
   "@dcaConfirmContinue": {
@@ -8271,10 +7101,6 @@
   "decryptVaultButton": "Decryptob",
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
   },
   "paySecureBitcoinWallet": "Güvenli Bitcoin cüzdanı",
   "@paySecureBitcoinWallet": {
@@ -8292,10 +7118,6 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
-  "bitboxActionVerifyAddressButton": "Verify Address",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
   "importColdcardInstructionsStep7": "Mobil cihazınızda, \"open kamera\" tıklayın",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
@@ -8307,10 +7129,6 @@
   "enterBackupKeyLabel": "Yedekleme anahtarı girin",
   "@enterBackupKeyLabel": {
     "description": "Label for backup key input field"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "İlk olarak, BitBox02 cihazınızın telefon USB portuna bağlı olduğundan emin olun. Cihazınız hala uygulama ile bağlantı yapmazsa, aşağıdakileri deneyin:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
   },
   "securityWarningTitle": "Güvenlik Uyarısı",
   "@securityWarningTitle": {
@@ -8345,25 +7163,13 @@
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
   },
-  "bitboxScreenAddressToVerify": "Doğrulama Adresi:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
   "payConfirmPayment": "Ödemeyi Onaylayın",
   "@payConfirmPayment": {
     "description": "Button text to confirm and execute payment"
   },
-  "bitboxErrorPermissionDenied": "USB izinleri BitBox cihazlarına bağlanmak için gereklidir.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
   "recoveryPhraseTitle": "Kurtarma cümlenizi yazın\nDoğru sırayla",
   "@recoveryPhraseTitle": {
     "description": "Title instructing user to write down recovery phrase"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "Lütfen BitBox cihazınızdaki işlemi onaylayın...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
   },
   "sellConfirmPayment": "Doğru ödeme",
   "@sellConfirmPayment": {
@@ -8438,18 +7244,10 @@
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
   },
-  "electrumConfirm": "Onay Onay Onay Onaylandı",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
   "transactionDetailLabelOrderNumber": "Sipariş Numarası",
   "transactionDetailLabelPaymentDescription": "Ödeme açıklaması",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
-  },
-  "bitboxActionPairDeviceSuccessSubtext": "BitBox cihazınız şimdi çiftleştirilir ve kullanıma hazırdır.",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
   },
   "pickPasswordInsteadButton": "Bunun yerine şifre seçin >>",
   "@pickPasswordInsteadButton": {
@@ -8458,10 +7256,6 @@
   "coreScreensSendNetworkFeeLabel": "Ağ Fee gönder",
   "@coreScreensSendNetworkFeeLabel": {
     "description": "Label for send network fee field"
-  },
-  "bitboxScreenScanningSubtext": "BitBox cihazınıza bakmak...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
   },
   "sellOrderFailed": "Yer satmak için başarısız oldu",
   "@sellOrderFailed": {
@@ -8494,10 +7288,6 @@
   "dcaConfirmNetworkBitcoin": "Bitcoin",
   "@dcaConfirmNetworkBitcoin": {
     "description": "Bitcoin network label"
-  },
-  "seedsignerStep14": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Kosta Rika (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
@@ -8544,25 +7334,9 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "bitboxErrorConnectionTypeNotInitialized": "Bağlantı türü ilklenmedi.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
-  },
   "transactionListOngoingTransfersDescription": "Bu takaslar şu anda devam ediyor. Fonlarınız güvendedir ve takas tamamlandığında kullanılabilir olacaktır.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
-  },
-  "ledgerErrorPermissionDenied": "Ledger cihazlarına bağlanmak için Bluetooth izinleri gereklidir.",
-  "ledgerErrorNoDevicesFound": "Ledger cihazı bulunamadı. Cihazınızın açık ve Bluetooth'un etkin olduğundan emin olun.",
-  "ledgerErrorMultipleDevicesFound": "Birden fazla Ledger cihazı bulundu. Lütfen yakında yalnızca bir cihaz olduğundan emin olun.",
-  "ledgerErrorDeviceNotFound": "Ledger cihazı bulunamadı.",
-  "ledgerErrorDeviceMismatch": "Cihaz uyuşmazlığı tespit edildi.",
-  "ledgerErrorInvalidPsbt": "Geçersiz PSBT formatı tespit edildi.",
-  "ledgerErrorMissingDerivationPath": "Türetme yolu gereklidir",
-  "ledgerErrorMissingScriptType": "Betik türü gereklidir",
-  "ledgerProcessingVerifySubtext": "Lütfen Adresinizi Ledger cihazınızda onaylayın.",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
   },
   "transactionOrderLabelOriginCedula": "Origin Cedula",
   "@transactionOrderLabelOriginCedula": {
@@ -8625,25 +7399,13 @@
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
-  "ledgerInstructionsAndroidDual": "Ledger'inizin Bitcoin uygulaması açıldı ve Bluetooth etkinleştirildiğinden emin olun.",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
   "defaultWalletsLabel": "Varsayılan Cüzdanlar",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
   },
-  "jadeStep9": "İşlem Jade'nizde ithal edildiğinde, varış adresini ve miktarı gözden geçirin.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
   "receiveAddLabel": "Add Label",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
-  },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
   },
   "dcaConfirmFrequencyHourly": "Her saat",
   "@dcaConfirmFrequencyHourly": {
@@ -8669,10 +7431,6 @@
   "testBackupGoogleDrivePrivacyPart5": "bull Bitcoin ile paylaşılan.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "İşleminiz başarıyla imzalanmıştır.",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
   },
   "transactionStatusTransferExpired": "Takasın Süresi Doldu",
   "@transactionStatusTransferExpired": {
@@ -8756,14 +7514,6 @@
   "@recoverButton": {
     "description": "Button label to recover wallet"
   },
-  "passportStep5": "   - Cihazınızda ekran parlaklığı artırmak",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "bitboxScreenConnectSubtext": "BitBox02'nizin USB aracılığıyla kilidini ve bağlantılı olduğundan emin olun.",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
   "payOwnerName": "Owner Name Name Name",
   "@payOwnerName": {
     "description": "Label for owner name field"
@@ -8784,10 +7534,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxErrorInvalidResponse": "BitBox cihazından gelen uygun yanıt. Lütfen tekrar deneyin.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
   },
   "payAdvancedOptions": "Gelişmiş seçenekler",
   "@payAdvancedOptions": {
@@ -8829,10 +7575,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "Geçerli bir sayı girin",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "Onaylandı",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -8851,10 +7593,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "electrumRetryCount": "Retry Count",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
@@ -8863,10 +7601,6 @@
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
   },
-  "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
   "payFilterByType": "Filter by type",
   "@payFilterByType": {
     "description": "Label for type filter dropdown"
@@ -8874,10 +7608,6 @@
   "importMnemonicImporting": "İthalat...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "BIP329 standart biçimini kullanarak ithalat veya ihracat cüzdan etiketleri.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Emin değilsiniz ve yedekleme güvenlik uygulamaları hakkında bilgi edinmek için daha fazla zamana ihtiyacınız var.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -8910,10 +7640,6 @@
   "importWatchOnlyScriptType": "Senaryo Type",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "Özel Servers",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Swap Başarısız",
   "@transactionStatusSwapFailed": {
@@ -8992,21 +7718,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "Timeout (saniyeler)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "Sipariş Durumu",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "Gelişmiş seçenekleri kurtarmak için başarısız oldu",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "bitboxScreenWalletTypeLabel": "Cüzdan Türü:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
   },
   "importQrDeviceKruxStep6": "İşte bu!",
   "@importQrDeviceKruxStep6": {
@@ -9059,10 +7773,6 @@
   "coreScreensPageNotFound": "Sayfa bulunamadı",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "passportStep8": "İşlem pasaportunuzda ithal edildikten sonra, varış adresini ve miktarı gözden geçirin.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
   },
   "importQrDeviceTitle": "Connect {deviceName}",
   "@importQrDeviceTitle": {
@@ -9121,10 +7831,6 @@
   "@importQrDeviceButtonInstructions": {
     "description": "ImportQrDevice: Button to show setup instructions"
   },
-  "electrumLiquidSslInfo": "Hiçbir protokol belirtilmemelidir, SSL otomatik olarak kullanılacaktır.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "Cihaz bağlantılı",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -9150,10 +7856,6 @@
   "@swapTotalFees": {
     "description": "Total fees label"
   },
-  "keystoneStep11": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
   "scanningCompletedMessage": "Scanning tamamlandı",
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
@@ -9169,10 +7871,6 @@
   "buyUnauthenticatedError": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
-  },
-  "bitboxActionSignTransactionButton": "Start Signing",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
   },
   "sendEnterAbsoluteFee": "Satmak için mutlak ücret girin",
   "@sendEnterAbsoluteFee": {
@@ -9190,10 +7888,6 @@
   "@payPayee": {
     "description": "Label for payee details"
   },
-  "exchangeAccountComingSoon": "Bu özellik yakında geliyor.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
-  },
   "sellInProgress": "İlerlemede Sat...",
   "@sellInProgress": {
     "description": "Message for sell in progress"
@@ -9210,10 +7904,6 @@
   "sendSwapInProgressInvoice": "Değişim devam ediyor. Fatura birkaç saniyede ödenecektir.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
-  },
-  "electrumRetryCountNegativeError": "Retry Count olumsuz olamaz",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
   },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Bunu hesap numarası olarak ekleyin",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
@@ -9287,19 +7977,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "passportStep9": "Pasaportunuzda işlemi imzalamak için düğmeleri tıklayın.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
-  "electrumDeleteConfirmation": "Bu sunucuyu silmek istediğinizden emin misiniz?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "Import etmek için bir cüzdan türü seçin",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -9349,17 +8026,9 @@
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
   },
-  "kruxStep12": "Krux daha sonra size kendi QR kodunu gösterecektir.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
   "buyInputMinAmountError": "En azından satın almalısınız",
   "@buyInputMinAmountError": {
     "description": "Minimum amount error message"
-  },
-  "ledgerScanningTitle": "Cihazlar için Tarama",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
   },
   "payInstitutionCode": "Kurumsal Kod Kodu",
   "@payInstitutionCode": {
@@ -9369,10 +8038,6 @@
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
   },
-  "bitboxActionUnlockDeviceSuccessSubtext": "BitBox cihazınız şimdi açılıyor ve kullanıma hazır.",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
   "payShareInvoice": "Share In bill",
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
@@ -9380,22 +8045,6 @@
   "walletDetailsSignerDeviceLabel": "Signer Device",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "bitboxScreenEnterPassword": "Şifre girin",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "keystoneStep10": "Keystone daha sonra size kendi QR kodunu gösterecektir.",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
-  },
-  "ledgerSuccessSignTitle": "İşlem Başarılı Bir Şekilde İmzalandı",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
-  },
-  "electrumPrivacyNoticeContent1": "Gizlilik Bildirimi: Kendi düğümünü kullanarak, üçüncü tarafın IP adresinizi, işlemlerinizle bağlantı kurabileceğini garanti eder.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "Backup key manuel >>",
   "@testBackupEnterKeyManually": {
@@ -9413,10 +8062,6 @@
   "@allWordsSelectedMessage": {
     "description": "Message shown when all words are selected"
   },
-  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
-  },
   "testBackupErrorSelectAllWords": "Lütfen tüm kelimeleri seçin",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -9428,10 +8073,6 @@
   "toLabel": "To",
   "@toLabel": {
     "description": "Label for destination address in transaction details"
-  },
-  "passportStep7": "   - Cihazınızı biraz geri taşımayı deneyin",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
   },
   "sendConfirm": "Onay Onay Onay Onaylandı",
   "@sendConfirm": {
@@ -9468,10 +8109,6 @@
   "sellInteracTransfer": "E-posta ile para transferi",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
-  },
-  "bitboxScreenPairingCodeSubtext": "Bu kodu BitBox02 ekranını eşleştirin, sonra cihazı doğrulayın.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
   },
   "createdAtLabel": "Oluşturun:",
   "@createdAtLabel": {
@@ -9542,10 +8179,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "kruxStep1": "Krux cihazınıza giriş",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "dcaUseDefaultLightningAddress": "Varsayılan Lightning adresimi kullanın.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -9605,17 +8238,9 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "bitboxActionVerifyAddressSuccess": "Adres TYT başarıyla başarılı bir şekilde",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
   "psbtImDone": "Ben yaptım",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
-  },
-  "bitboxScreenSelectWalletType": "Cüzdan seçin Tipi Tipi Tipi Tipi",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
   },
   "appUnlockEnterPinMessage": "Kilit kodunuzu kilidini açmak için girin",
   "@appUnlockEnterPinMessage": {
@@ -9645,10 +8270,6 @@
   "@payCompleted": {
     "description": "Title for payment completed screen"
   },
-  "bitboxScreenManagePermissionsButton": "Uygulama İzinleri Yönetin",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
-  },
   "sellKYCPending": "KAB doğrulama",
   "@sellKYCPending": {
     "description": "Message when verification in progress"
@@ -9656,10 +8277,6 @@
   "buyGetConfirmedFaster": "Daha hızlı teyit et",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "electrumEnableSsl": "Enable SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
   },
   "payCustomFee": "Özel Ücretler",
   "@payCustomFee": {
@@ -9684,10 +8301,6 @@
   "payUnsupportedInvoiceType": "Desteksiz fatura türü",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
-  },
-  "seedsignerStep13": "İşlem Bull Bitcoin cüzdanında ithal edilecek.",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
   },
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Cüzdan",
   "@autoswapRecipientWalletDefaultLabel": {
@@ -9724,10 +8337,6 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
-  "psbtFlowMoveLaser": "Kırmızı lazeri hareket ettirin ve QR kodunun üzerinde",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
   "chooseVaultLocationTitle": "Select away location",
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
@@ -9735,15 +8344,6 @@
   "dcaConfirmOrderTypeValue": "Yeniden satın almak",
   "@dcaConfirmOrderTypeValue": {
     "description": "Order type value"
-  },
-  "psbtFlowDeviceShowsQr": "{device} size kendi QR kodunu gösterecektir.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "testBackupEncryptedVaultTitle": "Encrypted to",
   "@testBackupEncryptedVaultTitle": {
@@ -9786,18 +8386,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "Port 1 ile 65535 arasında olmalıdır",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "Zamanout boş olamaz",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "Ancak, İşlem ID veya Recipient Details sayfanıza tıklayarak mempool üzerinden işlemleri görürseniz, bu bilgiler BullBitcoin tarafından bilinecektir.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "Kimlik doğrulandı",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -9805,10 +8393,6 @@
   "importColdcardScanPrompt": "QR kodunu Coldcard Q",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "Tor proxy sürüyor ve hazır",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "Encrypted Vault",
   "@backupSettingsEncryptedVault": {
@@ -9826,10 +8410,6 @@
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
   },
-  "bitboxScreenPairingCode": "Pairing Code",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
-  },
   "testBackupPhysicalBackupTitle": "Fiziksel yedekleme",
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
@@ -9838,10 +8418,6 @@
   "@fundExchangeSpeiDescription": {
     "description": "Description for SPEI transfer method"
   },
-  "ledgerProcessingImport": "İthalat",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
-  },
   "coldcardStep15": "Artık yayınlanmaya hazır! Yayına tıkladığınızda, işlem Bitcoin ağında yayınlanacak ve fonlar gönderilir.",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
@@ -9849,10 +8425,6 @@
   "comingSoonDefaultMessage": "Bu özellik şu anda geliştiriliyor ve yakında mevcut olacak.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "ledgerErrorMissingAddress": "Adres doğrulama için gereklidir",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
   },
   "enterBackupKeyManuallyTitle": "Yedekleme anahtarı manuel olarak girin",
   "@enterBackupKeyManuallyTitle": {
@@ -9902,14 +8474,6 @@
   "@pinCodeConfirm": {
     "description": "Button label to confirm PIN entry"
   },
-  "bitboxActionUnlockDeviceProcessing": "Unlocking Device",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "seedsignerStep4": "Bir sorun taramanız varsa:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
   "mempoolNetworkLiquidTestnet": "Sıvı Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -9917,18 +8481,6 @@
   "payBitcoinOnChain": "Bitcoin on-chain",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "Tor proxy çalışmıyor",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "ledgerButtonTryAgain": "Tekrar tekrar deneyin",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
   },
   "buyInstantPaymentWallet": "Anında ödeme cüzdanı",
   "@buyInstantPaymentWallet": {
@@ -9982,14 +8534,6 @@
   "@receiveDescription": {
     "description": "Optional memo field"
   },
-  "bitboxScreenVerifyAddress": "Verify Address",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenConnectDevice": "BitBox Cihazınızı Bağlayın",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
-  },
   "amountRequestedLabel": "Para talep etti: {amount}",
   "@amountRequestedLabel": {
     "description": "Shows the requested amount to send",
@@ -10030,10 +8574,6 @@
   "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN USD transfer"
-  },
-  "ledgerSignTitle": "Kayıt İşlemleri",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
   },
   "importWatchOnlyCancel": "Cancel",
   "@importWatchOnlyCancel": {
@@ -10252,7 +8792,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir.",
   "wizardSkipButton": "Atla",
   "wizardPageIndicator": "SAYFA {current} / {total}",
   "wizardNextButton": "İleri",
@@ -10337,8 +8876,6 @@
   "pinCodeDeleteError": "PIN kodunuz silinemedi. Lütfen tekrar deneyin.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
-  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
-  "mempoolErrorInvalidUrl": "Geçersiz sunucu URL'si. Geçerli bir alan adı veya IP adresi girin.",
   "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -10625,26 +9162,7 @@
   "swapRescueWalletHint": "Bir cüzdan seçin",
   "swapRescueButton": "Geri Yükle",
   "swapRescueSuccess": "Takas geri yüklendi — şimdi devam edecek",
-  "mempoolServerStatusOnline": "Çevrimiçi",
-  "mempoolServerStatusOffline": "Çevrimdışı",
-  "mempoolServerStatusChecking": "Kontrol ediliyor...",
   "mempoolServerStatusUnknown": "Bilinmiyor",
-  "mempoolCustomServerSaveFailed": "Sunucu kaydedilemedi",
-  "mempoolCustomServerInfoDescription": "Mempool sunucuları, ücret tahmini yapmak ve işlem detaylarını görüntülerken blok gezginini açmak için kullanılır.",
-  "mempoolCustomServerUseSsl": "SSL kullan",
-  "mempoolCustomServerSslAutoDetected": "(Otomatik algılandı)",
-  "mempoolCustomServerSslHelpText": "Yerel (.local, özel IP'ler) ve Tor (.onion) sunucularında SSL genellikle devre dışıdır. Genel IP'ler ve alan adları SSL kullanmalıdır.",
-  "mempoolErrorSameAsDefault": "Bu URL varsayılan sunucuyla aynı. Lütfen farklı bir URL kullanın.",
-  "mempoolErrorConnectionTimeout": "Bağlantı zaman aşımına uğradı. Sunucu yavaş olabilir veya ulaşılamıyor olabilir.",
-  "mempoolErrorHostNotFound": "Bu sunucu bulunamıyor. Lütfen URL'yi kontrol edip tekrar deneyin.",
-  "mempoolErrorConnectionFailed": "Sunucuya bağlanılamıyor. Ağ bağlantınızı kontrol edip tekrar deneyin.",
-  "mempoolErrorNotMempoolServer": "Bu URL bir mempool sunucusu gibi görünmüyor. Lütfen adresi doğrulayın.",
-  "mempoolErrorServerUnavailable": "Sunucu kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
-  "mempoolErrorServerError": "Sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
-  "mempoolErrorInvalidResponse": "Sunucu geçersiz bir yanıt döndürdü.",
-  "mempoolErrorSaveServerFailed": "Sunucu kaydedilemedi",
-  "mempoolErrorLoadFailed": "Mempool sunucu verileri yüklenemedi",
-  "mempoolErrorDeleteFailed": "Özel sunucu silinemedi",
   "exchangeStatisticsBuySellRatioDesc": "Alım ve satımdan gelen toplam hacim yüzdesi",
   "exchangeStatisticsBuyVolumeDesc": "Bitcoin satın almak için harcanan toplam miktar",
   "exchangeStatisticsSellVolumeDesc": "Bitcoin satışından elde edilen toplam miktar",
@@ -10685,46 +9203,6 @@
   "sendCoordinatingPayjoinTransaction": "Bir Payjoin işlemi koordine ediliyor.",
   "sendErrorInvoiceExpired": "Bu faturanın süresi doldu. Alıcıdan yeni bir fatura isteyin.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Daha küçük ödemeler yapmak için Anında Ödemeleri fonlamayı düşünün.",
-  "psbtFlowSignViaNfc": "NFC ile imzala",
-  "psbtFlowSignViaNfcSheetTitle": "PSBT'yi NFC ile göndermek için {deviceName} cihazınıza dokunun",
-  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Talimatları",
-  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Talimatları",
-  "psbtFlowColdcardQStep1": "Coldcard Q cihazınıza giriş yapın",
-  "psbtFlowColdcardQStep2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
-  "psbtFlowColdcardQStep3": "Tercih ettiğiniz imzalama yöntemini seçin:",
-  "psbtFlowColdcardQStep4": "QR kodu için:",
-  "psbtFlowColdcardQStep5": "   - Coldcard Q'nuzda \"Scan any QR code\" seçeneğini seçin",
-  "psbtFlowColdcardQStep6": "   - Bull cüzdanında gösterilen QR kodunu tarayın",
-  "psbtFlowColdcardQStep7": "   - Taramada sorun yaşarsanız:",
-  "psbtFlowColdcardQStep8": "     - Cihazınızın ekran parlaklığını artırın",
-  "psbtFlowColdcardQStep9": "     - Kırmızı lazeri QR kodunun üzerinde yukarı aşağı hareket ettirin",
-  "psbtFlowColdcardQStep10": "     - Cihazınızı biraz geriye çekmeyi deneyin",
-  "psbtFlowColdcardQStep11": "NFC için:",
-  "psbtFlowColdcardQStep12": "   - Coldcard Q'nuzda \"Ready to Sign\" seçeneğini seçin, ardından NFC düğmesine dokunun",
-  "psbtFlowColdcardQStep13": "   - Telefonunuzu Coldcard Q'ya dokundurun",
-  "psbtFlowColdcardQStep14": "   - PSBT'nin aktarılmasını bekleyin",
-  "psbtFlowColdcardQStep15": "İşlem Coldcard Q'nuza aktarıldıktan sonra, hedef adresi ve miktarı gözden geçirin.",
-  "psbtFlowColdcardQStep16": "İşlemi Coldcard Q'nuzda imzalamak için düğmelere tıklayın.",
-  "psbtFlowColdcardQStep17": "Coldcard Q daha sonra imzalanmış işlemin QR kodunu gösterecek veya NFC aktarımını hazırlayacaktır.",
-  "psbtFlowColdcardQStep18": "QR ile imzaladıysanız, Bull Bitcoin cüzdanında \"Ben yaptım\"a tıklayın.",
-  "psbtFlowColdcardQStep19": "Bull Bitcoin cüzdanı, imzalanmış işlemin QR kodunu taramanızı veya NFC ile almanızı isteyecektir.",
-  "psbtFlowColdcardQStep20": "   - QR için: Coldcard Q'daki QR kodunu tarayın",
-  "psbtFlowColdcardQStep21": "   - NFC için: telefonunuzu Coldcard Q'ya dokundurun",
-  "psbtFlowColdcardQStep22": "İmzalanmış işlem Bull Bitcoin cüzdanına aktarılacaktır.",
-  "psbtFlowColdcardQStep23": "Artık yayınlanmaya hazır. Yayınla'ya tıkladığınız anda, işlem Bitcoin ağında yayınlanacaktır.",
-  "psbtFlowColdcardMk4Step1": "Coldcard Mk4 cihazınıza giriş yapın",
-  "psbtFlowColdcardMk4Step2": "Bir geçiş parolanız varsa ekleyin (isteğe bağlı)",
-  "psbtFlowColdcardMk4Step3": "Coldcard Mk4'ünüzde \"Ready to Sign\" seçeneğini seçin, ardından 3 numaralı düğmeye dokunun",
-  "psbtFlowColdcardMk4Step4": "Telefonunuzu Coldcard Mk4'e dokundurun",
-  "psbtFlowColdcardMk4Step5": "PSBT'nin aktarılmasını bekleyin",
-  "psbtFlowColdcardMk4Step6": "İşlem Coldcard Mk4'ünüze aktarıldıktan sonra, hedef adresi ve miktarı gözden geçirin.",
-  "psbtFlowColdcardMk4Step7": "İşlemi Coldcard Mk4'ünüzde imzalamak için düğmelere tıklayın.",
-  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 daha sonra imzalanmış işlemi NFC aktarımı için hazırlayacaktır.",
-  "psbtFlowColdcardMk4Step9": "Bull Bitcoin cüzdanında, yayın ekranında NFC'ye dokunun.",
-  "psbtFlowColdcardMk4Step10": "İmzalanmış işlemi almak için telefonunuzu Coldcard Mk4'e dokundurun.",
-  "psbtFlowColdcardMk4Step11": "İmzalanmış işlem Bull Bitcoin cüzdanına aktarılacaktır.",
-  "psbtFlowColdcardMk4Step12": "Bull Bitcoin cüzdanında işlem detaylarını gözden geçirin.",
-  "psbtFlowColdcardMk4Step13": "Artık yayınlanmaya hazır. Yayınla'ya tıkladığınız anda, işlem Bitcoin ağında yayınlanacaktır.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "İmzalanmış işlemi NFC ile almak için Coldcard'ınıza dokunun",
@@ -10769,11 +9247,9 @@
   "fundExchangeCopGeneratePaymentLink": "Ödeme Bağlantısı Oluştur",
   "fundExchangeCopRedirectMessage": "Ödemeyi yapmak için harici bir sayfaya yönlendirileceksiniz.",
   "fundExchangeCopOpenPaymentLink": "Ödeme Bağlantısını Aç",
-  "priceChartFailedToLoad": "Fiyat geçmişi yüklenemedi",
   "priceFailedToLoad": "Fiyat yüklenemedi",
   "statusScreenTryAgain": "Tekrar Dene",
   "statusScreenContinue": "Devam Et",
-  "noteVisibleToSenderNotice": "Bu not, QR kodunuzun veya faturanızın alıcısı tarafından görülebilecektir.",
   "viewerAddressTab": "Adres",
   "viewerPaymentUriTab": "Ödeme URI'si",
   "settingsErrorReportingTitle": "Hata bildirimi",
@@ -10903,18 +9379,6 @@
   "mempoolErrorUpdateSettingsFailed": "Ayarlar güncellenemedi: {error}",
   "sendSubSatVbyteWarning": "1 sat/vB altındaki işlemlerin onaylanması daha uzun sürebilir ve tüm düğümlere yayılmayabilir.",
   "sendBelowMinFeeRateError": "Ücret oranı en az 0,1 sat/vB olmalıdır.",
-  "bitboxErrorBluetoothPermissionDenied": "BitBox02 Nova'nıza bağlanmak için Bluetooth izni gereklidir.",
-  "bitboxErrorBluetoothUnavailable": "Bluetooth kullanılamıyor. Bluetooth'u açın ve tekrar deneyin.",
-  "bitboxErrorNoBleDevicesFound": "Yakında BitBox02 Nova bulunamadı. Bluetooth'u kontrol edip tekrar deneyin.",
-  "bitboxErrorMultipleBleDevicesFound": "Birden fazla BitBox02 Nova cihazı bulundu. Yakında yalnızca bir tane bırakın ve tekrar deneyin.",
-  "bitboxErrorOperationFailed": "BitBox işlemi başarısız oldu. Lütfen tekrar deneyin.",
-  "bitboxScreenConnectSubtextBluetooth": "BitBox02 Nova'nızın kilidinin açık ve Bluetooth'un etkin olduğundan emin olun.",
-  "bitboxScreenScanningSubtextBluetooth": "Yakınlarda BitBox02 Nova'nız aranıyor...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Sorun Giderme",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Cihazınız uygulamayla hâlâ bağlanmıyorsa, şunları deneyin:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Bluetooth'un açık ve bu uygulama için izinli olduğundan emin olun.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "BitBox02 Nova'nızda Bluetooth'un etkin olduğundan emin olun.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "BitBox02 Nova'nızı yeniden başlatın ve tekrar bağlanmayı deneyin.",
   "sendErrorInsufficientBalanceFrozenHint": "Yeterli harcanabilir bakiye yok — {amount} donduruldu. Kullanmak için Coin'leri yönet bölümünden dondurmayı kaldırın.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -10944,7 +9408,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Payjoin bilgilendirmesi",
   "settingsPayjoinAdvancedTitle": "Gelişmiş Payjoin ayarları",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Liquid bakiyeniz otomatik olarak Bitcoin’e dönüştürülür.",
   "addressViewErrorWalletNotFound": "Bu cüzdan bulunamadı.",
   "addressViewErrorLoadFailed": "Adresleriniz yüklenemedi. Lütfen tekrar deneyin.",
   "coreSwapsStatusNotStarted": "Başlatılmadı",
@@ -10959,19 +9422,6 @@
   "coreSwapsStatusUnknown": "Bilinmiyor",
   "sendSwapExpiredTitle": "Sipariş Süresi Doldu",
   "sendSwapExpiredMessage": "Bu siparişin süresi, herhangi bir fon gönderilmeden önce doldu. Cüzdanınızdan hiçbir şey gönderilmedi.",
-  "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
-  "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
-  "torSettingsBootstrapProgress": "Bağlanıyor… %{percent}",
-  "torSettingsEmbeddedTitle": "Gömülü Tor",
-  "torSettingsEmbeddedDescription": "Gömülü Tor, RecoverBull ve Bitcoin Electrum .onion sunucuları tarafından kullanılır. Uygulamanın diğer trafiği doğrudan kalır.",
-  "torSettingsTransportMode": "Bağlantı yöntemi",
-  "torSettingsModeAutomatic": "Otomatik",
-  "torSettingsModeDirect": "Doğrudan",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Önce doğrudan Tor bağlantısını dener; ağ Tor'u engelliyor görünüyorsa Snowflake kullanır.",
-  "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
-  "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
-  "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
   "settingsScreenPrivacyTitle": "Ekran gizliliği",
   "settingsScreenPrivacyDisabledMessage": "Hassas ekranlarda ekran görüntüsü almaya artık izin veriliyor",
   "settingsSearchHint": "Ayarlarda ara",
@@ -11006,11 +9456,7 @@
   "exchangeSupportChatLoadMessagesError": "Mesajlar yüklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatSendMessageError": "Mesajınız gönderilemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatLoadAttachmentError": "Ek açılamadı. Lütfen tekrar deneyin.",
-  "statusCheckNoDefaultWalletError": "Varsayılan Bitcoin cüzdanı bulunamadı. Lütfen varsayılan bir cüzdan ayarlayın ve tekrar deneyin.",
-  "statusCheckResultsMayBeOutdated": "Sonuçlar güncel olmayabilir",
   "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
-  "psbtFlowInvalidPsbtError": "Bu işlem okunamadı. Geri dönüp yeniden oluşturun.",
-  "psbtFlowQrEncodingError": "Bu işlem QR koduna dönüştürülemedi.",
   "sendErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
@@ -11042,15 +9488,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Bu dosya türü kabul edilmiyor. Başka bir tane seçin.",
   "exchangeSettingsErrorDocumentUnreadable": "Bu dosya okunamadı. Başka bir tane seçin.",
   "exchangeSettingsErrorUploadingDocument": "Belge yüklenemedi. Lütfen tekrar deneyin.",
-  "labelsErrorNoteTooLong": "Not en fazla {max} karakter olmalıdır",
-  "labelsErrorNoteForbiddenCharacter": "Not {character} karakterini içeremez",
-  "labelsErrorFileTooLarge": "Bu dosya çok büyük. Etiket dosyaları {max} boyutundan küçük olmalıdır.",
-  "labelsErrorFileUnreadable": "Bu bir BIP-329 etiket dosyasına benzemiyor. Doğru dosyayı seçtiğinizden emin olun.",
-  "labelsErrorFileEmpty": "Bu dosyada içe aktarılacak etiket yok.",
-  "labelsErrorExportFailed": "Etiketleriniz kaydedilemedi. Lütfen tekrar deneyin.",
-  "labelsErrorFileReservedName": "Bu dosya uygulamanın ayırdığı bir etiket adını kullanıyor. Dosyada adını değiştirip tekrar deneyin.",
-  "labelsErrorNoteForbiddenWhitespace": "Not satır sonu veya sekme içeremez",
-  "labelsErrorFileInvalidEntry": "Bu dosyadaki bazı girdiler okunamadı. Dosyayı kontrol edip tekrar deneyin.",
   "recipientsErrorLoadFailed": "Alıcılarınız yüklenemedi. Lütfen tekrar deneyin.",
   "recipientsErrorSaveFailed": "Bu alıcı kaydedilemedi. Bilgileri kontrol edip tekrar deneyin.",
   "recipientsErrorSinpeLookupFailed": "Bu telefon numarasını doğrulayamadık. Numarayı kontrol edip tekrar deneyin.",
@@ -11228,11 +9665,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil.",
   "settingsDarkModeTitle": "Karanlık mod",
   "settingsSourceCodeTitle": "Kaynak kodu",
-  "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
-  "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
-  "serverEncrypted": "Şifreli",
-  "serverUnencrypted": "Şifresiz",
   "backgroundTasksTitle": "Arka plan görevleri",
   "blockedInSystemSettings": "Sistem ayarlarında engellendi",
   "notificationsBlockedMessage": "Bildirimler sistem ayarlarında engellendi.",

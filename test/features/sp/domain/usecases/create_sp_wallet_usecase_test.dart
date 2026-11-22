@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -13,7 +12,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../sp_fakes.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 SettingsEntity _settings({
   bool? isSuperuser = true,
@@ -62,7 +61,7 @@ void main() {
     accountRepo = FakeSpAccountRepository(hasSessionValue: false);
     configRepo = FakeSpBackendConfigRepository();
 
-    when(() => settingsRepo.fetch()).thenAnswer((_) async => _settings());
+    when(() => settingsRepo.fetch()).thenAnswer((_) async => Ok(_settings()));
     when(() => secretUsecase.execute(any()))
         .thenAnswer((_) async => Ok(secret));
     usecase = build();
@@ -73,7 +72,8 @@ void main() {
       'regtest active refuses creation before custody or backend access',
       () async {
         when(() => settingsRepo.fetch()).thenAnswer(
-          (_) async => _settings().copyWith(environment: Environment.regtest),
+          (_) async =>
+              Ok(_settings().copyWith(environment: Environment.regtest)),
         );
         final result = await run();
         expect((result as Err).failure, isA<SpUnsupportedNetwork>());
@@ -108,7 +108,7 @@ void main() {
 
     test('refuses with SpRequiresSuperuser when superuser is off', () async {
       when(() => settingsRepo.fetch())
-          .thenAnswer((_) async => _settings(isSuperuser: false));
+          .thenAnswer((_) async => Ok(_settings(isSuperuser: false)));
 
       final result = await run();
 
@@ -119,7 +119,7 @@ void main() {
 
     test('refuses with SpRequiresDevMode when dev mode is off', () async {
       when(() => settingsRepo.fetch())
-          .thenAnswer((_) async => _settings(isDevModeEnabled: false));
+          .thenAnswer((_) async => Ok(_settings(isDevModeEnabled: false)));
 
       final result = await run();
 
@@ -129,7 +129,7 @@ void main() {
 
     test('checks superuser before dev mode', () async {
       when(() => settingsRepo.fetch()).thenAnswer(
-        (_) async => _settings(isSuperuser: false, isDevModeEnabled: false),
+        (_) async => Ok(_settings(isSuperuser: false, isDevModeEnabled: false)),
       );
 
       final result = await run();

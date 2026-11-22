@@ -1,7 +1,6 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:primitives/primitives.dart' show Ok;
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -14,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements ActiveEnvironmentReader {}
 
 class _Xpub extends Mock implements ImportWatchOnlyXpubUsecase {}
 
@@ -32,14 +31,9 @@ void main() {
             .copyWith(label: labelCorrection ? '' : 'NeverScanned');
         final settings = _Settings();
         final importer = _Xpub();
-        when(settings.fetch).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
-          ),
-        );
-        locator.registerSingleton<SettingsRepository>(settings);
+        when(settings.readActiveEnvironment)
+            .thenAnswer((_) async => Ok(Environment.testnet));
+        locator.registerSingleton<ActiveEnvironmentReader>(settings);
         locator.registerSingleton<ImportWatchOnlyXpubUsecase>(importer);
         locator.registerSingleton<ImportWatchOnlyDescriptorUsecase>(
           _Descriptor(),
@@ -60,13 +54,8 @@ void main() {
         // The form was captured on testnet; switch the live selection before
         // submission to keep testing a real mismatch after regtest support.
         if (!labelCorrection) {
-          when(settings.fetch).thenAnswer(
-            (_) async => const SettingsEntity(
-              environment: Environment.mainnet,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'USD',
-            ),
-          );
+          when(settings.readActiveEnvironment)
+              .thenAnswer((_) async => Ok(Environment.mainnet));
         }
         for (var attempt = 0; attempt < 2; attempt++) {
           final button = find.text(AppLocalizationsEn().importWatchOnlyImport);

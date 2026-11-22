@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
@@ -11,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserRepository {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 /// Stands in for whatever a foreign exception message may embed — a
 /// credential, a response body. It must never reach a [DcaFailure].
@@ -38,7 +37,7 @@ void main() {
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
     );
-    when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
+    when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
 
   DcaFailure failureOf(Result<DcaStartData, DcaFailure> result) {
@@ -49,7 +48,8 @@ void main() {
   group('StartDcaUsecase', () {
     test('regtest refuses DCA before backend IO', () async {
       when(settings.fetch).thenAnswer(
-        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+        (_) async =>
+            Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
       expect(await usecase.execute(), isA<Err>());
       verifyZeroInteractions(mainnetUsers);

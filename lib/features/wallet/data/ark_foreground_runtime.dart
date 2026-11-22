@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -5,11 +8,9 @@ import 'dart:ui';
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -30,7 +31,9 @@ import 'package:secrets/secrets.dart';
 import 'ark_board_abandonment.dart';
 import 'ark_installation_state.dart';
 import 'ark_display_data.dart';
-import 'wallet_native_runtime.dart';
+
+import 'package:sync/write.dart' show WalletNativeRuntime;
+
 import 'sqlite_ark_funding_reservations.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.
@@ -194,7 +197,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
 }) async {
   try {
     final selection = _WalletArkSelection(
-      locator<SettingsRepository>(),
+      locator<ActiveEnvironmentReader>(),
       locator<WalletMetadataDatasource>(),
       arkUrl,
       primaryEsploraUrl,
@@ -236,7 +239,12 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     WalletArkDisplayData? displayData;
     try {
       final locale =
-          (await locator<SettingsRepository>().fetch()).language?.locale ??
+          ((await locator<RuntimeDisplayPreferencesReader>().readLanguage())
+                  .fold(
+                    (value) => value,
+                    (failure) => throw Exception('Preferences read failed'),
+                  ))
+              ?.locale ??
           const Locale('en');
       final openedMaintenance = await openArkForegroundMaintenance(
         path: '${directory.path}/reminders.sqlite',
@@ -258,13 +266,18 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           : _ScheduledArkRegistry(registry, dispatcher);
       final board = boardFunding.bind(client, selection.sourceWalletId);
       if (locator.isRegistered<WalletNativeRuntime>()) {
-        final settings = locator<SettingsRepository>();
+        final settings = locator<RuntimeDisplayPreferencesReader>();
         displayData = WalletArkDisplayData(
           runtime: locator<WalletNativeRuntime>(),
           account: config.id,
           selectedSource: selection.displaySourceWalletId,
-          currency: () async => (await settings.fetch()).currencyCode,
-          currencyChanges: settings.currencyChangeStream,
+          currency: () async => (await settings.readCurrency()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          ),
+          currencyChanges: settings.currencyChangeStream.expand<String>(
+            (result) => result.fold((value) => [value], (_) => const []),
+          ),
           isActive: () => policy.active,
         );
       }
@@ -277,7 +290,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           locator<ParentCustodyAdmissionPort>(),
           SecretsArkParentPresence(secrets),
           managedRegistry,
-          ArkDerivationCollision(locator<Bip85Repository>()),
+          ArkDerivationCollision(locator<Bip85Registry>()),
         ),
         registry: managedRegistry,
         boardFunding: board,
@@ -400,7 +413,7 @@ final class _SelectionFailure implements Exception {
 }
 
 final class _WalletArkSelection implements ArkAccountSelectionPort {
-  final SettingsRepository _settings;
+  final ActiveEnvironmentReader _settings;
   final WalletMetadataDatasource _wallets;
   final Uri _arkUrl;
   final Uri _esploraUrl;
@@ -443,7 +456,11 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
 
   Future<Result<(ArkAccountConfig, String), ArkFailure>> _select() async {
     try {
-      if ((await _settings.fetch()).environment != Environment.regtest) {
+      if ((await _settings.readActiveEnvironment()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          ) !=
+          Environment.regtest) {
         return const Err(ArkNetworkUnavailableFailure());
       }
       final eligible = (await _wallets.fetchAll())
@@ -478,7 +495,7 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
 
 /// Reads every historical BIP85 record, including revoked derivations.
 final class ArkDerivationCollision implements ArkChildCollisionPort {
-  final Bip85Repository _registry;
+  final Bip85Registry _registry;
   const ArkDerivationCollision(this._registry);
 
   @override

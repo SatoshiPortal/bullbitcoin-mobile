@@ -1,0 +1,12 @@
+{
+  "@@locale": "es",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "announcementPayjoinTitle": "Aumenta tu privacidad",
+  "announcementPayjoinDescription": "Activa Payjoin para que tus pagos en Bitcoin sean más privados.",
+  "announcementDismissConfirmTitle": "¿Descartar este anuncio?",
+  "announcementDismissConfirmBody": "Léelo para saber más o descártalo para ocultarlo. Los anuncios descartados no se vuelven a mostrar.",
+  "announcementDismissConfirmAction": "Descartar",
+  "announcementDismissConfirmRead": "Leer",
+  "announcementAppUpdateRequiredTitle": "Actualiza BULL",
+  "announcementAppUpdateRequiredDescription": "Para usar el servicio de pagos Lightning y de intercambios, actualiza la app móvil BULL a la nueva versión."
+}

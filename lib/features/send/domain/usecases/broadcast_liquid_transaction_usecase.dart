@@ -2,23 +2,26 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show NetworkX, SignedPset, WalletFacade;
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:sync/sync.dart' show SyncProtectedInputsFailure;
+import 'package:sync/sync.dart'
+    show
+        SyncProtectedInputsFailure,
+        WalletConnectionPort,
+        broadcastLiquidTransaction;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 
 class BroadcastLiquidTransactionUsecase {
-  final LiquidBlockchainRepository _liquidBlockchain;
-  final SettingsRepository _settingsRepository;
+  final WalletConnectionPort _connections;
+  final Preferences _settingsRepository;
   final WalletFacade? _wallet;
 
   BroadcastLiquidTransactionUsecase({
-    required LiquidBlockchainRepository liquidBlockchainRepository,
+    required this._connections,
     required this._settingsRepository,
     this._wallet,
-  }) : _liquidBlockchain = liquidBlockchainRepository;
+  });
 
   /// Broadcasts [signedPset]. With [walletId], `wallet.tx` checks its
   /// generation and the freezes first.
@@ -32,7 +35,10 @@ class BroadcastLiquidTransactionUsecase {
     String? walletId,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (network != null && isTestnet != null) {
         throw ArgumentError('Specify one network context');
       }
@@ -68,10 +74,17 @@ class BroadcastLiquidTransactionUsecase {
           ),
         };
       }
-      return await _liquidBlockchain.broadcastTransaction(
-        signedPset: signedPset,
-        network: network,
-      );
+      if (!network.isLiquid) throw const UnsupportedNetworkException();
+      return switch (await broadcastLiquidTransaction(
+        signedPset,
+        network: network.liquid,
+        connections: _connections,
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw CategorizedBroadcastException(
+          broadcastFailureCategory(failure),
+        ),
+      };
     } on Exception catch (e) {
       throw CategorizedBroadcastException(mapBroadcastFailure(e));
     }

@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -17,8 +18,6 @@ import 'package:sync/sync.dart';
 import 'ark_funding_test_fixture.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
-
-class _Bdk extends Mock implements BdkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -51,7 +50,7 @@ void main() {
   BitcoinWalletRepository generic() => BitcoinWalletRepository(
     walletMetadataDatasource: metadata,
     secrets: Secrets(scratchDirectory: () async => fixture.directory.path),
-    bdkWalletDatasource: _Bdk(),
+    wallet: (_) async => throw StateError('no native access expected'),
     walletValuesDatasource: _Values(),
     arkFundingGuard: guard,
   );
@@ -146,6 +145,48 @@ void main() {
     );
     expect(checking.sawCommittedMarker, isTrue);
     expect(checking.reads, greaterThan(0));
+  });
+  test('unavailable native wallet raises a recoverable sync exception before signing', () async {
+    final storage = FakeSecureStoragePlatform(
+      entries: {
+        'seed_73c5da0a': jsonEncode({
+          'mnemonicWords': [...List.filled(11, 'abandon'), 'about'],
+          'passphrase': null,
+          'runtimeType': 'mnemonic',
+        }),
+      },
+    )..install();
+    when(() => metadata.fetch(any())).thenAnswer(
+      (_) async => fundingMetadata.copyWith(masterFingerprint: '73c5da0a'),
+    );
+    var opens = 0;
+    final adapter = PayjoinWalletAdapter(
+      Secrets(scratchDirectory: () async => fixture.directory.path),
+      (_) async {
+        opens++;
+        return const Err(SyncStorageFailure());
+      },
+      (_) async => BitcoinSpendStatus.ready,
+      _Values(),
+      metadata,
+      guard,
+    );
+    await expectLater(
+      adapter.signPsbt(
+        walletId: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+        psbt: publicFundingPsbt,
+      ),
+      throwsA(
+        isA<WalletSnapshotException>().having(
+          (error) => error.failure,
+          'failure',
+          isA<SyncStorageFailure>(),
+        ),
+      ),
+    );
+    expect(opens, 1);
+    expect(storage.reads, greaterThan(0));
   });
   test('marker persistence contention cannot reach the key store', () async {
     final db = sqlite3.open(fixture.path);

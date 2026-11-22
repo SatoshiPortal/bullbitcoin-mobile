@@ -1,10 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/exchange_preferences.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
@@ -49,33 +51,46 @@ UserSummary _summary({List<String> groups = const []}) => UserSummary(
   emailNotificationsEnabled: false,
 );
 
-/// Answers the picker with a fixed outcome.
-class _StubPicker implements DocumentPickerPort {
-  final Result<PickedDocument?, ExchangeSettingsFailure> result;
-  int calls = 0;
+/// Answers the picker and reader with fixed outcomes.
+class _StubPicker extends Fake implements FileSystem {
+  final Result<PickedDocument?, FileSystemFailure> result;
 
   _StubPicker(this.result);
 
   @override
-  Future<Result<PickedDocument?, ExchangeSettingsFailure>> pick({
-    required List<String> allowedExtensions,
+  Future<Result<PickedDocument?, FileSystemFailure>> pick({
+    List<String> allowedExtensions = const [],
+  }) async => result;
+
+  @override
+  Future<Result<Uint8List, FileSystemFailure>> read(
+    PickedDocument document, {
+    required int maxBytes,
   }) async {
-    calls++;
-    return result;
+    final bytes = (document as _Document).bytes;
+    if (bytes == null) {
+      return const Err(FileSystemReadFailure());
+    }
+    if (bytes.length > maxBytes) {
+      return const Err(FileSystemTooLargeFailure());
+    }
+    return Ok(Uint8List.fromList(bytes));
   }
 }
 
-PickedDocument _document({
-  String name = 'id.png',
-  String? extension = 'png',
-  int sizeBytes = 1024,
-  List<int>? bytes = const [1, 2, 3],
-}) => PickedDocument(
-  name: name,
-  extension: extension,
-  sizeBytes: sizeBytes,
-  bytes: bytes,
-);
+class _Document extends Fake implements PickedDocument {
+  @override
+  final String name;
+  @override
+  final String? extension;
+  final List<int>? bytes;
+
+  _Document({
+    this.name = 'id.png',
+    this.extension = 'png',
+    this.bytes = const [1, 2, 3],
+  });
+}
 
 /// Asserts a failure carries nothing that could identify the user or the API.
 void _expectSanitized(ExchangeSettingsFailure failure) {
@@ -333,10 +348,10 @@ void main() {
 
   group('UploadExchangeDocumentUsecase', () {
     UploadExchangeDocumentUsecase build(
-      DocumentPickerPort picker,
+      FileSystem picker,
       UploadKycDocumentUsecase upload,
     ) => UploadExchangeDocumentUsecase(
-      documentPicker: picker,
+      fileSystem: picker,
       uploadKycDocumentUsecase: upload,
     );
 
@@ -353,7 +368,7 @@ void main() {
       final upload = _MockUploadKycDocument();
 
       final result = await build(
-        _StubPicker(Ok(_document(bytes: const []))),
+        _StubPicker(Ok(_Document(bytes: const []))),
         upload,
       ).execute();
 
@@ -373,7 +388,7 @@ void main() {
       final upload = _MockUploadKycDocument();
 
       final result = await build(
-        _StubPicker(Ok(_document(bytes: null))),
+        _StubPicker(Ok(_Document(bytes: null))),
         upload,
       ).execute();
 
@@ -400,7 +415,7 @@ void main() {
       ).thenAnswer((_) async => FileUploadResult.success());
 
       final result = await build(
-        _StubPicker(Ok(_document(name: 'ID.PNG', extension: 'PNG'))),
+        _StubPicker(Ok(_Document(name: 'ID.PNG', extension: 'PNG'))),
         upload,
       ).execute();
 
@@ -416,7 +431,7 @@ void main() {
 
       final result = await build(
         _StubPicker(
-          Ok(_document(sizeBytes: FileToUpload.maxFileSizeBytes + 1)),
+          Ok(_Document(bytes: Uint8List(FileToUpload.maxFileSizeBytes + 1))),
         ),
         upload,
       ).execute();
@@ -437,7 +452,7 @@ void main() {
       final upload = _MockUploadKycDocument();
 
       final result = await build(
-        _StubPicker(Ok(_document(name: 'payload.exe', extension: 'exe'))),
+        _StubPicker(Ok(_Document(name: 'payload.exe', extension: 'exe'))),
         upload,
       ).execute();
 
@@ -464,7 +479,7 @@ void main() {
       ).thenAnswer((_) async => FileUploadResult.failure(_rawReason));
 
       final result = await build(
-        _StubPicker(Ok(_document())),
+        _StubPicker(Ok(_Document())),
         upload,
       ).execute();
 
@@ -485,7 +500,7 @@ void main() {
       ).thenThrow(Exception(_rawReason));
 
       final result = await build(
-        _StubPicker(Ok(_document())),
+        _StubPicker(Ok(_Document())),
         upload,
       ).execute();
 
@@ -497,17 +512,12 @@ void main() {
     test('a picker failure short-circuits without uploading', () async {
       final upload = _MockUploadKycDocument();
       final picker = _StubPicker(
-        const Err(
-          ExchangeSettingsDocumentUnreadableFailure('pickFiles blew up'),
-        ),
+        const Err(FileSystemPickFailure('PlatformException')),
       );
 
       final result = await build(picker, upload).execute();
 
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsDocumentUnreadableFailure>(),
-      );
+      expect((result as Err).failure, isA<ExchangeSettingsUnexpectedFailure>());
       verifyNever(
         () => upload.execute(
           fileBytes: any(named: 'fileBytes'),
@@ -526,7 +536,7 @@ void main() {
       ).thenAnswer((_) async => FileUploadResult.success());
 
       final result = await build(
-        _StubPicker(Ok(_document())),
+        _StubPicker(Ok(_Document())),
         upload,
       ).execute(userId: 'u-42');
 

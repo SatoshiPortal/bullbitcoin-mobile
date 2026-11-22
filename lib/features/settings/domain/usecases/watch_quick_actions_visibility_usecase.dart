@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
 /// Combines the exchange state with the platform and network restrictions.
@@ -13,7 +13,7 @@ class WatchQuickActionsVisibilityUsecase {
   });
 
   final ExchangeFacade _exchange;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   final Stream<bool> _platformChanges;
   final bool _isIOS;
 
@@ -78,7 +78,12 @@ class WatchQuickActionsVisibilityUsecase {
           unawaited(() async {
             var initial = false;
             try {
-              initial = (await _settings.fetch()).isSuperuser == true;
+              initial =
+                  ((await _settings.fetch()).fold(
+                    (value) => value,
+                    (failure) => throw Exception('Preferences read failed'),
+                  )).isSuperuser ==
+                  true;
             } on Exception {
               // Fail closed when the platform policy cannot be read.
             }

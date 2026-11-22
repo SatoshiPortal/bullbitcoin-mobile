@@ -1,7 +1,7 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/amount_input_mode_setting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dark_mode_switch.dart';
@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_pricer/bull_pricer.dart' show SupportedCurrency;
 import 'package:bull_ui/bull_ui.dart'
     show BullLanguagePicker, BullPickerChip, BullPickerItem, BullSnackBar;
@@ -28,9 +28,7 @@ class AppSettingsScreen extends StatelessWidget {
     final currency = context.select(
       (SettingsCubit cubit) => cubit.state.currencyCode,
     );
-    final availableCurrencies = context.select(
-      (BitcoinPriceBloc bloc) => bloc.state.availableCurrencies,
-    );
+    final availableCurrencies = BitcoinPriceFeature.watchCurrencies(context);
     final items = settingsItemsOf(context);
 
     Widget? trailingFor(SettingsItemId id) => switch (id) {

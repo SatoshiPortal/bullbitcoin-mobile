@@ -1,11 +1,10 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -54,13 +53,14 @@ class UtxoTile extends StatelessWidget {
     final colors = context.bull;
 
     final bitcoinUnit =
-        context.select((SettingsCubit c) => c.state.bitcoinUnit) ??
+        context.select((CoinsCubit c) => c.state.amountDisplay?.bitcoinUnit) ??
         BitcoinUnit.btc;
     final hideAmounts =
-        context.select((SettingsCubit c) => c.state.hideAmounts) ?? true;
-    final fiat = context.select(
-      (BitcoinPriceBloc b) =>
-          b.state.calculateFiatPrice(utxo.amountSat.toInt()),
+        context.select((CoinsCubit c) => c.state.amountDisplay?.hideAmounts) ??
+        true;
+    final fiat = BitcoinPriceFeature.watchFiatAmount(
+      context,
+      utxo.amountSat.toInt(),
     );
 
     final amount = bitcoinUnit == BitcoinUnit.btc

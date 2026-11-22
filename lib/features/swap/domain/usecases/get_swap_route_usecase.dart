@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/swap_route_setting_repository.dart';
@@ -6,7 +6,7 @@ import 'package:bull_logger/bull_logger.dart';
 
 class GetSwapRouteUsecase {
   final SwapRouteSettingRepository _swapRouteSettingRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetSwapRouteUsecase({
     required this._swapRouteSettingRepository,
@@ -27,7 +27,11 @@ class GetSwapRouteUsecase {
     var devModeEnabled = false;
     try {
       devModeEnabled =
-          (await _settingsRepository.fetch()).isDevModeEnabled ?? false;
+          ((await _settingsRepository.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).isDevModeEnabled ??
+          false;
     } catch (e) {
       log.warning('Swap route: settings unreadable (${e.runtimeType})');
     }

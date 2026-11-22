@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/loading/status_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/pin_code_failure_l10n.dart';
@@ -9,10 +8,9 @@ import 'package:bb_mobile/features/pin_code/ui/screens/confirm_pin_code_screen.d
 import 'package:bb_mobile/features/pin_code/ui/screens/pin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart';
 
 class PinCodeSettingFlow extends StatelessWidget {
   const PinCodeSettingFlow({super.key});
@@ -59,7 +57,7 @@ class PinCodeSettingFlow extends StatelessWidget {
               builder: (context, status) {
                 switch (status) {
                   case PinCodeSettingStatus.initializing:
-                    return StatusScreen(
+                    return _PinSettingProgress(
                       title: context.loc.pinCodeLoading,
                       description: context.loc.pinCodeCheckingStatus,
                     );
@@ -89,13 +87,58 @@ class PinCodeSettingFlow extends StatelessWidget {
                   case PinCodeSettingStatus.success:
                   case PinCodeSettingStatus.deleted:
                   case PinCodeSettingStatus.failure:
-                    return StatusScreen(
+                    return _PinSettingProgress(
                       title: context.loc.pinCodeProcessing,
                       description: context.loc.pinCodeSettingUp,
                     );
                 }
               },
             ),
+      ),
+    );
+  }
+}
+
+class _PinSettingProgress extends StatelessWidget {
+  const _PinSettingProgress({required this.title, required this.description});
+
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return BullScaffold(
+      backgroundColor: context.bull.surface,
+      body: BullStackedPage(
+        bottomChild: const SizedBox.shrink(),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
+            child: Column(
+              children: [
+                const BullLoader.large(),
+                const Gap(BullSpacing.md),
+                Semantics(
+                  header: true,
+                  child: BullText(
+                    title,
+                    role: BullTextRole.subtitle,
+                    fontWeight: FontWeight.bold,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const Gap(BullSpacing.md),
+                BullText(
+                  description,
+                  role: BullTextRole.label,
+                  fontWeight: FontWeight.w400,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

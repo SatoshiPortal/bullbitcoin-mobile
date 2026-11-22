@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -13,18 +12,20 @@ import 'package:sync/sync.dart'
 
 class _Database extends Mock implements SqliteDatabase {}
 
-class _Settings extends Mock implements GetSettingsUsecase {}
+class _Settings extends Mock implements Preferences {}
 
 void _registerSettings(GetIt locator) {
   final settings = _Settings();
-  when(settings.execute).thenAnswer(
-    (_) async => const SettingsEntity(
-      environment: Environment.mainnet,
-      bitcoinUnit: BitcoinUnit.sats,
-      currencyCode: 'CAD',
+  when(settings.fetch).thenAnswer(
+    (_) async => Ok(
+      const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
     ),
   );
-  locator.registerSingleton<GetSettingsUsecase>(settings);
+  locator.registerSingleton<Preferences>(settings);
 }
 
 void main() {

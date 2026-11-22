@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'dart:async';
@@ -5,10 +6,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -27,17 +25,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 
 class _Wallet extends Mock implements WalletBloc {}
 
 class _Settings extends Mock implements SettingsCubit {}
-
-class _Price extends Mock implements BitcoinPriceBloc {}
-
-class _Chart extends Mock implements PriceChartCubit {}
-
-class _Announcements extends Mock implements AnnouncementsCubit {}
 
 class _Transactions extends Mock implements TransactionsCubit {}
 
@@ -66,7 +58,7 @@ void main() {
     )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
   });
   for (final type in AppThemeType.values) {
-    for (final scene in ['home', 'settings', 'wallet', 'legacy-sheet']) {
+    for (final scene in ['home', 'settings', 'wallet', 'shared-sheet']) {
       testWidgets('untouched $scene ${type.name}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
@@ -85,9 +77,15 @@ void main() {
           signerDevice: null,
           balanceSat: BigInt.from(1000000),
         );
+        const amountDisplay = (
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          hideAmounts: false,
+        );
         final wallets = _Wallet();
         when(() => wallets.state).thenReturn(
           WalletState(
+            amountDisplay: amountDisplay,
             status: WalletStatus.success,
             wallets: [wallet],
             backupNeeded: false,
@@ -108,22 +106,7 @@ void main() {
           ),
         );
         when(() => settings.stream).thenAnswer((_) => const Stream.empty());
-        final price = _Price();
-        when(() => price.state).thenReturn(
-          const BitcoinPriceState(
-            currency: 'CAD',
-            bitcoinPrice: 125000,
-            availableCurrencies: ['CAD', 'USD'],
-          ),
-        );
-        when(() => price.stream).thenAnswer((_) => const Stream.empty());
-        final chart = _Chart();
-        when(() => chart.state).thenReturn(const PriceChartState());
-        when(() => chart.stream).thenAnswer((_) => const Stream.empty());
-        final announcements = _Announcements();
-        when(() => announcements.state).thenReturn(const AnnouncementsState());
-        when(() => announcements.stream)
-            .thenAnswer((_) => const Stream.empty());
+
         final transactions = _Transactions();
         when(() => transactions.state)
             .thenReturn(const TransactionsState(transactions: []));
@@ -158,6 +141,7 @@ void main() {
                     extendBodyBehindAppBar: true,
                     appBar: WalletHomeAppBar(onSettings: () {}),
                     body: WalletHomeScreen(
+                      announcements: const SizedBox.shrink(),
                       arkHost: null,
                       createSetupCubit: () => throw StateError(
                         'Populated preview does not create wallets',
@@ -176,17 +160,17 @@ void main() {
                     onOpenCoins: (_, _) async {},
                   ),
                   _ => Scaffold(
-                    appBar: AppBar(title: const Text('Legacy sheet exception')),
+                    appBar: AppBar(title: const Text('Shared bottom sheet')),
                     body: Builder(
                       builder: (context) => Center(
                         child: BullButton.secondary(
-                          label: 'Open legacy sheet',
-                          onPressed: () => BlurredBottomSheet.show<void>(
+                          label: 'Open shared sheet',
+                          onPressed: () => BullBottomSheet.show<void>(
                             context: context,
                             child: const Padding(
                               padding: EdgeInsets.all(24),
                               child: Text(
-                                'Untouched legacy modal with explicit overrides.',
+                                'Modal using the shared theme defaults.',
                               ),
                             ),
                           ),
@@ -207,9 +191,13 @@ void main() {
               providers: [
                 BlocProvider<WalletBloc>.value(value: wallets),
                 BlocProvider<SettingsCubit>.value(value: settings),
-                BlocProvider<BitcoinPriceBloc>.value(value: price),
-                BlocProvider<PriceChartCubit>.value(value: chart),
-                BlocProvider<AnnouncementsCubit>.value(value: announcements),
+                BitcoinPriceFixture.prices(
+                  amountDisplay: amountDisplay,
+                  currency: 'CAD',
+                  bitcoinPrice: 125000,
+                  availableCurrencies: const ['CAD', 'USD'],
+                ),
+                BitcoinPriceFixture.chart(),
               ],
               child: MaterialApp.router(
                 debugShowCheckedModeBanner: false,
@@ -248,8 +236,8 @@ void main() {
           );
         });
         await tester.pumpAndSettle();
-        if (scene == 'legacy-sheet') {
-          await tester.tap(find.text('Open legacy sheet'));
+        if (scene == 'shared-sheet') {
+          await tester.tap(find.text('Open shared sheet'));
           await tester.pumpAndSettle();
         }
         await tester.pump(const Duration(milliseconds: 16));

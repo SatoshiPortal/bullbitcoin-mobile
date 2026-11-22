@@ -5,7 +5,6 @@ import 'package:primitives/primitives.dart' hide Network;
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/send/data/liquid_blockchain_repository_impl.dart';
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:sync/sync.dart'
     show
@@ -16,12 +15,11 @@ import 'package:sync/sync.dart'
         SyncSpendBlockedFailure,
         WalletConnection,
         WalletConnectionPort;
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -49,7 +47,7 @@ final class _Failing implements WalletConnectionPort {
   }
 }
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
@@ -130,10 +128,12 @@ void main() {
           });
           final settings = _Settings();
           when(settings.fetch).thenAnswer(
-            (_) async => const SettingsEntity(
-              environment: Environment.mainnet,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'USD',
+            (_) async => Ok(
+              const SettingsEntity(
+                environment: Environment.mainnet,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
             ),
           );
           // What sync reports once every server failed; the native causes and
@@ -145,9 +145,6 @@ void main() {
           };
           final connections = _Failing(failure);
           final bitcoin = BitcoinBlockchainRepository(connections: connections);
-          final liquid = LiquidBlockchainRepositoryImpl(
-            connections: connections,
-          );
           final btc = BroadcastBitcoinTransactionUsecase(
             wallet: WalletFacade(
               const Stream.empty(),
@@ -167,7 +164,7 @@ void main() {
             settingsRepository: settings,
           );
           final lbtc = BroadcastLiquidTransactionUsecase(
-            liquidBlockchainRepository: liquid,
+            connections: connections,
             settingsRepository: settings,
           );
           const wallet = WalletFacade(Stream.empty());

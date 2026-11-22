@@ -11,62 +11,58 @@ import 'package:path/path.dart' as p;
 // Networks owner moves and captured-network consumers: see the per-edge review
 // in FEATURES.md (2026-11-07); do not regenerate this baseline blindly.
 // Remove retired edges; review any addition instead of regenerating this list.
-// In particular, sp/swap -> wallet predates foreground sync: repository
-// compatibility exports and swap's wallet navigation remain out of scope.
+// SP and swap still import the wallet repository, and swap uses wallet
+// navigation. Both feature edges predate foreground sync.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
 // These four edges are documented in FEATURES.md.
+// QR and NFC consumers use the scanning feature's public capabilities; its
+// implementation has no dependencies on those consumers (see FEATURES.md).
+// Label Editor publishes the existing note, label and import/export UI. Its
+// consumers use that surface while data-only consumers depend on the package.
 const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'app_unlock wallet',
-  'announcements': 'settings swap',
-  'app_startup': 'app_unlock import_mnemonic logs onboarding pin_code recoverbull settings wallet',
+  'app_startup':
+      'app_unlock import_mnemonic logs onboarding recoverbull settings wallet',
   'app_unlock': 'pin_code wallet',
   'autobuy': 'default_wallets exchange wallet',
-  'autoswap': 'labels send swap wallet',
+  'autoswap': 'send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
-  'bip85_entropy': 'wallet',
-  'bitbox': 'import_watch_only_wallet wallet',
-  'bitcoin_price': 'settings',
-  'broadcast_signed_tx': 'send wallet',
-  'buy': 'exchange fees fund_exchange labels settings transactions wallet',
-  'coins': 'bitcoin_price labels settings wallet',
+  'broadcast_signed_tx': 'scanning send wallet',
+  'buy': 'exchange fees fund_exchange transactions wallet',
+  'coins': 'bitcoin_price wallet',
   'consolidation': 'send wallet',
-  'dca': 'exchange fund_exchange settings wallet',
+  'dca': 'exchange fund_exchange wallet',
   'default_wallets': 'exchange wallet',
-  'electrum_settings': 'tor_settings wallet',
-  'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange settings transactions withdraw',
+  'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange transactions withdraw',
   'exchange_settings': 'exchange',
   'exchange_support_chat': 'exchange',
-  'fees': 'electrum_settings wallet',
+  'fees': 'wallet',
   'fund_exchange': 'exchange recipients',
-  'import_coldcard': 'import_watch_only_wallet',
-  'import_mnemonic': 'electrum_settings wallet',
-  'import_qr_device': 'import_watch_only_wallet',
-  'import_wallet': 'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
-  'import_watch_only_wallet': 'wallet',
-  'labels': 'wallet',
-  'ledger': 'import_watch_only_wallet wallet',
+  'import_coldcard': 'import_watch_only_wallet scanning signers',
+  'import_mnemonic': 'wallet',
+  'import_qr_device': 'import_watch_only_wallet signers',
+  'import_wallet': 'import_coldcard import_mnemonic import_qr_device import_watch_only_wallet settings signers',
+  'import_watch_only_wallet': 'scanning signers wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',
-  'mempool_settings': 'settings',
-  'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
-  'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
+  'network': 'recoverbull',
+  'onboarding': 'import_mnemonic recoverbull settings wallet network',
+  'pay': 'bitcoin_price exchange fees recipients send transactions wallet',
   'pin_code': 'app_unlock settings test_wallet_backup',
-  'psbt_flow': 'broadcast_signed_tx wallet',
-  'receive': 'bitbox labels ledger settings swap transactions wallet',
-  'recipients': 'exchange settings',
+  'receive': 'label_editor settings signers swap transactions wallet',
+  'recipients': 'exchange',
   'replace_by_fee': 'fees send wallet',
-  'sell': 'bitcoin_price exchange fees labels recipients send settings transactions wallet',
-  'send': 'ark bitbox coins consolidation fees labels ledger psbt_flow settings sp swap transactions wallet',
-  'settings': 'ark address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code quick_actions recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
+  'scanning': 'signers',
+  'sell': 'bitcoin_price exchange fees recipients send transactions wallet',
+  'send': 'ark coins consolidation fees label_editor signers sp swap transactions wallet',
+  'settings': 'address_view all_seed_view app_unlock ark autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets exchange exchange_settings fees import_wallet label_editor logs network pay pin_code quick_actions recoverbull sp swap test_wallet_backup transactions wallet',
   'sp': 'wallet',
-  'status_check': 'electrum_settings recoverbull wallet',
   'support': 'exchange_support_chat',
-  'swap': 'ark autoswap consolidation fees labels send settings transactions wallet',
+  'swap': 'ark autoswap consolidation fees send transactions wallet',
   'test_wallet_backup': 'app_unlock onboarding recoverbull wallet',
-  'transactions':
-      'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
-  'wallet': 'ark announcements backup_settings bitcoin_price consolidation electrum_settings import_watch_only_wallet labels onboarding quick_actions receive recoverbull send settings sp swap tor_settings transactions',
+  'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
+  'wallet': 'ark bip85_entropy backup_settings bitcoin_price consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

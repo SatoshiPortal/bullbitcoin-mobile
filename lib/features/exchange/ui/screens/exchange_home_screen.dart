@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
@@ -10,10 +11,10 @@ import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
+import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -181,15 +182,17 @@ class ExchangeHomeScreen extends StatelessWidget {
           top: 0,
           left: 0,
           right: 0,
-          child: BlocBuilder<PriceChartCubit, PriceChartState>(
-            builder: (context, priceChartState) {
-              final showChart = priceChartState.showChart;
+          child: Builder(
+            builder: (context) {
+              final showChart = BitcoinPriceFeature.watchChartVisible(context);
 
               return AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 centerTitle: true,
-                title: showChart ? null : const TopBarBullLogo(),
+                title: showChart
+                    ? null
+                    : Assets.logos.bbLogoSmall.image(width: 40, height: 40),
                 leading: Padding(
                   // 48 dp targets keep the back arrow where it was at 16.
                   padding: EdgeInsets.only(left: showChart ? 16.0 : 4.0),
@@ -203,7 +206,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                             size: 24,
                           ),
                           onPressed: () {
-                            context.read<PriceChartCubit>().hideChart();
+                            BitcoinPriceFeature.hideChart(context);
                           },
                         )
                       : SizedBox(
@@ -229,7 +232,9 @@ class ExchangeHomeScreen extends StatelessWidget {
                                   size: 24,
                                 ),
                                 onPressed: () {
-                                  context.read<PriceChartCubit>().showChart();
+                                  unawaited(
+                                    BitcoinPriceFeature.showChart(context),
+                                  );
                                 },
                               ),
                               BullSupportButton.icon(

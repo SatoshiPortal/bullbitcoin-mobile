@@ -18,6 +18,7 @@ dependencies:
   primitives:
   intl: any
   auto_size_text: ^3.0.0
+  keyboard_actions: ^5.0.3
   custom_sliding_segmented_control: ^2.0.0
   gif: ^2.3.0
   shimmer: ^4.0.0

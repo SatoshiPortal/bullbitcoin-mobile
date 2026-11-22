@@ -1,6 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -58,10 +57,11 @@ void main() {
         ),
       ),
     );
-    final displayed = tester.widget<CurrencyText>(
-      find.byType(CurrencyText).first,
+    final displayed = tester.widget<BullAmount>(find.byType(BullAmount).first);
+    expect(displayed.magnitude.value.toInt(), 1300);
+    expect(
+      displayed.magnitude.value.toInt(),
+      swap.amountSat - (swap.receieveAmount ?? 0),
     );
-    expect(displayed.satsAmount, 1300);
-    expect(displayed.satsAmount, swap.amountSat - (swap.receieveAmount ?? 0));
   });
 }

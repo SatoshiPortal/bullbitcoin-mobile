@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usec
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade;
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Ok, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

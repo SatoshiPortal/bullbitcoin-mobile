@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQuickActionBar, Gap, BullTypographyX;
+    show BullText, BullQuickActionBar, Gap, BullTypographyX;
 
 class ExchangeHomeTopSection extends StatelessWidget {
   const ExchangeHomeTopSection({required this.onAction, super.key});
@@ -36,9 +34,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
 
     final topGap = balances.length > 3 ? 32.0 : 46.0;
 
-    final showChart = context.select(
-      (PriceChartCubit cubit) => cubit.state.showChart,
-    );
+    final showChart = BitcoinPriceFeature.watchChartVisible(context);
 
     return SizedBox(
       height: _balanceAreaHeight + _actionsOverhang(context),
@@ -118,7 +114,7 @@ class _BalancesView extends StatelessWidget {
       children: [
         Gap(topGap),
         if (balances.isEmpty)
-          BBText(
+          BullText(
             '0.00',
             style: balanceTextStyle?.copyWith(
               color: context.appColors.onSecondaryFixed,
@@ -127,7 +123,7 @@ class _BalancesView extends StatelessWidget {
           )
         else
           ...balances.map(
-            (b) => BBText(
+            (b) => BullText(
               '${b.amount} ${b.currencyCode}',
               style: balanceTextStyle?.copyWith(
                 color: context.appColors.onSecondaryFixed,

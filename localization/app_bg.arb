@@ -220,18 +220,6 @@
   "@payPendingPayments": {
     "description": "Filter for pending payments"
   },
-  "electrumCloseTooltip": "Затвори",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
-  "ledgerHelpTitle": "Отстраняване на неизправности",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
-  },
-  "bitboxErrorMultipleDevicesFound": "Намерени са множество BitBox устройства. Моля, уверете се, че е свързано само едно устройство.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
   "payTransactionBroadcast": "Изпращане на транзакцията",
   "@payTransactionBroadcast": {
     "description": "Success message after broadcasting"
@@ -256,10 +244,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "bitboxScreenNeedHelpButton": "Нужна помощ?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
-  },
   "fundExchangeETransferLabelSecretAnswer": "Секретен отговор",
   "@fundExchangeETransferLabelSecretAnswer": {
     "description": "Label for E-transfer security answer"
@@ -271,10 +255,6 @@
   "transactionDetailLabelTransactionFee": "Такса за транзакцията",
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
-  },
-  "jadeStep13": "- Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Jade. Сканирайте го.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
   },
   "payInstitutionNumber": "Код на банката",
   "@payInstitutionNumber": {
@@ -296,17 +276,9 @@
   "@sendSendNetworkFee": {
     "description": "Label for network fee on send side of swap"
   },
-  "psbtFlowClickScan": "Сканирайте",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
   "sellInstitutionNumber": "Код на банката",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
-  },
-  "mempoolSettingsCustomServer": "Персонализиран сървър",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "fundExchangeMethodRegularSepa": "Стандартен SEPA",
   "@fundExchangeMethodRegularSepa": {
@@ -315,10 +287,6 @@
   "fundExchangeSinpeLabelPhone": "Изпратете към този телефонен номер",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "passportStep1": "==WEBLATE_PART==\nВлезте в устройството Passport",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
   },
   "sellAdvancedOptions": "Разширени настройки",
   "@sellAdvancedOptions": {
@@ -335,10 +303,6 @@
   "receiveGenerateAddress": "Създай нов адрес",
   "@receiveGenerateAddress": {
     "description": "Button to create new on-chain address"
-  },
-  "kruxStep3": "Натисни PSBT",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "hwColdcardQ": "Coldcard Q",
   "@hwColdcardQ": {
@@ -405,10 +369,6 @@
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
   },
-  "bitboxScreenTroubleshootingStep2": "Уверете се, че телефонът ви има разрешения за USB.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Моля, изберете скорост на таксата.",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -425,10 +385,6 @@
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "kruxStep7": "   - Увеличете яркостта на екрана на вашето устройство",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
   "exchangeStatisticsBuySellRatio": "Съотношение Купуване/Продажба",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
@@ -440,14 +396,6 @@
   "transactionStatusTransferFailed": "Обменът се провали",
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
-  },
-  "jadeStep11": "- Jade ще ви покаже своя собствен QR код.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
-  "bitboxActionPairDeviceProcessing": "Сдвояване на устройството",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
   },
   "receiveServerNetworkFees": "Сървърни такси за мрежата",
   "@receiveServerNetworkFees": {
@@ -531,10 +479,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "bitboxActionPairDeviceButton": "Започнете сдвояване.",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
-  },
   "transactionDetailLabelSwapFees": "Такси за размяна",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
@@ -604,10 +548,6 @@
   "testBackupWriteDownPhrase": "Запишете фразата си за възстановяване\nв правилния ред\n==WEBLATE_PART==",
   "@testBackupWriteDownPhrase": {
     "description": "Main instruction header for physical backup screen"
-  },
-  "jadeStep8": "   - Опитайте да преместите устройството си по-близо или по-далеч",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
   },
   "payNotLoggedIn": "Не сте влезли",
   "@payNotLoggedIn": {
@@ -690,10 +630,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "seedsignerStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на SeedSigner. Сканирайте го.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
   "sendShowPsbt": "Покажи PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
@@ -705,10 +641,6 @@
   "hwJade": "Blockstream Jade",
   "@hwJade": {
     "description": "Name of Blockstream Jade hardware wallet"
-  },
-  "keystoneStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
   },
   "exchangeStatisticsTitle": "Статистика",
   "@exchangeStatisticsTitle": {
@@ -755,14 +687,6 @@
   "@payNetworkFees": {
     "description": "Label for network fees amount"
   },
-  "bitboxScreenSegwitBip84": "Сегвит (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenConnectingSubtext": "Установяване на сигурна връзка...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
   "receiveShareAddress": "Сподели адрес",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
@@ -774,10 +698,6 @@
   "sharedWithBullBitcoin": "споделено с Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
-  },
-  "jadeStep7": "   - Дръжте QR кода стабилен и в центъра",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
   },
   "sendCouldNotBuildTransaction": "Не може да се изгради транзакция",
   "@sendCouldNotBuildTransaction": {
@@ -807,10 +727,6 @@
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
   },
-  "bitboxActionImportWalletSuccessSubtext": "Вашият BitBox портфейл е успешно импортиран",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
   "transactionStatusPaymentInProgress": "Плащането е в процес",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -835,18 +751,6 @@
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
   },
-  "psbtFlowPartProgress": "Част {current} от {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
   "receiveShareInvoice": "Сподели инвойс",
   "@receiveShareInvoice": {
     "description": "Button to share invoice"
@@ -870,10 +774,6 @@
   "autoswapWarningTitle": "Автообменът е активиран с следните настройки:",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
-  },
-  "seedsignerStep1": "Включете устройството SeedSigner.\n==WEBLATE_PART==",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
   },
   "backupWalletHowToDecideBackupLosePhysical": "Един от най-често срещаните начини, по които хората губят своите биткойни, е като загубят физическото резервно копие. Всеки, който намери вашето физическо резервно копие, ще може да открадне всички ваши биткойни. Ако сте много уверени, че можете да го скриете добре и никога да не го изгубите, това е добър вариант.",
   "@backupWalletHowToDecideBackupLosePhysical": {
@@ -918,10 +818,6 @@
   "payPaymentInProgress": "Плащането е в процес на обработка!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "jadeStep6": "   - Увеличете яркостта на екрана на вашето устройство",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
   },
   "fundExchangeETransferLabelEmail": "Изпратете E-трансфер към този имейл адрес",
   "@fundExchangeETransferLabelEmail": {
@@ -1052,10 +948,6 @@
   "@replaceByFeeCustomFeeTitle": {
     "description": "Title for custom fee input section"
   },
-  "kruxStep14": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Krux. Сканирайте го.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
   "payAvailableBalance": "Налични: {amount}",
   "@payAvailableBalance": {
     "description": "Label showing available wallet balance",
@@ -1089,10 +981,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "passportStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Passport. Сканирайте го.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
   "paySelectRecipient": "Изберете получател",
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
@@ -1109,17 +997,9 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "bitboxScreenEnterPasswordSubtext": "Моля, въведете паролата си на BitBox устройството, за да продължите.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
   "sendOpenTheCamera": "Отвори камерата",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
-  },
-  "passportStep11": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
   },
   "sendSwapId": "ID за размяна",
   "@sendSwapId": {
@@ -1149,22 +1029,9 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "psbtFlowScanDeviceQr": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на {device}. Сканирайте го.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "okButton": "ОК",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "passportStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
   },
   "exchangeAccountInfoLoadErrorMessage": "Не може да се зареди информация за акаунта",
   "@exchangeAccountInfoLoadErrorMessage": {
@@ -1238,10 +1105,6 @@
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
   },
-  "psbtFlowReadyToBroadcast": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
-  },
   "sendErrorLiquidWalletRequired": "За обмен от Liquid към Lightning трябва да се използва Liquid портфейл",
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
@@ -1258,10 +1121,6 @@
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep5": "   - Увеличете яркостта на екрана на вашето устройство",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
   "sellKYCApproved": "KYC верификация одобрена.",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
@@ -1269,10 +1128,6 @@
   "buyKYCLevel": "Ниво KYC",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
-  },
-  "passportInstructionsTitle": "Foundation Passport Инструкции",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
   },
   "physicalBackupTitle": "Физическо резервно копие.",
   "@physicalBackupTitle": {
@@ -1301,10 +1156,6 @@
   "totalFeeLabel": "Обща такса",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Въведете URL адреса на вашия персонализиран мемпул сървър. Сървърът ще бъде валидиран преди запазване.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "Опитвате се да продадете под минималната сума, която може да се продаде с този портфейл.",
   "@sellBelowMinAmountError": {
@@ -1346,15 +1197,6 @@
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
   },
-  "bip329LabelsImportSuccessPlural": "{count} етикети импортирани",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "От",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1362,10 +1204,6 @@
   "sendTransactionBuilt": "Транзакцията е готова",
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
-  },
-  "bitboxErrorOperationCancelled": "Операцията беше прекъсната. Моля, опитайте отново.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
   },
   "dcaSuccessMessageHourly": "Ще купите {amount} на всеки час",
   "@dcaSuccessMessageHourly": {
@@ -1428,10 +1266,6 @@
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
   },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT Инструкции",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
   "scanNfcButton": "==WEBLATE_PART==\nСканирай NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -1452,15 +1286,6 @@
   "sendRecipientAddress": "Адрес на получателя",
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
-  },
-  "psbtFlowReviewTransaction": "След като транзакцията бъде импортирана във вашия {device}, прегледайте адреса на получателя и сумата.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "importWalletImportMnemonic": "- Импортирай мнемоника",
   "@importWalletImportMnemonic": {
@@ -1489,10 +1314,6 @@
   "coldcardStep13": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Coldcard. Сканирайте го.",
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
-  },
-  "psbtFlowIncreaseBrightness": "Увеличи яркостта на екрана на устройството си.",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
   },
   "payCoinjoinCompleted": "CoinJoin завършен",
   "@payCoinjoinCompleted": {
@@ -1534,14 +1355,6 @@
   "backupWalletBackupButton": "Резервно копие",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolSettingsTitle": "Мемпул сървър",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
-  },
-  "bitboxActionSignTransactionProcessing": "Подписване на транзакция",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
   },
   "sellWalletBalance": "Баланс: {amount}",
   "@sellWalletBalance": {
@@ -1635,10 +1448,6 @@
   "featureComingSoonTitle": "Функцията идва скоро",
   "@featureComingSoonTitle": {
     "description": "Title for coming soon bottom sheet"
-  },
-  "bip329LabelsImportSuccessSingular": "1 етикет импортиран",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
   },
   "payBillerName": "Име на издателя на фактурата",
   "@payBillerName": {
@@ -1864,10 +1673,6 @@
   "@receiveGenerateInvoice": {
     "description": "Button to create Lightning invoice"
   },
-  "kruxStep8": "   - Преместете червения лазер нагоре и надолу върху QR кода",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
-  },
   "fundExchangeTitle": "Финансиране",
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
@@ -1941,10 +1746,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Старите транзакции",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Не показвай повече това предупреждение.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -1956,10 +1757,6 @@
   "recoverWalletButton": "Възстанови портфейла.",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "Сигурни ли сте, че искате да изтриете този персонализиран мемпул сървър? Вместо него ще бъде използван стандартният сървър.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - Увеличете яркостта на екрана на вашето устройство",
   "@coldcardStep6": {
@@ -2009,10 +1806,6 @@
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
-  "kruxStep15": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
   "exchangeStatisticsVolume": "Обем",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
@@ -2020,10 +1813,6 @@
   "fundExchangeETransferLabelSecretQuestion": "Секретен въпрос",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
-  },
-  "jadeStep15": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "confirmButton": "Потвърди",
   "@confirmButton": {
@@ -2044,10 +1833,6 @@
   "sendSigningFailed": "Неуспешно подписване",
   "@sendSigningFailed": {
     "description": "Error during hardware wallet signing"
-  },
-  "bitboxErrorDeviceNotPaired": "Устройството не е сдвоено. Моля, завършете процеса на сдвояване първо.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
   },
   "transferIdLabel": "ID на прехвърлянето",
   "@transferIdLabel": {
@@ -2153,10 +1938,6 @@
   "@paySecurityAnswerHint": {
     "description": "Hint for security answer input"
   },
-  "bitboxActionImportWalletTitle": "Импортирайте BitBox портфейл.",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
-  },
   "backupSettingsError": "Грешка",
   "@backupSettingsError": {
     "description": "Header text for error message display"
@@ -2233,10 +2014,6 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "psbtFlowInstructions": "Инструкции",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
   "sendHighFeeWarning": "Предупреждение за висока такса",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
@@ -2245,17 +2022,9 @@
   "@walletButtonSend": {
     "description": "Button label to send funds"
   },
-  "bitboxScreenTroubleshootingStep1": "Уверете се, че на BitBox02 е инсталиран най-новият фърмуер.",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
   "backupSettingsExportVault": "Експортирай Vault",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
-  },
-  "bitboxActionUnlockDeviceTitle": "Отключете BitBox устройството.",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
   },
   "autoswapInfoSettingsButton": "Конфигурирайте настройките",
   "@autoswapInfoSettingsButton": {
@@ -2268,10 +2037,6 @@
   "sellPriceWillRefreshIn": "Цената ще се обнови след ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "kruxStep16": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
   },
   "buyVerifyIdentity": "Потвърдете самоличността",
   "@buyVerifyIdentity": {
@@ -2288,10 +2053,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google ще ви помоли да споделите лична информация с това приложение.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "bitboxScreenVerifyAddressSubtext": "Сравнете този адрес с екрана на BitBox02",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
   },
   "testCompletedSuccessMessage": "Можете да възстановите достъп до изгубен биткойн портфейл",
   "@testCompletedSuccessMessage": {
@@ -2362,17 +2123,9 @@
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
   },
-  "jadeStep1": "Влезте във вашето устройство Jade.",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
   "settingsSecurityPinTitle": "PIN за сигурност",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "psbtFlowTroubleScanningTitle": "Ако имате затруднения със сканирането:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
   },
   "sellArsBalance": "Баланс ARS",
   "@sellArsBalance": {
@@ -2381,14 +2134,6 @@
   "fundExchangeCanadaPostStep1": "1. Отидете във всеки пункт на Canada Post",
   "@fundExchangeCanadaPostStep1": {
     "description": "Step 1 for Canada Post payment process"
-  },
-  "seedsignerInstructionsTitle": "SeedSigner Инструкции",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "Потвърдете кода за сдвояване на BitBox устройството...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
   },
   "backupInstruction3": "Всеки, който има достъп до вашето резервно копие от 12 думи, може да открадне вашите биткойни. Скрийте го добре.",
   "@backupInstruction3": {
@@ -2446,10 +2191,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "bitboxScreenTroubleshootingTitle": "Отстраняване на проблеми с BitBox02",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
   "fundExchangeCrIbanUsdDescriptionBold": "точно",
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
@@ -2457,10 +2198,6 @@
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Прехвърляне на колони чрез SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
-  },
-  "kruxStep2": "Натисни Подпиши",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "fundExchangeArsBankTransferDescription": "Изпратете банков превод от вашата банкова сметка, използвайки точните аржентински банкови данни по-долу.",
   "@fundExchangeArsBankTransferDescription": {
@@ -2481,10 +2218,6 @@
   "pinProtectionDescription": "Вашият PIN защитава достъпа до вашия портфейл и настройките. Дръжте го лесно запомнящ се",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "kruxStep5": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
   },
   "backupSettingsLabelsButton": "Етикети",
   "@backupSettingsLabelsButton": {
@@ -2574,10 +2307,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "seedsignerStep11": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
   "transactionDetailLabelPayjoinStatus": "Статус Payjoin",
   "@transactionDetailLabelPayjoinStatus": {
     "description": "Label for payjoin status"
@@ -2618,10 +2347,6 @@
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "bitboxErrorConnectionFailed": "Неуспешно свързване към BitBox устройство. Моля, проверете връзката си.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
   "exchangeFileUploadDocumentTitle": "Качете произволен документ",
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
@@ -2641,14 +2366,6 @@
   "payBumpFee": "Увеличи таксата",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "Настройване на вашия портфейл за наблюдение...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "psbtFlowDone": "Готов съм",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
   },
   "testBackupRecoverWallet": "Възстанови портфейла.",
   "@testBackupRecoverWallet": {
@@ -2686,10 +2403,6 @@
   "fundExchangeWarningConfirmation": "Потвърждавам, че не ме молят да купувам Bitcoin от друг човек.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "mempoolCustomServerDeleteTitle": "Изтрий персонализирания сървър?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
   },
   "confirmSendTitle": "Потвърди изпращане\n==WEBLATE_PART==",
   "@confirmSendTitle": {
@@ -2798,10 +2511,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Настройки на сметката за обмен",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "Качване до {maxFiles} файлове. Разрешени формати: PDF, JPG, PNG, GIF, HEIC. Максимален размер на файл: 10 MB.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -2847,10 +2556,6 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "bip329LabelsImportButton": "Импортиране на етикети",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "exchangeFileUploadAllSuccess": "Всички файлове са качени успешно",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
@@ -2870,10 +2575,6 @@
   "copyDialogButton": "Копирай",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
-  },
-  "bitboxActionImportWalletProcessing": "Импортиране на портфейла",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
   },
   "swapConfirmTransferTitle": "Потвърдете обмена",
   "@swapConfirmTransferTitle": {
@@ -2935,10 +2636,6 @@
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "payDecodingInvoice": "Разкодиране на инвойс...",
   "@payDecodingInvoice": {
     "description": "Loading message while parsing invoice"
@@ -2966,14 +2663,6 @@
   "pinStatusCheckingDescription": "Проверка на състоянието на PIN",
   "@pinStatusCheckingDescription": {
     "description": "Status screen description during initialization"
-  },
-  "passportStep6": "   - Преместете червения лазер нагоре и надолу върху QR кода",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
-  "keystoneStep4": "Ако имате затруднения със сканирането:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
   },
   "autoswapTriggerAtBalanceInfoText": "Авторазмяна ще се задейства, когато балансът ви надвиши този максимален баланс.",
   "@autoswapTriggerAtBalanceInfoText": {
@@ -3015,21 +2704,9 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "psbtFlowMoveBack": "Опитай да преместиш устройството си малко по-далеч.",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
   "exchangeReferralsContactSupportMessage": "Свържете се с поддръжката, за да научите за нашата реферална програма",
   "@exchangeReferralsContactSupportMessage": {
     "description": "Message prompting users to contact support about the referral program"
-  },
-  "exchangeAccountTitle": "Сметка за обмен",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
-  "keystoneStep2": "Сканирайте",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
   },
   "sendContinue": "Продължи",
   "@sendContinue": {
@@ -3063,10 +2740,6 @@
   "sellBitcoinOnChain": "Биткойн в блокчейна",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "exchangeRecipientsComingSoon": "Получатели - Очаква се скоро",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
   },
   "bip85ExperimentalWarning": "Експериментално",
   "@bip85ExperimentalWarning": {
@@ -3136,10 +2809,6 @@
   "@sendSelectNetworkFee": {
     "description": "Label for selecting the network fee in the send flow"
   },
-  "keystoneStep6": "   - Преместете червения лазер нагоре и надолу върху QR кода",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
   "walletDeletionErrorGeneric": "Неуспях да изтрия портфейла, моля опитайте отново.",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
@@ -3184,10 +2853,6 @@
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
-  "passportStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
   "settingsCurrencyTitle": "Валута",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -3203,15 +2868,6 @@
   "onboardingPhysicalBackupDescription": "Възстановете портфейла си чрез 12 думи.",
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
-  },
-  "psbtFlowSelectSeed": "След като транзакцията бъде импортирана във вашия {device}, трябва да изберете seed фразата, с която желаете да подпишете.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusLoading": "Зареждане",
   "@pinStatusLoading": {
@@ -3255,14 +2911,6 @@
   "receivePaymentNormally": "Приемайте плащания по обичайния начин",
   "@receivePaymentNormally": {
     "description": "Option to receive payment without payjoin if it fails"
-  },
-  "kruxStep10": "Когато транзакцията бъде импортирана в Krux, прегледайте адреса на получателя и сумата.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "bitboxErrorHandshakeFailed": "Не успях да установя защитена връзка. Моля, опитайте отново.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
   },
   "sellKYCRequired": "Изисква се KYC верификация.",
   "@sellKYCRequired": {
@@ -3380,14 +3028,6 @@
   "@sellGoHome": {
     "description": "Button to go to home screen"
   },
-  "keystoneStep8": "Когато транзакцията бъде импортирана във вашия Keystone, прегледайте адреса на получателя и сумата.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "psbtFlowSpecterTitle": "Specter Инструкции",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "importMnemonicChecking": "Проверка...",
   "@importMnemonicChecking": {
     "description": "Status while checking wallet type"
@@ -3403,10 +3043,6 @@
   "autoswapInfoRemindLater": "Уведоми ме по-късно",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
-  },
-  "bitboxErrorDeviceNotFound": "BitBox устройство не е намерено.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
   },
   "sellInsufficientBalanceError": "Недостатъчен баланс в избрания портфейл за изпълнение на тази поръчка за продажба.",
   "@sellInsufficientBalanceError": {
@@ -3428,10 +3064,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "Сървър по подразбиране",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "Поставете адрес за плащане или фактура",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -3451,10 +3083,6 @@
   "failedToDeriveBackupKey": "==WEBLATE_PART==\nНе успях да извлека резервния ключ.",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "bip329LabelsExportSuccess": "Етикети експортирани успешно",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Най-бавният вариант, но може да се извърши чрез онлайн банкиране (3-4 работни дни)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -3488,10 +3116,6 @@
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
   },
-  "mempoolCustomServerAdd": "Добави персонализиран сървър",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
-  },
   "sendHighFeeWarningDescription": "Общата такса е {feePercent}% от сумата, която изпращате",
   "@sendHighFeeWarningDescription": {
     "description": "Warning message showing fee as percentage of send amount",
@@ -3516,10 +3140,6 @@
   "importWatchOnlyUnknown": "Неизвестно",
   "@importWatchOnlyUnknown": {
     "description": "Default value when signing device is unknown"
-  },
-  "bitboxScreenNestedSegwitBip49": "Вложен SegWit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
   },
   "payContinue": "Продължи",
   "@payContinue": {
@@ -3670,10 +3290,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "keystoneStep5": "   - Увеличете яркостта на екрана на вашето устройство",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
   "sendSelectCoinsManually": "Изберете монетите ръчно",
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
@@ -3718,10 +3334,6 @@
   "@cancelButton": {
     "description": "Button to cancel logout action"
   },
-  "kruxStep9": "   - Опитайте да преместите устройството си малко по-далече.",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
-  },
   "sendReceiveNetworkFee": "Такса за мрежата при получаване.",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
@@ -3761,10 +3373,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Посетете recoverbull.com за повече информация.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "kruxStep11": "Натиснете бутоните, за да подпишете транзакцията на Krux.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
   },
   "payExternalWalletDescription": "Платете от друг биткойн портфейл",
   "@payExternalWalletDescription": {
@@ -3809,10 +3417,6 @@
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Шифрован сейф: ",
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
-  },
-  "seedsignerStep9": "Прегледайте адреса на получателя и сумата и потвърдете подписването на вашия SeedSigner.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
   },
   "logoutButton": "Изход",
   "@logoutButton": {
@@ -3870,10 +3474,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "keystoneStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
-  },
   "receiveGenerationFailed": "Неуспях да генерирам {type}",
   "@receiveGenerationFailed": {
     "description": "Error when address/invoice generation fails",
@@ -3924,10 +3524,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "passportStep2": "Натисни Подпиши с QR код",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
   "pinCodeRemoveButton": "Премахване на PIN за сигурност",
   "@pinCodeRemoveButton": {
     "description": "Button label to remove the security PIN"
@@ -3951,10 +3547,6 @@
   "testBackupTitle": "Проверете резервното копие на портфейла си",
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "keystoneStep9": "Натиснете бутоните, за да подпишете транзакцията във вашия Keystone.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
   },
   "totalFeesLabel": "Общи такси",
   "@totalFeesLabel": {
@@ -4066,10 +3658,6 @@
   "@payPaymentDetails": {
     "description": "Section header for payment information"
   },
-  "bitboxActionVerifyAddressTitle": "Проверете адреса на BitBox.",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
   "psbtSignTransaction": "Подпишете транзакцията",
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
@@ -4082,10 +3670,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxActionImportWalletSuccess": "Портфейлът е успешно импортиран",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
   },
   "nextButton": "Напред",
   "@nextButton": {
@@ -4107,10 +3691,6 @@
   "@googleAppleCloudRecommendationText": {
     "description": "Text explaining when to use Google/Apple cloud"
   },
-  "jadeStep14": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
   "payCorporateName": "Име на корпорацията",
   "@payCorporateName": {
     "description": "Label for corporate name field"
@@ -4126,10 +3706,6 @@
   "customLocationRecommendationText": "Уверени сте, че няма да загубите vault файла и че той ще остане достъпен, ако загубите телефона си.",
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
-  },
-  "kruxStep13": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
   },
   "transactionSwapInfoRefundableTransfer": "Този обмен ще бъде автоматично възстановен за няколко секунди. Ако не стане, можете да опитате ръчно възстановяване, като натиснете бутона „Повторен опит за възстановяване на обмена“.",
   "@transactionSwapInfoRefundableTransfer": {
@@ -4248,10 +3824,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "psbtFlowSignTransaction": "Подпишете транзакцията",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
   "payAllPayments": "Всички плащания",
   "@payAllPayments": {
     "description": "Filter option to show all"
@@ -4367,14 +3939,6 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "jadeStep10": "- Кликнете върху бутоните, за да подпишете транзакцията на вашия Jade.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "bitboxScreenUnknownError": "Възникна непозната грешка.",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
   "receiveLiquid": "Liquid",
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
@@ -4391,10 +3955,6 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "psbtFlowTransactionImported": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
   "testBackupGoogleDriveSignIn": "Ще трябва да влезете в Google Drive",
   "@testBackupGoogleDriveSignIn": {
     "description": "Progress screen title when fetching from Google Drive"
@@ -4406,10 +3966,6 @@
   "payTimeoutError": "Изтече времето за плащане. Моля, проверете статуса.",
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
-  },
-  "kruxStep4": "Натисни Зареди от камерата",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
   },
   "testBackupErrorNoMnemonic": "Няма заредена мнемонична фраза.",
   "@testBackupErrorNoMnemonic": {
@@ -4485,10 +4041,6 @@
   "@onboardingCreateWalletButtonLabel": {
     "description": "The label for the button to create a wallet from the onboarding screen"
   },
-  "bitboxScreenVerifyOnDevice": "Моля, потвърдете този адрес на BitBox устройството.",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
   "payAllCountries": "Всички държави",
   "@payAllCountries": {
     "description": "Option for all countries filter"
@@ -4541,10 +4093,6 @@
   "walletDeletionErrorOngoingSwaps": "==WEBLATE_PART==\nНе можете да изтриете портфейл с активни размени.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
-  },
-  "bitboxScreenConnecting": "Свързване към BitBox",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
   },
   "transactionLabelServerNetworkFees": "Сървърни такси за мрежата",
   "@transactionLabelServerNetworkFees": {
@@ -4614,10 +4162,6 @@
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "Въведете паролата си на BitBox устройството...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
   "sellWhichWalletQuestion": "От кой портфейл искате да продавате?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
@@ -4633,10 +4177,6 @@
   "receiveFixedAmount": "Сума",
   "@receiveFixedAmount": {
     "description": "Required amount field"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "Адресът е потвърден на вашето BitBox устройство",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
   },
   "transactionSwapDescLnSendPaid": "Вашата транзакция в блокчейна е излъчена. След едно потвърждение плащането по Lightning ще бъде изпратено.",
   "@transactionSwapDescLnSendPaid": {
@@ -4670,10 +4210,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "seedsignerStep6": "   - Преместете червения лазер нагоре и надолу върху QR кода",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
   "payTransitNumber": "Транзитен номер",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -4690,10 +4226,6 @@
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "psbtFlowScanQrShown": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
   "testBackupErrorInvalidFile": "Невалидно съдържание на файл.",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -4709,10 +4241,6 @@
   "sendSlowPaymentWarningDescription": "Обменът на биткойни ще отнеме време за потвърждение.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "Моля, потвърдете адреса на вашето BitBox устройство.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
   },
   "pinConfirmHeadline": "Потвърдете нов PIN",
   "@pinConfirmHeadline": {
@@ -4762,10 +4290,6 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "keystoneInstructionsTitle": "Keystone Инструкции",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
-  },
   "hwLedger": "Ledger",
   "@hwLedger": {
     "description": "Name of Ledger hardware wallet"
@@ -4786,10 +4310,6 @@
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
   },
-  "bitboxActionVerifyAddressProcessing": "Показване на адреса на BitBox...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
-  },
   "sendTypeSwap": "Обмени",
   "@sendTypeSwap": {
     "description": "Send type name for Lightning swap transactions"
@@ -4797,10 +4317,6 @@
   "sendErrorAmountExceedsMaximum": "Сумата надвишава максималната сума за обмен",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
-  },
-  "bitboxActionSignTransactionSuccess": "Транзакцията е успешно подписана",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
   },
   "exchangeStatisticsBuyStats": "Статистика за покупки",
   "@exchangeStatisticsBuyStats": {
@@ -4848,17 +4364,9 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "Индекс: [X7X]",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
-  },
-  "bitboxActionUnlockDeviceButton": "Разблокирайте BitBox устройството.",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
   },
   "payNetworkError": "Грешка в мрежата. Моля, опитайте отново.",
   "@payNetworkError": {
@@ -4933,10 +4441,6 @@
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
   },
-  "bitboxScreenTryAgainButton": "Опитайте отново",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
-  },
   "exchangeStatisticsNoData": "Няма налична статистика",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -4966,17 +4470,9 @@
       }
     }
   },
-  "psbtFlowClickDone": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
   "addressCardUnusedLabel": "Неизползван",
   "@addressCardUnusedLabel": {
     "description": "Label indicating an address has not been used"
-  },
-  "bitboxActionUnlockDeviceSuccess": "Устройството е успешно отключено",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
   },
   "receivePayjoinInProgress": "PayJoin в процес",
   "@receivePayjoinInProgress": {
@@ -5040,10 +4536,6 @@
   "@screenshotLabel": {
     "description": "Label for screenshot (with X mark)"
   },
-  "bitboxErrorOperationTimeout": "Операцията изтече. Моля, опитайте отново.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
   "receiveLightning": "Лайтнинг мрежа",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
@@ -5051,10 +4543,6 @@
   "sendRecipientAddressOrInvoice": "Адрес на получателя или фактура",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "Моля, въведете URL адрес на сървъра",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "payBitcoinAddress": "Адрес на Bitcoin",
   "@payBitcoinAddress": {
@@ -5076,15 +4564,6 @@
   "@transactionDetailLabelStatus": {
     "description": "Label for status"
   },
-  "psbtFlowTurnOnDevice": "Включете вашето {device} устройство",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsKeyServer": "Сървър за ключове ",
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
@@ -5092,10 +4571,6 @@
   "connectHardwareWalletColdcardQ": "Coldcard Q",
   "@connectHardwareWalletColdcardQ": {
     "description": "Coldcard Q hardware wallet option"
-  },
-  "seedsignerStep2": "Сканирайте",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
   },
   "addressCardIndexLabel": "Индекс: ",
   "@addressCardIndexLabel": {
@@ -5116,15 +4591,6 @@
   "testBackupCreatedAt": "Създаден на:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "psbtFlowSignTransactionOnDevice": "Натисни бутоните, за да подпишеш транзакцията на вашия {device}.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "settingsSuperuserModeDisabledMessage": "Режимът на суперпотребителя е деактивиран.",
   "@settingsSuperuserModeDisabledMessage": {
@@ -5187,10 +4653,6 @@
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
   },
-  "keystoneStep7": "   - Опитайте да преместите устройството си малко по-далече.",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
   "coreSwapsChainExpired": "Обменът е изтекъл",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
@@ -5244,14 +4706,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "passportStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "jadeStep5": "Ако имате затруднения със сканирането:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
   "receivePayjoinFailQuestion": "Нямате време за чакане или PayJoin се провали от страна на изпращача?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
@@ -5287,10 +4741,6 @@
   "testBackupEncryptedVaultTag": "Лесно и просто (1 минута)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "bitboxScreenTroubleshootingStep3": "Рестартирайте BitBox02, като го разкачите и отново свържете.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
   },
   "fundExchangeErrorLoadingDetails": "Детайлите за плащането не могат да се заредят в момента. Моля върнете се назад и опитайте отново, изберете друг метод на плащане или се върнете по-късно.",
   "fundExchangeErrorTitleOrdPo404": "Опцията за плащане не е налична",
@@ -5364,10 +4814,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "Старите транзакции - Очаква се скоро",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "Доказателство за адрес",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -5416,10 +4862,6 @@
   "@transactionListToday": {
     "description": "Date label for today's transactions"
   },
-  "keystoneStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на Keystone. Сканирайте го.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
   "payFeeRate": "Скорост на таксата",
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
@@ -5448,10 +4890,6 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "passportStep10": "Passport ще ви покаже своя собствен QR код.",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
   "transactionDetailLabelAmountSent": "Изпратена сума",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
@@ -5471,10 +4909,6 @@
   "payScanQRCode": "Сканирай QR код",
   "@payScanQRCode": {
     "description": "Button text to open QR code scanner for payment"
-  },
-  "seedsignerStep10": "SeedSigner ще ви покаже своя собствен QR код.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
   },
   "psbtInstructions": "Инструкции",
   "@psbtInstructions": {
@@ -5531,10 +4965,6 @@
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
-  "seedsignerStep7": "   - Опитайте да преместите устройството си малко по-далече.",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
   "sendAmount": "Сума",
   "@sendAmount": {
     "description": "Label for the transaction amount"
@@ -5542,10 +4972,6 @@
   "swapErrorInsufficientFunds": "Не може да се създаде транзакция. Вероятно поради недостатъчни средства за покриване на таксите и сумата",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
-  },
-  "seedsignerStep8": "След като транзакцията бъде импортирана във вашия SeedSigner, трябва да изберете seed фразата, с която искате да подпишете.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
   },
   "receiveNoteLabel": "Бележка",
   "@receiveNoteLabel": {
@@ -5588,10 +5014,6 @@
   "@pasteInputDefaultHint": {
     "description": "Default placeholder hint for paste input field"
   },
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Препоръчително",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
   "encryptedVaultRecommendationText": "Не сте сигурни и ви трябва още време, за да научите повече за практиките за сигурност на резервното копие.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
@@ -5603,10 +5025,6 @@
   "fundExchangeAccountSubtitle": "Изберете вашата държава и начин на плащане",
   "@fundExchangeAccountSubtitle": {
     "description": "Subtitle on fund exchange account screen prompting user to select country and payment method"
-  },
-  "bitboxScreenWaitingConfirmation": "Изчакване на потвърждение от BitBox02...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
   },
   "howToDecideVaultLocationText1": "Доставчиците на облачно съхранение като Google или Apple нямат достъп до вашите биткойни, защото паролата за криптиране е прекалено силна. Те могат да получат достъп до вашите биткойни само в малко вероятния случай, че си сътрудничат със сървъра за ключове (онлайн услугата, която съхранява вашата парола за криптиране). Ако ключовият сървър някога бъде хакнат, вашите биткойни може да бъдат изложени на риск във облака на Google или Apple.",
   "@howToDecideVaultLocationText1": {
@@ -5640,10 +5058,6 @@
   "sendConfirmSwap": "Потвърди размяната",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Изход - Очаква се скоро",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Общ обем на търговията",
   "@exchangeStatisticsTotalVolume": {
@@ -5705,14 +5119,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bitboxActionPairDeviceSuccess": "Устройството е успешно сдвоено",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxErrorNoDevicesFound": "Не са намерени BitBox устройства. Уверете се, че устройството е включено и свързано чрез USB.",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
   "receiveSwapID": "ID за размяна",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
@@ -5733,10 +5139,6 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "kruxStep6": "Ако имате затруднения със сканирането:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
-  },
   "autoswapMaximumFeeError": "Максимален праг на таксата е {threshold}%",
   "@autoswapMaximumFeeError": {
     "description": "Validation error shown when fee threshold exceeds maximum",
@@ -5753,14 +5155,6 @@
   "testBackupErrorWalletMismatch": "Резервното копие не съвпада със съществуващия портфейл.",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "bip329LabelsHeading": "Етикети BIP329",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "jadeStep2": "Добавете защитна парола, ако имате такава (по избор)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "coldcardStep4": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
   "@coldcardStep4": {
@@ -5837,21 +5231,9 @@
       }
     }
   },
-  "keystoneStep1": "Влезте в устройството Keystone.",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep3": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "backupKeyWarningMessage": "Внимание: Бъдете внимателни къде съхранявате резервния ключ.",
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
-  },
-  "bitboxActionSignTransactionTitle": "Подпишете транзакция.",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
   },
   "testBackupGoogleDrivePrivacyPart3": "напуска телефона ви и е ",
   "@testBackupGoogleDrivePrivacyPart3": {
@@ -5884,10 +5266,6 @@
   "settingsThemeTitle": "Тема",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "jadeStep3": "Изберете опцията \"Сканирай QR\"",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "payEmail": "Имейл",
   "@payEmail": {
@@ -5969,10 +5347,6 @@
   "@paySuccessfulPayments": {
     "description": "Filter for successful payments"
   },
-  "bitboxScreenScanning": "Сканиране на устройства",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
   "howToDecideBackupTitle": "Как да решите",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
@@ -5980,10 +5354,6 @@
   "savingToDevice": "Запазване на вашето устройство.",
   "@savingToDevice": {
     "description": "Message shown when saving to device"
-  },
-  "bitboxActionImportWalletButton": "Започнете импортиране.",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
   },
   "fundExchangeLabelSwiftCode": "SWIFT код",
   "@fundExchangeLabelSwiftCode": {
@@ -6046,14 +5416,6 @@
   "settingsAppVersionLabel": "Версия на приложението: ",
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
-  },
-  "bip329LabelsExportButton": "Експортиране на етикети",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "jadeStep4": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
   },
   "payBillerNameValue": "Избрано име на издателя на фактурата",
   "@payBillerNameValue": {
@@ -6163,10 +5525,6 @@
   "testBackupDoNotShare": "Не споделяйте с никого",
   "@testBackupDoNotShare": {
     "description": "Warning header about keeping recovery phrase secret"
-  },
-  "kruxInstructionsTitle": "Krux Инструкции",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
   },
   "paySinpeNumeroComprobante": "==WEBLATE_PART==\nРеференционен номер",
   "@paySinpeNumeroComprobante": {
@@ -6278,15 +5636,6 @@
   "@payChannelBalanceLow": {
     "description": "Error when Lightning channel lacks sufficient outbound liquidity"
   },
-  "bitboxScreenActionFailed": "{action} Неуспешно",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCanadaPostStep3": "3. Кажете на касиера сумата, която искате да заредите",
   "@fundExchangeCanadaPostStep3": {
     "description": "Step 3 for Canada Post payment process"
@@ -6294,10 +5643,6 @@
   "payFee": "Такса",
   "@payFee": {
     "description": "Label for fee"
-  },
-  "passportStep4": "Ако имате затруднения със сканирането:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
   },
   "decryptVaultButton": "Дешифрирайте сейфа",
   "@decryptVaultButton": {
@@ -6319,10 +5664,6 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
-  "bitboxActionVerifyAddressButton": "Потвърдете адреса",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
   "testBackupStoreItSafe": "Съхранявайте го на сигурно място",
   "@testBackupStoreItSafe": {
     "description": "Sub-instruction telling users to store recovery phrase safely"
@@ -6330,10 +5671,6 @@
   "enterBackupKeyLabel": "Въведете резервен ключ",
   "@enterBackupKeyLabel": {
     "description": "Label for backup key input field"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "Първо се уверете, че устройството BitBox02 е свързано към USB порта на телефона ви. Ако устройството все още не се свързва с приложението, опитайте следното:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
   },
   "securityWarningTitle": "Предупреждение за сигурността.",
   "@securityWarningTitle": {
@@ -6360,25 +5697,13 @@
   "@payInvoiceDetails": {
     "description": "Section header for invoice information"
   },
-  "bitboxScreenAddressToVerify": "Адрес за потвърждение:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
   "payConfirmPayment": "Потвърди плащането",
   "@payConfirmPayment": {
     "description": "Button text to confirm and execute payment"
   },
-  "bitboxErrorPermissionDenied": "USB разрешения са необходими за свързване към BitBox устройства.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
   "recoveryPhraseTitle": "Запишете фразата си за възстановяване\nв правилния ред\n==WEBLATE_PART==",
   "@recoveryPhraseTitle": {
     "description": "Title instructing user to write down recovery phrase"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "Потвърдете транзакцията на BitBox устройството...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
   },
   "sellConfirmPayment": "Потвърдете плащането",
   "@sellConfirmPayment": {
@@ -6454,17 +5779,9 @@
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
-  "bitboxActionPairDeviceSuccessSubtext": "Вашето BitBox устройство вече е сдвоено и готово за използване",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
-  },
   "pickPasswordInsteadButton": "Изберете парола вместо това >>",
   "@pickPasswordInsteadButton": {
     "description": "Button label to switch to password input"
-  },
-  "bitboxScreenScanningSubtext": "Търсене на вашето BitBox устройство...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
   },
   "sellOrderFailed": "Неуспешно поставяне на поръчката за продажба",
   "@sellOrderFailed": {
@@ -6493,10 +5810,6 @@
   "fundExchangeInfoBankCountryUk": "Страната на банката ни е Обединеното кралство.",
   "@fundExchangeInfoBankCountryUk": {
     "description": "Info message that bank country is United Kingdom"
-  },
-  "seedsignerStep14": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Коста Рика (CRC)",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
@@ -6542,10 +5855,6 @@
   "backupWalletVaultProviderCustomLocation": "Персонализирано местоположение.",
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
-  },
-  "bitboxErrorConnectionTypeNotInitialized": "Типът на връзката не е инициализиран.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
   },
   "transactionListOngoingTransfersDescription": "Тези обмени в момента са в ход. Вашите средства са защитени и ще бъдат налични, когато обменът завърши.",
   "@transactionListOngoingTransfersDescription": {
@@ -6604,10 +5913,6 @@
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
   },
-  "jadeStep9": "- След като транзакцията бъде импортирана във вашия Jade, прегледайте адреса на получателя и сумата.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
   "receiveAddLabel": "Добави етикет",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
@@ -6632,10 +5937,6 @@
   "testBackupGoogleDrivePrivacyPart5": "споделено с Bull Bitcoin.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "Вашата транзакция е успешно подписана",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
   },
   "transactionStatusTransferExpired": "Обменът е изтекъл",
   "@transactionStatusTransferExpired": {
@@ -6685,14 +5986,6 @@
   "@recoverButton": {
     "description": "Button label to recover wallet"
   },
-  "passportStep5": "   - Увеличете яркостта на екрана на вашето устройство",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "bitboxScreenConnectSubtext": "Уверете се, че BitBox02 е отключено и свързано чрез USB.",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
   "payOwnerName": "Име на притежателя",
   "@payOwnerName": {
     "description": "Label for owner name field"
@@ -6713,10 +6006,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxErrorInvalidResponse": "Невалиден отговор от BitBox устройство. Моля, опитайте отново.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
   },
   "payAdvancedOptions": "Разширени настройки",
   "@payAdvancedOptions": {
@@ -6772,10 +6061,6 @@
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
   },
-  "jadeStep12": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
   "payFilterByType": "Филтрирай по тип",
   "@payFilterByType": {
     "description": "Label for type filter dropdown"
@@ -6783,10 +6068,6 @@
   "importMnemonicImporting": "Импортиране...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "Импорт/Експорт на етикети BIP329",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Не сте сигурни и ви трябва още време, за да научите повече за практиките за сигурност на резервното копие.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
@@ -6885,10 +6166,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "bitboxScreenWalletTypeLabel": "Тип на портфейла:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
-  },
   "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -6924,10 +6201,6 @@
   "buyBitcoinSent": "биткойн изпратен!",
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
-  },
-  "passportStep8": "След като транзакцията бъде импортирана във вашето устройство Passport, прегледайте адреса на получателя и сумата.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
   },
   "payIban": "IBAN",
   "@payIban": {
@@ -6991,10 +6264,6 @@
   "@swapTotalFees": {
     "description": "Total fees label"
   },
-  "keystoneStep11": "Натисни \"Готов съм\" в портфейла Bull Bitcoin.",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
   "scanningCompletedMessage": "Сканирането завърши",
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
@@ -7007,10 +6276,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "bitboxActionSignTransactionButton": "Започнете подписване.",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
-  },
   "sendEnterAbsoluteFee": "Въведете абсолютната такса в сатоши",
   "@sendEnterAbsoluteFee": {
     "description": "Placeholder for absolute fee input field"
@@ -7022,10 +6287,6 @@
   "payPayee": "Получател",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "Тази функция предстои.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "Продажбата е в ход...",
   "@sellInProgress": {
@@ -7096,10 +6357,6 @@
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
   },
-  "passportStep9": "Щракнете върху бутоните, за да подпишете транзакцията на вашето устройство Passport.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
   "importMnemonicSelectType": "Изберете тип портфейл за импортиране",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -7137,17 +6394,9 @@
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
   },
-  "kruxStep12": "Krux ще ви покаже своя собствен QR код.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
   "payInstitutionCode": "Код на институцията",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "bitboxActionUnlockDeviceSuccessSubtext": "Вашето BitBox устройство вече е отключено и готово за използване",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
   },
   "payShareInvoice": "Сподели инвойс",
   "@payShareInvoice": {
@@ -7156,14 +6405,6 @@
   "walletDetailsSignerDeviceLabel": "Устройство за подписване",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "bitboxScreenEnterPassword": "Въведете парола",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "keystoneStep10": "Keystone ще ви покаже своя собствен QR код.",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
   },
   "testBackupEnterKeyManually": "Въведете ключ за резервно копие ръчно >>",
   "@testBackupEnterKeyManually": {
@@ -7180,10 +6421,6 @@
   "allWordsSelectedMessage": "Избрали сте всички думи.",
   "@allWordsSelectedMessage": {
     "description": "Message shown when all words are selected"
-  },
-  "bitboxActionPairDeviceTitle": "Сдвоете BitBox устройство.",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
   },
   "buyKYCLevel2": "Ниво 2 - Разширено",
   "@buyKYCLevel2": {
@@ -7209,10 +6446,6 @@
   "toLabel": "До",
   "@toLabel": {
     "description": "Label for destination address in transaction details"
-  },
-  "passportStep7": "   - Опитайте да преместите устройството си малко по-далече.",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
   },
   "sendConfirm": "Потвърди",
   "@sendConfirm": {
@@ -7241,10 +6474,6 @@
   "sellInteracTransfer": "Паричен превод по имейл",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
-  },
-  "bitboxScreenPairingCodeSubtext": "Потвърдете, че този код съвпада с екрана на BitBox02, след което потвърдете на устройството.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
   },
   "createdAtLabel": "Създаден на:",
   "@createdAtLabel": {
@@ -7315,10 +6544,6 @@
   "@buyVerificationRequired": {
     "description": "Error when KYC needed for purchase size"
   },
-  "kruxStep1": "Влезте в устройството Krux",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "dcaUseDefaultLightningAddress": "Използвайте моя по подразбиране Lightning адрес.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -7370,17 +6595,9 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "bitboxActionVerifyAddressSuccess": "Адресът е успешно проверен",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
   "psbtImDone": "Готов съм",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
-  },
-  "bitboxScreenSelectWalletType": "Изберете тип портфейла",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
   },
   "appUnlockEnterPinMessage": "==WEBLATE_PART==\nВъведете вашия PIN код за отключване",
   "@appUnlockEnterPinMessage": {
@@ -7397,10 +6614,6 @@
   "payCompleted": "Плащането завършено!",
   "@payCompleted": {
     "description": "Title for payment completed screen"
-  },
-  "bitboxScreenManagePermissionsButton": "Управление на разрешенията за приложението",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
   },
   "sellKYCPending": "KYC верификация в процес на обработка.",
   "@sellKYCPending": {
@@ -7434,10 +6647,6 @@
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
   },
-  "seedsignerStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
-  },
   "autoswapRecipientWalletDefaultLabel": "Bitcoin портфейл",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
@@ -7454,22 +6663,9 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
-  "psbtFlowMoveLaser": "Премести червената лазерна лента нагоре и надолу над QR кода.",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
   "chooseVaultLocationTitle": "Изберете място за сейфа.",
   "@chooseVaultLocationTitle": {
     "description": "Title for choose vault location screen"
-  },
-  "psbtFlowDeviceShowsQr": "{device} ще ви покаже собствен QR код.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "testBackupEncryptedVaultTitle": "Шифиран сейф",
   "@testBackupEncryptedVaultTitle": {
@@ -7531,10 +6727,6 @@
   "sendErrorInsufficientBalanceForPayment": "Нямате достатъчно средства за покриване на това плащане",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
-  },
-  "bitboxScreenPairingCode": "Код за сдвояване",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
   },
   "testBackupPhysicalBackupTitle": "Физическо резервно копие.",
   "@testBackupPhysicalBackupTitle": {
@@ -7600,14 +6792,6 @@
   "@pinCodeConfirm": {
     "description": "Button label to confirm PIN entry"
   },
-  "bitboxActionUnlockDeviceProcessing": "Разблокиране на устройството",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "seedsignerStep4": "Ако имате затруднения със сканирането:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid тестнет",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -7615,10 +6799,6 @@
   "payBitcoinOnChain": "Биткойн в блокчейна",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-вложен-в-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
   },
   "buyInstantPaymentWallet": "Портфейл за мигновени плащания",
   "@buyInstantPaymentWallet": {
@@ -7663,14 +6843,6 @@
   "receiveDescription": "Описание (по избор)",
   "@receiveDescription": {
     "description": "Optional memo field"
-  },
-  "bitboxScreenVerifyAddress": "Потвърдете адреса",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenConnectDevice": "Свържете вашето BitBox устройство.",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
   },
   "amountRequestedLabel": "Заявена сума: {amount}",
   "@amountRequestedLabel": {
@@ -7810,7 +6982,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Високите стойности на Stop Gap значително увеличават времето за синхронизация. Дръжте приложението отворено на преден план, докато синхронизацията завърши — преместването му във фонов режим може да я прекъсне.",
   "wizardSkipButton": "Пропусни",
   "wizardPageIndicator": "СТРАНИЦА {current} / {total}",
   "wizardNextButton": "Напред",
@@ -8012,9 +7183,6 @@
   "pinCodeDeleteError": "Неуспешно изтриване на вашия ПИН. Моля, опитайте отново.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Обменният курс не е наличен. Моля, опитайте отново по-късно.",
-  "priceChartLoadFailed": "Данните за ценовата графика не можаха да бъдат заредени. Моля, опитайте отново.",
-  "electrumServerUnreachable": "Сървърът е недостъпен. Проверете адреса и опитайте отново.",
-  "mempoolErrorInvalidUrl": "Невалиден URL адрес на сървъра. Въведете валиден домейн или IP адрес.",
   "allSeedViewErrorFetch": "Неуспешно зареждане на семената. Моля, опитайте отново.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -8309,26 +7477,7 @@
   "swapRescueWalletHint": "Изберете портфейл",
   "swapRescueButton": "Възстанови",
   "swapRescueSuccess": "Обменът е възстановен — сега ще продължи",
-  "mempoolServerStatusOnline": "Онлайн",
-  "mempoolServerStatusOffline": "Офлайн",
-  "mempoolServerStatusChecking": "Проверка...",
   "mempoolServerStatusUnknown": "Неизвестен",
-  "mempoolCustomServerSaveFailed": "Неуспешно запазване на сървъра",
-  "mempoolCustomServerInfoDescription": "Mempool сървърите се използват за оценка на таксите и за отваряне на блок изследователя при преглед на детайли за транзакция.",
-  "mempoolCustomServerUseSsl": "Използвай SSL",
-  "mempoolCustomServerSslAutoDetected": "(Автоматично открито)",
-  "mempoolCustomServerSslHelpText": "За локални (.local, частни IP адреси) и Tor (.onion) сървъри SSL обикновено е изключен. Публичните IP адреси и домейни трябва да използват SSL.",
-  "mempoolErrorSameAsDefault": "Този URL адрес е същият като този на сървъра по подразбиране. Моля, използвайте друг URL адрес.",
-  "mempoolErrorConnectionTimeout": "Времето за свързване изтече. Сървърът може да е бавен или недостъпен.",
-  "mempoolErrorHostNotFound": "Този сървър не може да бъде намерен. Моля, проверете URL адреса и опитайте отново.",
-  "mempoolErrorConnectionFailed": "Не може да се установи връзка със сървъра. Проверете мрежовата си връзка и опитайте отново.",
-  "mempoolErrorNotMempoolServer": "Този URL адрес не изглежда да е mempool сървър. Моля, проверете адреса.",
-  "mempoolErrorServerUnavailable": "Сървърът не е достъпен. Моля, опитайте отново по-късно.",
-  "mempoolErrorServerError": "Възникна грешка в сървъра. Моля, опитайте отново по-късно.",
-  "mempoolErrorInvalidResponse": "Сървърът върна невалиден отговор.",
-  "mempoolErrorSaveServerFailed": "Неуспешно запазване на сървъра",
-  "mempoolErrorLoadFailed": "Неуспешно зареждане на данните на mempool сървъра",
-  "mempoolErrorDeleteFailed": "Неуспешно изтриване на персонализирания сървър",
   "receivePayjoinNoUtxos": "Първо получете средства, за да го активирате.\nЗа използване на payjoin са необходими UTXO.",
   "payViewReceipt": "Виж разписката",
   "paySinpeReceipt": "SINPE разписка",
@@ -8390,46 +7539,6 @@
   "sendCoordinatingPayjoinTransaction": "Координиране на Payjoin транзакция.",
   "sendErrorInvoiceExpired": "Тази фактура е изтекла. Помолете получателя за нова фактура.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Помислете за захранване на Instant Payments за по-малки плащания.",
-  "psbtFlowSignViaNfc": "Подпиши през NFC",
-  "psbtFlowSignViaNfcSheetTitle": "Докоснете {deviceName}, за да изпратите PSBT през NFC",
-  "psbtFlowColdcardQInstructionsTitle": "Инструкции за Coldcard Q",
-  "psbtFlowColdcardMk4InstructionsTitle": "Инструкции за Coldcard Mk4",
-  "psbtFlowColdcardQStep1": "Влезте в устройството си Coldcard Q",
-  "psbtFlowColdcardQStep2": "Добавете passphrase, ако имате такава (по избор)",
-  "psbtFlowColdcardQStep3": "Изберете предпочитания от вас метод за подписване:",
-  "psbtFlowColdcardQStep4": "За QR код:",
-  "psbtFlowColdcardQStep5": "   - Изберете „Сканирай произволен QR код“ на вашия Coldcard Q",
-  "psbtFlowColdcardQStep6": "   - Сканирайте QR кода, показан в портфейла Bull",
-  "psbtFlowColdcardQStep7": "   - Ако имате проблем със сканирането:",
-  "psbtFlowColdcardQStep8": "     - Увеличете яркостта на екрана на устройството си",
-  "psbtFlowColdcardQStep9": "     - Движете червения лазер нагоре-надолу над QR кода",
-  "psbtFlowColdcardQStep10": "     - Опитайте да отдалечите леко устройството си назад",
-  "psbtFlowColdcardQStep11": "За NFC:",
-  "psbtFlowColdcardQStep12": "   - Изберете „Готов за подписване“ на вашия Coldcard Q, след което натиснете бутона NFC",
-  "psbtFlowColdcardQStep13": "   - Докоснете телефона си до Coldcard Q",
-  "psbtFlowColdcardQStep14": "   - Изчакайте PSBT да се прехвърли",
-  "psbtFlowColdcardQStep15": "Веднага щом транзакцията бъде импортирана в Coldcard Q, прегледайте адреса на получателя и сумата.",
-  "psbtFlowColdcardQStep16": "Натиснете бутоните, за да подпишете транзакцията на вашия Coldcard Q.",
-  "psbtFlowColdcardQStep17": "Coldcard Q след това ще покаже QR код на подписаната транзакция или ще подготви NFC прехвърляне.",
-  "psbtFlowColdcardQStep18": "Ако сте подписали с QR, натиснете „Готово съм“ в портфейла Bull Bitcoin.",
-  "psbtFlowColdcardQStep19": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на подписаната транзакция или да използвате NFC, за да я получите.",
-  "psbtFlowColdcardQStep20": "   - За QR: сканирайте QR кода на Coldcard Q",
-  "psbtFlowColdcardQStep21": "   - За NFC: докоснете телефона си до Coldcard Q",
-  "psbtFlowColdcardQStep22": "Подписаната транзакция ще бъде импортирана в портфейла Bull Bitcoin.",
-  "psbtFlowColdcardQStep23": "Сега е готово за излъчване! Веднага щом кликнете върху „Излъчване“, транзакцията ще бъде публикувана в мрежата на Bitcoin.",
-  "psbtFlowColdcardMk4Step1": "Влезте в устройството си Coldcard Mk4",
-  "psbtFlowColdcardMk4Step2": "Добавете passphrase, ако имате такава (по избор)",
-  "psbtFlowColdcardMk4Step3": "Изберете „Готов за подписване“ на вашия Coldcard Mk4, след което натиснете бутон номер 3",
-  "psbtFlowColdcardMk4Step4": "Докоснете телефона си до Coldcard Mk4",
-  "psbtFlowColdcardMk4Step5": "Изчакайте PSBT да се прехвърли",
-  "psbtFlowColdcardMk4Step6": "Веднага щом транзакцията бъде импортирана в Coldcard Mk4, прегледайте адреса на получателя и сумата.",
-  "psbtFlowColdcardMk4Step7": "Натиснете бутоните, за да подпишете транзакцията на вашия Coldcard Mk4.",
-  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 след това ще подготви подписаната транзакция за NFC прехвърляне.",
-  "psbtFlowColdcardMk4Step9": "В портфейла Bull Bitcoin натиснете NFC на екрана за излъчване.",
-  "psbtFlowColdcardMk4Step10": "Докоснете телефона си до Coldcard Mk4, за да получите подписаната транзакция.",
-  "psbtFlowColdcardMk4Step11": "Подписаната транзакция ще бъде импортирана в портфейла Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step12": "Прегледайте детайлите на транзакцията в портфейла Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step13": "Сега е готово за излъчване! Веднага щом кликнете върху „Излъчване“, транзакцията ще бъде публикувана в мрежата на Bitcoin.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxTitle": "Излъчи транзакция",
   "broadcastSignedTxScanQR": "Сканирайте QR кода от вашия хардуерен портфейл",
@@ -8718,130 +7827,13 @@
   "autoswapRecipientWalletInfo": "Изберете кой биткойн портфейл ще получи прехвърлените средства (задължително)",
   "autoswapDefaultWalletLabel": "Биткойн портфейл",
   "autoswapSave": "Запази",
-  "electrumTitle": "Настройки на Electrum сървър",
-  "electrumNetworkBitcoin": "Bitcoin",
-  "electrumNetworkLiquid": "Liquid",
-  "electrumAdvancedOptions": "Разширени опции",
-  "electrumAddCustomServer": "Добави персонализиран сървър",
-  "electrumServerUrlHint": "URL адрес на {network} {environment} сървър",
   "electrumMainnet": "Основна мрежа",
   "electrumTestnet": "Тестова мрежа",
-  "electrumEmptyFieldError": "Това поле не може да бъде празно",
-  "electrumLiquidSslInfo": "Не трябва да се задава протокол, SSL ще се използва автоматично.",
-  "electrumAddServer": "Добави сървър",
-  "electrumEnableSsl": "Активирай SSL",
-  "electrumProtocolError": "Не включвайте протокол (ssl:// или tcp://).",
-  "electrumFormatError": "Използвайте формат хост:порт (напр. example.com:50001)",
-  "electrumBitcoinServerInfo": "Въведете адреса на сървъра във формат: хост:порт (напр. example.com:50001)",
-  "electrumStopGap": "Stop Gap",
-  "electrumTimeout": "Изчакване (секунди)",
-  "electrumRetryCount": "Брой опити",
-  "electrumValidateDomain": "Валидирай домейна",
-  "electrumStopGapEmptyError": "Stop Gap не може да бъде празно",
-  "electrumInvalidNumberError": "Въведете валидно число",
-  "electrumStopGapNegativeError": "Stop Gap не може да бъде отрицателно",
-  "electrumStopGapTooHighError": "Stop Gap изглежда твърде високо. (Макс. {maxStopGap})",
-  "electrumTimeoutEmptyError": "Времето за изчакване не може да бъде празно",
-  "electrumTimeoutPositiveError": "Времето за изчакване трябва да бъде положително",
-  "electrumTimeoutTooHighError": "Времето за изчакване изглежда твърде високо. (Макс. {maxTimeout} секунди)",
-  "electrumRetryCountEmptyError": "Броят опити не може да бъде празен",
-  "electrumRetryCountNegativeError": "Броят опити не може да бъде отрицателен",
-  "electrumTimeoutWarning": "Вашето време за изчакване ({timeoutValue} секунди) е по-ниско от препоръчителната стойност ({recommended} секунди) за този Stop Gap.",
-  "electrumInvalidStopGapError": "Невалидна стойност за Stop Gap: {value}",
-  "electrumInvalidTimeoutError": "Невалидна стойност за времето за изчакване: {value}",
-  "electrumInvalidRetryError": "Невалидна стойност за броя опити: {value}",
-  "electrumSaveFailedError": "Неуспешно запазване на разширените опции",
-  "electrumUnknownError": "Възникна грешка",
-  "electrumReset": "Нулирай",
-  "electrumConfirm": "Потвърди",
-  "electrumDeleteServerTitle": "Изтрий персонализирания сървър",
-  "electrumDeletePrivacyNotice": "Известие за поверителност:\n\nИзползването на собствен възел гарантира, че никоя трета страна не може да свърже вашия IP адрес с транзакциите ви. Като изтриете последния си персонализиран сървър, ще се свържете със сървър на BullBitcoin.\n",
-  "electrumDeleteConfirmation": "Сигурни ли сте, че искате да изтриете този сървър?\n\n{serverUrl}",
-  "electrumCancel": "Отказ",
-  "electrumDelete": "Изтрий",
-  "electrumDefaultServers": "Сървъри по подразбиране",
-  "electrumDefaultServersInfo": "За да защитим поверителността ви, сървърите по подразбиране не се използват, когато са конфигурирани персонализирани сървъри.",
-  "electrumCustomServers": "Персонализирани сървъри",
-  "electrumDragToReorder": "(Задръжте натиснато, за да плъзнете и промените приоритета)",
-  "electrumLoadFailedError": "Неуспешно зареждане на сървърите",
-  "electrumSavePriorityFailedError": "Неуспешно запазване на приоритета на сървъра",
-  "electrumAddFailedError": "Неуспешно добавяне на персонализиран сървър",
-  "electrumDeleteFailedError": "Неуспешно изтриване на персонализирания сървър",
-  "electrumServerAlreadyExists": "Този сървър вече съществува",
-  "electrumPrivacyNoticeTitle": "Известие за поверителност",
-  "electrumPrivacyNoticeContent1": "Известие за поверителност: Използването на собствен възел гарантира, че никоя трета страна не може да свърже вашия IP адрес с транзакциите ви.",
-  "electrumPrivacyNoticeContent2": "Ако обаче преглеждате транзакции чрез mempool, като кликнете върху ID на транзакцията или страницата с данни за получателя, тази информация ще бъде известна на BullBitcoin.",
-  "electrumPrivacyNoticeCancel": "Отказ",
-  "electrumPrivacyNoticeSave": "Запази",
-  "electrumServerNotUsed": "Не се използва",
-  "electrumServerOnline": "Онлайн",
-  "electrumServerOffline": "Офлайн",
   "addressViewNoAddressesFound": "Не са намерени адреси",
   "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
   "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",
   "appStartupErrorTitle": "Грешка при стартиране",
   "appStartupContactSupportButton": "Свържи се с поддръжката",
-  "ledgerImportTitle": "Импортирай Ledger портфейл",
-  "ledgerSignTitle": "Подпиши транзакция",
-  "ledgerVerifyTitle": "Потвърди адрес на Ledger",
-  "ledgerImportButton": "Започни импортиране",
-  "ledgerSignButton": "Започни подписване",
-  "ledgerVerifyButton": "Потвърди адрес",
-  "ledgerProcessingImport": "Импортиране на портфейл",
-  "ledgerProcessingSign": "Подписване на транзакция",
-  "ledgerProcessingVerify": "Показване на адреса на Ledger...",
-  "ledgerSuccessImportTitle": "Портфейлът е импортиран успешно",
-  "ledgerSuccessSignTitle": "Транзакцията е подписана успешно",
-  "ledgerSuccessVerifyTitle": "Потвърждаване на адреса на Ledger...",
-  "ledgerSuccessImportDescription": "Вашият Ledger портфейл беше импортиран успешно.",
-  "ledgerSuccessSignDescription": "Вашата транзакция беше подписана успешно.",
-  "ledgerSuccessVerifyDescription": "Адресът беше потвърден на вашето устройство Ledger.",
-  "ledgerProcessingImportSubtext": "Настройване на портфейл само за наблюдение (watch-only)...",
-  "ledgerProcessingSignSubtext": "Моля, потвърдете транзакцията на устройството си Ledger...",
-  "ledgerProcessingVerifySubtext": "Моля, потвърдете адреса на устройството си Ledger.",
-  "ledgerConnectTitle": "Свържете вашето устройство Ledger",
-  "ledgerScanningTitle": "Търсене на устройства",
-  "ledgerConnectingMessage": "Свързване с {deviceName}",
-  "ledgerActionFailedMessage": "{action} се провали",
-  "ledgerInstructionsIos": "Уверете се, че вашият Ledger е отключен, приложението Bitcoin е отворено и Bluetooth е активиран.",
-  "ledgerInstructionsAndroidUsb": "Уверете се, че вашият Ledger е отключен с отворено приложение Bitcoin, и го свържете чрез USB.",
-  "ledgerInstructionsAndroidDual": "Уверете се, че вашият Ledger е отключен, приложението Bitcoin е отворено и Bluetooth е активиран.",
-  "ledgerScanningMessage": "Търсене на близки Ledger устройства...",
-  "ledgerConnectingSubtext": "Установяване на защитена връзка...",
-  "ledgerErrorPermissionDenied": "За свързване с устройства Ledger са необходими разрешения за Bluetooth.",
-  "ledgerErrorNoDevicesFound": "Не са намерени устройства Ledger. Уверете се, че устройството ви е включено и Bluetooth е активиран.",
-  "ledgerErrorMultipleDevicesFound": "Намерени са няколко устройства Ledger. Моля, уверете се, че наблизо има само едно устройство.",
-  "ledgerErrorDeviceNotFound": "Устройството Ledger не е намерено.",
-  "ledgerErrorDeviceMismatch": "Открито е несъответствие на устройството.",
-  "ledgerErrorInvalidPsbt": "Открит е невалиден PSBT формат.",
-  "ledgerErrorMissingDerivationPath": "Изисква се път на деривация",
-  "ledgerErrorMissingScriptType": "Изисква се тип на скрипта",
-  "ledgerErrorDeviceBusy": "Друга програма използва вашия Ledger. Моля, затворете я (например Ledger Live) и опитайте отново.",
-  "ledgerErrorNoConnection": "Няма налична връзка с Ledger",
-  "ledgerErrorRejectedByUser": "Транзакцията беше отхвърлена от потребителя на устройството Ledger.",
-  "ledgerErrorDeviceLocked": "Устройството Ledger е заключено. Моля, отключете устройството си и опитайте отново.",
-  "ledgerErrorBitcoinAppNotOpen": "Моля, отворете приложението Bitcoin на устройството си Ledger и опитайте отново.",
-  "ledgerErrorMissingPsbt": "Изисква се PSBT за подписване",
-  "ledgerErrorMissingAddress": "Изисква се адрес за потвърждение",
-  "ledgerButtonTryAgain": "Опитай отново",
-  "ledgerButtonManagePermissions": "Управление на разрешенията на приложението",
-  "ledgerButtonNeedHelp": "Нуждаете се от помощ?",
-  "ledgerVerifyAddressLabel": "Адрес за потвърждение:",
-  "ledgerWalletTypeLabel": "Тип портфейл:",
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - Препоръчително",
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "ledgerWalletTypeLegacyDescription": "P2PKH - По-стар формат",
-  "ledgerWalletTypeSelectTitle": "Избери тип портфейл",
-  "ledgerSuccessAddressVerified": "Адресът е потвърден успешно!",
-  "ledgerHelpSubtitle": "Първо се уверете, че устройството ви Ledger е отключено и приложението Bitcoin е отворено. Ако устройството ви все още не се свързва с приложението, опитайте следното:",
-  "ledgerHelpStep1": "Рестартирайте устройството си Ledger.",
-  "ledgerHelpStep2": "Уверете се, че Bluetooth на телефона ви е включен и разрешен.",
-  "ledgerHelpStep3": "Уверете се, че Bluetooth на вашия Ledger е включен.",
-  "ledgerHelpStep4": "Уверете се, че имате инсталирана най-новата версия на приложението Bitcoin от Ledger Live.",
-  "ledgerHelpStep5": "Уверете се, че устройството ви Ledger използва най-новия фърмуер — можете да актуализирате фърмуера чрез настолното приложение Ledger Live.",
   "ledgerDefaultWalletLabel": "Ledger портфейл",
   "exchangeBrandName": "BULL BITCOIN",
   "exchangeLandingConnectAccount": "Свържете сметката си в борсата Bull Bitcoin",
@@ -8852,8 +7844,6 @@
   "exchangeFeatureBankTransfers": "• Изпращайте банкови преводи и плащайте сметки",
   "exchangeFeatureCustomerSupport": "• Разговаряйте с клиентска поддръжка",
   "exchangeFeatureUnifiedHistory": "• Обединена история на транзакциите",
-  "priceChartFetchingHistory": "Извличане на история на цените...",
-  "priceChartFailedToLoad": "Неуспешно зареждане на историята на цените",
   "priceFailedToLoad": "Неуспешно зареждане на цената",
   "statusScreenTryAgain": "Опитай отново",
   "statusScreenContinue": "Продължи",
@@ -8931,29 +7921,8 @@
   "cancel": "Отказ",
   "delete": "Изтрий",
   "save": "Запази",
-  "statusCheckTitle": "Статус на услугите",
-  "statusCheckLastChecked": "Последна проверка: {time}",
-  "statusCheckOnline": "Онлайн",
-  "statusCheckOffline": "Офлайн",
-  "statusCheckUnknown": "Неизвестен",
   "torSettingsTitle": "Настройки на Tor",
   "torSettingsEnableProxy": "Активирай Tor прокси",
-  "torSettingsProxyPort": "Порт на Tor прокси",
-  "torSettingsPortDisplay": "Порт: {port}",
-  "torSettingsPortNumber": "Номер на порт",
-  "torSettingsPortHint": "9050",
-  "torSettingsPortValidationEmpty": "Моля, въведете номер на порт",
-  "torSettingsPortValidationInvalid": "Моля, въведете валидно число",
-  "torSettingsPortValidationRange": "Портът трябва да бъде между 1 и 65535",
-  "torSettingsSaveButton": "Запази",
-  "torSettingsConnectionStatus": "Статус на връзката",
-  "torSettingsStatusConnected": "Готово",
-  "torSettingsStatusConnecting": "Свързване...",
-  "torSettingsStatusDisconnected": "Изключен",
-  "torSettingsStatusUnknown": "Неизвестен статус",
-  "torSettingsDescConnected": "Tor прокси работи и е готов",
-  "torSettingsDescConnecting": "Установяване на връзка с Tor",
-  "torSettingsDescDisconnected": "Tor прокси не работи",
   "withdrawSuccessTitle": "Тегленето е инициирано",
   "withdrawSuccessOrderDetails": "Детайли за поръчката",
   "withdrawConfirmBankAccount": "Банкова сметка",
@@ -8989,16 +7958,8 @@
   "coreScreensReceiveAmountLabel": "Сума за получаване",
   "coreScreensSendNetworkFeeLabel": "Мрежова такса за изпращане",
   "coreScreensConfirmButton": "Потвърди",
-  "noteVisibleToSenderNotice": "Тази бележка ще бъде видима за получателя на вашия QR код или фактура.",
   "viewerAddressTab": "Адрес",
   "viewerPaymentUriTab": "URI за плащане",
-  "systemLabelSwaps": "Обмени",
-  "systemLabelAutoSwap": "Автообмен",
-  "systemLabelPayjoin": "Payjoin",
-  "systemLabelSelfSpend": "Собствен разход",
-  "systemLabelExchangeBuy": "Купуване",
-  "systemLabelExchangeSell": "Продаване",
-  "labelDeleteFailed": "Неуспешно изтриване на „{label}“. Моля, опитайте отново.",
   "logoutConfirmationTitle": "Потвърди изхода",
   "logoutConfirmationDescription": "Сигурни ли сте, че искате да излезете от акаунта си в Bull Bitcoin? Ще трябва да влезете отново, за да получите достъп до функциите на борсата.",
   "logoutConfirmationCancel": "Отказ",
@@ -9022,18 +7983,6 @@
   "mempoolErrorUpdateSettingsFailed": "Неуспешно актуализиране на настройките: {error}",
   "sendSubSatVbyteWarning": "Транзакциите под 1 sat/vB може да отнемат повече време за потвърждение и може да не се разпространят до всички възли.",
   "sendBelowMinFeeRateError": "Таксата трябва да бъде поне 0.1 sat/vB.",
-  "bitboxErrorBluetoothPermissionDenied": "Необходимо е разрешение за Bluetooth, за да се свържете с вашия BitBox02 Nova.",
-  "bitboxErrorBluetoothUnavailable": "Bluetooth не е достъпен. Включете Bluetooth и опитайте отново.",
-  "bitboxErrorNoBleDevicesFound": "Не е намерен BitBox02 Nova наблизо. Проверете Bluetooth и опитайте отново.",
-  "bitboxErrorMultipleBleDevicesFound": "Намерени са няколко устройства BitBox02 Nova. Дръжте само едно наблизо и опитайте отново.",
-  "bitboxErrorOperationFailed": "Операцията с BitBox не бе успешна. Моля, опитайте отново.",
-  "bitboxScreenConnectSubtextBluetooth": "Уверете се, че вашият BitBox02 Nova е отключен и Bluetooth е активиран.",
-  "bitboxScreenScanningSubtextBluetooth": "Търсене на вашия BitBox02 Nova наблизо...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "Отстраняване на неизправности с BitBox02 Nova",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Ако устройството ви все още не се свързва с приложението, опитайте следното:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Уверете се, че Bluetooth е включен и разрешен за това приложение.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "Уверете се, че Bluetooth е активиран на вашия BitBox02 Nova.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "Рестартирайте вашия BitBox02 Nova и опитайте да се свържете отново.",
   "sendErrorInsufficientBalanceFrozenHint": "Няма достатъчно наличен баланс — {amount} е замразен. Размразете монетите в „Управление на монетите“, за да го използвате.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -9063,7 +8012,6 @@
   "settingsPayjoinDisclaimerRowLabel": "Уведомление за Payjoin",
   "settingsPayjoinAdvancedTitle": "Разширени настройки на Payjoin",
   "sendPayjoinLabel": "Payjoin",
-  "announcementAutoswapDescription": "Вашият Liquid се обменя автоматично за Bitcoin.",
   "addressViewErrorWalletNotFound": "Този портфейл не беше намерен.",
   "addressViewErrorLoadFailed": "Адресите ви не можаха да бъдат заредени. Моля, опитайте отново.",
   "coreSwapsStatusNotStarted": "Не е започнало",
@@ -9078,19 +8026,6 @@
   "coreSwapsStatusUnknown": "Неизвестно",
   "sendSwapExpiredTitle": "Поръчката изтече",
   "sendSwapExpiredMessage": "Тази поръчка изтече, преди да бъдат изпратени средства. От портфейла ви не е изпратено нищо.",
-  "torSettingsStatusCensored": "Връзката изглежда филтрирана",
-  "torSettingsDescCensored": "Tor не успя да достигне мрежата. Това обикновено означава, че връзката се филтрира.",
-  "torSettingsBootstrapProgress": "Свързване… {percent}%",
-  "torSettingsEmbeddedTitle": "Вграден Tor",
-  "torSettingsEmbeddedDescription": "Вграденият Tor се използва от RecoverBull и от сървърите Bitcoin Electrum с адрес .onion. Останалият трафик на приложението остава пряк.",
-  "torSettingsTransportMode": "Начин на свързване",
-  "torSettingsModeAutomatic": "Автоматично",
-  "torSettingsModeDirect": "Пряко",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Първо опитва пряка връзка с Tor и използва Snowflake, ако мрежата изглежда блокира Tor.",
-  "torSettingsModeDirectDescription": "Свързва се пряко с мрежата Tor, без сменяем транспорт.",
-  "torSettingsModeSnowflakeDescription": "Използва доброволчески Snowflake прокси сървъри, за да достигне Tor от филтрирана мрежа.",
-  "torSettingsActiveTransport": "Активен транспорт: {transport}",
   "settingsScreenPrivacyTitle": "Поверителност на екрана",
   "settingsScreenPrivacyDisabledMessage": "Екранните снимки вече са разрешени на чувствителните екрани",
   "settingsSearchHint": "Търсене в настройките",
@@ -9125,11 +8060,7 @@
   "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
   "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
   "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново.",
-  "statusCheckNoDefaultWalletError": "Не е намерен портфейл по подразбиране за Bitcoin. Моля, задайте портфейл по подразбиране и опитайте отново.",
-  "statusCheckResultsMayBeOutdated": "Резултатите може да са остарели",
   "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
-  "psbtFlowInvalidPsbtError": "Тази транзакция не можа да бъде прочетена. Върнете се и я създайте отново.",
-  "psbtFlowQrEncodingError": "Тази транзакция не може да бъде преобразувана в QR код.",
   "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
@@ -9161,15 +8092,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Този тип файл не се приема. Изберете друг.",
   "exchangeSettingsErrorDocumentUnreadable": "Този файл не можа да бъде прочетен. Изберете друг.",
   "exchangeSettingsErrorUploadingDocument": "Документът не можа да бъде качен. Моля, опитайте отново.",
-  "labelsErrorNoteTooLong": "Бележката не може да е по-дълга от {max} знака",
-  "labelsErrorNoteForbiddenCharacter": "Бележката не може да съдържа знака {character}",
-  "labelsErrorFileTooLarge": "Този файл е твърде голям. Файловете с етикети трябва да са под {max}.",
-  "labelsErrorFileUnreadable": "Това не изглежда като файл с етикети BIP-329. Проверете дали сте избрали правилния файл.",
-  "labelsErrorFileEmpty": "Този файл не съдържа етикети за импортиране.",
-  "labelsErrorExportFailed": "Етикетите ви не можаха да бъдат запазени. Опитайте отново.",
-  "labelsErrorFileReservedName": "Този файл използва име на етикет, запазено от приложението. Преименувайте го във файла и опитайте отново.",
-  "labelsErrorNoteForbiddenWhitespace": "Бележката не може да съдържа нови редове или табулации",
-  "labelsErrorFileInvalidEntry": "Някои записи в този файл не можаха да бъдат прочетени. Проверете файла и опитайте отново.",
   "recipientsErrorLoadFailed": "Получателите ви не можаха да бъдат заредени. Опитайте отново.",
   "recipientsErrorSaveFailed": "Този получател не можа да бъде запазен. Проверете данните и опитайте отново.",
   "recipientsErrorSinpeLookupFailed": "Не успяхме да проверим този телефонен номер. Проверете го и опитайте отново.",
@@ -9347,11 +8269,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
   "settingsDarkModeTitle": "Тъмен режим",
   "settingsSourceCodeTitle": "Изходен код",
-  "torSettingsStatusNoInternetOrBlocked": "Няма интернет или мрежата е цензурирана",
-  "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси.",
-  "serverEncrypted": "Криптирано",
-  "serverUnencrypted": "Некриптирано",
   "backgroundTasksTitle": "Фонови задачи",
   "blockedInSystemSettings": "Блокирано в системните настройки",
   "notificationsBlockedMessage": "Известията са блокирани в системните настройки.",

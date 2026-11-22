@@ -1,17 +1,17 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:primitives/primitives.dart' show Ok;
+import 'package:bb_mobile/features/import_watch_only_wallet/read_watch_only_network_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements ActiveEnvironmentReader {}
 
 class _ImportXpub extends Mock implements ImportWatchOnlyXpubUsecase {}
 
@@ -38,15 +38,8 @@ void main() {
     'a real parsed test public key imports in the selected regtest context',
     () async {
       final settings = _Settings();
-      when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          isSuperuser: true,
-          isDevModeEnabled: true,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
-      );
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => Ok(Environment.regtest));
       final importer = _ImportXpub();
       final imported = _Wallet();
       when(() => imported.network).thenReturn(Network.bitcoinRegtest);
@@ -56,7 +49,7 @@ void main() {
         importWatchOnlyXpubUsecase: importer,
         importWatchOnlyDescriptorUsecase: _ImportDescriptor(),
         parseWatchOnlyInputUsecase: ParseWatchOnlyInputUsecase(),
-        settingsRepository: settings,
+        readNetworkUsecase: ReadWatchOnlyNetworkUsecase(settings),
       );
       addTearDown(cubit.close);
       await cubit.parsePastedInput(_vpub);

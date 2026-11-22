@@ -1,16 +1,16 @@
 import 'package:bb_mobile/features/buy/ui/widgets/buy_order_failure_message.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullButton,
         BullInfoCard,
         BullScrollableColumn,
@@ -76,7 +76,8 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
         title: Text(context.loc.buyInputTitle),
       ),
       body: SafeArea(
-        child: BBKeyboardActions(
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
           disableScroll: true,
           child: BullScrollableColumn(
             crossAxisAlignment: .start,

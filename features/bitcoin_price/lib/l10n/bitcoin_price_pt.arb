@@ -1,0 +1,12 @@
+{
+  "currencySettingsDefaultFiatCurrencyLabel": "Moeda de fiat padrão",
+  "fiatCurrencySettingsLabel": "Moeda de Fiat",
+  "priceChartFetchingHistory": "Fetching Price History...",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
+  "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente."
+}

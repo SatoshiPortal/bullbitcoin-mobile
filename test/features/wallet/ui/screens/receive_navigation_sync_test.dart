@@ -1,12 +1,11 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:secrets/secrets.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
@@ -22,9 +21,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _WalletBloc extends Mock implements WalletBloc {}
 
-class _PriceBloc extends Mock implements BitcoinPriceBloc {}
-
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
@@ -45,17 +42,18 @@ void main() {
     tester,
   ) async {
     final wallet = _WalletBloc();
-    final price = _PriceBloc();
+
     when(() => wallet.state)
         .thenReturn(const WalletState(failure: NoWalletsFoundFailure()));
     when(() => wallet.stream)
         .thenAnswer((_) => const Stream<WalletState>.empty());
-    when(() => price.state)
-        .thenReturn(const BitcoinPriceState(loadingPrice: true));
-    when(() => price.stream)
-        .thenAnswer((_) => const Stream<BitcoinPriceState>.empty());
+
     final settings = _Settings();
-    when(settings.fetch).thenAnswer((_) => Completer<SettingsEntity>().future);
+    when(settings.readDeveloperEnvironment).thenAnswer(
+      (_) => (Completer<DeveloperEnvironmentPreferences>().future).then(
+        (value) => Ok(value),
+      ),
+    );
     final references = _References();
     NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
       LoadNetworkWalletSetupUsecase(settings, references),
@@ -81,6 +79,7 @@ void main() {
             GoRoute(
               path: '/wallet',
               builder: (_, _) => WalletHomeScreen(
+                announcements: const SizedBox.shrink(),
                 arkHost: null,
                 createSetupCubit: createSetupCubit,
                 onEmptyMainnet: () {},
@@ -109,7 +108,7 @@ void main() {
       MultiBlocProvider(
         providers: [
           BlocProvider<WalletBloc>.value(value: wallet),
-          BlocProvider<BitcoinPriceBloc>.value(value: price),
+          BitcoinPriceFixture.prices(loadingPrice: true),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),

@@ -16,6 +16,15 @@ enum XpubType {
   final List<int> versionBytes;
 
   const XpubType(this.versionBytes);
+
+  /// Identifies a supported, case-sensitive text prefix. The key itself still
+  /// needs to be decoded and validated by the caller.
+  static XpubType? tryFromPrefix(String key) {
+    for (final type in values) {
+      if (key.startsWith(type.name)) return type;
+    }
+    return null;
+  }
 }
 
 extension ScriptTypeX on ScriptType {

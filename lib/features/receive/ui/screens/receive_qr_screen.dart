@@ -1,8 +1,6 @@
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
@@ -11,10 +9,6 @@ import 'package:bb_mobile/features/receive/ui/widgets/receive_advanced_settings.
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enlarged_qr.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
-import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
-import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' show EdgeInsetsDirectional;
@@ -117,9 +111,13 @@ class ReceiveQRDetails extends StatelessWidget {
             backgroundColor: context.appColors.surface,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             onTap: () => state.isLightning
-                ? InvoiceViewer.showDetail(
+                ? BullInvoiceViewer.showDetail(
                     context,
                     data: state.addressOrInvoiceOnly,
+                    title: context.loc.invoiceViewerTitle,
+                    copyLabel: context.loc.viewerTapToCopy,
+                    copiedMessage: context.loc.copiedToClipboard,
+
                     clipboardText: state.clipboardData,
                   )
                 : AddressViewer.showDetail(
@@ -137,8 +135,12 @@ class ReceiveQRDetails extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: state.isLightning
-                  ? InvoiceViewer(
+                  ? BullInvoiceViewer(
                       state.addressOrInvoiceOnly,
+                      title: context.loc.invoiceViewerTitle,
+                      copyLabel: context.loc.viewerTapToCopy,
+                      copiedMessage: context.loc.copiedToClipboard,
+
                       clipboardText: state.clipboardData,
                       style: context.bullType.body.copyWith(
                         decorationThickness: 1.5,
@@ -216,10 +218,10 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       children: [
         _ReceiveInvoiceRow(
           label: context.loc.amountLabel,
-          value: CurrencyText(
+          value: BullAmount.signedSats(
             amount ?? 0,
-            showFiat: false,
             textAlign: TextAlign.end,
+            interactive: false,
           ),
           action: BullFieldAction(
             label: context.loc.receiveEditAmount,
@@ -231,7 +233,11 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           label: context.loc.receiveFees,
           value: fees == null
               ? const BullShimmerLine(width: 90, height: 16)
-              : CurrencyText(fees, showFiat: false, textAlign: TextAlign.end),
+              : BullAmount.signedSats(
+                  fees,
+                  textAlign: TextAlign.end,
+                  interactive: false,
+                ),
           action: BullFieldAction(
             label: context.loc.receiveFeeDetails,
             onPressed: () => _showFees(context),
@@ -243,13 +249,13 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           label: context.loc.receiveYouReceive,
           value: net == null
               ? const BullShimmerLine(width: 90, height: 16)
-              : CurrencyText(
+              : BullAmount.signedSats(
                   net,
-                  showFiat: false,
                   textAlign: TextAlign.end,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
+                  interactive: false,
                 ),
         ),
         if (state.confirmedNote.isNotEmpty)
@@ -259,11 +265,12 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           ),
         if (showsLiquidDisclosure) ...[
           Container(color: context.appColors.surface, height: 1),
-          DisclosureLink(
+          BullDisclosureLink(
             label: context.loc.receiveLiquidRiskDisclosureLabel,
             semanticLabel: context.loc.liquidRiskDisclosureSemanticLabel,
             title: context.loc.liquidRiskDisclosureTitle,
             body: context.loc.liquidRiskDisclosureBody,
+            closeLabel: context.loc.closeDialogButton,
           ),
         ],
       ],
@@ -331,7 +338,11 @@ class ReceiveLnFeesDetails extends StatelessWidget {
   Widget _row(BuildContext context, String label, int amount) =>
       _ReceiveInvoiceRow(
         label: label,
-        value: CurrencyText(amount, showFiat: false, textAlign: TextAlign.end),
+        value: BullAmount.signedSats(
+          amount,
+          textAlign: TextAlign.end,
+          interactive: false,
+        ),
       );
 
   @override
@@ -458,14 +469,13 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
       final chain = address.keyChain == WalletAddressKeyChain.external
           ? '0'
           : '1';
-      context.pushNamed(
-        LedgerRoute.ledgerVerifyAddress.name,
-        extra: LedgerRouteParams(
-          address: state.address,
-          derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
-          requestedDeviceType: wallet.signerDevice,
-          scriptType: wallet.scriptType,
-        ),
+      SignersNavigation.verifyLedger(
+        context,
+        network: wallet.network.environment,
+        address: state.address,
+        derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
+        requestedDeviceType: wallet.signerDevice,
+        scriptType: wallet.scriptType,
       );
     },
   );
@@ -491,14 +501,13 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
       final chain = address.keyChain == WalletAddressKeyChain.external
           ? '0'
           : '1';
-      context.pushNamed(
-        BitBoxRoute.bitboxVerifyAddress.name,
-        extra: BitBoxRouteParams(
-          address: state.address,
-          derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
-          requestedDeviceType: wallet.signerDevice,
-          scriptType: wallet.scriptType,
-        ),
+      SignersNavigation.verifyBitBox(
+        context,
+        network: wallet.network.environment,
+        address: state.address,
+        derivationPath: '${wallet.derivationPath}/$chain/${address.index}',
+        requestedDeviceType: wallet.signerDevice,
+        scriptType: wallet.scriptType,
       );
     },
   );

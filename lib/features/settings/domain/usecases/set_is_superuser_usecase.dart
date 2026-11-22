@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:meta/meta.dart';
 
 class SetIsSuperuserUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   const SetIsSuperuserUsecase({required this._settingsRepository});
 

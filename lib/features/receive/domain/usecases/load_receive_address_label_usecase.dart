@@ -1,12 +1,12 @@
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:meta/meta.dart';
 
 /// Receive-owned wrapper around the labels feature's public contract.
 class LoadReceiveAddressLabelUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const LoadReceiveAddressLabelUsecase(this._labelsFacade);
 
@@ -18,7 +18,8 @@ class LoadReceiveAddressLabelUsecase {
   @useResult
   Future<Result<String, ReceiveFailure>> execute(String address) async {
     try {
-      final labels = await _labelsFacade.fetchByReference(address);
+      final labels = (await _labelsFacade.fetch(reference: address))
+          .fold((labels) => labels, (_) => const <Label>[]);
       for (final label in labels) {
         if (!LabelSystem.isSystemLabel(label.label)) return Ok(label.label);
       }

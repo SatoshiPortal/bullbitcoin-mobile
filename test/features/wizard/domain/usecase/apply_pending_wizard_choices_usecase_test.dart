@@ -1,17 +1,15 @@
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockWizardRepository extends Mock implements WizardRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _Intervals implements BackgroundSyncIntervalRepository {
   _Intervals(this.stored);
@@ -161,7 +159,7 @@ void main() {
       ),
     );
     when(() => settings.setCurrency(any()))
-        .thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+        .thenAnswer((_) async => const Err(PreferencesWriteFailure('nope')));
 
     await usecase.execute();
 
@@ -191,9 +189,8 @@ void main() {
           },
         ),
       );
-      when(
-        () => settings.setCurrency(any()),
-      ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+      when(() => settings.setCurrency(any()))
+          .thenAnswer((_) async => const Err(PreferencesWriteFailure('nope')));
 
       await usecase.execute();
 

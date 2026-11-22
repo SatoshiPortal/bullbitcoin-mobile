@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
+import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 
 import 'dart:async';
@@ -11,8 +13,8 @@ import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.d
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/load_coin_label_filters_usecase.dart';
 
 /// Debounce applied before reloading after a wallet sync finishes — a real
 /// wait that keeps multiple finish events from each triggering a reload.
@@ -24,15 +26,21 @@ const _syncReloadDebounce = Duration(seconds: 3);
 class CoinsCubit extends Cubit<CoinsState> {
   CoinsCubit({
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
+    WatchCoinsAmountDisplayUsecase? watchAmountDisplayUsecase,
     required String walletId,
     required this._getUtxosUsecase,
     required this._freezeUtxosUsecase,
     required this._unfreezeUtxosUsecase,
     required this._refreshCoinsUsecase,
-    required this._labelsFacade,
+    required this._loadCoinLabelFilters,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
   }) : super(CoinsState(walletId: walletId)) {
+    _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
+      preferences,
+    ) {
+      if (!isClosed) emit(state.copyWith(amountDisplay: preferences));
+    });
     _startedSub = watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) {
@@ -50,8 +58,10 @@ class CoinsCubit extends Cubit<CoinsState> {
   final FreezeUtxosUsecase _freezeUtxosUsecase;
   final UnfreezeUtxosUsecase _unfreezeUtxosUsecase;
   final RefreshCoinsUsecase _refreshCoinsUsecase;
-  final LabelsFacade _labelsFacade;
+  final LoadCoinLabelFiltersUsecase _loadCoinLabelFilters;
 
+  late final StreamSubscription<AmountDisplayPreferences?>?
+  _amountDisplaySubscription;
   StreamSubscription? _startedSub;
   StreamSubscription? _finishedSub;
   StreamSubscription? _revisionsSubscription;
@@ -60,6 +70,7 @@ class CoinsCubit extends Cubit<CoinsState> {
   @override
   Future<void> close() async {
     _debounceTimer?.cancel();
+    await _amountDisplaySubscription?.cancel();
     await _revisionsSubscription?.cancel();
     await _startedSub?.cancel();
     await _finishedSub?.cancel();
@@ -85,7 +96,7 @@ class CoinsCubit extends Cubit<CoinsState> {
           );
         }
       case Ok(:final value):
-        final labels = await _labelsFacade.fetchDistinctLabels();
+        final labels = await _loadCoinLabelFilters.execute();
         if (isClosed) return;
 
         final stillPresent = value.map(utxoOutpointKey).toSet();

@@ -2,9 +2,8 @@ import 'package:rust_bindings/rust_bindings.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:preferences/preferences.dart' as settings;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -21,22 +20,8 @@ class _Electrum extends Mock implements swaps.ElectrumRunner {}
 
 class _Lockup extends Mock implements swaps.LockupChain {}
 
-class _Keychain implements swaps.SecretStore {
-  final _values = <String, String>{};
-  @override
-  Future<String?> read(String key) async => _values[key];
-  @override
-  Future<void> write(String key, String value) async {
-    _values[key] = value;
-  }
-
-  @override
-  Future<void> delete(String key) async {
-    _values.remove(key);
-  }
-}
-
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(BullSdk.init);
   for (final environment in [
     NetworkEnv.mainnet,
@@ -89,7 +74,10 @@ void main() {
       final defaultWallet = _Wallet();
       when(() => defaultWallet.masterFingerprint).thenReturn(secret.id.hex);
       final glue = SwapsAppGlue(walletRepository: wallets, secrets: secrets);
-      final canonical = swaps.SwapStorage(rows: _Rows(), secrets: _Keychain());
+      final canonical = swaps.SwapStorage(
+        rows: _Rows(),
+        secrets: secrets.swapKeychain,
+      );
       for (final environment in [
         NetworkEnv.mainnet,
         NetworkEnv.testnet,

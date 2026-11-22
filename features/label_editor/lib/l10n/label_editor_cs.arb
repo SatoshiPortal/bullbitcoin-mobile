@@ -1,0 +1,94 @@
+{
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "Čeština",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} štítky importované",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "Koupit",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "1 dovážené etikety",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "Prodej",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "Nelze odstranit \"{label}\". Prosím, zkuste to znovu.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Zadejte zde...",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "Importní štítky",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "Čeština",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "Štítky úspěšně exportovány",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "Čeština",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 Štítky",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Štítky Import / Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "Export štítků",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "Vlastní špendlík",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "Import nebo export peněženky pomocí standardu BIP329.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "Tato poznámka bude viditelná příjemci vašeho QR kódu nebo faktury.",
+  "labelsErrorNoteTooLong": "Poznámka nesmí být delší než {max} znaků",
+  "labelsErrorNoteForbiddenCharacter": "Poznámka nesmí obsahovat znak {character}",
+  "labelsErrorFileTooLarge": "Tento soubor je příliš velký. Soubory se štítky musí být menší než {max}.",
+  "labelsErrorFileUnreadable": "Nevypadá to jako soubor se štítky BIP-329. Zkontrolujte, zda jste vybrali správný soubor.",
+  "labelsErrorFileEmpty": "Tento soubor neobsahuje žádné štítky k importu.",
+  "labelsErrorExportFailed": "Vaše štítky se nepodařilo uložit. Zkuste to prosím znovu.",
+  "labelsErrorFileReservedName": "Tento soubor používá název štítku vyhrazený aplikací. Přejmenujte jej v souboru a zkuste to znovu.",
+  "labelsErrorNoteForbiddenWhitespace": "Poznámka nesmí obsahovat konce řádků ani tabulátory",
+  "labelsErrorFileInvalidEntry": "Některé položky v tomto souboru se nepodařilo přečíst. Zkontrolujte soubor a zkuste to znovu."
+}

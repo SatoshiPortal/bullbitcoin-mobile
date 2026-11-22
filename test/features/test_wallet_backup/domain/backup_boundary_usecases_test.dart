@@ -1,9 +1,9 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, ScriptType;
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
@@ -19,7 +19,7 @@ import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockCompletePhysicalBackupVerificationUsecase extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
@@ -64,7 +64,7 @@ void main() {
         settingsRepository: settings,
         backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
       );
-      when(() => settings.fetch()).thenAnswer((_) async => _settings);
+      when(() => settings.fetch()).thenAnswer((_) async => Ok(_settings));
     });
 
     void stubWallets(List<Wallet> value) => when(
@@ -127,7 +127,7 @@ void main() {
         walletRepository: wallets,
         settingsRepository: settings,
       );
-      when(() => settings.fetch()).thenAnswer((_) async => _settings);
+      when(() => settings.fetch()).thenAnswer((_) async => Ok(_settings));
     });
 
     test('reports an empty list as a distinct failure, not an empty Ok, so '

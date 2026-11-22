@@ -1,11 +1,9 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/setup.dart';
 
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -24,7 +22,7 @@ import 'package:mocktail/mocktail.dart';
 
 /// What the repository boundary already sanitized it to. If a use-case ever
 /// widened this — or let the core family through — the assertions below fail.
-const _sanitized = SettingsStoreWriteFailure('setCurrency failed: _Exception');
+const _sanitized = PreferencesWriteFailure('setCurrency failed: _Exception');
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
@@ -32,9 +30,9 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _Electrum extends Mock implements ElectrumSettingsFacade {}
+class _Electrum extends Mock implements ElectrumDefaultsProvisioner {}
 
 void main() {
   setUpAll(() {
@@ -49,12 +47,14 @@ void main() {
   setUp(() {
     repository = _MockSettingsRepository();
     when(() => repository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-        isSuperuser: true,
-        isDevModeEnabled: true,
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ),
       ),
     );
   });
@@ -97,7 +97,7 @@ void main() {
       expect(failure, isA<SettingsStorageFailure>(), reason: name);
       expect(
         failure,
-        isNot(isA<SettingsStoreFailure>()),
+        isNot(isA<PreferencesFailure>()),
         reason: 'the core family must not escape into the cubit',
       );
       expect(
@@ -208,7 +208,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Err(_sanitized)),
     () =>
-        SetExchangeTestnetBasicAuthUsecase(settingsRepository: repository)
+        SetExchangeTestnetBasicAuthUsecase(preferences: repository)
             .execute(username: 'u', password: 'p'),
   );
 

@@ -1,6 +1,5 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show Ok;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
@@ -22,7 +21,10 @@ final _ok = isA<Ok<void, SettingsFailure>>();
 /// is attempted before any is asserted, so one failure cannot skip the others
 /// and leak developer mode into the groups that follow in the same run.
 Future<void> selectDeveloperNetwork(Environment environment) async {
-  final previous = await locator<SettingsRepository>().fetch();
+  final previous = (await locator<Preferences>().fetch()).fold(
+    (value) => value,
+    (failure) => throw StateError('Preferences unavailable'),
+  );
   addTearDown(() async {
     final restored = [
       await locator<SetEnvironmentUsecase>().execute(Environment.mainnet),

@@ -12,14 +12,16 @@ import 'features/wallet/data/ark_funding_test_fixture.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure, ElectrumSaveFailure, RegtestElectrumProfile;
+import 'package:electrum/electrum.dart'
+    show ElectrumFailure, ElectrumSaveFailure;
+import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/settings_table.drift.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_electrum_reconnect_watcher.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_tip_watcher.dart';
 import 'package:bb_mobile/locator.dart';
@@ -318,6 +320,9 @@ void main() {
       PathProviderPlatform.instance = _Paths(directory.path);
       FakeSecureStoragePlatform().install();
       SharedPreferences.setMockInitialValues({});
+      final previousPreferences = SharedPreferencesAsyncPlatform.instance;
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
       final database = SqliteDatabase(NativeDatabase.memory());
       final locator = GetIt.asNewInstance();
       final nativeTor = _NativeTor();
@@ -332,6 +337,7 @@ void main() {
         await locator.reset();
         await database.close();
         PathProviderPlatform.instance = previousPaths;
+        SharedPreferencesAsyncPlatform.instance = previousPreferences;
         await directory.delete(recursive: true);
       });
 

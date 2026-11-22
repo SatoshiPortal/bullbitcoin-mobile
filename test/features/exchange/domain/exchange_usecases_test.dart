@@ -9,8 +9,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dar
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
@@ -29,7 +28,7 @@ class _MockUserRepository extends Mock implements ExchangeUserRepository {}
 
 class _MockAccess extends Mock implements ExchangeAccessRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSendSupportChat extends Mock
     implements SendSupportChatMessageUsecase {}
@@ -56,10 +55,10 @@ void main() {
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
     when(() => access.epoch).thenReturn(1);
     when(settings.fetch)
-        .thenAnswer((_) async => _settings(Environment.mainnet));
+        .thenAnswer((_) async => Ok(_settings(Environment.mainnet)));
   });
 
-  // SettingsRepository is shared core and still throws. These use-cases
+  // Preferences is shared core and still throws. These use-cases
   // promise a Result and the cubit has no catch left, so a throw here would
   // escape as an unhandled exception and leave the screen waiting.
   group('a throwing settings read is returned, not thrown', () {
@@ -102,7 +101,14 @@ void main() {
     'regtest refuses exchange operations without historical side effects',
     () async {
       when(settings.fetch)
-          .thenAnswer((_) async => _settings(Environment.regtest));
+          .thenAnswer((_) async => Ok(_settings(Environment.regtest)));
+      when(settings.readExchangeWebPreferences).thenAnswer(
+        (_) async => Ok((
+          environment: Environment.regtest,
+          exchangeTestnetBasicAuthUsername: null,
+          exchangeTestnetBasicAuthPassword: null,
+        )),
+      );
       final support = _MockSendSupportChat();
       final results = [
         await GetExchangeAnnouncementsUsecase(
@@ -117,8 +123,7 @@ void main() {
           settingsRepository: settings,
           access: access,
         ).execute(language: 'fr'),
-        await GetExchangeWebSettingsUsecase(settingsRepository: settings)
-            .execute(),
+        await GetExchangeWebSettingsUsecase(preferences: settings).execute(),
         await RequestExchangeAccountDeletionUsecase(
           sendSupportChatMessageUsecase: support,
           settingsRepository: settings,

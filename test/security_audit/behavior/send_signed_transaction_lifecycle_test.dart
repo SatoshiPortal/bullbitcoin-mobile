@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:primitives/primitives.dart' show Ok;
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, Ok, ScriptType;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 
 // Behavioral proof for two audit findings on SendCubit:
@@ -29,10 +28,10 @@ import 'package:swaps/swaps.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -43,7 +42,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
@@ -83,8 +82,10 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -94,13 +95,12 @@ class _MockSelectBestWalletUsecase extends Mock
 class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockAppFeeEstimates extends Mock implements AppFeeEstimates {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -245,12 +245,13 @@ class _MockDropPendingSwapLockupUsecase extends Mock
 
 class _TestSendCubit extends SendCubit {
   _TestSendCubit({
-    required super.labelsFacade,
+    required super.loadSendLabelSuggestions,
+    required super.storeSendTransactionLabel,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
     required super.getSendExchangeRateUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.feeEstimates,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -326,7 +327,7 @@ final _wallet = Wallet(
 
 void main() {
   late _MockBroadcastBitcoinTransactionUsecase broadcastBitcoinTx;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockGetWalletUsecase getWalletUsecase;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
@@ -345,7 +346,7 @@ void main() {
 
   setUp(() {
     broadcastBitcoinTx = _MockBroadcastBitcoinTransactionUsecase();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     getWalletUsecase = _MockGetWalletUsecase();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
@@ -361,12 +362,13 @@ void main() {
     ).thenAnswer((_) async => []);
 
     cubit = _TestSendCubit(
-      labelsFacade: labelsFacade,
+      loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(labelsFacade),
+      storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
       bestWalletUsecase: _MockSelectBestWalletUsecase(),
       detectBitcoinStringUsecase: _MockDetectBitcoinStringUsecase(),
-      getSettingsUsecase: _MockGetSettingsUsecase(),
+      getSettingsUsecase: _MockPreferences(),
       getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
-      getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
+      feeEstimates: _MockAppFeeEstimates(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/import_coldcard/import_coldcard_page.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,13 +17,13 @@ class ImportColdcardRouter {
       name: ImportColdcardRoute.importColdcardQ.name,
       path: ImportColdcardRoute.importColdcardQ.path,
       builder: (context, state) =>
-          ImportColdcardPage(signerDevice: SignerDeviceEntity.coldcardQ),
+          ImportColdcardPage(signerDevice: SignerDevice.coldcardQ),
     ),
     GoRoute(
       name: ImportColdcardRoute.importColdcardMk4.name,
       path: ImportColdcardRoute.importColdcardMk4.path,
       builder: (context, state) =>
-          ImportColdcardPage(signerDevice: SignerDeviceEntity.coldcardMk4),
+          ImportColdcardPage(signerDevice: SignerDevice.coldcardMk4),
     ),
   ];
 }

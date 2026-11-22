@@ -108,7 +108,7 @@ List<String> productionDartFiles(String root) {
               // Wallet) and calls them; hand-written files are checked, there
               // too.
               !_isGeneratedBridge(root, file) &&
-              !RegExp(r'\.(g|freezed|gr|config|mocks|steps)\.dart$')
+              !RegExp(r'\.(g|freezed|gr|config|mocks|steps|drift)\.dart$')
                   .hasMatch(file.path) &&
               !file.path
                   .split(Platform.pathSeparator)

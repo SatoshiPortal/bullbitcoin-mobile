@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -13,7 +13,7 @@ import 'package:primitives/primitives.dart';
 class SetAutoBuyUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final GetDefaultWalletsUsecase _getDefaultWalletsUsecase;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
 
@@ -30,7 +30,10 @@ class SetAutoBuyUsecase {
     // The shared settings repository still throws, so this is its boundary.
     final ExchangeUserRepository userRepository;
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.activeNetwork.name),
         NetworkCapability.exchange,

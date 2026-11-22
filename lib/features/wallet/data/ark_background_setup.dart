@@ -1,12 +1,13 @@
+import 'package:preferences/preferences.dart' show Preferences;
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
+
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
@@ -35,11 +36,12 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   }
   final sqlite = SqliteDatabase();
   resources.onClose(sqlite.close);
-  final settings = SettingsRepository(
-    settingsDatasource: SettingsDatasource(sqlite: sqlite),
-  );
+  final settings = Preferences.open(database: sqlite);
   resources.onClose(settings.close);
-  final preferences = await settings.fetch();
+  final language = (await settings.readLanguage()).fold(
+    (value) => value,
+    (failure) => throw Exception('Preferences read failed'),
+  );
   // Browsing another network does not retire captured regtest obligations.
   final directory = '${documents.path}/ark';
   final registry = switch (SqliteArkAccountRegistry.open(
@@ -50,7 +52,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     Err() => throw StateError('Ark account inventory unavailable'),
   };
   resources.onClose(registry.close);
-  final locale = preferences.language?.locale ?? const Locale('en');
+  final locale = language?.locale ?? const Locale('en');
   final copy = arkExpiryCopy(locale);
   final initialized = await initializeArkNotifications(locale);
   final notification = switch (initialized) {

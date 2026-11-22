@@ -1,5 +1,5 @@
 import 'package:bull_ark/ark_ui_setup.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:btc_map/btc_map.dart';
@@ -7,51 +7,51 @@ import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubi
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/screens/route_error_screen.dart';
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
+import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart'
+    show RouteErrorScreen;
+import 'package:announcements/setup.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart'
+    show SwapFacade;
+import 'package:preferences/preferences.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:label_editor/setup.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
-import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
+import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/coins/public/coins_facade.dart';
+import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
-import 'package:bb_mobile/features/dca/ui/dca_router.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:network/network.dart';
+import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/mempool_settings/router.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/pay/ui/pay_router.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
-import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
-import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
@@ -96,7 +96,7 @@ class AppRouter {
       case QuickAction.support:
         SupportFacade.contactSupport(context);
       case QuickAction.priceHistory:
-        context.pushNamed(SettingsRoute.priceHistory.name);
+        BitcoinPriceFeature.openHistory(context);
       case QuickAction.buy:
         context.pushNamed(BuyRoute.buy.name);
       case QuickAction.sell:
@@ -107,6 +107,20 @@ class AppRouter {
         context.pushNamed(ExchangeRoute.exchangeHome.name);
     }
   }
+
+  static void _onBackupTestSucceeded(BuildContext context) {
+    WalletRecoverBullBindings.tested(context);
+    router.goNamed(WalletRoute.walletHome.name);
+  }
+
+  static final _announcements = AnnouncementsFeature.mount(
+    dismissals: locator<AnnouncementDismissals>(),
+    isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
+    watchAppUpdateRequired: () =>
+        locator<SwapFacade>().watchAppUpdateRequired(),
+    openPayjoinSettings: (context) =>
+        context.pushNamed(SettingsRoute.payjoinSettings.name),
+  );
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -150,33 +164,28 @@ class AppRouter {
               ? 1
               : 0;
 
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => locator<PriceChartCubit>()),
-              BlocProvider(
-                create: (_) => locator<AnnouncementsCubit>()..refresh(),
-              ),
-            ],
-            child: PopScope(
-              canPop: false,
-              onPopInvokedWithResult: (didPop, _) {
-                context.goNamed(WalletRoute.walletHome.name);
-              },
-              child: BackupWarningOverlay(
-                child: Scaffold(
-                  // The app bar of the exchange tab is rendered by the
-                  // ExchangeHomeScreen itself, as an overlay.
-                  appBar: tabIndex == 0
-                      ? WalletHomeAppBar(
-                          onSettings: () =>
-                              context.pushNamed(SettingsRoute.settings.name),
-                        )
-                      : null,
-                  extendBodyBehindAppBar: true,
-                  body: child,
-                ),
+          final shell = PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, _) {
+              context.goNamed(WalletRoute.walletHome.name);
+            },
+            child: BackupWarningOverlay(
+              child: Scaffold(
+                // The app bar of the exchange tab is rendered by the
+                // ExchangeHomeScreen itself, as an overlay.
+                appBar: tabIndex == 0
+                    ? WalletHomeAppBar(
+                        onSettings: () =>
+                            context.pushNamed(SettingsRoute.settings.name),
+                      )
+                    : null,
+                extendBodyBehindAppBar: true,
+                body: child,
               ),
             ),
+          );
+          return locator<BitcoinPriceFeature>().provideEmbeddedChart(
+            child: shell,
           );
         },
         routes: [
@@ -189,6 +198,7 @@ class AppRouter {
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
+            announcements: () => _announcements.carousel(),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
@@ -203,16 +213,24 @@ class AppRouter {
       ),
       ConsolidationRouter.route,
       SettingsRouter.route(
-        buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
-            .buildHistory(onBack: () => context.pop()),
+        appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
+        onBackupTestSucceeded: _onBackupTestSucceeded,
+        priceRoutes: locator<BitcoinPriceFeature>().routes,
       ),
       TransactionsRouter.transactionsRoute(
         scope: (child) => ActiveNetworkScope(child: child),
       ),
+      TransactionsRouter.exchangeTransactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
-      SendRouter.route,
+      SendRouter.route(
+        openSignedTransactionReader: (context, psbt, wallet) =>
+            context.pushNamed<void>(
+              BroadcastSignedTxRoute.broadcastHome.name,
+              extra: (psbt: psbt, wallet: wallet),
+            ),
+      ),
       CoinsRouter.route(
         missingWalletRedirect: WalletRoute.walletHome.path,
         onSend: (context, wallet, outpoints) => context.pushNamed<void>(
@@ -234,25 +252,25 @@ class AppRouter {
       ImportMnemonicRouter.route,
       ImportWatchOnlyRouter.route,
       BroadcastSignedTxRouter.route,
-      PsbtRouterConfig.route,
+      ...locator<SignersFeature>().routes,
       ImportWalletRouter.route,
       ...ImportColdcardRouter.routes,
-      ...LedgerRouter.routes,
-      ...BitBoxRouter.routes,
       DcaRouter.route,
       AutoBuyRouter.route,
       ...LimitOrdersRouter.routes,
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
-      ElectrumSettingsRouter.route,
-      MempoolSettingsRoute.route,
+      ...locator<NetworkFeature>().routes.root,
+      ...locator<FeesFeature>().routes,
       SpSetupRouter.route(successRedirectPath: WalletRoute.walletHome.path),
       SpRouter.route(
         sendRouteName: SendRoute.send.name,
         sendRouteExtra: const SendRouteArgs.sp(),
         exitRedirectPath: WalletRoute.walletHome.path,
-        fiatBalanceBuilder: (balanceSat) =>
-            HomeFiatBalance(balanceSat: balanceSat),
+        fiatBalanceBuilder: (balanceSat) => HomeFiatBalance(
+          balanceSat: balanceSat,
+          onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
+        ),
       ),
       ...ImportQrDeviceRouter.routes,
       locator<RecoverBullFeature>().route(
@@ -261,15 +279,11 @@ class AppRouter {
           WalletRecoverBullBindings.recovered(context);
           router.goNamed(WalletRoute.walletHome.name);
         },
-        onTested: (context) {
-          WalletRecoverBullBindings.tested(context);
-          router.goNamed(WalletRoute.walletHome.name);
-        },
+        onTested: _onBackupTestSucceeded,
         onOpenTorSettings: (context) =>
-            context.pushNamed(const TorSettingsFacade().settingsRouteName),
+            NetworkNavigation.open(context, section: NetworkSection.tor),
       ),
-      LabelsRouter.route,
-      StatusCheckRouter.route,
+      ...LabelEditorFeature.mount(labels: () => locator<Labels>()).routes,
       BtcMapFeature.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),

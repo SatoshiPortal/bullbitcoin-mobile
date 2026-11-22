@@ -11,7 +11,7 @@ void main() {
   group('Security audit #2652 BLE discovery', () {
     test('settle window restarts on every new advertiser', () {
       final source = File(
-        'lib/core/bitbox/data/datasources/bitbox_device_datasource.dart',
+        'features/signers/lib/src/bitbox/data/datasources/bitbox_device_datasource.dart',
       ).readAsStringSync();
 
       final start = source.indexOf('_scanBleDevicesForDuration');

@@ -2,7 +2,6 @@ library;
 
 // exports
 export 'enums/network.dart' show Network;
-export 'enums/xpub_type.dart' show XpubType;
 export 'enums/coin_type.dart' show CoinType;
 export 'enums/derivation.dart' show Derivation;
 export 'descriptor.dart' show Descriptor;

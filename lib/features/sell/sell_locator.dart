@@ -1,44 +1,44 @@
-import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_adoptable_payjoin_sender_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/broadcast_payjoin_original_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_visible_payjoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_sell_confidential_sepa_availability_usecase_v2.dart';
-import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/load_sell_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/read_sell_payin_txid_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/load_sell_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/prepare_sell_bitcoin_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/prepare_sell_liquid_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/read_sell_payin_txid_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/store_sell_transaction_label_usecase.dart';
 
 class SellLocator {
   static void setup(GetIt locator) {
@@ -97,8 +97,8 @@ class SellLocator {
     locator.registerFactory<LoadSellContextUsecase>(
       () => LoadSellContextUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
+        feeEstimates: locator<AppFeeEstimates>(),
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
         getIndexPrice: Pricer.getIndexPrice,
         getOrderUsecase: locator<GetOrderUsecase>(),
@@ -121,13 +121,13 @@ class SellLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
     );
 
-    locator.registerFactory<GetSellConfidentialSepaAvailabilityUsecaseV2>(
-      () => GetSellConfidentialSepaAvailabilityUsecaseV2(
+    locator.registerFactory<GetSellConfidentialSepaAvailabilityUsecase>(
+      () => GetSellConfidentialSepaAvailabilityUsecase(
         locator<RecipientsFacade>(),
       ),
     );
@@ -140,7 +140,7 @@ class SellLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -179,7 +179,9 @@ class SellLocator {
             locator<CalculateSellLiquidFeesUsecase>(),
         loadSellWalletUtxosUsecase: locator<LoadSellWalletUtxosUsecase>(),
         readSellPayinTxidUsecase: locator<ReadSellPayinTxidUsecase>(),
-        labelsFacade: locator<LabelsFacade>(),
+        storeSellTransactionLabel: StoreSellTransactionLabelUsecase(
+          locator<Labels>(),
+        ),
         labelCompletedSellOrderUsecase:
             locator<LabelCompletedSellOrderUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),

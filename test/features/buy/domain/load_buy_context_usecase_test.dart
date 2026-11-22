@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -20,13 +19,13 @@ import '../../../fake_index_price_reader.dart';
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
 class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockGetNetworkFees extends Mock implements AppFeeEstimates {}
 
 class _MockFeeOptions extends Mock implements FeeOptions {}
 
@@ -61,7 +60,7 @@ void main() {
       getSettingsUsecase: getSettings,
       getWalletsUsecase: getWallets,
       getReceiveAddressUsecase: getReceiveAddress,
-      getNetworkFeesUsecase: getNetworkFees,
+      feeEstimates: getNetworkFees,
       getIndexPrice: getIndexPrice.call,
     );
   });
@@ -158,7 +157,9 @@ void main() {
   });
 
   group('satsToCurrency', () {
-    setUp(() => when(getSettings.execute).thenAnswer((_) async => _settings()));
+    setUp(
+      () => when(getSettings.fetch).thenAnswer((_) async => Ok(_settings())),
+    );
 
     test(
       'values the amount at the mainnet price of the settings currency',
@@ -187,8 +188,9 @@ void main() {
     });
 
     test('asks the testnet price in the testnet environment', () async {
-      when(getSettings.execute)
-          .thenAnswer((_) async => _settings(environment: Environment.testnet));
+      when(getSettings.fetch).thenAnswer(
+        (_) async => Ok(_settings(environment: Environment.testnet)),
+      );
 
       final result = await usecase.satsToCurrency();
 
@@ -218,7 +220,7 @@ void main() {
     });
 
     test('a failed settings read is sanitized', () async {
-      when(getSettings.execute).thenThrow(Exception(_rawReason));
+      when(getSettings.fetch).thenThrow(Exception(_rawReason));
 
       expect(
         await usecase.satsToCurrency(currencyCode: 'CAD'),

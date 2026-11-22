@@ -1,11 +1,9 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +12,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
 
 class _MockBuyBloc extends Mock implements BuyBloc {}
-
-class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
@@ -31,21 +27,10 @@ Future<BuyBloc> _pumpAccelerateScreen(
   BuyState state,
 ) async {
   final buyBloc = _MockBuyBloc();
-  final settingsCubit = _MockSettingsCubit();
 
-  when(() => buyBloc.state).thenReturn(state);
+  when(() => buyBloc.state)
+      .thenReturn(state.copyWith(displayBitcoinUnit: BitcoinUnit.sats));
   when(() => buyBloc.stream).thenAnswer((_) => const Stream<BuyState>.empty());
-  when(() => settingsCubit.state).thenReturn(
-    const SettingsState(
-      storedSettings: SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-      ),
-    ),
-  );
-  when(() => settingsCubit.stream)
-      .thenAnswer((_) => const Stream<SettingsState>.empty());
 
   await tester.pumpWidget(
     MaterialApp(
@@ -53,10 +38,7 @@ Future<BuyBloc> _pumpAccelerateScreen(
       localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: MultiBlocProvider(
-        providers: [
-          BlocProvider<BuyBloc>.value(value: buyBloc),
-          BlocProvider<SettingsCubit>.value(value: settingsCubit),
-        ],
+        providers: [BlocProvider<BuyBloc>.value(value: buyBloc)],
         child: const BuyAccelerateScreen(),
       ),
     ),

@@ -111,22 +111,14 @@
   "walletDetailsSignerLabel": "Signataire",
   "walletDetailsSignerDeviceLabel": "Dispositif signataire",
   "walletDetailsSignerDeviceNotSupported": "Non pris en charge",
-  "mempoolSettingsTitle": "Mempool Server",
   "mempoolSettingsDescription": "Configurez des serveurs mempool personnalisés pour différents réseaux. Chaque réseau peut utiliser son propre serveur pour l'explorateur de blocs et l'estimation des frais.",
-  "mempoolSettingsDefaultServer": "Default Server",
-  "mempoolSettingsCustomServer": "Serveur personnalisé",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
-  "mempoolCustomServerAdd": "Add Custom Server",
   "mempoolCustomServerDelete": "Delete",
-  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
-  "mempoolCustomServerDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce serveur mempool personnalisé ? Le serveur par défaut sera utilisé à la place.",
   "mempoolCustomServerUrl": "Server URL",
-  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
   "mempoolCustomServerSaveSuccess": "Serveur personnalisé enregistré avec succès",
-  "mempoolCustomServerBottomSheetDescription": "Entrez l'URL de votre serveur mempool personnalisé. Le serveur sera validé avant l'enregistrement.",
   "walletSettingsImportWalletTitle": "Importer un portefeuille",
   "bitcoinSettingsBroadcastTransactionTitle": "Diffuser une transaction",
   "bitcoinSettingsTestnetModeTitle": "Mode Testnet",
@@ -156,17 +148,10 @@
   "exchangeReferralsApplyToJoinMessage": "Postulez pour rejoindre le programme ici",
   "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
   "exchangeRecipientsTitle": "Destinataires",
-  "exchangeRecipientsComingSoon": "Destinataires - Disponible prochainement",
-  "exchangeLogoutComingSoon": "Déconnexion - Disponible prochainement",
-  "exchangeLegacyTransactionsTitle": "Transactions héritées",
-  "exchangeLegacyTransactionsComingSoon": "Transactions héritées - Disponible prochainement",
   "exchangeFileUploadTitle": "Téléversement sécurisé de fichiers",
   "exchangeFileUploadDocumentTitle": "Téléverser un document",
   "exchangeFileUploadInstructions": "Si vous devez envoyer d'autres documents, téléversez-les ici.",
   "exchangeFileUploadButton": "Téléverser",
-  "exchangeAccountTitle": "Compte d'échange",
-  "exchangeAccountSettingsTitle": "Paramètres du compte d'échange",
-  "exchangeAccountComingSoon": "Cette fonctionnalité sera bientôt disponible.",
   "exchangeBitcoinWalletsTitle": "Portefeuilles Bitcoin par défaut",
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Adresse Bitcoin",
   "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (adresse LN)",
@@ -1308,85 +1293,6 @@
     }
   },
   "autoswapTriggerBalanceError": "Le solde maximal doit être au moins égal à 2 fois le solde cible",
-  "bitboxErrorPermissionDenied": "Les autorisations USB sont nécessaires pour se connecter aux appareils BitBox.",
-  "bitboxErrorNoDevicesFound": "Aucun appareil BitBox trouvé. Assurez-vous que votre appareil est allumé et connecté via USB.",
-  "bitboxErrorMultipleDevicesFound": "Plusieurs appareils BitBox trouvés. Veuillez vous assurer qu'un seul appareil est connecté.",
-  "bitboxErrorDeviceNotFound": "Appareil BitBox introuvable.",
-  "bitboxErrorConnectionTypeNotInitialized": "Type de connexion non initialisé.",
-  "bitboxErrorDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
-  "bitboxErrorHandshakeFailed": "Échec de l'établissement de la connexion sécurisée. Veuillez réessayer.",
-  "bitboxErrorOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
-  "bitboxErrorConnectionFailed": "Échec de la connexion à l'appareil BitBox. Veuillez vérifier votre connexion.",
-  "bitboxErrorInvalidResponse": "Réponse invalide de l'appareil BitBox. Veuillez réessayer.",
-  "bitboxErrorOperationCancelled": "L'opération a été annulée. Veuillez réessayer.",
-  "bitboxActionUnlockDeviceTitle": "Déverrouiller l'appareil BitBox",
-  "bitboxActionPairDeviceTitle": "Appairer l'appareil BitBox",
-  "bitboxActionImportWalletTitle": "Importer le portefeuille BitBox",
-  "bitboxActionSignTransactionTitle": "Signer la transaction",
-  "bitboxActionVerifyAddressTitle": "Vérifier l'adresse sur BitBox",
-  "bitboxActionUnlockDeviceButton": "Déverrouiller l'appareil",
-  "bitboxActionPairDeviceButton": "Démarrer l'appairage",
-  "bitboxActionImportWalletButton": "Démarrer l'importation",
-  "bitboxActionSignTransactionButton": "Démarrer la signature",
-  "bitboxActionVerifyAddressButton": "Vérifier l'adresse",
-  "bitboxActionUnlockDeviceProcessing": "Déverrouillage de l'appareil",
-  "bitboxActionPairDeviceProcessing": "Appairage de l'appareil",
-  "bitboxActionImportWalletProcessing": "Importation du portefeuille",
-  "bitboxActionSignTransactionProcessing": "Signature de la transaction",
-  "bitboxActionVerifyAddressProcessing": "Affichage de l'adresse sur BitBox...",
-  "bitboxActionUnlockDeviceSuccess": "Appareil déverrouillé avec succès",
-  "bitboxActionPairDeviceSuccess": "Appareil appairé avec succès",
-  "bitboxActionImportWalletSuccess": "Portefeuille importé avec succès",
-  "bitboxActionSignTransactionSuccess": "Transaction signée avec succès",
-  "bitboxActionVerifyAddressSuccess": "Adresse vérifiée avec succès",
-  "bitboxActionUnlockDeviceSuccessSubtext": "Votre appareil BitBox est maintenant déverrouillé et prêt à être utilisé.",
-  "bitboxActionPairDeviceSuccessSubtext": "Votre appareil BitBox est maintenant appairé et prêt à être utilisé.",
-  "bitboxActionImportWalletSuccessSubtext": "Votre portefeuille BitBox a été importé avec succès.",
-  "bitboxActionSignTransactionSuccessSubtext": "Votre transaction a été signée avec succès.",
-  "bitboxActionVerifyAddressSuccessSubtext": "L'adresse a été vérifiée sur votre appareil BitBox.",
-  "bitboxActionUnlockDeviceProcessingSubtext": "Veuillez entrer votre mot de passe sur l'appareil BitBox...",
-  "bitboxActionPairDeviceProcessingSubtext": "Veuillez vérifier le code d'appairage sur votre appareil BitBox...",
-  "bitboxActionImportWalletProcessingSubtext": "Configuration de votre portefeuille en lecture seule...",
-  "bitboxActionSignTransactionProcessingSubtext": "Veuillez confirmer la transaction sur votre appareil BitBox...",
-  "bitboxActionVerifyAddressProcessingSubtext": "Veuillez confirmer l'adresse sur votre appareil BitBox.",
-  "bitboxScreenConnectDevice": "Connectez votre appareil BitBox",
-  "bitboxScreenScanning": "Recherche d'appareils",
-  "bitboxScreenConnecting": "Connexion au BitBox",
-  "bitboxScreenPairingCode": "Code d'appairage",
-  "bitboxScreenEnterPassword": "Entrer le mot de passe",
-  "bitboxScreenVerifyAddress": "Vérifier l'adresse",
-  "bitboxScreenActionFailed": "{action} a échoué",
-  "@bitboxScreenActionFailed": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "bitboxScreenConnectSubtext": "Assurez-vous que votre BitBox02 est déverrouillé et connecté via USB.",
-  "bitboxScreenScanningSubtext": "Recherche de votre appareil BitBox...",
-  "bitboxScreenConnectingSubtext": "Établissement d'une connexion sécurisée...",
-  "bitboxScreenPairingCodeSubtext": "Vérifiez que ce code correspond à celui affiché sur votre BitBox02, puis confirmez sur l'appareil.",
-  "bitboxScreenEnterPasswordSubtext": "Veuillez entrer votre mot de passe sur l'appareil BitBox pour continuer.",
-  "bitboxScreenVerifyAddressSubtext": "Comparez cette adresse avec celle affichée sur votre BitBox02",
-  "bitboxScreenUnknownError": "Une erreur inconnue s'est produite",
-  "bitboxScreenWaitingConfirmation": "En attente de confirmation sur BitBox02...",
-  "bitboxScreenAddressToVerify": "Adresse à vérifier :",
-  "bitboxScreenVerifyOnDevice": "Veuillez vérifier cette adresse sur votre appareil BitBox",
-  "bitboxScreenWalletTypeLabel": "Type de portefeuille :",
-  "bitboxScreenSelectWalletType": "Sélectionner le type de portefeuille",
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommandé",
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
-  "bitboxScreenTroubleshootingTitle": "Dépannage BitBox02",
-  "bitboxScreenTroubleshootingSubtitle": "Tout d'abord, assurez-vous que votre appareil BitBox02 est connecté au port USB de votre téléphone. Si votre appareil ne se connecte toujours pas à l'application, essayez ce qui suit :",
-  "bitboxScreenTroubleshootingStep1": "Assurez-vous d'avoir le dernier firmware installé sur votre BitBox.",
-  "bitboxScreenTroubleshootingStep2": "Assurez-vous que les permissions USB sont activées sur votre téléphone.",
-  "bitboxScreenTroubleshootingStep3": "Redémarrez votre appareil BitBox02 en le débranchant et en le reconnectant.",
-  "bitboxScreenTryAgainButton": "Réessayer",
-  "bitboxScreenManagePermissionsButton": "Gérer les permissions de l'application",
-  "bitboxScreenNeedHelpButton": "Besoin d'aide ?",
   "bitboxScreenDefaultWalletLabel": "Portefeuille BitBox",
   "advancedOptionsTitle": "Options avancées",
   "replaceByFeeActivatedLabel": "Remplacement par frais activé",
@@ -2188,79 +2094,7 @@
   "psbtSignTransaction": "Signer la transaction",
   "psbtInstructions": "Instructions",
   "psbtImDone": "J'ai terminé",
-  "psbtFlowSignTransaction": "Signer la transaction",
-  "psbtFlowInstructions": "Instructions",
-  "psbtFlowDone": "J'ai terminé",
-  "psbtFlowPartProgress": "Partie {current} de {total}",
-  "@psbtFlowPartProgress": {
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSpecterTitle": "Instructions Specter",
   "psbtFlowColdcardTitle": "Instructions Coldcard Q",
-  "psbtFlowTurnOnDevice": "Allumez votre appareil {device}",
-  "@psbtFlowTurnOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickScan": "Cliquez sur Scanner",
-  "psbtFlowScanQrShown": "Scannez le code QR affiché dans le portefeuille Bull",
-  "psbtFlowTroubleScanningTitle": "Si vous avez du mal à scanner :",
-  "psbtFlowIncreaseBrightness": "Augmentez la luminosité de l'écran de votre appareil",
-  "psbtFlowMoveLaser": "Déplacez le laser rouge de haut en bas sur le code QR",
-  "psbtFlowMoveBack": "Essayez de reculer légèrement votre appareil",
-  "psbtFlowReviewTransaction": "Une fois la transaction importée dans votre {device}, vérifiez l'adresse de destination et le montant.",
-  "@psbtFlowReviewTransaction": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSelectSeed": "Une fois la transaction importée dans votre {device}, vous devriez sélectionner la graine avec laquelle vous souhaitez signer.",
-  "@psbtFlowSelectSeed": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSignTransactionOnDevice": "Cliquez sur les boutons pour signer la transaction sur votre {device}.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowDeviceShowsQr": "Le {device} vous montrera ensuite son propre code QR.",
-  "@psbtFlowDeviceShowsQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickDone": "Cliquez sur « J'ai terminé » dans le portefeuille Bull Bitcoin.",
-  "psbtFlowScanDeviceQr": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le {device}. Scannez-le.",
-  "@psbtFlowScanDeviceQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowTransactionImported": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
-  "psbtFlowReadyToBroadcast": "C'est maintenant prêt à diffuser ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
   "hwConnectTitle": "Connecter un portefeuille matériel",
   "hwChooseDevice": "Choisissez le portefeuille matériel que vous souhaitez connecter",
   "hwColdcardQ": "Coldcard Q",
@@ -2270,68 +2104,6 @@
   "hwKrux": "Krux",
   "hwPassport": "Foundation Passport",
   "hwSeedSigner": "SeedSigner",
-  "kruxInstructionsTitle": "Instructions Krux",
-  "kruxStep1": "Connectez-vous à votre appareil Krux",
-  "kruxStep2": "Cliquez sur Signer",
-  "kruxStep3": "Cliquez sur PSBT",
-  "kruxStep4": "Cliquez sur Charger depuis la caméra",
-  "kruxStep5": "Scannez le code QR affiché dans le portefeuille Bull",
-  "kruxStep6": "Si vous avez des difficultés à scanner :",
-  "kruxStep7": "   - Augmentez la luminosité de l'écran de votre appareil",
-  "kruxStep8": "   - Déplacez le laser rouge de haut en bas sur le code QR",
-  "kruxStep9": "   - Essayez de reculer un peu votre appareil",
-  "kruxStep10": "Une fois la transaction importée dans votre Krux, vérifiez l'adresse de destination et le montant.",
-  "kruxStep11": "Cliquez sur les boutons pour signer la transaction sur votre Krux.",
-  "kruxStep12": "Le Krux affichera alors son propre code QR.",
-  "kruxStep13": "Cliquez sur \"J'ai terminé\" dans le portefeuille Bull Bitcoin.",
-  "kruxStep14": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le Krux. Scannez-le.",
-  "kruxStep15": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
-  "kruxStep16": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
-  "keystoneInstructionsTitle": "Instructions Keystone",
-  "keystoneStep1": "Connectez-vous à votre appareil Keystone",
-  "keystoneStep2": "Cliquez sur Scanner",
-  "keystoneStep3": "Scannez le code QR affiché dans le portefeuille Bull",
-  "keystoneStep4": "Si vous avez des difficultés à scanner :",
-  "keystoneStep5": "   - Augmentez la luminosité de l'écran de votre appareil",
-  "keystoneStep6": "   - Déplacez le laser rouge de haut en bas sur le code QR",
-  "keystoneStep7": "   - Essayez de reculer un peu votre appareil",
-  "keystoneStep8": "Une fois la transaction importée dans votre Keystone, vérifiez l'adresse de destination et le montant.",
-  "keystoneStep9": "Cliquez sur les boutons pour signer la transaction sur votre Keystone.",
-  "keystoneStep10": "Le Keystone affichera alors son propre code QR.",
-  "keystoneStep11": "Cliquez sur \"J'ai terminé\" dans le portefeuille Bull Bitcoin.",
-  "keystoneStep12": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le Keystone. Scannez-le.",
-  "keystoneStep13": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
-  "keystoneStep14": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
-  "passportInstructionsTitle": "Instructions Foundation Passport",
-  "passportStep1": "Connectez-vous à votre appareil Passport",
-  "passportStep2": "Cliquez sur Signer avec code QR",
-  "passportStep3": "Scannez le code QR affiché dans le portefeuille Bull",
-  "passportStep4": "Si vous avez des difficultés à scanner :",
-  "passportStep5": "   - Augmentez la luminosité de l'écran de votre appareil",
-  "passportStep6": "   - Déplacez le laser rouge de haut en bas sur le code QR",
-  "passportStep7": "   - Essayez de reculer un peu votre appareil",
-  "passportStep8": "Une fois la transaction importée dans votre Passport, vérifiez l'adresse de destination et le montant.",
-  "passportStep9": "Cliquez sur les boutons pour signer la transaction sur votre Passport.",
-  "passportStep10": "Le Passport affichera alors son propre code QR.",
-  "passportStep11": "Cliquez sur \"J'ai terminé\" dans le portefeuille Bull Bitcoin.",
-  "passportStep12": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le Passport. Scannez-le.",
-  "passportStep13": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
-  "passportStep14": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
-  "seedsignerInstructionsTitle": "Instructions SeedSigner",
-  "seedsignerStep1": "Allumez votre appareil SeedSigner",
-  "seedsignerStep2": "Cliquez sur Scanner",
-  "seedsignerStep3": "Scannez le code QR affiché dans le portefeuille Bull",
-  "seedsignerStep4": "Si vous avez des difficultés à scanner :",
-  "seedsignerStep5": "   - Augmentez la luminosité de l'écran de votre appareil",
-  "seedsignerStep6": "   - Déplacez le laser rouge de haut en bas sur le code QR",
-  "seedsignerStep7": "   - Essayez de reculer un peu votre appareil",
-  "seedsignerStep8": "Une fois la transaction importée dans votre SeedSigner, vous devriez sélectionner la graine avec laquelle vous souhaitez signer.",
-  "seedsignerStep9": "Vérifiez l'adresse de destination et le montant, et confirmez la signature sur votre SeedSigner.",
-  "seedsignerStep10": "Le SeedSigner affichera alors son propre code QR.",
-  "seedsignerStep11": "Cliquez sur \"J'ai terminé\" dans le portefeuille Bull Bitcoin.",
-  "seedsignerStep12": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le SeedSigner. Scannez-le.",
-  "seedsignerStep13": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
-  "seedsignerStep14": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
   "connectHardwareWalletTitle": "Connecter un portefeuille matériel",
   "connectHardwareWalletDescription": "Choisissez le portefeuille matériel que vous souhaitez connecter",
   "connectHardwareWalletColdcardQ": "Coldcard Q",
@@ -2357,22 +2129,6 @@
   "coldcardStep13": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le Coldcard. Scannez-le.",
   "coldcardStep14": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
   "coldcardStep15": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
-  "jadeInstructionsTitle": "Instructions PSBT Blockstream Jade",
-  "jadeStep1": "Connectez-vous à votre appareil Jade",
-  "jadeStep2": "Ajoutez une passphrase si vous en avez une (optionnel)",
-  "jadeStep3": "Sélectionnez l'option \"Scanner QR\"",
-  "jadeStep4": "Scannez le code QR affiché dans le portefeuille Bull",
-  "jadeStep5": "Si vous avez des difficultés à scanner :",
-  "jadeStep6": "   - Augmentez la luminosité de l'écran de votre appareil",
-  "jadeStep7": "   - Maintenez le code QR stable et centré",
-  "jadeStep8": "   - Essayez de rapprocher ou d'éloigner votre appareil",
-  "jadeStep9": "Une fois la transaction importée dans votre Jade, vérifiez l'adresse de destination et le montant.",
-  "jadeStep10": "Cliquez sur les boutons pour signer la transaction sur votre Jade.",
-  "jadeStep11": "Le Jade affichera alors son propre code QR.",
-  "jadeStep12": "Cliquez sur \"J'ai terminé\" dans le portefeuille Bull Bitcoin.",
-  "jadeStep13": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR sur le Jade. Scannez-le.",
-  "jadeStep14": "La transaction sera importée dans le portefeuille Bull Bitcoin.",
-  "jadeStep15": "Elle est maintenant prête à être diffusée ! Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin et les fonds seront envoyés.",
   "importWalletTitle": "Ajouter un nouveau portefeuille",
   "importWalletConnectHardware": "Connecter un portefeuille matériel",
   "importWalletImportMnemonic": "Importer une mnémonique",
@@ -2487,21 +2243,6 @@
   "exportTransactionsInvalidDateRange": "La date de début doit être antérieure à la date de fin",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
-  },
-  "bip329LabelsTitle": "Étiquettes BIP329",
-  "bip329LabelsHeading": "Import/Export d'étiquettes BIP329",
-  "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",
-  "bip329LabelsImportButton": "Importer les étiquettes",
-  "bip329LabelsExportButton": "Exporter les étiquettes",
-  "bip329LabelsExportSuccess": "Étiquettes exportées avec succès",
-  "bip329LabelsImportSuccessSingular": "1 étiquette importée",
-  "bip329LabelsImportSuccessPlural": "{count} étiquettes importées",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "broadcastSignedTxTitle": "Diffuser la transaction",
   "broadcastSignedTxScanQR": "Scannez le code QR de votre portefeuille matériel",
@@ -2791,235 +2532,20 @@
   "autoswapRecipientWalletInfo": "Choisissez quel portefeuille Bitcoin recevra les fonds transférés (obligatoire)",
   "autoswapDefaultWalletLabel": "Portefeuille Bitcoin",
   "autoswapSave": "Enregistrer",
-  "electrumTitle": "Paramètres du serveur Electrum",
-  "electrumNetworkBitcoin": "Bitcoin",
-  "electrumNetworkLiquid": "Liquid",
-  "electrumAdvancedOptions": "Options avancées",
-  "electrumAddCustomServer": "Ajouter un serveur personnalisé",
-  "electrumCloseTooltip": "Fermer",
-  "electrumServerUrlHint": "URL du serveur {network} {environment}",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
-  "electrumEmptyFieldError": "Ce champ ne peut pas être vide",
-  "electrumLiquidSslInfo": "Aucun protocole ne doit être spécifié, SSL sera utilisé automatiquement.",
-  "electrumAddServer": "Ajouter un serveur",
-  "electrumEnableSsl": "Activer SSL",
-  "electrumProtocolError": "N'incluez pas le protocole (ssl:// ou tcp://).",
-  "electrumFormatError": "Utilisez le format hôte:port (par ex., exemple.com:50001)",
-  "electrumBitcoinServerInfo": "Entrez l'adresse du serveur au format : hôte:port (par ex., exemple.com:50001)",
-  "electrumStopGap": "Écart d'arrêt",
-  "electrumTimeout": "Délai d'attente (secondes)",
-  "electrumRetryCount": "Nombre de tentatives",
-  "electrumValidateDomain": "Valider le domaine",
-  "electrumStopGapEmptyError": "L'écart d'arrêt ne peut pas être vide",
-  "electrumInvalidNumberError": "Entrez un nombre valide",
-  "electrumStopGapNegativeError": "L'écart d'arrêt ne peut pas être négatif",
-  "electrumStopGapTooHighError": "L'écart d'arrêt semble trop élevé. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "Le délai d'attente ne peut pas être vide",
-  "electrumTimeoutPositiveError": "Le délai d'attente doit être positif",
-  "electrumTimeoutTooHighError": "Le délai d'attente semble trop élevé. (Max. {maxTimeout} secondes)",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumRetryCountEmptyError": "Le nombre de tentatives ne peut pas être vide",
-  "electrumRetryCountNegativeError": "Le nombre de tentatives ne peut pas être négatif",
-  "electrumTimeoutWarning": "Votre délai d'attente ({timeoutValue} secondes) est inférieur à la valeur recommandée ({recommended} secondes) pour cet écart d'arrêt.",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidStopGapError": "Valeur d'écart d'arrêt invalide : {value}",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidTimeoutError": "Valeur de délai d'attente invalide : {value}",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidRetryError": "Valeur de nombre de tentatives invalide : {value}",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSaveFailedError": "Échec de l'enregistrement des options avancées",
-  "electrumUnknownError": "Une erreur s'est produite",
-  "electrumReset": "Réinitialiser",
-  "electrumConfirm": "Confirmer",
-  "electrumDeleteServerTitle": "Supprimer le serveur personnalisé",
-  "electrumDeletePrivacyNotice": "Avis de confidentialité :\n\nL'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions. En supprimant votre dernier serveur personnalisé, vous vous connecterez à un serveur BullBitcoin.\n",
-  "electrumDeleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce serveur ?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumCancel": "Annuler",
-  "electrumDelete": "Supprimer",
-  "electrumDefaultServers": "Serveurs par défaut",
-  "electrumDefaultServersInfo": "Pour protéger votre vie privée, les serveurs par défaut ne sont pas utilisés lorsque des serveurs personnalisés sont configurés.",
-  "electrumCustomServers": "Serveurs personnalisés",
-  "electrumDragToReorder": "(Appuyez longuement pour faire glisser et changer la priorité)",
-  "electrumLoadFailedError": "Échec du chargement des serveurs",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSavePriorityFailedError": "Échec de l'enregistrement de la priorité du serveur",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumAddFailedError": "Échec de l'ajout du serveur personnalisé",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumDeleteFailedError": "Échec de la suppression du serveur personnalisé",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumServerAlreadyExists": "Ce serveur existe déjà",
-  "electrumServerUnreachable": "Le serveur est injoignable. Vérifiez l'adresse et réessayez.",
-  "electrumPrivacyNoticeTitle": "Avis de confidentialité",
-  "electrumPrivacyNoticeContent1": "Avis de confidentialité : L'utilisation de votre propre nœud garantit qu'aucun tiers ne peut lier votre adresse IP à vos transactions.",
-  "electrumPrivacyNoticeContent2": "Cependant, si vous consultez les transactions via mempool en cliquant sur votre ID de transaction ou la page Détails du destinataire, ces informations seront connues de BullBitcoin.",
-  "electrumPrivacyNoticeCancel": "Annuler",
-  "electrumPrivacyNoticeSave": "Enregistrer",
-  "electrumServerNotUsed": "Non utilisé",
-  "electrumServerOnline": "En ligne",
-  "electrumServerOffline": "Hors ligne",
   "addressViewNoAddressesFound": "Aucune adresse trouvée",
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
   "appStartupErrorMessage": "L'application n'a pas pu démarrer. Essayez de la fermer complètement puis de la relancer. Si l'erreur persiste, contactez le support et partagez vos journaux.",
   "appStartupContactSupportButton": "Contacter le support",
-  "ledgerImportTitle": "Importer un portefeuille Ledger",
-  "ledgerSignTitle": "Signer la transaction",
-  "ledgerVerifyTitle": "Vérifier l'adresse sur Ledger",
-  "ledgerImportButton": "Commencer l'importation",
-  "ledgerSignButton": "Commencer la signature",
-  "ledgerVerifyButton": "Vérifier l'adresse",
-  "ledgerProcessingImport": "Importation du portefeuille",
-  "ledgerProcessingSign": "Signature de la transaction",
-  "ledgerProcessingVerify": "Affichage de l'adresse sur Ledger...",
-  "ledgerSuccessImportTitle": "Portefeuille importé avec succès",
-  "ledgerSuccessSignTitle": "Transaction signée avec succès",
-  "ledgerSuccessVerifyTitle": "Vérification de l'adresse sur Ledger...",
-  "ledgerSuccessImportDescription": "Votre portefeuille Ledger a été importé avec succès.",
-  "ledgerSuccessSignDescription": "Votre transaction a été signée avec succès.",
-  "ledgerSuccessVerifyDescription": "L'adresse a été vérifiée sur votre appareil Ledger.",
-  "ledgerProcessingImportSubtext": "Configuration de votre portefeuille en lecture seule...",
-  "ledgerProcessingSignSubtext": "Veuillez confirmer la transaction sur votre appareil Ledger...",
-  "ledgerProcessingVerifySubtext": "Veuillez confirmer l'adresse sur votre appareil Ledger.",
-  "ledgerConnectTitle": "Connectez votre appareil Ledger",
-  "ledgerScanningTitle": "Recherche d'appareils",
-  "ledgerConnectingMessage": "Connexion à {deviceName}",
-  "@ledgerConnectingMessage": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerActionFailedMessage": "{action} a échoué",
-  "@ledgerActionFailedMessage": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerInstructionsIos": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé.",
-  "ledgerInstructionsAndroidUsb": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et connectez-le via USB.",
-  "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé, ou connectez l'appareil via USB.",
-  "ledgerScanningMessage": "Recherche d'appareils Ledger à proximité...",
-  "ledgerConnectingSubtext": "Établissement d'une connexion sécurisée...",
   "ledgerErrorUnknown": "Erreur inconnue",
   "ledgerErrorUnknownOccurred": "Une erreur inconnue s'est produite",
-  "ledgerErrorNoConnection": "Aucune connexion Ledger disponible",
-  "ledgerErrorRejectedByUser": "La transaction a été rejetée par l'utilisateur sur l'appareil Ledger.",
-  "ledgerErrorDeviceLocked": "L'appareil Ledger est verrouillé. Veuillez déverrouiller votre appareil et réessayer.",
-  "ledgerErrorBitcoinAppNotOpen": "Veuillez ouvrir l'application Bitcoin sur votre appareil Ledger et réessayer.",
-  "ledgerErrorMissingPsbt": "PSBT est requis pour la signature",
   "ledgerErrorMissingDerivationPathSign": "Le chemin de dérivation est requis pour la signature",
   "ledgerErrorMissingScriptTypeSign": "Le type de script est requis pour la signature",
-  "ledgerErrorMissingAddress": "L'adresse est requise pour la vérification",
   "ledgerErrorMissingDerivationPathVerify": "Le chemin de dérivation est requis pour la vérification",
   "ledgerErrorMissingScriptTypeVerify": "Le type de script est requis pour la vérification",
-  "ledgerButtonTryAgain": "Réessayer",
-  "ledgerButtonManagePermissions": "Gérer les permissions de l'application",
-  "ledgerButtonNeedHelp": "Besoin d'aide ?",
-  "ledgerVerifyAddressLabel": "Adresse à vérifier :",
-  "ledgerWalletTypeLabel": "Type de portefeuille :",
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommandé",
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "ledgerWalletTypeLegacyDescription": "P2PKH - Format ancien",
-  "ledgerWalletTypeSelectTitle": "Sélectionnez le type de portefeuille",
-  "ledgerSuccessAddressVerified": "Adresse vérifiée avec succès !",
-  "ledgerHelpTitle": "Dépannage Ledger",
-  "ledgerHelpSubtitle": "Tout d'abord, assurez-vous que votre appareil Ledger est déverrouillé et que l'application Bitcoin est ouverte. Si votre appareil ne se connecte toujours pas à l'application, essayez ce qui suit :",
-  "ledgerHelpStep1": "Redémarrez votre appareil Ledger.",
-  "ledgerHelpStep2": "Assurez-vous que Bluetooth est activé et autorisé sur votre téléphone.",
-  "ledgerHelpStep3": "Assurez-vous que Bluetooth est activé sur votre Ledger.",
-  "ledgerHelpStep4": "Assurez-vous d'avoir installé la dernière version de l'application Bitcoin depuis Ledger Live.",
-  "ledgerHelpStep5": "Assurez-vous que votre appareil Ledger utilise le dernier firmware, vous pouvez mettre à jour le firmware en utilisant l'application Ledger Live pour ordinateur.",
   "ledgerDefaultWalletLabel": "Portefeuille Ledger",
   "exchangeBrandName": "BULL BITCOIN",
   "exchangeLandingConnectAccount": "Connectez votre compte d'échange Bull Bitcoin",
@@ -3030,7 +2556,6 @@
   "exchangeFeatureBankTransfers": "• Envoyez des virements bancaires et payez des factures",
   "exchangeFeatureCustomerSupport": "• Discutez avec le support client",
   "exchangeFeatureUnifiedHistory": "• Historique des transactions unifié",
-  "priceChartFetchingHistory": "Récupération de l'historique des prix...",
   "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Les services d'échange de cryptomonnaies ne sont pas disponibles dans l'application mobile Bull Bitcoin.",
   "exchangeLoginButton": "Se connecter ou s'inscrire",
@@ -3170,43 +2695,8 @@
   "allSeedViewPassphraseLabel": "Passphrase :",
   "cancel": "Annuler",
   "delete": "Supprimer",
-  "statusCheckTitle": "État des Services",
-  "statusCheckLastChecked": "Dernière vérification : {time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "statusCheckOnline": "En ligne",
-  "statusCheckOffline": "Hors ligne",
-  "statusCheckUnknown": "Inconnu",
   "torSettingsTitle": "Paramètres Tor",
   "torSettingsEnableProxy": "Activer le proxy Tor",
-  "torSettingsProxyPort": "Port du proxy Tor",
-  "torSettingsPortDisplay": "Port : {port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "torSettingsPortNumber": "Numéro de port",
-  "torSettingsPortHint": "9050",
-  "torSettingsPortValidationEmpty": "Veuillez entrer un numéro de port",
-  "torSettingsPortValidationInvalid": "Veuillez entrer un nombre valide",
-  "torSettingsPortValidationRange": "Le port doit être entre 1 et 65535",
-  "torSettingsSaveButton": "Enregistrer",
-  "torSettingsConnectionStatus": "État de connexion",
-  "torSettingsStatusConnected": "Prêt",
-  "torSettingsStatusConnecting": "Connexion en cours...",
-  "torSettingsStatusDisconnected": "Déconnecté",
-  "torSettingsStatusUnknown": "État inconnu",
-  "torSettingsDescConnected": "Le proxy Tor est actif et prêt",
-  "torSettingsDescConnecting": "Établissement de la connexion Tor",
-  "torSettingsDescDisconnected": "Le proxy Tor n'est pas actif",
   "withdrawSuccessTitle": "Retrait initié",
   "withdrawSuccessOrderDetails": "Détails de la commande",
   "withdrawConfirmBankAccount": "Compte bancaire",
@@ -3243,20 +2733,6 @@
   "coreScreensReceiveAmountLabel": "Montant reçu",
   "coreScreensSendNetworkFeeLabel": "Frais de réseau d'envoi",
   "coreScreensConfirmButton": "Confirmer",
-  "systemLabelSwaps": "Swaps",
-  "systemLabelAutoSwap": "Auto Swap",
-  "systemLabelPayjoin": "Payjoin",
-  "systemLabelSelfSpend": "Auto transfert",
-  "systemLabelExchangeBuy": "Achat",
-  "systemLabelExchangeSell": "Vente",
-  "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "save": "Sauvegarder",
   "recipientsSearchHint": "Rechercher des destinataires par nom ou étiquette",
   "logoutConfirmationTitle": "Confirmer la déconnexion",
@@ -3463,33 +2939,12 @@
       }
     }
   },
-  "mempoolServerStatusOnline": "En ligne",
-  "mempoolServerStatusOffline": "Hors ligne",
-  "mempoolServerStatusChecking": "Vérification...",
   "mempoolServerStatusUnknown": "Inconnu",
-  "mempoolCustomServerSaveFailed": "Échec de l'enregistrement du serveur",
-  "mempoolCustomServerInfoDescription": "Les serveurs mempool sont utilisés pour l'estimation des frais et pour ouvrir l'explorateur de blocs lors de l'affichage des détails de transaction.",
-  "mempoolCustomServerUseSsl": "Utiliser SSL",
-  "mempoolCustomServerSslAutoDetected": "(Détecté automatiquement)",
-  "mempoolCustomServerSslHelpText": "Pour les serveurs locaux (.local, IPs privées) et Tor (.onion), SSL est généralement désactivé. Les IPs publiques et les domaines devraient utiliser SSL.",
-  "mempoolErrorSameAsDefault": "Cette URL est identique au serveur par défaut. Veuillez utiliser une URL différente.",
-  "mempoolErrorConnectionTimeout": "Délai de connexion dépassé. Le serveur peut être lent ou inaccessible.",
-  "mempoolErrorHostNotFound": "Serveur introuvable. Veuillez vérifier l'URL et réessayer.",
-  "mempoolErrorConnectionFailed": "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez.",
-  "mempoolErrorNotMempoolServer": "Cette URL ne semble pas être un serveur mempool. Veuillez vérifier l'adresse.",
-  "mempoolErrorServerUnavailable": "Serveur indisponible. Veuillez réessayer plus tard.",
-  "mempoolErrorServerError": "Le serveur a rencontré une erreur. Veuillez réessayer plus tard.",
-  "mempoolErrorInvalidResponse": "Le serveur a renvoyé une réponse invalide.",
-  "mempoolErrorInvalidUrl": "URL du serveur invalide. Saisissez un domaine ou une adresse IP valide.",
-  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur",
-  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool",
-  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé",
   "autoswapActiveCardTitle": "Autoswap est actif",
   "autoswapWarningExplanationBold": "automatiquement",
   "deleteLogsTitle": "Supprimer les journaux",
   "logsDeletedMessage": "Journaux supprimés",
   "sendSelfTransfer": "Auto-transfert",
-  "priceChartFailedToLoad": "Échec du chargement de l'historique des prix",
   "priceFailedToLoad": "Échec du chargement du prix",
   "statusScreenTryAgain": "Réessayer",
   "statusScreenContinue": "Continuer",
@@ -3650,7 +3105,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Des valeurs élevées de stop gap augmentent considérablement le temps de synchronisation. Gardez l'application ouverte au premier plan jusqu'à ce que la synchronisation soit terminée — la mettre en arrière-plan peut l'interrompre.",
   "wizardSkipButton": "Passer",
   "wizardPageIndicator": "PAGE {current} / {total}",
   "wizardNextButton": "Suivant",
@@ -3851,7 +3305,6 @@
   "pinCodeDeleteError": "Impossible de supprimer votre code PIN. Veuillez réessayer.",
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Taux de change indisponible. Veuillez réessayer plus tard.",
-  "priceChartLoadFailed": "Les données du graphique de prix n'ont pas pu être chargées. Veuillez réessayer.",
   "allSeedViewErrorFetch": "Échec du chargement des mnémoniques. Veuillez réessayer.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -4169,46 +3622,6 @@
   "nfcError": "Erreur NFC : {error}",
   "sendCoordinatingPayjoinTransaction": "Coordination d'une transaction Payjoin.",
   "sendErrorInvoiceExpired": "Cette facture a expiré. Demandez une nouvelle facture au destinataire.",
-  "psbtFlowSignViaNfc": "Signer via NFC",
-  "psbtFlowSignViaNfcSheetTitle": "Approchez votre {deviceName} pour envoyer la PSBT via NFC",
-  "psbtFlowColdcardQInstructionsTitle": "Instructions Coldcard Q",
-  "psbtFlowColdcardMk4InstructionsTitle": "Instructions Coldcard Mk4",
-  "psbtFlowColdcardQStep1": "Connectez-vous à votre appareil Coldcard Q",
-  "psbtFlowColdcardQStep2": "Ajoutez une passphrase si vous en avez une (optionnel)",
-  "psbtFlowColdcardQStep3": "Choisissez votre méthode de signature préférée :",
-  "psbtFlowColdcardQStep4": "Pour le code QR :",
-  "psbtFlowColdcardQStep5": "   - Sélectionnez \"Scanner n'importe quel code QR\" sur votre Coldcard Q",
-  "psbtFlowColdcardQStep6": "   - Scannez le code QR affiché dans le portefeuille Bull",
-  "psbtFlowColdcardQStep7": "   - Si vous avez des difficultés à scanner :",
-  "psbtFlowColdcardQStep8": "     - Augmentez la luminosité de l'écran de votre appareil",
-  "psbtFlowColdcardQStep9": "     - Déplacez le laser rouge de haut en bas sur le code QR",
-  "psbtFlowColdcardQStep10": "     - Essayez de reculer un peu votre appareil",
-  "psbtFlowColdcardQStep11": "Pour le NFC :",
-  "psbtFlowColdcardQStep12": "   - Sélectionnez \"Prêt à signer\" sur votre Coldcard Q, puis appuyez sur le bouton NFC",
-  "psbtFlowColdcardQStep13": "   - Approchez votre téléphone du Coldcard Q",
-  "psbtFlowColdcardQStep14": "   - Attendez le transfert de la PSBT",
-  "psbtFlowColdcardQStep15": "Une fois la transaction importée dans votre Coldcard Q, vérifiez l'adresse de destination et le montant.",
-  "psbtFlowColdcardQStep16": "Cliquez sur les boutons pour signer la transaction sur votre Coldcard Q.",
-  "psbtFlowColdcardQStep17": "Le Coldcard Q affichera alors un code QR de transaction signée ou préparera le transfert NFC.",
-  "psbtFlowColdcardQStep18": "Si vous avez signé avec le code QR, cliquez sur \"J'ai terminé\" dans le portefeuille Bull Bitcoin.",
-  "psbtFlowColdcardQStep19": "Le portefeuille Bull Bitcoin vous demandera de scanner le code QR de la transaction signée ou d'utiliser le NFC pour le recevoir.",
-  "psbtFlowColdcardQStep20": "   - Pour le QR : scannez le code QR sur le Coldcard Q",
-  "psbtFlowColdcardQStep21": "   - Pour le NFC : approchez votre téléphone du Coldcard Q",
-  "psbtFlowColdcardQStep22": "La transaction signée sera importée dans le portefeuille Bull Bitcoin.",
-  "psbtFlowColdcardQStep23": "Elle est maintenant prête à être diffusée. Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin.",
-  "psbtFlowColdcardMk4Step1": "Connectez-vous à votre appareil Coldcard Mk4",
-  "psbtFlowColdcardMk4Step2": "Ajoutez une passphrase si vous en avez une (optionnel)",
-  "psbtFlowColdcardMk4Step3": "Sélectionnez \"Prêt à signer\" sur votre Coldcard Mk4, puis appuyez sur le bouton numéro 3",
-  "psbtFlowColdcardMk4Step4": "Approchez votre téléphone du Coldcard Mk4",
-  "psbtFlowColdcardMk4Step5": "Attendez le transfert de la PSBT",
-  "psbtFlowColdcardMk4Step6": "Une fois la transaction importée dans votre Coldcard Mk4, vérifiez l'adresse de destination et le montant.",
-  "psbtFlowColdcardMk4Step7": "Cliquez sur les boutons pour signer la transaction sur votre Coldcard Mk4.",
-  "psbtFlowColdcardMk4Step8": "Le Coldcard Mk4 préparera alors la transaction signée pour le transfert NFC.",
-  "psbtFlowColdcardMk4Step9": "Dans le portefeuille Bull Bitcoin, appuyez sur NFC sur l'écran de diffusion.",
-  "psbtFlowColdcardMk4Step10": "Approchez votre téléphone du Coldcard Mk4 pour recevoir la transaction signée.",
-  "psbtFlowColdcardMk4Step11": "La transaction signée sera importée dans le portefeuille Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step12": "Vérifiez les détails de la transaction dans le portefeuille Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step13": "Elle est maintenant prête à être diffusée. Dès que vous cliquerez sur diffuser, la transaction sera publiée sur le réseau Bitcoin.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Approchez votre Coldcard pour recevoir la transaction signée via NFC",
@@ -4253,25 +3666,12 @@
   "fundExchangeCopGeneratePaymentLink": "Générer le lien de paiement",
   "fundExchangeCopRedirectMessage": "Vous serez redirigé vers une page externe pour effectuer le paiement.",
   "fundExchangeCopOpenPaymentLink": "Ouvrir le lien de paiement",
-  "noteVisibleToSenderNotice": "Cette note sera visible par le destinataire de votre code QR ou de votre facture.",
   "viewerAddressTab": "Adresse",
   "viewerPaymentUriTab": "URI de paiement",
   "transactionSwapOpenWithin24h": "Ouvrez l'application dans les 24 heures pour finaliser votre swap.",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "Les transactions à moins de 1 sat/vo peuvent prendre plus de temps à se confirmer et ne pas se propager à tous les nœuds.",
   "sendBelowMinFeeRateError": "Les frais doivent être d'au moins 0,1 sat/vo.",
-  "bitboxErrorBluetoothPermissionDenied": "L'autorisation Bluetooth est requise pour se connecter à votre BitBox02 Nova.",
-  "bitboxErrorBluetoothUnavailable": "Le Bluetooth n'est pas disponible. Activez le Bluetooth et réessayez.",
-  "bitboxErrorNoBleDevicesFound": "Aucun BitBox02 Nova trouvé à proximité. Vérifiez le Bluetooth et réessayez.",
-  "bitboxErrorMultipleBleDevicesFound": "Plusieurs appareils BitBox02 Nova trouvés. Gardez-en un seul à proximité et réessayez.",
-  "bitboxErrorOperationFailed": "L'opération BitBox a échoué. Veuillez réessayer.",
-  "bitboxScreenConnectSubtextBluetooth": "Assurez-vous que votre BitBox02 Nova est déverrouillé et que le Bluetooth est activé.",
-  "bitboxScreenScanningSubtextBluetooth": "Recherche de votre BitBox02 Nova à proximité...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "Dépannage BitBox02 Nova",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Si votre appareil ne se connecte toujours pas à l'application, essayez ce qui suit :",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Assurez-vous que le Bluetooth est activé et autorisé pour cette application.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "Assurez-vous que le Bluetooth est activé sur votre BitBox02 Nova.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "Redémarrez votre BitBox02 Nova et essayez de vous reconnecter.",
   "sendErrorInsufficientBalanceFrozenHint": "Solde disponible insuffisant — {amount} est gelé. Dégelez des pièces dans Gérer les pièces pour l'utiliser.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -4303,14 +3703,6 @@
   "transactionDetailLabelPayjoinFeeContribution": "Contribution aux frais du payjoin",
   "transactionPayjoinFeeContributionExplanation": "Un payjoin ajoute une de vos pièces comme entrée supplémentaire au paiement afin d'améliorer la confidentialité. Les frais de minage de cette entrée ajoutée sont déduits du montant que vous recevez (BIP78).",
   "receivePayjoinFallbackCountdown": "Retour à un paiement normal dans",
-  "announcementPayjoinTitle": "Augmentez votre confidentialité",
-  "announcementPayjoinDescription": "Activez le Payjoin pour rendre vos paiements Bitcoin plus privés.",
-  "announcementAutoswapTitle": "Autoswap est activé",
-  "announcementAutoswapDescription": "Vos bitcoins Liquid sont automatiquement convertis vers Bitcoin.",
-  "announcementDismissConfirmTitle": "Ignorer cette annonce ?",
-  "announcementDismissConfirmBody": "Lisez pour en savoir plus, ou ignorez pour la masquer. Les annonces ignorées ne réapparaîtront plus.",
-  "announcementDismissConfirmAction": "Ignorer",
-  "announcementDismissConfirmRead": "Lire",
   "dcaAccountUnavailableError": "Impossible de charger votre compte. Vérifiez votre connexion, assurez-vous d'être connecté et réessayez.",
   "dcaLightningAddressRequiredError": "Saisissez une adresse Lightning pour recevoir vos achats.",
   "dcaReceiveAddressError": "Impossible de préparer une adresse de réception dans votre portefeuille. Veuillez réessayer.",
@@ -4354,47 +3746,12 @@
   "coreSwapsStatusUnknown": "Inconnu",
   "sendSwapExpiredTitle": "Commande expirée",
   "sendSwapExpiredMessage": "Cette commande a expiré avant l'envoi de fonds. Rien n'a été envoyé depuis votre portefeuille.",
-  "announcementAppUpdateRequiredTitle": "Mettez BULL à jour",
-  "announcementAppUpdateRequiredDescription": "Pour utiliser le service de paiement Lightning et de swap, veuillez mettre à jour l’application mobile BULL vers la nouvelle version.",
-  "mempoolErrorNetworkMismatch": "Ce serveur est sur un autre réseau Bitcoin.",
-  "torSettingsStatusCensored": "Connexion semble filtrée",
-  "torSettingsDescCensored": "Tor n'a pas pu joindre le réseau. Cela indique souvent une connexion filtrée.",
-  "torSettingsBootstrapProgress": "Connexion… {percent} %",
-  "torSettingsEmbeddedTitle": "Tor intégré",
-  "torSettingsEmbeddedDescription": "Le Tor intégré est utilisé par RecoverBull et les serveurs Bitcoin Electrum en .onion. Le reste du trafic de l'application reste direct.",
-  "torSettingsTransportMode": "Méthode de connexion",
-  "torSettingsModeAutomatic": "Automatique",
-  "torSettingsModeDirect": "Directe",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Essaie d'abord une connexion Tor directe, puis Snowflake si le réseau semble bloquer Tor.",
-  "torSettingsModeDirectDescription": "Se connecte directement au réseau Tor, sans transport enfichable.",
-  "torSettingsModeSnowflakeDescription": "Utilise les proxys bénévoles Snowflake pour joindre Tor depuis un réseau filtré.",
-  "torSettingsActiveTransport": "Transport actif : {transport}",
   "swapErrorRouteUnavailable": "{fromNetwork} vers {toNetwork} n'est pas disponible.",
   "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible.",
   "settingsScreenPrivacyTitle": "Confidentialité de l’écran",
   "settingsScreenPrivacyDisabledMessage": "Les captures d’écran sont désormais autorisées sur les écrans sensibles",
-  "torSettingsExternalProxyReachable": "Proxy SOCKS5 accessible",
-  "torSettingsExternalProxyReachableDescription": "Le proxy SOCKS5 configuré a accepté une connexion.",
-  "torSettingsExternalProxyChecking": "Vérification du proxy",
-  "torSettingsExternalProxyCheckingDescription": "Bull vérifie le proxy SOCKS5 configuré.",
   "torSettingsExternalProxyUnavailable": "Proxy SOCKS5 indisponible",
   "torSettingsExternalProxyUnavailableDescription": "Bull n’a pas pu se connecter au proxy SOCKS5 configuré.",
-  "torSettingsExternalProxyNotChecked": "Proxy non vérifié",
-  "torSettingsExternalProxyNotCheckedDescription": "Bull n’a pas encore vérifié le proxy SOCKS5 configuré.",
-  "torSettingsRetry": "Réessayer",
-  "torSettingsLearnAboutOrbot": "En savoir plus sur Orbot",
-  "torSettingsOrbotLinkFailed": "Impossible d’ouvrir le site d’Orbot.",
-  "torSettingsLocalProxyTitle": "Proxy SOCKS5 local (avancé)",
-  "torSettingsLocalProxyDescription": "Acheminez RecoverBull et les serveurs Bitcoin Electrum personnalisés en .onion via un proxy SOCKS5 local. Les frais, le mempool, Liquid et les serveurs clearnet restent directs. Orbot peut router toute l’application en mode VPN.",
-  "torSettingsLocalProxyPortHelper": "Port SOCKS5 local courant : 9050",
-  "torSettingsEmbeddedStatusUnknownDescription": "Le Tor intégré n’a pas encore communiqué son état de connexion.",
-  "torSettingsLocalProxyStatus": "État du proxy SOCKS5 local",
-  "mempoolErrorOnionRouteUnavailable": "Le serveur onion est inaccessible. Vérifiez que votre route Tor est disponible, puis réessayez.",
-  "electrumConfiguredExternalTorUnavailable": "Votre proxy Tor configuré est indisponible. Ouvrez les réglages Tor pour le reconnecter.",
-  "electrumOpenTorSettings": "Ouvrir les réglages Tor",
-  "torSettingsProxyAttemptPort": "Port testé : {port}",
-  "torSettingsProxyAttemptWithActivePort": "Port testé : {attemptedPort} · Port actif : {activePort}",
   "torStatusReady": "Tor prêt",
   "torStatusConnecting": "Connexion à Tor : {progress} %",
   "torStatusNotStarted": "Tor non démarré",
@@ -4410,13 +3767,9 @@
   "exchangeSupportChatLoadMessagesError": "Impossible de charger les messages. Veuillez réessayer.",
   "exchangeSupportChatSendMessageError": "Impossible d'envoyer votre message. Veuillez réessayer.",
   "exchangeSupportChatLoadAttachmentError": "Impossible d'ouvrir la pièce jointe. Veuillez réessayer.",
-  "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
-  "statusCheckResultsMayBeOutdated": "Les résultats peuvent être obsolètes",
   "onboardingBackupVerificationError": "Votre portefeuille a été récupéré, mais la vérification de la sauvegarde n'a pas pu être complétée. Veuillez réessayer.",
   "sendErrorSelectedCoinsUnavailable": "Un ou plusieurs coins sélectionnés ne sont plus disponibles. Vérifiez votre sélection et réessayez.",
   "sendErrorSelectedCoinsInsufficient": "Les coins sélectionnés ne couvrent pas le montant et les frais. Sélectionnez plus de coins ou réduisez le montant.",
-  "psbtFlowInvalidPsbtError": "Cette transaction n'a pas pu être lue. Retournez en arrière et créez-la à nouveau.",
-  "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR.",
   "sendErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
   "sendErrorExchangeOrderMismatch": "Ce paiement ne correspond plus à la commande. Veuillez recommencer le paiement.",
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
@@ -4448,15 +3801,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Ce type de fichier n'est pas accepté. Choisissez-en un autre.",
   "exchangeSettingsErrorDocumentUnreadable": "Ce fichier n'a pas pu être lu. Choisissez-en un autre.",
   "exchangeSettingsErrorUploadingDocument": "Le document n'a pas pu être téléversé. Veuillez réessayer.",
-  "labelsErrorNoteTooLong": "La note ne doit pas dépasser {max} caractères",
-  "labelsErrorNoteForbiddenCharacter": "La note ne peut pas contenir le caractère {character}",
-  "labelsErrorFileTooLarge": "Ce fichier est trop volumineux. Les fichiers d’étiquettes doivent faire moins de {max}.",
-  "labelsErrorFileUnreadable": "Ce fichier ne semble pas être un fichier d’étiquettes BIP-329. Vérifiez que vous avez choisi le bon fichier.",
-  "labelsErrorFileEmpty": "Ce fichier ne contient aucune étiquette à importer.",
-  "labelsErrorExportFailed": "Vos étiquettes n’ont pas pu être enregistrées. Veuillez réessayer.",
-  "labelsErrorFileReservedName": "Ce fichier utilise un nom d’étiquette réservé par l’application. Renommez-le dans le fichier et réessayez.",
-  "labelsErrorNoteForbiddenWhitespace": "La note ne peut pas contenir de sauts de ligne ni de tabulations",
-  "labelsErrorFileInvalidEntry": "Certaines entrées de ce fichier n’ont pas pu être lues. Vérifiez le fichier et réessayez.",
   "recipientsErrorLoadFailed": "Vos bénéficiaires n’ont pas pu être chargés. Veuillez réessayer.",
   "recipientsErrorSaveFailed": "Ce bénéficiaire n’a pas pu être enregistré. Vérifiez les informations et réessayez.",
   "recipientsErrorSinpeLookupFailed": "Nous n’avons pas pu vérifier ce numéro de téléphone. Vérifiez-le et réessayez.",
@@ -4730,7 +4074,6 @@
   "wizardExchangeTitle": "BULL Exchange",
   "wizardExchangeDescription": "Achetez, vendez et payez avec Bull Bitcoin directement depuis votre portefeuille.",
   "quickActionsSettingsTitle": "Actions rapides",
-  "priceHistoryTitle": "Historique des prix",
   "exchangeTradingUnavailable": "Les opérations sont indisponibles.",
   "exchangeTradingRetry": "Réessayer",
   "exchangeAccessUnreadable": "Impossible de lire l’accès à la plateforme. Réessayez ou réinitialisez-le.",
@@ -4755,8 +4098,6 @@
   "settingsDarkModeTitle": "Mode sombre",
   "settingsSourceCodeTitle": "Code source",
   "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer.",
-  "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
-  "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor.",
   "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
   "mnemonicWordCountLabel": "Mots",
   "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
@@ -4818,8 +4159,6 @@
   "swapArkFeeReview": "Les frais et le montant reçu sont confirmés lors de la prochaine vérification.",
   "swapArkRouteUnavailable": "Ce transfert est indisponible.",
   "swapInternalTransferDescription": "Transférez facilement des bitcoins entre vos portefeuilles. Ne gardez dans le portefeuille de paiements instantanés que les fonds nécessaires aux dépenses courantes.",
-  "serverEncrypted": "Chiffré",
-  "serverUnencrypted": "Non chiffré",
   "backgroundTasksTitle": "Tâches en arrière-plan",
   "blockedInSystemSettings": "Bloqué dans les réglages du système",
   "notificationsBlockedMessage": "Les notifications sont bloquées dans les réglages du système.",

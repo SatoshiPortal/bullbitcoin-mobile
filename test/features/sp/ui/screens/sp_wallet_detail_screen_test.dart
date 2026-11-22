@@ -1,17 +1,21 @@
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
+import 'package:bull_ui/bull_ui.dart' show BullTransactionListItem;
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bitcoin_price/testing.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletDetailBalanceCard;
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
@@ -28,7 +32,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
-class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
+class _MockWalletBloc extends Mock implements WalletBloc {}
 
 SettingsState _settingsState() => SettingsState(
   storedSettings: SettingsEntity(
@@ -58,9 +62,19 @@ SpWalletData _walletData({
 Widget _buildPage({
   required SpCubit cubit,
   required SettingsCubit settingsCubit,
-  required BitcoinPriceBloc bitcoinPriceBloc,
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
+  final walletBloc = _MockWalletBloc();
+  when(() => walletBloc.state).thenReturn(
+    const WalletState(
+      amountDisplay: (
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+        hideAmounts: false,
+      ),
+    ),
+  );
+  when(() => walletBloc.stream).thenAnswer((_) => const Stream.empty());
   return MaterialApp(
     navigatorKey: navigatorKey,
     theme: AppTheme.themeData(AppThemeType.light),
@@ -72,15 +86,18 @@ Widget _buildPage({
     home: MultiBlocProvider(
       providers: [
         BlocProvider<SpCubit>.value(value: cubit),
+        BlocProvider<WalletBloc>.value(value: walletBloc),
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
-        BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+        BitcoinPriceFixture.prices(),
       ],
       child: SettingsFacade.amountScope(
         navigatorKey: navigatorKey,
         child: SpWalletDetailScreen(
           exitRedirectPath: '/exit-target',
-          fiatBalanceBuilder: (balanceSat) =>
-              HomeFiatBalance(balanceSat: balanceSat),
+          fiatBalanceBuilder: (balanceSat) => HomeFiatBalance(
+            balanceSat: balanceSat,
+            onCurrencyChanged: (_, _) {},
+          ),
         ),
       ),
     ),
@@ -91,18 +108,17 @@ void main() {
   late SpCubitHarness harness;
   late MockLoadSpWalletDataUsecase loadUsecase;
   late _MockSettingsCubit settingsCubit;
-  late _MockBitcoinPriceBloc bitcoinPriceBloc;
+
   late SpCubit cubit;
 
   setUp(() {
     harness = SpCubitHarness();
     loadUsecase = harness.loadUsecase;
     settingsCubit = _MockSettingsCubit();
-    bitcoinPriceBloc = _MockBitcoinPriceBloc();
+
     when(() => settingsCubit.state).thenReturn(_settingsState());
     when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(() => bitcoinPriceBloc.state).thenReturn(const BitcoinPriceState());
-    when(() => bitcoinPriceBloc.stream).thenAnswer((_) => const Stream.empty());
+
     when(() => loadUsecase.execute())
         .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(_walletData()));
     when(() => harness.watchUsecase.execute())
@@ -115,11 +131,7 @@ void main() {
 
   Future<void> pumpPage(WidgetTester tester) async {
     await tester.pumpWidget(
-      _buildPage(
-        cubit: cubit,
-        settingsCubit: settingsCubit,
-        bitcoinPriceBloc: bitcoinPriceBloc,
-      ),
+      _buildPage(cubit: cubit, settingsCubit: settingsCubit),
     );
   }
 
@@ -138,12 +150,20 @@ void main() {
     expect(find.text('Scan'), findsNothing);
   });
 
-  testWidgets('uses wallet detail balance card', (tester) async {
+  testWidgets('uses the local Bitcoin balance card palette', (tester) async {
     await cubit.load();
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.byType(WalletDetailBalanceCard), findsOneWidget);
+    final card = find.byType(WalletDetailBalanceCard);
+    expect(card, findsOneWidget);
+    final container = tester.widget<Container>(
+      find.descendant(of: card, matching: find.byType(Container)).first,
+    );
+    final decoration = container.decoration! as BoxDecoration;
+    expect(decoration.image?.colorFilter, isNull);
+    final colors = tester.element(card).appColors;
+    expect((decoration.border! as Border).bottom.color, colors.onTertiary);
   });
 
   testWidgets('the nudge Scan button scans in place, without routing away', (
@@ -213,7 +233,7 @@ void main() {
     await pumpPage(tester);
     await tester.pump();
 
-    expect(find.byType(TxListItem), findsOneWidget);
+    expect(find.byType(BullTransactionListItem), findsOneWidget);
   });
 
   // The flag itself is computed by LoadSpWalletDataUsecase (see its test); the
@@ -332,7 +352,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Verification failed'), findsOneWidget);
-    expect(find.byType(TxListItem), findsOneWidget);
+    expect(find.byType(BullTransactionListItem), findsOneWidget);
   });
 
   testWidgets('a confirmed payment with no time sits under Verifying', (

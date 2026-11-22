@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
@@ -28,7 +28,7 @@ class MockBitcoinWalletRepository extends Mock
 class MockBroadcastBitcoinTransactionUsecase extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
 
-class MockGetNetworkFeesUsecase extends Mock implements GetNetworkFeesUsecase {}
+class MockAppFeeEstimates extends Mock implements AppFeeEstimates {}
 
 void main() {
   setUpAll(() {
@@ -37,17 +37,17 @@ void main() {
 
   late MockBitcoinWalletRepository walletRepository;
   late MockBroadcastBitcoinTransactionUsecase broadcastUsecase;
-  late MockGetNetworkFeesUsecase getNetworkFeesUsecase;
+  late MockAppFeeEstimates feeEstimates;
   late BumpFeeUsecase usecase;
 
   setUp(() {
     walletRepository = MockBitcoinWalletRepository();
     broadcastUsecase = MockBroadcastBitcoinTransactionUsecase();
-    getNetworkFeesUsecase = MockGetNetworkFeesUsecase();
+    feeEstimates = MockAppFeeEstimates();
     usecase = BumpFeeUsecase(
       bitcoinWalletRepository: walletRepository,
       broadcastBitcoinTransactionUsecase: broadcastUsecase,
-      getNetworkFeesUsecase: getNetworkFeesUsecase,
+      feeEstimates: feeEstimates,
     );
   });
 
@@ -246,7 +246,7 @@ void main() {
         slow: NetworkFee.relativeSatPerKwu(1),
         minRelay: RelativeFee(25),
       );
-      when(() => getNetworkFeesUsecase.execute(isLiquid: false))
+      when(() => feeEstimates.execute(isLiquid: false))
           .thenAnswer((_) async => feeOptions);
 
       final result = await usecase.getNetworkFees();
@@ -257,7 +257,7 @@ void main() {
     test(
       'returns Err(ReplaceByFeeNetworkFeesFailure) on exception — no raw leak',
       () async {
-        when(() => getNetworkFeesUsecase.execute(isLiquid: false))
+        when(() => feeEstimates.execute(isLiquid: false))
             .thenThrow(Exception('network unavailable'));
 
         final result = await usecase.getNetworkFees();

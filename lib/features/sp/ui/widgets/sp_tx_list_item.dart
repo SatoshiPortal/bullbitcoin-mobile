@@ -1,29 +1,31 @@
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bull_ui/bull_ui.dart' show bullTimeAgo, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAmount,
+        BullTransactionListItemData,
+        BullTransactionStatusRow,
+        bullTimeAgo,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
-/// Resolves an [SpPayment] into the shared [TxListItemData] the core row
-/// renders.
-///
-/// Lives in SP rather than in the row itself so `tx_list_item.dart` never has
-/// to import SP types.
-TxListItemData spPaymentListItemData(BuildContext context, SpPayment payment) {
+/// Resolves an [SpPayment] into display data for the shared transaction row.
+BullTransactionListItemData spPaymentListItemData(
+  BuildContext context,
+  SpPayment payment,
+) {
   final isIncoming = payment.direction == SpPaymentDirection.receive;
   final isSp = payment.hasSpOutput;
 
-  return TxListItemData(
+  return BullTransactionListItemData(
     icon: isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
     iconBackgroundColor: context.appColors.surface,
     iconBorderColor: context.appColors.border,
-    amount: CurrencyText(
+    amount: BullAmount.signedSats(
       payment.amountSat.value.toInt(),
-      showFiat: false,
       interactive: true,
       style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
     ),
@@ -67,7 +69,7 @@ class SpPaymentStatusLabel extends StatelessWidget {
       SpPaymentStatus.verified => date ?? context.loc.spConfirmed,
       SpPaymentStatus.verifyFailed => context.loc.spVerificationFailed,
     };
-    final status = StatusRow(
+    final status = BullTransactionStatusRow(
       label: label,
       icon: payment.status == SpPaymentStatus.verified && date != null
           ? Icons.check_circle

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure;
+import 'package:bb_mobile/features/settings/public/network_bindings.dart';
+import 'package:electrum/electrum.dart' show ElectrumFailure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -12,10 +12,10 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/background_entrypoint.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
+import 'package:network/setup.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
@@ -87,9 +87,12 @@ class Bull {
       databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
     );
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
-    final settings = locator<SettingsRepository>();
+    final settings = locator<Preferences>();
     configureLogTorContext(
-      () => loadTorDiagnosticContext(settings, locator<Tor>()),
+      () async => loadTorDiagnosticContext(
+        await SettingsNetworkBindings.readTorPreferences(settings),
+        locator<Tor>(),
+      ),
     );
     await refreshReportingConsent(settings);
     await prepareBackgroundWalletStores(locator);

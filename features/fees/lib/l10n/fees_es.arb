@@ -1,0 +1,10 @@
+{
+  "settingsTitle": "Fuente de comisiones de Bitcoin",
+  "electrumLabel": "Electrum",
+  "mempoolLabel": "Mempool",
+  "electrumDescription": "Estimaciones del servidor Electrum configurado.",
+  "mempoolDescription": "Estimaciones del servidor Mempool configurado.",
+  "loadError": "No se pudo cargar la fuente de comisiones.",
+  "saveError": "No se pudo guardar esta opción. La fuente anterior sigue activa.",
+  "retry": "Reintentar"
+}

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
@@ -16,7 +16,7 @@ import 'package:secrets/secrets.dart' show Secret;
 /// the on-disk account.
 class CreateSpWalletUsecase {
   final GetSpSecretUsecase _getSpSecretUsecase;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
@@ -43,7 +43,10 @@ class CreateSpWalletUsecase {
     // Outer boundary: any Exception from the settings/secret/sentinel/save reads
     // becomes an Err so execute() is total.
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (settings.isSuperuser != true) {
         return const Err(SpRequiresSuperuser());
       }
@@ -187,7 +190,10 @@ class CreateSpWalletUsecase {
       };
 
   Future<bool> _isActive(BitcoinNetwork network) async {
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     return settings.isSuperuser == true &&
         settings.isDevModeEnabled == true &&
         network.env == settings.environment.networkEnv &&

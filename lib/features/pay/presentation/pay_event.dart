@@ -40,7 +40,7 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.updateOrderStatus({required String orderId}) =
       PayUpdateOrderStatus;
 
-  // ────── shared fee modal (FeeModalActions) ──────
+  // ────── shared fee modal (FeeModalActionsPort) ──────
   /// A preset tile was picked. Commits the tier and rebuilds the fee estimate.
   const factory PayEvent.feeOptionSelected(FeeSelection feeSelection) =
       PayFeeOptionSelected;

@@ -16,12 +16,14 @@ import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../wallet_utxo_fixture.dart';
+
+import 'package:bb_mobile/features/coins/domain/usecases/load_coin_label_filters_usecase.dart';
 
 class _MockGetUtxosUsecase extends Mock implements GetUtxosUsecase {}
 
@@ -31,7 +33,7 @@ class _MockUnfreezeUtxosUsecase extends Mock implements UnfreezeUtxosUsecase {}
 
 class _MockRefreshCoinsUsecase extends Mock implements RefreshCoinsUsecase {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockWatchStarted extends Mock
     implements WatchStartedWalletSyncsUsecase {}
@@ -44,7 +46,7 @@ void main() {
   late _MockFreezeUtxosUsecase freezeUtxos;
   late _MockUnfreezeUtxosUsecase unfreezeUtxos;
   late _MockRefreshCoinsUsecase refreshCoins;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockWatchStarted watchStarted;
   late _MockWatchFinished watchFinished;
   late StreamController<WalletRevisionState> revisions;
@@ -62,7 +64,7 @@ void main() {
     freezeUtxosUsecase: freezeUtxos,
     unfreezeUtxosUsecase: unfreezeUtxos,
     refreshCoinsUsecase: refreshCoins,
-    labelsFacade: labelsFacade,
+    loadCoinLabelFilters: LoadCoinLabelFiltersUsecase(labelsFacade),
     watchStartedWalletSyncsUsecase: watchStarted,
     watchFinishedWalletSyncsUsecase: watchFinished,
   );
@@ -73,7 +75,7 @@ void main() {
     freezeUtxos = _MockFreezeUtxosUsecase();
     unfreezeUtxos = _MockUnfreezeUtxosUsecase();
     refreshCoins = _MockRefreshCoinsUsecase();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     watchStarted = _MockWatchStarted();
     watchFinished = _MockWatchFinished();
     startedController = StreamController<String>.broadcast();
@@ -83,8 +85,8 @@ void main() {
         .thenAnswer((_) => startedController.stream);
     when(() => watchFinished.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) => finishedController.stream);
-    when(() => labelsFacade.fetchDistinctLabels())
-        .thenAnswer((_) async => <String>{});
+    when(() => labelsFacade.suggestions())
+        .thenAnswer((_) async => Ok(<String>{}));
     when(() => refreshCoins.execute(walletId: any(named: 'walletId')))
         .thenAnswer((_) async {});
   });

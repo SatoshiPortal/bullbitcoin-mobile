@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
@@ -67,7 +66,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
   final SetAmountInputModeUsecase _setAmountInputModeUsecase;
   final SetLanguageUsecase _setLanguageUsecase;
@@ -100,7 +99,12 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
-      _getSettingsUsecase.execute(),
+      _getSettingsUsecase.fetch().then(
+        (result) => result.fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        ),
+      ),
       PackageInfo.fromPlatform(),
     ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';

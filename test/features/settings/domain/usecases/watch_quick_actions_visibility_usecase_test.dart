@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +9,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 class _Exchange extends Mock implements ExchangeFacade {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 SettingsEntity _settings(bool superuser) => SettingsEntity(
   environment: Environment.mainnet,
@@ -86,7 +85,8 @@ void main() {
         () => exchange.currentAccess,
       ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
       when(exchange.watchAccess).thenAnswer((_) => access.stream);
-      when(settings.fetch).thenAnswer((_) => pending.future);
+      when(settings.fetch)
+          .thenAnswer((_) => (pending.future).then((value) => Ok(value)));
       final values = <bool>[];
       final sub = WatchQuickActionsVisibilityUsecase(
         exchange: exchange,

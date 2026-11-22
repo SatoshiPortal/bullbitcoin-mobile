@@ -18,7 +18,10 @@ void main() {
           source.indexOf('Future<void> onConfirmTransactionClicked'),
         );
         expect(broadcast, contains('await _broadcastBitcoinTxUsecase.execute'));
-        expect(broadcast, contains('await _labelsFacade.store'));
+        expect(
+          broadcast,
+          contains('await _storeSendTransactionLabel.execute('),
+        );
         expect(broadcast, contains('step: SendStep.success'));
         expect(broadcast, contains('if (!isClosed)'));
         expect(source, contains('return super.close();'));

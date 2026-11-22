@@ -1,0 +1,28 @@
+/// Implementation seams for tests of app composition and Electrum internals.
+library;
+
+export 'src/data/datasources/electrum_remote_datasource.dart';
+export 'src/data/drift_electrum_server_repository.dart';
+export 'src/data/drift_electrum_settings_repository.dart';
+export 'src/data/drift_electrum_transaction_repository.dart';
+export 'src/data/electrum_server_storage_datasource.dart';
+export 'src/data/electrum_servers_adapter.dart';
+export 'src/data/electrum_settings_storage_datasource.dart';
+export 'src/data/electrum_socket_connector.dart';
+export 'src/data/electrum_tor_session_adapter.dart';
+export 'src/data/models/electrum_server_model.dart';
+export 'src/data/models/electrum_settings_model.dart';
+export 'src/data/server_status_adapter.dart';
+export 'src/data/transaction_model_mapper.dart';
+export 'src/data/wallet_connection_policy_impl.dart';
+export 'src/domain/configured_electrum_connection.dart';
+export 'src/domain/electrum_fallback_runner.dart';
+export 'src/domain/errors/electrum_server_exception.dart';
+export 'src/domain/errors/electrum_settings_exception.dart';
+export 'src/domain/ports/electrum_tor_session_port.dart';
+export 'src/domain/repositories/electrum_server_repository.dart';
+export 'src/domain/repositories/electrum_settings_repository.dart';
+export 'src/domain/repositories/electrum_transaction_repository.dart';
+export 'src/domain/entities/electrum_settings.dart';
+export 'src/domain/ports/server_status_port.dart';
+export 'src/domain/usecases/load_electrum_server_data_usecase.dart';

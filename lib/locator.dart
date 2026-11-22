@@ -1,9 +1,18 @@
+import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:fees_feature/fees_feature.dart' show FeesFeature;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mempool/mempool.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure, RegtestElectrumProfile;
+import 'package:electrum/electrum.dart' show ElectrumFailure;
+import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
-import 'package:bb_mobile/features/status_check/status_core_locator.dart';
+import 'package:bb_mobile/features/settings/public/network_bindings.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -16,58 +25,54 @@ import 'package:bb_mobile/features/transactions/public/transactions_facade.dart'
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
-import 'package:bb_mobile/features/announcements/announcements_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
-import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
-import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
+import 'package:signers/routes.dart';
+import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
-import 'package:bb_mobile/features/buy/buy_locator.dart';
+import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
-import 'package:bb_mobile/features/dca/dca_locator.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
-import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
-import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
+import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
-import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
-import 'package:bb_mobile/features/pay/pay_locator.dart';
+import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_flow_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
-import 'package:bb_mobile/features/recipients/recipients_locator.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
-import 'package:bb_mobile/features/sell/sell_locator.dart';
+import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
+import 'package:bb_mobile/features/settings/data/settings_environment_adapter.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
-import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
-import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
-import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
+import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
-import 'package:sync/sync.dart' show SyncFailure, SyncStorageFailure;
+import 'package:sync/sync.dart'
+    show SyncFailure, SyncStorageFailure, WalletConnectionPort;
 
 final GetIt locator = GetIt.instance;
 
@@ -111,6 +116,18 @@ class AppLocator {
     RegtestElectrumProfile? regtestProfile,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
+    locator.registerSingleton(
+      SignersFeature.mount(
+        services: locator,
+        writeNfc: (context, title, data, onSuccess) =>
+            NfcBottomSheet.showWriteNfc(
+              context: context,
+              title: title,
+              data: data,
+              onSuccess: onSuccess,
+            ),
+      ),
+    );
 
     // One instance per isolate; background tasks must not use its keystore.
     // Liquid signing removes its temporary children after use. Stale caches
@@ -158,7 +175,6 @@ class AppLocator {
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
     // Lazy registrations only; storage is prepared before network repositories.
-    ElectrumSettingsLocator.setup(locator);
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
@@ -170,9 +186,20 @@ class AppLocator {
     );
     if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
+    locator.registerLazySingleton(() {
+      final preferences = SharedPreferencesAsync();
+      return Fees.open(
+        connections: locator<WalletConnectionPort>(),
+        mempool: locator<Mempool>(),
+        readPreference: preferences.getString,
+        writePreference: preferences.setString,
+      );
+    });
+    locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
+    locator.registerFactory(
+      () => AppFeeEstimates(fees: locator(), settingsRepository: locator()),
+    );
     CoreLocator.registerUsecases(locator);
-    CoreLocator.registerFrameworks(locator);
-    CoreLocator.registerFacades(locator);
     PayjoinSetup.setup(
       locator,
       database,
@@ -183,14 +210,16 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    MempoolSettingsLocator.setup(locator);
-    TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
+    Bip85EntropyLocator.setup(
+      locator,
+      readParent: WalletBip85Bindings.reader(locator),
+    );
     // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
@@ -208,7 +237,13 @@ class AppLocator {
     );
     const LogsFeature().setup(locator);
     BtcMapFeature.setup(locator);
-    BitcoinPriceLocator.setup(locator);
+    locator.registerLazySingleton<BitcoinPriceFeature>(
+      () => BitcoinPriceFeature.mount(
+        environment: locator<ActiveEnvironmentReader>(),
+        amountDisplay: locator<AmountDisplayPreferencesReader>(),
+        display: locator<RuntimeDisplayPreferencesReader>(),
+      ),
+    );
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);
@@ -220,10 +255,8 @@ class AppLocator {
     TestWalletBackupLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
-    PsbtFlowLocator.setup(locator);
     SwapLocator.setup(locator);
     AutoSwapLocator.setup(locator);
-    AnnouncementsLocator.setup(locator);
     // Lifecycle side effect lives in the composition root, not in DI
     // registration: the background handler opts out via
     // [startOrderSwapWatcher] so polling only runs in the foreground app.
@@ -244,18 +277,41 @@ class AppLocator {
     SellLocator.setup(locator);
     WithdrawLocator.setup(locator);
     PayLocator.setup(locator);
-    StatusLocator.setup(locator);
-    StatusCheckLocator.setup(locator);
+    locator.registerSingleton(
+      NetworkFeature.mount(
+        services: locator,
+        bindings: (
+          readDefaultNetwork: () =>
+              locator<GetDefaultWalletNetworkUsecase>().execute(),
+          readEnvironment: () =>
+              SettingsNetworkBindings.readEnvironment(locator<Preferences>()),
+          readMempoolEnvironment: SettingsEnvironmentAdapter(
+            settingsRepository: locator<Preferences>(),
+          ).getEnvironment,
+          checkBitcoinFees: (network) =>
+              probeMempoolFees(locator<Fees>(), network),
+          isTorRequired: () => locator<WalletRepository>().isTorRequired(),
+          readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
+            locator<Preferences>(),
+          ),
+          saveTorProxy: ({required enabled, required port}) =>
+              SettingsNetworkBindings.saveTorProxy(
+                locator<Preferences>(),
+                enabled: enabled,
+                port: port,
+              ),
+          saveTorMode: (mode) =>
+              locator<Preferences>().setTorTransportMode(mode),
+        ),
+      ),
+    );
 
     FundExchangeLocator.setup(locator);
     AddressViewLocator.setup(locator);
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
-    Bip85EntropyLocator.setup(locator);
-    LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
-    BitBoxLocator.setup(locator);
 
     // Follows network switches from launch on, whether or not the swap
     // watcher has started yet: the engine must match the network the first

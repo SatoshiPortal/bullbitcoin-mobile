@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_card.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -17,8 +17,6 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
-class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
-
 Future<void> _pumpCard(
   WidgetTester tester, {
   required String title,
@@ -32,9 +30,6 @@ Future<void> _pumpCard(
   final settings = _MockSettingsCubit();
   when(() => settings.state).thenReturn(const SettingsState());
   when(() => settings.stream).thenAnswer((_) => const Stream.empty());
-  final price = _MockBitcoinPriceBloc();
-  when(() => price.state).thenReturn(const BitcoinPriceState());
-  when(() => price.stream).thenAnswer((_) => const Stream.empty());
 
   await tester.pumpWidget(
     MaterialApp(
@@ -47,7 +42,7 @@ Future<void> _pumpCard(
       home: MultiBlocProvider(
         providers: [
           BlocProvider<SettingsCubit>.value(value: settings),
-          BlocProvider<BitcoinPriceBloc>.value(value: price),
+          BitcoinPriceFixture.prices(),
         ],
         child: BullAmountScope(
           snapshot: const BullAmountSnapshot(

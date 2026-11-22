@@ -3,13 +3,13 @@ import 'domain/usecases/get_receive_amount_quotes_usecase.dart';
 
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -97,11 +97,11 @@ class ReceiveLocator {
       () => GetReceiveWalletsUsecase(locator<GetWalletsUsecase>()),
     );
     locator.registerFactory<GetReceiveSettingsUsecase>(
-      () => GetReceiveSettingsUsecase(locator<GetSettingsUsecase>()),
+      () => GetReceiveSettingsUsecase(locator<Preferences>()),
     );
     locator.registerFactory<ConvertReceiveAmountUsecase>(
       () => ConvertReceiveAmountUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
@@ -113,13 +113,13 @@ class ReceiveLocator {
           GetReceiveAddressAtIndexUsecase(locator<GetAddressAtIndexUsecase>()),
     );
     locator.registerFactory<LoadReceiveAddressLabelUsecase>(
-      () => LoadReceiveAddressLabelUsecase(locator<LabelsFacade>()),
+      () => LoadReceiveAddressLabelUsecase(locator<Labels>()),
     );
     locator.registerFactory<SaveReceiveAddressLabelUsecase>(
-      () => SaveReceiveAddressLabelUsecase(locator<LabelsFacade>()),
+      () => SaveReceiveAddressLabelUsecase(locator<Labels>()),
     );
     locator.registerFactory<FetchReceiveNoteSuggestionsUsecase>(
-      () => FetchReceiveNoteSuggestionsUsecase(locator<LabelsFacade>()),
+      () => FetchReceiveNoteSuggestionsUsecase(locator<Labels>()),
     );
 
     locator.registerFactory<GetReceiveSwapLimitsUsecase>(
@@ -134,7 +134,7 @@ class ReceiveLocator {
         getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
         convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),
         getReceiveAmountQuotesUsecase: GetReceiveAmountQuotesUsecase(
-          settings: locator<GetSettingsUsecase>(),
+          settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
         prepareReceiveAddressUsecase: locator<PrepareReceiveAddressUsecase>(),

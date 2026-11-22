@@ -3,12 +3,13 @@
 /// http://127.0.0.1:3535 and http://127.0.0.1:3000.
 library;
 
+import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+
 import 'dart:io';
 
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
@@ -27,7 +28,7 @@ import 'package:secrets/testing.dart';
 
 class _Bip85 extends Mock implements Bip85Repository {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
@@ -96,7 +97,10 @@ void main() {
       final wallets = _Wallets();
       final wallet = _Wallet();
       final bip85 = _Bip85();
-      when(() => settings.fetch()).thenAnswer((_) async => settingsValue);
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => Ok(settingsValue.environment));
+      when(settings.readLanguage)
+          .thenAnswer((_) async => Ok(settingsValue.language));
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
       when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
       when(() => wallet.networkCode).thenReturn('bitcoinRegtest');
@@ -110,9 +114,10 @@ void main() {
         mayCreate: true,
       );
       locator
-        ..registerSingleton<SettingsRepository>(settings)
+        ..registerSingleton<ActiveEnvironmentReader>(settings)
+        ..registerSingleton<RuntimeDisplayPreferencesReader>(settings)
         ..registerSingleton<WalletMetadataDatasource>(wallets)
-        ..registerSingleton<Bip85Repository>(bip85)
+        ..registerSingleton<Bip85Registry>(Bip85Registry(bip85.fetchAll))
         ..registerSingleton<Secrets>(secrets)
         ..registerSingleton<ParentCustodyAdmissionPort>(admission)
         ..registerSingleton<SeedReferences>(

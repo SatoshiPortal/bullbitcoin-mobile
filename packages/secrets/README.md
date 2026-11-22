@@ -22,6 +22,30 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
+|-- accessKeychain
+|   |-- isPinSet() -> bool
+|   |-- verifyPin(candidate) -> bool?
+|   |-- setPin(pin) -> void
+|   |-- deletePin() -> void
+|   |-- readAttempts() -> String?
+|   |-- writeAttempts(value) -> void
+|   |-- readLockedUntil() -> String?
+|   |-- writeLockedUntil(value) -> void
+|   `-- deleteLockedUntil() -> void
+|-- exchangeKeychain
+|   |-- read(isTestnet:) -> String?
+|   |-- write(value, isTestnet:) -> void
+|   `-- delete(isTestnet:) -> void
+|-- silentPaymentKeychain
+|   |-- readBackend() -> String?
+|   |-- writeBackend(value) -> void
+|   |-- deleteBackend() -> void
+|   |-- readAutoScan() -> String?
+|   `-- writeAutoScan(value) -> void
+|-- swapKeychain
+|   |-- read(key) -> String?
+|   |-- write(key, value) -> void
+|   `-- delete(key) -> void
 |-- generate([wordCount: MnemonicLength.words12]) -> Secret
 |-- import(words:, language:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
@@ -193,3 +217,9 @@ RecoverBull creation, restoration and backup inspection use the package. Decrypt
 ## Read next
 
 [doc/design.md](doc/design.md): contracts, passphrase behavior, storage ownership, module layout, custody checks and contributor rules.
+
+## Legacy owner keychains
+
+`Secrets.accessKeychain`, `exchangeKeychain`, `silentPaymentKeychain` and `swapKeychain` expose closed handles. Access compares the PIN without returning it; a missing PIN is distinct from a mismatch and a failed read. All operations return `Result<…, SecretFailure>`. Exchange selects only mainnet or testnet; Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
+
+The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys are `failedUnlockAttemptsKey`, `unlockLockedUntilKey`, `exchange_api_key`, `exchange_api_key_testnet`, `sp_backend_config` and `sp_auto_scan_enabled`. These entries retain their exact bytes, with Android `resetOnError: false` and `migrateOnAlgorithmChange: false`, and iOS `first_unlock_this_device`. There is no data migration. SP configuration is not secret, but moving it to another store would require a separate migration. Exchange owns its diagnostics without duplicate keychain reporting; access operations retain sanitized boundary diagnostics.

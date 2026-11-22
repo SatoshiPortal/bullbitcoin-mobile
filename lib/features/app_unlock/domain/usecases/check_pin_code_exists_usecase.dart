@@ -1,21 +1,17 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
-import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
+import 'package:secrets/secrets.dart';
 
 class CheckPinCodeExistsUsecase {
-  final PinCodeRepository _pinCodeRepository;
+  final AccessKeychain _accessKeychain;
 
-  CheckPinCodeExistsUsecase({required this._pinCodeRepository});
+  CheckPinCodeExistsUsecase({required this._accessKeychain});
 
-  Future<Result<bool, AppUnlockFailure>> execute() =>
-      _pinCodeRepository.isPinCodeSet().then(
-        (result) => result.mapErr(
-          (failure) => switch (failure) {
-            PinCodeKeychainLockedFailure() =>
-              const AppUnlockKeychainLockedFailure(),
-            _ => const AppUnlockPinCheckFailure(),
-          },
-        ),
+  Future<Result<bool, AppUnlockFailure>> execute() async =>
+      (await _accessKeychain.isPinSet()).mapErr(
+        (failure) => switch (failure) {
+          KeystoreLockedFailure() => const AppUnlockKeychainLockedFailure(),
+          _ => const AppUnlockPinCheckFailure(),
+        },
       );
 }

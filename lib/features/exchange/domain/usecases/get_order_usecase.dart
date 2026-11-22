@@ -1,0 +1,39 @@
+import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bull_logger/bull_logger.dart';
+
+class GetOrderUsecase {
+  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
+  final ExchangeOrderRepository _testnetExchangeOrderRepository;
+  final Preferences _settingsRepository;
+
+  GetOrderUsecase({
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._settingsRepository,
+  });
+
+  Future<Order> execute({required String orderId}) async {
+    try {
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
+      final isTestnet = settings.environment.requireHistoricalTestnet();
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
+      final order = await repo.getOrder(orderId);
+      return order;
+    } on Exception catch (e) {
+      log.warning('Exchange order unavailable: ${e.runtimeType}');
+      throw GetOrderException('Exchange order unavailable: ${e.runtimeType}');
+    }
+  }
+}
+
+class GetOrderException extends BullException {
+  GetOrderException(super.message);
+}

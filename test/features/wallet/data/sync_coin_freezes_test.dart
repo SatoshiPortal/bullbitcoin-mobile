@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/labels/adapters/wallet_freeze_adapter.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -20,11 +19,9 @@ import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 
-import 'freezes_only_sync.dart';
-
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
-class _Labels extends Mock implements LabelsFacade {}
+class _Labels extends Mock implements Labels {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +52,8 @@ void main() {
     labels = _Labels();
     when(() => metadata.fetch(walletId))
         .thenAnswer((_) async => _row(walletId));
-    when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+    when(() => labels.fetch(reference: any(named: 'reference')))
+        .thenAnswer((_) async => Ok([]));
   });
   tearDown(() async {
     await owner.close();
@@ -119,25 +117,6 @@ void main() {
         ),
       ),
     );
-  });
-
-  group('BIP329 adapter', () {
-    test('keeps every origin, empty ones included', () async {
-      final wallet = await testWallet(key: key);
-      WalletFreezeAdapter adapter() => WalletFreezeAdapter(
-        sync: () async => owner,
-        walletUtxoRepository: repository(wallet),
-      );
-      await adapter().freeze([
-        (walletId: walletId, txId: kept.txId, vout: kept.vout),
-        (walletId: null, txId: frozen.txId, vout: frozen.vout),
-      ]);
-
-      expect((await adapter().getAllFrozen()).toSet(), {
-        (walletId: walletId, txId: kept.txId, vout: kept.vout),
-        (walletId: '', txId: frozen.txId, vout: frozen.vout),
-      });
-    });
   });
 }
 

@@ -1,15 +1,16 @@
+import 'package:primitives/primitives.dart' show Ok;
+
+import '../../../../scripted_wallet_connections.dart';
 import '../../../../frozen_outpoints_fixture.dart';
 
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,9 +18,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
 
-class _LiquidBlockchain extends Mock implements LiquidBlockchainRepository {}
-
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
@@ -43,13 +42,15 @@ void main() {
       () async {
         final settings = _Settings();
         final bitcoin = _Blockchain();
-        final liquid = _LiquidBlockchain();
+        final liquid = ScriptedWalletConnections();
         final error = StateError('synthetic programmer failure');
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
         when(
@@ -58,15 +59,10 @@ void main() {
             network: Network.bitcoinMainnet,
           ),
         ).thenAnswer((_) async => throw error);
-        when(
-          () => liquid.broadcastTransaction(
-            signedPset: _signedPublicTest,
-            network: Network.liquidMainnet,
-          ),
-        ).thenAnswer((_) async => throw error);
+        liquid.reply = () => throw error;
         final future = isLiquid
             ? BroadcastLiquidTransactionUsecase(
-                liquidBlockchainRepository: liquid,
+                connections: liquid,
                 settingsRepository: settings,
               ).execute(_signedPublicTest)
             : BroadcastBitcoinTransactionUsecase(
@@ -87,24 +83,20 @@ void main() {
     'explicit Liquid testnet broadcast still checks current authorization',
     () async {
       final settings = _Settings();
-      final blockchain = _LiquidBlockchain();
+      final blockchain = ScriptedWalletConnections();
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: true,
-          isDevModeEnabled: false,
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: true,
+            isDevModeEnabled: false,
+          ),
         ),
       );
-      when(
-        () => blockchain.broadcastTransaction(
-          signedPset: _signedPublicTest,
-          network: Network.liquidTestnet,
-        ),
-      ).thenAnswer((_) async => 'txid');
       final usecase = BroadcastLiquidTransactionUsecase(
-        liquidBlockchainRepository: blockchain,
+        connections: blockchain,
         settingsRepository: settings,
       );
       try {
@@ -112,7 +104,7 @@ void main() {
       } on Exception {
         /* Refused before backend access. */
       }
-      verifyZeroInteractions(blockchain);
+      expect(blockchain.networks, isEmpty);
     },
   );
 
@@ -122,7 +114,7 @@ void main() {
       final settings = _Settings();
       final value = _SettingsValue();
       final blockchain = _Blockchain();
-      when(settings.fetch).thenAnswer((_) async => value);
+      when(settings.fetch).thenAnswer((_) async => Ok(value));
       when(() => value.environment).thenReturn(Environment.regtest);
       when(() => value.isSuperuser).thenReturn(true);
       when(() => value.isDevModeEnabled).thenReturn(true);
@@ -162,12 +154,14 @@ void main() {
       final settings = _Settings();
       final blockchain = _Blockchain();
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: true,
-          isDevModeEnabled: false,
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: true,
+            isDevModeEnabled: false,
+          ),
         ),
       );
       when(() => blockchain.broadcastPsbt(_signedPublicTest, network: network))
@@ -197,12 +191,14 @@ void main() {
       final blockchain = _Blockchain();
       var authorized = true;
       when(settings.fetch).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: authorized ? Environment.regtest : Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-          isSuperuser: true,
-          isDevModeEnabled: authorized,
+        (_) async => Ok(
+          SettingsEntity(
+            environment: authorized ? Environment.regtest : Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+            isSuperuser: true,
+            isDevModeEnabled: authorized,
+          ),
         ),
       );
       final started = Completer<void>();
