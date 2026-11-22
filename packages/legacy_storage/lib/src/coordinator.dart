@@ -176,7 +176,15 @@ final class StorageCutover {
   }) async {
     LifecycleAdmission? held;
     try {
-      final exclusive = await _gate.acquire(exclusive: true, timeout: timeout);
+      final LifecycleAdmission exclusive;
+      try {
+        exclusive = await _gate.acquire(exclusive: true, timeout: timeout);
+      } on LifecycleException catch (error) {
+        if (error.reason != 'busy') rethrow;
+        // A background isolate can hold a shared lease across startup.
+        // Admission checks the source and receipts under its own shared lease.
+        return await admit(timeout: Duration.zero);
+      }
       held = exclusive;
       if (exclusive is! ExclusiveAdmission) {
         throw const LifecycleException('admission');
