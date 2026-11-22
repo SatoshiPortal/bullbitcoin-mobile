@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import '../domain/swap_amount_conversion.dart';
@@ -34,7 +35,6 @@ import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.da
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
-import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -87,7 +87,7 @@ part 'transfer_bloc.freezed.dart';
 class TransferBloc extends Bloc<TransferEvent, TransferState>
     implements FeeModalActionsPort, FeeModalStatePort {
   TransferBloc({
-    required this._getSettingsUsecase,
+    required this._loadPreferencesUsecase,
     this._getSwapAmountQuotesUsecase,
     required this._getWalletsUsecase,
     required this._feeEstimates,
@@ -168,7 +168,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetSwapAmountQuotesUsecase? _getSwapAmountQuotesUsecase;
   Timer? _amountQuoteTimer;
   int? _preparingAmountGeneration;
-  final Preferences _getSettingsUsecase;
+  final LoadTransferPreferencesUsecase _loadPreferencesUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final AppFeeEstimates _feeEstimates;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
@@ -237,10 +237,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   ) async {
     emit(state.copyWith(isStarting: true));
     try {
-      final settings = (await _getSettingsUsecase.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
+      final TransferPreferences settings;
+      switch (await _loadPreferencesUsecase.execute()) {
+        case Ok(:final value):
+          settings = value;
+        case Err(:final failure):
+          emit(state.copyWith(startError: failure));
+          return;
+      }
       if (_getSwapAmountQuotesUsecase != null) {
         add(const TransferAmountQuotesRequested());
         _amountQuoteTimer ??= Timer.periodic(const Duration(minutes: 1), (_) {
@@ -268,13 +272,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         case Err(failure: SwapPriceUnavailableFailure()):
           exchangeRate = null;
         case Err(:final failure):
-          emit(
-            state.copyWith(
-              startError: Exception(
-                'price read failed: ${failure.runtimeType}',
-              ),
-            ),
-          );
+          emit(state.copyWith(startError: failure));
           return;
       }
       final List<Wallet> wallets;
@@ -286,8 +284,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         case Err(:final failure):
           emit(
             state.copyWith(
-              startError: Exception(
-                'wallets read failed: ${failure.runtimeType}',
+              startError: SwapUnexpectedFailure(
+                'wallets: ${failure.runtimeType}',
               ),
             ),
           );
@@ -313,11 +311,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           : null;
       final pendingResult = await _getPendingOrderSwapsUsecase.execute();
       if (pendingResult case Ok(:final value)) {
+        final activeNetwork = settings.activeNetwork;
         final pendingTransfer = value
             .where(
               (order) =>
                   order.purpose == OrderSwapPurpose.transfer &&
-                  switch (settings.activeNetwork) {
+                  switch (activeNetwork) {
                     NetworkEnv.mainnet =>
                       order.environment == OrderSwapEnvironment.mainnet,
                     NetworkEnv.testnet =>
@@ -361,7 +360,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       await _loadSwapRoute(emit);
       await _resumePendingTransfer(emit);
     } catch (e) {
-      emit(state.copyWith(startError: Exception(e.toString())));
+      emit(state.copyWith(startError: SwapUnexpectedFailure(e.toString())));
     } finally {
       emit(state.copyWith(isStarting: false));
     }

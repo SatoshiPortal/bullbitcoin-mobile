@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
+
 import 'domain/usecases/get_swap_amount_quotes_usecase.dart';
 
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
@@ -370,7 +372,9 @@ class SwapLocator {
           settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
-        getSettingsUsecase: locator<Preferences>(),
+        loadPreferencesUsecase: LoadTransferPreferencesUsecase(
+          locator<Preferences>(),
+        ),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         feeEstimates: locator<AppFeeEstimates>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),

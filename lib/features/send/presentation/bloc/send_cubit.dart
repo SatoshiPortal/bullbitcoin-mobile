@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
+
 import '../../domain/send_amount_conversion.dart';
 import '../../domain/usecases/get_send_amount_quotes_usecase.dart';
 
@@ -30,7 +32,6 @@ import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
-import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -133,7 +134,7 @@ class SendCubit extends Cubit<SendState>
     required this._storeSendTransactionLabel,
     required this._bestWalletUsecase,
     required this._detectBitcoinStringUsecase,
-    required this._getSettingsUsecase,
+    required this._loadPreferencesUsecase,
     required this._getSendExchangeRateUsecase,
     required this._feeEstimates,
     required this._getWalletUtxosUsecase,
@@ -244,7 +245,7 @@ class SendCubit extends Cubit<SendState>
   final StoreSendTransactionLabelUsecase _storeSendTransactionLabel;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
-  final Preferences _getSettingsUsecase;
+  final LoadSendDisplayPreferencesUsecase _loadPreferencesUsecase;
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
   final GetSendAmountQuotesUsecase? _getSendAmountQuotesUsecase;
@@ -501,7 +502,7 @@ class SendCubit extends Cubit<SendState>
                 ),
               ),
             );
-            await _loadLocalSendSettings();
+            if (!await _loadLocalSendSettings()) return;
             await _loadCurrencyData();
             await getExchangeRate();
             await loadFees();
@@ -536,7 +537,7 @@ class SendCubit extends Cubit<SendState>
               .toList(),
         ),
       );
-      await _loadLocalSendSettings();
+      if (!await _loadLocalSendSettings()) return;
       if (state.isSweep) {
         await _initializeSweep(state.sweepOutpoints);
       } else if (state.selectedInputOutpoints.isNotEmpty) {
@@ -2011,23 +2012,23 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  Future<void> _loadLocalSendSettings() async {
-    final settings = (await _getSettingsUsecase.fetch()).fold(
-      (value) => value,
-      (failure) => throw Exception('Preferences read failed'),
-    );
-    final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
-    final bitcoinUnit = settings.bitcoinUnit;
-    final fiatCurrency = settings.currencyCode;
-
-    emit(
-      state.copyWith(
-        fiatCurrencyCode: fiatCurrency,
-        bitcoinUnit: bitcoinUnit,
-        inputAmountCurrencyCode: BitcoinUnit.sats.code,
-        payjoinGloballyEnabled: payjoinEnabled,
-      ),
-    );
+  Future<bool> _loadLocalSendSettings() async {
+    switch (await _loadPreferencesUsecase.execute()) {
+      case Ok(:final value):
+        final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
+        emit(
+          state.copyWith(
+            fiatCurrencyCode: value.currencyCode,
+            bitcoinUnit: value.bitcoinUnit,
+            inputAmountCurrencyCode: BitcoinUnit.sats.code,
+            payjoinGloballyEnabled: payjoinEnabled,
+          ),
+        );
+        return true;
+      case Err(:final failure):
+        emit(state.copyWith(loadingBestWallet: false, failure: failure));
+        return false;
+    }
   }
 
   Future<void> _loadCurrencyData() async {
@@ -2259,18 +2260,19 @@ class SendCubit extends Cubit<SendState>
     } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
-      final (settings, rate, payjoinEnabled) = await (
-        _getSettingsUsecase.fetch().then(
-          (result) => result.fold(
-            (value) => value,
-            (failure) => throw Exception('Preferences read failed'),
-          ),
-        ),
+      final (result, rate, payjoinEnabled) = await (
+        _loadPreferencesUsecase.execute(),
         _exchangeRate(),
         _getSendPayjoinEnabledUsecase.execute(),
       ).wait;
 
-      fiatCurrencyCode = settings.currencyCode;
+      switch (result) {
+        case Ok(:final value):
+          fiatCurrencyCode = value.currencyCode;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
       exchangeRate = rate;
       payjoinGloballyEnabled = payjoinEnabled;
     }

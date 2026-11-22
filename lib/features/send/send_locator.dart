@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
+
 import 'domain/usecases/get_send_amount_quotes_usecase.dart';
 
 import 'package:bull_ark/bull_ark.dart' show ArkFacade;
@@ -299,7 +301,9 @@ class SendLocator {
         ),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
-        getSettingsUsecase: locator<Preferences>(),
+        loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
+          locator<Preferences>(),
+        ),
         getSendExchangeRateUsecase: locator<GetSendExchangeRateUsecase>(),
         getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
           settings: locator<Preferences>(),
