@@ -72,7 +72,7 @@ class Bull {
     final legacy = LegacySourceStore(
       source: LegacySource(
         File(p.join(bullDirectory.path, 'bullbitcoin_sqlite.sqlite')),
-        16,
+        SqliteDatabase.currentSchemaVersion,
       ),
       create: SqliteDatabase.new,
     );

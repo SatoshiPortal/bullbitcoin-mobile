@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:legacy_storage/coordination.dart'
+    show splitV1SourceSchemaVersion;
+
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -127,7 +130,7 @@ class SqliteDatabase extends $SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 16;
+  static const int currentSchemaVersion = splitV1SourceSchemaVersion;
 
   @override
   int get schemaVersion => currentSchemaVersion;

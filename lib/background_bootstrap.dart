@@ -31,7 +31,7 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
     legacy: LegacySourceStore(
       source: LegacySource(
         File('${documents.path}/bullbitcoin_sqlite.sqlite'),
-        16,
+        SqliteDatabase.currentSchemaVersion,
       ),
       create: SqliteDatabase.new,
     ),

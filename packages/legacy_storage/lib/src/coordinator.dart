@@ -13,6 +13,9 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 import '../legacy_storage.dart';
 import 'lifecycle.dart';
 
+/// Last published schema of the source imported by split-v1.
+const splitV1SourceSchemaVersion = 16;
+
 /// Every legacy obligation, including projections from shared historical rows.
 const splitV1Owners = <String>{
   'electrum',

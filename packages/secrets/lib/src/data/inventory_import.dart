@@ -217,7 +217,9 @@ final class _PreparedInventory implements PreparedOwner {
   }
 
   Future<void> _copyLegacy(LegacySource source) async {
-    if (source.schemaVersion != 16) throw const _WrongSchema();
+    if (source.schemaVersion != splitV1SourceSchemaVersion) {
+      throw const _WrongSchema();
+    }
     final legacy = sqlite3.open(source.file.path, mode: OpenMode.readOnly);
     try {
       legacy.execute('BEGIN');
