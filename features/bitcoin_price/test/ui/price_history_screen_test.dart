@@ -15,71 +15,79 @@ class _Preferences extends Mock
         RuntimeDisplayPreferencesReader {}
 
 void main() {
-  testWidgets('history opens, retries and returns to settings', (tester) async {
-    final preferences = _Preferences();
-    when(preferences.readActiveEnvironment)
-        .thenAnswer((_) async => const Ok(Environment.testnet));
-    when(preferences.readCurrency).thenAnswer((_) async => const Ok('CAD'));
-    when(() => preferences.currencyChangeStream)
-        .thenAnswer((_) => const Stream.empty());
-    when(preferences.watchDisplayPreferences)
-        .thenAnswer((_) => const Stream.empty());
-    final requests = <({BitcoinNetwork network, SupportedCurrency currency})>[];
-    final feature = BitcoinPriceFeature.mount(
-      environment: preferences,
-      amountDisplay: preferences,
-      display: preferences,
-      getIndexPrice: ({required network, required currency}) async =>
-          const Err(PricerNetworkFailure()),
-      getPriceHistory: ({required network, required currency}) async {
-        requests.add((network: network, currency: currency));
-        return const Err(PricerNetworkFailure());
-      },
-    );
-    final router = GoRouter(
-      initialLocation: '/settings',
-      routes: [
-        GoRoute(
-          path: '/settings',
-          builder: (context, _) => Scaffold(
-            body: TextButton(
-              onPressed: () => BitcoinPriceFeature.openHistory(context),
-              child: const Text('Open history'),
+  testWidgets(
+    'history opens at its settings path, retries and returns to settings',
+    (tester) async {
+      final preferences = _Preferences();
+      when(preferences.readActiveEnvironment)
+          .thenAnswer((_) async => const Ok(Environment.testnet));
+      when(preferences.readCurrency).thenAnswer((_) async => const Ok('CAD'));
+      when(() => preferences.currencyChangeStream)
+          .thenAnswer((_) => const Stream.empty());
+      when(preferences.watchDisplayPreferences)
+          .thenAnswer((_) => const Stream.empty());
+      final requests =
+          <({BitcoinNetwork network, SupportedCurrency currency})>[];
+      final feature = BitcoinPriceFeature.mount(
+        environment: preferences,
+        amountDisplay: preferences,
+        display: preferences,
+        getIndexPrice: ({required network, required currency}) async =>
+            const Err(PricerNetworkFailure()),
+        getPriceHistory: ({required network, required currency}) async {
+          requests.add((network: network, currency: currency));
+          return const Err(PricerNetworkFailure());
+        },
+      );
+      final router = GoRouter(
+        initialLocation: '/settings',
+        routes: [
+          GoRoute(
+            path: '/settings',
+            builder: (context, _) => Scaffold(
+              body: TextButton(
+                onPressed: () => BitcoinPriceFeature.openHistory(context),
+                child: const Text('Open history'),
+              ),
             ),
+            routes: feature.routes,
           ),
-          routes: feature.routes,
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        feature.providePrices(
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: ThemeData(extensions: testBullExtensions),
+            localizationsDelegates:
+                BitcoinPriceLocalizations.localizationsDelegates,
+            supportedLocales: BitcoinPriceLocalizations.supportedLocales,
+          ),
         ),
-      ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      feature.providePrices(
-        child: MaterialApp.router(
-          routerConfig: router,
-          theme: ThemeData(extensions: testBullExtensions),
-          localizationsDelegates:
-              BitcoinPriceLocalizations.localizationsDelegates,
-          supportedLocales: BitcoinPriceLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Open history'));
-    await tester.pumpAndSettle();
-    final historyTitle = find.text('Price history');
-    expect(historyTitle, findsOneWidget);
-    expect(requests, [
-      (network: BitcoinNetwork.mainnet, currency: SupportedCurrency.cad),
-    ]);
-    expect(
-      find.text('Price chart data could not be loaded. Please try again.'),
-      findsOneWidget,
-    );
-    await tester.tap(find.byTooltip('Retry'));
-    await tester.pumpAndSettle();
-    expect(requests, hasLength(2));
-    await tester.tap(find.byType(IconButton).first);
-    await tester.pumpAndSettle();
-    expect(find.text('Open history'), findsOneWidget);
-  });
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open history'));
+      await tester.pumpAndSettle();
+      final historyTitle = find.text('Price history');
+      expect(historyTitle, findsOneWidget);
+      expect(
+        GoRouterState.of(tester.element(historyTitle)).uri.path,
+        '/settings/price-history',
+      );
+      expect(requests, [
+        (network: BitcoinNetwork.mainnet, currency: SupportedCurrency.cad),
+      ]);
+      expect(
+        find.text('Price chart data could not be loaded. Please try again.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byTooltip('Retry'));
+      await tester.pumpAndSettle();
+      expect(requests, hasLength(2));
+      await tester.tap(find.byType(IconButton).first);
+      await tester.pumpAndSettle();
+      expect(find.text('Open history'), findsOneWidget);
+    },
+  );
 }

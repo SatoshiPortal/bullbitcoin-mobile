@@ -125,6 +125,7 @@ void main() {
             .isError,
         false,
       );
+      expect(router.namedLocation('priceHistory'), '/settings/price-history');
       router.go('/ark');
       await tester.pumpWidget(
         MaterialApp.router(

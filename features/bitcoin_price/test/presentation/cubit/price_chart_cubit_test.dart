@@ -81,12 +81,13 @@ void main() {
     expect(cubit.state.isLoading, isFalse);
   });
 
-  test('a failed preference read is reported', () async {
+  test('opening the chart handles a failed preference read', () async {
     when(settings.execute)
         .thenAnswer((_) async => const Err(BitcoinPricePreferencesFailure()));
 
-    await cubit.loadPriceHistory();
+    await cubit.showChart();
 
+    expect(cubit.state.showChart, isTrue);
     expect(cubit.state.failure, isA<BitcoinPricePreferencesFailure>());
     expect(cubit.state.isLoading, isFalse);
     verifyNever(

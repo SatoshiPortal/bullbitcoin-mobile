@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 class _Preferences extends Mock implements RuntimeDisplayPreferencesReader {}
 
 void main() {
-  test('a currency notification after a failure is observed', () async {
+  test('failed notification is typed and observation resumes', () async {
     final preferences = _Preferences();
     when(() => preferences.currencyChangeStream).thenAnswer(
       (_) => Stream.fromIterable([
@@ -18,14 +18,17 @@ void main() {
       ]),
     );
     await expectLater(
-      WatchPriceCurrencyUsecase(preferences)
-          .execute()
-          .where((result) => result is Ok),
+      WatchPriceCurrencyUsecase(preferences).execute(),
       emitsInOrder([
         isA<Ok<String, BitcoinPriceFailure>>().having(
           (result) => result.value,
           'value',
           'USD',
+        ),
+        isA<Err<String, BitcoinPriceFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<BitcoinPricePreferencesFailure>(),
         ),
         isA<Ok<String, BitcoinPriceFailure>>().having(
           (result) => result.value,
