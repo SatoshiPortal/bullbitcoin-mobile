@@ -167,6 +167,8 @@ graph TD
   labels --> bull_logger
   labels --> bull_payjoin
   labels --> primitives
+  labels --> legacy_storage
+  labels --> secrets
   labels --> sync
   legacy_storage --> primitives
   mempool --> bull_logger
