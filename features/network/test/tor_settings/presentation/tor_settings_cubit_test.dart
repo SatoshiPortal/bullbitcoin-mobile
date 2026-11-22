@@ -1,3 +1,8 @@
+import 'package:network/src/status_check/domain/network_failure.dart';
+import 'package:network/src/tor_settings/domain/load_tor_preferences_usecase.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
+
 import 'package:network/src/tor_settings/domain/watch_tor_settings_usecase.dart';
 import 'package:network/src/tor_settings/domain/tor_preferences.dart';
 
@@ -12,12 +17,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/tor_adapter.dart';
 
-class _MockGetSettingsUsecase extends Mock implements _ReadSettings {}
+class _MockGetSettingsUsecase extends Mock
+    implements LoadTorPreferencesUsecase {}
 
 class _MockUpdateTorProxyUsecase extends Mock
     implements UpdateTorProxyUsecase {}
 
-class _MockSettingsRepository extends Mock implements _SettingsAccess {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockUpdateTorTransportModeUsecase extends Mock
     implements UpdateTorTransportModeUsecase {}
@@ -29,17 +35,12 @@ CheckExternalTorConnectionUsecase _resolverFromPort(
   ExternalTorPort port, {
   int portNumber = 9050,
 }) {
-  final settings = _MockGetSettingsUsecase();
+  final settings = _MockSettingsRepository();
   final tor = _MockTor();
   final external = _MockExternalTor();
-  when(settings.execute).thenAnswer(
-    (_) async => (
-      useTorProxy: true,
-      torProxyPort: portNumber,
-      torTransportMode: TorTransportMode.automatic,
-      lastSuccessfulTorTransport: null,
-    ),
-  );
+  when(
+    settings.readTorProxyPreferences,
+  ).thenAnswer((_) async => Ok((useTorProxy: true, torProxyPort: portNumber)));
   when(() => tor.external).thenReturn(external);
   when(() => external.verify(any())).thenAnswer((invocation) async {
     final endpoint = invocation.positionalArguments.single as TorProxyEndpoint;
@@ -59,7 +60,7 @@ CheckExternalTorConnectionUsecase _resolverFromPort(
       );
     }
   });
-  return CheckExternalTorConnectionUsecase(settings.execute, tor);
+  return CheckExternalTorConnectionUsecase(settings, tor);
 }
 
 class _MockTor extends Mock implements Tor {}
@@ -115,25 +116,17 @@ class _SignalingExternalTorPort implements ExternalTorPort {
   }
 }
 
-abstract interface class _ReadSettings {
-  Future<TorPreferences> execute();
-}
-
-abstract interface class _SettingsAccess {
-  Future<bool> setTorProxy({required bool enabled, required int port});
-}
-
 void main() {
   setUpAll(() {
     registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
   test('does not emit when settings finish loading after close', () async {
     final getSettings = _MockGetSettingsUsecase();
-    final settings = Completer<TorPreferences>();
+    final settings = Completer<Result<TorPreferences, NetworkFailure>>();
     when(() => getSettings.execute()).thenAnswer((_) => settings.future);
 
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchSettingsUsecase: _MockWatchTorConnectionUsecase(),
@@ -145,12 +138,14 @@ void main() {
     final initialization = cubit.init();
     await Future<void>.delayed(Duration.zero);
     await cubit.close();
-    settings.complete((
-      useTorProxy: false,
-      torProxyPort: 9050,
-      torTransportMode: TorTransportMode.automatic,
-      lastSuccessfulTorTransport: null,
-    ));
+    settings.complete(
+      Ok((
+        useTorProxy: false,
+        torProxyPort: 9050,
+        torTransportMode: TorTransportMode.automatic,
+        lastSuccessfulTorTransport: null,
+      )),
+    );
 
     await expectLater(initialization, completes);
   });
@@ -163,19 +158,19 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: true,
           torProxyPort: 0,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
 
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
 
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchSettingsUsecase: watchTor,
@@ -197,12 +192,12 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: false,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
       final settingsRepository = _MockSettingsRepository();
       when(
@@ -210,14 +205,14 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenAnswer((_) async => true);
+      ).thenAnswer((_) async => const Ok(null));
       final externalPort = _FakeExternalTorPort()..available = false;
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: UpdateTorProxyUsecase(
-          settingsRepository.setTorProxy,
+          settingsRepository,
           ExternalTor(VerifyExternalTorUsecase(externalPort)),
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -245,9 +240,9 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenAnswer((_) async => true);
+      ).thenAnswer((_) async => const Ok(null));
       final usecase = UpdateTorProxyUsecase(
-        settingsRepository.setTorProxy,
+        settingsRepository,
         ExternalTor(VerifyExternalTorUsecase(_FakeExternalTorPort())),
       );
 
@@ -270,7 +265,7 @@ void main() {
     () async {
       final settingsRepository = _MockSettingsRepository();
       final usecase = UpdateTorProxyUsecase(
-        settingsRepository.setTorProxy,
+        settingsRepository,
         ExternalTor(VerifyExternalTorUsecase(_FakeExternalTorPort())),
       );
 
@@ -293,18 +288,18 @@ void main() {
   test('revalidates the external proxy when refreshed after resume', () async {
     final getSettings = _MockGetSettingsUsecase();
     when(() => getSettings.execute()).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         useTorProxy: true,
         torProxyPort: 9050,
         torTransportMode: TorTransportMode.automatic,
         lastSuccessfulTorTransport: null,
-      ),
+      )),
     );
     final externalPort = _FakeExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchSettingsUsecase: watchTor,
@@ -325,18 +320,18 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: false,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
       final embeddedStates = StreamController<TorConnectionState>();
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => embeddedStates.stream);
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchSettingsUsecase: watchTor,
@@ -367,12 +362,12 @@ void main() {
   test('does not persist a superseded activation after disabling', () async {
     final getSettings = _MockGetSettingsUsecase();
     when(() => getSettings.execute()).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         useTorProxy: false,
         torProxyPort: 9050,
         torTransportMode: TorTransportMode.automatic,
         lastSuccessfulTorTransport: null,
-      ),
+      )),
     );
     final settingsRepository = _MockSettingsRepository();
     when(
@@ -380,14 +375,14 @@ void main() {
         enabled: any(named: 'enabled'),
         port: any(named: 'port'),
       ),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => const Ok(null));
     final externalPort = _BlockingExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: UpdateTorProxyUsecase(
-        settingsRepository.setTorProxy,
+        settingsRepository,
         ExternalTor(VerifyExternalTorUsecase(externalPort)),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -418,12 +413,12 @@ void main() {
   test('shows a separate connecting attempt for a replacement port', () async {
     final getSettings = _MockGetSettingsUsecase();
     when(() => getSettings.execute()).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         useTorProxy: true,
         torProxyPort: 9050,
         torTransportMode: TorTransportMode.automatic,
         lastSuccessfulTorTransport: null,
-      ),
+      )),
     );
     final settingsRepository = _MockSettingsRepository();
     final externalPort = _BlockReplacementExternalTorPort();
@@ -433,13 +428,13 @@ void main() {
         enabled: any(named: 'enabled'),
         port: any(named: 'port'),
       ),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => const Ok(null));
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: UpdateTorProxyUsecase(
-        settingsRepository.setTorProxy,
+        settingsRepository,
         ExternalTor(verifier),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -468,12 +463,12 @@ void main() {
   test('keeps the active endpoint when a replacement port fails', () async {
     final getSettings = _MockGetSettingsUsecase();
     when(() => getSettings.execute()).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         useTorProxy: true,
         torProxyPort: 9050,
         torTransportMode: TorTransportMode.automatic,
         lastSuccessfulTorTransport: null,
-      ),
+      )),
     );
     final settingsRepository = _MockSettingsRepository();
     when(
@@ -481,14 +476,14 @@ void main() {
         enabled: any(named: 'enabled'),
         port: any(named: 'port'),
       ),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => const Ok(null));
     final externalPort = _FakeExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: UpdateTorProxyUsecase(
-        settingsRepository.setTorProxy,
+        settingsRepository,
         ExternalTor(VerifyExternalTorUsecase(externalPort)),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -514,12 +509,12 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: true,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
       final settingsRepository = _MockSettingsRepository();
       when(
@@ -530,15 +525,15 @@ void main() {
       ).thenAnswer(
         // The repository is the boundary now: it catches, logs the raw reason
         // and hands back a sanitized failure.
-        (_) async => false,
+        (_) async => const Err(PreferencesWriteFailure()),
       );
       final externalPort = _FakeExternalTorPort();
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: UpdateTorProxyUsecase(
-          settingsRepository.setTorProxy,
+          settingsRepository,
           ExternalTor(VerifyExternalTorUsecase(externalPort)),
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -564,27 +559,27 @@ void main() {
   test('keeps an active proxy when disabling cannot be persisted', () async {
     final getSettings = _MockGetSettingsUsecase();
     when(() => getSettings.execute()).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         useTorProxy: true,
         torProxyPort: 9050,
         torTransportMode: TorTransportMode.automatic,
         lastSuccessfulTorTransport: null,
-      ),
+      )),
     );
     final settingsRepository = _MockSettingsRepository();
     when(() => settingsRepository.setTorProxy(enabled: false, port: 9050))
         .thenAnswer(
           // The repository is the boundary now: it catches, logs the raw reason
           // and hands back a sanitized failure.
-          (_) async => false,
+          (_) async => const Err(PreferencesWriteFailure()),
         );
     final externalPort = _FakeExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: UpdateTorProxyUsecase(
-        settingsRepository.setTorProxy,
+        settingsRepository,
         ExternalTor(VerifyExternalTorUsecase(externalPort)),
       ),
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -609,7 +604,7 @@ void main() {
 
   test('does not apply settings loaded before a newer action', () async {
     final getSettings = _MockGetSettingsUsecase();
-    final settings = Completer<TorPreferences>();
+    final settings = Completer<Result<TorPreferences, NetworkFailure>>();
     when(() => getSettings.execute()).thenAnswer((_) => settings.future);
     final updateProxy = _MockUpdateTorProxyUsecase();
     when(
@@ -622,7 +617,7 @@ void main() {
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
-      readPreferences: getSettings.execute,
+      loadPreferences: getSettings,
       updateTorProxyUsecase: updateProxy,
       updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
       watchSettingsUsecase: watchTor,
@@ -635,12 +630,14 @@ void main() {
     final refresh = cubit.onAppResumed();
     await Future<void>.delayed(Duration.zero);
     await cubit.updateTorSettings(useTorProxy: false, torProxyPort: 9050);
-    settings.complete((
-      useTorProxy: true,
-      torProxyPort: 9050,
-      torTransportMode: TorTransportMode.automatic,
-      lastSuccessfulTorTransport: null,
-    ));
+    settings.complete(
+      Ok((
+        useTorProxy: true,
+        torProxyPort: 9050,
+        torTransportMode: TorTransportMode.automatic,
+        lastSuccessfulTorTransport: null,
+      )),
+    );
     await refresh;
 
     expect(cubit.state.useTorProxy, isFalse);
@@ -653,12 +650,12 @@ void main() {
       var fetchCount = 0;
       when(() => getSettings.execute()).thenAnswer((_) async {
         fetchCount++;
-        return (
+        return Ok((
           useTorProxy: false,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        );
+        ));
       });
       final settingsRepository = _MockSettingsRepository();
       when(
@@ -666,15 +663,15 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenAnswer((_) async => true);
+      ).thenAnswer((_) async => const Ok(null));
       final externalPort = _BlockingExternalTorPort();
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
       final verifier = VerifyExternalTorUsecase(externalPort);
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: UpdateTorProxyUsecase(
-          settingsRepository.setTorProxy,
+          settingsRepository,
           ExternalTor(verifier),
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -706,12 +703,12 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: false,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
       final settingsRepository = _MockSettingsRepository();
       final externalPort = _FakeExternalTorPort()..available = false;
@@ -719,9 +716,9 @@ void main() {
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
       final verifier = VerifyExternalTorUsecase(externalPort);
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: UpdateTorProxyUsecase(
-          settingsRepository.setTorProxy,
+          settingsRepository,
           ExternalTor(verifier),
         ),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
@@ -745,18 +742,18 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: true,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
       final externalPort = _SignalingExternalTorPort(available: true);
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchSettingsUsecase: watchTor,
@@ -776,18 +773,18 @@ void main() {
     () async {
       final getSettings = _MockGetSettingsUsecase();
       when(() => getSettings.execute()).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           useTorProxy: true,
           torProxyPort: 9050,
           torTransportMode: TorTransportMode.automatic,
           lastSuccessfulTorTransport: null,
-        ),
+        )),
       );
       final externalPort = _SignalingExternalTorPort(available: false);
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
       final cubit = TorSettingsCubit(
-        readPreferences: getSettings.execute,
+        loadPreferences: getSettings,
         updateTorProxyUsecase: _MockUpdateTorProxyUsecase(),
         updateTorTransportModeUsecase: _MockUpdateTorTransportModeUsecase(),
         watchSettingsUsecase: watchTor,

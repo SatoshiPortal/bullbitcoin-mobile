@@ -98,7 +98,7 @@ void main() {
         electrumSettingsRepository: electrumSettingsRepo,
         serverStatusPort: statusPort,
         torSessionPort: torSessionPort,
-        readPreferences: appSettingsRepository.fetch,
+        readPreferences: () async => Ok(await appSettingsRepository.fetch()),
       );
     });
 
@@ -529,7 +529,7 @@ void main() {
 
           serverStatusPort: statusPort,
           torSessionPort: torSessionPort,
-          readPreferences: appSettingsRepository.fetch,
+          readPreferences: () async => Ok(await appSettingsRepository.fetch()),
         );
         when(() => serverRepo.fetchAll(network: _network))
             .thenAnswer((_) async => const Ok([]));
@@ -566,7 +566,7 @@ void main() {
 
         serverStatusPort: statusPort,
         torSessionPort: torSessionPort,
-        readPreferences: appSettingsRepository.fetch,
+        readPreferences: () async => Ok(await appSettingsRepository.fetch()),
       );
 
       when(
@@ -694,7 +694,7 @@ void main() {
 
           serverStatusPort: statusPort,
           torSessionPort: torSessionPort,
-          readPreferences: appSettingsRepository.fetch,
+          readPreferences: () async => Ok(await appSettingsRepository.fetch()),
         );
 
         final result = await usecase.execute(network: _network);
@@ -749,7 +749,7 @@ void main() {
 
         serverStatusPort: statusPort,
         torSessionPort: torSessionPort,
-        readPreferences: appSettingsRepository.fetch,
+        readPreferences: () async => Ok(await appSettingsRepository.fetch()),
       );
 
       final result = await usecase.execute(network: _network);

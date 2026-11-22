@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:primitives/primitives.dart' show ConvertAmount, Ok, ScriptType;
@@ -249,7 +250,7 @@ class _TestSendCubit extends SendCubit {
     required super.storeSendTransactionLabel,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
-    required super.getSettingsUsecase,
+    required super.loadPreferencesUsecase,
     required super.getSendExchangeRateUsecase,
     required super.feeEstimates,
     required super.getWalletUtxosUsecase,
@@ -366,7 +367,9 @@ void main() {
       storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
       bestWalletUsecase: _MockSelectBestWalletUsecase(),
       detectBitcoinStringUsecase: _MockDetectBitcoinStringUsecase(),
-      getSettingsUsecase: _MockPreferences(),
+      loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
+        _MockPreferences(),
+      ),
       getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
       feeEstimates: _MockAppFeeEstimates(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,

@@ -1,5 +1,5 @@
 import 'package:electrum/electrum.dart';
-import 'package:network/src/tor_settings/domain/tor_preferences.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
@@ -24,11 +24,8 @@ class _MockFeesRepository extends Mock implements _BitcoinFees {}
 
 class _MockWalletRepository extends Mock implements _WalletUsage {}
 
-class _MockSettingsRepository extends Mock implements _SettingsAccess {}
-
-abstract interface class _SettingsAccess {
-  Future<TorPreferences> fetch();
-}
+class _MockSettingsRepository extends Mock
+    implements TorProxyPreferencesReader {}
 
 abstract interface class _WalletUsage {
   Future<Result<bool, Failure>> isTorRequired();
@@ -42,12 +39,10 @@ class _MockTor extends Mock implements Tor {}
 
 class _MockExternalTor extends Mock implements ExternalTor {}
 
-TorPreferences _settings({required bool useTorProxy, int port = 9050}) => (
-  useTorProxy: useTorProxy,
-  torProxyPort: port,
-  torTransportMode: TorTransportMode.automatic,
-  lastSuccessfulTorTransport: null,
-);
+Result<TorProxyPreferences, PreferencesFailure> _settings({
+  required bool useTorProxy,
+  int port = 9050,
+}) => Ok((useTorProxy: useTorProxy, torProxyPort: port));
 
 void main() {
   setUpAll(() {
@@ -75,7 +70,7 @@ void main() {
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
-    when(() => settingsRepository.fetch())
+    when(() => settingsRepository.readTorProxyPreferences())
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
@@ -88,7 +83,7 @@ void main() {
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
-      readTorPreferences: settingsRepository.fetch,
+      preferences: settingsRepository,
       tor: tor,
     );
 
@@ -120,7 +115,7 @@ void main() {
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
-    when(() => settingsRepository.fetch())
+    when(() => settingsRepository.readTorProxyPreferences())
         .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
@@ -133,7 +128,7 @@ void main() {
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
-      readTorPreferences: settingsRepository.fetch,
+      preferences: settingsRepository,
       tor: tor,
     );
 
@@ -169,7 +164,7 @@ void main() {
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
-      when(() => settingsRepository.fetch())
+      when(() => settingsRepository.readTorProxyPreferences())
           .thenAnswer((_) async => _settings(useTorProxy: false));
       when(() => tor.external).thenReturn(external);
       final usecase = CheckAllServiceStatusUsecase(
@@ -182,7 +177,7 @@ void main() {
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
-        readTorPreferences: settingsRepository.fetch,
+        preferences: settingsRepository,
         tor: tor,
       );
 
@@ -214,7 +209,7 @@ void main() {
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
-      when(() => settingsRepository.fetch())
+      when(() => settingsRepository.readTorProxyPreferences())
           .thenAnswer((_) async => _settings(useTorProxy: true));
       when(() => tor.external).thenReturn(external);
       when(() => external.verify(any())).thenAnswer(
@@ -236,7 +231,7 @@ void main() {
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
-        readTorPreferences: settingsRepository.fetch,
+        preferences: settingsRepository,
         tor: tor,
       );
 
@@ -267,7 +262,7 @@ void main() {
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
-      when(() => settingsRepository.fetch())
+      when(() => settingsRepository.readTorProxyPreferences())
           .thenAnswer((_) async => _settings(useTorProxy: true));
       when(() => tor.external).thenReturn(external);
       when(() => external.verify(any())).thenAnswer(
@@ -286,7 +281,7 @@ void main() {
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
-        readTorPreferences: settingsRepository.fetch,
+        preferences: settingsRepository,
         tor: tor,
       );
 
@@ -318,7 +313,7 @@ void main() {
       when(walletRepository.isTorRequired)
           .thenAnswer((_) async => const Ok(false));
       final settingsRepository = _MockSettingsRepository();
-      when(() => settingsRepository.fetch())
+      when(() => settingsRepository.readTorProxyPreferences())
           .thenAnswer((_) async => _settings(useTorProxy: false));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
@@ -333,7 +328,7 @@ void main() {
         isTorRequired: walletRepository.isTorRequired,
 
         checkServerConnection: () async => const Ok(false),
-        readTorPreferences: settingsRepository.fetch,
+        preferences: settingsRepository,
         tor: _MockTor(),
       );
       final liquidPublished = Completer<void>();
@@ -378,7 +373,8 @@ void main() {
     when(walletRepository.isTorRequired)
         .thenAnswer((_) async => const Ok(false));
     final settingsRepository = _MockSettingsRepository();
-    when(settingsRepository.fetch).thenThrow(Exception('Tor probe failed'));
+    when(settingsRepository.readTorProxyPreferences)
+        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
@@ -393,7 +389,7 @@ void main() {
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
-      readTorPreferences: settingsRepository.fetch,
+      preferences: settingsRepository,
       tor: _MockTor(),
     );
 
@@ -405,6 +401,8 @@ void main() {
     expect(updates.any((status) => status.liquidElectrum.isOnline), isTrue);
     expect(result.bitcoinElectrum.status, ServiceStatus.offline);
     expect(result.liquidElectrum.isOnline, isTrue);
+    expect(result.tor.status, ServiceStatus.unknown);
+    verifyNever(walletRepository.isTorRequired);
     expect(result.lastChecked, isNotNull);
   });
 
@@ -415,6 +413,9 @@ void main() {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final tor = _MockTor();
+    final preferences = _MockSettingsRepository();
+    when(preferences.readTorProxyPreferences)
+        .thenAnswer((_) async => _settings(useTorProxy: false));
     final usecase = CheckAllServiceStatusUsecase(
       electrumServers: electrum,
       getIndexPrice: _FakeIndexPriceReader(fiatAmount: 70000).call,
@@ -423,7 +424,7 @@ void main() {
       checkBitcoinFees: (_) async {},
       isTorRequired: () async => const Err(_WalletReadFailure()),
       checkServerConnection: () async => const Ok(false),
-      readTorPreferences: () async => _settings(useTorProxy: false),
+      preferences: preferences,
       tor: tor,
     );
 
@@ -452,7 +453,7 @@ void main() {
     when(walletRepository.isTorRequired)
         .thenAnswer((_) async => const Ok(false));
     final settingsRepository = _MockSettingsRepository();
-    when(() => settingsRepository.fetch())
+    when(() => settingsRepository.readTorProxyPreferences())
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
@@ -465,7 +466,7 @@ void main() {
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
-      readTorPreferences: settingsRepository.fetch,
+      preferences: settingsRepository,
       tor: _MockTor(),
     );
 
@@ -491,7 +492,7 @@ void main() {
     when(walletRepository.isTorRequired)
         .thenAnswer((_) async => const Ok(false));
     final settingsRepository = _MockSettingsRepository();
-    when(() => settingsRepository.fetch())
+    when(() => settingsRepository.readTorProxyPreferences())
         .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
@@ -504,7 +505,7 @@ void main() {
       isTorRequired: walletRepository.isTorRequired,
 
       checkServerConnection: () async => const Ok(false),
-      readTorPreferences: settingsRepository.fetch,
+      preferences: settingsRepository,
       tor: _MockTor(),
     );
 

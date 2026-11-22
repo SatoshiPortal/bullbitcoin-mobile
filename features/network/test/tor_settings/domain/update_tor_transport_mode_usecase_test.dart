@@ -1,16 +1,13 @@
+import 'package:preferences/preferences.dart';
 import 'package:network/src/tor_settings/domain/update_tor_transport_mode_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 
-class _MockSettingsRepository extends Mock implements _SettingsAccess {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockEmbeddedTor extends Mock implements EmbeddedTor {}
-
-abstract interface class _SettingsAccess {
-  Future<Result<void, Failure>> setTorTransportMode(TorTransportMode mode);
-}
 
 void main() {
   test('persists the preference before reconfiguring embedded Tor', () async {
@@ -30,7 +27,7 @@ void main() {
     when(() => embeddedTor.setMode(TorTransportMode.snowflake))
         .thenAnswer((_) async => ready);
     final usecase = UpdateTorTransportModeUsecase(
-      settingsRepository.setTorTransportMode,
+      settingsRepository,
       embeddedTor,
     );
 

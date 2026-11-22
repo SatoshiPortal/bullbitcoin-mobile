@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -245,7 +246,7 @@ void main() {
     BroadcastBitcoinTransactionUsecase? bitcoinBroadcast,
     GetSwapAmountQuotesUsecase? amountQuotes,
   }) => TransferBloc(
-    getSettingsUsecase: getSettings,
+    loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
     getSwapAmountQuotesUsecase: amountQuotes,
     getWalletsUsecase: getWallets,
     feeEstimates: getNetworkFees,

@@ -41,6 +41,8 @@ class Memory implements QuickActionsStorage {
   Future<void> remove(String key) async {}
 }
 
+class _UnusedPreferences extends Mock implements Preferences {}
+
 void main() {
   testWidgets(
     'actual shell routes keep unavailable Ark entries inert and navigable',
@@ -71,18 +73,11 @@ void main() {
       locator.registerSingleton(
         NetworkFeature.mount(
           services: networkServices,
+          preferences: _UnusedPreferences(),
           bindings: (
             readDefaultNetwork: () async => const Ok(null),
-            readEnvironment: () async =>
-                throw StateError('Unexpected environment read'),
-            readMempoolEnvironment: () async =>
-                throw StateError('Unexpected Mempool environment read'),
             checkBitcoinFees: (_) async {},
             isTorRequired: () async => const Ok(false),
-            readTorPreferences: () async =>
-                throw StateError('Unexpected Tor read'),
-            saveTorProxy: ({required enabled, required port}) async => false,
-            saveTorMode: (_) async => const Ok(null),
           ),
         ),
       );

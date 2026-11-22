@@ -14,7 +14,7 @@ void main() {
     );
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
     final online = await checkConfiguredElectrum(
-      serversPort,
+      serversPort.runWithFallback,
       statusPort,
       ElectrumServerNetwork.bitcoinMainnet,
     );
@@ -32,7 +32,7 @@ void main() {
     );
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
     await checkConfiguredElectrum(
-      serversPort,
+      serversPort.runWithFallback,
       statusPort,
       ElectrumServerNetwork.bitcoinMainnet,
     );
@@ -44,7 +44,7 @@ void main() {
     final serversPort = _FakeElectrumServersPort(_connection(socks5: '  '));
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
     final online = await checkConfiguredElectrum(
-      serversPort,
+      serversPort.runWithFallback,
       statusPort,
       ElectrumServerNetwork.bitcoinMainnet,
     );
@@ -56,7 +56,8 @@ void main() {
   test('does not bypass a malformed configured proxy', () async {
     final statusPort = _FakeServerStatusPort(ElectrumServerStatus.online);
     final online = await checkConfiguredElectrum(
-      _FakeElectrumServersPort(_connection(socks5: 'not-an-endpoint')),
+      _FakeElectrumServersPort(_connection(socks5: 'not-an-endpoint'))
+          .runWithFallback,
       statusPort,
       ElectrumServerNetwork.bitcoinMainnet,
     );
@@ -76,7 +77,7 @@ void main() {
       );
 
       final result = await checkConfiguredElectrum(
-        _FakeElectrumServersPort(first, fallback: [second]),
+        _FakeElectrumServersPort(first, fallback: [second]).runWithFallback,
         status,
         ElectrumServerNetwork.bitcoinMainnet,
       );
@@ -88,7 +89,7 @@ void main() {
   test('reports an unreachable active server set as offline', () async {
     expect(
       await checkConfiguredElectrum(
-        _FakeElectrumServersPort(_connection()),
+        _FakeElectrumServersPort(_connection()).runWithFallback,
         _FakeServerStatusPort(ElectrumServerStatus.offline),
         ElectrumServerNetwork.bitcoinMainnet,
       ),
@@ -113,31 +114,27 @@ ElectrumConnection _connection({
   socks5: socks5,
 );
 
-final class _FakeElectrumServersPort implements ElectrumServersPort {
-  @override
-  Future<bool> hasCustomServers({
-    required ElectrumServerNetwork network,
-  }) async => false;
-
+final class _FakeElectrumServersPort {
   final ElectrumConnection connection;
   final List<ElectrumConnection> fallback;
   ElectrumServerNetwork? network;
 
   _FakeElectrumServersPort(this.connection, {this.fallback = const []});
 
-  @override
-  Future<T> runWithFallback<T>({
+  Future<Result<T, ElectrumFailure>> runWithFallback<T>({
     required ElectrumServerNetwork network,
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
-  }) {
+  }) async {
     this.network = network;
-    return runElectrumFallback(
-      servers: [connection, ...fallback],
-      urlOf: (server) => server.url,
-      isCustomOf: (server) => server.isCustom,
-      operation: operation,
-      isTransient: isTransient,
+    return Ok(
+      await runElectrumFallback(
+        servers: [connection, ...fallback],
+        urlOf: (server) => server.url,
+        isCustomOf: (server) => server.isCustom,
+        operation: operation,
+        isTransient: isTransient,
+      ),
     );
   }
 }

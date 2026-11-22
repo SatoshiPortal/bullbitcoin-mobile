@@ -22,6 +22,10 @@ abstract interface class _PreferencesReader {
   Future<ElectrumPreferences> fetch();
 }
 
+final class _PreferencesReadFailure extends Failure {
+  const _PreferencesReadFailure();
+}
+
 class _MockAppSettingsRepository extends Mock implements _PreferencesReader {}
 
 const _network = ElectrumServerNetwork.bitcoinMainnet;
@@ -89,7 +93,7 @@ void main() {
     adapter = ElectrumServersAdapter(
       serverRepository: serverRepo,
       settingsRepository: settingsRepo,
-      readPreferences: appSettingsRepository.fetch,
+      readPreferences: () async => Ok(await appSettingsRepository.fetch()),
       torSessionPort: torSessionPort,
     );
   });
@@ -106,6 +110,34 @@ void main() {
     final app = appSettings ?? _appSettings();
     when(() => appSettingsRepository.fetch()).thenAnswer((_) async => app);
   }
+
+  test(
+    'failed preferences stop mainnet before server selection or routing',
+    () async {
+      final runner = ElectrumServersAdapter(
+        serverRepository: serverRepo,
+        settingsRepository: settingsRepo,
+        readPreferences: () async => const Err(_PreferencesReadFailure()),
+        torSessionPort: torSessionPort,
+      );
+      final result = await runner.runWithFallbackResult<void>(
+        network: _network,
+        operation: (_) async => fail('Must stop before the operation'),
+      );
+
+      expect(
+        result,
+        isA<Err<void, ElectrumFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ElectrumUnexpectedFailure>(),
+        ),
+      );
+      verifyZeroInteractions(serverRepo);
+      verifyZeroInteractions(settingsRepo);
+      verifyZeroInteractions(torSessionPort);
+    },
+  );
 
   for (final network in [
     ElectrumServerNetwork.bitcoinTestnet,

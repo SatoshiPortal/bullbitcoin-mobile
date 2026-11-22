@@ -145,6 +145,24 @@ Map<String, String> _edges(
 }
 
 void main() {
+  test(
+    'preferences are consumed through feature use cases in presentation',
+    () {
+      final preferenceField = RegExp(r'\bPreferences\s+_\w+\s*;');
+      for (final path in [
+        'lib/features/send/presentation/bloc/send_cubit.dart',
+        'lib/features/settings/presentation/bloc/settings_cubit.dart',
+        'lib/features/swap/presentation/transfer_bloc.dart',
+      ]) {
+        expect(
+          File(path).readAsStringSync(),
+          isNot(matches(preferenceField)),
+          reason: path,
+        );
+      }
+    },
+  );
+
   test('resolves owners through relative, public and conditional exports', () {
     final edges = _edges(
       {

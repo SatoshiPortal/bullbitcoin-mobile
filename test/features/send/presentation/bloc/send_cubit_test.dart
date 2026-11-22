@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
@@ -297,7 +298,7 @@ class _TestableSendCubit extends SendCubit {
     required super.storeSendTransactionLabel,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
-    required super.getSettingsUsecase,
+    required super.loadPreferencesUsecase,
     required super.getSendExchangeRateUsecase,
     required super.feeEstimates,
     required super.getWalletUtxosUsecase,
@@ -579,7 +580,9 @@ void main() {
     storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detector ?? detectBitcoinStringUsecase,
-    getSettingsUsecase: getSettingsUsecase,
+    loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
+      getSettingsUsecase,
+    ),
     getSendExchangeRateUsecase: getSendExchangeRateUsecase,
     feeEstimates: feeEstimates,
     getWalletUtxosUsecase: getWalletUtxosUsecase,

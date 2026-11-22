@@ -52,7 +52,6 @@ void main() {
       final source = [
         'lib/background_bootstrap.dart',
         'lib/features/wallet/background_setup.dart',
-        'lib/features/settings/data/electrum/background_setup.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
       expect(source, contains('await getApplicationDocumentsDirectory()'));
       expect(source, contains('openExisting(documents.path)'));

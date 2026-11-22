@@ -1,3 +1,4 @@
+import 'package:preferences/preferences.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,8 @@ import 'package:network/src/mempool_settings/ui/mempool_settings_screen.dart';
 import 'package:primitives/primitives.dart';
 
 import 'fixtures.dart';
+
+class _Preferences extends Mock implements Preferences {}
 
 class _Electrum extends Mock implements Electrum {}
 
@@ -63,22 +66,25 @@ void main() {
     when(() => embedded.states).thenAnswer((_) => const Stream.empty());
     services.registerSingleton<Tor>(tor);
 
+    final preferences = _Preferences();
+    when(preferences.fetch).thenAnswer(
+      (_) async => const Ok(
+        SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      ),
+    );
+    when(preferences.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.testnet));
     final feature = NetworkFeature.mount(
       services: services,
+      preferences: preferences,
       bindings: (
         readDefaultNetwork: () async => const Ok(null),
-        readEnvironment: () async => NetworkEnv.testnet,
-        readMempoolEnvironment: () async => const Ok(BitcoinNetwork.testnet),
         checkBitcoinFees: (_) async {},
         isTorRequired: () async => const Ok(false),
-        readTorPreferences: () async => (
-          useTorProxy: false,
-          torProxyPort: 9050,
-          torTransportMode: TorTransportMode.automatic,
-          lastSuccessfulTorTransport: null,
-        ),
-        saveTorProxy: ({required enabled, required port}) async => false,
-        saveTorMode: (_) async => const Ok(null),
       ),
     );
     final router = GoRouter(
