@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show LiquidWalletRepository;

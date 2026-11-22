@@ -49,7 +49,7 @@ import 'package:sync/sync.dart'
 import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'support/wallet_model.dart';
 
 import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;

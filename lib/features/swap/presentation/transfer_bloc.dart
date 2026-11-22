@@ -45,9 +45,9 @@ import 'package:bb_mobile/features/send/public/send_setup.dart'
     show
         CalculateBitcoinAbsoluteFeesUsecase,
         PrepareBitcoinSendUsecase,
-        ValidateBitcoinSelectionUsecase,
         PreparedBitcoinSend,
-        ValidateBitcoinSelectionException;
+        ValidateBitcoinSelectionException,
+        ValidateBitcoinSelectionUsecase;
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';

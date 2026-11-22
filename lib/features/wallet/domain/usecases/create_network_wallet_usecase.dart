@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';

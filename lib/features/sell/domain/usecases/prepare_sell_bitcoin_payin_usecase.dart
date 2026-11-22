@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/send/public/send_facade.dart'
-    show BitcoinSpendStatus, WalletSpendBlockedException;
+    show WalletSpendBlockedException;
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show BitcoinSpendStatus;
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'

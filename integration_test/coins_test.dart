@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart' as primitives show Network;
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';

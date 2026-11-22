@@ -92,9 +92,9 @@ The repository is the data **seam** and the single source of truth for one data 
 
 > **Source / trade-off.** The Flutter team's case study puts the abstract class *and* its implementations together in `data/repositories/<entity>/` and keeps `domain/` for models only — `BookingRepository` + `BookingRepositoryRemote` + `BookingRepositoryLocal` all in `data/` ([data-layer](https://docs.flutter.dev/app-architecture/case-study/data-layer), folder tree in the [case study](https://docs.flutter.dev/app-architecture/case-study)). We deviate on purpose: because we keep a real use-case layer in `domain/`, the interface lives in `domain/` so the dependency rule holds. It is the same Ports-&-Adapters idea — interface = port, impl = adapter — expressed in our vocabulary and without a duplicate `repositories/` folder.
 
-**The boundary rule — this one never bends.** A repository's **public signatures — returns *and* params — use only domain types**: entities, value objects, `Result<Entity, …>`. Wire models, library types (a BDK `LocalUtxo`, an LWK type, a Drift row), JSON `Map`s and DTOs **never cross the repository boundary** — they live and die inside `data/`. This is *why* entity and model stay separate (see "Entity vs. model" below); it is not abstraction for its own sake. *(Legacy leak to converge: `WalletAddressRepository` takes a `WalletModel` param — a `data/` model in a `domain/` contract; new code passes an id or an entity instead.)*
+**The boundary rule — this one never bends.** A repository's **public signatures — returns *and* params — use only domain types**: entities, value objects, `Result<Entity, …>`. Wire models, library types (a BDK `LocalUtxo`, an LWK type, a Drift row), JSON `Map`s and DTOs **never cross the repository boundary** — they live and die inside `data/`. This is *why* entity and model stay separate (see "Entity vs. model" below); it is not abstraction for its own sake.
 
-- **Owns:** combining its datasources, caching, and **mapping wire model ↔ domain entity**; the single source of truth for one type. Real example: `WalletUtxoRepositoryImpl` injects its datasources (metadata, sync wallet values, sync freezes) plus the labels capability, picks BDK-vs-LWK from wallet metadata, maps `WalletUtxoModel → WalletUtxo`, and returns `List<WalletUtxo>`.
+- **Owns:** combining its datasources, caching, and **mapping wire model ↔ domain entity**; the single source of truth for one type. Real example: Coins resolves a registered wallet as a WalletKey, reads the published CoinList from Sync, and maps each coin to a WalletUtxo with its labels.
 - **Never:** orchestrate a user goal across **other repositories**, or sequence a multi-step workflow — that is a use-case.
 - **Smell:** a repository importing another repository; a "god repository" of unrelated methods; data-shaping leaking up into a use-case.
 
@@ -118,16 +118,7 @@ Every persisted or transferred record has **two** types, kept apart — never on
 
 **This is not over-abstraction.** Over-abstraction is *extra layers* — a repository **and** datasource for trivial CRUD, a mapper *file* for a one-line map, a request/response-DTO explosion. The entity/model split is the one boundary you never collapse. The cap stays **two types per record** (entity + wire model); the five-types-per-record shape (entity / value-object / primitive / request-DTO / response-DTO + a mapper between each) is the verbosity to collapse. Value objects are for correctness-critical primitives — amount/sats, address, fee rate — not every field.
 
-**Target shape (the `wallet` types, with the impl in `data/` per the no-`repositories/`-folder rule above):**
-
-```
-wallet/
-  domain/entities/wallet_utxo.dart       # WalletUtxo — sealed, rich, invariants guaranteed
-  data/
-    models/wallet_utxo_model.dart        # WalletUtxoModel — freezed wire/persistence DTO
-    mappers/wallet_utxo_mapper.dart      # WalletUtxoModel ↔ WalletUtxo
-    wallet_utxo_repository_impl.dart     # (legacy lives under data/repositories/ — converge)
-```
+Coins illustrates this boundary. The incoming record is Sync's Coin. WalletUtxoMapper combines it with the application's labels to produce a WalletUtxo for display.
 
 The app imports `ConvertAmount` and `FormatAmount` from `primitives`. Amount formatting uses Intl without a Flutter dependency.
 
@@ -364,7 +355,7 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 
 **`lib/core` disappears.** It is the legacy home of what becomes `packages/`. No change adds code to `lib/core`, neither logic nor wiring: a change that needs to touch a `lib/core` domain extracts the part it touches into its package (or feature), so its `lib/core` diff is net negative. The shell calls the package's entry point from composition (`lib/locator.dart`, `lib/bootstrap.dart`), and the package wires its own internals.
 
-**Dated migration exception (2026-11): wallet readers.** The wallet readers (catalog, addresses, UTXOs, balances, history, PSBT/PSET construction) stay in `lib/core/wallet` until the wallet is split by capability, rather than being moved twice. While native-store writes are cut over to their single writer, the `packages/sync` package that the wallet sync PRs introduce, the only changes allowed there are deletions and delegation to that package: no new logic, no new wiring. The exception ends with the capability split.
+**Wallet readers.** The remaining legacy catalog and sync readers stay in `lib/core/wallet` until their owning capabilities replace them. Sync owns the native lifecycle and publishes balances, address usage, history, coins and spend operations on a wallet handle. Address View attaches address labels, Coins attaches outpoint, transaction and address labels, and Transactions owns its history projection and transaction status localization. Send owns payment preparation and the follow-up to guarded broadcasts. The existing catalog resolves wallet IDs for these operations until Secrets publishes its inventory API. Native identity is carried as a WalletKey, including the concrete network.
 
 **Dated security exception (2026-11): frozen-input broadcast guard.** The guard introduced on develop now lives in the send feature and protects imported and airgap Bitcoin broadcasts as well as wallet sends. The rule #7 exception for adding it to lib/core has ended. Its legacy exception-based contract (rule #11) remains until the shared broadcast API returns the feature's failure family; typed broadcast categories do not by themselves complete that migration. Payjoin broadcasts through its own adapter and is not covered.
 

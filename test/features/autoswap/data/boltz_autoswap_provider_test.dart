@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Ok, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';

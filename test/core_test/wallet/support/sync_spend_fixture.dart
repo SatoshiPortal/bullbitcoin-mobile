@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'wallet_model.dart';
+
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart' as p;

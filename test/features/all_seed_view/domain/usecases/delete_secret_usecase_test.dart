@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';

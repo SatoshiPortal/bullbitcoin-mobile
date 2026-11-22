@@ -3,7 +3,7 @@ import 'package:sync/testing.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'wallet_model.dart';
 
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:rust_bindings/bdk.dart' as bdk;

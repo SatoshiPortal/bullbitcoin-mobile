@@ -12,7 +12,7 @@ import 'package:sync/sync.dart'
         WalletRevision;
 import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
 // Unit tests for the repository boundary of

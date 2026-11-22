@@ -2,7 +2,7 @@ import 'initialization_result.dart';
 
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:fees/fees.dart';

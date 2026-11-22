@@ -122,7 +122,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
           ),
         );
       case LiquidNetwork():
-        // Liquid uses only the external descriptor, as WalletModel.fromMetadata does.
+        // Liquid uses only the external descriptor.
         if (!LiquidWalletDescriptor.isConfidentialDescriptor(external)) {
           return const Err(SyncInvalidCatalogFailure());
         }

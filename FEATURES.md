@@ -705,6 +705,12 @@ The wallet module supplies inventory and protocol ports to the runtime in `sync`
 
 Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
 
+### Wallet reader ownership
+
+Sync publishes the wallet-relative native values and address usage. Address View derives and enriches addresses and retains the native issued-index watermark. Address View also supplies the common receive-address read, and Receive owns its flow-specific address decisions. Coins consumes the published coin and freeze state and enriches the coins with labels. Transactions owns application history, including environment selection, optional direct sync, wallet-relative presentation values and labels. Import previews use Sync's descriptor scan directly. Send assembles spend requests, delegates native operations to Sync and requests software signatures from Secrets after protocol admission. Hardware signing stays with Signers.
+
+The app owners still use the legacy catalog to resolve identity and access native handles. Shared application consumers now point to the address, coins, receive and transaction owners for the relocated rules and types. Existing composition and route dependencies remain until the catalog and feature extractions replace them.
+
 ## Access ownership
 
 `features/access` replaces PIN Code and App Unlock. App Startup reads PIN status through `Access`, Settings uses the mounted PIN route, and Backup and All Seed View consume the typed reauthentication gate. `AccessFeature.mount` contributes root and settings routes once before startup; the host supplies lazy backup eligibility and navigation callbacks. Secrets retains PIN and failed-attempt storage. Access publishes one failure family while preserving the distinct unlock and PIN-settings locked messages.

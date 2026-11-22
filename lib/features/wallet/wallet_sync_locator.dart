@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/coordinated_swap_sync.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_sp_for_wallet_usecase.dart';
