@@ -6,8 +6,8 @@ import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:access/access.dart';
+import 'package:access/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
@@ -56,7 +56,7 @@ void main() {
 
   AppUnlockGrant issueGrant() {
     AppUnlockGrant? grant;
-    final gate = const AppUnlockFacade().buildReauthenticationGate(
+    final gate = const Access().buildReauthenticationGate(
       onSuccess: (value) => grant = value,
     );
     (gate as PinCodeUnlockScreen).onSuccess();

@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:access/access.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -25,9 +25,9 @@ import 'package:bull_ui/bull_ui.dart'
         Gap;
 
 class AllSeedViewScreen extends StatefulWidget {
-  final AppUnlockFacade appUnlockFacade;
+  final Access access;
 
-  const AllSeedViewScreen({super.key, required this.appUnlockFacade});
+  const AllSeedViewScreen({super.key, required this.access});
 
   @override
   State<AllSeedViewScreen> createState() => _AllSeedViewScreenState();
@@ -65,11 +65,10 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     final generation = ++_revealGeneration;
     final accepted = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (gateContext) =>
-            widget.appUnlockFacade.buildReauthenticationGate(
-              canPop: true,
-              onSuccess: (_) => Navigator.of(gateContext).pop(true),
-            ),
+        builder: (gateContext) => widget.access.buildReauthenticationGate(
+          canPop: true,
+          onSuccess: (_) => Navigator.of(gateContext).pop(true),
+        ),
       ),
     );
     if (!mounted || accepted != true || generation != _revealGeneration) return;
@@ -120,7 +119,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
           // already requires before changing the PIN. With no PIN set the
           // unlock screen succeeds immediately.
           if (!state.isUnlocked) {
-            return widget.appUnlockFacade.buildReauthenticationGate(
+            return widget.access.buildReauthenticationGate(
               canPop: true,
               onSuccess: (grant) =>
                   context.read<AllSeedViewCubit>().unlock(grant),

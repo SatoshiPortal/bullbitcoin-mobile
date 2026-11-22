@@ -14,6 +14,7 @@ workspace:
   - features/label_editor
   - features/network
   - features/signers
+  - features/access
   - features/ark
   - features/fees
   - packages/fees
@@ -54,6 +55,7 @@ workspace:
   - packages/bbx_api
 
 dependencies:
+  access:
   announcements:
   bitcoin_price:
   labels:

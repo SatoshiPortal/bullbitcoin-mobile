@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 void main() {
   test('publishes the legacy swap recovery routes', () {
     final routeNames = SettingsRouter.route(
+      accessRoutes: const [],
       appSettingsRoutes: const [],
       onBackupTestSucceeded: (_) {},
       priceRoutes: const [],

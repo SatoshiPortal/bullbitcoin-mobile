@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.d
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:access/access.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_sc
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
-import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -55,6 +54,7 @@ class SettingsRouter {
     required List<RouteBase> priceRoutes,
     required void Function(BuildContext) onBackupTestSucceeded,
     required List<RouteBase> appSettingsRoutes,
+    required List<RouteBase> accessRoutes,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
@@ -177,14 +177,7 @@ class SettingsRouter {
         ],
       ),
 
-      GoRoute(
-        path: SettingsRoute.pinCode.path,
-        name: SettingsRoute.pinCode.name,
-        builder: (context, state) => PinCodeSettingFlow(
-          onBackUp: (context) =>
-              context.pushNamed<void>(SettingsRoute.backupSettings.name),
-        ),
-      ),
+      ...accessRoutes,
       GoRoute(
         path: SettingsRoute.backupSettings.path,
         name: SettingsRoute.backupSettings.name,
@@ -250,7 +243,7 @@ class SettingsRouter {
         name: SettingsRoute.allSeedView.name,
         builder: (context, state) => BlocProvider(
           create: (_) => locator<AllSeedViewCubit>(),
-          child: const AllSeedViewScreen(appUnlockFacade: AppUnlockFacade()),
+          child: const AllSeedViewScreen(access: Access()),
         ),
       ),
     ],

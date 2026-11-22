@@ -1,0 +1,46 @@
+{
+  "@@locale": "it",
+  "appUnlockButton": "Sblocca",
+  "appUnlockPinCheckError": "Impossibile caricare le impostazioni di sicurezza. Riavvia l'app.",
+  "appUnlockPinVerifyError": "Impossibile verificare il tuo PIN. Riprova.",
+  "pinCodeSecurityPinTitle": "PIN di sicurezza",
+  "pinCodeCreateButton": "Crea PIN",
+  "pinCodeManageTitle": "Gestisci il PIN di sicurezza",
+  "pinCodeProcessing": "In elaborazione",
+  "pinCodeCreateTitle": "Crea un nuovo pin",
+  "pinCodeContinue": "Continua",
+  "appUnlockAttemptSingular": "tentativo fallito",
+  "pinCodeCreateDescription": "Il PIN protegge l'accesso al portafoglio e alle impostazioni. Non dimenticartelo.",
+  "pinCodeConfirmTitle": "Conferma il nuovo PIN",
+  "pinCodeRemoveButton": "Rimuovere il PIN di sicurezza",
+  "appUnlockAttemptPlural": "tentativi falliti",
+  "pinCodeMismatchError": "I PIN non corrispondono",
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "pinCodeChangeButton": "Cambia PIN",
+  "pinCodeCheckingStatus": "Controllo dello stato del PIN in corso",
+  "pinCodeAuthentication": "Autenticazione",
+  "pinCodeSettingUp": "Impostazione del codice PIN in corso",
+  "pinCodeBackupRequiredWarning": "Completa il backup del portafoglio prima di impostare un PIN",
+  "appUnlockScreenTitle": "Autenticazione",
+  "appUnlockIncorrectPinError": "PIN non corretto. Riprova. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Inserisci il codice PIN per sbloccare",
+  "backupSettingsStartBackup": "Avvia il backup",
+  "pinCodeConfirm": "Conferma",
+  "pinCodeLoading": "Caricamento",
+  "pinCodeSaveError": "Impossibile salvare il PIN. Riprova.",
+  "pinCodeDeleteError": "Impossibile eliminare il PIN. Riprova.",
+  "pinCodeNotSetError": "Nessun codice PIN impostato.",
+  "appUnlockTryAgainIn": "Troppi tentativi non riusciti. Riprova tra {seconds} s.",
+  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco",
+  "pinCodeLengthHint": "Inserisci da {min} a {max} cifre"
+}

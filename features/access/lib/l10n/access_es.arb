@@ -1,0 +1,48 @@
+{
+  "@@locale": "es",
+  "pinCodeAuthentication": "Autenticación",
+  "pinCodeCreateTitle": "Crear nuevo PIN",
+  "pinCodeCreateDescription": "Su PIN protege el acceso a su billetera y ajustes. Manténgalo memorable.",
+  "pinCodeConfirmTitle": "Confirmar nuevo PIN",
+  "pinCodeMismatchError": "Los PIN no coinciden",
+  "pinCodeSecurityPinTitle": "PIN de Seguridad",
+  "pinCodeManageTitle": "Administrar su PIN de seguridad",
+  "pinCodeChangeButton": "Cambiar PIN",
+  "pinCodeCreateButton": "Crear PIN",
+  "pinCodeRemoveButton": "Retirar PIN de seguridad",
+  "pinCodeContinue": "Continuar",
+  "pinCodeConfirm": "Confirmar",
+  "pinCodeLoading": "Cargando",
+  "pinCodeCheckingStatus": "Verificando estado del PIN",
+  "pinCodeProcessing": "Procesando",
+  "pinCodeSettingUp": "Configurando su código PIN",
+  "pinCodeBackupRequiredWarning": "Por favor, completa una copia de seguridad de la billetera antes de establecer un PIN",
+  "oopsSomethingWentWrong": "¡Ups! Algo salió mal",
+  "appUnlockScreenTitle": "Autenticación",
+  "appUnlockEnterPinMessage": "Ingrese su código PIN para desbloquear",
+  "appUnlockIncorrectPinError": "PIN incorrecto. Por favor, inténtelo de nuevo. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockAttemptSingular": "intento fallido",
+  "appUnlockAttemptPlural": "intentos fallidos",
+  "appUnlockButton": "Desbloquear",
+  "appUnlockPinCheckError": "No se pueden cargar los ajustes de seguridad. Reinicia la aplicación.",
+  "appUnlockPinVerifyError": "No se puede verificar tu PIN. Por favor, inténtalo de nuevo.",
+  "backupSettingsStartBackup": "Iniciar Respaldo",
+  "pinCodeSaveError": "No se pudo guardar tu PIN. Por favor, inténtalo de nuevo.",
+  "pinCodeDeleteError": "No se pudo eliminar tu PIN. Por favor, inténtalo de nuevo.",
+  "pinCodeNotSetError": "No se ha configurado ningún código PIN.",
+  "appUnlockTryAgainIn": "Demasiados intentos fallidos. Inténtalo de nuevo en {seconds} s.",
+  "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque",
+  "pinCodeLengthHint": "Introduce de {min} a {max} dígitos",
+  "pinCodeShowPin": "Mostrar PIN",
+  "pinCodeHidePin": "Ocultar PIN"
+}

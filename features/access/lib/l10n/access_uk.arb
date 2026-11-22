@@ -1,0 +1,44 @@
+{
+  "@@locale": "uk",
+  "pinCodeAuthentication": "Аутентифікація",
+  "pinCodeCreateTitle": "Створення нового штифта",
+  "pinCodeCreateDescription": "Ваш PIN захищає доступ до вашого гаманця та налаштувань. Збережіть його незабутнім.",
+  "pinCodeConfirmTitle": "Підтвердити новий штифт",
+  "pinCodeMismatchError": "ПІНС не відповідає",
+  "pinCodeSecurityPinTitle": "Безпека PIN",
+  "pinCodeManageTitle": "Управління безпекою PIN",
+  "pinCodeChangeButton": "Зміна PIN",
+  "pinCodeCreateButton": "Створення PIN",
+  "pinCodeRemoveButton": "Видалення безпеки PIN",
+  "pinCodeContinue": "Продовжити",
+  "pinCodeConfirm": "Підтвердження",
+  "pinCodeLoading": "Завантаження",
+  "pinCodeCheckingStatus": "Перевірка стану PIN",
+  "pinCodeProcessing": "Переробка",
+  "pinCodeSettingUp": "Налаштування коду PIN",
+  "pinCodeBackupRequiredWarning": "Будь ласка, виконайте резервне копіювання гаманця перед встановленням PIN-коду",
+  "appUnlockButton": "Розблокувати",
+  "appUnlockPinCheckError": "Не вдалося завантажити налаштування безпеки. Будь ласка, перезапустіть додаток.",
+  "appUnlockPinVerifyError": "Не вдалося перевірити ваш PIN. Будь ласка, спробуйте ще раз.",
+  "appUnlockAttemptSingular": "невдала спроба",
+  "appUnlockAttemptPlural": "невдалих спроб",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "appUnlockScreenTitle": "Аутентифікація",
+  "appUnlockIncorrectPinError": "Некоректний ПІН. Будь ласка, спробуйте знову. {failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Введіть код шпильки для розблокування",
+  "backupSettingsStartBackup": "Початок резервного копіювання",
+  "pinCodeSaveError": "Не вдалося зберегти ваш PIN. Будь ласка, спробуйте ще раз.",
+  "pinCodeDeleteError": "Не вдалося видалити ваш PIN. Будь ласка, спробуйте ще раз.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Введіть від {min} до {max} цифр"
+}

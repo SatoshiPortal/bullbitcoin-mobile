@@ -4,9 +4,8 @@ import 'dart:math';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:access/access.dart';
+import 'package:access/testing.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -80,7 +79,7 @@ final class _DeviceWallets extends Fake implements rb.RecoverBullWalletPort {
 
 // Keep the actual PIN input route open without starting automatic unlock.
 // This isolates its real go_router Back callback, including on a no-PIN app.
-final class _DeviceCancelUnlock extends AppUnlockFacade {
+final class _DeviceCancelUnlock extends Access {
   const _DeviceCancelUnlock();
 
   @override
@@ -628,7 +627,7 @@ void registerReturnNavigationTest() {
             value: bloc,
             child: ShowMnemonicScreen(
               onTestSucceeded: (_) {},
-              appUnlockFacade: const _DeviceCancelUnlock(),
+              access: const _DeviceCancelUnlock(),
             ),
           ),
         ),

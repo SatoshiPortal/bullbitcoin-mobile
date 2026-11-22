@@ -1,3 +1,4 @@
+import 'package:access/access.dart';
 import 'package:background_tasks/background_tasks.dart'
     show backgroundSyncAvailable;
 import 'package:primitives/primitives.dart';
@@ -688,7 +689,7 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsSecurityPinTitle,
       ),
       icon: Icons.fiber_pin,
-      open: (context) => context.pushNamed(SettingsRoute.pinCode.name),
+      open: (context) => const PinSettingsRouteData().push(context),
       keywords: _keywords(
         localization.settingsSearchSecurityPinKeywords,
         english.settingsSearchSecurityPinKeywords,

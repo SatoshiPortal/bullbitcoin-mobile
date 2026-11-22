@@ -419,12 +419,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "अनलॉक",
-  "appUnlockPinCheckError": "सुरक्षा सेटिंग लोड नहीं हो सकीं। कृपया ऐप को पुनः प्रारंभ करें।",
-  "appUnlockPinVerifyError": "आपका PIN सत्यापित नहीं हो सका। कृपया पुनः प्रयास करें।",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "सेवा शुल्क",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -722,10 +716,6 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "सुरक्षा PIN",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
   "transactionStatusPaymentInProgress": "भुगतान प्रगति में",
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
@@ -845,10 +835,6 @@
   "fundExchangeETransferLabelEmail": "इस ईमेल को ई-ट्रांसफर भेजें",
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
-  },
-  "pinCodeCreateButton": "PIN बनाएं",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "Testnet मोड",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1634,10 +1620,6 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "अपना सुरक्षा PIN प्रबंधित करें",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "buyConfirmBitcoinPrice": "बिटकॉइन मूल्य",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -2121,10 +2103,6 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "प्रक्रिया में है",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
-  },
   "transactionDetailLabelRefunded": "वापस किया गया",
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
@@ -2252,10 +2230,6 @@
   "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "pinCodeCreateTitle": "नया PIN बनाएं",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "exchangeBitcoinWalletsDescription": "स्वचालित Bitcoin निकासी के लिए डिफ़ॉल्ट वॉलेट पते सेट करें।",
   "@exchangeBitcoinWalletsDescription": {
@@ -2635,10 +2609,6 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "जारी रखें",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
-  },
   "payInvoiceTitle": "भुगतान चालान",
   "@payInvoiceTitle": {
     "description": "AppBar title for the pay invoice screen"
@@ -2927,10 +2897,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "असफल प्रयास",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "अपना PIN दर्ज करें",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
@@ -2938,10 +2904,6 @@
   "buyShouldBuyAtLeast": "आपको कम से कम खरीदना चाहिए",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "आपका PIN आपके वॉलेट और सेटिंग्स तक पहुंच की सुरक्षा करता है। इसे याद रखने योग्य बनाएं।",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "कॉर्पोरेट",
   "@payCorporate": {
@@ -3653,10 +3615,6 @@
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "नए PIN की पुष्टि करें",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "keyServerLabel": "कुंजी सर्वर ",
   "@keyServerLabel": {
     "description": "Label for key server status"
@@ -4346,10 +4304,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "pinCodeRemoveButton": "सुरक्षा PIN हटाएं",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "यह मेरा खाता है",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -4475,10 +4429,6 @@
   "coldcardStep14": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "PIN कोड",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "व्यापार संख्या",
   "@exchangeStatisticsTradeCount": {
@@ -5175,10 +5125,6 @@
   "payInvalidAddress": "Invalid address",
   "@payInvalidAddress": {
     "description": "Error for malformed address"
-  },
-  "appUnlockAttemptPlural": "असफल प्रयास",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exportVaultButton": "निर्यात वॉल्ट",
   "@exportVaultButton": {
@@ -6108,10 +6054,6 @@
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
   },
-  "pinCodeMismatchError": "PIN मेल नहीं खाते",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "autoswapRecipientWalletPlaceholderRequired": "Bitcoin Wallet",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
@@ -6894,10 +6836,6 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "PIN बदलें",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "सुरक्षा प्रश्न दर्ज करें (10-40 वर्ण)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
@@ -6950,10 +6888,6 @@
   "dcaConfirmAutoMessage": "इन सेटिंग्स के अनुसार ऑर्डर स्वचालित रूप से रखा जाएगा। आप उन्हें कभी भी अक्षम कर सकते हैं।।",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "PIN स्थिति जाँची जा रही है",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "इसके बजाय {pinOrPassword} का उपयोग करें >>",
   "@usePasswordInsteadButton": {
@@ -7057,10 +6991,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "प्रमाणीकरण",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "कम",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -7116,14 +7046,6 @@
   "backupWalletSuccessTestButton": "टेस्ट बैकअप",
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
-  },
-  "pinCodeSettingUp": "आपका PIN कोड सेट किया जा रहा है",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "PIN सेट करने से पहले कृपया एक वॉलेट बैकअप पूरा करें",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
   },
   "replaceByFeeErrorFeeRateTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
   "@replaceByFeeErrorFeeRateTooLow": {
@@ -7437,10 +7359,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "प्रमाणीकरण",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "वॉलेट का नाम",
   "@importQrDeviceWalletName": {
@@ -7832,18 +7750,6 @@
   "exchangeDcaHideSettings": "सेटिंग छुपाएं",
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
-  },
-  "appUnlockIncorrectPinError": "Incorrect PIN. फिर से प्रयास करें। {failedAttempts} {attemptsWord}",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
   },
   "buyBitcoinSent": "Bitcoin भेज दिया गया!",
   "@buyBitcoinSent": {
@@ -8347,10 +8253,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "appUnlockEnterPinMessage": "अनलॉक करने के लिए अपना पिन कोड दर्ज करें",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
   "torSettingsTitle": "Tor सेटिंग्स",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
@@ -8579,10 +8481,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "पुष्टि करें",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -8675,10 +8573,6 @@
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
-  },
-  "pinCodeLoading": "लोड हो रहा है",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "Recipient Name",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -9095,9 +8989,6 @@
   "onboardingAdvancedOptionsFooter": "आप इन सेटिंग्स को बाद में App Settings में बदल सकते हैं",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support पर सपोर्ट से संपर्क करें",
   "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है",
-  "pinCodeSaveError": "आपका PIN सेव नहीं हो सका। कृपया पुनः प्रयास करें।",
-  "pinCodeDeleteError": "आपका PIN हटाया नहीं जा सका। कृपया पुनः प्रयास करें।",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
   "sendEstimatedDeliveryHours": "घंटे",
   "@sendEstimatedDeliveryHours": {
@@ -9849,6 +9740,5 @@
   "permissionsTitle": "अनुमतियाँ",
   "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
   "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
-  "wizardNotificationsDescription": "भुगतान आने पर जानें।",
-  "pinCodeLengthHint": "{min} से {max} अंक दर्ज करें"
+  "wizardNotificationsDescription": "भुगतान आने पर जानें।"
 }

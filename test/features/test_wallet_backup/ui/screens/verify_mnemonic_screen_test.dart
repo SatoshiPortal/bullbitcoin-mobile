@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:access/access.dart';
+import 'package:access/testing.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -30,7 +30,7 @@ import 'package:secrets/testing.dart';
 
 class _AllCubit extends Mock implements AllSeedViewCubit {}
 
-class _RevealUnlock extends AppUnlockFacade {
+class _RevealUnlock extends Access {
   const _RevealUnlock();
 
   @override
@@ -325,7 +325,7 @@ void main() {
           value: bloc,
           child: ShowMnemonicScreen(
             onTestSucceeded: (_) {},
-            appUnlockFacade: const _RevealUnlock(),
+            access: const _RevealUnlock(),
           ),
         ),
       ),
@@ -424,7 +424,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<AllSeedViewCubit>.value(
             value: cubit,
-            child: const AllSeedViewScreen(appUnlockFacade: _RevealUnlock()),
+            child: const AllSeedViewScreen(access: _RevealUnlock()),
           ),
         ),
       );
