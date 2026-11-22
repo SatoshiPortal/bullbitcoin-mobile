@@ -100,6 +100,7 @@ graph TD
   announcements --> preferences
   announcements --> primitives
   ark --> primitives
+  background_tasks --> legacy_storage
   background_tasks --> sync
   background_tasks --> bull_logger
   background_tasks --> primitives
@@ -169,6 +170,8 @@ graph TD
   mempool --> bull_logger
   mempool --> bull_tor
   mempool --> primitives
+  mempool --> legacy_storage
+  mempool --> secrets
   network --> bull_logger
   network --> bull_payjoin
   network --> bull_pricer
