@@ -166,6 +166,7 @@ graph TD
   network --> bull_tor
   network --> bull_ui
   network --> electrum
+  network --> fees
   network --> mempool
   network --> preferences
   network --> primitives
