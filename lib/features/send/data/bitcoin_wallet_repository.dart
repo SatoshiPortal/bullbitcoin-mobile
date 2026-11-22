@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
-import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show ArkFundingSigningGuard;
 
@@ -320,34 +318,6 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     };
     return switch (await handle.tx.originalSignatures(txid)) {
       Ok(:final value) => value,
-      Err(:final failure) => throw sync.WalletSnapshotException(failure),
-    };
-  }
-
-  Future<({BigInt satoshis, int transactions})> dryScan({
-    required String externalDescriptor,
-    required String internalDescriptor,
-    required Network network,
-    required ElectrumConnection electrumServer,
-  }) async {
-    final scanned = await sync.prescanBitcoinWallet(
-      externalDescriptor: externalDescriptor,
-      internalDescriptor: internalDescriptor,
-      network: network.bitcoin,
-      connection: sync.WalletConnection(
-        url: electrumServer.url,
-        socks5: electrumServer.socks5,
-        timeout: Duration(seconds: electrumServer.effectiveTimeout),
-        retry: electrumServer.retry,
-        stopGap: electrumServer.stopGap,
-        validateDomain: electrumServer.validateDomain,
-      ),
-    );
-    return switch (scanned) {
-      Ok(:final value) => (
-        satoshis: value.confirmedSat,
-        transactions: value.transactions,
-      ),
       Err(:final failure) => throw sync.WalletSnapshotException(failure),
     };
   }

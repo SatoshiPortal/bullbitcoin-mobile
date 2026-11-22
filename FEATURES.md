@@ -492,6 +492,7 @@ graph TB
     SELL --> UTXO_MGMT
     SEND --> ADDRESS_MGMT
     SWAPS --> ADDRESS_MGMT
+    IMPORT_MNEMONIC --> SYNC
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff

@@ -10,8 +10,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/public/send_setup.dart'
-    show BitcoinWalletRepository;
+import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
@@ -22,12 +21,25 @@ class CheckWalletStatusUsecase {
   CheckWalletStatusUsecase(
     this._settingsRepository,
     this._serversPort,
-    this._bitcoinWalletRepository,
-    this._secrets,
-  );
+    this._secrets, {
+    Future<({BigInt satoshis, int transactions})> Function({
+          required String externalDescriptor,
+          required String internalDescriptor,
+          required Network network,
+          required ElectrumConnection electrumServer,
+        })
+        prescan =
+        _prescan,
+  }) : _dryScan = prescan;
   final Preferences _settingsRepository;
   final ElectrumServersPort _serversPort;
-  final BitcoinWalletRepository _bitcoinWalletRepository;
+  final Future<({BigInt satoshis, int transactions})> Function({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required Network network,
+    required ElectrumConnection electrumServer,
+  })
+  _dryScan;
   final Secrets _secrets;
 
   /// Derives the descriptors of all [scriptTypes] in one call, then starts one scan per script type.
@@ -119,7 +131,7 @@ class CheckWalletStatusUsecase {
               network.bitcoin.env,
               isLiquid: false,
             ),
-            operation: (connection) => _bitcoinWalletRepository.dryScan(
+            operation: (connection) => _dryScan(
               externalDescriptor: descriptors.external,
               internalDescriptor: descriptors.internal,
               network: network,
@@ -147,6 +159,36 @@ class CheckWalletStatusUsecase {
       }
       throw CheckWalletStatusException('Scan failed: ${e.runtimeType}');
     }
+  }
+
+  static Future<({BigInt satoshis, int transactions})> _prescan({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required Network network,
+    required ElectrumConnection electrumServer,
+  }) async {
+    final scanned = await sync.prescanBitcoinWallet(
+      externalDescriptor: externalDescriptor,
+      internalDescriptor: internalDescriptor,
+      network: network.bitcoin,
+      connection: sync.WalletConnection(
+        url: electrumServer.url,
+        socks5: electrumServer.socks5,
+        timeout: Duration(seconds: electrumServer.effectiveTimeout),
+        retry: electrumServer.retry,
+        stopGap: electrumServer.stopGap,
+        validateDomain: electrumServer.validateDomain,
+      ),
+    );
+    return switch (scanned) {
+      primitives.Ok(:final value) => (
+        satoshis: value.confirmedSat,
+        transactions: value.transactions,
+      ),
+      primitives.Err(:final failure) => throw sync.WalletSnapshotException(
+        failure,
+      ),
+    };
   }
 
   /// Marks [scan]'s failure as handled for the moment before the caller listens; the caller still receives it.

@@ -17,14 +17,26 @@ import 'package:primitives/primitives.dart'
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockPrescan extends Mock {
+  Future<({BigInt satoshis, int transactions})> dryScan({
+    required String? externalDescriptor,
+    required String? internalDescriptor,
+    required Network? network,
+    required ElectrumConnection? electrumServer,
+  }) => super.noSuchMethod(
+    Invocation.method(#dryScan, [], {
+      #externalDescriptor: externalDescriptor,
+      #internalDescriptor: internalDescriptor,
+      #network: network,
+      #electrumServer: electrumServer,
+    }),
+  ) as Future<({BigInt satoshis, int transactions})>;
+}
 
 class _FakeConnection extends ElectrumConnection {
   const _FakeConnection()
@@ -66,12 +78,16 @@ void main() {
 
   late _MockSettingsRepository settings;
   late _FakeServersPort servers;
-  late _MockBitcoinWalletRepository wallets;
+  late _MockPrescan wallets;
   late Secrets secrets;
   late FakeSecureStoragePlatform storage;
 
-  CheckWalletStatusUsecase usecase() =>
-      CheckWalletStatusUsecase(settings, servers, wallets, secrets);
+  CheckWalletStatusUsecase usecase() => CheckWalletStatusUsecase(
+    settings,
+    servers,
+    secrets,
+    prescan: wallets.dryScan,
+  );
 
   void environment(Environment environment) =>
       when(() => settings.fetch()).thenAnswer(
@@ -102,7 +118,7 @@ void main() {
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     settings = _MockSettingsRepository();
     servers = _FakeServersPort();
-    wallets = _MockBitcoinWalletRepository();
+    wallets = _MockPrescan();
     when(
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
