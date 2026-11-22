@@ -220,6 +220,11 @@ drift-migrations:
 secrets-drift-migrations:
 	@(cd packages/secrets && fvm dart run drift_dev make-migrations)
 
+.PHONY: wallet-satellite-drift-migrations
+wallet-satellite-drift-migrations:
+	@(cd features/signers && fvm dart run drift_dev make-migrations)
+	@(cd packages/sync && fvm dart run drift_dev make-migrations)
+
 .PHONY: mempool-drift-migrations
 mempool-drift-migrations:
 	@(cd packages/mempool && fvm dart run drift_dev make-migrations)

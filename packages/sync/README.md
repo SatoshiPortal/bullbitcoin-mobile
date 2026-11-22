@@ -201,3 +201,7 @@ The defaults are the local development Electrum port 50000 and faucet port 3000.
 The Liquid codecs' refusals of hostile input through the real LWK parser are in `native_test/liquid_codec_test.dart`, run the same way; the unit suite covers their mapping with a fake binding.
 
 Spend preparation consumers resolve a `WalletKey` and call the Result-returning `wallet.tx` capability directly. App repositories keep metadata, fee and presentation conversions; the former BDK/LWK forwarding datasources are removed. `bitcoinRecipientAmounts` owns PSBT recipient-script matching and remainder calculation in sync.
+
+## Persisted wallet sync times
+
+The storage library imports the historical sync time for each wallet id into Sync's encrypted metadata store. It preserves the original nullable value through the migration. The native revision and writer lease stores continue to coordinate wallet operations.

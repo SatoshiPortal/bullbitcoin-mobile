@@ -6,6 +6,10 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 dependencies:
+  secrets:
+  legacy_storage:
+  drift: ^2.35.4
+  sqlite3: ^3.9.1
   bitbox_transport:
   bs58check: ^1.0.2
   bull_logger:
@@ -40,6 +44,7 @@ dependencies:
       url: https://github.com/bukata-sa/bc-ur-dart.git
       ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
 dev_dependencies:
+  drift_dev: ^2.35.3
   fake_async: ^1.3.3
   build_runner: ^2.10.4
   freezed: ^4.0.0

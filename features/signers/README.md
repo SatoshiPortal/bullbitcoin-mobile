@@ -11,3 +11,7 @@ Import owns descriptor construction and confirmation after receiving the public 
 The module also publishes URQR decoding for scanner consumers. BBQR encoding lives here; legacy BBQR transaction decoding stays in the shell until `BitcoinTx` moves to `sync`.
 
 Run code generation and translations through the root `make build-runner` and `make translations` targets. Run the feature tests from this directory with `fvm flutter test --concurrency 2`. No hardware is required for the unit and widget suites; actual USB/BLE device interaction requires separate device validation.
+
+## Device association storage
+
+The storage library owns the encrypted association between a wallet id and the device the user imported. Its foreground migration preserves the nullable historical device name exactly and commits a verified receipt. Device detection and hardware signing continue to use the Signers feature.
