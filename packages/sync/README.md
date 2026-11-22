@@ -118,6 +118,7 @@ Wallet
 |-- addresses
 |   |-- book -> Observed<WalletValue<AddressBook>>
 |   |-- at(index, [keychain: Keychain.external]) -> Observed<WalletValue<DerivedAddress>>
+|   |-- usage() -> Result<Map<String, ({BigInt balanceSat, int transactionCount})>, SyncFailure>
 |   `-- owns
 |       |-- script(script) -> Observed<WalletValue<Ownership>>
 |       `-- outpoint(outpoint) -> Observed<WalletValue<Ownership>>
