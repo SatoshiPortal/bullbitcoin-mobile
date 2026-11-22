@@ -41,8 +41,9 @@ void main() {
         testingKeys: keys,
         checkpoint: (point) async {
           if (point == step) {
-            await File('${directory.path}/checkpoint')
-                .writeAsString('$pid', flush: true);
+            final pending = File('${directory.path}/checkpoint.tmp');
+            await pending.writeAsString('$pid', flush: true);
+            await pending.rename('${directory.path}/checkpoint');
             await Completer<void>().future;
           }
         },
