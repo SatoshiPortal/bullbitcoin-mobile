@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -94,6 +95,35 @@ void main() {
       await File('${directory.path}/legacy.sqlite').delete();
       expect(await fixtureCutover(directory).prepare(), isA<Err>());
       expect(File('${directory.path}/legacy.sqlite').existsSync(), isFalse);
+    },
+  );
+
+  test(
+    'foreground can prepare while a background isolate is admitted',
+    () async {
+      final background = await prepare();
+      final path = directory.path;
+      try {
+        final (ready, pending) = await Isolate.run(() async {
+          final directory = Directory(path);
+          final foreground = await fixtureCutover(directory)
+              .prepare(timeout: Duration.zero);
+          if (foreground case Ok(:final value)) await value.close();
+          final later = await fixtureCutover(
+            directory,
+            later: true,
+          ).prepare(timeout: Duration.zero);
+          if (later case Ok(:final value)) await value.close();
+          return (
+            foreground is Ok<RuntimeAdmission, LegacyImportFailure>,
+            later is Err<RuntimeAdmission, LegacyImportFailure>,
+          );
+        });
+        expect(ready, isTrue);
+        expect(pending, isTrue);
+      } finally {
+        await background.close();
+      }
     },
   );
 
