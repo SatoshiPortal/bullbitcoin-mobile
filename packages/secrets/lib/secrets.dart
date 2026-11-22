@@ -9,6 +9,7 @@
 /// Result-returning methods expose typed [SecretFailure] values. See the README for a complete example and automatically maintained call trees, and `doc/design.md` for the custody contract.
 library;
 
+export 'src/domain/database_open_failure.dart';
 export 'src/public/keychains.dart'
     show AccessKeychain, ExchangeKeychain, SilentPaymentKeychain, SwapKeychain;
 export 'src/public/extensions.dart'

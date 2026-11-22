@@ -687,3 +687,7 @@ Spend preparation consumers resolve a `WalletKey` and call the Result-returning 
 ## Access ownership
 
 `features/access` replaces PIN Code and App Unlock. App Startup reads PIN status through `Access`, Settings uses the mounted PIN route, and Backup and All Seed View consume the typed reauthentication gate. `AccessFeature.mount` contributes root and settings routes once before startup; the host supplies lazy backup eligibility and navigation callbacks. Secrets retains PIN and failed-attempt storage. Access publishes one failure family while preserving the distinct unlock and PIN-settings locked messages.
+
+## Encrypted database import foundation
+
+The `legacy_storage` workspace member depends on `primitives` for typed import results. Module migration code can use it to copy a frozen legacy source into the owning database with a committed receipt. `secrets` can open a keyed Drift executor for an owner. App startup and the production database owners still use their existing connections.

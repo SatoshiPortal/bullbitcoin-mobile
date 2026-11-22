@@ -1,14 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:secrets/src/public/keychains.dart';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     show Language, MnemonicLength;
 import 'package:bull_logger/bull_logger.dart';
+import 'package:drift/drift.dart' show QueryExecutor;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart';
 import 'package:secrets/src/data/data.dart';
+import 'package:secrets/src/data/encrypted_database.dart';
+import 'package:secrets/src/domain/database_open_failure.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/public/secret.dart';
 
@@ -368,6 +372,31 @@ final class DatabaseKeys {
   final String _module;
 
   DatabaseKeys._(this._repository, this._module);
+
+  /// Keys one native connection and transfers its ownership to Drift.
+  ///
+  /// Supplying [existingSchemaVersion] makes the open background-only:
+  /// the database must exist at that version and Drift migrations are disabled.
+  /// The owner must still check its import receipt before exposing the connection.
+  /// Foreground creation and resets require exclusive owner coordination.
+  @useResult
+  Future<Result<QueryExecutor, DatabaseOpenFailure>> open({
+    required String name,
+    required File file,
+    int? existingSchemaVersion,
+  }) {
+    _requireKeySegment(name, 'name');
+    if (existingSchemaVersion != null && existingSchemaVersion < 1) {
+      throw ArgumentError.value(existingSchemaVersion, 'existingSchemaVersion');
+    }
+    return openEncryptedDatabase(
+      _repository,
+      module: _module,
+      name: name,
+      file: file,
+      existingSchemaVersion: existingSchemaVersion,
+    );
+  }
 
   /// Gets an existing key or atomically creates one. A corrupt stored key is refused, never overwritten.
   @useResult

@@ -11,6 +11,7 @@ workspace:
   - features/announcements
   - features/bitcoin_price
   - packages/labels
+  - packages/legacy_storage
   - features/label_editor
   - features/network
   - features/signers
@@ -210,6 +211,8 @@ hooks:
   user_defines:
     payjoin:
       build: source
+    sqlite3:
+      source: sqlite3mc
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the
