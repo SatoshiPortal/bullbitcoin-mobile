@@ -3,7 +3,6 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -193,9 +192,6 @@ class AppLocator {
       );
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
-    locator.registerFactory(
-      () => AppFeeEstimates(fees: locator(), settingsRepository: locator()),
-    );
     CoreLocator.registerUsecases(locator);
     PayjoinSetup.setup(
       locator,
@@ -281,8 +277,6 @@ class AppLocator {
         bindings: (
           readDefaultNetwork: () =>
               locator<WalletFacade>().defaultWalletNetwork(),
-          checkBitcoinFees: (network) =>
-              probeMempoolFees(locator<Fees>(), network),
           isTorRequired: () => locator<WalletFacade>().isTorRequired(),
         ),
       ),

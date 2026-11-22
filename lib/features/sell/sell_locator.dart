@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
@@ -98,7 +98,7 @@ class SellLocator {
       () => LoadSellContextUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<Preferences>(),
-        feeEstimates: locator<AppFeeEstimates>(),
+        fees: locator<Fees>(),
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
         getIndexPrice: Pricer.getIndexPrice,
         getOrderUsecase: locator<GetOrderUsecase>(),

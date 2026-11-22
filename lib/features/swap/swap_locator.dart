@@ -10,7 +10,7 @@ import 'presentation/internal_ark_transfer_cubit.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_domain;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -376,7 +376,7 @@ class SwapLocator {
           locator<Preferences>(),
         ),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
-        feeEstimates: locator<AppFeeEstimates>(),
+        loadNetworkFeesUsecase: LoadTransferNetworkFeesUsecase(fees: locator()),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
         validateBitcoinSelectionUsecase:
             locator<ValidateBitcoinSelectionUsecase>(),

@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    as wallet
+    show Network, NetworkX;
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -19,7 +21,7 @@ class LoadBuyContextUsecase {
   final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final AppFeeEstimates _feeEstimates;
+  final Fees _fees;
   final IndexPriceReader _getIndexPrice;
 
   const LoadBuyContextUsecase({
@@ -27,7 +29,7 @@ class LoadBuyContextUsecase {
     required this._getSettingsUsecase,
     required this._getWalletsUsecase,
     required this._getReceiveAddressUsecase,
-    required this._feeEstimates,
+    required this._fees,
     required this._getIndexPrice,
   });
 
@@ -88,8 +90,29 @@ class LoadBuyContextUsecase {
     required bool isLiquid,
   }) async {
     try {
-      return Ok(await _feeEstimates.execute(isLiquid: isLiquid));
-    } catch (e, st) {
+      final SettingsEntity settings;
+      switch (await _getSettingsUsecase.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err(:final failure):
+          final reason = 'Preferences read failed: ${failure.runtimeType}';
+          log.warning(reason);
+          return Err(BuyUnexpectedFailure(reason));
+      }
+      final network = wallet.Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: isLiquid,
+      );
+      switch (await _fees.estimate(network.shared)) {
+        case Ok(:final value):
+          return Ok(value);
+        case Err(:final failure):
+          final reason =
+              'Network fee estimation unavailable: ${failure.runtimeType}';
+          log.warning(reason);
+          return Err(BuyUnexpectedFailure(reason));
+      }
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to load the network fees',
         error: e,

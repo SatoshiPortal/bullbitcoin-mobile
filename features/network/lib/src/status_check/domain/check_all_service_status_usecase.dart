@@ -7,6 +7,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'service_status.dart';
 
 import 'package:electrum/electrum.dart';
+import 'package:fees/fees.dart';
 
 import 'package:preferences/preferences.dart';
 
@@ -28,7 +29,7 @@ class CheckAllServiceStatusUsecase {
   final IndexPriceReader _getIndexPrice;
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
-  final Future<void> Function(BitcoinNetwork) _checkBitcoinFees;
+  final Fees _fees;
   final Future<Result<bool, Failure>> Function() _isTorRequired;
   final Future<rb.Result<bool, rb.RecoverBullFailure>> Function()
   _checkServerConnection;
@@ -40,7 +41,7 @@ class CheckAllServiceStatusUsecase {
     required this._getIndexPrice,
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
-    required this._checkBitcoinFees,
+    required this._fees,
     required this._isTorRequired,
     required this._checkServerConnection,
     required this._preferences,
@@ -240,10 +241,15 @@ class CheckAllServiceStatusUsecase {
       NetworkEnv.signet => BitcoinNetwork.signet,
       NetworkEnv.regtest => BitcoinNetwork.regtest,
     };
-    await _checkBitcoinFees(bitcoinNetwork);
-
+    final estimate = await _fees.estimate(
+      bitcoinNetwork,
+      source: FeeSource.mempool,
+    );
+    if (estimate case Err(:final failure)) {
+      log.warning('Mempool fee probe unavailable: ${failure.runtimeType}');
+    }
     return ServiceStatusInfo(
-      status: ServiceStatus.online,
+      status: estimate is Ok ? ServiceStatus.online : ServiceStatus.unknown,
 
       lastChecked: DateTime.now(),
     );

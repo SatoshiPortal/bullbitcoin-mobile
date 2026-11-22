@@ -34,7 +34,7 @@ import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -90,7 +90,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._loadPreferencesUsecase,
     this._getSwapAmountQuotesUsecase,
     required this._getWalletsUsecase,
-    required this._feeEstimates,
+    required this._loadNetworkFeesUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
     required this._prepareLiquidSendUsecase,
@@ -170,7 +170,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   int? _preparingAmountGeneration;
   final LoadTransferPreferencesUsecase _loadPreferencesUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  final AppFeeEstimates _feeEstimates;
+  final LoadTransferNetworkFeesUsecase _loadNetworkFeesUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
@@ -251,19 +251,21 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           if (!isClosed) add(const TransferAmountQuotesRequested());
         });
       }
-      final (
-        walletsResult,
-        liquidNetworkFees,
-        bitcoinNetworkFees,
-        exchangeRateResult,
-      ) = await (
+      final (walletsResult, feesResult, exchangeRateResult) = await (
         _getWalletsUsecase.execute(),
-        _feeEstimates.execute(isLiquid: true),
-        _feeEstimates.execute(isLiquid: false),
+        _loadNetworkFeesUsecase.execute(settings.activeNetwork),
         _getSwapExchangeRateUsecase.execute(
           currencyCode: settings.currencyCode,
         ),
       ).wait;
+      final TransferNetworkFees fees;
+      switch (feesResult) {
+        case Ok(:final value):
+          fees = value;
+        case Err(:final failure):
+          emit(state.copyWith(startError: failure));
+          return;
+      }
       final double? exchangeRate;
       switch (exchangeRateResult) {
         case Ok(:final value):
@@ -345,8 +347,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           wallets: wallets,
           fromWallet: fromWallet,
           toWallet: toWallet,
-          bitcoinNetworkFees: bitcoinNetworkFees,
-          liquidNetworkFees: liquidNetworkFees,
+          bitcoinNetworkFees: fees.bitcoin,
+          liquidNetworkFees: fees.liquid,
           fiatCurrencyCode: settings.currencyCode,
           exchangeRate: exchangeRate,
         ),

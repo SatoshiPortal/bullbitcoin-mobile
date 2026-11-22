@@ -55,6 +55,7 @@ graph TB
     FEES_UI --> BULL_UI
     FEES_UI --> FEES_PACKAGE
     SETTINGS -->|fee source navigation| FEES_UI
+    NETWORK -->|Mempool status probe| FEES_PACKAGE
     FEES_PACKAGE --> PRIMITIVES
     CORE --> SYNC
     SEND --> SYNC
@@ -149,7 +150,6 @@ graph TB
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price<br/>Workspace Feature]
     BIP85[BIP85]
-    FEES[App fee environment adapter]
     FEES_PACKAGE[Fees Package]
     FEES_UI[Fees Feature]
     WALLETS[Wallets]
@@ -358,7 +358,6 @@ graph TB
     SELL --> TX_HISTORY
     BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
-    SEND --> FEES
     SEND --> FEES_UI
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
@@ -439,13 +438,10 @@ graph TB
     AUTOSWAP --> SEND
     AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
-    BUY --> FEES
     CONSOLIDATION --> SEND
     DEFAULT_WALLETS --> EXCHANGE
     DEFAULT_WALLETS -->|public destination validation and input| WALLETS
     EXCHANGE_SUPPORT_CHAT --> EXCHANGE
-    FEES --> WALLETS
-    FEES --> FEES_PACKAGE
     WALLETS --> FEES_PACKAGE
     TX_HISTORY --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
@@ -459,17 +455,13 @@ graph TB
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
     LIMIT_ORDERS -->|public destination input| WALLETS
-    PAY --> FEES
     PAY --> FEES_UI
     SEND --> SIGNERS
-    REPLACE_BY_FEE --> FEES
     REPLACE_BY_FEE --> FEES_UI
     REPLACE_BY_FEE --> SEND
-    SELL --> FEES
     SELL --> FEES_UI
     CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> AUTOSWAP
-    SWAPS --> FEES
     SWAPS --> FEES_UI
     TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
@@ -483,7 +475,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,FEES_UI,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -605,7 +597,7 @@ The shell ownership move relocates wallet failures while retaining the `lib/core
 
 ## Networks source-edge review (2026-11-08)
 
-The architecture test records source dependencies, including internal imports and compatibility exports. The following 46 additions are individually reviewed against the rebased networks tree: 39 expose existing dependencies through owner relocation, one follows the #3103 Payjoin adapter split, three carry concrete-network behavior, and three come from the rebuilt mnemonic-language prerequisite. They are not permission for new internal imports. Existing cycles and internal boundaries remain migration debt; broad facade extraction is separate work. The captured-network changes below retain the current API and avoid an unrelated feature migration. The diagram and the exact allowlist in `test/architecture/foreground_sync_dependencies_test.dart` record the same observed additions.
+The architecture test records source dependencies, including internal imports and compatibility exports. The original review compared 46 additions against the rebased networks tree. The table shows the surviving source edges from that review after subsequent workspace extractions. They are not permission for new internal imports. Existing cycles and internal boundaries remain migration debt; broad facade extraction is separate work. The captured-network changes below retain the current API and avoid an unrelated feature migration. The diagram and the exact allowlist in `test/architecture/foreground_sync_dependencies_test.dart` record the same observed additions.
 
 | Source → owner | Provenance and reason retained | Observed import/export path |
 |---|---|---|
@@ -616,29 +608,22 @@ The architecture test records source dependencies, including internal imports an
 | `autoswap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
-| `buy → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/buy/buy_locator.dart -> lib/features/fees/public/app_fee_estimates.dart` |
 | `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `dca → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/dca/domain/usecases/set_dca_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `default_wallets → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/default_wallets/public/default_wallets_facade.dart -> lib/features/exchange/domain/usecases/save_default_wallet_usecase.dart` |
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `exchange_support_chat → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/exchange_support_chat/exchange_support_chat_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
-| `fees → wallets` | The app fee adapter converts the captured or configured wallet network through the public wallet API. | `lib/features/fees/public/app_fee_estimates.dart -> lib/features/wallet/public/wallet_facade.dart` |
 | `import_wallet → settings` | Network behavior: The public settings capability controls which import methods the selected network supports. | `lib/features/import_wallet/import_wallet_page.dart -> lib/features/settings/public/settings_facade.dart` |
 | `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
-| `pay → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/pay/pay_locator.dart -> lib/features/fees/public/app_fee_estimates.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `recipients → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/recipients/recipients_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
 | `recipients → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/recipients/domain/usecases/get_recipients_environment_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `replace_by_fee → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/fees/public/app_fee_estimates.dart` |
 | `replace_by_fee → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
-| `sell → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/sell/sell_locator.dart -> lib/features/fees/public/app_fee_estimates.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `send → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/send/send_locator.dart -> lib/features/fees/public/app_fee_estimates.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `settings → swap` | Owner relocation: Keep existing restore/rescue entry points on the swap facade. | `lib/features/settings/ui/screens/bitcoin/swap_restore_screen.dart -> lib/features/swap/public/swap_facade.dart` |
 | `swap → autoswap` | Owner relocation: Keep existing autoswap settings persistence wiring in the relocated swap registration. | `lib/features/swap/swaps_core_locator.dart -> lib/features/autoswap/domain/repositories/auto_swap_settings_repository.dart` |
-| `swap → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/swap/swap_locator.dart -> lib/features/fees/public/app_fee_estimates.dart` |
 | `swap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/swap/ui/pages/swap_page.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `wizard → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/wizard/ui/screens/wizard_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 
@@ -678,7 +663,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 
 ## Network settings and service status
 
-The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. The network use cases use Electrum, Mempool and Tor operations and the Payjoin, Pricer and RecoverBull diagnostics capabilities. The shell supplies the default wallet environment and the wallet Tor requirement through WalletFacade, and passes a Mempool-only Bitcoin fee probe. Network reads Preferences directly. Background Electrum composition remains independent of the network UI.
+The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. Network use cases call Electrum, Mempool, Preferences and Tor, as well as the Payjoin, Pricer and RecoverBull diagnostics capabilities. The network member requests a Bitcoin fee estimate from Fees with the Mempool source. The shell supplies the default wallet environment and Tor requirement through WalletFacade. Background Electrum composition remains independent of the network UI.
 
 ## Wallet-independent transaction values
 

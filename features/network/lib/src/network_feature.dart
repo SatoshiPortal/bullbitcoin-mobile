@@ -3,6 +3,7 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
+import 'package:fees/fees.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mempool/mempool.dart';
@@ -28,7 +29,6 @@ typedef NetworkRoutes = ({List<RouteBase> root, List<RouteBase> appSettings});
 
 typedef NetworkBindings = ({
   Future<Result<NetworkEnv?, Failure>> Function() readDefaultNetwork,
-  Future<void> Function(BitcoinNetwork) checkBitcoinFees,
   Future<Result<bool, Failure>> Function() isTorRequired,
 });
 
@@ -55,7 +55,7 @@ final class NetworkFeature {
           getIndexPrice: Pricer.getIndexPrice,
           payjoinPolicy: services<PayjoinPolicyAccess>(),
           payjoinDiagnostics: services<PayjoinDiagnostics>(),
-          checkBitcoinFees: bindings.checkBitcoinFees,
+          fees: services<Fees>(),
           isTorRequired: bindings.isTorRequired,
           checkServerConnection: services<RecoverBullFacade>().checkServer,
           preferences: preferences,

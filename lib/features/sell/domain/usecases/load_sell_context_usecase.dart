@@ -4,7 +4,9 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.da
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    as wallet
+    show Network, NetworkX;
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -18,7 +20,7 @@ import 'package:primitives/primitives.dart';
 class LoadSellContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final Preferences _getSettingsUsecase;
-  final AppFeeEstimates _feeEstimates;
+  final Fees _fees;
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
   final IndexPriceReader _getIndexPrice;
   final GetOrderUsecase _getOrderUsecase;
@@ -26,7 +28,7 @@ class LoadSellContextUsecase {
   const LoadSellContextUsecase({
     required this._getExchangeUserSummaryUsecase,
     required this._getSettingsUsecase,
-    required this._feeEstimates,
+    required this._fees,
     required this._getAddressAtIndexUsecase,
     required this._getIndexPrice,
     required this._getOrderUsecase,
@@ -61,8 +63,29 @@ class LoadSellContextUsecase {
     required bool isLiquid,
   }) async {
     try {
-      return Ok(await _feeEstimates.execute(isLiquid: isLiquid));
-    } catch (e, st) {
+      final SettingsEntity settings;
+      switch (await _getSettingsUsecase.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err(:final failure):
+          final reason = 'Preferences read failed: ${failure.runtimeType}';
+          log.warning(reason);
+          return Err(SellFeesUnavailableFailure(reason));
+      }
+      final network = wallet.Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: isLiquid,
+      );
+      switch (await _fees.estimate(network.shared)) {
+        case Ok(:final value):
+          return Ok(value);
+        case Err(:final failure):
+          final reason =
+              'Network fee estimation unavailable: ${failure.runtimeType}';
+          log.warning(reason);
+          return Err(SellFeesUnavailableFailure(reason));
+      }
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to load the network fees',
         error: e,

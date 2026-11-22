@@ -31,7 +31,7 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -136,7 +136,7 @@ class SendCubit extends Cubit<SendState>
     required this._detectBitcoinStringUsecase,
     required this._loadPreferencesUsecase,
     required this._getSendExchangeRateUsecase,
-    required this._feeEstimates,
+    required this._loadNetworkFeesUsecase,
     required this._getWalletUtxosUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
@@ -249,7 +249,7 @@ class SendCubit extends Cubit<SendState>
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
   final GetSendAmountQuotesUsecase? _getSendAmountQuotesUsecase;
-  final AppFeeEstimates _feeEstimates;
+  final LoadSendNetworkFeesUsecase _loadNetworkFeesUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
@@ -2957,30 +2957,39 @@ class SendCubit extends Cubit<SendState>
   Future<void> loadFees({int? inputGeneration}) async {
     final wallet = state.selectedWallet;
     if (wallet == null) return;
-    final environment = wallet.network.environment;
     bool isStale() =>
         (inputGeneration != null &&
             inputGeneration != _paymentRequestInputGeneration) ||
         state.selectedWallet?.network != wallet.network;
     try {
-      final bitcoinFees = await _feeEstimates.execute(
+      final bitcoinResult = await _loadNetworkFeesUsecase.execute(
+        walletNetwork: wallet.network,
         isLiquid: false,
-        network: Network.fromEnvironment(
-          environment: environment,
-          isLiquid: false,
-        ),
       );
       if (isStale()) return;
-      final liquidFees = wallet.network == Network.bitcoinRegtest
-          ? null
-          : await _feeEstimates.execute(
-              isLiquid: true,
-              network: Network.fromEnvironment(
-                environment: environment,
-                isLiquid: true,
-              ),
-            );
-      if (isStale()) return;
+      final FeeOptions bitcoinFees;
+      switch (bitcoinResult) {
+        case Ok(:final value):
+          bitcoinFees = value;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+      FeeOptions? liquidFees;
+      if (wallet.network != Network.bitcoinRegtest) {
+        final liquidResult = await _loadNetworkFeesUsecase.execute(
+          walletNetwork: wallet.network,
+          isLiquid: true,
+        );
+        if (isStale()) return;
+        switch (liquidResult) {
+          case Ok(:final value):
+            liquidFees = value;
+          case Err(:final failure):
+            emit(state.copyWith(failure: failure));
+            return;
+        }
+      }
       final ratesChanged =
           state.bitcoinFeesList != bitcoinFees ||
           state.liquidFeesList != liquidFees;

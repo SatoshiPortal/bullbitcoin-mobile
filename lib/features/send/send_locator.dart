@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -309,7 +309,7 @@ class SendLocator {
           settings: locator<Preferences>(),
           read: Pricer.getIndexPrices,
         ),
-        feeEstimates: locator<AppFeeEstimates>(),
+        loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: locator()),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         prepareBitcoinSendUsecase:
             locator<PrepareSendBitcoinTransactionUsecase>(),
