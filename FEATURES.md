@@ -30,6 +30,11 @@ graph TB
     ELECTRUM[Electrum package<br/>Server selection, settings and transaction lookup]
     SYNC[Sync Package<br/>Native lifecycle, Electrum sync, BitcoinTx, review values, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
+    LEGACY_STORAGE[Legacy Storage Package<br/>Cutover marker, lifecycle admission and imports]
+    BG_TASKS --> LEGACY_STORAGE
+    MEMPOOL --> LEGACY_STORAGE
+    MEMPOOL --> SECRETS
+    LEGACY_STORAGE --> PRIMITIVES
     BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
@@ -690,4 +695,4 @@ Spend preparation consumers resolve a `WalletKey` and call the Result-returning 
 
 ## Encrypted database import foundation
 
-The `legacy_storage` workspace member depends on `primitives` for typed import results. Module migration code can use it to copy a frozen legacy source into the owning database with a committed receipt. `secrets` can open a keyed Drift executor for an owner. App startup and the production database owners still use their existing connections.
+The `legacy_storage` workspace member depends on `primitives` for typed import results. Module migration code can use it to copy a frozen legacy source into the owning database with a committed receipt. `secrets` can open a keyed Drift executor for an owner. Foreground startup now composes the split-v1 coordinator and Mempool participant before publishing Mempool's encrypted store. Background Tasks holds the same lifecycle admission until resource closure, and requests retry on incomplete setup or failed cleanup. Legacy Storage remains independent of Mempool; each owner implements the participant contract. Other owners retain their historical connections while the manifest is incomplete; this development coexistence never authorizes legacy retirement.

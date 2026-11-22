@@ -1,4 +1,9 @@
-import 'package:electrum/electrum.dart' show ElectrumFailure;
+import 'dart:io';
+
+import 'package:legacy_storage/coordination.dart';
+import 'package:mempool/mempool.dart';
+import 'package:mempool/migration.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -30,7 +35,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class Bull {
-  static Future<Result<void, ElectrumFailure>> init() async {
+  static Future<Result<void, Failure>> init() async {
     final bullDirectory = await getApplicationDocumentsDirectory();
     final payjoinDatabasePath = p.join(
       bullDirectory.path,
@@ -63,39 +68,98 @@ class Bull {
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
-    final setup = await AppLocator.setup(
-      locator,
-      SqliteDatabase(),
-      payjoinDatabasePath: payjoinDatabasePath,
-      arkFundingDatabasePath: p.join(bullDirectory.path, 'ark-funding.sqlite'),
-      initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
+    final support = await getApplicationSupportDirectory();
+    final legacy = LegacySourceStore(
+      source: LegacySource(
+        File(p.join(bullDirectory.path, 'bullbitcoin_sqlite.sqlite')),
+        16,
+      ),
+      create: SqliteDatabase.new,
     );
-    if (setup case Err()) return setup;
-    await initializeWalletRuntime(locator);
-    // Custody inventory is already installed, independently of this profile.
-    await _setupArkRegtestProfile();
-    Bloc.observer = AppBlocObserver();
+    final mempoolFile = File(
+      p.join(support.path, 'databases', 'mempool.sqlite'),
+    );
+    final cutover = StorageCutover(
+      directory: Directory(p.join(support.path, 'storage-coordination')),
+      legacy: legacy,
+      expectedOwners: splitV1Owners,
+      destinationFamilies: [
+        for (final owner in splitV1Owners)
+          File(p.join(support.path, 'databases', '$owner.sqlite')),
+      ],
+      participants: [
+        MempoolImport(
+          file: mempoolFile,
+          defaultServers: [
+            ApiServiceConstants.bbMempoolUrlPath,
+            ApiServiceConstants.testnetMempoolUrlPath,
+            ApiServiceConstants.bbLiquidMempoolUrlPath,
+            ApiServiceConstants.bbLiquidMempoolTestnetUrlPath,
+          ],
+        ),
+      ],
+    );
+    final admitted = await cutover.prepare();
+    if (admitted case Err(:final failure)) return Err(failure);
+    final admission = (admitted as Ok<RuntimeAdmission, Failure>).value;
+    locator.registerSingleton<RuntimeAdmission>(
+      admission,
+      dispose: (value) => value.close(),
+    );
+    var initialized = false;
+    try {
+      final setup = await AppLocator.setup(
+        locator,
+        await legacy.open(admission),
+        openMempool: (tor, http) => Mempool.open(
+          file: mempoolFile,
+          admission: admission,
+          tor: tor,
+          torHttp: http,
+        ),
+        payjoinDatabasePath: payjoinDatabasePath,
+        arkFundingDatabasePath: p.join(
+          bullDirectory.path,
+          'ark-funding.sqlite',
+        ),
+        initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
+      );
+      if (setup case Err()) return setup;
+      await initializeWalletRuntime(locator);
+      // Custody inventory is already installed, independently of this profile.
+      await _setupArkRegtestProfile();
+      Bloc.observer = AppBlocObserver();
 
-    // Flush wizard pending values (if any) to SQLite now that the
-    // settings repository is available, then mark the wizard complete.
-    final _ = await locator<ExchangeFacade>().resolveAccess();
-    await completeStartupWizard(locator);
-    await locator<QuickActionsCubit>().load();
-    await AppLocator.setupRecoverBull(
-      locator,
-      databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
-    );
-    unawaited(locator<RecoverBullFacade>().checkAtColdStart());
-    final settings = locator<Preferences>();
-    configureLogTorContext(
-      () => loadTorDiagnosticContext(settings, locator<Tor>()),
-    );
-    await refreshReportingConsent(settings);
-    await prepareBackgroundWalletStores(locator);
-    await configureBackgroundTasks();
+      // Flush wizard pending values (if any) to SQLite now that the
+      // settings repository is available, then mark the wizard complete.
+      final _ = await locator<ExchangeFacade>().resolveAccess();
+      await completeStartupWizard(locator);
+      await locator<QuickActionsCubit>().load();
+      await AppLocator.setupRecoverBull(
+        locator,
+        databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
+      );
+      unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+      final settings = locator<Preferences>();
+      configureLogTorContext(
+        () => loadTorDiagnosticContext(settings, locator<Tor>()),
+      );
+      await refreshReportingConsent(settings);
+      await prepareBackgroundWalletStores(locator);
+      await configureBackgroundTasks();
 
-    await Report.recordMigration();
-    return const Ok(null);
+      await Report.recordMigration();
+      initialized = true;
+      return const Ok(null);
+    } finally {
+      if (!initialized) {
+        try {
+          await locator.reset();
+        } finally {
+          await admission.close();
+        }
+      }
+    }
   }
 }
 

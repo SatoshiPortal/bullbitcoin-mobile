@@ -7,7 +7,7 @@ import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:electrum/electrum.dart' show ElectrumFailure;
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:electrum/setup.dart' show RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
@@ -102,10 +102,15 @@ class AppLocator {
   }
 
   /// Call this in the `main` function **before** `runApp()`
-  static Future<Result<void, ElectrumFailure>> setup(
+  static Future<Result<void, Failure>> setup(
     GetIt locator,
     SqliteDatabase database, {
     required String payjoinDatabasePath,
+    required Future<Result<Mempool, MempoolFailure>> Function(
+      Tor Function() tor,
+      TorHttpClientFactory http,
+    )
+    openMempool,
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
@@ -184,6 +189,17 @@ class AppLocator {
     );
     if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
+    final mempool = await openMempool(
+      () => locator<Tor>(),
+      locator<TorHttpClientFactory>(),
+    );
+    if (mempool case Err(:final failure)) return Err(failure);
+    locator.registerSingleton<Mempool>(
+      (mempool as Ok<Mempool, MempoolFailure>).value,
+      dispose: (value) async {
+        final _ = await value.close();
+      },
+    );
     locator.registerLazySingleton(() {
       final preferences = SharedPreferencesAsync();
       return Fees.open(

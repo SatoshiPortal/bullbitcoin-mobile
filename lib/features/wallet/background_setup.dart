@@ -1,3 +1,4 @@
+import 'package:legacy_storage/coordination.dart';
 import 'package:preferences/preferences.dart' show Preferences;
 
 export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
@@ -56,12 +57,21 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   Stopwatch clock, {
   required BackgroundSyncIntervalRepository intervals,
 }) async {
+  final admission = resources.storageAdmission;
+  if (admission == null) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     log.fine('Background wallet task deferred: schema not current');
-    return () async => const BackgroundTaskExecutionResult.success();
+    return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = SqliteDatabase();
-  resources.onClose(sqlite.close);
+  final sqlite = await LegacySourceStore(
+    source: LegacySource(
+      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
+      SqliteDatabase.currentSchemaVersion,
+    ),
+    create: SqliteDatabase.new,
+  ).open(admission);
   final settings = Preferences.open(database: sqlite);
   resources.onClose(settings.close);
   final preferences = (await settings.fetch()).fold(

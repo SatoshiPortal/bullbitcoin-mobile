@@ -87,6 +87,7 @@ dependencies:
   electrum:
   bull_tor:
   mempool:
+  legacy_storage:
   preferences:
   screen_privacy:
   bull_reporting:

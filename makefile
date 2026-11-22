@@ -216,6 +216,10 @@ drift-migrations:
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
 
+.PHONY: mempool-drift-migrations
+mempool-drift-migrations:
+	@(cd packages/mempool && fvm dart run drift_dev make-migrations)
+
 .PHONY: recoverbull-drift-migrations
 recoverbull-drift-migrations:
 	@(cd features/recoverbull && fvm dart run drift_dev make-migrations)

@@ -1,3 +1,4 @@
+import 'package:legacy_storage/coordination.dart';
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' as native;
 import 'package:mocktail/mocktail.dart';
@@ -29,16 +30,23 @@ class _Paths extends PathProviderPlatform {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
+  late Directory locks;
   late PathProviderPlatform previousPaths;
   late BackgroundTaskResources resources;
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('ark-background-host-');
+    locks = await Directory.systemTemp.createTemp('ark-background-lock-');
     previousPaths = PathProviderPlatform.instance;
     PathProviderPlatform.instance = _Paths(directory.path);
-    resources = BackgroundTaskResources();
+    resources = BackgroundTaskResources(
+      admission: await NativeFileGate(
+        File('${locks.path}/lifecycle.lock'),
+      ).acquire(exclusive: false, timeout: Duration.zero) as RuntimeAdmission,
+    );
   });
   tearDown(() async {
     await resources.close();
+    await locks.delete(recursive: true);
     PathProviderPlatform.instance = previousPaths;
     await directory.delete(recursive: true);
   });

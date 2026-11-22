@@ -67,7 +67,7 @@ void main() {
   setUp(() {
     reads = _ServerReads();
     database = TestDatabase(NativeDatabase.memory().interceptWith(reads));
-    mempool = Mempool.open(
+    mempool = Mempool.testing(
       database: database,
       tor: () => throw StateError('Link lookup must not use Tor'),
       torHttp: const TorHttpClientFactory(),

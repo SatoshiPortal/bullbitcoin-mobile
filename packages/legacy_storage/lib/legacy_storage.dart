@@ -109,3 +109,8 @@ final class _UnexpectedSourceSchema implements Exception {
 final class _VerificationRejected implements Exception {
   const _VerificationRejected();
 }
+
+/// Device unlock or a later lifecycle admission may make this operation ready.
+final class LegacyImportDeferred extends LegacyImportFailure {
+  const LegacyImportDeferred();
+}

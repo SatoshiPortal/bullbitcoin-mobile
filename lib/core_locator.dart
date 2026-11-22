@@ -1,9 +1,8 @@
+import 'package:bull_tor/tor.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
 import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
-import 'package:bull_tor/tor.dart';
-import 'package:mempool/mempool.dart';
 import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -109,13 +108,6 @@ class CoreLocator {
 
   static void registerServices(GetIt locator) {
     ExchangeLocator.registerServices(locator);
-    locator.registerLazySingleton<Mempool>(
-      () => Mempool.open(
-        database: locator<SqliteDatabase>(),
-        tor: () => locator<Tor>(),
-        torHttp: locator<TorHttpClientFactory>(),
-      ),
-    );
   }
 
   static void registerUsecases(GetIt locator) {

@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:legacy_storage/coordination.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/background_setup.dart'
@@ -20,7 +25,29 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
   await initializeLogging(directory: documents, background: true);
   final logger = LoggerBackgroundTaskLogger(log);
   const intervals = SharedPreferencesBackgroundSyncIntervalRepository();
+  final support = await getApplicationSupportDirectory();
+  final cutover = StorageCutover(
+    directory: Directory('${support.path}/storage-coordination'),
+    legacy: LegacySourceStore(
+      source: LegacySource(
+        File('${documents.path}/bullbitcoin_sqlite.sqlite'),
+        16,
+      ),
+      create: SqliteDatabase.new,
+    ),
+    expectedOwners: splitV1Owners,
+    participants: const [],
+  );
+  final admitted = await cutover.admit();
+  if (admitted case Err()) {
+    return BackgroundTaskRunner(
+      logger: logger,
+      handlers: {task: () async => const BackgroundTaskExecutionResult.retry()},
+    );
+  }
+  final admission = (admitted as Ok<RuntimeAdmission, Failure>).value;
   return BackgroundTaskRunner.forTask(
+    admission: admission,
     task: task,
     logger: logger,
     intervals: intervals,

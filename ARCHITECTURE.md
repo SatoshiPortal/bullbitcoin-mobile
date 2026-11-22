@@ -461,7 +461,13 @@ The Electrum setup library exposes the sync-owned connection contract through an
 
 Electrum also owns the declarations, generated rows and queries for `ElectrumServers`, `ElectrumSettings` and `Transactions`. The app's Drift composer attaches these tables to its existing SQLite file. The Electrum accessor uses the composed connection. The physical schema remains at version 16. Generate Electrum's Drift libraries before the app composer with `make build-runner`.
 
-`packages/mempool` generates the rows and accessor for `MempoolServers` and `MempoolSettings`. The app composer includes both tables in `bullbitcoin_sqlite.sqlite` at schema 16. The shell opens the capability with `Mempool.open`. Mempool Settings reads the active environment from Preferences, checks public explorer support and passes a typed Bitcoin or Liquid network to `mempool.servers`. Fees resolve the active Bitcoin base through the same server capability. Explorer callers use `mempool.links` for typed URI results.
+`packages/mempool` generates the rows and accessor for `MempoolServers` and `MempoolSettings`. The historical composer retains both table declarations for the supported schema-16 migration chain. Runtime Mempool reads use its encrypted schema-1 store, opened by `Mempool.open` under a shared lifecycle admission after its foreground participant commits a verified import or fresh-setup receipt. Mempool Settings reads the app environment through its setup binding and passes a typed Bitcoin or Liquid network to `mempool.servers`. Fees resolve the active Bitcoin base through the same server capability. Explorer callers use `mempool.links` for typed URI results.
+
+## Per-owner encrypted cutover
+
+`legacy_storage/coordination.dart` owns split-v1 admission, durable per-owner provenance, participant orchestration and the closed manifest. Composition supplies the existing legacy database constructor; `LegacySourceStore` performs migration opening and verification, so the shell contains no SQL or marker interpretation. Mempool implements its participant without a reverse dependency from Legacy Storage. Source-established state is durable before runtime. Fresh setup is proved by a transactional receipt, not by a global fresh flag. Unported owners retain writable historical storage through development slices; production ships the whole migration in one release.
+
+The native flock sentinel is stable and independently opened per admission. Temporary connections close before exclusivity is released; runtime reacquires shared admission and revalidates. All resources register before publication. Failed or uncertain closure retains the admission in quarantine; Background Tasks returns retry after cleanup failure. The historical file and PIN entries cannot be retired by this slice. Platform durability and native lifecycle validation remain separate release gates.
 
 ### Wallet-independent chain operations
 

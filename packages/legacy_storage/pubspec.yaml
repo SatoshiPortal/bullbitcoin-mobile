@@ -9,6 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  ffi: ^2.2.0
   drift: ^2.35.4
   meta: ^1.17.0
   primitives:
