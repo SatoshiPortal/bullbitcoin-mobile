@@ -87,9 +87,11 @@ final class WalletProjections {
   final FrameSource _source;
   final FreezePolicy freezes;
   final _slots = <WalletKey, _Slot>{};
+  final _pendingReads = <Future<void>>{};
   late final StreamSubscription<WalletRevisionState> _subscription;
   late final StreamSubscription<void> _freezeSubscription;
   bool _closed = false;
+  Future<void>? _closing;
 
   WalletProjections({
     required this._revisions,
@@ -114,12 +116,29 @@ final class WalletProjections {
   /// The active generation of [key], from revision metadata only.
   Future<Result<int, SyncFailure>> generation(WalletKey key) async {
     if (_closed) return const Err(SyncClosedFailure());
-    return switch (await _revisions.read(key)) {
+    final result = await _trackRead(_revisions.read(key));
+    if (_closed) return const Err(SyncClosedFailure());
+    return switch (result) {
       Ok(:final value) when value.lifecycle == WalletLifecycle.deleted =>
         const Err(SyncNotFoundFailure()),
       Ok(:final value) => Ok(value.stamp.generation),
       Err(:final failure) => Err(failure),
     };
+  }
+
+  // Generation reads and address derivations run outside the per-wallet queue.
+  Future<T> _trackRead<T>(Future<T> read) {
+    late final Future<void> settled;
+    void forget() {
+      _pendingReads.remove(settled);
+    }
+
+    settled = read.then<void>(
+      (_) => forget(),
+      onError: (Object _, StackTrace _) => forget(),
+    );
+    _pendingReads.add(settled);
+    return read;
   }
 
   /// Loads the frame at the latest committed revision, without network.
@@ -278,7 +297,7 @@ final class WalletProjections {
     }
     slot.deriving.add(id);
     unawaited(
-      _source.derive(key, keychain, index).then((result) {
+      _trackRead(_source.derive(key, keychain, index)).then((result) {
         slot.deriving.remove(id);
         if (_closed || slot.frame?.revision.generation != generation) return;
         switch (result) {
@@ -362,13 +381,20 @@ final class WalletProjections {
 
   WalletFrame? frameOf(WalletKey key) => _slots[key]?.frame;
 
-  Future<void> close() async {
-    if (_closed) return;
+  Future<void> close() => _closing ??= _close();
+
+  Future<void> _close() async {
     _closed = true;
-    await _subscription.cancel();
-    await _freezeSubscription.cancel();
-    for (final slot in _slots.values) {
-      slot.closeAll();
+    try {
+      await Future.wait([_subscription.cancel(), _freezeSubscription.cancel()]);
+    } finally {
+      for (final slot in _slots.values) {
+        slot.closeAll();
+      }
+      await Future.wait([
+        for (final slot in _slots.values) slot.tail,
+        ..._pendingReads,
+      ]);
     }
   }
 }

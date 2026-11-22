@@ -57,7 +57,7 @@ const _allowedTargets = <String, String>{
   'recipients': 'exchange settings',
   'replace_by_fee': 'fees send wallet',
   'sell': 'bitcoin_price exchange fees labels recipients send settings transactions wallet',
-  'send': 'ark bitbox consolidation fees labels ledger psbt_flow settings sp swap transactions wallet',
+  'send': 'ark bitbox coins consolidation fees labels ledger psbt_flow settings sp swap transactions wallet',
   'settings': 'ark address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code quick_actions recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
   'status_check': 'electrum_settings recoverbull wallet',
