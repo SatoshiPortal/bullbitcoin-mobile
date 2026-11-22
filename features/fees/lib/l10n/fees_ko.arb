@@ -1,3 +1,22 @@
 {
-  "retry": "이름 *"
+  "retry": "이름 *",
+  "doneButton": "한국어",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "자주 묻는 질문",
+  "sendBelowMinFeeRateError": "수수료율은 최소 0.1 sat/vB 이상이어야 합니다.",
+  "sendCustomFee": "회사 소개",
+  "sendEconomyFee": "주요사업",
+  "sendEnterAbsoluteFee": "Sats에서 절대 수수료를 입력하십시오",
+  "sendEnterRelativeFee": "Sats/vB에 상대적인 요금을 입력하십시오",
+  "sendEstimatedDelivery": "예상 배송 ~ ",
+  "sendEstimatedDelivery10Minutes": "10 분",
+  "sendEstimatedDelivery10to30Minutes": "10-30 분",
+  "sendEstimatedDeliveryHours": "시간",
+  "sendEstimatedDeliveryHoursToDays": "영업시간",
+  "sendFastFee": "빠른 속도",
+  "sendRelativeFees": "상대 비용",
+  "sendSats": "뚱 베어",
+  "sendSatsPerVB": "통계/VB",
+  "sendSelectNetworkFee": "네트워크 수수료",
+  "sendSubSatVbyteWarning": "1 sat/vB 미만의 트랜잭션은 확인되는 데 시간이 더 걸릴 수 있으며 모든 노드에 전파되지 않을 수 있습니다."
 }

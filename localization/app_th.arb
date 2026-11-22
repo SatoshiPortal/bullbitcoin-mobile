@@ -489,10 +489,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "ชั่วโมง",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "สิ้นสุด",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1832,10 +1828,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 นาที",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "ใส่ {pinOrPassword} ของคุณเพื่อดำเนินการต่อ",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2798,10 +2790,6 @@
   "testBackupRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "ราคาโดยประมาณ ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "ชําระเงินออนไลน์",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -4063,10 +4051,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "ค่าธรรมเนียม",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "ที่อยู่",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4451,10 +4435,6 @@
   "buySecureBitcoinWallet": "รักษาความปลอดภัย Bitcoin",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "ใส่ค่าใช้จ่ายในที่นั่ง / VB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "importQrDevicePassportStep1": "เปิดเครื่อง Passport ของคุณ",
   "@importQrDevicePassportStep1": {
@@ -4858,10 +4838,6 @@
   "payDecodeFailed": "กรอกใบแจ้งหนี้",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "ค่าธรรมเนียม",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@rbfErrorFeeTooLow": {
@@ -7960,10 +7936,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "กรอกค่าธรรมเนียมทั้งหมด",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "การเตือนภัย",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9381,8 +9353,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
   "mempoolErrorUpdateSettingsFailed": "อัปเดตการตั้งค่าไม่สำเร็จ: {error}",
-  "sendSubSatVbyteWarning": "ธุรกรรมที่มีอัตราค่าธรรมเนียมต่ำกว่า 1 sat/vB อาจใช้เวลานานขึ้นในการยืนยัน และอาจไม่กระจายไปยังทุกโหนด",
-  "sendBelowMinFeeRateError": "อัตราค่าธรรมเนียมต้องมีอย่างน้อย 0.1 sat/vB",
   "sendErrorInsufficientBalanceFrozenHint": "ยอดคงเหลือที่ใช้ได้ไม่เพียงพอ — {amount} ถูกแช่แข็งไว้ ปลดการแช่แข็งเหรียญใน \"จัดการเหรียญ\" เพื่อใช้งาน",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

@@ -457,10 +457,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "ساعات إلى أيام",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "معلقة",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1686,10 +1682,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 دقائق",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "أدخلي {pinOrPassword}",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2584,10 +2576,6 @@
   "testBackupRecoverWallet": "Recover Wallet",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "تقديرات الإنجاز ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "دفع مشروع القانون على الإنترنت",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -3762,10 +3750,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "الرسوم النسبية",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "العنوان",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4119,10 +4103,6 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "sendEnterRelativeFee": "رسوم نسبية للدخول في الجلسات/التدبير",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
-  },
   "fundExchangeBankTransferWireDescription": "أرسل تحويلاً سلكياً من حسابك المصرفي باستخدام تفاصيل مصرف (بول بيتكين) أدناه بنكك قد يتطلب فقط بعض التفاصيل.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -4475,10 +4455,6 @@
   "payDecodeFailed": "فشل في فك شفرة الفاتورة",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "رسوم مطلقة",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@rbfErrorFeeTooLow": {
@@ -7333,10 +7309,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "إدخال رسوم مطلقة في الجلسات",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "الإنذار بالمرحلة",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9380,8 +9352,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
-  "sendSubSatVbyteWarning": "قد تستغرق المعاملات بمعدل أقل من 1 ساتوشي/بايت افتراضي وقتًا أطول للتأكيد وقد لا تنتشر إلى جميع العُقد.",
-  "sendBelowMinFeeRateError": "يجب ألا يقل معدل الرسوم عن 0.1 ساتوشي/بايت افتراضي.",
   "sendErrorInsufficientBalanceFrozenHint": "الرصيد القابل للإنفاق غير كافٍ — {amount} مجمّد. أزِل التجميد عن العملات من إدارة العملات لاستخدامها.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

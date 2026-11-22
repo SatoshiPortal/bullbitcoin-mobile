@@ -452,16 +452,11 @@
   "sendScanBitcoinQRCode": "Bitcoin বা Lightning QR code স্কেন কৰক আৰু bitcoin দিয়ক।",
   "sendOpenTheCamera": "কেমেৰা খোলক",
   "sendCustomFee": "কাষ্টম মাচুল",
-  "sendAbsoluteFees": "পৰম মাচুল",
-  "sendRelativeFees": "আপেক্ষিক মাচুল",
   "sendSats": "sats",
   "sendSatsPerVB": "sat/vB",
   "sendConfirmCustomFee": "কাষ্টম মাচুল নিশ্চিত কৰক",
-  "sendEstimatedDelivery10Minutes": "10 মিনিট",
   "sendEstimatedDelivery10to30Minutes": "10-30 মিনিট",
   "sendEstimatedDeliveryFewHours": "কেইঘণ্টামান",
-  "sendEstimatedDeliveryHoursToDays": "ঘণ্টাৰ পৰা দিনলৈ",
-  "sendEstimatedDelivery": "আনুমানিক ডেলিভাৰি ~ ",
   "sendAddress": "ঠিকনা: ",
   "sendType": "ধৰণ: ",
   "sendReceive": "গ্ৰহণ কৰক",
@@ -3031,14 +3026,6 @@
         "type": "String"
       }
     }
-  },
-  "sendEnterAbsoluteFee": "sats ত নিৰপেক্ষ ফি লিখক",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
-  "sendEnterRelativeFee": "sats/vB ত আপেক্ষিক ফি হাৰ লিখক",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "sendErrorSwapCreationFailed": "Swap তৈয়াৰ কৰিবলৈ বিফল হৈছে।",
   "@sendErrorSwapCreationFailed": {
@@ -6802,8 +6789,6 @@
   "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
   "importWatchOnlyXpubLabel": "XPUB",
-  "sendSubSatVbyteWarning": "1 sat/vB তকৈ কম হাৰৰ লেনদেন নিশ্চিত হ'বলৈ বেছি সময় ল'ব পাৰে আৰু সকলো node লৈ প্ৰচাৰিত নহ'বও পাৰে।",
-  "sendBelowMinFeeRateError": "ফি হাৰ কমেও 0.1 sat/vB হ'ব লাগিব।",
   "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

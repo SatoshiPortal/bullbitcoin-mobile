@@ -14,6 +14,8 @@ import 'package:bull_ui/bull_ui.dart'
         Gap,
         BullTypographyX;
 
+import '../fees_l10n.dart';
+
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
 /// local edit state (controller, focus, in-progress parsed fee) and lifts
@@ -365,6 +367,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
 
   @override
   Widget build(BuildContext context) {
+    final copy = context.feeCopy;
     final showAsSelected = widget.isCommittedAsCustom || _focusNode.hasFocus;
     final feeOptions = widget.feePresets;
     final customFee = _customFee;
@@ -387,13 +390,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
             economicKwu == null ||
             slowKwu == null)
         ? ''
-        : '${widget.ui.label(context, FeeLabel.sendEstimatedDelivery)}${customKwu >= fastestKwu
-              ? widget.ui.label(context, FeeLabel.sendEstimatedDelivery10Minutes)
+        : '${copy.sendEstimatedDelivery}${customKwu >= fastestKwu
+              ? copy.sendEstimatedDelivery10Minutes
               : customKwu >= economicKwu
-              ? widget.ui.label(context, FeeLabel.sendEstimatedDelivery10to30Minutes)
+              ? copy.sendEstimatedDelivery10to30Minutes
               : customKwu >= slowKwu
-              ? widget.ui.label(context, FeeLabel.sendEstimatedDeliveryHours)
-              : widget.ui.label(context, FeeLabel.sendEstimatedDeliveryHoursToDays)}';
+              ? copy.sendEstimatedDeliveryHours
+              : copy.sendEstimatedDeliveryHoursToDays}';
 
     // Fee-rate guards. The floor is the live network minimum carried by
     // [FeeOptions.minRelay] (mempool's `minimumFee` clamped up to the static
@@ -440,7 +443,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                       crossAxisAlignment: .stretch,
                       children: [
                         BullText(
-                          widget.ui.label(context, FeeLabel.sendCustomFee),
+                          copy.sendCustomFee,
                           style: context.bullType.subtitle.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -483,8 +486,8 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   children: [
                     BullText(
                       _isAbsolute
-                          ? widget.ui.label(context, FeeLabel.sendAbsoluteFees)
-                          : widget.ui.label(context, FeeLabel.sendRelativeFees),
+                          ? copy.sendAbsoluteFees
+                          : copy.sendRelativeFees,
                       style: context.bullType.label.copyWith(
                         fontWeight: FontWeight.w400,
                       ),
@@ -542,14 +545,12 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                   hintText: _isAbsolute
-                      ? widget.ui.label(context, FeeLabel.sendEnterAbsoluteFee)
-                      : widget.ui.label(context, FeeLabel.sendEnterRelativeFee),
+                      ? copy.sendEnterAbsoluteFee
+                      : copy.sendEnterRelativeFee,
                   hintStyle: context.bullType.body.copyWith(
                     color: context.bull.onSurface,
                   ),
-                  suffixText: _isAbsolute
-                      ? widget.ui.label(context, FeeLabel.sendSats)
-                      : widget.ui.label(context, FeeLabel.sendSatsPerVB),
+                  suffixText: _isAbsolute ? copy.sendSats : copy.sendSatsPerVB,
                   suffixStyle: context.bullType.body.copyWith(
                     color: context.bull.onSurface,
                   ),
@@ -566,7 +567,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
               if (subOneSatPerVbyte) ...[
                 const Gap(8),
                 BullText(
-                  widget.ui.label(context, FeeLabel.sendSubSatVbyteWarning),
+                  copy.sendSubSatVbyteWarning,
                   style: context.bullType.caption.copyWith(
                     color: context.bull.warning,
                   ),
@@ -575,7 +576,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
               if (belowFloor) ...[
                 const Gap(8),
                 BullText(
-                  widget.ui.label(context, FeeLabel.sendBelowMinFeeRateError),
+                  copy.sendBelowMinFeeRateError,
                   style: context.bullType.caption.copyWith(
                     color: context.bull.error,
                   ),
@@ -614,9 +615,8 @@ class _PreviewLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final unit = isAbsolute
-        ? ui.label(context, FeeLabel.sendSats)
-        : ui.label(context, FeeLabel.sendSatsPerVB);
+    final copy = context.feeCopy;
+    final unit = isAbsolute ? copy.sendSats : copy.sendSatsPerVB;
     final rateLabel = '${customFee.value} $unit';
 
     if (previewLoading) {
@@ -649,7 +649,7 @@ class _PreviewLine extends StatelessWidget {
       ..write(' ~ ')
       ..write(ui.formatApproximateSats(feeSat))
       ..write(' ')
-      ..write(ui.label(context, FeeLabel.sendSats));
+      ..write(copy.sendSats);
     if (fiatEq != null) {
       text
         ..write(' (~ ')

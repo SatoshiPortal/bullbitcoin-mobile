@@ -1146,14 +1146,6 @@
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
-  "sendAbsoluteFees": "Absolute fees",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
-  },
-  "sendRelativeFees": "Relative fees",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "sendSats": "sats",
   "@sendSats": {
     "description": "Unit label for satoshis"
@@ -1166,10 +1158,6 @@
   "@sendConfirmCustomFee": {
     "description": "Button label for confirming a custom fee"
   },
-  "sendEstimatedDelivery10Minutes": "10 minutes",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "sendEstimatedDelivery10to30Minutes": "10-30 minutes",
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
@@ -1177,14 +1165,6 @@
   "sendEstimatedDeliveryFewHours": "few hours",
   "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
-  },
-  "sendEstimatedDeliveryHoursToDays": "hours to days",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
-  "sendEstimatedDelivery": "Estimated delivery ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "sendAddress": "Address: ",
   "@sendAddress": {
@@ -5970,14 +5950,6 @@
       }
     }
   },
-  "sendEnterAbsoluteFee": "Enter absolute fee in sats",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
-  "sendEnterRelativeFee": "Enter relative fee in sats/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
-  },
   "sendErrorSwapCreationFailed": "Failed to create swap.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
@@ -10352,14 +10324,6 @@
         "description": "The error details"
       }
     }
-  },
-  "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions may take longer to confirm and may not propagate to all nodes.",
-  "@sendSubSatVbyteWarning": {
-    "description": "Warning shown under the custom fee input when the user picks a fee rate between 0.1 and 1 sat/vByte"
-  },
-  "sendBelowMinFeeRateError": "Fee rate must be at least 0.1 sat/vB.",
-  "@sendBelowMinFeeRateError": {
-    "description": "Error shown under the custom fee input when the user picks a fee rate below 0.1 sat/vByte"
   },
   "sendEstimatedDeliveryHours": "hours",
   "@sendEstimatedDeliveryHours": {

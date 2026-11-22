@@ -1,3 +1,22 @@
 {
-  "retry": "पुनः प्रयास करें"
+  "retry": "पुनः प्रयास करें",
+  "doneButton": "दान",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "पूर्ण शुल्क",
+  "sendBelowMinFeeRateError": "शुल्क दर कम से कम 0.1 sat/vB होनी चाहिए।",
+  "sendCustomFee": "कस्टम शुल्क",
+  "sendEconomyFee": "अर्थव्यवस्था",
+  "sendEnterAbsoluteFee": "सत्संग में पूर्ण शुल्क दर्ज करें",
+  "sendEnterRelativeFee": "सत्स/vB में सापेक्ष शुल्क दर्ज करें",
+  "sendEstimatedDelivery": "अनुमानित डिलीवरी ~ ",
+  "sendEstimatedDelivery10Minutes": "10 मिनट",
+  "sendEstimatedDelivery10to30Minutes": "10-30 मिनट",
+  "sendEstimatedDeliveryHours": "घंटे",
+  "sendEstimatedDeliveryHoursToDays": "घंटों से दिनों तक",
+  "sendFastFee": "फास्ट",
+  "sendRelativeFees": "सापेक्ष शुल्क",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "नेटवर्क शुल्क चुनें",
+  "sendSubSatVbyteWarning": "1 sat/vB से कम वाले लेनदेन की पुष्टि होने में अधिक समय लग सकता है और हो सकता है कि वे सभी नोड्स तक प्रसारित न हों।"
 }

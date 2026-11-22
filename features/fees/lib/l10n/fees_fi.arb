@@ -1,3 +1,22 @@
 {
-  "retry": "Yritä uudelleen"
+  "retry": "Yritä uudelleen",
+  "doneButton": "Valmis",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Kulut tarkalleen",
+  "sendBelowMinFeeRateError": "Kulutason on oltava vähintään 0.1 sat/vB.",
+  "sendCustomFee": "Mukautettu kulutaso",
+  "sendEconomyFee": "Taloudinen",
+  "sendEnterAbsoluteFee": "Anna absoluuttinen kulu satoshissa",
+  "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
+  "sendEstimatedDelivery": "Arvioitu viive ~ ",
+  "sendEstimatedDelivery10Minutes": "10 minuuttia",
+  "sendEstimatedDelivery10to30Minutes": "10-30 minuuttia",
+  "sendEstimatedDeliveryHours": "tuntia",
+  "sendEstimatedDeliveryHoursToDays": "tunneista vuorokausiin",
+  "sendFastFee": "Nopea",
+  "sendRelativeFees": "Kulut suhteellisena",
+  "sendSats": "sat",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "Valitse verkkokulujen taso",
+  "sendSubSatVbyteWarning": "Alle 1 sat/vB -transaktioiden vahvistuminen voi kestää kauemmin, eivätkä ne välttämättä leviä kaikkiin solmuihin."
 }

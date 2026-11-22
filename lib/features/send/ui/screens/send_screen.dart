@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/fees/public/app_fee_ui.dart';
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
@@ -1856,7 +1855,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: feeSelectionRowLabel(
             context,
-            ui: appFeeUi,
+            ui: FeeUi.standard,
             selection: selectedFeeOption,
             customFee: customFee,
             fastestLabel: context.loc.sendFastFee,
@@ -1923,7 +1922,7 @@ Future<void> _showBitcoinFeeOptions(BuildContext context) async {
   final selected = await BullBottomSheet.show<String>(
     context: context,
     child: FeeOptionsModal(
-      ui: appFeeUi,
+      ui: FeeUi.standard,
       viewState: sendCubit,
       actions: sendCubit,
       defaultAbsoluteCustomFee: false,

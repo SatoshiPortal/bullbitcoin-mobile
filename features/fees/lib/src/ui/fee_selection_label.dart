@@ -3,6 +3,8 @@ import 'fee_ui.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter/widgets.dart';
 
+import '../fees_l10n.dart';
+
 /// Value shown on the "Fee Priority" row of the exchange confirmation screens
 /// (sell, pay) for the committed selection. Presets read as their tier name; a
 /// custom fee reads as the value that was typed, because "Custom Fee" on its
@@ -19,16 +21,16 @@ String feeSelectionRowLabel(
   required String fastestLabel,
 }) => switch (selection) {
   FeeSelection.fastest => fastestLabel,
-  FeeSelection.economic => ui.label(context, FeeLabel.sendEconomyFee),
-  FeeSelection.slow => ui.label(context, FeeLabel.feePrioritySlow),
+  FeeSelection.economic => context.feeCopy.sendEconomyFee,
+  FeeSelection.slow => context.feeCopy.feePrioritySlow,
   FeeSelection.custom => switch (customFee) {
     RelativeFee(:final satPerKwu) =>
-      '${_formattedRate(satPerKwu / 250.0)} ${ui.label(context, FeeLabel.sendSatsPerVB)}',
+      '${_formattedRate(satPerKwu / 250.0)} ${context.feeCopy.sendSatsPerVB}',
     AbsoluteFee(:final sats) =>
-      '${ui.formatSats(sats)} ${ui.label(context, FeeLabel.sendSats)}',
+      '${ui.formatSats(sats)} ${context.feeCopy.sendSats}',
     // Custom is selected but nothing has been typed yet — only reachable
     // while the modal is open, since dismissal rolls an empty field back.
-    null => ui.label(context, FeeLabel.sendCustomFee),
+    null => context.feeCopy.sendCustomFee,
   },
 };
 

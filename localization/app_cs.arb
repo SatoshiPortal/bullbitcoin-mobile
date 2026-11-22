@@ -726,10 +726,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "hodiny do dnů",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "Čeština",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -2017,10 +2013,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 minut",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "Zadejte své {pinOrPassword} pokračovat",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2914,10 +2906,6 @@
   "testBackupRecoverWallet": "Obnovit peněženku",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "Odhadovaná dodávka ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "Online platba za účet",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -4103,10 +4091,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "Relativní poplatky",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "Na adresu",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4475,10 +4459,6 @@
   "buySecureBitcoinWallet": "Secure Bitcoin Peněženka",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "Zadejte relativní poplatek ve sdělcích/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "importQrDevicePassportStep1": "Zapněte zařízení Passport",
   "@importQrDevicePassportStep1": {
@@ -4861,10 +4841,6 @@
   "payDecodeFailed": "Vypnuto dekódovat fakturu",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "Absolutní poplatky",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "Musíte zvýšit poplatek minimálně 1 sat/vbyte ve srovnání s původní transakcí",
   "@rbfErrorFeeTooLow": {
@@ -7795,10 +7771,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "Zadejte absolutní poplatek ve sdělcích",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "Derivation Path Varování",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9377,8 +9349,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Došlo k neočekávané chybě",
   "mempoolErrorUpdateSettingsFailed": "Nepodařilo se aktualizovat nastavení: {error}",
-  "sendSubSatVbyteWarning": "Transakce s poplatkem pod 1 sat/vB se mohou potvrzovat déle a nemusí se rozšířit na všechny uzly.",
-  "sendBelowMinFeeRateError": "Poplatek musí být alespoň 0,1 sat/vB.",
   "sendErrorInsufficientBalanceFrozenHint": "Nedostatečný disponibilní zůstatek – {amount} je zmrazeno. Rozmrazte mince v sekci Spravovat mince, abyste je mohli použít.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

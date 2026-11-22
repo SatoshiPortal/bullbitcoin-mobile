@@ -489,10 +489,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "günlerce günler",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "Pending",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -1824,10 +1820,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 dakika 10 dakika",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "{pinOrPassword}'a devam etmek için",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2786,10 +2778,6 @@
   "testBackupRecoverWallet": "Recover Cüzdan",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "Tahmin edilen teslimat - ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -4035,10 +4023,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "Relative ücretleri",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "Adrese",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4423,10 +4407,6 @@
   "buySecureBitcoinWallet": "Güvenli Bitcoin Cüzdanı",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "Satmak için göreceli ücret girin /vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "importQrDevicePassportStep1": "Passport cihazınızı açın",
   "@importQrDevicePassportStep1": {
@@ -4830,10 +4810,6 @@
   "payDecodeFailed": "Faturayı bozmaya başarısız oldu",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "Mutlak ücretler",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
   "@rbfErrorFeeTooLow": {
@@ -7872,10 +7848,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "sendEnterAbsoluteFee": "Satmak için mutlak ücret girin",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "Türleme Path Uyarı",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9377,8 +9349,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Beklenmeyen bir hata oluştu",
   "mempoolErrorUpdateSettingsFailed": "Ayarlar güncellenemedi: {error}",
-  "sendSubSatVbyteWarning": "1 sat/vB altındaki işlemlerin onaylanması daha uzun sürebilir ve tüm düğümlere yayılmayabilir.",
-  "sendBelowMinFeeRateError": "Ücret oranı en az 0,1 sat/vB olmalıdır.",
   "sendErrorInsufficientBalanceFrozenHint": "Yeterli harcanabilir bakiye yok — {amount} donduruldu. Kullanmak için Coin'leri yönet bölümünden dondurmayı kaldırın.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

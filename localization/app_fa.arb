@@ -988,10 +988,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "ساعت ها تا روزها",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "امتناع",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
@@ -2122,10 +2118,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 دقیقه",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "برای ادامه، {pinOrPassword} خود را وارد کنید",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2944,10 +2936,6 @@
   "testBackupRecoverWallet": "بازیابی کیف پول",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "تحویل تخمین زده شده - ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "پرداخت آنلاین",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -4021,10 +4009,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "هزینه های نسبی",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "برای آدرس",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4358,10 +4342,6 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "sendEnterRelativeFee": "وارد کردن هزینه نسبی در sats/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
-  },
   "fundExchangeBankTransferWireDescription": "ارسال یک انتقال سیم از حساب بانکی خود با استفاده از جزئیات بانک بیت کوین در زیر. بانک شما ممکن است فقط به برخی از این جزئیات نیاز داشته باشد.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -4694,10 +4674,6 @@
   "payDecodeFailed": "شکست در رمزگشایی فاکتور",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "هزینه های مطلق",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "شما نیاز به افزایش نرخ هزینه با حداقل 1 نشست/vbyte در مقایسه با معامله اصلی",
   "@rbfErrorFeeTooLow": {
@@ -7298,10 +7274,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "sendEnterAbsoluteFee": "وارد کردن هزینه مطلق در نشست",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "هشدار مسیر",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -9377,8 +9349,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "خطایی غیرمنتظره رخ داد",
   "mempoolErrorUpdateSettingsFailed": "به‌روزرسانی تنظیمات ممکن نشد: {error}",
-  "sendSubSatVbyteWarning": "تراکنش‌های زیر ۱ ساتوشی/vB ممکن است تأیید طولانی‌تری داشته باشند و به همه‌ی گره‌ها منتشر نشوند.",
-  "sendBelowMinFeeRateError": "نرخ کارمزد باید حداقل ۰.۱ ساتوشی/vB باشد.",
   "sendErrorInsufficientBalanceFrozenHint": "موجودی قابل خرج کافی نیست — {amount} منجمد شده است. برای استفاده از آن، سکه‌ها را در «مدیریت سکه‌ها» از حالت انجماد خارج کنید.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",

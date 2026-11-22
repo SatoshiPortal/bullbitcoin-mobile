@@ -561,10 +561,6 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "часове до дни",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "fundExchangeLabelBankAccountCountry": "Държава на банковата сметка",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -1609,10 +1605,6 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "10 минути",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "enterPinToContinueMessage": "Въведете вашия {pinOrPassword}, за да продължите",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
@@ -2370,10 +2362,6 @@
   "testBackupRecoverWallet": "Възстанови портфейла.",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "Очаквано време за потвърждение ~ ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "Онлайн плащане на сметки",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -3318,10 +3306,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "Относителни такси",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "Адрес на получателя",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -3605,10 +3589,6 @@
   "buySecureBitcoinWallet": "Сигурен биткойн портфейл",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
-  },
-  "sendEnterRelativeFee": "Въведете относителна такса в сатоши/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
   },
   "fundExchangeBankTransferWireDescription": "Изпратете банков превод от вашата банкова сметка, използвайки банковите данни на Bull Bitcoin по-долу. Вашата банка може да изисква само някои от тези данни.",
   "@fundExchangeBankTransferWireDescription": {
@@ -3926,10 +3906,6 @@
   "payDecodeFailed": "Неуспешно декодиране на инвойса",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "sendAbsoluteFees": "Фиксирани такси",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
   },
   "rbfErrorFeeTooLow": "Трябва да увеличите таксата с поне 1 сат/байт спрямо оригиналната транзакция.",
   "@rbfErrorFeeTooLow": {
@@ -6276,10 +6252,6 @@
   "@receiveContinue": {
     "description": "Button label for continuing in the receive flow"
   },
-  "sendEnterAbsoluteFee": "Въведете абсолютната такса в сатоши",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "Предупреждение за деривационния път",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -7981,8 +7953,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Възникна неочаквана грешка",
   "mempoolErrorUpdateSettingsFailed": "Неуспешно актуализиране на настройките: {error}",
-  "sendSubSatVbyteWarning": "Транзакциите под 1 sat/vB може да отнемат повече време за потвърждение и може да не се разпространят до всички възли.",
-  "sendBelowMinFeeRateError": "Таксата трябва да бъде поне 0.1 sat/vB.",
   "sendErrorInsufficientBalanceFrozenHint": "Няма достатъчно наличен баланс — {amount} е замразен. Размразете монетите в „Управление на монетите“, за да го използвате.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
