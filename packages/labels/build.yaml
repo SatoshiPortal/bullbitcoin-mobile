@@ -5,5 +5,11 @@ targets:
         enabled: false
       drift_dev:analyzer:
         enabled: true
+        options: &options
+          databases:
+            labels_database: lib/src/data/labels_database.dart
+          schema_dir: lib/src/data/schemas/
+          test_dir: test/migrations_test/
       drift_dev:modular:
         enabled: true
+        options: *options

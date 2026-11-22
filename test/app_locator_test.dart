@@ -1,3 +1,4 @@
+import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
 import 'package:mempool/testing.dart';
 import 'package:ark/ark.dart';
@@ -116,6 +117,13 @@ void main() {
         await AppLocator.setup(
           locator,
           database,
+          openLabels: (sync, openWallet) async => Ok(
+            createLabelsForTesting(
+              database: database,
+              sync: sync,
+              openWallet: openWallet,
+            ),
+          ),
           openElectrum: (readPreferences, tor) async => Ok(
             createElectrumForTesting(
               database: database,
@@ -362,6 +370,13 @@ void main() {
       final result = await AppLocator.setup(
         locator,
         database,
+        openLabels: (sync, openWallet) async => Ok(
+          createLabelsForTesting(
+            database: database,
+            sync: sync,
+            openWallet: openWallet,
+          ),
+        ),
         openElectrum: (readPreferences, tor) async => Ok(
           createElectrumForTesting(
             database: database,
@@ -435,6 +450,13 @@ void main() {
     final result = await AppLocator.setup(
       locator,
       database,
+      openLabels: (sync, openWallet) async => Ok(
+        createLabelsForTesting(
+          database: database,
+          sync: sync,
+          openWallet: openWallet,
+        ),
+      ),
       openElectrum: (readPreferences, tor) async => Ok(
         createElectrumForTesting(
           database: database,

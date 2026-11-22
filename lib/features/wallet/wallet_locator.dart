@@ -11,8 +11,6 @@ import 'domain/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show SqliteArkFundingReservations;
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-
 import 'data/sqlite_parent_custody_admission.dart';
 
 import 'package:bb_mobile/features/send/public/send_setup.dart'
@@ -41,7 +39,6 @@ import 'package:bb_mobile/features/transactions/data/wallet_transaction_reposito
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:labels/labels.dart';
-import 'package:labels/storage.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
@@ -231,7 +228,7 @@ class WalletLocator {
         sync: locator<ElectrumSync>(),
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
-        freezes: FrozenUtxosFreezeStore(database: locator<SqliteDatabase>()),
+        freezes: locator<FreezeStorePort>(),
         connections: locator<WalletConnectionPort>(),
         fundingReservations:
             locator.isRegistered<SqliteArkFundingReservations>()

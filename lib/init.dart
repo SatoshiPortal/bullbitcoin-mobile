@@ -1,3 +1,5 @@
+import 'package:labels/labels.dart';
+import 'package:labels/migration.dart';
 import 'package:electrum/electrum.dart';
 import 'package:electrum/migration.dart';
 
@@ -85,6 +87,7 @@ class Bull {
     final electrumFile = File(
       p.join(support.path, 'databases', 'electrum.sqlite'),
     );
+    final labelsFile = File(p.join(support.path, 'databases', 'labels.sqlite'));
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -104,6 +107,7 @@ class Bull {
           ],
         ),
         ElectrumImport(file: electrumFile),
+        LabelsImport(file: labelsFile),
       ],
     );
     final admitted = await cutover.prepare();
@@ -118,6 +122,12 @@ class Bull {
       final setup = await AppLocator.setup(
         locator,
         await legacy.open(admission),
+        openLabels: (sync, openWallet) => Labels.open(
+          file: labelsFile,
+          admission: admission,
+          sync: sync,
+          openWallet: openWallet,
+        ),
         openElectrum: (readPreferences, tor) => Electrum.open(
           file: electrumFile,
           admission: admission,

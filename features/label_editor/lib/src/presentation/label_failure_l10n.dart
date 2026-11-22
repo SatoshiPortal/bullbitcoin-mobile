@@ -25,7 +25,8 @@ extension LabelFailureL10n on LabelFailure {
     LabelsFileReservedNameFailure() =>
       context.labelLoc.labelsErrorFileReservedName,
     LabelsExportFailure() => context.labelLoc.labelsErrorExportFailed,
-    LabelUnexpectedFailure() => context.labelLoc.oopsSomethingWentWrong,
+    LabelUnexpectedFailure() ||
+    LabelsStorageNotReadyFailure() => context.labelLoc.oopsSomethingWentWrong,
   };
 
   bool _isInvisible(String character) =>

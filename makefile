@@ -225,12 +225,15 @@ wallet-satellite-drift-migrations:
 	@(cd features/signers && fvm dart run drift_dev make-migrations)
 	@(cd packages/sync && fvm dart run drift_dev make-migrations)
 
-.PHONY: electrum-drift-migrations mempool-drift-migrations
+.PHONY: electrum-drift-migrations mempool-drift-migrations labels-drift-migrations
 electrum-drift-migrations:
 	@(cd packages/electrum && fvm dart run drift_dev make-migrations)
 
 mempool-drift-migrations:
 	@(cd packages/mempool && fvm dart run drift_dev make-migrations)
+
+labels-drift-migrations:
+	@(cd packages/labels && fvm dart run drift_dev make-migrations)
 
 .PHONY: recoverbull-drift-migrations
 recoverbull-drift-migrations:

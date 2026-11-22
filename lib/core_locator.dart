@@ -1,3 +1,5 @@
+import 'package:labels/labels.dart';
+import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
@@ -12,7 +14,6 @@ import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
-import 'package:sync/sync.dart' show WalletConnectionPort;
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
@@ -54,14 +55,22 @@ class CoreLocator {
     );
   }
 
-  static void registerPorts(GetIt locator) {
+  static Future<Result<void, LabelFailure>> registerPorts(
+    GetIt locator, {
+    required Future<Result<Labels, LabelFailure>> Function(
+      Future<Sync> Function() sync,
+      Future<Wallet> Function(String) openWallet,
+    )
+    openLabels,
+  }) async {
     final walletSync = WalletLocator.syncAccess(locator);
-    setupLabels(
-      locator,
-      database: locator<SqliteDatabase>(),
-      sync: walletSync.foreground,
-      openWallet: walletSync.openWallet,
+    final labels = await openLabels(
+      walletSync.foreground,
+      walletSync.openWallet,
     );
+    if (labels case Err(:final failure)) return Err(failure);
+    setupLabels(locator, (labels as Ok<Labels, LabelFailure>).value);
+    return const Ok(null);
   }
 
   static Future<Result<void, ElectrumFailure>> registerRepositories(

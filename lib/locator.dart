@@ -1,3 +1,4 @@
+import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
@@ -73,7 +74,7 @@ import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
-    show SyncFailure, SyncStorageFailure, WalletConnectionPort;
+    show Sync, Wallet, SyncFailure, SyncStorageFailure, WalletConnectionPort;
 
 final GetIt locator = GetIt.instance;
 
@@ -109,6 +110,11 @@ class AppLocator {
     GetIt locator,
     SqliteDatabase database, {
     required String payjoinDatabasePath,
+    required Future<Result<Labels, LabelFailure>> Function(
+      Future<Sync> Function() sync,
+      Future<Wallet> Function(String) openWallet,
+    )
+    openLabels,
     required Future<Result<Electrum, ElectrumFailure>> Function(
       ReadElectrumPreferences readPreferences,
       Tor Function() tor,
@@ -199,7 +205,11 @@ class AppLocator {
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
     // The proper solution is to refactor the code to remove this dependency
-    CoreLocator.registerPorts(locator);
+    final labels = await CoreLocator.registerPorts(
+      locator,
+      openLabels: openLabels,
+    );
+    if (labels case Err(:final failure)) return Err(failure);
     final repositories = await CoreLocator.registerRepositories(
       locator,
       regtestProfile: regtestProfile,

@@ -1,3 +1,4 @@
+import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
@@ -76,9 +77,11 @@ void main() {
       final walletSync = WalletLocator.syncAccess(services);
       setupLabels(
         services,
-        database: database,
-        sync: walletSync.foreground,
-        openWallet: walletSync.openWallet,
+        createLabelsForTesting(
+          database: database,
+          sync: walletSync.foreground,
+          openWallet: walletSync.openWallet,
+        ),
       );
       // Wallet's native runtime requires the Payjoin owner's reservation port.
       PayjoinSetup.setup(

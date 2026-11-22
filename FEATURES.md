@@ -722,3 +722,5 @@ The `legacy_storage` workspace member depends on `primitives` for typed import r
 Secrets uses Legacy Storage for lifecycle admission and participates in split-v1 through its migration library. The encrypted Secrets store owns wallet definitions, derivation records and view access state. Sync's inventory composition library translates the descriptor projection to the native catalog contract.
 
 Electrum also implements its import participant through `legacy_storage` and opens its encrypted store through `secrets`. Foreground and background connection/cache consumers use that store; historical tables remain only for the legacy migration chain.
+
+Labels implements its participant through `legacy_storage`, opens its encrypted store through `secrets`, and supplies Sync with its owner-built freeze and reserved-address ports. Label, Payjoin and BIP-329 consumers share that authority.

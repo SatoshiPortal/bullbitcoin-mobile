@@ -10,6 +10,8 @@ environment:
 resolution: workspace
 
 dependencies:
+  flutter:
+    sdk: flutter
   bip329_labels: ^2.0.0
   bs58check: ^1.0.2
   bull_logger:
@@ -19,6 +21,9 @@ dependencies:
   get_it: ^9.1.1
   meta: ^1.17.0
   primitives:
+  legacy_storage:
+  secrets:
+  sqlite3: ^3.9.1
   sync:
 
 dev_dependencies:

@@ -65,6 +65,11 @@ final class LabelsExportFailure extends LabelFailure {
   const LabelsExportFailure([super.logMessage]);
 }
 
+/// Owner storage is not prepared yet or the device keystore is locked.
+final class LabelsStorageNotReadyFailure extends LabelFailure {
+  const LabelsStorageNotReadyFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class LabelUnexpectedFailure extends LabelFailure {

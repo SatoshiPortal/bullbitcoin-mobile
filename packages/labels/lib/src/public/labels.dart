@@ -1,3 +1,14 @@
+import 'dart:io';
+
+import 'package:meta/meta.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:secrets/secrets.dart';
+
+import '../data/labels_import.dart';
+import '../data/labels_store.dart';
+import '../data/frozen_utxos_freeze_store.dart';
+import '../data/reserved_address_port_impl.dart';
+
 import 'package:drift/drift.dart';
 import 'package:labels/src/data/bip329_codec.dart';
 import 'package:labels/src/data/drift_labels_repository.dart';
@@ -23,6 +34,9 @@ import 'package:sync/sync.dart';
 
 /// Label persistence and BIP-329 import and export.
 class Labels {
+  final LabelsStore? _store;
+  final FreezeStorePort _freezes;
+  final ReservedAddressPort _reservedAddresses;
   final FetchLabelsUsecase _fetchLabels;
   final StoreLabelUsecase _storeLabelsUsecase;
   final TrashLabelUsecase _trashLabelUsecase;
@@ -32,6 +46,9 @@ class Labels {
   final LabelsConverterPort _converter;
 
   Labels._({
+    required this._freezes,
+    required this._reservedAddresses,
+    this._store,
     required this._fetchLabels,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
@@ -40,7 +57,63 @@ class Labels {
     required this._converter,
   });
 
-  factory Labels.open({
+  @useResult
+  static Future<Result<Labels, LabelFailure>> open({
+    required File file,
+    required RuntimeAdmission admission,
+    required Future<Sync> Function() sync,
+    required Future<Wallet> Function(String) openWallet,
+  }) async {
+    try {
+      final opened = await LabelsStore.open(file, admission, existing: true);
+      if (opened case Err(:final failure)) {
+        return Err(
+          failure is DatabaseNotReady ||
+                  failure is DatabaseKeyUnavailable &&
+                      failure.reason == DatabaseKeyProblem.locked
+              ? const LabelsStorageNotReadyFailure()
+              : const LabelUnexpectedFailure(),
+        );
+      }
+      final store = (opened as Ok<LabelsStore, DatabaseOpenFailure>).value;
+      var published = false;
+      try {
+        final readiness = await readLabelsReadiness(store.database);
+        if (readiness case Ok(value: final ready)
+            when ready != OwnerReadiness.pending) {
+          final owner = _usingDatabase(
+            database: store.database,
+            sync: sync,
+            openWallet: openWallet,
+            store: store,
+          );
+          published = true;
+          return Ok(owner);
+        }
+        if (readiness case Ok(value: OwnerReadiness.pending)) {
+          return const Err(LabelsStorageNotReadyFailure());
+        }
+        return const Err(LabelUnexpectedFailure());
+      } finally {
+        if (!published) await store.handle.close();
+      }
+    } on Exception {
+      return const Err(LabelUnexpectedFailure());
+    }
+  }
+
+  @useResult
+  Future<Result<void, LabelFailure>> close() async {
+    try {
+      await _store?.handle.close();
+      return const Ok(null);
+    } on Exception {
+      return const Err(LabelUnexpectedFailure());
+    }
+  }
+
+  static Labels _usingDatabase({
+    LabelsStore? store,
     required GeneratedDatabase database,
     required Future<Sync> Function() sync,
     required Future<Wallet> Function(String) openWallet,
@@ -49,6 +122,9 @@ class Labels {
     final converter = LabelsConverterAdapter(Bip329LabelsCodec());
     final freezes = WalletFreezeAdapter(sync: sync, openWallet: openWallet);
     return Labels._(
+      store: store,
+      freezes: FrozenUtxosFreezeStore(database: database),
+      reservedAddresses: ReservedAddressPortImpl(repository),
       fetchLabels: FetchLabelsUsecase(repository),
       storeLabelsUsecase: StoreLabelUsecase(labelRepository: repository),
       trashLabelUsecase: TrashLabelUsecase(labelRepository: repository),
@@ -123,4 +199,21 @@ Label _toLabel(ApplicationLabel label) => Label(
   label: label.label,
   reference: label.reference,
   origin: label.origin,
+);
+
+/// Owner-built ports, exposed only through the composition entry library.
+extension LabelsSetup on Labels {
+  FreezeStorePort get freezes => _freezes;
+  ReservedAddressPort get reservedAddresses => _reservedAddresses;
+}
+
+@visibleForTesting
+Labels createLabelsForTesting({
+  required GeneratedDatabase database,
+  required Future<Sync> Function() sync,
+  required Future<Wallet> Function(String) openWallet,
+}) => Labels._usingDatabase(
+  database: database,
+  sync: sync,
+  openWallet: openWallet,
 );

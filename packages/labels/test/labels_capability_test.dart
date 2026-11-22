@@ -1,3 +1,4 @@
+import 'package:labels/testing.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
@@ -12,7 +13,7 @@ void main() {
   setUp(() {
     database = LabelsTestDatabase(NativeDatabase.memory());
     addTearDown(database.close);
-    labels = Labels.open(
+    labels = createLabelsForTesting(
       database: database,
       sync: () async => throw StateError('Sync must remain lazy'),
       openWallet: (_) async =>

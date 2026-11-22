@@ -16,6 +16,8 @@
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
+import 'package:labels/testing.dart';
+
 import 'package:electrum/testing.dart';
 
 import 'package:mempool/testing.dart';
@@ -145,6 +147,13 @@ void main() {
       await AppLocator.setup(
         locator,
         database,
+        openLabels: (sync, openWallet) async => Ok(
+          createLabelsForTesting(
+            database: database,
+            sync: sync,
+            openWallet: openWallet,
+          ),
+        ),
         openElectrum: (readPreferences, tor) async => Ok(
           createElectrumForTesting(
             database: database,
