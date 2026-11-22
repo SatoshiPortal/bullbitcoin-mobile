@@ -15,6 +15,7 @@ dependencies:
   sqlite3: ^3.5.2
   bull_logger:
   primitives:
+  secrets:
   meta: ^1.17.0
   crypto: ^3.0.7
   bitcoin_base: ^7.3.0
