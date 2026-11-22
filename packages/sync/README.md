@@ -21,6 +21,8 @@ wallet.history.watch().listen(render);
 
 Values are mapped from the native wallet once per revision, built into one immutable frame, then published by a single pointer assignment before any notification: several `now` reads without an `await` between them see the same revision. Who republishes after a commit made elsewhere: the revision reader emits a change whenever a read finds a new state, and the foreground reads after every worker outcome (`WalletNativeRuntime.refresh`); a change for a wallet that has values or subscribers schedules a reload.
 
+Address lists can read wallet.addresses.usage() after loading. The result combines the published history and coin balances, counts each transaction once per paying address, and uses confidential addresses on Liquid. The app adds labels. WalletValue.latest returns the published data or its typed failure. Inspect status and revision when freshness matters.
+
 ⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. Liquid has no ownership index: LWK does not expose it.
 
 ## Native runtime
