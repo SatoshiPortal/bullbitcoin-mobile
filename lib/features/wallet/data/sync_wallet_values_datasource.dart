@@ -2,8 +2,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Ok, Result;
 import 'package:sync/sync.dart' show WalletSnapshotException;
@@ -65,25 +63,6 @@ class SyncWalletValuesDatasource {
     return true;
   }
 
-  Future<List<WalletUtxoModel>> getUtxos({required sync.WalletKey key}) async =>
-      [
-        for (final coin in WalletCatalogPortImpl.value(
-          (await _load(key)).coins.now.latest,
-        ))
-          _utxo(coin),
-      ];
-
-  /// The coins with their frozen state, as sync publishes them. Throws
-  /// while the freezes are unknown: a coin never reads as unfrozen.
-  Future<List<({WalletUtxoModel model, bool frozen})>> getCoins({
-    required sync.WalletKey key,
-  }) async => [
-    for (final coin in WalletCatalogPortImpl.value(
-      (await _load(key)).coins.now.latest,
-    ))
-      (model: _utxo(coin), frozen: coin.frozen),
-  ];
-
   static Future<T> _exact<T>(
     Future<Result<T, sync.SyncFailure>> Function() query,
   ) async {
@@ -98,26 +77,4 @@ class SyncWalletValuesDatasource {
       }
     }
   }
-
-  static WalletUtxoModel _utxo(sync.Coin coin) => switch (coin) {
-    sync.BitcoinCoin() => WalletUtxoModel.bitcoin(
-      txId: coin.outpoint.txId,
-      vout: coin.outpoint.vout,
-      amountSat: coin.amountSat,
-      scriptPubkey: Uint8List.fromList(coin.scriptPubkey),
-      // A wallet coin always has an address form; keep the old fallback.
-      address: coin.address ?? '',
-      isExternalKeyChain: coin.keychain == sync.Keychain.external,
-      confirmations: coin.confirmations,
-    ),
-    sync.LiquidCoin() => WalletUtxoModel.liquid(
-      txId: coin.outpoint.txId,
-      vout: coin.outpoint.vout,
-      amountSat: coin.amountSat,
-      scriptPubkey: coin.scriptPubkey,
-      standardAddress: coin.standardAddress,
-      confidentialAddress: coin.confidentialAddress,
-      blockHeight: coin.blockHeight,
-    ),
-  };
 }

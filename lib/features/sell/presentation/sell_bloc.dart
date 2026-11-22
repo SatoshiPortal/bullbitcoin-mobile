@@ -10,7 +10,7 @@ import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';

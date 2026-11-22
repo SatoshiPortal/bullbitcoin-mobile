@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Outpoint;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 
 abstract interface class WalletUtxoRepository {
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId});

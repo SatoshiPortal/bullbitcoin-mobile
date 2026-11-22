@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/load_sell_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';

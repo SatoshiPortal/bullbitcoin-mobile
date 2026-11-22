@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
@@ -25,7 +26,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
 
 class _Wallet extends Mock implements WalletBloc {}
 
@@ -158,6 +159,7 @@ void main() {
                   'wallet' => WalletDetailScreen(
                     walletId: wallet.id,
                     onOpenCoins: (_, _) async {},
+                    loadCoinSummary: (_) async => const Err(CoinsLoadFailure()),
                   ),
                   _ => Scaffold(
                     appBar: AppBar(title: const Text('Shared bottom sheet')),

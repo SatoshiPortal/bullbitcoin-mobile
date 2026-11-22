@@ -1,12 +1,18 @@
+import 'public/coins.dart';
+
+import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:preferences/preferences.dart'
     show AmountDisplayPreferencesReader;
 import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
@@ -18,7 +24,22 @@ import 'package:bb_mobile/features/coins/domain/usecases/load_coin_label_filters
 
 class CoinsLocator {
   static void setup(GetIt locator) {
-    // Feature usecases (thin wrappers over the shared core wallet layer).
+    locator.registerLazySingleton<Coins>(
+      () => Coins(locator<GetUtxosUsecase>().execute),
+    );
+    locator.registerLazySingleton<WalletUtxoRepository>(
+      () => WalletUtxoRepositoryImpl(
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        loadWallet: locator<WalletNativeRuntime>().loadWallet,
+        freezesDatasource: locator<SyncFreezesDatasource>(),
+        labelsFacade: locator<Labels>(),
+      ),
+    );
+    locator.registerLazySingleton<GetWalletUtxosUsecase>(
+      () => GetWalletUtxosUsecase(
+        utxoRepository: locator<WalletUtxoRepository>(),
+      ),
+    );
     locator.registerFactory<GetUtxosUsecase>(
       () => GetUtxosUsecase(
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),

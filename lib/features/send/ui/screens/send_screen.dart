@@ -1,7 +1,7 @@
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
-import '../../../coins/public/coins_facade.dart' show CoinsRoute;
+import '../../../coins/public/coins.dart' show CoinsRoute;
 import '../widgets/send_leave_payment_dialog.dart';
 import '../widgets/send_grouped_address.dart';
 

@@ -1,30 +1,27 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:sync/sync.dart' show WalletKey;
+import 'package:sync/sync.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:primitives/primitives.dart' show Outpoint;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/coins/data/mappers/wallet_utxo_mapper.dart';
+import 'package:primitives/primitives.dart' show Outpoint, Result;
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Labels _labelsFacade;
-  final SyncWalletValuesDatasource _values;
+  final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
   final SyncFreezesDatasource _freezes;
 
   WalletUtxoRepositoryImpl({
     required this._walletMetadataDatasource,
     required this._labelsFacade,
-    required SyncWalletValuesDatasource walletValuesDatasource,
+    required this._loadWallet,
     required SyncFreezesDatasource freezesDatasource,
-  }) : _values = walletValuesDatasource,
-       _freezes = freezesDatasource;
+  }) : _freezes = freezesDatasource;
 
   Future<List<Label>> _fetchLabels(String reference) async =>
       (await _labelsFacade.fetch(reference: reference))
@@ -38,56 +35,39 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
       throw Exception('Wallet metadata not found for walletId: $walletId');
     }
 
-    final walletModel = metadata.isBitcoin
-        ? WalletModel.publicBdk(
-            externalDescriptor: metadata.externalPublicDescriptor,
-            internalDescriptor: metadata.internalPublicDescriptor,
-            network: metadata.network,
-            id: metadata.id,
-          )
-        : WalletModel.publicLwk(
-            combinedCtDescriptor: metadata.externalPublicDescriptor,
-            network: metadata.network,
-            id: metadata.id,
-          );
-
-    // Sync publishes each coin with its frozen state: a freeze is global by
-    // outpoint, whichever wallet or import froze it.
-    final coins = await _values.getCoins(
-      key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
-    );
+    final key = WalletKey(id: metadata.id, network: metadata.network.shared);
+    final wallet = WalletCatalogPortImpl.value(await _loadWallet(key));
+    // An unavailable freeze policy must never publish apparently spendable coins.
+    final coins = WalletCatalogPortImpl.value(wallet.coins.now.latest);
 
     final utxos = await Future.wait(
       coins.map((coin) async {
-        final model = coin.model;
-        // Get labels for the UTXO if any
-        final labelModels = await _fetchLabels(model.labelRef);
-        final txLabels = await _fetchLabels(model.txId);
-        // Get the possible address labels for the UTXO
+        final (txId: txId, vout: vout) = coin.outpoint;
+        final labelModels = await _fetchLabels('$txId:$vout');
+        final txLabels = await _fetchLabels(txId);
         List<Label> addressLabels;
-        switch (model) {
-          case LiquidWalletUtxoModel _:
+        switch (coin) {
+          case LiquidCoin():
             final (standardAddressLabels, confidentialAddressLabels) = await (
-              _fetchLabels(model.standardAddress),
-              _fetchLabels(model.confidentialAddress),
+              _fetchLabels(coin.standardAddress),
+              _fetchLabels(coin.confidentialAddress),
             ).wait;
 
             addressLabels = [
               ...standardAddressLabels,
               ...confidentialAddressLabels,
             ];
-          case BitcoinWalletUtxoModel _:
-            final labels = await _fetchLabels(model.address);
+          case BitcoinCoin():
+            final labels = await _fetchLabels(coin.address ?? '');
             addressLabels = labels;
         }
 
         return WalletUtxoMapper.toEntity(
-          model,
+          coin,
           walletId: walletId,
           labels: labelModels,
           txLabels: txLabels,
           addressLabels: addressLabels,
-          isFrozen: coin.frozen,
         );
       }).toList(),
     );

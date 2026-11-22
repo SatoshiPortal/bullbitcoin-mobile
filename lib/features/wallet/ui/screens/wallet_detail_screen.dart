@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/coins/public/coins.dart';
+import 'package:primitives/primitives.dart';
+
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -38,10 +39,13 @@ class WalletDetailScreen extends StatelessWidget {
     super.key,
     required this.walletId,
     required this.onOpenCoins,
+    required this.loadCoinSummary,
   });
 
   final String walletId;
   final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
+  final Future<Result<CoinSummary, CoinsFailure>> Function(String)
+  loadCoinSummary;
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +132,7 @@ class WalletDetailScreen extends StatelessWidget {
                       child: _CoinsEntryTile(
                         wallet: wallet,
                         onOpenCoins: onOpenCoins,
+                        loadCoinSummary: loadCoinSummary,
                       ),
                     ),
                     if (wallet.isLiquid)
@@ -166,19 +171,25 @@ class WalletDetailScreen extends StatelessWidget {
 /// frozen total as a subtitle. Hidden for Liquid (freeze-exclusion plumbing
 /// exists for Bitcoin only); shown for watch-only Bitcoin wallets.
 class _CoinsEntryTile extends StatefulWidget {
-  const _CoinsEntryTile({required this.wallet, required this.onOpenCoins});
+  const _CoinsEntryTile({
+    required this.wallet,
+    required this.onOpenCoins,
+    required this.loadCoinSummary,
+  });
 
   final Wallet wallet;
   final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
+  final Future<Result<CoinSummary, CoinsFailure>> Function(String)
+  loadCoinSummary;
 
   @override
   State<_CoinsEntryTile> createState() => _CoinsEntryTileState();
 }
 
 class _CoinsEntryTileState extends State<_CoinsEntryTile> {
-  /// Last loaded utxos; null until the first load resolves. Retained across
+  /// Last loaded coin summary; null until the first load resolves. Retained across
   /// reloads so the subtitle never blanks mid-refresh (no flicker).
-  List<WalletUtxo>? _utxos;
+  CoinSummary? _summary;
 
   @override
   void initState() {
@@ -192,15 +203,9 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
   /// sent tx updates the count). Keeps the previous value visible until the
   /// new read resolves.
   Future<void> _reload() async {
-    try {
-      final utxos = await locator<GetWalletUtxosUsecase>().execute(
-        walletId: widget.wallet.id,
-      );
-      if (mounted) setState(() => _utxos = utxos);
-    } catch (_) {
-      // Best-effort: this is a non-critical subtitle. On failure keep the last
-      // known value (or show no subtitle on the first load) rather than
-      // surfacing an unhandled async error.
+    final result = await widget.loadCoinSummary(widget.wallet.id);
+    if (result case Ok(:final value) when mounted) {
+      setState(() => _summary = value);
     }
   }
 
@@ -216,7 +221,7 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
 
   Widget _buildCard(BuildContext context) {
     final radius = BorderRadius.circular(context.bullShapes.card);
-    final utxos = _utxos;
+    final summary = _summary;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
@@ -273,16 +278,11 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
                                       .copyWith(fontWeight: FontWeight.w500)
                                       .copyWith(fontWeight: FontWeight.w600),
                                 ),
-                                if (utxos != null) ...[
+                                if (summary != null) ...[
                                   const Gap(2),
                                   CoinsEntrySubtitle(
-                                    utxoCount: utxos.length,
-                                    frozenSat: utxos
-                                        .where((u) => u.isFrozen)
-                                        .fold<BigInt>(
-                                          BigInt.zero,
-                                          (sum, u) => sum + u.amountSat,
-                                        ),
+                                    utxoCount: summary.count,
+                                    frozenSat: summary.frozenSat,
                                   ),
                                 ],
                               ],

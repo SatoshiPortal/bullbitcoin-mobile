@@ -480,13 +480,16 @@ graph TB
 
     %% Wallet readers and spend preparation assigned to their app owners
     ADDRESS_MGMT --> SYNC
+    UTXO_MGMT --> SYNC
     RECEIVE --> ADDRESS_MGMT
     AUTOSWAP --> ADDRESS_MGMT
     BUY --> ADDRESS_MGMT
     DCA --> ADDRESS_MGMT
     LIMIT_ORDERS --> ADDRESS_MGMT
     PAY --> ADDRESS_MGMT
+    PAY --> UTXO_MGMT
     SELL --> ADDRESS_MGMT
+    SELL --> UTXO_MGMT
     SWAPS --> ADDRESS_MGMT
 
     %% Styling

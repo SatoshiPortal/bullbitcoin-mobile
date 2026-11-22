@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

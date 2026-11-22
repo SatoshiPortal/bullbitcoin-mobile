@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/transactions/data/wallet_history_datasource.dart';
 import 'package:primitives/primitives.dart' show LiquidNetwork;
-import 'package:sync/sync.dart' show WalletKey;
+import 'package:sync/sync.dart' show WalletKey, LiquidCoin;
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
@@ -93,13 +91,11 @@ void main() {
       (_) async => [coin('lbtc'), coin('other-asset', asset: 'other')],
     );
 
-    final coinReader = SyncWalletValuesDatasource(
-      load: (key) => testWalletFromNative(lwkWallet, key: key),
-    );
-    final coins = await coinReader.getUtxos(key: key);
+    final handle = await testWalletFromNative(lwkWallet, key: key);
+    final coins = handle.coins.now.data;
 
-    expect(coins.map((coin) => coin.txId), ['lbtc']);
-    expect((coins.single as LiquidWalletUtxoModel).blockHeight, 100);
+    expect(coins?.map((coin) => coin.outpoint.txId), ['lbtc']);
+    expect((coins?.single as LiquidCoin).blockHeight, 100);
   });
 
   group('Liquid self-transfer amount', () {

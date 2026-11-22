@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';

@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit, ConvertAmount;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/wallet/public/coin_selection.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/send/public/coin_selection.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

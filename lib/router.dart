@@ -20,7 +20,7 @@ import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/coins/public/coins_facade.dart';
+import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
@@ -208,6 +208,7 @@ class AppRouter {
       OnboardingRouter.route,
       ...locator<AccessFeature>().routes.root,
       WalletRouter.walletDetailRoute(
+        loadCoinSummary: (id) => locator<Coins>().summary(id),
         onOpenCoins: (context, wallet) =>
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
