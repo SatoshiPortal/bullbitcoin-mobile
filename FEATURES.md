@@ -468,6 +468,7 @@ graph TB
     REPLACE_BY_FEE --> SEND
     SELL --> FEES
     SELL --> FEES_UI
+    CORE -->|WalletFacade reads for network status| WALLETS
     SWAPS --> AUTOSWAP
     SWAPS --> FEES
     SWAPS --> FEES_UI

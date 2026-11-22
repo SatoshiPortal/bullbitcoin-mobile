@@ -78,7 +78,7 @@ void main() {
             readMempoolEnvironment: () async =>
                 throw StateError('Unexpected Mempool environment read'),
             checkBitcoinFees: (_) async {},
-            isTorRequired: () async => false,
+            isTorRequired: () async => const Ok(false),
             readTorPreferences: () async =>
                 throw StateError('Unexpected Tor read'),
             saveTorProxy: ({required enabled, required port}) async => false,

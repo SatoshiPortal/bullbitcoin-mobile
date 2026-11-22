@@ -3,8 +3,10 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_di
 import 'package:primitives/primitives.dart';
 
 import 'data/ark_installation_state.dart';
+import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/get_receive_address_usecase.dart';
 import 'domain/usecases/get_transfer_receive_address_usecase.dart';
+import 'domain/usecases/is_tor_required_usecase.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show SqliteArkFundingReservations;
@@ -150,6 +152,9 @@ class WalletLocator {
     locator.registerLazySingleton<WalletFacade>(
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
+        readDefaultWalletNetwork: () =>
+            locator<GetDefaultWalletNetworkUsecase>().execute(),
+        readTorRequirement: () => locator<IsTorRequiredUsecase>().execute(),
         nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
             NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>())
                 .execute(id, excludedAddresses: excludedAddresses),

@@ -15,7 +15,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, NetworkEnv, Err, Ok;
+    show BitcoinNetwork, NetworkEnv, Err, Failure, Ok, Result;
 
 class CheckAllServiceStatusUsecase {
   /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
@@ -29,7 +29,7 @@ class CheckAllServiceStatusUsecase {
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
   final Future<void> Function(BitcoinNetwork) _checkBitcoinFees;
-  final Future<bool> Function() _isTorRequired;
+  final Future<Result<bool, Failure>> Function() _isTorRequired;
   final Future<rb.Result<bool, rb.RecoverBullFailure>> Function()
   _checkServerConnection;
   final Future<TorPreferences> Function() _readTorPreferences;
@@ -298,8 +298,15 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
-    if (!await _isTorRequired()) return ServiceStatus.unknown;
-    return _checkEmbeddedTorConnection();
+    switch (await _isTorRequired()) {
+      case Ok(value: true):
+        return _checkEmbeddedTorConnection();
+      case Ok(value: false):
+        return ServiceStatus.unknown;
+      case Err(:final failure):
+        log.warning('Tor status: wallet read failed (${failure.runtimeType})');
+        return ServiceStatus.unknown;
+    }
   }
 
   Future<ServiceStatus> _checkEmbeddedTorConnection() async =>

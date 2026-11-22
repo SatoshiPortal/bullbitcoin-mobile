@@ -5,7 +5,6 @@ import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/fees/public/app_fee_estimates.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:electrum/electrum.dart' show ElectrumFailure;
@@ -282,7 +281,7 @@ class AppLocator {
         services: locator,
         bindings: (
           readDefaultNetwork: () =>
-              locator<GetDefaultWalletNetworkUsecase>().execute(),
+              locator<WalletFacade>().defaultWalletNetwork(),
           readEnvironment: () =>
               SettingsNetworkBindings.readEnvironment(locator<Preferences>()),
           readMempoolEnvironment: SettingsEnvironmentAdapter(
@@ -290,7 +289,7 @@ class AppLocator {
           ).getEnvironment,
           checkBitcoinFees: (network) =>
               probeMempoolFees(locator<Fees>(), network),
-          isTorRequired: () => locator<WalletRepository>().isTorRequired(),
+          isTorRequired: () => locator<WalletFacade>().isTorRequired(),
           readTorPreferences: () => SettingsNetworkBindings.readTorPreferences(
             locator<Preferences>(),
           ),

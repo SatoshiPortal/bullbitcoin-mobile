@@ -32,7 +32,7 @@ typedef NetworkBindings = ({
   Future<NetworkEnv> Function() readEnvironment,
   ReadMempoolEnvironment readMempoolEnvironment,
   Future<void> Function(BitcoinNetwork) checkBitcoinFees,
-  Future<bool> Function() isTorRequired,
+  Future<Result<bool, Failure>> Function() isTorRequired,
   ReadTorPreferences readTorPreferences,
   SaveTorProxy saveTorProxy,
   Future<Result<void, Failure>> Function(TorTransportMode) saveTorMode,

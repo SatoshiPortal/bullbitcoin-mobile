@@ -12,7 +12,7 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, NetworkEnv, Result, Err, Ok;
+    show BitcoinNetwork, NetworkEnv, Result, Err, Failure, Ok;
 
 class _MockElectrumServers extends Mock implements ElectrumServers {}
 
@@ -31,7 +31,7 @@ abstract interface class _SettingsAccess {
 }
 
 abstract interface class _WalletUsage {
-  Future<bool> isTorRequired();
+  Future<Result<bool, Failure>> isTorRequired();
 }
 
 abstract interface class _BitcoinFees {
@@ -70,7 +70,8 @@ void main() {
         .thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(walletRepository.isTorRequired)
+        .thenAnswer((_) async => const Ok(false));
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
@@ -114,7 +115,8 @@ void main() {
         .thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(walletRepository.isTorRequired)
+        .thenAnswer((_) async => const Ok(false));
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
@@ -161,7 +163,8 @@ void main() {
       final walletRepository = _MockWalletRepository();
       // Tor is not required for this wallet, so neither the Tor nor the
       // RecoverBull probe is reached — the point of the test is Payjoin.
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+      when(walletRepository.isTorRequired)
+          .thenAnswer((_) async => const Ok(false));
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
@@ -195,7 +198,8 @@ void main() {
     'reports configured external Tor ready without a backup wallet',
     () async {
       final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+      when(walletRepository.isTorRequired)
+          .thenAnswer((_) async => const Ok(false));
       final electrum = _MockElectrumServers();
       when(() => electrum.check(network: any(named: 'network')))
           .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
@@ -247,7 +251,8 @@ void main() {
     'reports configured external Tor unavailable without a backup wallet',
     () async {
       final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+      when(walletRepository.isTorRequired)
+          .thenAnswer((_) async => const Ok(false));
       final electrum = _MockElectrumServers();
       when(() => electrum.check(network: any(named: 'network')))
           .thenAnswer((_) async => const Ok(ElectrumServerStatus.online));
@@ -310,7 +315,8 @@ void main() {
           .thenAnswer((_) async => throw Exception('Mempool probe failed'));
 
       final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+      when(walletRepository.isTorRequired)
+          .thenAnswer((_) async => const Ok(false));
       final settingsRepository = _MockSettingsRepository();
       when(() => settingsRepository.fetch())
           .thenAnswer((_) async => _settings(useTorProxy: false));
@@ -369,7 +375,8 @@ void main() {
         .thenAnswer((_) async => throw Exception('Mempool probe failed'));
 
     final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(walletRepository.isTorRequired)
+        .thenAnswer((_) async => const Ok(false));
     final settingsRepository = _MockSettingsRepository();
     when(settingsRepository.fetch).thenThrow(Exception('Tor probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
@@ -416,7 +423,8 @@ void main() {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(walletRepository.isTorRequired)
+        .thenAnswer((_) async => const Ok(false));
     final settingsRepository = _MockSettingsRepository();
     when(() => settingsRepository.fetch())
         .thenAnswer((_) async => _settings(useTorProxy: false));
@@ -454,7 +462,8 @@ void main() {
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    when(walletRepository.isTorRequired)
+        .thenAnswer((_) async => const Ok(false));
     final settingsRepository = _MockSettingsRepository();
     when(() => settingsRepository.fetch())
         .thenAnswer((_) async => _settings(useTorProxy: false));

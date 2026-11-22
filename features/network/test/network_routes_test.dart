@@ -70,7 +70,7 @@ void main() {
         readEnvironment: () async => NetworkEnv.testnet,
         readMempoolEnvironment: () async => const Ok(BitcoinNetwork.testnet),
         checkBitcoinFees: (_) async {},
-        isTorRequired: () async => false,
+        isTorRequired: () async => const Ok(false),
         readTorPreferences: () async => (
           useTorProxy: false,
           torProxyPort: 9050,
