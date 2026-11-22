@@ -10,11 +10,13 @@ import 'package:go_router/go_router.dart';
 class PinCodeUnlockScreen extends StatelessWidget {
   const PinCodeUnlockScreen({
     super.key,
-    required this.onSuccess,
+    required VoidCallback onSuccess,
     this.canPop = false,
-  });
+    // Keep the public constructor parameter distinct from the private field.
+    // ignore: prefer_initializing_formals
+  }) : _onSuccess = onSuccess;
 
-  final VoidCallback onSuccess;
+  final VoidCallback _onSuccess;
   final bool canPop;
 
   @override
@@ -35,7 +37,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
               );
             }
           } else if (state.status == AppUnlockStatus.success) {
-            onSuccess();
+            _onSuccess();
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(const Duration(seconds: 1), () {
               if (context.mounted) {
