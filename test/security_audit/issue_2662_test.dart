@@ -17,8 +17,7 @@ void main() {
           'lib/features/fees/data/fees_repository_impl.dart',
         ).readAsStringSync();
 
-        expect(repositorySource, contains('customServer.fullUrl'));
-        expect(repositorySource, contains('defaultServer.fullUrl'));
+        expect(repositorySource, contains('.servers.activeBase('));
         expect(repositorySource, contains('baseUrl:'));
         expect(datasourceSource, isNot(contains('server.fullUrl')));
         expect(
