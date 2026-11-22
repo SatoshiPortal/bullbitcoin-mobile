@@ -5,16 +5,11 @@ import 'package:primitives/primitives.dart';
 
 import 'data/ark_installation_state.dart';
 
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
-import 'domain/usecases/get_transfer_receive_address_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
 
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show SqliteArkFundingReservations;
-
-import 'domain/usecases/next_unused_receive_address_usecase.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
@@ -82,7 +77,16 @@ import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 
 class WalletLocator {
-  static void setup(GetIt locator) {
+  static void setup(
+    GetIt locator, {
+    Future<Result<String, WalletDiscoveryFailure>> Function(String)?
+    receiveAddress,
+    Future<Result<String, WalletFailure>> Function(
+      String, {
+      Set<String> excludedAddresses,
+    })?
+    nextReceiveAddress,
+  }) {
     Future<WalletKey> keyFor(String id) =>
         WalletCatalogPortImpl.keyForId(locator<WalletMetadataDatasource>(), id);
     Future<BitcoinSpendStatus> spendStatus(
@@ -101,10 +105,6 @@ class WalletLocator {
       }
     }
 
-    locator.registerFactory<GetTransferReceiveAddressUsecase>(
-      () =>
-          GetTransferReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
-    );
     locator.registerFactory<WalletSecretReferencesRepository>(
       () => CatalogWalletSecretReferencesRepository(
         locator<WalletMetadataDatasource>(),
@@ -157,12 +157,9 @@ class WalletLocator {
         readDefaultWalletNetwork: () =>
             locator<GetDefaultWalletNetworkUsecase>().execute(),
         readTorRequirement: () => locator<IsTorRequiredUsecase>().execute(),
-        nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
-            NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>())
-                .execute(id, excludedAddresses: excludedAddresses),
+        nextReceiveAddress: nextReceiveAddress,
         spendStatus: spendStatus,
-        receiveAddress: (id) =>
-            locator<GetTransferReceiveAddressUsecase>().execute(id),
+        receiveAddress: receiveAddress,
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap((
           id,
           transaction, {

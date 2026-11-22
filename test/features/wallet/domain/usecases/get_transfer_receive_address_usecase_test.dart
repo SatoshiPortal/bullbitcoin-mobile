@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_transfer_receive_address_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_transfer_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

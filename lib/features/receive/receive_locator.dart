@@ -1,3 +1,5 @@
+import 'domain/usecases/get_transfer_receive_address_usecase.dart';
+import 'domain/usecases/next_unused_receive_address_usecase.dart';
 import 'domain/usecases/get_receive_swap_limits_usecase.dart';
 import 'domain/usecases/get_receive_amount_quotes_usecase.dart';
 
@@ -40,6 +42,14 @@ import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<GetTransferReceiveAddressUsecase>(
+      () =>
+          GetTransferReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
+    );
+    locator.registerFactory<NextUnusedReceiveAddressUsecase>(
+      () =>
+          NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
+    );
     locator.registerFactory<PollReceiveWalletUsecase>(
       () => PollReceiveWalletUsecase(locator<WalletFacade>()),
     );
