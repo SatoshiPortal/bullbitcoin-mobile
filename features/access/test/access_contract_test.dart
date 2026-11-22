@@ -151,6 +151,41 @@ void main() {
     expect(grants, hasLength(1));
   });
 
+  testWidgets('a configured PIN requires validation before a grant', (
+    tester,
+  ) async {
+    const pin = '1234';
+    storage.entries['securityKey'] = pin;
+    final grants = <AppUnlockGrant>[];
+    final gate = const Access().buildReauthenticationGate(
+      onSuccess: grants.add,
+    );
+    expect(
+      // Verify the widget exposes no success callback even to dynamic callers.
+      () => (gate as dynamic).onSuccess,
+      throwsA(isA<NoSuchMethodError>()),
+    );
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(app(gate));
+      await tester.pumpAndSettle();
+      expect(grants, isEmpty);
+
+      final loc = AccessLocalizations.of(tester.element(find.byType(Scaffold)));
+      for (final digit in pin.split('')) {
+        await tester.tap(find.bySemanticsLabel(digit));
+        await tester.pumpAndSettle();
+      }
+      expect(grants, isEmpty);
+
+      await tester.tap(find.text(loc.appUnlockButton));
+      await tester.pumpAndSettle();
+      expect(grants, hasLength(1));
+    } finally {
+      semantics.dispose();
+    }
+  });
+
   testWidgets(
     'disposing the gate while its PIN read is pending issues no grant',
     (tester) async {
