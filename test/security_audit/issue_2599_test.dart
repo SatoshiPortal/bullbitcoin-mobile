@@ -81,12 +81,23 @@ void main() {
       expect(source, isNot(contains('AppLocator.setup(')));
       expect(source, isNot(contains('payjoinDatabaseFilename')));
       expect(source, isNot(contains('package:secrets/')));
+      final admission = source.indexOf(
+        'final admitted = await cutover.admit()',
+      );
+      expect(admission, greaterThanOrEqualTo(0));
+      expect(
+        source.indexOf('BackgroundTaskRunner.forTask(', admission),
+        greaterThan(admission),
+      );
       final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
       expect(schemaGate, greaterThanOrEqualTo(0));
       expect(
-        source.indexOf('final sqlite = SqliteDatabase();'),
+        source.indexOf('final sqlite = await LegacySourceStore(', schemaGate),
         greaterThan(schemaGate),
       );
+      expect(source, contains(').open(admission)'));
+      expect(source, isNot(contains('cutover.prepare()')));
+      expect(source, isNot(contains('SqliteDatabase();')));
     });
 
     for (final (role, path) in [('foreground', 'lib/init.dart')]) {
