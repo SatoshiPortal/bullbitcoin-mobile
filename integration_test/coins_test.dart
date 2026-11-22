@@ -2,7 +2,6 @@ import 'initialization_result.dart';
 
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, Err, Ok, Result;
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart' as primitives show Network;
 
 import 'dart:io';
@@ -29,6 +28,7 @@ import 'package:sync/sync.dart' as sync;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'developer_network.dart';
+import 'funded_testnet_wallet.dart';
 
 // Integration tests for the Coins / UTXO view + freeze (issue #760).
 //
@@ -163,17 +163,10 @@ Future<void> main({bool isInitialized = false}) async {
         // Testnet is a developer network: enable it as a user would.
         // Restored when the group ends, even if this setup fails.
         await selectDeveloperNetwork(Environment.testnet);
-        final secret = switch (await locator<Secrets>().import(
-          words: mnemonic!.split(' '),
-          language: bip39.Language.english,
-        )) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-        };
-        wallet = await walletRepository.createWallet(
-          secret: secret,
-          network: Network.bitcoinTestnet,
-          scriptType: ScriptType.bip84,
+        wallet = await openFundedTestnetWallet(
+          mnemonic: mnemonic ?? fail('missing Alice fixture'),
+          secrets: locator<Secrets>(),
+          wallets: walletRepository,
         );
         // Fail fast: a funding sync that failed would otherwise surface as a
         // confusing balance assertion further down.

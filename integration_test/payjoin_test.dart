@@ -1,7 +1,5 @@
 import 'initialization_result.dart';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -24,6 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 import 'developer_network.dart';
+import 'funded_testnet_wallet.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -192,29 +191,21 @@ Future<void> main({bool isInitialized = false}) async {
         if (enabled case Err(:final failure)) throw failure;
       }
 
-      final receiverSecret = switch (await secrets.import(
-        words: receiverMnemonic!.split(' '),
-        language: bip39.Language.english,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      final senderSecret = switch (await secrets.import(
-        words: senderMnemonic!.split(' '),
-        language: bip39.Language.english,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      receiverWallet = await walletRepository.createWallet(
-        secret: receiverSecret,
-        network: Network.bitcoinTestnet,
-        scriptType: ScriptType.bip84,
+      receiverWallet = await openFundedTestnetWallet(
+        mnemonic: receiverMnemonic ?? fail('missing Alice fixture'),
+        secrets: secrets,
+        wallets: walletRepository,
       );
-      senderWallet = await walletRepository.createWallet(
-        secret: senderSecret,
-        network: Network.bitcoinTestnet,
-        scriptType: ScriptType.bip84,
+      senderWallet = await openFundedTestnetWallet(
+        mnemonic: senderMnemonic ?? fail('missing Bob fixture'),
+        secrets: secrets,
+        wallets: walletRepository,
+      );
+      expect(
+        senderWallet.id,
+        isNot(receiverWallet.id),
+        reason:
+            'The funded Payjoin requires distinct sender and receiver accounts',
       );
     });
 
