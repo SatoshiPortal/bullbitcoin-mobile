@@ -297,8 +297,10 @@ final class StorageCutover {
       legacy.verify();
       for (final participant in participants) {
         final origin = marker.origins[participant.ownerId];
-        if (origin == null ||
-            !_ready(await participant.inspect(shared), origin)) {
+        if (origin == null) throw const LifecycleException('owner');
+        final inspection = await participant.inspect(shared);
+        if (inspection case Err(:final failure)) return Err(failure);
+        if (!_ready(inspection, origin)) {
           throw const LifecycleException('not_ready');
         }
       }
