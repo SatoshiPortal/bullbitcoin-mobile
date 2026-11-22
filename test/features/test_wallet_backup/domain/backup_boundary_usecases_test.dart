@@ -94,8 +94,8 @@ void main() {
       },
     );
 
-    test('a failed read is an Err, not a silent false, so the caller owns '
-        'the fail-closed decision', () async {
+    test('a failed read retains its typed failure and cannot authorize PIN '
+        'creation', () async {
       when(
         () => wallets.getWallets(
           onlyDefaults: any(named: 'onlyDefaults'),
@@ -112,6 +112,7 @@ void main() {
           expect(failure, isA<TestWalletBackupWalletsUnavailableFailure>());
           expect(failure.logMessage, isNot(contains('app.sqlite')));
       }
+      expect(await usecase.hasVerifiedBackup(), isFalse);
     });
   });
 

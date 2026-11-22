@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/app_unlock_failure_l10n.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,9 +17,13 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
-  const PinCodeUnlockScreen({super.key, this.onSuccess, this.canPop = false});
+  const PinCodeUnlockScreen({
+    super.key,
+    required this.onSuccess,
+    this.canPop = false,
+  });
 
-  final void Function()? onSuccess;
+  final VoidCallback onSuccess;
   final bool canPop;
 
   @override
@@ -40,14 +43,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
               );
             }
           } else if (state.status == AppUnlockStatus.success) {
-            // If onSuccess is provided, call it, otherwise go to home as default.
-            // WalletHomeScreen syncs itself when it mounts / the router lands
-            // on the home location, so no explicit refresh dispatch is needed here.
-            if (onSuccess != null) {
-              onSuccess!();
-            } else {
-              context.goNamed(WalletRoute.walletHome.name);
-            }
+            onSuccess();
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(const Duration(seconds: 1), () {
               if (context.mounted) {

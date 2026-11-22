@@ -59,8 +59,8 @@ void main() {
     final gate = const AppUnlockFacade().buildReauthenticationGate(
       onSuccess: (value) => grant = value,
     );
-    (gate as PinCodeUnlockScreen).onSuccess!();
-    return grant!;
+    (gate as PinCodeUnlockScreen).onSuccess();
+    return grant ?? (throw StateError('Unlock did not issue a grant'));
   }
 
   late _MockDeleteSwapMasterKeyUsecase deleteSwapMasterKeyUsecase;

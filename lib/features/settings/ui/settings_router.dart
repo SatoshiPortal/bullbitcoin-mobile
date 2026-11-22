@@ -180,7 +180,10 @@ class SettingsRouter {
       GoRoute(
         path: SettingsRoute.pinCode.path,
         name: SettingsRoute.pinCode.name,
-        builder: (context, state) => const PinCodeSettingFlow(),
+        builder: (context, state) => PinCodeSettingFlow(
+          onBackUp: (context) =>
+              context.pushNamed<void>(SettingsRoute.backupSettings.name),
+        ),
       ),
       GoRoute(
         path: SettingsRoute.backupSettings.path,

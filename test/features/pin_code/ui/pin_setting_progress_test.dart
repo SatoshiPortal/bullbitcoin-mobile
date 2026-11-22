@@ -111,7 +111,10 @@ Future<AppLocalizations> _showProgress(
           ),
         ),
       ),
-      GoRoute(path: '/pin', builder: (_, _) => const PinCodeSettingFlow()),
+      GoRoute(
+        path: '/pin',
+        builder: (_, _) => PinCodeSettingFlow(onBackUp: (_) async {}),
+      ),
     ],
   );
   addTearDown(router.dispose);

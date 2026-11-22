@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/widgets.dart';
 
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -12,13 +12,16 @@ enum AppUnlockRoute {
 }
 
 class AppUnlockRouter {
-  static final route = GoRoute(
-    name: AppUnlockRoute.appUnlock.name,
-    path: AppUnlockRoute.appUnlock.path,
-    builder: (context, state) {
-      final onSuccess = state.extra as VoidCallback?;
+  static GoRoute route({required void Function(BuildContext) onUnlocked}) =>
+      GoRoute(
+        name: AppUnlockRoute.appUnlock.name,
+        path: AppUnlockRoute.appUnlock.path,
+        builder: (context, state) {
+          final onSuccess = state.extra as VoidCallback?;
 
-      return PinCodeUnlockScreen(onSuccess: onSuccess);
-    },
-  );
+          return PinCodeUnlockScreen(
+            onSuccess: onSuccess ?? () => onUnlocked(context),
+          );
+        },
+      );
 }

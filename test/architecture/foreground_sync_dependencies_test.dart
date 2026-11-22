@@ -25,7 +25,7 @@ const _allowedTargets = <String, String>{
   'all_seed_view': 'app_unlock wallet',
   'app_startup':
       'app_unlock import_mnemonic logs onboarding recoverbull settings wallet',
-  'app_unlock': 'pin_code wallet',
+  'app_unlock': 'pin_code',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
@@ -49,7 +49,7 @@ const _allowedTargets = <String, String>{
   'network': 'recoverbull',
   'onboarding': 'import_mnemonic recoverbull settings wallet network',
   'pay': 'bitcoin_price exchange fees recipients send transactions wallet',
-  'pin_code': 'app_unlock settings test_wallet_backup',
+  'pin_code': 'app_unlock',
   'receive': 'label_editor settings signers swap transactions wallet',
   'recipients': 'exchange',
   'replace_by_fee': 'fees send wallet',

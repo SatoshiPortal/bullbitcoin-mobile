@@ -206,7 +206,9 @@ class AppRouter {
       ExchangeRouter.authRoute(_exchangeConfig),
       ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
-      AppUnlockRouter.route,
+      AppUnlockRouter.route(
+        onUnlocked: (context) => context.goNamed(WalletRoute.walletHome.name),
+      ),
       WalletRouter.walletDetailRoute(
         onOpenCoins: (context, wallet) =>
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),

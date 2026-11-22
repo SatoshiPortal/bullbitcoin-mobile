@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/pin_code/domain/pin_code_failure.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/check_pin_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -65,11 +65,7 @@ class PinCodeSettingBloc
           //  wrongly told they already have. The failure belongs to another
           //  feature and is not shown here — it is a routing input, not
           //  something the user can act on from this screen.
-          final backupResult = await _checkBackupUsecase.execute();
-          final hasBackup = switch (backupResult) {
-            Ok(:final value) => value,
-            Err() => false,
-          };
+          final hasBackup = await _checkBackupUsecase.execute();
           final status = hasBackup
               ? PinCodeSettingStatus.choose
               : PinCodeSettingStatus.backupRequired;
@@ -95,7 +91,7 @@ class PinCodeSettingBloc
   final SetPinCodeUsecase _setPinCodeUsecase;
   final DeletePinCodeUsecase _deletePinCodeUsecase;
   final IsPinCodeSetUsecase _isPinCodeSetUsecase;
-  final CheckBackupUsecase _checkBackupUsecase;
+  final CheckPinBackupUsecase _checkBackupUsecase;
 
   Future<void> _onStarted(
     PinCodeSettingStarted event,
@@ -126,10 +122,7 @@ class PinCodeSettingBloc
   ) async {
     // Fails closed, same as _onInitialized: an unreadable backup state must
     //  route to backupRequired, never to choose.
-    final hasBackup = switch (await _checkBackupUsecase.execute()) {
-      Ok(:final value) => value,
-      Err() => false,
-    };
+    final hasBackup = await _checkBackupUsecase.execute();
     var status = PinCodeSettingStatus.choose;
     if (!hasBackup) status = PinCodeSettingStatus.backupRequired;
     emit(state.copyWith(status: status));

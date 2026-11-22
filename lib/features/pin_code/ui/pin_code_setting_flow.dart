@@ -6,14 +6,15 @@ import 'package:bb_mobile/features/pin_code/presentation/pin_code_failure_l10n.d
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/confirm_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/pin_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 class PinCodeSettingFlow extends StatelessWidget {
-  const PinCodeSettingFlow({super.key});
+  final Future<void> Function(BuildContext) onBackUp;
+
+  const PinCodeSettingFlow({super.key, required this.onBackUp});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +29,10 @@ class PinCodeSettingFlow extends StatelessWidget {
               context.pop();
             case PinCodeSettingStatus.failure:
               log.info('Pin Code Set Failed');
-              if (state.failure != null) {
+              if (state.failure case final failure?) {
                 BullSnackBar.show(
                   context,
-                  message: state.failure!.toTranslated(context),
+                  message: failure.toTranslated(context),
                 );
               }
               context.pop();
@@ -73,11 +74,11 @@ class PinCodeSettingFlow extends StatelessWidget {
                     return PinSettingsScreen(
                       onBackUp: () async {
                         final bloc = context.read<PinCodeSettingBloc>();
-                        await context.pushNamed(
-                          SettingsRoute.backupSettings.name,
-                        );
+                        await onBackUp(context);
                         // Re-check once the user comes back from the backup.
-                        bloc.add(const PinCodeSettingInitialized());
+                        if (!bloc.isClosed) {
+                          bloc.add(const PinCodeSettingInitialized());
+                        }
                       },
                     );
                   case PinCodeSettingStatus.choose:

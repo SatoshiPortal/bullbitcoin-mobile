@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/pin_code/domain/usecases/delete_pin_code_usec
 import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/check_pin_backup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,7 +14,7 @@ class MockDeletePinCodeUsecase extends Mock implements DeletePinCodeUsecase {}
 
 class MockIsPinCodeSetUsecase extends Mock implements IsPinCodeSetUsecase {}
 
-class MockCheckBackupUsecase extends Mock implements CheckBackupUsecase {}
+class MockCheckPinBackupUsecase extends Mock implements CheckPinBackupUsecase {}
 
 void main() {
   // The backup check gates whether the user is allowed to set a PIN at all.
@@ -23,7 +22,7 @@ void main() {
   // someone their funds are backed up when we do not know is the one outcome
   // that loses money.
   group('backup gate fails closed', () {
-    PinCodeSettingBloc buildBloc(MockCheckBackupUsecase checkBackup) {
+    PinCodeSettingBloc buildBloc(MockCheckPinBackupUsecase checkBackup) {
       final isPinCodeSet = MockIsPinCodeSetUsecase();
       when(() => isPinCodeSet.execute())
           .thenAnswer((_) async => const Ok(false));
@@ -35,28 +34,28 @@ void main() {
       );
     }
 
-    test('routes to backupRequired when the backup check fails', () async {
-      final checkBackup = MockCheckBackupUsecase();
-      when(() => checkBackup.execute()).thenAnswer(
-        (_) async =>
-            const Err(TestWalletBackupWalletsUnavailableFailure('locked')),
-      );
-      final bloc = buildBloc(checkBackup);
-      addTearDown(bloc.close);
+    test(
+      'routes to backupRequired when no verified backup is available',
+      () async {
+        final checkBackup = MockCheckPinBackupUsecase();
+        when(() => checkBackup.execute()).thenAnswer((_) async => false);
+        final bloc = buildBloc(checkBackup);
+        addTearDown(bloc.close);
 
-      await bloc.stream.firstWhere(
-        (state) => state.status != PinCodeSettingStatus.initializing,
-      );
+        await bloc.stream.firstWhere(
+          (state) => state.status != PinCodeSettingStatus.initializing,
+        );
 
-      expect(bloc.state.status, PinCodeSettingStatus.backupRequired);
-      // The other feature's failure is a routing input here, not something
-      // this screen shows.
-      expect(bloc.state.failure, isNull);
-    });
+        expect(bloc.state.status, PinCodeSettingStatus.backupRequired);
+        // The other feature's failure is a routing input here, not something
+        // this screen shows.
+        expect(bloc.state.failure, isNull);
+      },
+    );
 
     test('routes to choose when a backup exists', () async {
-      final checkBackup = MockCheckBackupUsecase();
-      when(() => checkBackup.execute()).thenAnswer((_) async => const Ok(true));
+      final checkBackup = MockCheckPinBackupUsecase();
+      when(() => checkBackup.execute()).thenAnswer((_) async => true);
       final bloc = buildBloc(checkBackup);
       addTearDown(bloc.close);
 
@@ -76,7 +75,7 @@ void main() {
       setPinCodeUsecase: MockSetPinCodeUsecase(),
       deletePinCodeUsecase: MockDeletePinCodeUsecase(),
       isPinCodeSetUsecase: isPinCodeSet,
-      checkBackupUsecase: MockCheckBackupUsecase(),
+      checkBackupUsecase: MockCheckPinBackupUsecase(),
     );
     addTearDown(bloc.close);
 
@@ -94,7 +93,7 @@ void main() {
       setPinCodeUsecase: MockSetPinCodeUsecase(),
       deletePinCodeUsecase: MockDeletePinCodeUsecase(),
       isPinCodeSetUsecase: isPinCodeSet,
-      checkBackupUsecase: MockCheckBackupUsecase(),
+      checkBackupUsecase: MockCheckPinBackupUsecase(),
     );
     addTearDown(bloc.close);
     await bloc.stream.firstWhere(
