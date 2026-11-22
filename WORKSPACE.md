@@ -167,6 +167,7 @@ graph TD
   network --> bull_ui
   network --> electrum
   network --> mempool
+  network --> preferences
   network --> primitives
   notifications --> bull_logger
   notifications --> primitives
