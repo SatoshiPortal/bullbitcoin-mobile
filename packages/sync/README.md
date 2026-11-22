@@ -27,6 +27,8 @@ Values are mapped from the native wallet once per revision, built into one immut
 
 `package:sync/write.dart` publishes `WalletNativeRuntime.open` for composition. It owns provisioning, recovery and native lifecycle operations on `WalletKey`, returning `Result` values. The catalog remains external through `WalletCatalogPort`; its owner supplies the deletion callback, invoked only after native deletion succeeds. A failed global provisioning pass does not prevent a known wallet from attempting its own read or receive operation.
 
+Every `WalletCatalogPort` read must complete, with either a value or a failure. Catalog reads must never call `Sync.close()` because closing waits for in-flight reads to finish.
+
 ## Transactions
 
 `transactions.dart` publishes wallet-independent Bitcoin and Liquid transaction values used by signed-transaction review. These provide review projections, while the history types in `sync.dart` describe a wallet’s view of its activity. Import the library for the view you need; neither exposes native handles.
