@@ -96,8 +96,29 @@ void main() {
     test('sends the payment processor and reads both objects', () async {
       final api = answer({
         'result': {
-          'element': {'code': 'ABC123', 'userNbr': 7},
-          'ppExtraData': {'BENEFICIARY NAME': 'Bull Bitcoin'},
+          'element': {'code': 'ABC123', 'userNbr': 7, 'IBAN': 'overridden'},
+          'ppExtraData': {
+            'BENEFICIARY NAME': 'Bull Bitcoin',
+            'BENEFICIARY EMAIL': 'pay@example.com',
+            'BANK ACCOUNT DETAILS': 'details',
+            'IBAN': 'DE89370400440532013000',
+            'SWIFT': 'SWIFTXX',
+            'INSTITUTION NUMBER': 1,
+            'TRANSIT NUMBER': '12345',
+            'ACCOUNT NUMBER': '1234567',
+            'ROUTING NUMBER': '021000021',
+            'BENEFICIARY ADDRESS': '1 Main St',
+            'BANK ADDRESS': '2 Bank St',
+            'BANK NAME': 'Bank',
+            'BILLER NAME': 'Bull Bitcoin Biller',
+            'BIC': 'BICXX',
+            'BANK ACCOUNT COUNTRY': 'FR',
+            'BANK COUNTRY': 'DE',
+            'CLABE': '002010077777777771',
+            'CÉDULA JURÍDICA': '3-101-123456',
+            'CVU': '0000003100010000000001',
+            'NUM TELEFONO': 88888888,
+          },
         },
       }).recipients;
 
@@ -111,10 +132,81 @@ void main() {
         '"params":{"paymentProcessorCode":"IN_CAD_EMAIL_TRANSFER_APL",'
         '"bankCode":null,"amount":null,"callbackUrl":null}}',
       );
-      expect(details.code, 'ABC123');
-      expect(details.userNbr, '7');
-      expect(details.beneficiaryName, 'Bull Bitcoin');
+      expect(details.isEmpty, isFalse);
+      expect(
+        {
+          'code': details.code,
+          'userNbr': details.userNbr,
+          'beneficiaryName': details.beneficiaryName,
+          'beneficiaryEmail': details.beneficiaryEmail,
+          'bankAccountDetails': details.bankAccountDetails,
+          'iban': details.iban,
+          'swift': details.swift,
+          'institutionNumber': details.institutionNumber,
+          'transitNumber': details.transitNumber,
+          'accountNumber': details.accountNumber,
+          'routingNumber': details.routingNumber,
+          'beneficiaryAddress': details.beneficiaryAddress,
+          'bankAddress': details.bankAddress,
+          'bankName': details.bankName,
+          'billerName': details.billerName,
+          'bic': details.bic,
+          'bankAccountCountry': details.bankAccountCountry,
+          'bankCountry': details.bankCountry,
+          'clabe': details.clabe,
+          'cedulaJuridica': details.cedulaJuridica,
+          'cvu': details.cvu,
+          'numTelefono': details.numTelefono,
+        },
+        {
+          'code': 'ABC123',
+          'userNbr': '7',
+          'beneficiaryName': 'Bull Bitcoin',
+          'beneficiaryEmail': 'pay@example.com',
+          'bankAccountDetails': 'details',
+          'iban': 'DE89370400440532013000',
+          'swift': 'SWIFTXX',
+          'institutionNumber': '1',
+          'transitNumber': '12345',
+          'accountNumber': '1234567',
+          'routingNumber': '021000021',
+          'beneficiaryAddress': '1 Main St',
+          'bankAddress': '2 Bank St',
+          'bankName': 'Bank',
+          'billerName': 'Bull Bitcoin Biller',
+          'bic': 'BICXX',
+          'bankAccountCountry': 'FR',
+          'bankCountry': 'DE',
+          'clabe': '002010077777777771',
+          'cedulaJuridica': '3-101-123456',
+          'cvu': '0000003100010000000001',
+          'numTelefono': '88888888',
+        },
+      );
     });
+
+    for (final field in [
+      'numTelefono',
+      'NUM TELEFONO',
+      'NUM_TELEFONO',
+      'PHONE NUMBER',
+      'phoneNumber',
+    ]) {
+      test('reads the SINPE phone from $field', () async {
+        final api = answer({
+          'result': {
+            'ppExtraData': {field: 88888888},
+          },
+        }).recipients;
+
+        final details = valueOf(
+          await api.getUserPaymentProcessorCode('IN_CRS_SINPE'),
+        );
+
+        expect(details.isEmpty, isFalse);
+        expect(details.numTelefono, '88888888');
+      });
+    }
 
     test('missing objects are empty', () async {
       final api = answer({'result': <String, Object?>{}}).recipients;

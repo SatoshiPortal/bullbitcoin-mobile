@@ -579,6 +579,20 @@ void main() {
       );
     });
 
+    test('a transport failure keeps its safe classification', () async {
+      await expectLater(
+        buy(FakeBbxHttp(error: DioExceptionType.connectionError)),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            'Exception: Failed to place buy order: '
+                'Exception: DioException(connectionError)',
+          ),
+        ),
+      );
+    });
+
     test('a single reason.limit is the minimum exception', () async {
       await expectLater(
         buy(

@@ -497,6 +497,24 @@ void main() {
         });
       }
 
+      test(
+        '$name: a transformTimeout keeps its legacy failure message',
+        () async {
+          final http = FakeBbxHttp(error: DioExceptionType.transformTimeout);
+
+          final failure = failureOf(await call(_new(http)));
+
+          expect(http.requests, hasLength(1));
+          expect(
+            failure,
+            name == 'registerResponsibilityConsent'
+                ? isA<FundExchangeConsentRegistrationFailure>()
+                : isA<FundExchangeUnexpectedFailure>(),
+          );
+          expect(failure.logMessage, 'Transport failure: transformTimeout');
+        },
+      );
+
       test('$name: a missing API key is NotAuthenticated', () async {
         final ((oldSent, oldResult), (sent, result)) = await _both(
           '$name: no key',

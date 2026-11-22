@@ -466,6 +466,18 @@ void main() {
       );
     });
 
+    test('limit failures do not quote the server message', () async {
+      answer(_reasons([_limit(20, _min)]));
+      expect(
+        await failedCall(sell()),
+        isA<BbxOrderLimitFailure>().having(
+          (f) => f.toString(),
+          'text',
+          isNot(contains('No valid payment options')),
+        ),
+      );
+    });
+
     test('a non-200 status is an HTTP failure', () async {
       answer({'result': _order}, status: 204);
       expect(await failedCall(sell()), isA<BbxHttpFailure>());

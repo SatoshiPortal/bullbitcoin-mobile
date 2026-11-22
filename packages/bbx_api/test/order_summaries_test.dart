@@ -293,6 +293,28 @@ void main() {
         expect((request.data as Map)['params'], isEmpty);
       });
 
+      for (final result in <Map<String, Object?>>[
+        <String, Object?>{},
+        {'min': null, 'max': null, 'limits': null},
+      ]) {
+        test('missing and null limit fields stay empty: $result', () async {
+          final orders = bbx(FakeHttp(body: {'result': result})).orders;
+
+          final limits = valueOf(await call(orders));
+
+          expect(limits.minimum, isNull);
+          expect(limits.maximum, isNull);
+          expect(limits.currencyLimits, isEmpty);
+        });
+      }
+
+      test('no result is a format error', () async {
+        expect(
+          await failedCall(call(bbx(FakeHttp(body: {'result': null})).orders)),
+          isA<BbxResponseFormatFailure>(),
+        );
+      });
+
       test('a JSON-RPC error is a failure', () async {
         expect(
           await failedCall(call(bbx(FakeHttp(body: _rpcError())).orders)),

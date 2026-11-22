@@ -99,6 +99,15 @@ void main() {
             'registerResponsibilityConsent',
           ]),
         );
+        expect(
+          selected?.requests,
+          everyElement(
+            isA<RequestOptions>()
+                .having((options) => options.connectTimeout, 'connect', isNull)
+                .having((options) => options.sendTimeout, 'send', isNull)
+                .having((options) => options.receiveTimeout, 'receive', isNull),
+          ),
+        );
         for (final adapter in adapters.values) {
           expect(adapter.requests, isEmpty);
         }
