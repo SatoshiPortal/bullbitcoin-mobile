@@ -138,6 +138,7 @@ graph TD
   electrum --> bull_tor
   electrum --> primitives
   electrum --> sync
+  fees --> bull_payjoin
   fees --> mempool
   fees --> primitives
   fees --> sync
