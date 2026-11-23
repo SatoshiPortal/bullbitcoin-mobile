@@ -1,5 +1,3 @@
-import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
-
 import 'dart:async';
 
 import 'package:address_view/routes.dart';
@@ -64,7 +62,6 @@ import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:preferences/preferences.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
