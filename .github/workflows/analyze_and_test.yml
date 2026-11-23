@@ -27,15 +27,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Three cheap prechecks gate two independent jobs split at the FRB boundary.
-# `checks` (analyze + fix +
-# format + unit tests) never compiles the Rust FRB crates — unit tests run on
-# the Dart VM against the bindings' Dart side only — so it reports in ~11min.
-# `integration` builds and launches the real Linux GTK app (Rust + GTK), the
-# ~28min long pole, in parallel. Both pay the same setup prefix (composite
-# action below); build_runner (~6.5min) dominates it — caching its output is
-# the known follow-up. Neither job `needs:` the other on purpose: the split
-# exists so the fast signal never waits for the slow one.
+# After the prechecks, x64 code generation and arm64 integration run in
+# parallel. All x64 test jobs consume the generated output of their own run.
 jobs:
   classification:
     name: Detect docs-only PR
@@ -163,9 +156,70 @@ jobs:
             if (!result.ready) core.setFailed(`PR is not ready: ${result.reason}. Link an open local issue labelled ready, or use the no-issue-needed exemption.`);
             else core.info(`PR readiness passed (${result.reason})`);
 
-  checks:
+  prepare-x64:
     needs: [classification, action-pins, readiness]
     if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Prepare generated code (x64)
+    runs-on: ubuntu-24.04
+    # A cold build compiles the host Rust hooks before running the generators.
+    # Give that work its own deadline so it cannot consume the test budget.
+    timeout-minutes: 60
+    outputs:
+      artifact: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+
+      - name: Pack generated code and Native Assets
+        shell: bash
+        run: |
+          shopt -s nullglob
+          # Match the build_runner cache's source suffixes, and let Git
+          # exclude tracked files. Dart and Cargo intermediates stay here.
+          git ls-files --others --ignored --exclude-standard -z -- \
+            '*.g.dart' '*.freezed.dart' '*.drift.dart' '*.mocks.dart' \
+            '*.gen.dart' '*.gr.dart' '*.config.dart' \
+            ':(exclude,glob)**/.dart_tool/**' ':(exclude,glob)**/build/**' \
+            > "$RUNNER_TEMP/flutter-codegen-files"
+          test -s "$RUNNER_TEMP/flutter-codegen-files"
+          # Preserve the hook records and libraries at their original paths.
+          native_files=(
+            .dart_tool/hooks_runner/*/*/*.json
+            .dart_tool/hooks_runner/*/*/hook.dill
+            .dart_tool/hooks_runner/*/*/hook.dill.d
+            .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
+            .dart_tool/hooks_runner/shared/*/build/download-*/*.so
+          )
+          test "${#native_files[@]}" -gt 0
+          printf '%s\0' "${native_files[@]}" >> "$RUNNER_TEMP/flutter-codegen-files"
+          tar --format=pax -czf "$RUNNER_TEMP/flutter-codegen.tar.gz" \
+            --null -T "$RUNNER_TEMP/flutter-codegen-files"
+
+      - name: Upload generated code and Native Assets
+        id: upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: flutter-codegen-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/flutter-codegen.tar.gz
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+  checks:
+    needs: prepare-x64
     name: Static checks and unit tests
     runs-on: ubuntu-24.04
     # Measured 2026-11-14 on develop: ~18 min of setup (free disk, Flutter,
@@ -202,6 +256,8 @@ jobs:
       - name: Flutter setup
         id: setup
         uses: ./.github/actions/flutter-setup
+        with:
+          codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
       # Static checks are gated on `!cancelled()` + setup success
       # instead of the implicit success(): one CI run surfaces ALL static
@@ -253,10 +309,10 @@ jobs:
       - name: Unit tests must pass (shard 0 of 3)
         run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=0
 
-  # The unit suites are the long pole of `checks`. Each shard gets a disjoint third of every member's test files (tools/unit_test_shard.sh) and pays only the cached setup.
+  # Each shard gets a disjoint third of every member's test files and uses
+  # the same generated code as checks.
   unit-shards:
-    needs: [classification, action-pins, readiness]
-    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    needs: prepare-x64
     name: Unit tests (shard ${{ matrix.shard }} of 3)
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -281,6 +337,8 @@ jobs:
 
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
+        with:
+          codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
       - name: Unit tests must pass
         run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
