@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/payment_destination.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/full_screen_scanner_page.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/payment_destination_field.dart';
 import 'package:bb_mobile/localizations.dart';

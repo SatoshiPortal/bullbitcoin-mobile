@@ -1,3 +1,4 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/public/send_psbt_handoff.dart';
 
@@ -26,7 +27,7 @@ import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';
 
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart'
-    show AddressViewer, FullScreenScannerPage;
+    show FullScreenScannerPage;
 import 'package:bb_mobile/features/wallet/public/recipient_wallet.dart'
     show Wallet, WalletCards, WalletTypeL10n;
 import 'package:bb_mobile/features/send/public/onchain_send_info_section.dart';

@@ -11,8 +11,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:labels/labels.dart';
@@ -40,7 +39,7 @@ class _MockPreferences extends Mock implements Preferences {}
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockBroadcastLiquid extends Mock
     implements BroadcastLiquidTransactionUsecase {}
@@ -157,15 +156,18 @@ void main() {
         .thenAnswer(
           (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
         );
-    when(() => getReceiveAddress.execute(walletId: 'liquid-wallet')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'liquid-wallet',
-        index: 0,
-        address: 'tlq1fallback',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'liquid-wallet'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'liquid-wallet',
+              index: 0,
+              address: 'tlq1fallback',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => liquidWalletRepository.buildPset(
         walletId: 'liquid-wallet',

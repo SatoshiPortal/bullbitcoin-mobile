@@ -1,10 +1,10 @@
+import 'package:address_view/address_view.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:meta/meta.dart';
@@ -16,7 +16,7 @@ class SetDcaUsecase {
   // interfaces for each domain just for what is needed from them in the DCA context/domain
   final WalletRepository _wallet;
   final Preferences _settingsRepository;
-  final WalletAddressRepository _walletAddressRepository;
+  final AddressView _walletAddressRepository;
   final Exchange _exchange;
 
   SetDcaUsecase({
@@ -87,9 +87,17 @@ class SetDcaUsecase {
           return const Err(DcaReceiveAddressFailure());
         }
 
-        final walletAddress = await _walletAddressRepository
-            .generateNewReceiveAddress(walletId: wallets.first.id);
-        address = walletAddress.address;
+        switch (await _walletAddressRepository.receiveAddress(
+          walletId: wallets.first.id,
+          advance: true,
+        )) {
+          case Ok(:final value):
+            address = value.address;
+          case Err():
+            return const Err(
+              DcaReceiveAddressFailure('receive address generation failed'),
+            );
+        }
       } catch (e, st) {
         if (e is Error) rethrow;
         log.severe(

@@ -1,14 +1,12 @@
-import 'domain/usecases/get_transfer_receive_address_usecase.dart';
-import 'domain/usecases/next_unused_receive_address_usecase.dart';
 import 'domain/usecases/get_receive_swap_limits_usecase.dart';
-import 'domain/usecases/get_receive_amount_quotes_usecase.dart';
+
+import 'package:receive/receive.dart';
 
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:labels/labels.dart';
@@ -18,14 +16,9 @@ import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_
 import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
@@ -42,14 +35,6 @@ import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
   static void setup(GetIt locator) {
-    locator.registerFactory<GetTransferReceiveAddressUsecase>(
-      () =>
-          GetTransferReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
-    );
-    locator.registerFactory<NextUnusedReceiveAddressUsecase>(
-      () =>
-          NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
-    );
     locator.registerFactory<PollReceiveWalletUsecase>(
       () => PollReceiveWalletUsecase(locator<WalletFacade>()),
     );
@@ -71,7 +56,7 @@ class ReceiveLocator {
     locator.registerFactory<CreateReceiveOrderSwapUsecase>(
       () => CreateReceiveOrderSwapUsecase(
         locator<SwapFacade>(),
-        locator<GetReceiveAddressUsecase>(),
+        locator<AddressView>(),
       ),
     );
     locator.registerFactory<GetReceiveSwapRouteUsecase>(
@@ -97,43 +82,29 @@ class ReceiveLocator {
       () => WatchReceiveOrderSwapUsecase(locator<SwapFacade>()),
     );
 
-    // Receive-owned boundaries for collaborators that still throw: the shared
-    // core use-cases and the labels feature's facade. They exist so the bloc
-    // holds Results and this feature's failures only — see AGENTS.md rule #11
-    // (the feature use-case is the try/catch boundary when the underlying
-    // repository is shared and still throws) and rule #4 (a bloc never calls
-    // another feature's facade directly).
+    // The remaining legacy wallet reads still map exceptions before the bloc.
     locator.registerFactory<GetReceiveWalletsUsecase>(
       () => GetReceiveWalletsUsecase(locator<GetWalletsUsecase>()),
     );
-    locator.registerFactory<GetReceiveSettingsUsecase>(
-      () => GetReceiveSettingsUsecase(locator<Preferences>()),
-    );
-    locator.registerFactory<ConvertReceiveAmountUsecase>(
-      () => ConvertReceiveAmountUsecase(
-        getSettingsUsecase: locator<Preferences>(),
-        getIndexPrice: Pricer.getIndexPrice,
-      ),
-    );
     locator.registerFactory<PrepareReceiveAddressUsecase>(
-      () => PrepareReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
+      () => PrepareReceiveAddressUsecase(locator<AddressView>()),
     );
     locator.registerFactory<GetReceiveAddressAtIndexUsecase>(
-      () =>
-          GetReceiveAddressAtIndexUsecase(locator<GetAddressAtIndexUsecase>()),
-    );
-    locator.registerFactory<LoadReceiveAddressLabelUsecase>(
-      () => LoadReceiveAddressLabelUsecase(locator<Labels>()),
-    );
-    locator.registerFactory<SaveReceiveAddressLabelUsecase>(
-      () => SaveReceiveAddressLabelUsecase(locator<Labels>()),
-    );
-    locator.registerFactory<FetchReceiveNoteSuggestionsUsecase>(
-      () => FetchReceiveNoteSuggestionsUsecase(locator<Labels>()),
+      () => GetReceiveAddressAtIndexUsecase(locator<AddressView>()),
     );
 
     locator.registerFactory<GetReceiveSwapLimitsUsecase>(
       () => GetReceiveSwapLimitsUsecase(locator<GetSwapLimitsAndFeesUsecase>()),
+    );
+
+    locator.registerLazySingleton<Receive>(
+      () => Receive.open(
+        addresses: locator<AddressView>(),
+        labels: locator<Labels>(),
+        preferences: locator<Preferences>(),
+        readPrice: Pricer.getIndexPrice,
+        readPrices: Pricer.getIndexPrices,
+      ),
     );
 
     // Bloc
@@ -141,12 +112,7 @@ class ReceiveLocator {
       (wallet, _) => ReceiveBloc(
         getReceiveSwapLimitsUsecase: locator<GetReceiveSwapLimitsUsecase>(),
         getReceiveWalletsUsecase: locator<GetReceiveWalletsUsecase>(),
-        getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
-        convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),
-        getReceiveAmountQuotesUsecase: GetReceiveAmountQuotesUsecase(
-          settings: locator<Preferences>(),
-          read: Pricer.getIndexPrices,
-        ),
+        receive: locator<Receive>(),
         prepareReceiveAddressUsecase: locator<PrepareReceiveAddressUsecase>(),
         createReceiveOrderSwapUsecase: locator<CreateReceiveOrderSwapUsecase>(),
         getReceiveSwapRouteUsecase: locator<GetReceiveSwapRouteUsecase>(),
@@ -159,12 +125,6 @@ class ReceiveLocator {
         watchWalletTransactionByAddressUsecase:
             locator<WatchWalletTransactionByAddressUsecase>(),
         watchReceiveOrderSwapUsecase: locator<WatchReceiveOrderSwapUsecase>(),
-        loadReceiveAddressLabelUsecase:
-            locator<LoadReceiveAddressLabelUsecase>(),
-        saveReceiveAddressLabelUsecase:
-            locator<SaveReceiveAddressLabelUsecase>(),
-        fetchReceiveNoteSuggestionsUsecase:
-            locator<FetchReceiveNoteSuggestionsUsecase>(),
         watchReceivePayjoinEnabledUsecase:
             locator<WatchReceivePayjoinEnabledUsecase>(),
         watchReceivePayjoinMinAmountUsecase:

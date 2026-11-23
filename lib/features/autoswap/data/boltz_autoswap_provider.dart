@@ -1,3 +1,4 @@
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:fees/fees.dart';
@@ -8,7 +9,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show LiquidWalletRepository;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:labels/labels.dart';
@@ -25,7 +25,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final WalletRepository _walletRepository;
   final Preferences _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
-  final GetReceiveAddressUsecase _getReceiveAddress;
+  final AddressView _getReceiveAddress;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
   final Labels _labelsFacade;
 
@@ -86,9 +86,17 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
           ),
         );
       }
-      final fallback = await _getReceiveAddress.execute(
+      final WalletAddress fallback;
+      switch (await _getReceiveAddress.receiveAddress(
         walletId: liquidWallet.id,
-      );
+      )) {
+        case Ok(:final value):
+          fallback = value;
+        case Err():
+          return const Err(
+            AutoswapExecutionFailure('Receive address unavailable'),
+          );
+      }
       final feeResult = await _estimateNetworkFee(
         walletId: liquidWallet.id,
         address: fallback.address,

@@ -1,3 +1,4 @@
+import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
@@ -197,6 +198,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       theme: AppTheme.themeData(appThemeType),
                       locale: language?.locale,
                       localizationsDelegates: [
+                        AddressViewLocalizations.delegate,
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
                         NovlangAnnouncementsLocalizationsDelegate(
                           novlangPolicy,

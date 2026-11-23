@@ -60,10 +60,6 @@ final class UnsupportedNetworkException implements Exception {
   const UnsupportedNetworkException();
 }
 
-final class InvalidWalletAddressException implements Exception {
-  const InvalidWalletAddressException();
-}
-
 @freezed
 abstract class Wallet with _$Wallet {
   const factory Wallet({

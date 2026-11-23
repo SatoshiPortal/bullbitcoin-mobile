@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:primitives/primitives.dart' show PaymentNetwork;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
 

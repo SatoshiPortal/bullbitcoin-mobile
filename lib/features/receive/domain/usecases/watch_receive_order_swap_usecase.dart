@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 

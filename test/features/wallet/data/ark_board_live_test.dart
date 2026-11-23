@@ -16,6 +16,7 @@
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
+import 'package:address_view/address_view.dart';
 import 'package:labels/testing.dart';
 
 import 'package:electrum/testing.dart';
@@ -38,7 +39,6 @@ import 'package:secrets/migration.dart';
 import 'package:signers/storage.dart';
 import 'package:sync/storage.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
@@ -345,10 +345,16 @@ void main() {
             .singleWhere(
               (w) => w.networkCode == 'bitcoinRegtest' && w.isDefault,
             );
-        final address = await locator<GetReceiveAddressUsecase>().execute(
+        final result = await locator<AddressView>().receiveAddress(
           walletId: source.id,
-          generateNew: true,
+          advance: true,
         );
+        final address = switch (result) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw StateError(
+            failure.runtimeType.toString(),
+          ),
+        };
         _report(
           'source wallet=${source.id} fingerprint=${source.masterFingerprint} '
           'network=${source.networkCode} address=${address.address}',

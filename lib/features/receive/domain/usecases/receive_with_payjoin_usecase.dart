@@ -1,5 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';

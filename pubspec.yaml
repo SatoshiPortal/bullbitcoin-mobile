@@ -8,9 +8,11 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/address_view
   - features/announcements
   - features/bitcoin_price
   - features/bull_exchange
+  - features/receive
   - packages/labels
   - packages/legacy_storage
   - packages/exchange
@@ -59,8 +61,10 @@ workspace:
 
 dependencies:
   access:
+  address_view:
   announcements:
   bitcoin_price:
+  receive:
   labels:
   label_editor:
   network:

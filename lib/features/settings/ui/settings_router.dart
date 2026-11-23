@@ -3,8 +3,6 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
-import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:access/access.dart';
@@ -97,6 +95,7 @@ class SettingsRouter {
     required List<RouteBase> appSettingsRoutes,
     required List<RouteBase> accessRoutes,
     required List<RouteBase> exchangeSettingsRoutes,
+    required List<RouteBase> addressRoutes,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
@@ -247,18 +246,7 @@ class SettingsRouter {
           );
         },
       ),
-      GoRoute(
-        path: SettingsRoute.walletAddresses.path,
-        name: SettingsRoute.walletAddresses.name,
-        builder: (context, state) {
-          final walletId = state.pathParameters['walletId']!;
-          return BlocProvider(
-            create: (_) =>
-                locator<AddressViewBloc>(param1: walletId, param2: 10),
-            child: AddressesScreen(walletId: walletId),
-          );
-        },
-      ),
+      ...addressRoutes,
       const LogsFeature().route,
       GoRoute(
         path: SettingsRoute.allSeedView.path,

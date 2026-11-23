@@ -23,14 +23,14 @@ import 'package:path/path.dart' as p;
 // Wallet reader ownership (2026-11-22): see FEATURES.md for the address,
 // coin, receive and history edges that replace the legacy wallet placements.
 const _allowedTargets = <String, String>{
-  'address_view': 'settings wallet',
+  'address_view': 'label_editor',
   'all_seed_view': 'access wallet',
   'app_startup':
       'access import_mnemonic logs onboarding recoverbull settings wallet',
-  'autobuy': 'default_wallets exchange wallet',
+  'autobuy': 'address_view default_wallets exchange',
   'autoswap': 'address_view send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
-  'broadcast_signed_tx': 'scanning send wallet',
+  'broadcast_signed_tx': 'address_view scanning send wallet',
   'buy': 'address_view exchange fund_exchange transactions wallet',
   'coins': 'bitcoin_price wallet',
   'consolidation': 'send wallet',
@@ -61,8 +61,9 @@ const _allowedTargets = <String, String>{
   'support': 'exchange_support_chat',
   'swap': 'address_view ark autoswap coins consolidation fees send transactions wallet',
   'test_wallet_backup': 'access onboarding recoverbull wallet',
-  'transactions': 'buy exchange label_editor pay replace_by_fee swap wallet',
-  'wallet': 'ark backup_settings bip85_entropy bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
+  'transactions':
+      'address_view buy exchange label_editor pay replace_by_fee swap wallet',
+  'wallet': 'address_view ark backup_settings bip85_entropy bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers sp swap transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

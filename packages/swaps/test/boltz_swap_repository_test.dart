@@ -126,7 +126,7 @@ void main() {
     environment: NetworkEnv.mainnet,
     electrum: _PassthroughElectrum(custom: customElectrum),
     lockupChain: lockupChain,
-    newAddressFor: (walletId) async => 'addr-of-$walletId',
+    newAddressFor: (walletId) async => Ok('addr-of-$walletId'),
     walletTx: (txid, {required walletId}) async => walletTxs[txid],
     walletTxs: (walletId, {bool sync = false}) async =>
         walletTxs.values.toList(),
@@ -607,7 +607,14 @@ void main() {
       final txid = await repo(fastest: 900)
           .claim(chainSwap(status: 'claimable', claimFees: 300));
 
-      expect(txid, 'claim-txid');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'claim-txid',
+        ),
+      );
       expect(claimedFee(), 900);
     });
 
@@ -794,7 +801,14 @@ void main() {
 
       final txid = await repo().refund(chainSwap());
 
-      expect(txid, 'refund-txid');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'refund-txid',
+        ),
+      );
       final stored =
           verify(() => storage.store(captureAny())).captured.last as SwapModel;
       expect(stored.status, SwapStatus.refunded.name);
@@ -892,7 +906,14 @@ void main() {
 
       final txid = await repo().refund(chainSwap(refundTxid: 'already-done'));
 
-      expect(txid, 'already-done');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'already-done',
+        ),
+      );
       verifyNever(() => storage.store(any()));
     });
 
@@ -902,7 +923,14 @@ void main() {
 
       final txid = await repo().refund(chainSwap());
 
-      expect(txid, 'already-done');
+      expect(
+        txid,
+        isA<Ok<String, SwapsFailure>>().having(
+          (result) => result.value,
+          'txid',
+          'already-done',
+        ),
+      );
       verifyNever(() => storage.store(any()));
     });
   });
@@ -1068,7 +1096,7 @@ void main() {
           environment: NetworkEnv.mainnet,
           electrum: _PassthroughElectrum(),
           lockupChain: lockupChain,
-          newAddressFor: (w) async => 'a',
+          newAddressFor: (w) async => Ok('a'),
           walletTx: (t, {required walletId}) async => null,
           walletTxs: (walletId, {bool sync = false}) async {
             if (sync) syncRequested = true;
@@ -1303,7 +1331,14 @@ void main() {
 
         final txid = await repo().refund(chainSwap());
 
-        expect(txid, 'true-refund');
+        expect(
+          txid,
+          isA<Ok<String, SwapsFailure>>().having(
+            (result) => result.value,
+            'txid',
+            'true-refund',
+          ),
+        );
         final stored =
             verify(() => storage.store(captureAny())).captured.last
                 as SwapModel;

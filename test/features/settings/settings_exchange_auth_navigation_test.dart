@@ -163,6 +163,7 @@ void main() {
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoute = SettingsRouter.route(
       accessRoutes: const [],
+      addressRoutes: const [],
       exchangeSettingsRoutes: BullExchangeFeature.mount(
         settings: SettingsRouter.exchangeSettingsHost,
         networkUnavailable: () async => false,
@@ -265,6 +266,7 @@ void main() {
     final route =
         SettingsRouter.route(
           accessRoutes: const [],
+          addressRoutes: const [],
           exchangeSettingsRoutes: const [],
           appSettingsRoutes: const [],
           onBackupTestSucceeded: (_) {},

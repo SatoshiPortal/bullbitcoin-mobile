@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transa
 import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
@@ -31,7 +31,7 @@ Future<void> main({bool isInitialized = false}) async {
 
   final walletRepository = locator<WalletRepository>();
   final secrets = locator<Secrets>();
-  final addressRepository = locator<WalletAddressRepository>();
+  final addressRepository = locator<AddressView>();
   final utxoRepository = locator<WalletUtxoRepository>();
   final receiverRole = locator<PayjoinReceiver>();
   final senderRole = locator<PayjoinSender>();
@@ -69,9 +69,14 @@ Future<void> main({bool isInitialized = false}) async {
   Future<void> consolidateUtxos(String walletId) async {
     final utxos = await utxoRepository.getWalletUtxos(walletId: walletId);
     if (utxos.length <= 1) return;
-    final address = await addressRepository.generateNewReceiveAddress(
+    final addressResult = await addressRepository.receiveAddress(
       walletId: walletId,
+      advance: true,
     );
+    final address = switch (addressResult) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail(failure.runtimeType.toString()),
+    };
     final preparationResult = await prepareBitcoinSend.execute(
       walletId: walletId,
       recipients: [
@@ -242,9 +247,14 @@ Future<void> main({bool isInitialized = false}) async {
       await consolidateUtxos(receiverWallet.id);
       await consolidateUtxos(senderWallet.id);
 
-      final address = await addressRepository.generateNewReceiveAddress(
+      final addressResult = await addressRepository.receiveAddress(
         walletId: receiverWallet.id,
+        advance: true,
       );
+      final address = switch (addressResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail(failure.runtimeType.toString()),
+      };
       final receiverResult = await receiverRole.start(
         StartPayjoinReceiver(
           walletId: receiverWallet.id,
@@ -308,9 +318,14 @@ Future<void> main({bool isInitialized = false}) async {
     }, timeout: const Timeout(Duration(seconds: 330)));
 
     test('a receiver expires when no sender submits a request', () async {
-      final address = await addressRepository.generateNewReceiveAddress(
+      final addressResult = await addressRepository.receiveAddress(
         walletId: receiverWallet.id,
+        advance: true,
       );
+      final address = switch (addressResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail(failure.runtimeType.toString()),
+      };
       final receiverResult = await receiverRole.start(
         StartPayjoinReceiver(
           walletId: receiverWallet.id,

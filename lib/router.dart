@@ -1,3 +1,4 @@
+import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -225,6 +226,7 @@ class AppRouter {
       ConsolidationRouter.route,
       SettingsRouter.route(
         accessRoutes: locator<AccessFeature>().routes.settings,
+        addressRoutes: [locator<AddressViewFeature>().route],
         exchangeSettingsRoutes: _exchangeFeature.settingsRoutes,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         onBackupTestSucceeded: _onBackupTestSucceeded,

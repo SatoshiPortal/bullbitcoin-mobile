@@ -9,8 +9,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:labels/labels.dart';
@@ -25,7 +24,7 @@ class _MockPreferences extends Mock implements Preferences {}
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockBroadcastLiquid extends Mock
     implements BroadcastLiquidTransactionUsecase {}
@@ -159,19 +158,22 @@ void main() {
         );
     when(() => swapFacade.getPendingOrders())
         .thenAnswer((_) async => const Ok([]));
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((invocation) async {
-          final walletId = invocation.namedArguments[#walletId] as String;
-          return WalletAddress(
-            walletId: walletId,
-            address: walletId == 'bitcoin-wallet'
-                ? 'tb1qdestination000000000000000000000000000000'
-                : 'tlq1fallback000000000000000000000000000000000',
-            index: 0,
-            createdAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          );
-        });
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer((invocation) async {
+      final walletId = invocation.namedArguments[#walletId] as String;
+      return Ok(
+        WalletAddress(
+          walletId: walletId,
+          address: walletId == 'bitcoin-wallet'
+              ? 'tb1qdestination000000000000000000000000000000'
+              : 'tlq1fallback000000000000000000000000000000000',
+          index: 0,
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      );
+    });
   });
 
   test('stops before signing when Liquid build 1 returns Err', () async {

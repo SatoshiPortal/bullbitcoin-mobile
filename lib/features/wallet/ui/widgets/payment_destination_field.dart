@@ -1,3 +1,4 @@
+import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,6 @@ import 'package:material_ui/material_ui.dart'
 
 import '../../domain/payment_destination.dart';
 import '../../domain/validate_payment_destination_usecase.dart';
-import 'address_viewer.dart';
 import 'full_screen_scanner_page.dart';
 
 /// App wiring for the pure destination input. Parsing never navigates forward.

@@ -1,12 +1,11 @@
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,8 +20,7 @@ class MockWalletRepository extends Mock implements WalletRepository {}
 
 class MockSettingsRepository extends Mock implements Preferences {}
 
-class MockWalletAddressRepository extends Mock
-    implements WalletAddressRepository {}
+class MockWalletAddressRepository extends Mock implements AddressView {}
 
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserOperations {}
@@ -228,10 +226,15 @@ void main() {
         ),
       ).thenAnswer((_) async => Ok([FakeWallet()]));
       when(
-        () => walletAddress.generateNewReceiveAddress(
+        () => walletAddress.receiveAddress(
           walletId: any(named: 'walletId'),
+          advance: true,
         ),
-      ).thenThrow(const WalletError.notFound(_sentinelWalletId));
+      ).thenAnswer(
+        (_) async => const Err(
+          AddressViewAddressesUnavailableFailure(_sentinelWalletId),
+        ),
+      );
 
       final result = await usecase.execute(
         amount: 10,

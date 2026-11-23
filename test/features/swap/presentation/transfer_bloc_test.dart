@@ -30,13 +30,12 @@ import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_se
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -135,7 +134,7 @@ class _MockWatchOrder extends Mock implements WatchOrderSwapUsecase {}
 
 class _MockDetectBitcoin extends Mock implements DetectBitcoinStringUsecase {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockGetUtxos extends Mock implements GetWalletUtxosUsecase {}
 
@@ -355,16 +354,19 @@ void main() {
         selectedInputs: any(named: 'selectedInputs'),
       ),
     ).thenAnswer((_) async => []);
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer(
-          (_) async => WalletAddress(
-            walletId: 'wallet-2',
-            index: 0,
-            address: 'destination',
-            createdAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          ),
-        );
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async => Ok(
+        WalletAddress(
+          walletId: 'wallet-2',
+          index: 0,
+          address: 'destination',
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
 
     bloc = buildBloc();
   });
@@ -740,15 +742,18 @@ void main() {
 
   test('blocked source refuses before creating an exchange order', () async {
     spendStatus = BitcoinSpendStatus.pending;
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        index: 0,
-        address: 'fallback',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-1',
+              index: 0,
+              address: 'fallback',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => getQuote.execute(
         environment: OrderSwapEnvironment.testnet,
@@ -807,16 +812,19 @@ void main() {
   void stubLiquidCreation(
     Future<Result<String, SendFailure>> Function() prepare,
   ) {
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer(
-          (_) async => WalletAddress(
-            walletId: 'wallet-1',
-            address: 'destination',
-            index: 0,
-            createdAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          ),
-        );
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async => Ok(
+        WalletAddress(
+          walletId: 'wallet-1',
+          address: 'destination',
+          index: 0,
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
     when(
       () => getQuote.execute(
         environment: OrderSwapEnvironment.testnet,
@@ -1284,15 +1292,18 @@ void main() {
       amountSat: BigInt.from(30000),
       address: 'tb1qselected',
     );
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        index: 0,
-        address: 'tb1qreceive',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-1',
+              index: 0,
+              address: 'tb1qreceive',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -1343,15 +1354,18 @@ void main() {
       amountSat: BigInt.from(30000),
       address: 'tb1qselected',
     );
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        index: 0,
-        address: 'tb1qreceive',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-1',
+              index: 0,
+              address: 'tb1qreceive',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -1402,15 +1416,18 @@ void main() {
         amountSat: BigInt.from(1000),
         address: 'tb1qselected',
       );
-      when(() => getReceiveAddress.execute(walletId: 'wallet-1')).thenAnswer(
-        (_) async => WalletAddress(
-          walletId: 'wallet-1',
-          index: 0,
-          address: 'tb1qreceive',
-          createdAt: DateTime.utc(2026),
-          updatedAt: DateTime.utc(2026),
-        ),
-      );
+      when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-1'))
+          .thenAnswer(
+            (_) async => Ok(
+              WalletAddress(
+                walletId: 'wallet-1',
+                index: 0,
+                address: 'tb1qreceive',
+                createdAt: DateTime.utc(2026),
+                updatedAt: DateTime.utc(2026),
+              ),
+            ),
+          );
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -1880,15 +1897,18 @@ void main() {
 
   test('a same-chain transfer pays the current destination wallet, never a '
       'receive address left by an earlier transfer', () async {
-    when(() => getReceiveAddress.execute(walletId: 'wallet-2')).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-2',
-        index: 0,
-        address: 'tb1qwallet2',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.receiveAddress(walletId: 'wallet-2'))
+        .thenAnswer(
+          (_) async => Ok(
+            WalletAddress(
+              walletId: 'wallet-2',
+              index: 0,
+              address: 'tb1qwallet2',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          ),
+        );
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -2982,16 +3002,20 @@ void main() {
           SwapsAmountOutOfLimitsFailure(minSat: 25000, maxSat: 1000000),
         ),
       );
-      when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-          .thenAnswer(
-            (_) async => WalletAddress(
-              walletId: 'wallet-2',
-              index: 0,
-              address: 'lq1destination',
-              createdAt: DateTime.utc(2026),
-              updatedAt: DateTime.utc(2026),
-            ),
-          );
+      when(
+        () =>
+            getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+      ).thenAnswer(
+        (_) async => Ok(
+          WalletAddress(
+            walletId: 'wallet-2',
+            index: 0,
+            address: 'lq1destination',
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026),
+          ),
+        ),
+      );
       when(
         () => getQuote.execute(
           environment: any(named: 'environment'),

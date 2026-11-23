@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_su
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
@@ -22,7 +21,7 @@ class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
-class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
+class _MockGetReceiveAddress extends Mock implements AddressView {}
 
 class _MockGetNetworkFees extends Mock implements Fees {}
 
@@ -113,8 +112,9 @@ void main() {
       createdAt: DateTime(2026),
       updatedAt: DateTime(2026),
     );
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenAnswer((_) async => address);
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => Ok(address));
 
     final result = await usecase.receiveAddress(walletId: 'wallet-1');
 
@@ -122,8 +122,12 @@ void main() {
   });
 
   test('a failed address derivation is sanitized, never raw', () async {
-    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
-        .thenThrow(Exception(_rawReason));
+    when(
+      () => getReceiveAddress.receiveAddress(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async =>
+          const Err(AddressViewAddressesUnavailableFailure(_rawReason)),
+    );
 
     final result = await usecase.receiveAddress(walletId: 'wallet-1');
 
@@ -132,6 +136,7 @@ void main() {
         fail('a failed derivation must not report an address');
       case Err(:final failure):
         expect(failure, isA<BuyUnexpectedFailure>());
+        expect(failure.logMessage, isNot(contains(_rawReason)));
     }
   });
 

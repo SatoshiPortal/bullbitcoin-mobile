@@ -3,10 +3,9 @@ import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
@@ -26,7 +25,7 @@ class _MockPreferences extends Mock implements Preferences {}
 
 class _MockGetNetworkFees extends Mock implements Fees {}
 
-class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
+class _MockGetAddressAtIndex extends Mock implements AddressView {}
 
 class _MockCalculateBitcoinFees extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
@@ -119,20 +118,21 @@ void main() {
     test('a derivation failure is sanitized', () async {
       final addresses = _MockGetAddressAtIndex();
       when(
-        () => addresses.execute(
+        () => addresses.at(
           walletId: any(named: 'walletId'),
           index: any(named: 'index'),
         ),
-      ).thenThrow(GetAddressAtIndexException(_rawReason));
-
-      final result = await GetPayPayinAddressUsecase(
-        getAddressAtIndexUsecase: addresses,
-      ).execute(walletId: 'wallet-1');
-
-      expect(
-        (result as Err<String, PayFailure>).failure,
-        isA<PayUnexpectedFailure>(),
+      ).thenAnswer(
+        (_) async =>
+            const Err(AddressViewAddressesUnavailableFailure(_rawReason)),
       );
+
+      final result = await GetPayPayinAddressUsecase(addresses: addresses)
+          .execute(walletId: 'wallet-1');
+
+      final failure = (result as Err<String, PayFailure>).failure;
+      expect(failure, isA<PayUnexpectedFailure>());
+      expect(failure.logMessage, isNot(contains(_rawReason)));
     });
 
     test('the derived address is unwrapped for the caller', () async {
@@ -145,15 +145,14 @@ void main() {
         updatedAt: DateTime(2026),
       );
       when(
-        () => addresses.execute(
+        () => addresses.at(
           walletId: any(named: 'walletId'),
           index: any(named: 'index'),
         ),
-      ).thenAnswer((_) async => address);
+      ).thenAnswer((_) async => Ok(address));
 
-      final result = await GetPayPayinAddressUsecase(
-        getAddressAtIndexUsecase: addresses,
-      ).execute(walletId: 'wallet-1');
+      final result = await GetPayPayinAddressUsecase(addresses: addresses)
+          .execute(walletId: 'wallet-1');
 
       expect((result as Ok<String, PayFailure>).value, 'bc1qown');
     });

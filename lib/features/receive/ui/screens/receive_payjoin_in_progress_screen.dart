@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';

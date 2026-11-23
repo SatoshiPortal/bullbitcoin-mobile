@@ -1,4 +1,4 @@
-import '../receive_lightning_limits.dart';
+import 'package:receive/receive.dart';
 
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 

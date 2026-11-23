@@ -1,49 +1,39 @@
-import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
+import 'dart:io';
+
+import 'package:address_view/address_view.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/features/address_view/data/wallet_address_repository_impl.dart';
-import 'package:sync/sync.dart' show AddressBook, Keychain, DerivedAddress;
+import 'package:secrets/testing.dart' show FakeSecureStoragePlatform;
+import 'package:sync/sync.dart'
+    show AddressBook, Keychain, DerivedAddress, WalletKey;
 import 'package:sync/testing.dart' show testWallet;
 import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Metadata extends Mock implements WalletRegistrations {}
+import '../../../support/inventory_fixture.dart';
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Labels extends Mock implements Labels {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test(
     'Liquid address history keeps the issued high-water when labels fail',
     () async {
       const id = 'elwpkh([aabbccdd/84h/1776h/0h])';
-      final row = WalletMetadataModel(
-        networkCode: 'liquidMainnet',
-        id: id,
-        masterFingerprint: 'aabbccdd',
-        xpubFingerprint: 'aabbccdd',
-        isEncryptedVaultTested: false,
-        isPhysicalBackupTested: false,
-        xpub: 'public',
-        externalPublicDescriptor: 'ct(slip77(public),elwpkh(public))',
-        internalPublicDescriptor: '',
-        signer: Signer.none,
-        isDefault: false,
-      );
-      final key = WalletSyncBinding.keyFromMetadata(row);
-      final metadata = _Metadata();
+      FakeSecureStoragePlatform().install();
+      final dir = await Directory.systemTemp.createTemp('address-history');
+      addTearDown(() => dir.delete(recursive: true));
+      final fixture = await InventoryFixture.open(dir);
+      addTearDown(fixture.close);
+      await fixture.addPublicWallet(id: id, network: 'liquidMainnet');
+      final key = WalletKey(id: id, network: LiquidNetwork.mainnet);
       final native = _Native();
       final labels = _Labels();
-      when(() => metadata.fetch(id)).thenAnswer((_) async => row);
-      when(
-        () => native.issuedReceiveIndex(WalletSyncBinding.keyFromMetadata(row)),
-      ).thenAnswer((_) async => const Ok(7));
+      when(() => native.issuedReceiveIndex(key))
+          .thenAnswer((_) async => const Ok(7));
       final wallet = await testWallet(
         key: key,
         addresses: AddressBook(
@@ -62,24 +52,39 @@ void main() {
       );
       when(() => labels.fetch(reference: any(named: 'reference')))
           .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
-      final repository = WalletAddressRepositoryImpl(
+      final repository = AddressView.open(
         native: native,
-        walletRegistrations: metadata,
-        loadWallet: (_) async => Ok(wallet),
-        labelsFacade: labels,
+        labels: labels,
+        inventory: fixture.inventory,
+        loadWallet: (requested) async {
+          expect(requested, key);
+          return Ok(wallet);
+        },
       );
-      final addresses = await repository.getGeneratedReceiveAddresses(
-        id,
-        limit: 3,
+      final addresses = await repository.list(walletId: id, limit: 3);
+      expect(
+        addresses,
+        isA<Ok<List<WalletAddress>, AddressViewFailure>>()
+            .having(
+              (result) => result.value.map((address) => address.index),
+              'indexes',
+              [7, 6, 5],
+            )
+            .having(
+              (result) => result.value.expand((address) => address.labels),
+              'labels',
+              isEmpty,
+            ),
       );
-      expect(addresses.map((address) => address.index), [7, 6, 5]);
-      expect(addresses.expand((address) => address.labels), isEmpty);
-      final next = await repository.getGeneratedReceiveAddresses(
-        id,
-        limit: 2,
-        fromIndex: 4,
+      final next = await repository.list(walletId: id, limit: 2, fromIndex: 4);
+      expect(
+        next,
+        isA<Ok<List<WalletAddress>, AddressViewFailure>>().having(
+          (result) => result.value.map((address) => address.index),
+          'indexes',
+          [4, 3],
+        ),
       );
-      expect(next.map((address) => address.index), [4, 3]);
     },
   );
 }

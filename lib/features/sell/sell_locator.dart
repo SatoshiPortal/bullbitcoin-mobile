@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/send/public/send_setup.dart'
         CalculateBitcoinAbsoluteFeesUsecase,
         LiquidWalletRepository,
         PrepareBitcoinSendUsecase;
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
@@ -101,7 +101,7 @@ class SellLocator {
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<Preferences>(),
         fees: locator<Fees>(),
-        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
+        addresses: locator<AddressView>(),
         getIndexPrice: Pricer.getIndexPrice,
         getOrderUsecase: locator<GetOrderUsecase>(),
       ),
@@ -150,10 +150,6 @@ class SellLocator {
       () => LabelCompletedSellOrderUsecase(
         transactionsFacade: locator<TransactionsFacade>(),
       ),
-    );
-
-    locator.registerFactory<GetAddressAtIndexUsecase>(
-      () => GetAddressAtIndexUsecase(walletAddressRepository: locator()),
     );
   }
 

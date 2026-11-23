@@ -1,7 +1,10 @@
+import 'package:address_view/address_view.dart';
+import 'package:labels/labels.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, bullUiLocalizationsDelegate;
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+import 'package:receive/receive.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:preferences/preferences.dart';
 
@@ -11,14 +14,8 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -47,25 +44,14 @@ import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart' as swaps;
 
-class _MockSettings extends Mock implements Preferences {}
+class _MockLabels extends Mock implements Labels {}
 
-class _UnsupportedReceiveSettings extends GetReceiveSettingsUsecase {
-  const _UnsupportedReceiveSettings(super.settings);
-  @override
-  Future<primitives.Result<SettingsEntity, ReceiveFailure>> execute({
-    ReceiveNetworkType? mode,
-    primitives.Network? selectedNetwork,
-  }) => super.execute(
-    mode: mode,
-    selectedNetwork: primitives.BitcoinNetwork.signet,
-  );
-}
+class _MockReceive extends Mock implements Receive {}
+
+class _MockSettings extends Mock implements Preferences {}
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
-
-class _MockConvertReceiveAmountUsecase extends Mock
-    implements ConvertReceiveAmountUsecase {}
 
 class _MockPrepareReceiveAddressUsecase extends Mock
     implements PrepareReceiveAddressUsecase {}
@@ -86,15 +72,6 @@ class _MockWatchWalletTransactionByAddressUsecase extends Mock
 
 class _MockWatchReceiveOrderSwapUsecase extends Mock
     implements WatchReceiveOrderSwapUsecase {}
-
-class _MockLoadReceiveAddressLabelUsecase extends Mock
-    implements LoadReceiveAddressLabelUsecase {}
-
-class _MockSaveReceiveAddressLabelUsecase extends Mock
-    implements SaveReceiveAddressLabelUsecase {}
-
-class _MockFetchReceiveNoteSuggestionsUsecase extends Mock
-    implements FetchReceiveNoteSuggestionsUsecase {}
 
 class _MockWatchReceivePayjoinEnabledUsecase extends Mock
     implements WatchReceivePayjoinEnabledUsecase {}
@@ -147,15 +124,34 @@ void main() {
             : isA<ReceiveAddressUnavailableFailure>();
         final swap = _MockCreateReceiveOrderSwapUsecase();
         final errors = <Object>[];
+        final operations = _MockReceive();
+        final readSettings = Receive.open(
+          addresses: _ReceiveAddressView(),
+          labels: _MockLabels(),
+          preferences: settings,
+          readPrice: Pricer.getIndexPrice,
+          readPrices: Pricer.getIndexPrices,
+        ).settings;
+        when(
+          () => operations.settings(
+            mode: any(named: 'mode'),
+            selectedNetwork: any(named: 'selectedNetwork'),
+          ),
+        ).thenAnswer(
+          (call) => readSettings(
+            mode: call.namedArguments[#mode] as ReceiveNetworkType?,
+            selectedNetwork: unsupported
+                ? primitives.BitcoinNetwork.signet
+                : call.namedArguments[#selectedNetwork] as primitives.Network?,
+          ),
+        );
         late ReceiveBloc bloc;
         runZonedGuarded(
           () {
             bloc = ReceiveBloc(
               getReceiveWalletsUsecase: wallets,
-              getReceiveSettingsUsecase: unsupported
-                  ? _UnsupportedReceiveSettings(settings)
-                  : GetReceiveSettingsUsecase(settings),
-              convertReceiveAmountUsecase: _MockConvertReceiveAmountUsecase(),
+              receive: operations,
+              pollAmountQuotes: false,
               prepareReceiveAddressUsecase: _MockPrepareReceiveAddressUsecase(),
               createReceiveOrderSwapUsecase: swap,
               getReceiveSwapRouteUsecase: _MockGetReceiveSwapRouteUsecase(),
@@ -169,12 +165,6 @@ void main() {
               watchWalletTransactionByAddressUsecase:
                   _MockWatchWalletTransactionByAddressUsecase(),
               watchReceiveOrderSwapUsecase: _MockWatchReceiveOrderSwapUsecase(),
-              loadReceiveAddressLabelUsecase:
-                  _MockLoadReceiveAddressLabelUsecase(),
-              saveReceiveAddressLabelUsecase:
-                  _MockSaveReceiveAddressLabelUsecase(),
-              fetchReceiveNoteSuggestionsUsecase:
-                  _MockFetchReceiveNoteSuggestionsUsecase(),
               watchReceivePayjoinEnabledUsecase: enabled,
               watchReceivePayjoinMinAmountUsecase: minimum,
               getReceivePayjoinPolicyUsecase:
@@ -277,3 +267,5 @@ void main() {
     );
   }
 }
+
+class _ReceiveAddressView extends Mock implements AddressView {}

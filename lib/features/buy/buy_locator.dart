@@ -1,3 +1,4 @@
+import 'package:address_view/address_view.dart';
 import 'package:preferences/preferences.dart'
     show AmountDisplayPreferencesReader, Preferences;
 import 'package:bb_mobile/features/buy/domain/watch_buy_bitcoin_unit_usecase.dart';
@@ -6,7 +7,6 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:labels/labels.dart';
@@ -94,7 +94,7 @@ class BuyLocator {
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         getSettingsUsecase: locator<Preferences>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        getReceiveAddressUsecase: locator<AddressView>(),
         fees: locator<Fees>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),

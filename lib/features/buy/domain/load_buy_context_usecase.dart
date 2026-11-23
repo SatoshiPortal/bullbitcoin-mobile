@@ -7,8 +7,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -20,7 +19,7 @@ class LoadBuyContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
+  final AddressView _getReceiveAddressUsecase;
   final Fees _fees;
   final IndexPriceReader _getIndexPrice;
 
@@ -73,16 +72,10 @@ class LoadBuyContextUsecase {
   Future<Result<WalletAddress, BuyFailure>> receiveAddress({
     required String walletId,
   }) async {
-    try {
-      return Ok(await _getReceiveAddressUsecase.execute(walletId: walletId));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to derive the buy payout address',
-        error: e,
-        trace: st,
-      );
-      return Err(BuyUnexpectedFailure('$e'));
-    }
+    return (await _getReceiveAddressUsecase.receiveAddress(walletId: walletId))
+        .mapErr(
+          (failure) => BuyUnexpectedFailure(failure.runtimeType.toString()),
+        );
   }
 
   @useResult

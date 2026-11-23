@@ -17,7 +17,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_us
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
-import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network, NetworkX;
@@ -137,7 +137,7 @@ class SwapsLocator {
     log.info('[Swaps] boltz datasource url="$url" network=${environment.name}');
     final glue = locator<SwapsAppGlue>();
     final fees = locator<Fees>();
-    final addresses = locator<WalletAddressRepository>();
+    final addresses = locator<AddressView>();
     final walletTxs = locator<WalletTransactionRepository>();
     final boltz = BoltzSwapRepository.connect(
       url: url,
@@ -152,8 +152,12 @@ class SwapsLocator {
         settingsRepository: locator<Preferences>(),
       ),
       newAddressFor: (walletId) async =>
-          (await addresses.generateNewReceiveAddress(walletId: walletId))
-              .address,
+          (await addresses.receiveAddress(walletId: walletId, advance: true))
+              .map((address) => address.address)
+              .mapErr(
+                (_) =>
+                    const SwapsUnexpectedFailure('Receive address unavailable'),
+              ),
       walletTx: (txid, {required walletId}) async {
         final tx = await walletTxs.getWalletTransaction(
           txid,

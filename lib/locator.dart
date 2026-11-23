@@ -30,7 +30,7 @@ import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
-import 'package:bb_mobile/features/address_view/address_view_locator.dart';
+import 'package:bb_mobile/address_view_setup.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:access/setup.dart' show AccessFeature;
@@ -58,7 +58,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_lo
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
-import 'package:bb_mobile/features/receive/public/receive_setup.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/public/sell_facade.dart';
@@ -293,17 +293,8 @@ class AppLocator {
       readParent: WalletBip85Bindings.reader(locator),
     );
     // Wallet's SP use cases resolve the facade lazily, after registration.
-    WalletLocator.setup(
-      locator,
-      receiveAddress: (id) =>
-          locator<GetTransferReceiveAddressUsecase>().execute(id),
-      nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
-          locator<NextUnusedReceiveAddressUsecase>().execute(
-            id,
-            excludedAddresses: excludedAddresses,
-          ),
-    );
-    AddressViewLocator.setup(locator);
+    WalletLocator.setup(locator, receive: () => locator<Receive>());
+    mountAddressView(locator);
     // Inventory survives disabled routing and missing endpoint build defines.
     final _ = await prepareArkCustodyReferences(
       locator,

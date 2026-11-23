@@ -1,7 +1,7 @@
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -15,7 +15,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullIcons,
         Gap,
         BullTypographyX;
-import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
 class WalletDetailsScreen extends StatelessWidget {
@@ -126,9 +125,9 @@ class WalletDetailsScreen extends StatelessWidget {
                   const Gap(16),
                   BullButton.secondary(
                     label: context.loc.addressViewAddressesTitle,
-                    onPressed: () => context.pushNamed(
-                      SettingsRoute.walletAddresses.name,
-                      pathParameters: {'walletId': wallet.id},
+                    onPressed: () => AddressViewNavigation.open(
+                      context,
+                      walletId: wallet.id,
                     ),
                   ),
                 ],

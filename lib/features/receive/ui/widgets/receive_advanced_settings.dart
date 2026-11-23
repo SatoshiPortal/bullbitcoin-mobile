@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/receive/domain/receive_advanced_options.dart';
+import 'package:receive/receive.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:label_editor/label_editor.dart';

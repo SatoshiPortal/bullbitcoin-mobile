@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
@@ -47,7 +47,7 @@ class _GetSettings extends Mock implements Preferences {}
 
 class _Fees extends Mock implements Fees {}
 
-class _Address extends Mock implements GetAddressAtIndexUsecase {}
+class _Address extends Mock implements AddressView {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
@@ -112,7 +112,7 @@ void main() {
             getExchangeUserSummaryUsecase: _Summary(),
             getSettingsUsecase: _GetSettings(),
             fees: _Fees(),
-            getAddressAtIndexUsecase: _Address(),
+            addresses: _Address(),
             getIndexPrice: ({required network, required currency}) =>
                 throw StateError('unused'),
             getOrderUsecase: getOrder,
