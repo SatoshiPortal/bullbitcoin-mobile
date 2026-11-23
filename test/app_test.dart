@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:startup/startup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:material_ui/material_ui.dart';

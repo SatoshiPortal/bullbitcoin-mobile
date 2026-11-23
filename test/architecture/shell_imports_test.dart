@@ -14,7 +14,6 @@ const _legacyImports = {
   'lib/features/pay/ui/pay_router.dart -> locator.dart',
   'lib/features/send/ui/send_router.dart -> locator.dart',
   'lib/features/backup_settings/ui/screens/backup_settings_screen.dart -> locator.dart',
-  'lib/features/app_startup/ui/app_startup_widget.dart -> router.dart',
   'lib/features/limit_orders/ui/limit_orders_router.dart -> locator.dart',
   'lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> locator.dart',
   'lib/features/autoswap/ui/widgets/autoswap_settings.dart -> locator.dart',

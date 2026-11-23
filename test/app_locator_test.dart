@@ -37,7 +37,7 @@ import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:startup/startup.dart';
 import 'package:drift/native.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';

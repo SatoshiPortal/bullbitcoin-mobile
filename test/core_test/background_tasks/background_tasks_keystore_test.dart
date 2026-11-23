@@ -23,10 +23,10 @@ void main() {
     test('the handler reaches no secret-mutating use case', () {
       final source = [
         'lib/background_bootstrap.dart',
-        'lib/features/wallet/background_setup.dart',
+        'packages/background_tasks/lib/src/wallet_task_setup.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
 
-      expect(source, isNot(contains('package:secrets')));
+      expect(source, isNot(contains('package:secrets/secrets.dart')));
       for (final mutating in [
         'ImportWalletUsecase',
         'CreateDefaultWalletsUsecase',

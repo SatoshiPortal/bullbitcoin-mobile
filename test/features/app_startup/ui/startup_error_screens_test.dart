@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+import 'package:startup/setup.dart' show StartupLocalizations;
+import 'package:startup/startup.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -68,7 +69,10 @@ void main() {
         MaterialApp.router(
           debugShowCheckedModeBanner: false,
           theme: AppTheme.themeData(theme),
-          localizationsDelegates: appLocalizationsDelegates,
+          localizationsDelegates: const [
+            StartupLocalizations.delegate,
+            ...appLocalizationsDelegates,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
         ),

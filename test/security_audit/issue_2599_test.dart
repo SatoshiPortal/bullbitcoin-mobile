@@ -49,57 +49,59 @@ void main() {
       },
     );
 
-    test('background stores use Documents without opening Payjoin or custody', () {
-      final source = [
-        'lib/background_bootstrap.dart',
-        'lib/features/wallet/background_setup.dart',
-      ].map((path) => File(path).readAsStringSync()).join('\n');
-      expect(source, contains('await getApplicationDocumentsDirectory()'));
-      expect(source, contains('openExisting(documents.path)'));
-      expect(
-        source,
-        contains("_queueFilename = 'wallet_transaction_sync_queue.sqlite'"),
-      );
-      expect(source, contains('openBackgroundWalletSyncQueue(documents.path)'));
-      expect(source, contains('p.join(documents, _queueFilename)'));
-      expect(
-        source,
-        matches(
-          RegExp(
-            r'PaymentNotifications\.initializeBackground\(\s*documents\.path,',
+    test(
+      'background stores use Documents without opening Payjoin or custody',
+      () {
+        final source = [
+          'lib/background_bootstrap.dart',
+          'packages/background_tasks/lib/src/wallet_task_setup.dart',
+        ].map((path) => File(path).readAsStringSync()).join('\n');
+        expect(source, contains('await getApplicationDocumentsDirectory()'));
+        expect(source, contains('openExisting(documents.path)'));
+        expect(
+          source,
+          contains("_queueFilename = 'wallet_transaction_sync_queue.sqlite'"),
+        );
+        expect(
+          source,
+          contains('openBackgroundWalletSyncQueue(documents.path)'),
+        );
+        expect(source, contains('p.join(documents, _queueFilename)'));
+        expect(
+          source,
+          matches(RegExp(r'openNotifications\(\s*documents\.path,')),
+        );
+        final notifications = File(
+          'packages/notifications/lib/src/payment_notification_store.dart',
+        ).readAsStringSync();
+        expect(
+          notifications,
+          contains(
+            'openExistingNotificationStore(p.join(documents, paymentNotificationOutboxFilename))',
           ),
-        ),
-      );
-      final notifications = File(
-        'lib/features/wallet/data/payment_notifications.dart',
-      ).readAsStringSync();
-      expect(
-        notifications,
-        contains(
-          'openExistingNotificationStore(p.join(documents, outboxFilename))',
-        ),
-      );
-      expect(source, isNot(contains('AppLocator.setup(')));
-      expect(source, isNot(contains('payjoinDatabaseFilename')));
-      expect(source, isNot(contains('package:secrets/')));
-      final admission = source.indexOf(
-        'final admitted = await cutover.admit()',
-      );
-      expect(admission, greaterThanOrEqualTo(0));
-      expect(
-        source.indexOf('BackgroundTaskRunner.forTask(', admission),
-        greaterThan(admission),
-      );
-      final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
-      expect(schemaGate, greaterThanOrEqualTo(0));
-      expect(
-        source.indexOf('final sqlite = await LegacySourceStore(', schemaGate),
-        greaterThan(schemaGate),
-      );
-      expect(source, contains(').open(admission)'));
-      expect(source, isNot(contains('cutover.prepare()')));
-      expect(source, isNot(contains('SqliteDatabase();')));
-    });
+        );
+        expect(source, isNot(contains('AppLocator.setup(')));
+        expect(source, isNot(contains('payjoinDatabaseFilename')));
+        expect(source, isNot(contains('package:secrets/secrets.dart')));
+        final admission = source.indexOf(
+          'final admitted = await cutover.admit()',
+        );
+        expect(admission, greaterThanOrEqualTo(0));
+        expect(
+          source.indexOf('BackgroundTaskRunner.forTask(', admission),
+          greaterThan(admission),
+        );
+        final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
+        expect(schemaGate, greaterThanOrEqualTo(0));
+        expect(
+          source.indexOf('final sqlite = await LegacySourceStore(', schemaGate),
+          greaterThan(schemaGate),
+        );
+        expect(source, contains(').open(admission)'));
+        expect(source, isNot(contains('cutover.prepare()')));
+        expect(source, isNot(contains('SqliteDatabase();')));
+      },
+    );
 
     for (final (role, path) in [('foreground', 'lib/init.dart')]) {
       test(

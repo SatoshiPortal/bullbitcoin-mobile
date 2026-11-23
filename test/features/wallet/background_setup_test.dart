@@ -1,7 +1,9 @@
+import 'package:notifications/payment_store.dart';
+
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/wallet/background_setup.dart';
+import 'package:background_tasks/wallet_jobs.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +16,7 @@ void main() {
   String queuePath() =>
       '${documents.path}/wallet_transaction_sync_queue.sqlite';
   String storePath() =>
-      '${documents.path}/${PaymentNotifications.outboxFilename}';
+      '${documents.path}/${paymentNotificationOutboxFilename}';
 
   setUp(() {
     documents = Directory.systemTemp.createTempSync('background-stores-');

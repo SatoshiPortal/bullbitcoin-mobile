@@ -26,8 +26,6 @@ import 'package:path/path.dart' as p;
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor',
   'all_seed_view': 'access',
-  'app_startup':
-      'access logs mnemonic_entry onboarding recoverbull settings wallet',
   'autoswap': 'address_view swap wallet',
   'backup_settings': 'backups recoverbull settings test_wallet_backup wallet',
   'backups': 'recoverbull',
@@ -53,6 +51,7 @@ const _allowedTargets = <String, String>{
   'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
   'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
   'support': 'bull_exchange',
+  'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins consolidation fees send transactions wallet',
   'test_wallet_backup':
       'access onboarding physical_backup_verification recoverbull wallet',
