@@ -193,5 +193,6 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
         LimitOrderStatus.cancelled => context.loc.limitOrderStatusCancelled,
         LimitOrderStatus.expired => context.loc.limitOrderStatusExpired,
         LimitOrderStatus.failed => context.loc.limitOrderStatusFailed,
+        LimitOrderStatus.unknown => context.loc.limitOrderStatusUnknown,
       };
 }

@@ -2433,7 +2433,11 @@
   },
   "limitOrderStatusFailed": "Failed",
   "@limitOrderStatusFailed": {
-    "description": "Failed or unknown Limit Order status"
+    "description": "Failed Limit Order status"
+  },
+  "limitOrderStatusUnknown": "Status unknown",
+  "@limitOrderStatusUnknown": {
+    "description": "Limit Order status this app version does not know yet; the order may still be open"
   },
   "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
   "@limitOrdersAccountUnavailableError": {

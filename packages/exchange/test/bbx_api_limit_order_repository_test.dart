@@ -222,7 +222,7 @@ void main() {
       expect(order.address, 'bc1qaddress');
     });
 
-    test('keeps the old defaults and unknown statuses', () async {
+    test('keeps the old defaults and maps a new status to unknown', () async {
       final order = _valueOf(
         await repository(
           FakeBbxHttp(
@@ -237,7 +237,7 @@ void main() {
 
       expect(order.number, '');
       expect(order.address, '');
-      expect(order.status, LimitOrderStatus.failed);
+      expect(order.status, LimitOrderStatus.unknown);
     });
 
     test('listActive keeps only active orders', () async {
@@ -257,6 +257,28 @@ void main() {
       );
 
       expect(orders.map((o) => o.id), ['lo-1']);
+    });
+
+    test('listActive keeps orders whose status is unknown', () async {
+      final orders = _valueOf(
+        await repository(
+          FakeBbxHttp(
+            body: {
+              'result': {
+                'elements': [
+                  {..._order, 'status': 'EXECUTING'},
+                  {..._order, 'limitOrderId': 'lo-2', 'status': 'EXPIRED'},
+                  {..._order, 'limitOrderId': 'lo-3', 'status': 'FAILED'},
+                ],
+              },
+            },
+          ),
+        ).listActive(),
+      );
+
+      expect(orders.map((o) => o.id), ['lo-1']);
+      expect(orders.single.status, LimitOrderStatus.unknown);
+      expect(orders.single.isActive, isFalse);
     });
 
     test('cancelAll keeps every returned order', () async {

@@ -10,18 +10,22 @@ import '../domain/entities/limit_order_rate.dart';
 import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import 'exchange_call_classifier.dart';
+import 'limit_order_status_wire.dart';
 
 final class BbxApiLimitOrderRepository {
   final bbx.Bbx _api;
 
   const BbxApiLimitOrderRepository(this._api);
 
+  /// The orders that may still execute: active ones and ones whose status
+  /// this build doesn't know, so an unknown status neither hides an order nor
+  /// frees a slot of the open-order cap.
   Future<Result<List<LimitOrder>, ExchangeFailure>> listActive() => _guard(
     'list the active limit orders',
     ExchangeLimitOrderProblem.load,
     (api) => api.orderTriggers.listLimitOrders(),
     (orders) =>
-        orders.map(_toLimitOrder).where((order) => order.isActive).toList(),
+        orders.map(_toLimitOrder).where((order) => order.isOpen).toList(),
   );
 
   Future<Result<LimitOrder, ExchangeFailure>> get(String id) => _guard(
@@ -110,7 +114,7 @@ final class BbxApiLimitOrderRepository {
     currencyCode: order.currencyCode,
     limitPrice: double.parse(order.limitPrice),
     estimatedBtcAmount: double.parse(order.estimatedBtcAmount),
-    status: LimitOrderStatus.fromValue(order.status),
+    status: limitOrderStatusFromWire(order.status),
     createdAt: DateTime.parse(order.createdAt),
     expiresAt: DateTime.parse(order.expiresAt),
     executedAt: switch (order.executedAt) {
