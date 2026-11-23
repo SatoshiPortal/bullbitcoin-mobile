@@ -8,7 +8,6 @@ import 'package:path/path.dart' as p;
 // Exact legacy feature imports at 982b98e90 (2026-11-06). Remove entries as their
 // consumers migrate; never extend this list to permit a new shell dependency.
 const _legacyImports = {
-  'lib/features/bip85_entropy/router.dart -> locator.dart',
   'lib/features/broadcast_signed_tx/router.dart -> locator.dart',
   'lib/features/import_mnemonic/router.dart -> locator.dart',
   'lib/features/replace_by_fee/router.dart -> locator.dart',
@@ -40,13 +39,11 @@ const _legacyImports = {
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_home_screen.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_auth_screen.dart -> locator.dart',
-  'lib/features/exchange/ui/screens/exchange_kyc_screen.dart -> locator.dart',
   'lib/features/default_wallets/ui/default_wallets_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
   'lib/features/withdraw/ui/withdraw_router.dart -> locator.dart',
-  'lib/features/exchange_support_chat/ui/screens/exchange_support_chat_screen.dart -> locator.dart',
   'lib/features/consolidation/ui/consolidation_router.dart -> locator.dart',
   'lib/features/consolidation/ui/widgets/consolidation_banner.dart -> locator.dart',
   'lib/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart -> locator.dart',

@@ -110,6 +110,7 @@ void main() {
     final testnet = _value(await readOnly.readWallet(testId));
     expect(testnet.network, BitcoinNetwork.testnet);
     expect(testnet.signer, WalletSigner.remote);
+    expect(testnet.masterFingerprint, Fingerprint('01234567'));
     expect(testnet.secretFingerprint, isNull);
     expect(testnet.derivationPath, "m/84'/1'/7'");
     expect(testnet.scriptType, ScriptType.bip84);

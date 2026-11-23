@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/bip85_entropy/presentation/bip85_clipboard.dart';
+import 'package:bip85/src/presentation/bip85_clipboard.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 

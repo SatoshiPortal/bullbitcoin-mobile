@@ -1,6 +1,24 @@
-import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
+import 'package:secrets/bip85.dart';
+import 'package:bip85/src/presentation/bip85_state.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class _Derivation extends Fake implements Bip85Derivation {
+  @override
+  final String path;
+  @override
+  final String? alias;
+  @override
+  final Bip85Status status;
+  @override
+  final Bip85Application application;
+
+  _Derivation({
+    required this.path,
+    required this.alias,
+    required this.status,
+    required this.application,
+  });
+}
 
 void main() {
   test('toString names no BIP85 child', () {
@@ -8,13 +26,11 @@ void main() {
     final state = Bip85EntropyState(
       derivations: [
         (
-          derivation: Bip85DerivationEntity(
+          derivation: _Derivation(
             path: "128169'/16'/0'",
-            xprvFingerprint: '73c5da0a',
             alias: null,
             status: Bip85Status.active,
             application: Bip85Application.hex,
-            index: 0,
           ),
           entropy: entropy,
         ),
