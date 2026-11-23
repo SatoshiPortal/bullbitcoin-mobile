@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:primitives/primitives.dart';
 
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
@@ -15,7 +16,10 @@ import 'ui/screens/exchange_landing_screen_v2.dart';
 typedef ExchangeSupportChatHost = ({
   Exchange Function() exchange,
   bool Function(BuildContext) isLoggedIn,
-  Widget Function(ExchangeSupportChatDraft?) loginScreenBuilder,
+  Future<Result<void, ExchangeFailure>> Function(BuildContext) enableLogin,
+  void Function(BuildContext, ExchangeSupportChatDraft?) onLogin,
+  String Function(BuildContext) loginLabel,
+  String Function(BuildContext, ExchangeFailure) failureMessage,
   void Function(BuildContext, bool fromExchange) onExit,
 });
 
@@ -77,7 +81,10 @@ final class BullExchangeFeature {
         : ExchangeSupportChatRouter.route(
             exchange: supportChat.exchange,
             isLoggedIn: supportChat.isLoggedIn,
-            loginScreenBuilder: supportChat.loginScreenBuilder,
+            enableLogin: supportChat.enableLogin,
+            onLogin: supportChat.onLogin,
+            loginLabel: supportChat.loginLabel,
+            failureMessage: supportChat.failureMessage,
             onExit: supportChat.onExit,
           ),
     kyc == null

@@ -12,7 +12,6 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_exit_on_back.dart';
 import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
@@ -154,8 +153,15 @@ class ExchangeRouter {
         : (
             exchange: exchange,
             isLoggedIn: ExchangeScope.isLoggedIn,
-            loginScreenBuilder: (draft) =>
-                ExchangeSupportLoginScreen(draft: draft),
+            enableLogin: (context) =>
+                context.read<ExchangeCubit>().enableForSupport(),
+            onLogin: (context, draft) => context.goNamed(
+              ExchangeRoute.exchangeAuth.name,
+              queryParameters: {'from': 'support'},
+              extra: draft,
+            ),
+            loginLabel: (context) => context.loc.exchangeLoginButton,
+            failureMessage: (context, failure) => failure.toTranslated(context),
             onExit: (context, fromExchange) {
               if (fromExchange) {
                 context.goNamed(ExchangeRoute.exchangeHome.name);

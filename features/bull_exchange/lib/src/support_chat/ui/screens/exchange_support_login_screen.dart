@@ -1,10 +1,6 @@
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_exchange/bull_exchange.dart';
+import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullText,
@@ -14,13 +10,24 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         Gap,
         BullSnackBar,
-        BullTypographyX;
-import 'package:go_router/go_router.dart';
+        BullTypographyX,
+        BullThemeX;
+
+import '../../../../generated/l10n/exchange_localizations.dart';
 
 class ExchangeSupportLoginScreen extends StatefulWidget {
-  final ExchangeSupportChatDraft? draft;
+  final Future<Result<void, ExchangeFailure>> Function(BuildContext) enable;
+  final void Function(BuildContext) onLogin;
+  final String Function(BuildContext) loginLabel;
+  final String Function(BuildContext, ExchangeFailure) failureMessage;
 
-  const ExchangeSupportLoginScreen({super.key, this.draft});
+  const ExchangeSupportLoginScreen({
+    super.key,
+    required this.enable,
+    required this.onLogin,
+    required this.loginLabel,
+    required this.failureMessage,
+  });
 
   @override
   State<ExchangeSupportLoginScreen> createState() =>
@@ -34,33 +41,33 @@ class _ExchangeSupportLoginScreenState
   Future<void> _login() async {
     if (_busy) return;
     setState(() => _busy = true);
-    final result = await context.read<ExchangeCubit>().enableForSupport();
+    final result = await widget.enable(context);
     if (!mounted) return;
     setState(() => _busy = false);
     switch (result) {
       case Ok():
-        context.goNamed(
-          ExchangeRoute.exchangeAuth.name,
-          queryParameters: {'from': 'support'},
-          extra: widget.draft,
-        );
+        widget.onLogin(context);
       case Err(:final failure):
-        BullSnackBar.show(context, message: failure.toTranslated(context));
+        BullSnackBar.show(
+          context,
+          message: widget.failureMessage(context, failure),
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = ExchangeLocalizations.of(context);
     return Scaffold(
-      backgroundColor: context.appColors.background,
+      backgroundColor: context.bull.background,
       appBar: AppBar(
         title: BullText(
-          context.loc.exchangeSupportChatTitle,
+          loc.exchangeSupportChatTitle,
           style: context.bullType.subtitle.copyWith(
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: context.appColors.background,
+        backgroundColor: context.bull.background,
       ),
       body: Column(
         children: [
@@ -80,18 +87,18 @@ class _ExchangeSupportLoginScreenState
                         height: 48,
                         color:
                             Color.lerp(
-                              context.appColors.primary,
-                              context.appColors.secondaryFixed,
+                              context.bull.primary,
+                              context.bull.secondaryFixed,
                               0.2,
                             ) ??
-                            context.appColors.primary,
+                            context.bull.primary,
                       ),
                       const Gap(12),
                       _FakeMessageBubble(
                         isUser: true,
                         widthFraction: 0.55,
                         height: 36,
-                        color: context.appColors.secondary,
+                        color: context.bull.secondary,
                       ),
                       const Gap(12),
                       _FakeMessageBubble(
@@ -100,39 +107,37 @@ class _ExchangeSupportLoginScreenState
                         height: 64,
                         color:
                             Color.lerp(
-                              context.appColors.primary,
-                              context.appColors.secondaryFixed,
+                              context.bull.primary,
+                              context.bull.secondaryFixed,
                               0.2,
                             ) ??
-                            context.appColors.primary,
+                            context.bull.primary,
                       ),
                       const Gap(12),
                       _FakeMessageBubble(
                         isUser: true,
                         widthFraction: 0.45,
                         height: 36,
-                        color: context.appColors.secondary,
+                        color: context.bull.secondary,
                       ),
                     ],
                   ),
                 ),
                 // Semi-transparent overlay with login card
                 Container(
-                  color: context.appColors.onSurface.withValues(alpha: 0.55),
+                  color: context.bull.onSurface.withValues(alpha: 0.55),
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32),
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: context.appColors.surfaceContainer,
+                          color: context.bull.surfaceContainer,
                           borderRadius: BorderRadius.circular(
                             context.bullShapes.card,
                           ),
                           border: Border.all(
-                            color: context.appColors.outline.withValues(
-                              alpha: 0.3,
-                            ),
+                            color: context.bull.outline.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Column(
@@ -141,21 +146,21 @@ class _ExchangeSupportLoginScreenState
                             Icon(
                               Icons.chat_bubble_outline,
                               size: 48,
-                              color: context.appColors.primary,
+                              color: context.bull.primary,
                             ),
                             const Gap(16),
                             BullText(
-                              context.loc.exchangeSupportLoginChatRequired,
+                              loc.exchangeSupportLoginChatRequired,
                               style: context.bullType.body
                                   .copyWith(fontWeight: FontWeight.w500)
-                                  .copyWith(color: context.appColors.onSurface),
+                                  .copyWith(color: context.bull.onSurface),
                               textAlign: TextAlign.center,
                             ),
                             const Gap(24),
                             SizedBox(
                               width: double.infinity,
                               child: BullButton.primary(
-                                label: context.loc.exchangeLoginButton,
+                                label: widget.loginLabel(context),
                                 onPressed: (_busy) ? null : _login,
                               ),
                             ),
@@ -214,16 +219,15 @@ class _DisabledMessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = ExchangeLocalizations.of(context);
     return SafeArea(
       top: false,
       child: Container(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 24),
         decoration: BoxDecoration(
-          color: context.appColors.background,
+          color: context.bull.background,
           border: Border(
-            top: BorderSide(
-              color: context.appColors.outline.withValues(alpha: 0.2),
-            ),
+            top: BorderSide(color: context.bull.outline.withValues(alpha: 0.2)),
           ),
         ),
         child: Row(
@@ -233,7 +237,7 @@ class _DisabledMessageInput extends StatelessWidget {
               height: 52,
               child: BullInlineIconButton(
                 icon: Icon(Icons.attach_file),
-                tooltip: context.loc.exchangeSupportChatAttachFileTooltip,
+                tooltip: loc.exchangeSupportChatAttachFileTooltip,
 
                 onPressed: null,
               ),
@@ -244,7 +248,7 @@ class _DisabledMessageInput extends StatelessWidget {
               height: 52,
               child: BullInlineIconButton(
                 icon: Icon(Icons.description),
-                tooltip: context.loc.exchangeSupportChatAttachLogsTooltip,
+                tooltip: loc.exchangeSupportChatAttachLogsTooltip,
 
                 onPressed: null,
               ),
@@ -254,7 +258,7 @@ class _DisabledMessageInput extends StatelessWidget {
               child: IgnorePointer(
                 child: BullInputText(
                   value: '',
-                  hint: context.loc.exchangeSupportChatInputHint,
+                  hint: loc.exchangeSupportChatInputHint,
                   maxLines: 1,
                   onChanged: (_) {},
                 ),
@@ -266,7 +270,7 @@ class _DisabledMessageInput extends StatelessWidget {
               height: 52,
               child: BullInlineIconButton(
                 icon: Icon(Icons.send),
-                tooltip: context.loc.exchangeSupportChatSendTooltip,
+                tooltip: loc.exchangeSupportChatSendTooltip,
 
                 onPressed: null,
               ),
