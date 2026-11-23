@@ -5,18 +5,21 @@ import 'package:primitives/primitives.dart';
 
 import '../../domain/recoverbull_failure.dart';
 
-/// Reads only consent from an old schema-1 file. The caller holds exclusive
-/// cutover admission. A missing family or unadopted state returns `Ok(null)`.
-Future<Result<bool?, RecoverBullFailure>> readLegacyRecoverBullPermission(
-  File file,
-) async {
+/// Reads consent and its source URL from a schema-1 file without migrating it.
+/// The URL is for comparison only and must not be persisted by the importer.
+/// The caller holds exclusive cutover admission. A missing family or unadopted
+/// state returns `Ok(null)`.
+Future<
+  Result<({bool permissionGranted, String sourceUrl})?, RecoverBullFailure>
+>
+readLegacyRecoverBullPermission(File file) async {
   try {
-    bool? permission;
+    ({bool permissionGranted, String sourceUrl})? consent;
     final verified = await readStandaloneSource(file, (source) async {
       if (source == null) return true;
       if (source.userVersion != 1) return false;
       final rows = source.select(
-        'SELECT id, permission_granted, legacy_import_complete '
+        'SELECT id, permission_granted, legacy_import_complete, server '
         'FROM recoverbull_state',
       );
       if (rows.isEmpty) return true;
@@ -29,10 +32,12 @@ Future<Result<bool?, RecoverBullFailure>> readLegacyRecoverBullPermission(
       if (complete == 0) return true;
       final value = row['permission_granted'];
       if (value is! int || (value != 0 && value != 1)) return false;
-      permission = value == 1;
+      final server = row['server'];
+      if (server is! String) return false;
+      consent = (permissionGranted: value == 1, sourceUrl: server);
       return true;
     });
-    return verified ? Ok(permission) : const Err(VaultStorageFailure());
+    return verified ? Ok(consent) : const Err(VaultStorageFailure());
   } on Exception {
     return const Err(VaultStorageFailure());
   }

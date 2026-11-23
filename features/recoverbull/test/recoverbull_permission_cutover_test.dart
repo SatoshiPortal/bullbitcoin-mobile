@@ -6,6 +6,8 @@ import 'package:bull_recoverbull/src/domain/recoverbull_server_url.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+typedef _LegacyConsent = ({bool permissionGranted, String sourceUrl});
+
 void main() {
   late Directory directory;
   late File file;
@@ -29,7 +31,7 @@ void main() {
 
     expect(
       await readLegacyRecoverBullPermission(file),
-      isA<Ok<bool?, RecoverBullFailure>>().having(
+      isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
         (r) => r.value,
         'permission',
         null,
@@ -40,7 +42,7 @@ void main() {
   test('absence stays distinct from explicit denial', () async {
     expect(
       await readLegacyRecoverBullPermission(file),
-      isA<Ok<bool?, RecoverBullFailure>>().having(
+      isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
         (r) => r.value,
         'permission',
         null,
@@ -50,7 +52,7 @@ void main() {
     try {
       expect(
         await readLegacyRecoverBullPermission(file),
-        isA<Ok<bool?, RecoverBullFailure>>().having(
+        isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
           (r) => r.value,
           'permission',
           null,
@@ -61,8 +63,8 @@ void main() {
       );
       expect(
         await readLegacyRecoverBullPermission(file),
-        isA<Ok<bool?, RecoverBullFailure>>().having(
-          (r) => r.value,
+        isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
+          (r) => r.value?.permissionGranted,
           'permission',
           false,
         ),
@@ -70,8 +72,8 @@ void main() {
       source.execute('UPDATE recoverbull_state SET permission_granted = 1');
       expect(
         await readLegacyRecoverBullPermission(file),
-        isA<Ok<bool?, RecoverBullFailure>>().having(
-          (r) => r.value,
+        isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
+          (r) => r.value?.permissionGranted,
           'permission',
           true,
         ),
@@ -80,7 +82,7 @@ void main() {
       source.execute('UPDATE recoverbull_state SET permission_granted = 2');
       expect(
         await readLegacyRecoverBullPermission(file),
-        isA<Err<bool?, RecoverBullFailure>>(),
+        isA<Err<_LegacyConsent?, RecoverBullFailure>>(),
       );
     } finally {
       source.close();
@@ -91,7 +93,7 @@ void main() {
     File('${file.path}-wal').createSync();
     expect(
       await readLegacyRecoverBullPermission(file),
-      isA<Err<bool?, RecoverBullFailure>>(),
+      isA<Err<_LegacyConsent?, RecoverBullFailure>>(),
     );
   });
 
@@ -101,7 +103,7 @@ void main() {
       source.userVersion = 2;
       expect(
         await readLegacyRecoverBullPermission(file),
-        isA<Err<bool?, RecoverBullFailure>>(),
+        isA<Err<_LegacyConsent?, RecoverBullFailure>>(),
       );
       expect(source.userVersion, 2);
     } finally {
@@ -122,8 +124,8 @@ void main() {
     final before = await file.readAsBytes();
     expect(
       await readLegacyRecoverBullPermission(file),
-      isA<Ok<bool?, RecoverBullFailure>>().having(
-        (result) => result.value,
+      isA<Ok<_LegacyConsent?, RecoverBullFailure>>().having(
+        (result) => result.value?.permissionGranted,
         'permission',
         true,
       ),
