@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:legacy_storage/owner_database.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
@@ -14,12 +15,21 @@ final class RecoverBullCutover {
   final File file;
   final File standalone;
   final bool regtest;
+  final QueryExecutor Function()? _testingExecutor;
 
   const RecoverBullCutover({
     required this.file,
     required this.standalone,
     required this.regtest,
-  });
+  }) : _testingExecutor = null;
+
+  @internal
+  const RecoverBullCutover.withTestExecutor({
+    required this.file,
+    required this.standalone,
+    required this.regtest,
+    required QueryExecutor Function() executor,
+  }) : _testingExecutor = executor;
 
   String get ownerId => regtest ? 'recoverbull_regtest' : 'recoverbull';
 
@@ -111,18 +121,23 @@ final class RecoverBullCutover {
   Future<Result<OwnerDatabase<RecoverBullDatabase>, LegacyImportFailure>> _open(
     LifecycleAdmission admission, {
     required bool existing,
-  }) => OwnerDatabase.open(
-    admission: admission,
-    openExecutor: Secrets.databaseOpener<LegacyImportFailure>(
-      module: ownerId,
-      name: 'main',
-      file: file,
-      schema: RecoverBullDatabase.schema,
-      deferred: const LegacyImportDeferred(),
-      unavailable: const LegacyImportUnavailable(),
-    )(existing),
-    create: RecoverBullDatabase.new,
-  );
+  }) {
+    final testingExecutor = _testingExecutor;
+    return OwnerDatabase.open(
+      admission: admission,
+      openExecutor: testingExecutor == null
+          ? Secrets.databaseOpener<LegacyImportFailure>(
+              module: ownerId,
+              name: 'main',
+              file: file,
+              schema: RecoverBullDatabase.schema,
+              deferred: const LegacyImportDeferred(),
+              unavailable: const LegacyImportUnavailable(),
+            )(existing)
+          : () async => Ok(testingExecutor()),
+      create: RecoverBullDatabase.new,
+    );
+  }
 }
 
 const _tables = [

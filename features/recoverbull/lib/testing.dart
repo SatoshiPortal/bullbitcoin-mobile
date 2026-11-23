@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 
+import 'src/data/database/recoverbull_cutover.dart';
 import 'src/data/database/recoverbull_database.dart';
 import 'src/data/database/recoverbull_storage.dart';
 
@@ -35,3 +36,16 @@ RecoverBullStorage recoverBullStorageForTesting(String path) =>
         rethrow;
       }
     });
+
+RecoverBullCutover recoverBullCutoverForTesting({
+  required File file,
+  required File standalone,
+}) {
+  final path = file.path;
+  return RecoverBullCutover.withTestExecutor(
+    file: file,
+    standalone: standalone,
+    regtest: false,
+    executor: () => NativeDatabase(File(path)),
+  );
+}
