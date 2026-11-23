@@ -7,9 +7,6 @@ import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bbx_api/bbx_api.dart'
@@ -189,7 +186,7 @@ void main() {
   test(
     'shared Dio features distinguish missing credentials from read failures',
     () async {
-      final funding = BbxApiFundingRepository(api: api);
+      final funding = user.funding;
       final recipients = BbxApiRecipientsRepository(api: api);
       final limits = user.limitOrders;
       expect(
@@ -199,7 +196,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'funding',
-          isA<FundExchangeNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       expect(
@@ -226,7 +223,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'funding unavailable',
-          isA<FundExchangeUnexpectedFailure>(),
+          isA<ExchangeUnexpectedFailure>(),
         ),
       );
       expect(

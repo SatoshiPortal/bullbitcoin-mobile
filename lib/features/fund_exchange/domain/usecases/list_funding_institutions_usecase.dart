@@ -1,9 +1,9 @@
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+
+import '../map_funding_failure.dart';
 
 class ListFundingInstitutionsQuery {
   final FundingJurisdiction jurisdiction;
@@ -18,17 +18,17 @@ class ListFundingInstitutionsResult {
 }
 
 class ListFundingInstitutionsUsecase {
-  final FundingRepository _fundingRepository;
+  final ExchangeFunding _funding;
 
-  const ListFundingInstitutionsUsecase({required this._fundingRepository});
+  const ListFundingInstitutionsUsecase({required this._funding});
 
   @useResult
   Future<Result<ListFundingInstitutionsResult, FundExchangeFailure>> execute(
     ListFundingInstitutionsQuery query,
   ) async {
-    final result = await _fundingRepository.listInstitutions(
+    final result = (await _funding.listInstitutions(
       jurisdiction: query.jurisdiction,
-    );
+    )).mapErr(mapFundingFailure);
 
     return result.map(
       (institutions) =>

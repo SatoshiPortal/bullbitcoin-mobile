@@ -1,26 +1,30 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/fund_exchange/data/bbx_api_funding_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:bbx_api/bbx_api.dart'
+    show BbxFailure, BbxCredentialUnavailableFailure;
 import 'package:bbx_api/bbx_api_testing.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/src/data/bbx_api_funding_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../exchange/data/bbx_api_test_http.dart';
-import '../result_helpers.dart';
+import 'bbx_api_test_http.dart';
 import 'bbx_api_funding_repository_legacy.dart';
 
 const _iban = 'DE89370400440532013000';
+const _paymentReturnUrl = 'https://app.bullbitcoin.com';
+
+F failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok() => fail('expected an Err, got Ok'),
+  Err(:final failure) => failure,
+};
+
+T valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
+};
 
 const _methods = <FundingMethod>[
   EmailETransfer(),
@@ -161,22 +165,25 @@ Map<String, Object?> _canonical(FundingDetails d) => switch (d) {
   },
 };
 
-FundingRepository _new(HttpClientAdapter http, {ReadExchangeApiKey? key}) =>
-    BbxApiFundingRepository(
-      api: bbxForTesting(
-        endpoint: testBbxEndpoint,
-        adapter: http,
-        readActiveApiKey: bbxCredentialRead(key),
-      ),
-    );
+BbxApiFundingRepository _new(
+  HttpClientAdapter http, {
+  Future<Result<String?, BbxFailure>> Function()? key,
+}) => BbxApiFundingRepository(
+  paymentReturnUrl: Uri.parse(_paymentReturnUrl),
+  api: bbxForTesting(
+    endpoint: 'https://example.invalid',
+    adapter: http,
+    readActiveApiKey: key ?? () async => const Ok('synthetic-key'),
+  ),
+);
 
 /// The path and JSON text of each request.
 List<(String, String)> _sent(FakeBbxHttp http) => [
   for (final r in http.requests) (r.path, jsonEncode(r.data)),
 ];
 
-typedef _Operation = Future<Result<Object?, FundExchangeFailure>> Function(
-  FundingRepository,
+typedef _Operation = Future<Result<Object?, ExchangeFailure>> Function(
+  BbxApiFundingRepository,
 );
 
 final _operations = <String, _Operation>{
@@ -196,7 +203,7 @@ final _operations = <String, _Operation>{
 Future<
   (
     (List<Object?>, Object?),
-    (List<(String, String)>, Result<Object?, FundExchangeFailure>),
+    (List<(String, String)>, Result<Object?, ExchangeFailure>),
   )
 >
 _both(
@@ -205,7 +212,7 @@ _both(
   Object? body,
   int status = 200,
   DioExceptionType? error,
-  ReadExchangeApiKey? key,
+  Future<Result<String?, BbxFailure>> Function()? key,
 }) async {
   final http = FakeBbxHttp(body: body, status: status, error: error);
   final result = await call(_new(http, key: key));
@@ -254,7 +261,7 @@ void main() {
         _sent(http).single.$2,
         '{"jsonrpc":"2.0","id":"0","method":"getCopPaymentLink","params":'
         '{"paymentProcessorCode":null,"bankCode":"BC01","amount":50000,'
-        '"callbackUrl":"${ApiServiceConstants.bbAppUrl}"}}',
+        '"callbackUrl":"$_paymentReturnUrl"}}',
       );
       expect(
         (valueOf(result) as CopBankTransferFundingDetails).paymentLink,
@@ -348,9 +355,7 @@ void main() {
         },
       );
 
-      List<(String, String)> institutions(
-        Result<Object?, FundExchangeFailure> r,
-      ) {
+      List<(String, String)> institutions(Result<Object?, ExchangeFailure> r) {
         final value = valueOf(r);
         if (value is! List<FundingInstitution>) {
           fail('Expected a list of funding institutions');
@@ -385,7 +390,14 @@ void main() {
           body: body,
         );
 
-        expect(failureOf(result), isA<FundExchangeNoInstitutionsFailure>());
+        expect(
+          failureOf(result),
+          isA<ExchangeFundingFailure>().having(
+            (failure) => failure.problem,
+            'problem',
+            ExchangeFundingProblem.noInstitutions,
+          ),
+        );
         expect(_legacyResult(oldResult)[0], FundExchangeNoInstitutionsFailure);
       });
     }
@@ -414,7 +426,7 @@ void main() {
             '{"jsonrpc":"2.0","id":"0","method":'
                 '"registerResponsibilityConsent","params":{}}',
           ));
-          expect(newResult, isA<Ok<void, FundExchangeFailure>>());
+          expect(newResult, isA<Ok<void, ExchangeFailure>>());
           expect(oldResult, ['ok', null]);
         });
       }
@@ -492,7 +504,7 @@ void main() {
             case Ok():
               expect(old[0], 'ok');
             case Err(:final failure):
-              expect(failure.runtimeType, old[0]);
+              expect(_legacyType(failure), old[0]);
           }
         });
       }
@@ -508,8 +520,8 @@ void main() {
           expect(
             failure,
             name == 'registerResponsibilityConsent'
-                ? isA<FundExchangeConsentRegistrationFailure>()
-                : isA<FundExchangeUnexpectedFailure>(),
+                ? isA<ExchangeConsentRegistrationFailure>()
+                : isA<ExchangeUnexpectedFailure>(),
           );
           expect(failure.logMessage, 'Transport failure: transformTimeout');
         },
@@ -524,7 +536,7 @@ void main() {
 
         expect(sent, isEmpty);
         expect(oldSent, isEmpty);
-        expect(failureOf(result), isA<FundExchangeNotAuthenticatedFailure>());
+        expect(failureOf(result), isA<ExchangeNotAuthenticatedFailure>());
         expect(
           _legacyResult(oldResult)[0],
           FundExchangeNotAuthenticatedFailure,
@@ -535,10 +547,10 @@ void main() {
         final ((_, oldResult), (_, result)) = await _both(
           '$name: unreadable key',
           call,
-          key: () async => const Err(ExchangeApiKeyReadFailure()),
+          key: () async => const Err(BbxCredentialUnavailableFailure()),
         );
 
-        expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+        expect(failureOf(result), isA<ExchangeUnexpectedFailure>());
         expect(failureOf(result).logMessage, 'Exchange credential unavailable');
         expect(_legacyResult(oldResult)[1], failureOf(result).logMessage);
       });
@@ -566,8 +578,8 @@ void main() {
         expect(
           failure,
           name == 'registerResponsibilityConsent'
-              ? isA<FundExchangeConsentRegistrationFailure>()
-              : isA<FundExchangeUnexpectedFailure>(),
+              ? isA<ExchangeConsentRegistrationFailure>()
+              : isA<ExchangeUnexpectedFailure>(),
         );
       });
     }
@@ -606,7 +618,7 @@ void main() {
         ),
       ).getFundingDetails(fundingMethod: const CanadaPost());
 
-      expect(failureOf(result), isA<FundExchangeUnexpectedFailure>());
+      expect(failureOf(result), isA<ExchangeUnexpectedFailure>());
     });
   });
 }
@@ -628,7 +640,7 @@ class _ThrowingAdapter implements HttpClientAdapter {
 }
 
 /// A result in the form the old repository's answers were recorded in.
-Object? _legacyOutcome(Result<Object?, FundExchangeFailure> r) => switch (r) {
+Object? _legacyOutcome(Result<Object?, ExchangeFailure> r) => switch (r) {
   Ok(:final value) => [
     'ok',
     switch (value) {
@@ -637,5 +649,28 @@ Object? _legacyOutcome(Result<Object?, FundExchangeFailure> r) => switch (r) {
       _ => value,
     },
   ],
-  Err(:final failure) => [failure.runtimeType, failure.logMessage],
+  Err(:final failure) => [_legacyType(failure), failure.logMessage],
+};
+
+Type _legacyType(ExchangeFailure failure) => switch (failure) {
+  ExchangeNotAuthenticatedFailure() => FundExchangeNotAuthenticatedFailure,
+  ExchangeConsentRegistrationFailure() =>
+    FundExchangeConsentRegistrationFailure,
+  ExchangeNetworkFailure() => FundExchangeNetworkFailure,
+  ExchangeFundingFailure(:final problem) => switch (problem) {
+    ExchangeFundingProblem.paymentOptionUnavailable =>
+      FundExchangePaymentOptionUnavailableFailure,
+    ExchangeFundingProblem.optionNotPermitted =>
+      FundExchangeOptionNotPermittedFailure,
+    ExchangeFundingProblem.sinpeNotRegistered =>
+      FundExchangeSinpeNotRegisteredFailure,
+    ExchangeFundingProblem.kycIncomplete => FundExchangeKycIncompleteFailure,
+    ExchangeFundingProblem.copRequestInvalid =>
+      FundExchangeCopRequestInvalidFailure,
+    ExchangeFundingProblem.sepaVirtualPaymentInactive =>
+      FundExchangeSepaVirtualPaymentInactiveFailure,
+    ExchangeFundingProblem.requestInvalid => FundExchangeRequestInvalidFailure,
+    ExchangeFundingProblem.noInstitutions => FundExchangeNoInstitutionsFailure,
+  },
+  _ => FundExchangeUnexpectedFailure,
 };

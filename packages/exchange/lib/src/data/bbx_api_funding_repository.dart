@@ -1,26 +1,26 @@
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/fund_exchange/data/models/get_funding_details_request_params_model.dart';
-import 'package:bb_mobile/features/fund_exchange/data/models/get_funding_details_response_model.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-/// [FundingRepository] for one environment on its [Bbx].
-class BbxApiFundingRepository implements FundingRepository {
+import '../domain/entities/funding_details.dart';
+import '../domain/entities/funding_institution.dart';
+import '../domain/entities/funding_jurisdiction.dart';
+import '../domain/entities/funding_method.dart';
+import '../domain/exchange_failure.dart';
+import 'funding_details_mapper.dart';
+
+final class BbxApiFundingRepository {
   final Bbx _api;
+  final Uri _paymentReturnUrl;
 
-  BbxApiFundingRepository({required this._api});
+  const BbxApiFundingRepository({
+    required this._api,
+    required this._paymentReturnUrl,
+  });
 
-  @override
   @useResult
-  Future<Result<FundingDetails, FundExchangeFailure>> getFundingDetails({
+  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
   }) async {
     final isCop = fundingMethod is CopBankTransfer;
@@ -31,7 +31,7 @@ class BbxApiFundingRepository implements FundingRepository {
         final result = await _api.orders.getCopPaymentLink(
           bankCode: fundingMethod.bankCode,
           amount: fundingMethod.amountCop,
-          callbackUrl: ApiServiceConstants.bbAppUrl,
+          callbackUrl: _paymentReturnUrl.toString(),
         );
         return switch (result) {
           Ok(:final value) => Ok(
@@ -41,32 +41,46 @@ class BbxApiFundingRepository implements FundingRepository {
         };
       }
 
-      final paymentProcessorCode =
-          GetFundingDetailsRequestParamsModel.fromFundingMethod(fundingMethod)
-              .paymentProcessorCode;
-      if (paymentProcessorCode == null) {
-        return const Err(
-          FundExchangeUnexpectedFailure(
-            'Missing funding payment processor code',
-          ),
-        );
-      }
+      final paymentProcessorCode = switch (fundingMethod) {
+        EmailETransfer() => 'IN_CAD_EMAIL_TRANSFER_APL',
+        BankTransferWire() => 'IN_CAD_WIRE_TRANSFER_SCU',
+        OnlineBillPayment() => 'IN_CAD_BILL_PAYMENT_APL',
+        CanadaPost() => 'IN_CAD_LOADHUB',
+        InstantSepa() => 'IN_EUR_CJ_IBAN',
+        RegularSepa() => 'IN_EUR_SEPA_DELUBAC',
+        SpeiTransfer() => 'IN_MXN_BITSO_CLABE',
+        Sinpe() => 'IN_CRC_RDV_SINPE',
+        CrIbanCrc() => 'IN_CRC_RDV_IBAN',
+        CrIbanUsd() => 'IN_USD_RDV_IBAN',
+        ArsBankTransfer() => 'IN_ARS_BITSO',
+        CopBankTransfer() => throw StateError(
+          'COP handled by its own endpoint',
+        ),
+      };
       final result = await _api.recipients.getUserPaymentProcessorCode(
         paymentProcessorCode,
       );
       return switch (result) {
-        Ok(value: final details) => Ok(_details(details, fundingMethod)),
+        Ok(value: final details) => switch (fundingDetails(
+          details,
+          fundingMethod,
+        )) {
+          final value? => Ok(value),
+          null => const Err(
+            ExchangeUnexpectedFailure('Incomplete funding instructions'),
+          ),
+        },
         Err(:final failure) => Err(_failure(failure, method, _refusal)),
       };
     } catch (e, st) {
-      return Err(_unexpected(e, st, method, FundExchangeUnexpectedFailure.new));
+      return Err(_unexpected(e, st, method, ExchangeUnexpectedFailure.new));
     }
   }
 
-  @override
   @useResult
-  Future<Result<List<FundingInstitution>, FundExchangeFailure>>
-  listInstitutions({required FundingJurisdiction jurisdiction}) async {
+  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
+    required FundingJurisdiction jurisdiction,
+  }) async {
     const method = 'listInstitutionCodes';
 
     try {
@@ -104,7 +118,8 @@ class BbxApiFundingRepository implements FundingRepository {
 
           if (institutions.isEmpty) {
             return const Err(
-              FundExchangeNoInstitutionsFailure(
+              ExchangeFundingFailure(
+                ExchangeFundingProblem.noInstitutions,
                 'listInstitutionCodes returned no usable institution',
               ),
             );
@@ -113,14 +128,12 @@ class BbxApiFundingRepository implements FundingRepository {
           return Ok(institutions);
       }
     } catch (e, st) {
-      return Err(_unexpected(e, st, method, FundExchangeUnexpectedFailure.new));
+      return Err(_unexpected(e, st, method, ExchangeUnexpectedFailure.new));
     }
   }
 
-  @override
   @useResult
-  Future<Result<void, FundExchangeFailure>>
-  registerResponsibilityConsent() async {
+  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent() async {
     const method = 'registerResponsibilityConsent';
 
     try {
@@ -132,56 +145,24 @@ class BbxApiFundingRepository implements FundingRepository {
       };
     } catch (e, st) {
       return Err(
-        _unexpected(e, st, method, FundExchangeConsentRegistrationFailure.new),
+        _unexpected(e, st, method, ExchangeConsentRegistrationFailure.new),
       );
     }
-  }
-
-  /// The funding details the app reads from [details].
-  static FundingDetails _details(
-    PaymentProcessorDetails details,
-    FundingMethod fundingMethod,
-  ) {
-    return GetFundingDetailsResponseModel(
-      code: details.code,
-      userNbr: details.userNbr,
-      beneficiaryName: details.beneficiaryName,
-      beneficiaryEmail: details.beneficiaryEmail,
-      bankAccountDetails: details.bankAccountDetails,
-      iban: details.iban,
-      swift: details.swift,
-      institutionNumber: details.institutionNumber,
-      transitNumber: details.transitNumber,
-      accountNumber: details.accountNumber,
-      routingNumber: details.routingNumber,
-      beneficiaryAddress: details.beneficiaryAddress,
-      bankAddress: details.bankAddress,
-      bankName: details.bankName,
-      billerName: details.billerName,
-      bic: details.bic,
-      bankAccountCountry: details.bankAccountCountry,
-      bankCountry: details.bankCountry,
-      clabe: details.clabe,
-      cedulaJuridica: details.cedulaJuridica,
-      cvu: details.cvu,
-      numTelefono: details.numTelefono,
-    ).toDomain(method: fundingMethod);
   }
 
   /// The failure for a failed call, logging the reason without the request
   /// or response payload. A missing credential and an unreadable one stay
   /// distinct; [onFailure] maps a network or protocol refusal.
-  FundExchangeFailure _failure(
+  ExchangeFailure _failure(
     BbxFailure failure,
     String method,
-    FundExchangeFailure Function(BbxFailure failure, String? logMessage)
-    onFailure,
+    ExchangeFailure Function(BbxFailure failure, String? logMessage) onFailure,
   ) {
     switch (failure) {
       case BbxMissingCredentialFailure():
-        return const FundExchangeNotAuthenticatedFailure();
+        return const ExchangeNotAuthenticatedFailure();
       case BbxCredentialUnavailableFailure():
-        return const FundExchangeUnexpectedFailure(
+        return const ExchangeUnexpectedFailure(
           'Exchange credential unavailable',
         );
       case BbxRpcFailure(:final code, :final apiCode):
@@ -273,47 +254,62 @@ class BbxApiFundingRepository implements FundingRepository {
   }
 
   /// The failure for a funding instruction call.
-  static FundExchangeFailure _refusal(BbxFailure failure, String? logMessage) =>
+  static ExchangeFailure _refusal(BbxFailure failure, String? logMessage) =>
       switch (failure) {
         BbxRpcFailure(:final apiCode) => switch (apiCode) {
-          'ERR_ORD_PO404' => FundExchangePaymentOptionUnavailableFailure(
+          'ERR_ORD_PO404' => ExchangeFundingFailure(
+            ExchangeFundingProblem.paymentOptionUnavailable,
             logMessage,
           ),
-          'ERR_RCP_PO404' => FundExchangeOptionNotPermittedFailure(logMessage),
-          'ERR_RCP_POSINPE404' => FundExchangeSinpeNotRegisteredFailure(
+          'ERR_RCP_PO404' => ExchangeFundingFailure(
+            ExchangeFundingProblem.optionNotPermitted,
             logMessage,
           ),
-          'ERR_ORD_KYC400' => FundExchangeKycIncompleteFailure(logMessage),
-          'ERR_ORD_COP400' => FundExchangeCopRequestInvalidFailure(logMessage),
-          'ERR_ORD_CSRCP400' => FundExchangeSepaVirtualPaymentInactiveFailure(
+          'ERR_RCP_POSINPE404' => ExchangeFundingFailure(
+            ExchangeFundingProblem.sinpeNotRegistered,
             logMessage,
           ),
-          'ERR_RCP_400' => FundExchangeRequestInvalidFailure(logMessage),
-          _ => FundExchangeUnexpectedFailure(logMessage),
+          'ERR_ORD_KYC400' => ExchangeFundingFailure(
+            ExchangeFundingProblem.kycIncomplete,
+            logMessage,
+          ),
+          'ERR_ORD_COP400' => ExchangeFundingFailure(
+            ExchangeFundingProblem.copRequestInvalid,
+            logMessage,
+          ),
+          'ERR_ORD_CSRCP400' => ExchangeFundingFailure(
+            ExchangeFundingProblem.sepaVirtualPaymentInactive,
+            logMessage,
+          ),
+          'ERR_RCP_400' => ExchangeFundingFailure(
+            ExchangeFundingProblem.requestInvalid,
+            logMessage,
+          ),
+          _ => ExchangeUnexpectedFailure(logMessage),
         },
         BbxTimeoutFailure() ||
-        BbxConnectionFailure() => FundExchangeNetworkFailure(logMessage),
-        _ => FundExchangeUnexpectedFailure(logMessage),
+        BbxConnectionFailure() => ExchangeNetworkFailure(logMessage),
+        _ => ExchangeUnexpectedFailure(logMessage),
       };
 
   /// The failure for the consent call: no funding option maps from it, and
   /// only an unreachable API is a network failure.
-  static FundExchangeFailure _consentRefusal(
+  static ExchangeFailure _consentRefusal(
     BbxFailure failure,
     String? logMessage,
   ) => switch (failure) {
     BbxTimeoutFailure() ||
-    BbxConnectionFailure() => FundExchangeNetworkFailure(logMessage),
-    _ => FundExchangeConsentRegistrationFailure(logMessage),
+    BbxConnectionFailure() => ExchangeNetworkFailure(logMessage),
+    _ => ExchangeConsentRegistrationFailure(logMessage),
   };
 
   /// The failure for an exception thrown while mapping a response the API
   /// did send. Errors are rethrown.
-  FundExchangeFailure _unexpected(
+  ExchangeFailure _unexpected(
     Object e,
     StackTrace st,
     String method,
-    FundExchangeFailure Function(String) failure,
+    ExchangeFailure Function(String) failure,
   ) {
     if (e is Error) Error.throwWithStackTrace(e, st);
     final description = e.runtimeType.toString();

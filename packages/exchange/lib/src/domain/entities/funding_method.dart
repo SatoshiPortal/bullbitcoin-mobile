@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
+import 'funding_jurisdiction.dart';
+
 import 'package:meta/meta.dart';
 
 @immutable

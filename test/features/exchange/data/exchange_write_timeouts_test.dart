@@ -1,6 +1,4 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
@@ -81,7 +79,6 @@ void main() {
           },
         );
         RecipientsLocator.registerRepositories(locator);
-        FundExchangeLocator.registerRepositories(locator);
         final isTestnet = environment == Environment.testnet;
         final results = await Future.wait([
           exchange.limitOrders.create(
@@ -104,7 +101,7 @@ void main() {
             recipientId: 'fixture-recipient',
             isTestnet: isTestnet,
           ),
-          locator<FundingRepository>().registerResponsibilityConsent(),
+          exchange.funding.registerResponsibilityConsent(),
         ]);
         expect(results, everyElement(isA<Err<Object?, Failure>>()));
 

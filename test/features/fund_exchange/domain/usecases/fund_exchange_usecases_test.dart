@@ -1,12 +1,8 @@
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -20,9 +16,12 @@ void main() {
   group('GetFundingDetailsUsecase', () {
     test('forwards the repository failure unchanged', () async {
       final usecase = GetFundingDetailsUsecase(
-        fundingRepository: _FakeFundingRepository(
+        funding: _FakeFundingRepository(
           detailsResult: const Err(
-            FundExchangeKycIncompleteFailure(_rawReason),
+            ExchangeFundingFailure(
+              ExchangeFundingProblem.kycIncomplete,
+              _rawReason,
+            ),
           ),
         ),
       );
@@ -35,8 +34,8 @@ void main() {
 
     test('never throws for a failing repository', () async {
       final usecase = GetFundingDetailsUsecase(
-        fundingRepository: _FakeFundingRepository(
-          detailsResult: const Err(FundExchangeUnexpectedFailure(_rawReason)),
+        funding: _FakeFundingRepository(
+          detailsResult: const Err(ExchangeUnexpectedFailure(_rawReason)),
         ),
       );
 
@@ -53,9 +52,7 @@ void main() {
         paymentLink: 'https://pay.example/abc',
       );
       final usecase = GetFundingDetailsUsecase(
-        fundingRepository: _FakeFundingRepository(
-          detailsResult: const Ok(details),
-        ),
+        funding: _FakeFundingRepository(detailsResult: const Ok(details)),
       );
 
       final result = await usecase.execute(
@@ -69,9 +66,12 @@ void main() {
   group('ListFundingInstitutionsUsecase', () {
     test('forwards the repository failure unchanged', () async {
       final usecase = ListFundingInstitutionsUsecase(
-        fundingRepository: _FakeFundingRepository(
+        funding: _FakeFundingRepository(
           institutionsResult: const Err(
-            FundExchangeNoInstitutionsFailure(_rawReason),
+            ExchangeFundingFailure(
+              ExchangeFundingProblem.noInstitutions,
+              _rawReason,
+            ),
           ),
         ),
       );
@@ -91,9 +91,7 @@ void main() {
         name: 'Bancolombia',
       );
       final usecase = ListFundingInstitutionsUsecase(
-        fundingRepository: _FakeFundingRepository(
-          institutionsResult: Ok([institution]),
-        ),
+        funding: _FakeFundingRepository(institutionsResult: Ok([institution])),
       );
 
       final result = await usecase.execute(
@@ -109,9 +107,9 @@ void main() {
   group('RegisterResponsibilityConsentUsecase', () {
     test('forwards the repository failure unchanged', () async {
       final usecase = RegisterResponsibilityConsentUsecase(
-        fundingRepository: _FakeFundingRepository(
+        funding: _FakeFundingRepository(
           consentResult: const Err(
-            FundExchangeConsentRegistrationFailure(_rawReason),
+            ExchangeConsentRegistrationFailure(_rawReason),
           ),
         ),
       );
@@ -125,9 +123,7 @@ void main() {
 
     test('wraps success', () async {
       final usecase = RegisterResponsibilityConsentUsecase(
-        fundingRepository: _FakeFundingRepository(
-          consentResult: const Ok(null),
-        ),
+        funding: _FakeFundingRepository(consentResult: const Ok(null)),
       );
 
       expect(
@@ -138,11 +134,10 @@ void main() {
   });
 }
 
-class _FakeFundingRepository implements FundingRepository {
-  final Result<FundingDetails, FundExchangeFailure>? detailsResult;
-  final Result<List<FundingInstitution>, FundExchangeFailure>?
-  institutionsResult;
-  final Result<void, FundExchangeFailure>? consentResult;
+class _FakeFundingRepository implements ExchangeFunding {
+  final Result<FundingDetails, ExchangeFailure>? detailsResult;
+  final Result<List<FundingInstitution>, ExchangeFailure>? institutionsResult;
+  final Result<void, ExchangeFailure>? consentResult;
 
   _FakeFundingRepository({
     this.detailsResult,
@@ -151,16 +146,16 @@ class _FakeFundingRepository implements FundingRepository {
   });
 
   @override
-  Future<Result<FundingDetails, FundExchangeFailure>> getFundingDetails({
+  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
   }) async => detailsResult!;
 
   @override
-  Future<Result<List<FundingInstitution>, FundExchangeFailure>>
-  listInstitutions({required FundingJurisdiction jurisdiction}) async =>
-      institutionsResult!;
+  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
+    required FundingJurisdiction jurisdiction,
+  }) async => institutionsResult!;
 
   @override
-  Future<Result<void, FundExchangeFailure>>
-  registerResponsibilityConsent() async => consentResult!;
+  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent() async =>
+      consentResult!;
 }

@@ -2,17 +2,13 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,22 +19,22 @@ const _link = 'https://pay.example.com/abc';
 class _MockGetUserSummary extends Mock
     implements GetFundExchangeUserSummaryUsecase {}
 
-class _UnusedRepository implements FundingRepository {
+class _UnusedRepository implements ExchangeFunding {
   const _UnusedRepository();
 
   @override
-  Future<Result<FundingDetails, FundExchangeFailure>> getFundingDetails({
+  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
   }) async => throw UnimplementedError();
 
   @override
-  Future<Result<List<FundingInstitution>, FundExchangeFailure>>
-  listInstitutions({required FundingJurisdiction jurisdiction}) async =>
-      throw UnimplementedError();
+  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
+    required FundingJurisdiction jurisdiction,
+  }) async => throw UnimplementedError();
 
   @override
-  Future<Result<void, FundExchangeFailure>>
-  registerResponsibilityConsent() async => throw UnimplementedError();
+  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent() async =>
+      throw UnimplementedError();
 }
 
 /// Holds each launch open until the test releases it, so a second request can
@@ -61,15 +57,13 @@ FundExchangeBloc _blocWith(ExternalLinkPort link) {
   return FundExchangeBloc(
     getFundExchangeUserSummaryUsecase: _MockGetUserSummary(),
     getFundingDetailsUsecase: const GetFundingDetailsUsecase(
-      fundingRepository: repository,
+      funding: repository,
     ),
     listFundingInstitutionsUsecase: const ListFundingInstitutionsUsecase(
-      fundingRepository: repository,
+      funding: repository,
     ),
     registerResponsibilityConsentUsecase:
-        const RegisterResponsibilityConsentUsecase(
-          fundingRepository: repository,
-        ),
+        const RegisterResponsibilityConsentUsecase(funding: repository),
     openFundingPaymentLinkUsecase: OpenFundingPaymentLinkUsecase(
       externalLink: link,
     ),

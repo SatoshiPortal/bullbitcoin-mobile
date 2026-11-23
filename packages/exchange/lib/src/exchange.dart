@@ -3,6 +3,7 @@ import 'package:bbx_api/bbx_api.dart'
 import 'package:primitives/primitives.dart';
 
 import 'data/bbx_api_account_repository.dart';
+import 'data/bbx_api_funding_repository.dart';
 import 'data/bbx_api_kyc_repository.dart';
 import 'data/bbx_api_limit_order_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
@@ -19,6 +20,7 @@ import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
+import 'domain/exchange_funding.dart';
 import 'domain/exchange_limit_orders.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
@@ -93,6 +95,7 @@ final class Exchange {
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
   final ExchangeLimitOrders limitOrders;
+  final ExchangeFunding funding;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -105,6 +108,7 @@ final class Exchange {
     this._chat,
     this._notifications,
     this.limitOrders,
+    this.funding,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -116,11 +120,13 @@ final class Exchange {
     required Uri testnetEndpoint,
     required ExchangeSessionReader readSession,
     ExchangeNotificationBindings? notifications,
+    Uri? paymentReturnUrl,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
     readSession: readSession,
     notifications: notifications,
+    paymentReturnUrl: paymentReturnUrl,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -137,6 +143,7 @@ final class Exchange {
     required OpenInventoryClient openClient,
     required OpenInventoryClient openUntimedClient,
     ExchangeNotificationBindings? notifications,
+    Uri? paymentReturnUrl,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -214,6 +221,21 @@ final class Exchange {
       untimed: true,
       credentialReadFailure: () =>
           ExchangeLimitOrderFailure(problem, 'Exchange credential unavailable'),
+    );
+    final fundingReturnUrl =
+        paymentReturnUrl ?? Uri.parse('https://app.bullbitcoin.com');
+    Future<Result<T, ExchangeFailure>> fund<T>(
+      Future<Result<T, ExchangeFailure>> Function(BbxApiFundingRepository) call,
+    ) => withClient(
+      (client, _) => call(
+        BbxApiFundingRepository(
+          api: client,
+          paymentReturnUrl: fundingReturnUrl,
+        ),
+      ),
+      untimed: true,
+      credentialReadFailure: () =>
+          const ExchangeUnexpectedFailure('Exchange credential unavailable'),
     );
     ExchangeNotificationService? notificationService;
     bool closed = false;
@@ -351,6 +373,17 @@ final class Exchange {
           (repository) => repository.getRate(currency),
         ),
       ),
+      ExchangeFundingImpl(
+        get: (method) => fund(
+          (repository) => repository.getFundingDetails(fundingMethod: method),
+        ),
+        list: (jurisdiction) => fund(
+          (repository) =>
+              repository.listInstitutions(jurisdiction: jurisdiction),
+        ),
+        consent: () =>
+            fund((repository) => repository.registerResponsibilityConsent()),
+      ),
     );
   }
 
@@ -455,6 +488,7 @@ Exchange exchangeForTesting({
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
   ExchangeLimitOrders? limitOrders,
+  ExchangeFunding? funding,
 }) => Exchange._(
   hasPendingOrders ?? () => throw StateError('Unexpected inventory request'),
   getOrderStats ?? () => throw StateError('Unexpected statistics request'),
@@ -499,6 +533,12 @@ Exchange exchangeForTesting({
         cancel: (_) => throw StateError('Unexpected limit order cancel'),
         cancelAll: () => throw StateError('Unexpected limit order bulk cancel'),
         rate: (_) => throw StateError('Unexpected limit order rate'),
+      ),
+  funding ??
+      ExchangeFundingImpl(
+        get: (_) => throw StateError('Unexpected funding details request'),
+        list: (_) => throw StateError('Unexpected funding institution lookup'),
+        consent: () => throw StateError('Unexpected funding consent'),
       ),
 );
 

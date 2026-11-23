@@ -141,3 +141,20 @@ final class ExchangeLimitOrderFailure extends ExchangeFailure {
 
   const ExchangeLimitOrderFailure(this.problem, [super.logMessage]);
 }
+
+enum ExchangeFundingProblem {
+  paymentOptionUnavailable,
+  optionNotPermitted,
+  sinpeNotRegistered,
+  kycIncomplete,
+  copRequestInvalid,
+  sepaVirtualPaymentInactive,
+  requestInvalid,
+  noInstitutions,
+}
+
+final class ExchangeFundingFailure extends ExchangeFailure {
+  final ExchangeFundingProblem problem;
+
+  const ExchangeFundingFailure(this.problem, [super.logMessage]);
+}

@@ -1,9 +1,9 @@
-import 'package:bb_mobile/features/fund_exchange/domain/repositories/funding_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+
+import '../map_funding_failure.dart';
 
 sealed class GetFundingDetailsQuery {
   const GetFundingDetailsQuery();
@@ -70,9 +70,9 @@ class GetFundingDetailsResult {
 }
 
 class GetFundingDetailsUsecase {
-  final FundingRepository _fundingRepository;
+  final ExchangeFunding _funding;
 
-  const GetFundingDetailsUsecase({required this._fundingRepository});
+  const GetFundingDetailsUsecase({required this._funding});
 
   @useResult
   Future<Result<GetFundingDetailsResult, FundExchangeFailure>> execute(
@@ -94,9 +94,9 @@ class GetFundingDetailsUsecase {
         CopBankTransfer(bankCode: bankCode, amountCop: amountCop),
     };
 
-    final result = await _fundingRepository.getFundingDetails(
+    final result = (await _funding.getFundingDetails(
       fundingMethod: fundingMethod,
-    );
+    )).mapErr(mapFundingFailure);
 
     return result.map(
       (details) => GetFundingDetailsResult(fundingDetails: details),

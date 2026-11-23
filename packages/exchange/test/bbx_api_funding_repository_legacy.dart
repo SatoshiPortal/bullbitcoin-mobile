@@ -1,4 +1,27 @@
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+// Historical failure identities in the fixture, not production failure types.
+abstract final class FundExchangeConsentRegistrationFailure {}
+
+abstract final class FundExchangeCopRequestInvalidFailure {}
+
+abstract final class FundExchangeKycIncompleteFailure {}
+
+abstract final class FundExchangeNetworkFailure {}
+
+abstract final class FundExchangeNoInstitutionsFailure {}
+
+abstract final class FundExchangeNotAuthenticatedFailure {}
+
+abstract final class FundExchangeOptionNotPermittedFailure {}
+
+abstract final class FundExchangePaymentOptionUnavailableFailure {}
+
+abstract final class FundExchangeRequestInvalidFailure {}
+
+abstract final class FundExchangeSepaVirtualPaymentInactiveFailure {}
+
+abstract final class FundExchangeSinpeNotRegisteredFailure {}
+
+abstract final class FundExchangeUnexpectedFailure {}
 
 /// What the removed BullBitcoinApiFundingRepository sent and gave for each
 /// case of `bbx_api_funding_repository_test.dart`: the requests, and

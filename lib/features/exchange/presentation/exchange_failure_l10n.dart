@@ -41,6 +41,7 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeChatSendMessageFailure() ||
     ExchangeChatLoadAttachmentFailure() ||
     ExchangeLimitOrderFailure() ||
+    ExchangeFundingFailure() ||
     ExchangeOrderInventoryUnavailableFailure() ||
     ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
   };

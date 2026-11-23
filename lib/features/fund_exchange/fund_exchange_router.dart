@@ -16,8 +16,7 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_regula
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
