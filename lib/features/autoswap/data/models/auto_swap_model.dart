@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/storage/tables/auto_swap.drift.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:swaps/storage.dart' show AutoSwapRow;
 
 part 'auto_swap_model.freezed.dart';
 

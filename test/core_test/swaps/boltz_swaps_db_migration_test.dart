@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
-import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/migration.dart';
 import 'package:swaps/swaps.dart' hide SwapDirection;
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
@@ -11,7 +16,34 @@ void main() {
   late SqliteDatabase appDb;
   late BoltzSwapsDatabase swapsDb;
   late DriftSwapRowStore rows;
-  late BoltzSwapsDbMigration migration;
+  late Directory directory;
+  late File root;
+  late BoltzCutover migration;
+  late NativeFileGate gate;
+
+  Future<void> run() async {
+    final admission = await gate.acquire(
+      exclusive: true,
+      timeout: const Duration(seconds: 2),
+    ) as ExclusiveAdmission;
+    try {
+      final owner = await migration.participant.prepare(
+        admission,
+        OwnerOrigin.legacy,
+      );
+      expect(owner, isA<Ok>());
+      final prepared = (owner as Ok<PreparedOwner, LegacyImportFailure>).value;
+      expect(
+        await prepared.importLegacy(
+          LegacySource(root, SqliteDatabase.currentSchemaVersion),
+        ),
+        isA<Ok>(),
+      );
+      expect(await prepared.close(), isA<Ok>());
+    } finally {
+      await admission.close();
+    }
+  }
 
   Future<void> insertRow(
     String id, {
@@ -40,23 +72,29 @@ void main() {
         ),
       );
 
-  setUp(() {
-    appDb = SqliteDatabase(NativeDatabase.memory());
-    swapsDb = BoltzSwapsDatabase(NativeDatabase.memory());
+  setUp(() async {
+    directory = await Directory.systemTemp.createTemp('boltz-owner-');
+    root = File('${directory.path}/root.sqlite');
+    final file = File('${directory.path}/swaps.sqlite');
+    appDb = SqliteDatabase(NativeDatabase(root));
+    swapsDb = BoltzSwapsDatabase(NativeDatabase(file));
     rows = DriftSwapRowStore(swapsDb);
-    migration = BoltzSwapsDbMigration(
-      appDb: appDb,
-      swapsDb: swapsDb,
-      rows: rows,
+    gate = NativeFileGate(File('${directory.path}/lifecycle.lock'));
+    migration = BoltzCutover(
+      file: file,
+      standalone: File('${directory.path}/boltz_swaps.sqlite'),
+      regtest: false,
+      executor: (_) => _executor(file.path),
     );
   });
 
   tearDown(() async {
     await appDb.close();
     await swapsDb.close();
+    await directory.delete(recursive: true);
   });
 
-  test('an incomplete legacy row is skipped, the rest import', () async {
+  test('preserves incomplete rows without claiming they are usable', () async {
     await insertRow('chainSwap001', direction: SwapDirection.onchain);
     await insertRow(
       'brokenSend01',
@@ -64,11 +102,21 @@ void main() {
       paymentAddress: null,
     );
 
-    await migration.run();
+    await run();
 
     expect(await rows.fetch('chainSwap001'), isNotNull);
-    expect(await rows.fetch('brokenSend01'), isNull);
-    expect(await swapsDb.dataMigrationDone('app-db-swaps-v1'), isTrue);
+    final incomplete = await (swapsDb.select(
+      swapsDb.swaps,
+    )..where((table) => table.id.equals('brokenSend01'))).getSingle();
+    expect(incomplete.paymentAddress, isNull);
+    expect(
+      await hasLegacyImportReceipt(swapsDb, 'split-v1/swaps'),
+      isA<Ok<bool, LegacyImportFailure>>().having(
+        (r) => r.value,
+        'receipt',
+        true,
+      ),
+    );
   });
 
   test('carries the refunded backfill across', () async {
@@ -79,20 +127,20 @@ void main() {
       refundTxid: 'refund-txid',
     );
 
-    await migration.run();
+    await run();
 
     expect((await rows.fetch('refunded0001'))?.status, 'refunded');
   });
 
   test('runs once and never overwrites what the engine wrote', () async {
     await insertRow('chainSwap001', direction: SwapDirection.onchain);
-    await migration.run();
+    await run();
     final imported = await rows.fetch('chainSwap001');
     if (imported == null) fail('chain swap was not imported');
     await rows.store(imported.copyWith(status: 'paid'));
     await insertRow('lateRow00001', direction: SwapDirection.onchain);
 
-    await migration.run();
+    await run();
 
     expect((await rows.fetch('chainSwap001'))?.status, 'paid');
     expect(await rows.fetch('lateRow00001'), isNull);
@@ -160,7 +208,7 @@ void main() {
       ]);
     });
 
-    await migration.run();
+    await run();
 
     final receive = (await rows.fetch('receiveDone1'))?.toJson();
     expect(receive, containsPair('status', 'completed'));
@@ -186,3 +234,8 @@ void main() {
     expect(chain, containsPair('completionTime', 600));
   });
 }
+
+Future<Result<QueryExecutor, LegacyImportFailure>> Function() _executor(
+  String path,
+) =>
+    () async => Ok(NativeDatabase(File(path)));

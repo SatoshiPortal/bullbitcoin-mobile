@@ -10,7 +10,10 @@ import 'package:announcements/migration.dart';
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:bb_mobile/features/swap/data/order_swaps_store.dart';
 import 'package:bb_mobile/storage_owner_manifest.dart';
+import 'package:swaps/migration.dart';
 import 'package:legacy_storage/coordination.dart';
+import 'package:secrets/secrets.dart';
+import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
@@ -97,6 +100,30 @@ class Bull {
     final orderSwapsFile = File(
       p.join(support.path, 'databases', 'order_swaps.sqlite'),
     );
+    File destination(String owner) =>
+        File(p.join(support.path, 'databases', '$owner.sqlite'));
+    File standalone(String name) => File(p.join(bullDirectory.path, name));
+    BoltzCutover boltzStore({required bool regtest}) {
+      final owner = regtest ? 'swaps_regtest' : 'swaps';
+      return BoltzCutover(
+        file: destination(owner),
+        standalone: standalone(
+          regtest ? 'boltz_swaps_regtest.sqlite' : 'boltz_swaps.sqlite',
+        ),
+        regtest: regtest,
+        executor: Secrets.databaseOpener<LegacyImportFailure>(
+          file: destination(owner),
+          module: owner,
+          name: 'main',
+          schema: BoltzCutover.schema,
+          deferred: const LegacyImportDeferred(),
+          unavailable: const LegacyImportUnavailable(),
+        ),
+      );
+    }
+
+    final boltz = boltzStore(regtest: false);
+    final regtestBoltz = boltzStore(regtest: true);
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -108,6 +135,8 @@ class Bull {
       participants: [
         AnnouncementsStore.participant(announcementsFile),
         OrderSwapsStore.participant(orderSwapsFile),
+        boltz.participant,
+        regtestBoltz.participant,
         MempoolImport(
           file: mempoolFile,
           defaultServers: [
@@ -146,6 +175,23 @@ class Bull {
       if (orderSwaps case Ok(:final value)) {
         locator.registerSingleton(
           value.database,
+          dispose: (_) => value.handle.close(),
+        );
+      }
+      final openedBoltz = await boltz.open(admission);
+      if (openedBoltz case Err(:final failure)) return Err(failure);
+      if (openedBoltz case Ok(:final value)) {
+        locator.registerSingleton(
+          value.database,
+          dispose: (_) => value.handle.close(),
+        );
+      }
+      final openedRegtestBoltz = await regtestBoltz.open(admission);
+      if (openedRegtestBoltz case Err(:final failure)) return Err(failure);
+      if (openedRegtestBoltz case Ok(:final value)) {
+        locator.registerSingleton(
+          value.database,
+          instanceName: 'regtest',
           dispose: (_) => value.handle.close(),
         );
       }
