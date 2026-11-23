@@ -13,7 +13,6 @@ import 'package:notifications/payment_store.dart' show PaymentNotifications;
 import 'package:bull_recoverbull/storage.dart';
 import 'package:bull_recoverbull/setup.dart';
 import 'package:overview/setup.dart';
-import 'package:sync/sync.dart' show WalletRevisionState;
 import 'package:startup/setup.dart';
 import 'package:startup/startup.dart';
 import 'package:provisioning/provisioning.dart';
@@ -411,10 +410,6 @@ class AppLocator {
     final electrumSync = locator<ElectrumSync>();
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
-    Stream<WalletRevisionState> watchRevisions({String? walletId}) =>
-        native.changes.where(
-          (revision) => walletId == null || revision.stamp.key.id == walletId,
-        );
     locator.registerSingleton(
       TransactionsFeature.mount(
         locator,
@@ -423,11 +418,11 @@ class AppLocator {
         findDescriptor: (key) => locator<WalletCatalogPort>().find(key),
         synchronize: (descriptor) =>
             locator<ForegroundWalletSync>().synchronizeDescriptor(descriptor),
-        events: WalletHistoryEvents(
-          watchRevisions: watchRevisions,
+        events: WalletHistoryEvents.foreground(
+          revisions: native.changes,
+          finished: electrumSync.finished,
           watchSyncPassActivity: () =>
               overviewSync().coordinator.syncPassActivity,
-          watchSyncFinished: () => electrumSync.finished.map((_) {}),
           isSyncPassActive: () => overviewSync().coordinator.isSyncPassActive,
         ),
         syncStarted: () => locator<ForegroundWalletSync>().started,
