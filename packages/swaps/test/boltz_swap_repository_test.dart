@@ -194,6 +194,7 @@ void main() {
         swapId: any(named: 'swapId'),
         refundAddress: any(named: 'refundAddress'),
         isCooperative: any(named: 'isCooperative'),
+        counterpartyElectrum: any(named: 'counterpartyElectrum'),
         electrum: any(named: 'electrum'),
       ),
     ).thenAnswer((_) async => 200);
@@ -571,6 +572,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'claim-hex');
@@ -591,6 +593,7 @@ void main() {
                 claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
                 absoluteFees: captureAny(named: 'absoluteFees'),
                 tryCooperate: any(named: 'tryCooperate'),
+                counterpartyElectrum: any(named: 'counterpartyElectrum'),
                 electrum: any(named: 'electrum'),
               ),
             ).captured.single
@@ -602,6 +605,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -627,6 +631,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: true,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -635,6 +640,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 300);
@@ -644,6 +650,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: true,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('coop refused'));
@@ -653,6 +660,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'claim-hex');
@@ -673,6 +681,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: 300,
           tryCooperate: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).called(1);
@@ -686,6 +695,7 @@ void main() {
             swapId: any(named: 'swapId'),
             claimAddress: any(named: 'claimAddress'),
             isCooperative: any(named: 'isCooperative'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
         ).thenAnswer((_) async => 200);
@@ -695,6 +705,7 @@ void main() {
             claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
             absoluteFees: any(named: 'absoluteFees'),
             tryCooperate: any(named: 'tryCooperate'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
         ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
@@ -719,6 +730,7 @@ void main() {
             claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
             absoluteFees: any(named: 'absoluteFees'),
             tryCooperate: false,
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
         );
@@ -733,6 +745,7 @@ void main() {
             swapId: any(named: 'swapId'),
             claimAddress: any(named: 'claimAddress'),
             isCooperative: any(named: 'isCooperative'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
         ).thenThrow(Exception('sizing failed'));
@@ -751,6 +764,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -760,6 +774,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -776,6 +791,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: _PassthroughElectrum.connection,
         ),
       ).called(1);
@@ -816,6 +832,7 @@ void main() {
             swapId: any(named: 'swapId'),
             refundAddress: any(named: 'refundAddress'),
             isCooperative: any(named: 'isCooperative'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
         );
@@ -829,6 +846,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'signed-hex');
@@ -864,6 +882,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -897,6 +916,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('non-BIP68-final'));
@@ -923,6 +943,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -989,6 +1010,7 @@ void main() {
           swapId: any(named: 'swapId'),
           claimAddress: any(named: 'claimAddress'),
           isCooperative: any(named: 'isCooperative'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 200);
@@ -998,6 +1020,7 @@ void main() {
           claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
@@ -1016,6 +1039,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'signed-hex');
@@ -1040,6 +1064,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: false,
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).called(1);
@@ -1053,6 +1078,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'signed-hex');
@@ -1082,6 +1108,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: captureAny(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).captured;
@@ -1109,6 +1136,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
@@ -1312,6 +1340,7 @@ void main() {
           refundLiquidAddress: any(named: 'refundLiquidAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           tryCooperate: any(named: 'tryCooperate'),
+          counterpartyElectrum: any(named: 'counterpartyElectrum'),
           electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
