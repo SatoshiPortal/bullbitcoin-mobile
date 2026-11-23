@@ -215,7 +215,8 @@ drift-migrations:
 	fvm dart run drift_dev make-migrations
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
 	@$(MAKE) recoverbull-drift-migrations
-	@(cd features/announcements && fvm flutter gen-l10n)
+	@(cd features/announcements && fvm dart run drift_dev make-migrations)
+	@(cd packages/swaps && fvm dart run drift_dev make-migrations)
 
 .PHONY: secrets-drift-migrations
 secrets-drift-migrations:
