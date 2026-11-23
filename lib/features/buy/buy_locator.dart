@@ -13,7 +13,7 @@ import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
-import 'package:bb_mobile/features/transactions/transactions_facade.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.dart';
@@ -66,7 +66,7 @@ class BuyLocator {
     );
     locator.registerFactory<LabelCompletedBuyOrderUsecase>(
       () => LabelCompletedBuyOrderUsecase(
-        transactionsFacade: locator<TransactionsFacade>(),
+        transactionsFacade: locator<Transactions>(),
       ),
     );
     locator.registerFactory<LoadBuyContextUsecase>(

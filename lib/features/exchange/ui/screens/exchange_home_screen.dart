@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/withdraw/public/withdraw_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
@@ -257,9 +257,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         IconButton(
                           tooltip: context.loc.transactionHistoryTitle,
                           onPressed: () {
-                            context.pushNamed(
-                              TransactionsRoute.transactions.name,
-                            );
+                            TransactionsNavigation.openHistory(context);
                           },
                           color: context.appColors.onPrimary,
                           iconSize: 32,

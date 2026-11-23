@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/receive/ui/screens/receive_payment_in_progres
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_received_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_scaffold.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -75,11 +75,12 @@ class ReceiveRouter {
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
                       state.isPayjoinFlowOwningNavigation) {
-                    if (state.payjoin?.isCompleted == true) {
-                      context.goNamed(
-                        TransactionsRoute.payjoinTransactionDetails.name,
-                        pathParameters: {'payjoinId': state.payjoin!.id},
-                        queryParameters: {'returnHome': 'true'},
+                    if (state.payjoin case final payjoin?
+                        when payjoin.isCompleted) {
+                      TransactionsNavigation.goToDetails(
+                        context,
+                        TransactionDetailsTarget.payjoin(payjoin.id),
+                        returnHome: true,
                       );
                     } else {
                       context.goNamed(
@@ -131,11 +132,16 @@ class ReceiveRouter {
                   } else {
                     // For Bitcoin or Liquid, show the transaction details screen
                     // when the payment is received.
-                    context.goNamed(
-                      TransactionsRoute.transactionDetails.name,
-                      pathParameters: {'txId': state.txId},
-                      queryParameters: {'walletId': state.wallet?.id},
-                    );
+                    final walletId = state.wallet?.id;
+                    if (walletId != null) {
+                      TransactionsNavigation.goToDetails(
+                        context,
+                        TransactionDetailsTarget.wallet(
+                          state.txId,
+                          walletId: walletId,
+                        ),
+                      );
+                    }
                   }
                 },
               ),

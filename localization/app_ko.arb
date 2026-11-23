@@ -58,10 +58,6 @@
   "@payPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "transactionDetailLabelTransactionFee": "거래 수수료",
-  "@transactionDetailLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
   "transactionSwapDescLnSendPending": "스왑이 시작되었습니다. 우리는 당신의 자금을 잠그기 위해 on-chain 거래를 방송하고 있습니다.",
   "@transactionSwapDescLnSendPending": {
     "description": "Description for pending Lightning send swap"
@@ -172,10 +168,6 @@
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
   },
-  "transactionLabelPreimage": "제품정보",
-  "@transactionLabelPreimage": {
-    "description": "Label for preimage in Lightning swap details"
-  },
   "coreSwapsChainCanCoop": "스왑이 곧 완료됩니다.",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
@@ -204,10 +196,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionDetailLabelConfirmationTime": "확인 시간",
-  "@transactionDetailLabelConfirmationTime": {
-    "description": "Label for confirmation time"
   },
   "exchangeFileUploadStatusInReview": "관련 기사",
   "@exchangeFileUploadStatusInReview": {
@@ -475,17 +463,9 @@
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
   },
-  "transactionFilterBuy": "구매하기",
-  "@transactionFilterBuy": {
-    "description": "Filter option to show only buy orders"
-  },
   "approximateFiatPrefix": "·",
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
-  },
-  "coreWalletTransactionStatusPending": "관련 기사",
-  "@coreWalletTransactionStatusPending": {
-    "description": "Display name for pending wallet transaction status"
   },
   "fundExchangeLabelBankAccountCountry": "은행 계좌",
   "@fundExchangeLabelBankAccountCountry": {
@@ -708,14 +688,6 @@
   "@exchangeLandingFeature6": {
     "description": "Sixth feature bullet point"
   },
-  "transactionStatusPaymentRefunded": "지불 환불",
-  "@transactionStatusPaymentRefunded": {
-    "description": "Status label for refunded payments"
-  },
-  "transactionStatusPaymentInProgress": "결제 진행",
-  "@transactionStatusPaymentInProgress": {
-    "description": "Status label for Lightning payments in progress"
-  },
   "connectHardwareWalletKrux": "한국어",
   "@connectHardwareWalletKrux": {
     "description": "Krux hardware wallet option"
@@ -835,10 +807,6 @@
   "bitcoinSettingsTestnetModeTitle": "Testnet 형태",
   "@bitcoinSettingsTestnetModeTitle": {
     "description": "Title for the testnet mode toggle in Bitcoin settings"
-  },
-  "buyTitle": "Bitcoin 구매",
-  "@buyTitle": {
-    "description": "Screen title for buying Bitcoin"
   },
   "fromLabel": "내 계정",
   "@fromLabel": {
@@ -1201,10 +1169,6 @@
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
-  "transactionSwapLiquidToBitcoin": "비트코인",
-  "@transactionSwapLiquidToBitcoin": {
-    "description": "Label for Liquid to Bitcoin swap"
-  },
   "testBackupDecryptVault": "암호 해독",
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
@@ -1272,10 +1236,6 @@
   "mempoolSettingsDescription": "다른 네트워크를 위한 사용자 정의 mempool 서버를 구성하십시오. 각 네트워크는 블록 탐색기 및 수수료 추정에 대한 자체 서버를 사용할 수 있습니다.",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
-  },
-  "transactionSwapProgressClaim": "계정 만들기",
-  "@transactionSwapProgressClaim": {
-    "description": "Swap progress step: claim"
   },
   "exchangeHomeDeposit": "계좌정보",
   "@exchangeHomeDeposit": {
@@ -1395,14 +1355,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "transactionFilterAll": "모든 것",
-  "@transactionFilterAll": {
-    "description": "Filter option to show all transactions"
-  },
-  "transactionDetailLabelAmountReceived": "지불 방법",
-  "@transactionDetailLabelAmountReceived": {
-    "description": "Label for amount received"
-  },
   "receivePaymentReceived": "지불받은!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
@@ -1444,10 +1396,6 @@
   "fundExchangeArsBankTransferTitle": "은행 송금",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
-  },
-  "transactionLabelReceiveAmount": "결제하기",
-  "@transactionLabelReceiveAmount": {
-    "description": "Label for receive amount in swap details"
   },
   "sendServerNetworkFees": "서버 네트워크 요금",
   "@sendServerNetworkFees": {
@@ -1522,10 +1470,6 @@
   "@payFeeBreakdown": {
     "description": "Section header for detailed fee information"
   },
-  "coreSwapsLnSendPaid": "청구서는 결제 후 지불됩니다.",
-  "@coreSwapsLnSendPaid": {
-    "description": "Status message for paid Lightning send swap"
-  },
   "sellAmount": "판매 수수료",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
@@ -1553,10 +1497,6 @@
   "receiveCopyOrScanAddressOnly": "복사 또는 스캔 주소 만",
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
-  },
-  "transactionDetailAccelerate": "회사연혁",
-  "@transactionDetailAccelerate": {
-    "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
   "fundExchangeJurisdictionCanada": "🇰🇷 한국어",
   "@fundExchangeJurisdictionCanada": {
@@ -1600,17 +1540,9 @@
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
   },
-  "transactionDetailLabelPayjoinExpired": "구매하기",
-  "@transactionDetailLabelPayjoinExpired": {
-    "description": "Payjoin expired status"
-  },
   "payBillerName": "Biller 이름",
   "@payBillerName": {
     "description": "Label for biller name field"
-  },
-  "transactionSwapProgressCompleted": "지원하다",
-  "@transactionSwapProgressCompleted": {
-    "description": "Swap progress step: completed"
   },
   "sendErrorBitcoinWalletRequired": "Bitcoin 지갑은 비트 코인을 번개 스왑에 사용해야합니다",
   "@sendErrorBitcoinWalletRequired": {
@@ -1679,10 +1611,6 @@
   "hwChooseDevice": "연결하려는 하드웨어 지갑을 선택하십시오",
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
-  },
-  "transactionListNoTransactions": "아직 거래 없음.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
   },
   "backupInstruction1": "12 단어 백업을 잃으면 Bitcoin Wallet에 액세스 할 수 없습니다.",
   "@backupInstruction1": {
@@ -1798,10 +1726,6 @@
   "@importWatchOnlyType": {
     "description": "Label for wallet script type field"
   },
-  "transactionDetailLabelPayinAmount": "Payin 금액",
-  "@transactionDetailLabelPayinAmount": {
-    "description": "Label for payin amount"
-  },
   "importWalletSectionHardware": "하드웨어 지갑",
   "@importWalletSectionHardware": {
     "description": "Section header for hardware wallet types"
@@ -1881,10 +1805,6 @@
   "coreScreensFeeDeductionExplanation": "전송 금액에서 공제 된 총 수수료입니다",
   "@coreScreensFeeDeductionExplanation": {
     "description": "Explanation text for fee deduction"
-  },
-  "transactionSwapProgressInitiated": "지원하다",
-  "@transactionSwapProgressInitiated": {
-    "description": "Swap progress step: initiated"
   },
   "fundExchangeTitle": "투자정보",
   "@fundExchangeTitle": {
@@ -1995,10 +1915,6 @@
   "@sellCashPickup": {
     "description": "Option for in-person cash"
   },
-  "coreSwapsLnReceivePaid": "Sender는 청구서를 지불했습니다.",
-  "@coreSwapsLnReceivePaid": {
-    "description": "Status message for paid Lightning receive swap"
-  },
   "payInProgress": "결제 진행 중!",
   "@payInProgress": {
     "description": "Title for payment in progress screen"
@@ -2094,10 +2010,6 @@
   "transcribeLabel": "구독하기",
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
-  },
-  "transactionDetailLabelRefunded": "결제하기",
-  "@transactionDetailLabelRefunded": {
-    "description": "Label for refunded status"
   },
   "swapValidationSelectFromWallet": "스왑할 출처 지갑을 선택해 주세요",
   "@swapValidationSelectFromWallet": {
@@ -2445,10 +2357,6 @@
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
   },
-  "transactionDetailLabelPayjoinCompleted": "지원하다",
-  "@transactionDetailLabelPayjoinCompleted": {
-    "description": "Payjoin completed status"
-  },
   "sellArsBalance": "ARS 밸런스",
   "@sellArsBalance": {
     "description": "Display text for ARS balance payout method"
@@ -2477,10 +2385,6 @@
   "@testBackupVerify": {
     "description": "Button text to verify the selected word order"
   },
-  "transactionDetailLabelCreatedAt": "계정 만들기",
-  "@transactionDetailLabelCreatedAt": {
-    "description": "Label for creation time"
-  },
   "fundExchangeJurisdictionArgentina": "아르헨티나",
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
@@ -2488,10 +2392,6 @@
   "autoswapWarningCardSubtitle": "스왑은 즉시 지불 잔액이 0.02 BTC를 초과하면 트리거됩니다.",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
-  },
-  "transactionLabelSendAmount": "결제하기",
-  "@transactionLabelSendAmount": {
-    "description": "Label for send amount in swap details"
   },
   "testedStatus": "시험하는",
   "@testedStatus": {
@@ -2516,10 +2416,6 @@
   "payCopied": "뚱 베어!",
   "@payCopied": {
     "description": "Success message after copying"
-  },
-  "transactionLabelReceiveNetworkFee": "네트워크 수수료",
-  "@transactionLabelReceiveNetworkFee": {
-    "description": "Label for receive network fee in swap details"
   },
   "broadcastSignedTxPushTxButton": "푸시Tx",
   "@broadcastSignedTxPushTxButton": {
@@ -2669,10 +2565,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "transactionDetailLabelPayjoinStatus": "Payjoin 상태",
-  "@transactionDetailLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
   "fundExchangeBankTransferSubtitle": "은행 계좌에서 은행 송금",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
@@ -2740,10 +2632,6 @@
   "sellBitcoinAmount": "비트 코인 금액",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "transactionFilterReceive": "이름 *",
-  "@transactionFilterReceive": {
-    "description": "Filter option to show only received transactions"
   },
   "exchangeDcaFrequencyDay": "일 시",
   "@exchangeDcaFrequencyDay": {
@@ -2817,10 +2705,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionSwapProgressInProgress": "진행 중",
-  "@transactionSwapProgressInProgress": {
-    "description": "Generic swap progress step: in progress"
   },
   "fundExchangeWarningConfirmation": "나는 내가 다른 사람에 의해 Bitcoin을 구입하는 것을 요청하지 않다는 것을 확인합니다.",
   "@fundExchangeWarningConfirmation": {
@@ -3120,10 +3004,6 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "transactionSwapBitcoinToLiquid": "비트코인",
-  "@transactionSwapBitcoinToLiquid": {
-    "description": "Label for Bitcoin to Liquid swap"
-  },
   "sellBankDetails": "Bank 세부사항",
   "@sellBankDetails": {
     "description": "Section header for bank account info"
@@ -3187,10 +3067,6 @@
   "payFailedPayments": "뚱 베어",
   "@payFailedPayments": {
     "description": "Filter for failed payments"
-  },
-  "transactionDetailLabelToWallet": "지갑에",
-  "@transactionDetailLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "fundExchangeLabelRecipientName": "이름 *",
   "@fundExchangeLabelRecipientName": {
@@ -3293,10 +3169,6 @@
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "미국 달러로 송금 (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
     "description": "Subtitle description for IBAN USD payment method"
-  },
-  "transactionDetailLabelPayinStatus": "Payin 상태",
-  "@transactionDetailLabelPayinStatus": {
-    "description": "Label for payin status"
   },
   "importQrDeviceSpecterStep9": "Specter에 표시된 QR 코드를 스캔",
   "@importQrDeviceSpecterStep9": {
@@ -3533,10 +3405,6 @@
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
   },
-  "coreSwapsStatusInProgress": "진행 중",
-  "@coreSwapsStatusInProgress": {
-    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
-  },
   "confirmAccessPinTitle": "액세스 확인 {pinOrPassword}",
   "@confirmAccessPinTitle": {
     "description": "Title for confirming access PIN or password",
@@ -3554,10 +3422,6 @@
   "pinCreateHeadline": "새 핀 만들기",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
-  },
-  "transactionSwapProgressConfirmed": "이름 *",
-  "@transactionSwapProgressConfirmed": {
-    "description": "Swap progress step: confirmed"
   },
   "sellRoutingNumber": "연락처",
   "@sellRoutingNumber": {
@@ -3610,10 +3474,6 @@
   "payReviewPayment": "회사 소개",
   "@payReviewPayment": {
     "description": "Title for payment review screen"
-  },
-  "transactionTitle": "계정 관리",
-  "@transactionTitle": {
-    "description": "Title for the transactions screen"
   },
   "sellQrCode": "QR 코드",
   "@sellQrCode": {
@@ -3730,10 +3590,6 @@
   "payEnableRBF": "사용 가능한 RBF",
   "@payEnableRBF": {
     "description": "Checkbox to enable Replace-By-Fee"
-  },
-  "transactionDetailLabelFromWallet": "지갑에서",
-  "@transactionDetailLabelFromWallet": {
-    "description": "Label for source wallet"
   },
   "settingsLanguageTitle": "* 이름",
   "@settingsLanguageTitle": {
@@ -3936,10 +3792,6 @@
   "@sendFeePriority": {
     "description": "Label for selecting fee priority level"
   },
-  "transactionPayjoinSendWithout": "Payjoin 없이 보내십시오",
-  "@transactionPayjoinSendWithout": {
-    "description": "Button label to send transaction without payjoin"
-  },
   "paySelectCountry": "국가 선택",
   "@paySelectCountry": {
     "description": "Hint for country dropdown"
@@ -3988,10 +3840,6 @@
   "sendErrorInsufficientBalanceForSwap": "Liquid를 통해 이 스왑을 지불하고 Bitcoin을 통해 지불 할 수 없습니다.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "transactionFilterPayjoin": "지불조인",
-  "@transactionFilterPayjoin": {
-    "description": "Filter option to show only payjoin transactions"
   },
   "importQrDeviceKeystoneStep8": "BULL 지갑에서 선호하는 파생 유형을 선택하십시오. 확실하지 않은 경우, \"Segwit (BIP84)\"을 선택하십시오",
   "@importQrDeviceKeystoneStep8": {
@@ -4109,10 +3957,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "거래 ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "payDebitCardNumberHint": "직불 카드 번호 입력",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -4210,10 +4054,6 @@
   "@importQrDeviceKruxStep1": {
     "description": "Krux instruction step 1"
   },
-  "transactionSwapProgressFundsClaimed": "펀드\n이름 *",
-  "@transactionSwapProgressFundsClaimed": {
-    "description": "Swap progress step: funds claimed"
-  },
   "receiveGenerationFailed": "생성 실패 {type}",
   "@receiveGenerationFailed": {
     "description": "Error when address/invoice generation fails",
@@ -4230,10 +4070,6 @@
   "addressViewAddressesTitle": "이름 *",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
-  },
-  "transactionSwapProgressPaymentMade": "제품 정보\n이름 *",
-  "@transactionSwapProgressPaymentMade": {
-    "description": "Swap progress step: payment made"
   },
   "importQrDeviceSpecterStep4": "선택된 방법에 따라 프롬프트를 따르십시오",
   "@importQrDeviceSpecterStep4": {
@@ -4369,10 +4205,6 @@
   "buyInputCompleteKyc": "완료 KYC",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
-  },
-  "transactionFeesTotalDeducted": "전송 금액에서 공제 된 총 수수료입니다",
-  "@transactionFeesTotalDeducted": {
-    "description": "Fee deduction explanation for sending swaps"
   },
   "autoswapMaxFee": "최대 스왑 수수료",
   "@autoswapMaxFee": {
@@ -4512,10 +4344,6 @@
   "importColdcardError": "Coldcard를 가져올 실패",
   "@importColdcardError": {
     "description": "Error message"
-  },
-  "transactionStatusPayjoinRequested": "Payjoin 요청",
-  "@transactionStatusPayjoinRequested": {
-    "description": "Status label for payjoin transaction requests"
   },
   "payOwnerNameHint": "자주 묻는 질문",
   "@payOwnerNameHint": {
@@ -4674,10 +4502,6 @@
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Bold text warning that payment from wrong number will be rejected"
   },
-  "transactionDetailLabelPayoutStatus": "Payout 상태",
-  "@transactionDetailLabelPayoutStatus": {
-    "description": "Label for payout status"
-  },
   "buyInputFundAccount": "계정 생성",
   "@buyInputFundAccount": {
     "description": "Button to fund account"
@@ -4809,10 +4633,6 @@
   "@coldcardStep1": {
     "description": "Coldcard instruction step 1"
   },
-  "transactionDetailLabelBitcoinTxId": "Bitcoin 거래 ID",
-  "@transactionDetailLabelBitcoinTxId": {
-    "description": "Label for Bitcoin transaction ID"
-  },
   "sellSendPaymentCalculating": "교육 ...",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
@@ -4883,10 +4703,6 @@
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
-  "transactionDetailAddNote": "더 보기",
-  "@transactionDetailAddNote": {
-    "description": "Button label to add a note to a transaction"
-  },
   "addressCardUsedLabel": "제품 정보",
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
@@ -4928,10 +4744,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionDetailLabelPayinMethod": "Payin 방법",
-  "@transactionDetailLabelPayinMethod": {
-    "description": "Label for payin method"
   },
   "sellCurrentRate": "현재 비율",
   "@sellCurrentRate": {
@@ -5009,10 +4821,6 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "transactionDetailLabelLiquidTxId": "액체 거래 ID",
-  "@transactionDetailLabelLiquidTxId": {
-    "description": "Label for Liquid transaction ID"
-  },
   "testBackupBackupId": "백업 ID:",
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
@@ -5029,10 +4837,6 @@
   "walletDeletionErrorOngoingSwaps": "지속적인 스왑으로 지갑을 삭제할 수 없습니다.",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
-  },
-  "transactionLabelServerNetworkFees": "서버 네트워크 요금",
-  "@transactionLabelServerNetworkFees": {
-    "description": "Label for server network fees in swap details"
   },
   "importQrDeviceSeedsignerStep10": "설정 완료",
   "@importQrDeviceSeedsignerStep10": {
@@ -5152,10 +4956,6 @@
   "@receiveFixedAmount": {
     "description": "Required amount field"
   },
-  "transactionSwapDescLnSendPaid": "당신의 온체인 거래가 방송되었습니다. 1 확인 후, 번개 결제가 전송됩니다.",
-  "@transactionSwapDescLnSendPaid": {
-    "description": "Description for paid Lightning send swap"
-  },
   "exchangeFileUploadAddMoreFiles": "더 많은 파일 추가",
   "@exchangeFileUploadAddMoreFiles": {
     "description": "Button label to add more files"
@@ -5236,10 +5036,6 @@
   "@payHowToPayInvoice": {
     "description": "Question for payment method selection"
   },
-  "transactionDetailLabelSendNetworkFee": "네트워크 수수료",
-  "@transactionDetailLabelSendNetworkFee": {
-    "description": "Label for send network fee"
-  },
   "sendSlowPaymentWarningDescription": "Bitcoin swaps는 확인 시간을 취할 것입니다.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
@@ -5271,10 +5067,6 @@
   "addressCardBalanceLabel": "균형: ",
   "@addressCardBalanceLabel": {
     "description": "Label for the balance field in address card"
-  },
-  "transactionStatusInProgress": "진행 중",
-  "@transactionStatusInProgress": {
-    "description": "Status label for transactions in progress"
   },
   "recoverWalletScreenTitle": "지갑 복구",
   "@recoverWalletScreenTitle": {
@@ -5323,10 +5115,6 @@
   "importQrDeviceKruxInstructionsTitle": "Krux 지침",
   "@importQrDeviceKruxInstructionsTitle": {
     "description": "Title for Krux setup instructions"
-  },
-  "transactionOrderLabelOriginName": "근원 이름",
-  "@transactionOrderLabelOriginName": {
-    "description": "Label for origin name in fiat payment order"
   },
   "importQrDeviceKeystoneInstructionsTitle": "Keystone 지침",
   "@importQrDeviceKeystoneInstructionsTitle": {
@@ -5392,20 +5180,6 @@
   },
   "transactionHistoryTitle": "거래 내역",
   "exportTransactionsDescription": "지갑의 모든 거래(Bitcoin, Liquid, Lightning, 스왑)를 CSV 파일로 내보냅니다. 선택적으로 날짜 범위로 필터링할 수 있습니다.",
-  "exportTransactionsStartDate": "시작일",
-  "exportTransactionsEndDate": "종료일",
-  "exportTransactionsAnyDate": "전체",
-  "exportTransactionsButton": "CSV 내보내기",
-  "exportTransactionsSuccess": "거래가 성공적으로 내보내졌습니다",
-  "exportTransactionsEmpty": "선택한 기간에 내보낼 거래가 없습니다",
-  "exportTransactionsError": "거래 내역 내보내기에 실패했습니다",
-  "@exportTransactionsError": {
-    "description": "Message shown when an unexpected error occurs during CSV export"
-  },
-  "exportTransactionsInvalidDateRange": "시작 날짜는 종료 날짜보다 이전이어야 합니다",
-  "@exportTransactionsInvalidDateRange": {
-    "description": "Message shown when start date is after end date"
-  },
   "autoswapSelectWalletRequired": "Bitcoin 지갑 선택 *",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -5579,10 +5353,6 @@
       }
     }
   },
-  "transactionDetailLabelAddressNotes": "회사 소개",
-  "@transactionDetailLabelAddressNotes": {
-    "description": "Label for address notes"
-  },
   "coldcardInstructionsTitle": "Coldcard Q 지침",
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
@@ -5599,10 +5369,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionOrderLabelReferenceNumber": "참고 번호",
-  "@transactionOrderLabelReferenceNumber": {
-    "description": "Label for reference number in order details"
   },
   "backupWalletHowToDecide": "결정하는 방법?",
   "@backupWalletHowToDecide": {
@@ -5652,10 +5418,6 @@
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
   },
-  "transactionDetailLabelStatus": "주요연혁",
-  "@transactionDetailLabelStatus": {
-    "description": "Label for status"
-  },
   "sellSendPaymentPayinAmount": "Payin 금액",
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
@@ -5675,10 +5437,6 @@
   "dcaSetupContinue": "계속하기",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "transactionFeesDeductedFrom": "이 요금은 전송된 금액에서 공제됩니다",
-  "@transactionFeesDeductedFrom": {
-    "description": "Fee deduction explanation for receiving swaps"
   },
   "buyConfirmYouPay": "결제하기",
   "@buyConfirmYouPay": {
@@ -5723,10 +5481,6 @@
   "payNewRecipients": "새로운 수상자",
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
-  },
-  "transactionLabelSendNetworkFees": "네트워크 수수료",
-  "@transactionLabelSendNetworkFees": {
-    "description": "Label for send network fees in swap details"
   },
   "testBackupConfirm": "제품정보",
   "@testBackupConfirm": {
@@ -5822,10 +5576,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "transactionDetailLabelPayoutMethod": "Payout 방법",
-  "@transactionDetailLabelPayoutMethod": {
-    "description": "Label for payout method"
-  },
   "payPriceRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
@@ -5905,14 +5655,6 @@
   "fundExchangeSpeiTransfer": "SPEI 전송",
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
-  },
-  "coreSwapsStatusFailed": "뚱 베어",
-  "@coreSwapsStatusFailed": {
-    "description": "Display name for failed swap status"
-  },
-  "transactionFilterSell": "구매하기",
-  "@transactionFilterSell": {
-    "description": "Filter option to show only sell orders"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " 지불 설명에서 \"Bitcoin\"또는 \"Crypto\"라는 단어. 결제를 차단합니다.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -6045,10 +5787,6 @@
   "transactionDetailLabelSwapStatus": "Swap 상태",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
-  },
-  "transactionDetailLabelAmountSent": "전송 금액",
-  "@transactionDetailLabelAmountSent": {
-    "description": "Label for amount sent"
   },
   "typeLabel": "유형: ",
   "@typeLabel": {
@@ -6613,10 +6351,6 @@
       }
     }
   },
-  "transactionDetailLabelOrderType": "주문 유형",
-  "@transactionDetailLabelOrderType": {
-    "description": "Label for order type"
-  },
   "autoswapWarningSettingsLink": "Autoswap 설정 가져 오기",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
@@ -6708,10 +6442,6 @@
   "buyEnterBitcoinAddress": "비트 코인 주소를 입력",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "transactionDetailLabelPayoutAmount": "결제 금액",
-  "@transactionDetailLabelPayoutAmount": {
-    "description": "Label for payout amount"
   },
   "importQrDeviceSpecterStep6": "\"단일 키\"를 선택하십시오",
   "@importQrDeviceSpecterStep6": {
@@ -6883,10 +6613,6 @@
   "@dcaWalletTypeLightning": {
     "description": "Radio button option for Lightning wallet"
   },
-  "transactionSwapProgressBroadcasted": "방송",
-  "@transactionSwapProgressBroadcasted": {
-    "description": "Swap progress step: transaction broadcasted"
-  },
   "exchangeBitcoinWalletsSaveSuccess": "지갑 주소 성공적으로 저장",
   "@exchangeBitcoinWalletsSaveSuccess": {
     "description": "Success message when wallet address is saved"
@@ -6935,10 +6661,6 @@
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
   },
-  "transactionDetailLabelAddress": "이름 *",
-  "@transactionDetailLabelAddress": {
-    "description": "Label for address"
-  },
   "fundExchangeCrIbanUsdLabelPaymentDescription": "지불 묘사",
   "@fundExchangeCrIbanUsdLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN USD transfer"
@@ -6975,17 +6697,9 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "transactionDetailLabelPayjoinCreationTime": "Payjoin 생성 시간",
-  "@transactionDetailLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation time"
-  },
   "backupWalletBestPracticesTitle": "백업 모범 사례",
   "@backupWalletBestPracticesTitle": {
     "description": "AppBar title for physical backup checklist screen"
-  },
-  "transactionSwapInfoFailedExpired": "질문이나 우려 사항이 있는 경우, 지원 담당자에게 연락해 주십시오.",
-  "@transactionSwapInfoFailedExpired": {
-    "description": "Additional info for failed or expired swaps"
   },
   "memorizePasswordWarning": "지갑에 액세스할 수 있도록 {pinOrPassword}를 기억해야합니다. 적어도 6개의 손가락이어야 합니다. 이 {pinOrPassword}를 잃으면 백업을 복구 할 수 없습니다.",
   "@memorizePasswordWarning": {
@@ -7050,10 +6764,6 @@
   "dcaSetupScheduleMessage": "Bitcoin 구매는이 일정 당 자동으로 배치됩니다.",
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
-  },
-  "coreSwapsStatusExpired": "구매하기",
-  "@coreSwapsStatusExpired": {
-    "description": "Display name for expired swap status"
   },
   "fundExchangeCanadaPostStep3": "3. 명세 당신이 적재하고 싶은 총계를 말하십시오",
   "@fundExchangeCanadaPostStep3": {
@@ -7217,11 +6927,6 @@
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
   },
-  "transactionDetailLabelOrderNumber": "주문 번호",
-  "transactionDetailLabelPaymentDescription": "결제 설명",
-  "@transactionDetailLabelOrderNumber": {
-    "description": "Label for order number"
-  },
   "pickPasswordInsteadButton": "대신 암호를 선택 >>",
   "@pickPasswordInsteadButton": {
     "description": "Button label to switch to password input"
@@ -7310,10 +7015,6 @@
   "transactionListOngoingTransfersDescription": "이 스왑은 현재 진행 중입니다. 자금은 안전하며 스왑이 완료되면 사용할 수 있습니다.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
-  },
-  "transactionOrderLabelOriginCedula": "근원 Cedula",
-  "@transactionOrderLabelOriginCedula": {
-    "description": "Label for origin cedula in fiat payment order"
   },
   "buyViewDetails": "더 보기",
   "@buyViewDetails": {
@@ -7520,10 +7221,6 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
-  "transactionSwapDescChainPaid": "귀하의 거래는 방송되었습니다. 우리는 이제 잠금 거래를 기다리고 있습니다.",
-  "@transactionSwapDescChainPaid": {
-    "description": "Description for paid chain swap"
-  },
   "buyPaymentMethod": "지불 방법",
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
@@ -7690,10 +7387,6 @@
   "testBackupSuccessMessage": "Bitcoin 지갑에 액세스 할 수 있습니다",
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
-  },
-  "transactionDetailLabelOrderStatus": "주문 상태",
-  "@transactionDetailLabelOrderStatus": {
-    "description": "Label for order status"
   },
   "importQrDeviceKruxStep6": "그것은!",
   "@importQrDeviceKruxStep6": {
@@ -7883,10 +7576,6 @@
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
   },
-  "transactionFilterSend": "지원하다",
-  "@transactionFilterSend": {
-    "description": "Filter option to show only sent transactions"
-  },
   "exchangeFileUploadAcceptedMessage": "귀하의 서류가 접수되었습니다. 추가 업로드가 필요 없습니다.",
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
@@ -7902,10 +7591,6 @@
   "coreSwapsLnSendClaimable": "Swap은 청구 될 준비가되어 있습니다.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
-  },
-  "transactionDetailTitle": "거래내역",
-  "@transactionDetailTitle": {
-    "description": "Title for transaction details screen"
   },
   "autoswapRecipientWalletLabel": "비트코인 지갑",
   "@autoswapRecipientWalletLabel": {
@@ -7938,10 +7623,6 @@
   "googleDriveSignInMessage": "Google Drive에 로그인해야 합니다",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "transactionDetailLabelCompletedAt": "관련 기사",
-  "@transactionDetailLabelCompletedAt": {
-    "description": "Label for completion time"
   },
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
@@ -8064,10 +7745,6 @@
   "exchangeFileUploadStatusReady": "지원하다",
   "@exchangeFileUploadStatusReady": {
     "description": "Status badge when files can be uploaded"
-  },
-  "transactionSwapProgressInvoicePaid": "연락처\n뚱 베어",
-  "@transactionSwapProgressInvoicePaid": {
-    "description": "Swap progress step: Lightning invoice paid"
   },
   "sendInsufficientFunds": "충분한 자금",
   "@sendInsufficientFunds": {
@@ -8199,10 +7876,6 @@
   "sellSendPaymentNetworkFees": "네트워크 수수료",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "transactionSwapDescLnReceivePaid": "결제가 접수되었습니다! 이제 지갑에 온체인 트랜잭션을 방송하고 있습니다.",
-  "@transactionSwapDescLnReceivePaid": {
-    "description": "Description for paid Lightning receive swap"
   },
   "receiveNetworkUnavailable": "{network}는 현재 사용할 수 없습니다",
   "@receiveNetworkUnavailable": {
@@ -8356,10 +8029,6 @@
   "@buyVerificationComplete": {
     "description": "Success message after KYC approval"
   },
-  "transactionNotesLabel": "거래 노트",
-  "@transactionNotesLabel": {
-    "description": "Label for transaction notes section"
-  },
   "replaceByFeeFeeRateDisplay": "수수료율: {feeRate} sat/vbyte",
   "@replaceByFeeFeeRateDisplay": {
     "description": "Display text showing the fee rate",
@@ -8412,10 +8081,6 @@
   "enterBackupKeyManuallyTitle": "백업 키를 수동으로 입력",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "transactionDetailLabelRecipientAddress": "자주 묻는 질문",
-  "@transactionDetailLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "importWalletColdcardQ": "콜드 카드 Q",
   "@importWalletColdcardQ": {
@@ -8693,7 +8358,6 @@
   },
   "walletSetupErrorTryAgain": "지갑을 설정하는 중 문제가 발생했습니다. 다시 시도해 주세요.",
   "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
-  "transactionStatusPayjoinCompleted": "Payjoin 완료됨",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
   "coreScreensFeeRateLabel": "수수료율",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -9004,7 +8668,6 @@
   "logsShareOptionExport": "내보내기",
   "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
   "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
-  "coreSwapsStatusRefunded": "환불됨",
   "swapRestoreTitle": "스왑 복구",
   "swapRestoreActionable": "{count, plural, other{복구를 시도할 수 있는 스왑이 {count}건 있습니다. 이미 종료 상태일 수 있으니 참고하세요.}}",
   "swapRestoreNoSwaps": "복구할 스왑을 찾지 못했습니다",
@@ -9037,15 +8700,7 @@
   "exchangeStatisticsSellAvgPriceDesc": "매도 시 Bitcoin 1개당 평균 수령 가격",
   "exchangeStatisticsTotalVolumeDesc": "법정화폐 기준 매수 및 매도 거래량 합계",
   "receivePayjoinNoUtxos": "먼저 자금을 받아야 사용할 수 있습니다.\nPayjoin을 사용하려면 UTXO가 필요합니다.",
-  "payViewReceipt": "영수증 보기",
   "paySinpeReceipt": "SINPE 영수증",
-  "transactionFilterWithdraw": "출금",
-  "transactionFilterPay": "결제",
-  "transactionFilterFunding": "입금",
-  "transactionFilterReward": "보상",
-  "transactionFilterRefund": "환불",
-  "transactionListLoadingFailed": "거래 내역을 불러올 수 없습니다.",
-  "transactionLabelNetworkFees": "네트워크 수수료",
   "receiveLiquidRiskDisclosureLabel": "결제는 Liquid L-BTC로 전환됩니다(BTC 아님). 자세히 알아보기.",
   "walletLiquidRiskDisclosureLabel": "이 자금은 Liquid L-BTC입니다(BTC 아님). 자세히 알아보기.",
   "liquidRiskDisclosureSemanticLabel": "Liquid Bitcoin 위험 고지 열기",
@@ -9257,10 +8912,6 @@
   "consolidationScreenTitle": "통합",
   "consolidationSuccessBody": "코인이 합쳐지고 있습니다. 네트워크가 확인되면 완료됩니다.",
   "consolidationSuccessTitle": "통합 시작됨",
-  "transactionStatusPayjoinAborted": "Payjoin 중단됨",
-  "transactionDetailLabelPayjoinAborted": "중단됨",
-  "transactionDetailLabelPayjoinFeeContribution": "Payjoin 수수료 기여분",
-  "transactionPayjoinFeeContributionExplanation": "Payjoin은 개인정보 보호를 강화하기 위해 결제에 귀하의 코인 하나를 추가 입력으로 더합니다. 추가된 입력에 대한 채굴 수수료는 받는 금액에서 차감됩니다 (BIP78).",
   "dcaAccountUnavailableError": "계정을 불러올 수 없습니다. 인터넷 연결과 로그인 상태를 확인한 뒤 다시 시도하세요.",
   "dcaLightningAddressRequiredError": "구매한 비트코인을 받을 Lightning 주소를 입력하세요.",
   "dcaReceiveAddressError": "지갑에서 수신 주소를 준비할 수 없습니다. 다시 시도해 주세요.",
@@ -9271,16 +8922,6 @@
   "sendPayjoinLabel": "Payjoin",
   "addressViewErrorWalletNotFound": "이 지갑을 찾을 수 없습니다.",
   "addressViewErrorLoadFailed": "주소를 불러올 수 없습니다. 다시 시도해 주세요.",
-  "coreSwapsStatusNotStarted": "시작되지 않음",
-  "coreSwapsStatusAwaitingPayment": "결제 대기 중",
-  "coreSwapsStatusAwaitingConfirmation": "확인 대기 중",
-  "coreSwapsStatusUnderReview": "검토 중",
-  "coreSwapsStatusRejected": "거부됨",
-  "coreSwapsStatusCanceled": "취소됨",
-  "coreSwapsStatusPaymentDeadlineExpired": "결제 기한 만료",
-  "coreSwapsStatusScheduled": "예약됨",
-  "coreSwapsStatusAwaitingClaim": "수령 대기 중",
-  "coreSwapsStatusUnknown": "알 수 없음",
   "sendSwapExpiredTitle": "주문 만료",
   "sendSwapExpiredMessage": "자금이 전송되기 전에 이 주문이 만료되었습니다. 지갑에서 아무것도 전송되지 않았습니다.",
   "settingsScreenPrivacyTitle": "화면 개인정보 보호",
@@ -9330,10 +8971,6 @@
   "walletWarningElectrumBothDown": "Bitcoin 및 Liquid 서버를 사용할 수 없음",
   "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요",
   "walletLoadFailedRetryHint": "아래로 당겨 새로 고친 후 다시 시도하세요",
-  "transactionDetailLoadError": "거래 세부 정보를 불러올 수 없습니다.",
-  "transactionPayjoinBroadcastFailed": "원본 거래를 브로드캐스트할 수 없습니다. 다시 시도해 주세요.",
-  "transactionPayjoinOriginalUnavailable": "원본 거래를 더 이상 브로드캐스트할 수 없습니다.",
-  "transactionLabelLimitReached": "라벨은 최대 10개까지 추가할 수 있습니다.",
   "settingsErrorSavingSetting": "해당 설정을 저장할 수 없습니다. 다시 시도해 주세요.",
   "settingsErrorConsentNotGiven": "이 설정을 변경하려면 확인이 필요합니다.",
   "settingsErrorLoadingLogs": "진단 로그를 준비할 수 없습니다. 다시 시도해 주세요.",

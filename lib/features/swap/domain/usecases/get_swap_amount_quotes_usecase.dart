@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart';
 

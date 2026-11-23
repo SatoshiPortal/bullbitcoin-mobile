@@ -2,7 +2,7 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/swap_route_setting_repository.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 

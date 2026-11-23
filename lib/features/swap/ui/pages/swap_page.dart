@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';

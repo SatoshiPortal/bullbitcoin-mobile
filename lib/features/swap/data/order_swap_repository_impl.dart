@@ -9,12 +9,9 @@ import 'package:bb_mobile/features/swap/data/mappers/order_swap_mapper.dart';
 import 'package:bb_mobile/features/swap/data/mappers/order_swap_quote_mapper.dart';
 import 'package:bb_mobile/features/swap/data/mappers/order_swap_record_mapper.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_amount_codec.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 
 class OrderSwapRepositoryImpl implements OrderSwapRepository {
   final ExchangePublicApiDatasource _testnetRemote;

@@ -1,3 +1,5 @@
+import 'package:transactions/transactions.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/coins/public/coins.dart';
@@ -9,17 +11,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
-import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/coins_entry_subtitle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_amount.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/wallet_detail_txs_list.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullDisclosureLink,
@@ -40,9 +38,11 @@ class WalletDetailScreen extends StatelessWidget {
     required this.walletId,
     required this.onOpenCoins,
     required this.loadCoinSummary,
+    required this.scopeWalletHistory,
   });
 
   final String walletId;
+  final Widget Function(String walletId, Widget child) scopeWalletHistory;
   final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
   final Future<Result<CoinSummary, CoinsFailure>> Function(String)
   loadCoinSummary;
@@ -91,20 +91,16 @@ class WalletDetailScreen extends StatelessWidget {
           ? const BullShimmerBox(height: 100)
           : balanceSat == null
           ? Center(child: Text(context.loc.walletLoadFailed))
-          : BlocProvider<TransactionsCubit>(
-              create: (_) =>
-                  locator<TransactionsCubit>(param1: walletId)..loadTxs(),
-              child: Builder(
+          : scopeWalletHistory(
+              walletId,
+              Builder(
                 builder: (context) => BullPullableBody(
                   onRefresh: () async {
                     unawaited(BitcoinPriceFeature.refresh(context));
-                    final transactions = context.read<TransactionsCubit>();
-                    transactions.deferReloads();
-                    try {
-                      await context.read<WalletBloc>().refresh();
-                    } finally {
-                      await transactions.resumeReloads();
-                    }
+                    await WalletHistoryScope.refresh(
+                      context,
+                      context.read<WalletBloc>().refresh,
+                    );
                   },
                   slivers: [
                     SliverToBoxAdapter(

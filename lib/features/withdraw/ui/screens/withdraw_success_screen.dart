@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullSuccessScreen;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,10 +26,10 @@ class WithdrawSuccessScreen extends StatelessWidget {
           BullButton.secondary(
             label: context.loc.withdrawSuccessOrderDetails,
             onPressed: () {
-              context.pushNamed(
-                TransactionsRoute.orderTransactionDetails.name,
-                pathParameters: {'orderId': order.orderId},
-                queryParameters: {'returnToExchange': 'true'},
+              TransactionsNavigation.openDetails(
+                context,
+                TransactionDetailsTarget.order(order.orderId),
+                returnToExchange: true,
               );
             },
           ),

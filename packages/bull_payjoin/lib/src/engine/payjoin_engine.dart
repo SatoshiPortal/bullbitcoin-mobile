@@ -552,18 +552,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<bool> _canManuallyBroadcastOriginal(Payjoin payjoin) async =>
       payjoin.canManuallyBroadcastOriginal &&
       !_isWaitingForSender(payjoin) &&
-      await _visibleCompetingTransaction(payjoin) == null;
+      switch (await _visibleCompetingTransaction(payjoin)) {
+        Ok(value: null) => true,
+        _ => false,
+      };
 
   /// The session's spend the network already knows (the original or the
   /// payjoin transaction), or null when neither is visible. Lets a caller
   /// that saw the session expire tell "nothing was broadcast" from "the
   /// fallback broadcast reached the network but its outcome was not
   /// recorded" before it offers the payment again.
-  Future<String?> visibleCompetingTransaction(String payjoinId) async {
+  Future<Result<String?, api.PayjoinFailure>> visibleCompetingTransaction(
+    String payjoinId,
+  ) async {
     final freshModel =
         await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
         await _localPayjoinDatasource.fetchSender(payjoinId);
-    if (freshModel == null) return null;
+    if (freshModel == null) return const Ok(null);
     return _visibleCompetingTransaction(freshModel.toEntity());
   }
 
@@ -574,20 +579,28 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// both: persisted status can lag a transaction that has just reached the
   /// network, and broadcasting the original in that gap could race a
   /// successfully negotiated payjoin.
-  Future<String?> _visibleCompetingTransaction(Payjoin payjoin) async {
+  Future<Result<String?, api.PayjoinFailure>> _visibleCompetingTransaction(
+    Payjoin payjoin,
+  ) async {
     for (final txId in [payjoin.originalTxId, payjoin.txId]) {
       if (txId == null) continue;
-      if (await _io(
+      final visible = await _io(
         () => _transactions.isTransactionVisible(
           walletId: payjoin.walletId,
           transactionId: txId,
           refresh: true,
         ),
-      )) {
-        return txId;
+      );
+      if (visible == null) {
+        return const Err(
+          api.PayjoinUnavailableFailure(
+            'Could not verify competing transactions',
+          ),
+        );
       }
+      if (visible) return Ok(txId);
     }
-    return null;
+    return const Ok(null);
   }
 
   @override
@@ -638,9 +651,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final freshEntity = freshModel.toEntity();
     final String? competingTxId;
     try {
-      competingTxId = freshEntity.canManuallyBroadcastOriginal
+      final result = freshEntity.canManuallyBroadcastOriginal
           ? await _visibleCompetingTransaction(freshEntity)
-          : null;
+          : const Ok<String?, api.PayjoinFailure>(null);
+      switch (result) {
+        case Ok(:final value):
+          competingTxId = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
     } on Exception catch (error, trace) {
       _log.warning(
         code: api.PayjoinLogCode.watchFailure,
@@ -1284,24 +1303,35 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       retry.attempts++;
       // Ask the remote visibility boundary; unknown is never absence.
       final proposalId = model.txId;
-      if (proposalId != null &&
-          await _io(
-            () => _transactions.isTransactionVisible(
-              walletId: model.walletId,
-              transactionId: proposalId,
-              refresh: true,
-            ),
-          )) {
-        await _completeOnPayjoinTransactionSeen(id, proposalId);
-        return;
+      if (proposalId != null) {
+        final visible = await _io(
+          () => _transactions.isTransactionVisible(
+            walletId: model.walletId,
+            transactionId: proposalId,
+            refresh: true,
+          ),
+        );
+        if (visible == null) {
+          _stopProposalAfterFailedRead(id);
+          return;
+        }
+        if (visible) {
+          await _completeOnPayjoinTransactionSeen(id, proposalId);
+          return;
+        }
       }
-      if (await _io(
+      final originalVisible = await _io(
         () => _transactions.isTransactionVisible(
           walletId: model.walletId,
           transactionId: model.originalTxId,
           refresh: true,
         ),
-      )) {
+      );
+      if (originalVisible == null) {
+        _stopProposalAfterFailedRead(id);
+        return;
+      }
+      if (originalVisible) {
         await _completeOnOriginalTransactionSeen(id, model.originalTxId);
         return;
       }
@@ -1315,13 +1345,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       await _processPayjoinProposalInner(model, allowOriginalFallback: false);
       if (retry.attempts >= proposalRetryLimit) retry.stop();
     } catch (_) {
-      final retry = _proposalRetries[id];
-      retry?.stop();
-      if (!_disposed && retry != null) {
-        _payjoinStreamController.add(retry.model.toEntity());
-      }
+      _stopProposalAfterFailedRead(id);
     }
   });
+
+  void _stopProposalAfterFailedRead(String id) {
+    final retry = _proposalRetries[id];
+    retry?.stop();
+    if (!_disposed && retry != null) {
+      _payjoinStreamController.add(retry.model.toEntity());
+    }
+  }
 
   Future<void> _processPayjoinProposal(
     PayjoinSenderModel payjoinModel, {
@@ -1566,7 +1600,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           refresh: true,
         ),
       );
-      return visible ? txId : null;
+      return visible == true ? txId : null;
     } catch (e, st) {
       _log.warning(
         code: api.PayjoinLogCode.watchFailure,
@@ -1593,24 +1627,29 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<bool> _isUnobservedAtExpiry(PayjoinSenderModel sender) async {
     try {
       final payjoinTxId = sender.txId ?? await _deriveSenderPayjoinTxId(sender);
-      if (payjoinTxId != null &&
-          await _io(
-            () => _transactions.isTransactionVisible(
-              walletId: sender.walletId,
-              transactionId: payjoinTxId,
-              refresh: true,
-            ),
-          )) {
-        await _completeOnPayjoinTransactionSeen(sender.id, payjoinTxId);
-        return false;
+      if (payjoinTxId != null) {
+        final visible = await _io(
+          () => _transactions.isTransactionVisible(
+            walletId: sender.walletId,
+            transactionId: payjoinTxId,
+            refresh: true,
+          ),
+        );
+        if (visible == null) return false;
+        if (visible) {
+          await _completeOnPayjoinTransactionSeen(sender.id, payjoinTxId);
+          return false;
+        }
       }
-      if (await _io(
+      final originalVisible = await _io(
         () => _transactions.isTransactionVisible(
           walletId: sender.walletId,
           transactionId: sender.originalTxId,
           refresh: true,
         ),
-      )) {
+      );
+      if (originalVisible == null) return false;
+      if (originalVisible) {
         await _completeOnOriginalTransactionSeen(
           sender.id,
           sender.originalTxId,
@@ -1649,18 +1688,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     var absent = false;
     try {
-      if (await _io(
+      final visible = await _io(
         () => _transactions.isTransactionVisible(
           walletId: sender.walletId,
           transactionId: sender.originalTxId,
           refresh: true,
         ),
-      )) {
+      );
+      if (visible == true) {
         await _completeOnOriginalTransactionSeen(
           sender.id,
           sender.originalTxId,
         );
-      } else {
+      } else if (visible == false) {
         absent = true;
       }
     } catch (e, st) {
@@ -2671,7 +2711,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
               return false;
             }
           })
-          .where((visible) => visible)
+          .where((visible) => visible == true)
           .listen((_) {
             // onSeen (fetch + update + emit) can throw; the future is not
             //  awaited by the stream, so guard it explicitly or it becomes an
@@ -2748,13 +2788,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       var visible = false;
       try {
-        visible = await _io(
-          () => _transactions.isTransactionVisible(
-            walletId: walletId,
-            transactionId: txId,
-            refresh: true,
-          ),
-        );
+        visible =
+            await _io(
+              () => _transactions.isTransactionVisible(
+                walletId: walletId,
+                transactionId: txId,
+                refresh: true,
+              ),
+            ) ==
+            true;
       } catch (e) {
         _log.warning(
           code: api.PayjoinLogCode.watchFailure,

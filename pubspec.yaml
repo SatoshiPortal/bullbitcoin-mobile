@@ -18,6 +18,7 @@ workspace:
   - features/network
   - features/signers
   - features/access
+  - features/transactions
   - features/ark
   - features/fees
   - packages/fees
@@ -174,6 +175,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.26.0
+  transactions:
 
 dev_dependencies:
   file_picker: ^13.3.3

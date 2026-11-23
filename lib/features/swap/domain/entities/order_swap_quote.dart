@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:swaps/order_swaps.dart';
 
 class OrderSwapQuote {
   final BigInt inAmountSat;

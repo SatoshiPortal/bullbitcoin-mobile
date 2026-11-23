@@ -38,7 +38,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sh
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
-import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
+import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
@@ -84,7 +84,7 @@ class SettingsRouter {
         ExchangeAccountActions(showDeleteAccount: showDeleteAccount),
     onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
     onOpenTransactions: (context) =>
-        context.pushNamed(TransactionsRoute.exchangeTransactions.name),
+        TransactionsNavigation.openHistory(context, exchangeOnly: true),
     onOpenDefaultWallets: (context) =>
         context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
     onOpenExchange: (context) =>

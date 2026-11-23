@@ -32,10 +32,9 @@ typedef WalletTxLookup = Future<SwapWalletTx?> Function(
   required String walletId,
 });
 
-/// All of a wallet's transactions. [sync] freshens the wallet first;
-/// implementations must throw — not return stale data — when freshening was
-/// requested but failed.
-typedef WalletTxsLookup = Future<List<SwapWalletTx>> Function(
+/// All of a wallet's transactions. [sync] freshens the wallet first.
+/// A null result means the read or requested refresh was unavailable.
+typedef WalletTxsLookup = Future<List<SwapWalletTx>?> Function(
   String walletId, {
   bool sync,
 });
@@ -1892,6 +1891,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         :final receiveWalletId,
       ):
         final txs = await _walletTxs(receiveWalletId);
+        if (txs == null) return false;
         final tx = txs.where((tx) => tx.txId == receiveTxid).firstOrNull;
         if (tx == null || !tx.isIncoming) return false;
         final recordedOn = await _swapRecordingTxid(
@@ -3090,12 +3090,11 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         if (walletId == null) continue;
         try {
           var txs = await _walletTxs(walletId);
-          if (txs.any((tx) => tx.txId == proofTxid)) continue;
-          // Missing from cache: force one fresh sync before judging. A sync
-          // failure throws into the per-swap catch — never retract on a
-          // cache we could not freshen.
+          if (txs == null || txs.any((tx) => tx.txId == proofTxid)) continue;
+          // Missing from cache: force one fresh sync before judging.
+          // Retraction requires a successful refresh.
           txs = await _walletTxs(walletId, sync: true);
-          if (txs.isEmpty) continue;
+          if (txs == null || txs.isEmpty) continue;
           if (txs.any((tx) => tx.txId == proofTxid)) continue;
           swapsLog.warning(
             'SWAPS: ${swap.id} ${swap.status.name} but recorded '

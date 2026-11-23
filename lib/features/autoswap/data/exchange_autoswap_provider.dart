@@ -1,3 +1,4 @@
+import 'package:swaps/order_swaps.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';

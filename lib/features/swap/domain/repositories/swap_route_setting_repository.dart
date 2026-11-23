@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class SwapRouteSettingRepository {

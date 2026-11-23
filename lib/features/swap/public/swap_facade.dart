@@ -1,9 +1,7 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_refresh_batch.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.dart';
@@ -29,15 +27,11 @@ export '../domain/entities/order_swap_polling.dart';
 export '../domain/swap_sync_port.dart';
 export '../presentation/swap_failure_l10n.dart';
 
-export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
-export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
-export 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 export 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
-export 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 export 'package:bb_mobile/features/swap/public/order_swap_under_review_card.dart';
 
-class SwapFacade {
+class SwapFacade implements ReadOrderSwaps {
   final GetOrderSwapQuoteUsecase _getQuote;
   final CreateOrderSwapUsecase _createOrder;
   final RefreshOrderSwapUsecase _refreshOrder;
@@ -132,10 +126,12 @@ class SwapFacade {
   Future<Result<OrderSwapRecord, SwapFailure>> refreshOrder(String localId) =>
       _refreshOrder.execute(localId);
 
+  @override
   Future<Result<List<OrderSwapRecord>, SwapFailure>> getOrders({
     String? walletId,
   }) => _getOrders.execute(walletId: walletId);
 
+  @override
   Future<Result<OrderSwapRecord, SwapFailure>> getOrder(String localId) =>
       _getOrder.execute(localId);
 
@@ -183,6 +179,7 @@ class SwapFacade {
     required DateTime appliedAt,
   }) => _markLabelsApplied.execute(localId: localId, appliedAt: appliedAt);
 
+  @override
   Stream<Result<OrderSwapRecord, SwapFailure>> watchOrder(String localId) =>
       _watchOrder.execute(localId);
 

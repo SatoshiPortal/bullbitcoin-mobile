@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:swaps/swaps.dart' show SwapStore, SwapsBusyFailure;
 import 'package:meta/meta.dart';

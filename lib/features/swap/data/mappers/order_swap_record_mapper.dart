@@ -1,7 +1,5 @@
 import 'package:bb_mobile/features/swap/data/order_swaps_table.drift.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
-import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:drift/drift.dart';
 
 extension OrderSwapRecordToCompanionMapper on OrderSwapRecord {

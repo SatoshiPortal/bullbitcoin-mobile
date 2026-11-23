@@ -1,3 +1,5 @@
+import 'package:swaps/order_swaps.dart';
+
 import '../../domain/receive_live_amount.dart';
 import '../../domain/receive_advanced_options.dart';
 import '../../domain/receive_lightning_limits.dart';
@@ -28,8 +30,6 @@ import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:clock/clock.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -51,7 +51,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_s
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:transactions/transactions.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +74,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._receiveWithPayjoinUsecase,
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
-    required this._watchWalletTransactionByAddressUsecase,
+    required this._transactions,
     required this._watchReceiveOrderSwapUsecase,
     required this._loadReceiveAddressLabelUsecase,
     required this._saveReceiveAddressLabelUsecase,
@@ -174,8 +174,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final CreateBoltzReceiveSwapUsecase _createBoltzReceiveSwapUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final WatchWalletTransactionByAddressUsecase
-  _watchWalletTransactionByAddressUsecase;
+  final Transactions _transactions;
   final WatchReceiveOrderSwapUsecase _watchReceiveOrderSwapUsecase;
   final LoadReceiveAddressLabelUsecase _loadReceiveAddressLabelUsecase;
   final SaveReceiveAddressLabelUsecase _saveReceiveAddressLabelUsecase;
@@ -1600,7 +1599,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     final tx = event.tx;
     if (event.generation != _receiveGeneration ||
         tx.walletId != state.wallet?.id ||
-        tx.network != state.wallet?.network) {
+        tx.network != state.wallet?.network.shared) {
       return;
     }
     emit(state.copyWith(tx: tx));
@@ -1815,8 +1814,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }) {
     final generation = _receiveGeneration;
     _walletTransactionSubscription?.cancel();
-    _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
-        .execute(walletId: walletId, toAddress: address)
+    _walletTransactionSubscription = _transactions
+        .watchWalletTransactionByAddress(walletId: walletId, toAddress: address)
         .listen((tx) {
           // See _watchPayjoin's guard above for why this is needed.
           if (isClosed) return;

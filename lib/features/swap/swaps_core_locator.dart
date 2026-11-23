@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/address_view/domain/repositories/wallet_addre
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network, NetworkX;
-import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:transactions/transactions.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
@@ -119,6 +119,11 @@ class SwapsLocator {
     );
   }
 
+  static Null _historyUnavailable(TransactionFailure failure) {
+    log.warning('Swaps wallet history unavailable: ${failure.runtimeType}');
+    return null;
+  }
+
   static SwapEngineParts _buildEngine(
     GetIt locator, {
     required NetworkEnv environment,
@@ -138,7 +143,6 @@ class SwapsLocator {
     final glue = locator<SwapsAppGlue>();
     final fees = locator<Fees>();
     final addresses = locator<WalletAddressRepository>();
-    final walletTxs = locator<WalletTransactionRepository>();
     final boltz = BoltzSwapRepository.connect(
       url: url,
       storage: storage,
@@ -155,10 +159,14 @@ class SwapsLocator {
           (await addresses.generateNewReceiveAddress(walletId: walletId))
               .address,
       walletTx: (txid, {required walletId}) async {
-        final tx = await walletTxs.getWalletTransaction(
+        final history = await locator<Transactions>().getWalletTransaction(
           txid,
           walletId: walletId,
         );
+        final tx = switch (history) {
+          Ok(:final value) => value,
+          Err(:final failure) => _historyUnavailable(failure),
+        };
         if (tx == null) return null;
         return SwapWalletTx(
           txId: tx.txId,
@@ -167,12 +175,17 @@ class SwapsLocator {
         );
       },
       walletTxs: (walletId, {bool sync = false}) async {
-        final txs = await walletTxs.getWalletTransactions(
+        final history = await locator<Transactions>().getWalletTransactions(
           walletId: walletId,
           sync: sync,
         );
+        final transactions = switch (history) {
+          Ok(:final value) => value,
+          Err(:final failure) => _historyUnavailable(failure),
+        };
+        if (transactions == null) return null;
         return [
-          for (final tx in txs)
+          for (final tx in transactions)
             SwapWalletTx(
               txId: tx.txId,
               isIncoming: tx.isIncoming,
