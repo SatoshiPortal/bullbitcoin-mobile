@@ -1,4 +1,5 @@
 import 'package:access/access.dart' show Access;
+import 'package:address_view/routes.dart' show AddressViewFeature;
 import 'package:all_seed_view/setup.dart';
 import 'package:bip85/bip85.dart';
 import 'package:secrets/custody.dart';
@@ -29,6 +30,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:labels/labels.dart' show Labels;
 import 'package:signers/routes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
@@ -38,6 +40,7 @@ import 'package:secrets/secrets.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 
 import '../../support/inventory_fixture.dart';
 
@@ -77,6 +80,10 @@ class _UnusedSwapRouting extends Mock implements SwapRouting {}
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 
 class _UnusedSwaps extends Mock implements BoltzSwaps {}
+
+class _UnusedLabels extends Mock implements Labels {}
+
+class _UnusedNative extends Mock implements WalletNativeLifecycle {}
 
 class _UnusedReferences extends Mock implements SeedReferencePort {}
 
@@ -170,6 +177,15 @@ void main() {
       final secrets = Secrets(scratchDirectory: () async => directory.path);
       final inventory = inventoryFixture.inventory;
       locator.registerSingleton(
+        AddressViewFeature.mount(
+          labels: _UnusedLabels(),
+          inventory: inventory,
+          native: _UnusedNative(),
+          loadWallet: (_) => throw StateError('Unexpected address wallet read'),
+          revisions: const Stream.empty(),
+        ),
+      );
+      locator.registerSingleton(
         Bip85Feature.mount(
           derivations: inventory.bip85(secrets),
           inventory: inventory,
@@ -225,6 +241,7 @@ void main() {
         await quickActions.close();
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
+        await locator.unregister<AddressViewFeature>();
         await locator.unregister<Bip85Feature>();
         await locator.unregister<AllSeedViewFeature>();
         await accessServices.reset();
