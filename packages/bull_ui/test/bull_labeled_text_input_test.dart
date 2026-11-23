@@ -9,13 +9,16 @@ void main() {
     TextField field(WidgetTester tester) =>
         tester.widget<TextField>(find.byType(TextField));
 
-    testWidgets('renders the label and reports typed text', (tester) async {
+    testWidgets('keeps its semantic name before and after typing', (
+      tester,
+    ) async {
       final semantics = tester.ensureSemantics();
       String? typed;
       await tester.pumpWidget(
         wrapWithTheme(
           BullLabeledTextInput(
             label: 'Label',
+            hint: 'Required',
             value: '',
             onChanged: (v) => typed = v,
           ),
@@ -23,12 +26,23 @@ void main() {
       );
 
       expect(find.text('Label'), findsOneWidget);
-      final editor = tester.getSemantics(find.byType(EditableText));
-      expect(editor.getSemanticsData().label, 'Label');
-      expect(editor.getSemanticsData().flagsCollection.isTextField, isTrue);
+      final editable = find.byType(EditableText);
+      final empty = tester.getSemantics(editable).getSemanticsData();
+      expect(empty.label, 'Label');
+      expect(empty.hint, 'Required');
+      expect(empty.value, isEmpty);
+      expect(empty.flagsCollection.isTextField, isTrue);
+      final placeholder = tester.widget<Text>(find.text('Required'));
+      expect(placeholder.maxLines, 1);
+      expect(placeholder.overflow, TextOverflow.ellipsis);
 
       await tester.enterText(find.byType(TextField), 'hello');
+      await tester.pumpAndSettle();
 
+      final filled = tester.getSemantics(editable).getSemanticsData();
+      expect(filled.label, 'Label');
+      expect(filled.hint, 'Required');
+      expect(filled.value, 'hello');
       expect(typed, 'hello');
       semantics.dispose();
     });

@@ -3,7 +3,12 @@ import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.da
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullMnemonicKeyboard, BullSegmented, BullTypography;
+    show
+        BullButton,
+        BullLabeledTextInput,
+        BullMnemonicKeyboard,
+        BullSegmented,
+        BullTypography;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
@@ -61,8 +66,7 @@ Future<void> pumpWidget(
 
 Finder wordField(int index) => find.byType(TextField).at(index);
 
-/// A labelled input's inner [TextField], found by its placeholder — the label
-/// itself is a sibling widget, not part of the field.
+/// A [TextField] that uses Material's string placeholder.
 TextField fieldByHint(WidgetTester tester, String hint) =>
     tester.widget<TextField>(
       find.byWidgetPredicate(
@@ -911,7 +915,12 @@ void main() {
       await pumpWidget(tester, allowLabel: true, onSubmit: (_) {});
 
       // The hardening is opt-in: ordinary text still types normally.
-      final field = fieldByHint(tester, 'Required');
+      final field = tester.widget<TextField>(
+        find.descendant(
+          of: find.byType(BullLabeledTextInput),
+          matching: find.byType(TextField),
+        ),
+      );
       expect(field.smartQuotesType, SmartQuotesType.enabled);
       expect(field.smartDashesType, SmartDashesType.enabled);
       expect(field.enableSuggestions, isTrue);
