@@ -443,7 +443,8 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     bbx.BbxRpcFailure(:final apiCode, :final code) =>
       ExchangeOrderRejectedFailure(apiCode: apiCode, rpcCode: code),
     bbx.BbxTimeoutFailure() ||
-    bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
+    bbx.BbxConnectionFailure() ||
+    bbx.BbxOutcomeUnknownFailure() => const ExchangeNetworkFailure(),
     _ => const ExchangeOrderLoadFailure(),
   };
 }

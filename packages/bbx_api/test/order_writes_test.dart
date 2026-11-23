@@ -478,14 +478,34 @@ void main() {
       );
     });
 
-    test('a non-200 status is an HTTP failure', () async {
+    test('a status below 400 other than 200 is an unknown outcome', () async {
       answer({'result': _order}, status: 204);
-      expect(await failedCall(sell()), isA<BbxHttpFailure>());
+      expect(await failedCall(sell()), isA<BbxOutcomeUnknownFailure>());
     });
 
-    test('a result that is not an object is a format failure', () async {
+    test('a refused status is an HTTP failure', () async {
+      answer({'result': _order}, status: 500);
+      expect(
+        await failedCall(sell()),
+        isA<BbxHttpFailure>().having((f) => f.status, 'status', 500),
+      );
+    });
+
+    test('a result that is not an object is an unknown outcome', () async {
       answer({'result': null});
-      expect(await failedCall(sell()), isA<BbxResponseFormatFailure>());
+      expect(await failedCall(sell()), isA<BbxOutcomeUnknownFailure>());
+    });
+
+    test('confirm and accelerate are writes too', () async {
+      answer({'result': null});
+      expect(
+        await failedCall(orders.confirmOrderSummary('o-1')),
+        isA<BbxOutcomeUnknownFailure>(),
+      );
+      expect(
+        await failedCall(orders.unbatchAndExpressOrder('o-1')),
+        isA<BbxOutcomeUnknownFailure>(),
+      );
     });
   });
 }

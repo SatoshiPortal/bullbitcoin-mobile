@@ -78,6 +78,37 @@ final class BbxTransport {
     };
   }
 
+  /// Sends the write [method] like [request], reading its `result` with
+  /// [read] inside the same classification.
+  ///
+  /// A failure after the request may have reached the server is a
+  /// [BbxOutcomeUnknownFailure] (see [writeFailure]): the write may have
+  /// happened. A JSON-RPC refusal and a failure before sending are returned
+  /// unchanged.
+  Future<Result<T, BbxFailure>> write<T>(
+    String endpoint,
+    String method, {
+    Map<String, Object?> params = const {},
+    String id = '0',
+    Map<String, Object?>? headers,
+    BbxFailure Function(Object error) rejection = bbxRpcFailure,
+    required T Function(Object? result) read,
+  }) async {
+    final result = await request(
+      endpoint,
+      method,
+      params: params,
+      id: id,
+      headers: headers,
+      rejection: rejection,
+      read: read,
+    );
+    return switch (result) {
+      Ok() => result,
+      Err(:final failure) => Err(writeFailure(failure)),
+    };
+  }
+
   /// Posts a `multipart/form-data` request to [path] with [fields] and
   /// [files], keyed by form field name, and reads the response body with
   /// [read].
@@ -244,10 +275,60 @@ BbxFailure _withOrigin(
   BbxRequestCancelledFailure() => BbxRequestCancelledFailure(origin: origin),
   BbxTransformTimeoutFailure() => BbxTransformTimeoutFailure(origin: origin),
   BbxTransportFailure() => BbxTransportFailure(origin: origin),
+  BbxOutcomeUnknownFailure(:final reason) => BbxOutcomeUnknownFailure(
+    reason,
+    origin: origin,
+  ),
   BbxResponseFormatFailure(:final reason) => BbxResponseFormatFailure(
     reason,
     origin: origin,
   ),
+};
+
+/// The failure of a write that failed with [failure].
+///
+/// A failure after the request may have reached the server becomes a
+/// [BbxOutcomeUnknownFailure]: a send or receive timeout, a dropped
+/// connection, an unknown transport failure, a gateway error (502, 504), a
+/// status below 400 other than 200, a bad response without a status, or a
+/// reply that could not be read. A missing or unreadable credential, a
+/// connect timeout, a rejected certificate and a cancel happen before
+/// sending; a JSON-RPC refusal and any other HTTP status are the server's
+/// answer. Those are returned unchanged.
+BbxFailure writeFailure(BbxFailure failure) => switch (failure) {
+  BbxTimeoutFailure(:final kind, :final origin) => switch (kind) {
+    BbxTimeoutKind.connect => failure,
+    BbxTimeoutKind.send || BbxTimeoutKind.receive => BbxOutcomeUnknownFailure(
+      '${kind.name} timeout',
+      origin: origin,
+    ),
+  },
+  BbxConnectionFailure(:final origin) => BbxOutcomeUnknownFailure(
+    'connection lost',
+    origin: origin,
+  ),
+  BbxTransformTimeoutFailure(:final origin) => BbxOutcomeUnknownFailure(
+    'transform timeout',
+    origin: origin,
+  ),
+  BbxTransportFailure(:final origin) => BbxOutcomeUnknownFailure(
+    'transport failure',
+    origin: origin,
+  ),
+  BbxHttpFailure(:final status, :final origin)
+      when status == null || status < 400 || status == 502 || status == 504 =>
+    BbxOutcomeUnknownFailure('status $status', origin: origin),
+  BbxResponseFormatFailure(:final reason, :final origin) =>
+    BbxOutcomeUnknownFailure(reason, origin: origin),
+  BbxHttpFailure() ||
+  BbxMissingCredentialFailure() ||
+  BbxCredentialUnavailableFailure() ||
+  BbxRpcFailure() ||
+  BbxOrderLimitFailure() ||
+  BbxConfidentialSepaInactiveFailure() ||
+  BbxBadCertificateFailure() ||
+  BbxRequestCancelledFailure() ||
+  BbxOutcomeUnknownFailure() => failure,
 };
 
 /// The failure of a failed request.

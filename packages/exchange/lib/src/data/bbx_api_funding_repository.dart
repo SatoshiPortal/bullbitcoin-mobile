@@ -194,6 +194,15 @@ final class BbxApiFundingRepository {
           trace: StackTrace.current,
         );
         return onFailure(failure, reason);
+      case BbxOutcomeUnknownFailure(:final reason):
+        // Only writes report it; no funding call is one.
+        final logMessage = 'Outcome unknown: $reason';
+        log.warning(
+          '$method failed',
+          error: 'FundingNetworkException($logMessage)',
+          trace: StackTrace.current,
+        );
+        return onFailure(failure, logMessage);
       case BbxTimeoutFailure(:final kind):
         final logMessage = 'Unreachable: ${_timeoutName(kind)}';
         log.warning(

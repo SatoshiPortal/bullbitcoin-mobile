@@ -144,7 +144,7 @@ void main() {
       expect(recipient.recipientId, 'r-2');
     });
 
-    test('a result without an element is a format error', () async {
+    test('a result without an element is an unknown outcome', () async {
       answer({'result': <String, Object?>{}});
 
       expect(
@@ -156,7 +156,7 @@ void main() {
             isDefault: true,
           ),
         ),
-        isA<BbxResponseFormatFailure>(),
+        isA<BbxOutcomeUnknownFailure>(),
       );
     });
   });
@@ -257,24 +257,27 @@ void main() {
       },
     );
 
-    test('a saved recipient without its identity is a format error', () async {
-      answer({
-        'result': {
-          'element': {..._fiatRecipient, 'userNbr': '7'},
-        },
-      });
+    test(
+      'a saved recipient without its identity is an unknown outcome',
+      () async {
+        answer({
+          'result': {
+            'element': {..._fiatRecipient, 'userNbr': '7'},
+          },
+        });
 
-      expect(
-        await failedCall(
-          api.createRecipientFiat(const NewSepaEurRecipient(iban: 'DE89')),
-        ),
-        isA<BbxResponseFormatFailure>().having(
-          (f) => f.reason,
-          'reason',
-          'invalid userNbr',
-        ),
-      );
-    });
+        expect(
+          await failedCall(
+            api.createRecipientFiat(const NewSepaEurRecipient(iban: 'DE89')),
+          ),
+          isA<BbxOutcomeUnknownFailure>().having(
+            (f) => f.reason,
+            'reason',
+            'invalid userNbr',
+          ),
+        );
+      },
+    );
   });
 
   group('NewFiatRecipient', () {

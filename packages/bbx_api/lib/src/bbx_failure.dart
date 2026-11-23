@@ -178,6 +178,22 @@ final class BbxTransportFailure extends BbxFailure {
   const BbxTransportFailure({StackTrace? origin}) : super(origin);
 }
 
+/// A write failed after its request may have reached the server, so the
+/// write may have happened: a send or receive timeout, a dropped connection,
+/// a gateway error, a status below 400 other than 200, or a reply that could
+/// not be read. Read the resource again before sending the write again.
+///
+/// [reason] names the failure and never quotes the request or the response.
+final class BbxOutcomeUnknownFailure extends BbxFailure {
+  final String reason;
+
+  const BbxOutcomeUnknownFailure(this.reason, {StackTrace? origin})
+    : super(origin);
+
+  @override
+  String toString() => 'BbxOutcomeUnknownFailure($reason)';
+}
+
 /// The response did not have the expected shape.
 ///
 /// [reason] names the first invalid field, or the shape that was expected,

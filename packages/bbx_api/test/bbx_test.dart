@@ -530,4 +530,121 @@ void main() {
       expect(request.receiveTimeout, const Duration(seconds: 2));
     });
   });
+
+  group('write', () {
+    Future<BbxFailure> writeFailureOver(
+      HttpClientAdapter http, {
+      Future<Result<String?, BbxFailure>> Function()? readActiveApiKey,
+    }) => failedCall(
+      bbx(
+        http,
+        readActiveApiKey: readActiveApiKey,
+      ).users.saveUserPreferences(const UserPreferences(language: 'en')),
+    );
+
+    for (final type in [
+      DioExceptionType.sendTimeout,
+      DioExceptionType.receiveTimeout,
+      DioExceptionType.connectionError,
+      DioExceptionType.transformTimeout,
+      DioExceptionType.unknown,
+    ]) {
+      test('${type.name} after sending is an unknown outcome', () async {
+        expect(
+          await writeFailureOver(FailingHttp(type)),
+          isA<BbxOutcomeUnknownFailure>(),
+        );
+      });
+    }
+
+    for (final (type, check) in [
+      (
+        DioExceptionType.connectionTimeout,
+        (BbxFailure f) =>
+            f is BbxTimeoutFailure && f.kind == BbxTimeoutKind.connect,
+      ),
+      (
+        DioExceptionType.badCertificate,
+        (BbxFailure f) => f is BbxBadCertificateFailure,
+      ),
+      (
+        DioExceptionType.cancel,
+        (BbxFailure f) => f is BbxRequestCancelledFailure,
+      ),
+    ]) {
+      test('${type.name} happens before sending and stays as it is', () async {
+        final failure = await writeFailureOver(FailingHttp(type));
+        expect(check(failure), isTrue, reason: '$failure');
+      });
+    }
+
+    for (final status in [204, 302, 502, 504]) {
+      test('status $status is an unknown outcome', () async {
+        expect(
+          await writeFailureOver(
+            FakeHttp(status: status, body: {'result': null}),
+          ),
+          isA<BbxOutcomeUnknownFailure>().having(
+            (f) => f.reason,
+            'reason',
+            'status $status',
+          ),
+        );
+      });
+    }
+
+    for (final status in [400, 401, 403, 500, 503]) {
+      test("status $status is the server's refusal", () async {
+        expect(
+          await writeFailureOver(
+            FakeHttp(status: status, body: {'result': null}),
+          ),
+          isA<BbxHttpFailure>().having((f) => f.status, 'status', status),
+        );
+      });
+    }
+
+    test('a reply that cannot be read is an unknown outcome', () async {
+      expect(
+        await failedCall(
+          bbx(FakeHttp(body: {'result': 'x'})).recipients.createMyRecipient(
+            recipientType: 'OUT_BITCOIN_ADDRESS',
+            address: 'bc1q',
+            isOwner: true,
+            isDefault: true,
+          ),
+        ),
+        isA<BbxOutcomeUnknownFailure>(),
+      );
+    });
+
+    test('a JSON-RPC error is a refusal', () async {
+      expect(
+        await writeFailureOver(
+          FakeHttp(
+            body: {
+              'error': {'code': -32000, 'message': 'no'},
+            },
+          ),
+        ),
+        isA<BbxRpcFailure>().having((f) => f.code, 'code', -32000),
+      );
+    });
+
+    test('a missing credential never sends the write', () async {
+      final http = FakeHttp(body: {'result': null});
+      expect(
+        await writeFailureOver(http, readActiveApiKey: () => okApiKey(null)),
+        isA<BbxMissingCredentialFailure>(),
+      );
+      expect(http.requests, isEmpty);
+    });
+
+    test('the outcome text names the failure, not the payload', () async {
+      final failure = await writeFailureOver(
+        FailingHttp(DioExceptionType.receiveTimeout),
+      );
+      expect('$failure', 'BbxOutcomeUnknownFailure(receive timeout)');
+    });
+  });
 }

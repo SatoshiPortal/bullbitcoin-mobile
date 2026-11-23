@@ -48,7 +48,7 @@ final class RecipientsApi {
     required String address,
     required bool isOwner,
     required bool isDefault,
-  }) => _transport.request(
+  }) => _transport.write(
     endpoint,
     'createMyRecipient',
     params: {
@@ -70,7 +70,7 @@ final class RecipientsApi {
     String? address,
     bool? isDefault,
     bool isOwner = true,
-  }) => _transport.request(
+  }) => _transport.write(
     endpoint,
     'updateMyRecipient',
     params: {
@@ -88,7 +88,7 @@ final class RecipientsApi {
   /// Creates a fiat recipient.
   Future<Result<FiatRecipient, BbxFailure>> createRecipientFiat(
     NewFiatRecipient recipient,
-  ) => _transport.request(
+  ) => _transport.write(
     endpoint,
     'createRecipientFiat',
     params: {'element': newFiatRecipientToJson(recipient)},
@@ -247,7 +247,7 @@ final class RecipientsApi {
 
   /// Creates the user's virtual IBAN.
   Future<Result<VirtualIban, BbxFailure>> createVirtualIban() =>
-      _transport.request(
+      _transport.write(
         endpoint,
         'createMyRecipient',
         params: {

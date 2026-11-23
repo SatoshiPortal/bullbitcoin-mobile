@@ -249,11 +249,13 @@ final class OrdersApi {
     Map<String, Object?> params,
   ) => _orderCall(method, params, rejection: orderRejection);
 
+  /// Every order call here is a write: a failure after it may have reached
+  /// the server is a [BbxOutcomeUnknownFailure].
   Future<Result<OrderSummary, BbxFailure>> _orderCall(
     String method,
     Map<String, Object?> params, {
     BbxFailure Function(Object error) rejection = bbxRpcFailure,
-  }) => _transport.request(
+  }) => _transport.write(
     endpoint,
     method,
     params: params,
