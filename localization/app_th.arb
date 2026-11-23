@@ -277,10 +277,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "exchangeLandingRecommendedExchange": "อัตราแลกเปลี่ยน Bitcoin",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "receiveConfirming": "กำลังยืนยัน... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -1934,10 +1930,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "• • • แชทกับลูกค้า",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "กรุณาชําระเงิน",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -2802,10 +2794,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "บริการแลกเปลี่ยนสกุลเงิน cryptocurrency ไม่สามารถใช้ได้ในโปรแกรมโทรศัพท์มือถือ.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "ค่าธรรมเนียมที่กําหนดเอง",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2942,10 +2930,6 @@
   "walletDetailsSignerDeviceNotSupported": "ไม่สนับสนุน",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
-  },
-  "exchangeLandingDisclaimerLegal": "เข้าถึงบริการแลกเปลี่ยนจะ จํากัด ไปยังประเทศที่ Bull Bitcoin สามารถใช้งานตามกฎหมายและอาจจําเป็นต้องใช้ CYC.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "backupWalletEncryptedVaultTitle": "การเข้ารหัส",
   "@backupWalletEncryptedVaultTitle": {
@@ -3693,10 +3677,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• ซื้อ Bitcoin ตรงกับตนเอง",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "จํานวนจํานวนสูงสุด",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -4099,10 +4079,6 @@
   "backupSettingsKeyWarningBold": "คําเตือน: ระมัดระวังที่คุณประหยัดเงิน.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "exchangeLandingConnectAccount": "เชื่อมต่อบัญชี Bitcoin",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "recoverYourWalletTitle": "การกู้คืนกระเป๋าสตางค์ของคุณ",
   "@recoverYourWalletTitle": {
@@ -4770,10 +4746,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "•ขาย Bitcoin ได้ชําระเงินกับ Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "เมล็ด",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4860,10 +4832,6 @@
   "sendFastFee": "ได้อย่างรวดเร็ว",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "สหรัฐ",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "ไม่มีสถิติที่มีอยู่",
   "@exchangeStatisticsNoData": {
@@ -6038,10 +6006,6 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "• • • การโอนเงินและชําระเงิน",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "การชําระเงินทันที",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
@@ -6169,10 +6133,6 @@
   "googleAppleCloudRecommendation": "Google หรือ Google แอปเปิ้ล: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "ไปที่ Google Bitcoin แลกเปลี่ยนเว็บไซต์",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "ทดสอบ {walletName}",
   "@testWalletTitle": {
@@ -6830,10 +6790,6 @@
   "coreScreensPageNotFound": "หน้า",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "exchangeFeatureDcaOrders": "• DCA, การสั่งซื้อและอัตโนมัติ",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
   },
   "payIban": "ฉัน",
   "@payIban": {
@@ -7528,10 +7484,6 @@
   "payPaymentHistory": "ประวัติการชําระเงิน",
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
-  },
-  "exchangeFeatureUnifiedHistory": "•ประวัติการทําธุรกรรม",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "payViewDetails": "ดูรายละเอียด",
   "@payViewDetails": {

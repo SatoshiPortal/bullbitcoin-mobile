@@ -1,13 +1,13 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
+import 'package:secrets/secrets.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/create_limit_order_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/resolve_wallet_address_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/create_limit_order_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
@@ -126,7 +126,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
     );
   }
 
-  Future<void> selectAppWallet(Wallet appWallet) async {
+  Future<void> selectAppWallet(WalletRegistration appWallet) async {
     final requestId = ++_destinationRequestId;
     emit(
       state.copyWith(
@@ -137,7 +137,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
         clearFailure: true,
       ),
     );
-    final result = await _resolveAddress.execute(appWallet.id);
+    final result = await _resolveAddress.execute(appWallet);
     if (isClosed || requestId != _destinationRequestId) return;
     switch (result) {
       case Ok(:final value):

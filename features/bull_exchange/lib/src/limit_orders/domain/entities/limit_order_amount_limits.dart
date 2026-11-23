@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
 
 enum LimitOrderAmountViolationKind { belowMinimum, aboveMaximum }
 

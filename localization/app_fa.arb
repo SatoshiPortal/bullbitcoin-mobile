@@ -38,57 +38,9 @@
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
   },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "exchangeLandingConnectAccount": "حساب تبادل Bitcoin Bull خود را به هم متصل کنید",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
-  "exchangeLandingRecommendedExchange": "Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "exchangeFeatureSelfCustody": "خرید Bitcoin مستقیم به Self-custody",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "exchangeFeatureDcaOrders": "DCA، سفارشات محدود و خرید خودکار",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
-  "exchangeFeatureSellBitcoin": "• فروش Bitcoin، پرداخت با Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
-  "exchangeFeatureBankTransfers": "• ارسال انتقال بانکی و پرداخت صورتحساب",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
-  "exchangeFeatureCustomerSupport": "• چت با پشتیبانی مشتری",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
-  "exchangeFeatureUnifiedHistory": "• سابقه معامله یکپارچه",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
-  },
-  "exchangeLandingDisclaimerLegal": "دسترسی به خدمات تبادل به کشورهایی که بیت کوین بول می تواند به صورت قانونی کار کند محدود خواهد شد و ممکن است نیاز به KYC داشته باشد.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
-  "exchangeLandingDisclaimerNotAvailable": "خدمات مبادله Cryptocurrency در برنامه تلفن همراه Bull Bitcoin در دسترس نیست.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "exchangeLoginButton": "ثبت نام یا ثبت نام",
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
-  },
-  "exchangeGoToWebsiteButton": "به سایت تبادل Bitcoin Bull بروید",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "exchangeAuthLoginFailedTitle": "ورود شکست خورده",
   "@exchangeAuthLoginFailedTitle": {

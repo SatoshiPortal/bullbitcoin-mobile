@@ -274,10 +274,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "exchangeLandingRecommendedExchange": "প্রস্তাবিত বিটকয়েন এক্সচেঞ্জ",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "receiveConfirming": "নিশ্চিত করা হচ্ছে... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -1905,10 +1901,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "• গ্রাহক সহায়তার সাথে চ্যাট করুন",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "অনুগ্রহ করে এই ইনভয়েস পরিশোধ করুন",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -2767,10 +2759,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "==WEBLATE_PART==\nBull Bitcoin মোবাইল অ্যাপে ক্রিপ্টোকারেন্সি এক্সচেঞ্জ সেবা উপলব্ধ নয়।",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "কাস্টম ফি হার",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2903,10 +2891,6 @@
   "walletDetailsSignerDeviceNotSupported": "সমর্থিত নয়",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
-  },
-  "exchangeLandingDisclaimerLegal": "Bull Bitcoin বৈধভাবে কার্যকর করতে পারে এমন দেশগুলিতে এক্সচেঞ্জ সেবা প্রবেশ সীমিত হবে এবং এতে KYC-র প্রয়োজন হতে পারে।",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "backupWalletEncryptedVaultTitle": "এনক্রিপ্টেড ভল্ট",
   "@backupWalletEncryptedVaultTitle": {
@@ -3650,10 +3634,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• সরাসরি নিজের কাস্টডিতে বিটকয়েন কিনুন",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "পরিমাণ সর্বোচ্চ সীমা ছাড়িয়ে গেছে",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -4043,10 +4023,6 @@
   "backupSettingsKeyWarningBold": "সতর্কতা: ব্যাকআপ কী কোথায় সংরক্ষণ করবেন তা সাবধানে বিবেচনা করুন।",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "exchangeLandingConnectAccount": "Bull Bitcoin এক্সচেঞ্জ অ্যাকাউন্ট সংযোগ করুন",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "recoverYourWalletTitle": "আপনার ওয়ালেট পুনরুদ্ধার করুন",
   "@recoverYourWalletTitle": {
@@ -4699,10 +4675,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "• বিটকয়েন বিক্রি করুন, বিটকয়েনের মাধ্যমে পেমেন্ট পান",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "SeedSigner",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4789,10 +4761,6 @@
   "sendFastFee": "দ্রুত",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "কোনো পরিসংখ্যান নেই",
   "@exchangeStatisticsNoData": {
@@ -5958,10 +5926,6 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "• ব্যাংক ট্রান্সফার পাঠান এবং বিল পরিশোধ করুন",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "তাত্ক্ষণিক লেনদেন",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
@@ -6085,10 +6049,6 @@
   "googleAppleCloudRecommendation": "Google বা Apple ক্লাউড: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "Bull Bitcoin এক্সচেঞ্জ ওয়েবসাইটে যান",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "পরীক্ষা {walletName}",
   "@testWalletTitle": {
@@ -6746,10 +6706,6 @@
   "coreScreensPageNotFound": "পৃষ্ঠা পাওয়া যায়নি",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "exchangeFeatureDcaOrders": "• DCA, লিমিট অর্ডার ও অটো-বাই",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
   },
   "payIban": "IBAN",
   "@payIban": {
@@ -7432,10 +7388,6 @@
   "payPaymentHistory": "পেমেন্ট ইতিহাস",
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
-  },
-  "exchangeFeatureUnifiedHistory": "• একীভূত লেনদেন ইতিহাস",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "payViewDetails": "বিস্তারিত দেখুন",
   "@payViewDetails": {

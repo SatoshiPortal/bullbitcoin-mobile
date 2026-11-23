@@ -430,10 +430,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "exchangeLandingRecommendedExchange": "Doporučené Bitcoin burza",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "receiveConfirming": "Potvrzení ... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -2043,10 +2039,6 @@
   "@backupSettingsError": {
     "description": "Header text for error message display"
   },
-  "exchangeFeatureCustomerSupport": "• Chat s zákaznickou podporou",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
   "sellPleasePayInvoice": "Tuto fakturu prosím vyplňte",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
@@ -2850,10 +2842,6 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "exchangeLandingDisclaimerNotAvailable": "Služby výměny kryptoměn nejsou k dispozici v mobilní aplikaci Bull Bitcoin.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "Vlastní cena",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2982,10 +2970,6 @@
   "walletDetailsSignerDeviceNotSupported": "Bez podpory",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
-  },
-  "exchangeLandingDisclaimerLegal": "Přístup k výměně služeb bude omezen na země, kde Bull Bitcoin může legálně pracovat a může vyžadovat KYC.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "backupWalletEncryptedVaultTitle": "Šifrovaná klenba",
   "@backupWalletEncryptedVaultTitle": {
@@ -3701,10 +3685,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "exchangeFeatureSelfCustody": "• Koupit Bitcoin přímo na self-custody",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "payAmountTooHigh": "Množství přesahuje maximální",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -4095,10 +4075,6 @@
   "backupSettingsKeyWarningBold": "Upozornění: Buďte opatrní, kde uložíte záložní klíč.",
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
-  },
-  "exchangeLandingConnectAccount": "Připojte svůj účet na výměnu Bull Bitcoin",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "recoverYourWalletTitle": "Obnovit peněženku",
   "@recoverYourWalletTitle": {
@@ -4725,10 +4701,6 @@
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
   },
-  "exchangeFeatureSellBitcoin": "• Prodej Bitcoin, získat zaplaceno s Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "hwSeedSigner": "Čeština",
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
@@ -4815,10 +4787,6 @@
   "sendFastFee": "Rychlý",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "exchangeStatisticsNoData": "Žádné statistiky",
   "@exchangeStatisticsNoData": {
@@ -5937,10 +5905,6 @@
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
-  "exchangeFeatureBankTransfers": "• Odeslání bankovních převodů a poplatků",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "sellSendPaymentInstantPayments": "Okamžité platby",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
@@ -6064,10 +6028,6 @@
   "googleAppleCloudRecommendation": "Google nebo Apple cloud: ",
   "@googleAppleCloudRecommendation": {
     "description": "Bold label for Google/Apple cloud recommendation"
-  },
-  "exchangeGoToWebsiteButton": "Přejděte na webové stránky Bull Bitcoin",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "testWalletTitle": "Test {walletName}",
   "@testWalletTitle": {
@@ -6689,10 +6649,6 @@
   "coreScreensPageNotFound": "Stránka nebyla nalezena",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "exchangeFeatureDcaOrders": "• DCA, Limitní objednávky a Auto-buy",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
   },
   "payIban": "ČEŠTINA",
   "@payIban": {
@@ -7371,10 +7327,6 @@
   "payPaymentHistory": "Historie platby",
   "@payPaymentHistory": {
     "description": "Title for list of past payments"
-  },
-  "exchangeFeatureUnifiedHistory": "• Neověřené historie transakce",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "payViewDetails": "Zobrazit podrobnosti",
   "@payViewDetails": {

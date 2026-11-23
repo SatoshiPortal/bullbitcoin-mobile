@@ -118,7 +118,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy and DCA]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, authentication, dashboard, KYC, account and access settings, support chat, funding, withdrawals, recipient management, default payouts, AutoBuy, Buy, DCA and Limit Orders]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     SUPPORT -->|support chat| BULL_EXCHANGE
@@ -128,6 +128,7 @@ graph TB
     BULL_EXCHANGE -->|receive address issuance| SYNC
     BULL_EXCHANGE -->|Buy receive sessions| BULL_PAYJOIN
     BULL_EXCHANGE -->|Buy prices and fees| BULL_PRICER
+    BULL_EXCHANGE -->|Lightning address parsing| SATOSHIFIER
     BULL_EXCHANGE --> FEES_PACKAGE
     BULL_EXCHANGE --> PREFERENCES
     EXCHANGE --> EXCHANGE_DOMAIN
@@ -136,7 +137,6 @@ graph TB
     SELL -->|KYC navigation and amount input| BULL_EXCHANGE
     PAY -->|KYC navigation and amount input| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
-    LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
     TX_HISTORY --> EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN --> PRIMITIVES
@@ -297,7 +297,6 @@ graph TB
     RECEIVE_REQUEST --> PREFERENCES
     REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
-    LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
     PAY[Pay]
     COINS[Coins / UTXOs]
@@ -442,14 +441,11 @@ graph TB
     SETTINGS --> EXCHANGE
     SETTINGS --> PAY
     SETTINGS --> TX_HISTORY
-    LIMIT_ORDERS --> EXCHANGE
     EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
     PAY -->|public spend admission and routine sync| WALLETS
     PAY --> EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
-    LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
-    LIMIT_ORDERS -->|opens order details| BULL_EXCHANGE
     HW_WALLETS --> CORE
     CORE --> LABELS
     PAY -->|recipient selection| BULL_EXCHANGE
@@ -559,7 +555,6 @@ graph TB
     CONSOLIDATION --> FEES_PACKAGE
     CORE --> FEES_PACKAGE
     IMPORT_WATCH_ONLY --> SIGNERS
-    LIMIT_ORDERS -->|public destination input| WALLETS
     PAY --> FEES_UI
     SEND --> SIGNERS
     REPLACE_BY_FEE --> FEES_UI
@@ -591,7 +586,6 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_LABELS,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,LIMIT_ORDERS,SELL,PAY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams

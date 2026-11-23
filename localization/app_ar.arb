@@ -2584,10 +2584,6 @@
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
-  "exchangeLandingDisclaimerNotAvailable": "ولا تتوافر خدمات تبادل العملات في تطبيقات بول بيتكوين المتنقلة.",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "sendCustomFeeRate": "معدل الرسوم الجمركية",
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
@@ -2719,10 +2715,6 @@
   "walletDetailsSignerDeviceNotSupported": "غير مدعوم",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
-  },
-  "exchangeLandingDisclaimerLegal": "وسيقتصر الوصول إلى خدمات الصرف على البلدان التي يمكن أن يعمل فيها بول بيتكوين بصورة قانونية وقد يتطلب ذلك من الشركة.",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
   },
   "backupWalletEncryptedVaultTitle": "الخزنة المشفرة",
   "@backupWalletEncryptedVaultTitle": {
@@ -5675,10 +5667,6 @@
   "@backupWalletBestPracticesTitle": {
     "description": "AppBar title for physical backup checklist screen"
   },
-  "exchangeGoToWebsiteButton": "الذهاب إلى موقع تبادل بول بيتكين",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
-  },
   "testWalletTitle": "اختبار {walletName}",
   "@testWalletTitle": {
     "description": "Title for testing wallet backup",
@@ -6973,10 +6961,6 @@
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
-  "exchangeLandingRecommendedExchange": "Recommended Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
   "customLocationTitle": "الموقع العرفي",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
@@ -7102,10 +7086,6 @@
   "encryptedVaultRecommendation": "السرداب المشفرة: ",
   "@encryptedVaultRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
-  },
-  "exchangeFeatureCustomerSupport": "• مطاردة مع دعم العملاء",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
   },
   "informationWillNotLeave": "هذه المعلومات ",
   "@informationWillNotLeave": {
@@ -7241,10 +7221,6 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "exchangeFeatureSelfCustody": "• Buy Bitcoin straight to self-custody",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
   "autoswapMaxBalanceInfoText": "عندما يتجاوز رصيد المحفظة ضعف هذا المبلغ، ستبدأ المبادلة التلقائية لخفض الرصيد إلى هذا المستوى",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
@@ -7274,10 +7250,6 @@
   "takeYourTimeTag": "خذ وقتك",
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
-  },
-  "exchangeLandingConnectAccount": "إجمعي حسابك في البول بيتكوين",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
   "transactionSwapDescLnReceiveCompleted": "مبادلتك قد اكتملت بنجاح يجب أن تكون الأموال متاحة الآن في محفظتك.",
   "@transactionSwapDescLnReceiveCompleted": {
@@ -7321,10 +7293,6 @@
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
   },
-  "exchangeFeatureSellBitcoin": "• Sell Bitcoin, get paid with Bitcoin",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
   "autoswapBaseBalanceInfoText": "رصيد محفظة الدفع الفوري الخاص بك سوف يعود إلى هذا التوازن الهدف بعد التبديل الآلي.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
@@ -7332,10 +7300,6 @@
   "leaveYourPhone": "اترك هاتفك ",
   "@leaveYourPhone": {
     "description": "Middle part of privacy assurance message"
-  },
-  "exchangeBrandName": "BUL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
   "loadingBackupFile": "وضع ملف احتياطي...",
   "@loadingBackupFile": {
@@ -7413,10 +7377,6 @@
   "@savingToDevice": {
     "description": "Message shown when saving to device"
   },
-  "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
   "backupWalletVaultProviderAppleICloud": "Apple iCloud",
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
@@ -7479,10 +7439,6 @@
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
-  "exchangeFeatureDcaOrders": "• DCA, Limit orders and Auto-buy",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
   "autoswapSaveButton": "أنقذ",
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
@@ -7535,10 +7491,6 @@
   "customLocationRecommendation": "الموقع العرفي: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "exchangeFeatureUnifiedHistory": "● تاريخ المعاملات الموحد",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
   },
   "autoswapRecipientWalletRequired": "♪",
   "@autoswapRecipientWalletRequired": {

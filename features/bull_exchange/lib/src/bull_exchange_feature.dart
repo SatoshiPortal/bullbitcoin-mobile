@@ -13,6 +13,7 @@ import 'exchange_purchase_routes.dart';
 import 'funding/fund_exchange_router.dart';
 import 'kyc/exchange_kyc_host.dart';
 import 'kyc/exchange_kyc_screen.dart';
+import 'limit_orders/limit_order_creation_route.dart';
 import 'limit_orders/limit_orders_management.dart';
 import 'settings/ui/exchange_settings_router.dart';
 import 'support_chat/exchange_support_chat_navigation.dart';
@@ -43,6 +44,7 @@ final class BullExchangeFeature {
   final GoRoute? dashboardRoute;
   final GoRoute? withdrawalRoute;
   final GoRoute? limitOrderDetails;
+  final GoRoute? limitOrderCreate;
   final List<RouteBase> buyRoutes;
   final GoRoute? dcaRoute;
 
@@ -57,6 +59,7 @@ final class BullExchangeFeature {
     this.dashboardRoute,
     this.withdrawalRoute,
     this.limitOrderDetails,
+    this.limitOrderCreate,
     this.buyRoutes,
     this.dcaRoute,
   );
@@ -66,8 +69,6 @@ final class BullExchangeFeature {
     required bool Function(BuildContext) showWebsiteOnly,
     required String unavailableRedirectPath,
     required String brandAssetPath,
-    required ExchangeLandingCopy Function(BuildContext) copy,
-    required void Function(BuildContext) onSignIn,
     required void Function(BuildContext) onExit,
     ExchangeSupportChatHost? supportChat,
     ExchangeKycHost? kyc,
@@ -95,7 +96,7 @@ final class BullExchangeFeature {
           redirect: (_, _) async =>
               await networkUnavailable() ? unavailableRedirectPath : null,
           pageBuilder: (context, state) {
-            final labels = copy(context);
+            final labels = ExchangeLandingCopy.of(context);
             void exit() => onExit(context);
             return NoTransitionPage(
               key: state.pageKey,
@@ -108,7 +109,8 @@ final class BullExchangeFeature {
                   : ExchangeLandingScreen(
                       copy: labels,
                       brandAssetPath: brandAssetPath,
-                      onSignIn: () => onSignIn(context),
+                      onSignIn: () =>
+                          context.goNamed(BullExchangeNavigation.authName),
                       onExit: exit,
                     ),
             );
@@ -157,6 +159,7 @@ final class BullExchangeFeature {
             ),
       withdrawal == null ? null : withdrawRoute(withdrawal, brandAssetPath),
       limitOrders == null ? null : limitOrderDetailsRoute(limitOrders),
+      purchases == null ? null : limitOrderCreationRoute(purchases),
       purchases == null ? const [] : List.unmodifiable(mountBuy(purchases)),
       purchases == null ? null : mountDca(purchases),
     );

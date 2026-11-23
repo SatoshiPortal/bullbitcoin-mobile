@@ -907,5 +907,87 @@
   "dcaAccountUnavailableError": "আপোনাৰ একাউণ্ট ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰক, আপুনি লগ ইন কৰা আছে নে নাই নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "dcaLightningAddressRequiredError": "আপোনাৰ ক্ৰয়সমূহ লাভ কৰিবলৈ এটা Lightning ঠিকনা দিয়ক।",
   "dcaReceiveAddressError": "আপোনাৰ ৱালেটত এটা গ্ৰহণ কৰা ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।"
+  "dcaOrderCreationError": "পুনৰাবৃত্তিমূলক ক্ৰয় সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক।",
+  "limitOrdersIntroTitle": "Open a limit order",
+  "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
+  "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
+  "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
+  "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
+  "limitOrdersTargetTitle": "Choose your target price",
+  "limitOrdersPaymentMethod": "Payment method",
+  "limitOrdersCurrentPrice": "Current index price",
+  "limitOrdersDiscount": "Discount from current price",
+  "limitOrdersAmountTitle": "Set the amount",
+  "limitOrdersAvailableBalance": "Available: {amount}",
+  "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
+  "limitOrdersWalletTitle": "Choose a payout wallet",
+  "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
+  "limitOrdersManageDefaultWallets": "Manage default wallets",
+  "limitOrdersWalletBitcoin": "Bitcoin address",
+  "limitOrdersWalletLightning": "Lightning address",
+  "limitOrdersWalletLiquid": "Liquid address",
+  "limitOrdersConfirmationTitle": "Confirm limit order",
+  "limitOrdersBalancePayment": "{currency} balance",
+  "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
+  "limitOrdersConfirm": "Confirm limit order",
+  "limitOrdersCreatedTitle": "Limit order active",
+  "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
+  "limitOrdersBackToExchange": "Back to Exchange",
+  "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
+  "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
+  "limitOrdersInsufficientBalance": "অপৰ্যাপ্ত ব্যালেন্স",
+  "limitOrdersInsufficientBalanceMessage": "এই অৰ্ডাৰ তৈয়াৰ কৰিবলৈ আপোনাৰ যথেষ্ট ব্যালেন্স নাই।",
+  "limitOrdersFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
+  "exchangeBrandName": "BULL BITCOIN",
+  "@exchangeBrandName": {
+    "description": "The Bull Bitcoin brand name displayed on exchange screens"
+  },
+  "exchangeLandingConnectAccount": "আপোনাৰ Bull Bitcoin exchange account সংযোগ কৰক",
+  "@exchangeLandingConnectAccount": {
+    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
+  },
+  "exchangeLandingRecommendedExchange": "প্ৰস্তাৱিত Bitcoin Exchange",
+  "@exchangeLandingRecommendedExchange": {
+    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
+  },
+  "exchangeFeatureSelfCustody": "• Bitcoin সরাসৰি self-custody-তে কিনক",
+  "@exchangeFeatureSelfCustody": {
+    "description": "Feature bullet point describing self-custody Bitcoin purchases"
+  },
+  "exchangeFeatureDcaOrders": "• DCA, Limit orders আৰু Auto-buy",
+  "@exchangeFeatureDcaOrders": {
+    "description": "Feature bullet point describing DCA and automated buying features"
+  },
+  "exchangeFeatureSellBitcoin": "• Bitcoin বিক্ৰী কৰক, Bitcoin-ত পাওক",
+  "@exchangeFeatureSellBitcoin": {
+    "description": "Feature bullet point describing selling Bitcoin functionality"
+  },
+  "exchangeFeatureBankTransfers": "• বেংক ট্ৰান্সফাৰ পঠাওক আৰু বিল পৰিশোধ কৰক",
+  "@exchangeFeatureBankTransfers": {
+    "description": "Feature bullet point describing bank transfer and bill payment features"
+  },
+  "exchangeFeatureCustomerSupport": "• গ্ৰাহক সেৱাৰ সৈতে চেট কৰক",
+  "@exchangeFeatureCustomerSupport": {
+    "description": "Feature bullet point describing customer support chat feature"
+  },
+  "exchangeFeatureUnifiedHistory": "• একত্ৰিত লেনদেনৰ ইতিহাস",
+  "@exchangeFeatureUnifiedHistory": {
+    "description": "Feature bullet point describing unified transaction history feature"
+  },
+  "exchangeLandingDisclaimerLegal": "Exchange সেৱাসমূহৰ প্ৰৱেশ কেৱল সেই দেশসমূহতে সীমাবদ্ধ থাকিব য'ত Bull Bitcoin আইনগতভাৱে পৰিচালনা কৰিব পাৰে আৰু ইয়াত KYC আৱশ্যক হ'ব পাৰে।",
+  "@exchangeLandingDisclaimerLegal": {
+    "description": "Legal disclaimer about exchange service availability and KYC requirements"
+  },
+  "exchangeLandingDisclaimerNotAvailable": "Bull Bitcoin mobile application-ত cryptocurrency exchange সেৱা উপলব্ধ নহয়।",
+  "@exchangeLandingDisclaimerNotAvailable": {
+    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
+  },
+  "exchangeLoginButton": "লগইন বা চাইন আপ কৰক",
+  "@exchangeLoginButton": {
+    "description": "Button label for logging in or signing up to the exchange"
+  },
+  "exchangeGoToWebsiteButton": "Bull Bitcoin exchange ৱেবছাইটলৈ যাওক",
+  "@exchangeGoToWebsiteButton": {
+    "description": "Button label for navigating to the Bull Bitcoin exchange website"
+  }
 }

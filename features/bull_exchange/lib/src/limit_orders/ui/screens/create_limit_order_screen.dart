@@ -1,24 +1,30 @@
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show FormatAmount;
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_cubit.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/create_limit_order_state.dart';
-import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failure_l10n.dart';
+import 'package:secrets/secrets.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_amount_limits.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_failure.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/create_limit_order_cubit.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/create_limit_order_state.dart';
+import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../default_wallets/ui/default_wallets_router.dart';
+import '../../../exchange_landing_navigation.dart';
+import '../../../exchange_payout_field.dart';
+import '../../../funding/fund_exchange_router.dart';
+import '../../limit_orders_navigation.dart';
+import '../widgets/limit_order_detail_row.dart';
+
 final class CreateLimitOrderScreen extends StatefulWidget {
-  const CreateLimitOrderScreen({super.key});
+  final ExchangePayoutField payoutField;
+
+  const CreateLimitOrderScreen({required this.payoutField, super.key});
 
   @override
   State<CreateLimitOrderScreen> createState() => _CreateLimitOrderScreenState();
@@ -106,6 +112,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     final noButton =
         state.rate == null && (state.isLoading || state.failure != null);
     if (noButton) return null;
+    final order = state.createdOrder;
 
     final cubit = context.read<CreateLimitOrderCubit>();
     final button = switch (state.step) {
@@ -140,21 +147,21 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       CreateLimitOrderStep.done => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _hollowButton(
-            context,
-            label: context.loc.limitOrdersViewOrder,
-            onPressed: () {
-              final router = GoRouter.of(context);
-              final orderId = state.createdOrder!.id;
-              if (context.canPop()) {
-                router.pop(true);
-              }
-              router.pushNamed(
-                LimitOrdersNavigation.detailsName,
-                pathParameters: {'orderId': orderId},
-              );
-            },
-          ),
+          if (order != null)
+            _hollowButton(
+              context,
+              label: context.loc.limitOrdersViewOrder,
+              onPressed: () {
+                final router = GoRouter.of(context);
+                if (context.canPop()) {
+                  router.pop(true);
+                }
+                router.pushNamed(
+                  LimitOrdersNavigation.detailsName,
+                  pathParameters: {'orderId': order.id},
+                );
+              },
+            ),
           const Gap(12),
           _primaryButton(
             context,
@@ -163,7 +170,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               if (context.canPop()) {
                 context.pop(true);
               } else {
-                context.go('/exchange');
+                context.go(BullExchangeNavigation.dashboardPath);
               }
             },
           ),
@@ -185,9 +192,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         state.rate == null) {
       return const _NoBalanceView();
     }
-    if (state.failure != null && state.rate == null) {
+    if (state.failure case final failure? when state.rate == null) {
       return _FailureView(
-        message: state.failure!.toTranslated(context),
+        message: failure.toTranslated(context),
         onRetry: context.read<CreateLimitOrderCubit>().load,
       );
     }
@@ -227,7 +234,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   );
 
   Widget _target(BuildContext context, CreateLimitOrderState state) {
-    final currency = state.currency!;
+    final currency = state.currency;
+    final rate = state.rate;
+    if (currency == null || rate == null) return const SizedBox.shrink();
     // Two-way sync: reflect the cubit's limit-price/discount in whichever field
     // the user is not currently editing.
     if (!_limitPriceNode.hasFocus) {
@@ -274,7 +283,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         const Gap(24),
         LimitOrderDetailRow(
           label: context.loc.limitOrdersCurrentPrice,
-          value: FormatAmount.fiat(state.rate!.indexPrice, currency.code),
+          value: FormatAmount.fiat(rate.indexPrice, currency.code),
         ),
         const Gap(16),
         TextFormField(
@@ -322,7 +331,8 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   }
 
   Widget _amount(BuildContext context, CreateLimitOrderState state) {
-    final balance = state.selectedBalance!;
+    final balance = state.selectedBalance;
+    if (balance == null) return const SizedBox.shrink();
     return BullScrollableColumn(
       padding: const EdgeInsets.all(24),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,17 +433,20 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           ],
           const Gap(8),
         ],
-        PaymentDestinationField(
+        widget.payoutField(
+          type: WalletAddressType.lightning,
           value: state.lightningAddressInput,
           label: context.loc.limitOrdersLightningAddressLabel,
           hint: context.loc.limitOrdersLightningAddressHint,
-          acceptedTypes: const {PaymentDestinationType.lightningAddress},
-          keyboardType: TextInputType.emailAddress,
+          enabled: true,
           onChanged: cubit.setLightningAddress,
-          error: state.lightningAddressInvalid
-              ? context.loc.limitOrdersLightningAddressError
-              : null,
+          onValidated: (_) {},
         ),
+        if (state.lightningAddressInvalid)
+          BullText(
+            context.loc.limitOrdersLightningAddressError,
+            style: context.bullType.caption.copyWith(color: context.bull.error),
+          ),
         if (state.amountLimitViolation case final violation?) ...[
           const Gap(12),
           Text(
@@ -472,7 +485,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     };
   }
 
-  String _appWalletName(BuildContext context, Wallet wallet) {
+  String _appWalletName(BuildContext context, WalletRegistration wallet) {
     final label = wallet.label;
     if (label != null && label.isNotEmpty) return label;
     return wallet.network.isLiquid
@@ -481,7 +494,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   }
 
   Widget _confirmation(BuildContext context, CreateLimitOrderState state) {
-    final currency = state.currency!;
+    final currency = state.currency;
+    final wallet = state.wallet;
+    if (currency == null || wallet == null) return const SizedBox.shrink();
     return BullScrollableColumn(
       padding: const EdgeInsets.all(24),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -514,8 +529,8 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         ),
         const Divider(),
         LimitOrderDetailRow(
-          label: _walletName(context, state.wallet!.type),
-          value: state.wallet!.address,
+          label: _walletName(context, wallet.type),
+          value: wallet.address,
         ),
         const Gap(16),
         Semantics(
@@ -547,38 +562,35 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     );
   }
 
-  Widget _done(BuildContext context, CreateLimitOrderState state) =>
-      BullScrollableColumn(
-        padding: const EdgeInsets.all(24),
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Spacer(),
-          Icon(Icons.check_circle, size: 72, color: context.bull.primary),
-          const Gap(24),
-          Text(
-            context.loc.limitOrdersCreatedTitle,
-            style: context.bullType.subtitle.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
+  Widget _done(BuildContext context, CreateLimitOrderState state) {
+    final order = state.createdOrder;
+    if (order == null) return const SizedBox.shrink();
+    return BullScrollableColumn(
+      padding: const EdgeInsets.all(24),
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(),
+        Icon(Icons.check_circle, size: 72, color: context.bull.primary),
+        const Gap(24),
+        Text(
+          context.loc.limitOrdersCreatedTitle,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
           ),
-          const Gap(12),
-          Text(
-            context.loc.limitOrdersCreatedMessage(
-              FormatAmount.fiat(
-                state.createdOrder!.fiatAmount,
-                state.createdOrder!.currencyCode,
-              ),
-              FormatAmount.fiat(
-                state.createdOrder!.limitPrice,
-                state.createdOrder!.currencyCode,
-              ),
-            ),
-            textAlign: TextAlign.center,
+          textAlign: TextAlign.center,
+        ),
+        const Gap(12),
+        Text(
+          context.loc.limitOrdersCreatedMessage(
+            FormatAmount.fiat(order.fiatAmount, order.currencyCode),
+            FormatAmount.fiat(order.limitPrice, order.currencyCode),
           ),
-          const Spacer(),
-        ],
-      );
+          textAlign: TextAlign.center,
+        ),
+        const Spacer(),
+      ],
+    );
+  }
 
   String _walletName(BuildContext context, LimitOrderWalletType type) =>
       switch (type) {

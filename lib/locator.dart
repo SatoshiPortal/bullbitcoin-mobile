@@ -67,7 +67,6 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
-import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
@@ -448,7 +447,6 @@ class AppLocator {
     AutoSwapLocator.setup(locator);
 
     ExchangeLocator.setup(locator);
-    LimitOrdersLocator.setup(locator);
     SellLocator.setup(locator);
     PayLocator.setup(locator);
     locator.registerSingleton(

@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_sc
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';

@@ -20,7 +20,6 @@ export 'src/default_wallets/ui/default_wallets_router.dart'
     show DefaultWalletsNavigation;
 export 'src/default_wallets/ui/widgets/default_wallets_editor.dart'
     show DefaultWalletsEditor, DefaultWalletsFooterBuilder;
-export 'src/exchange_landing_copy.dart' show ExchangeLandingCopy;
 export 'src/exchange_landing_navigation.dart' show BullExchangeNavigation;
 export 'src/funding/fund_exchange_router.dart' show FundExchangeRoute;
 export 'src/kyc/exchange_kyc_host.dart' show ExchangeKycHost;
@@ -57,6 +56,7 @@ export 'src/ui/widgets/exchange_amount_currency_dropdown.dart'
     show ExchangeAmountCurrencyDropdown;
 export 'src/ui/widgets/exchange_amount_input_field.dart'
     show ExchangeAmountInputField;
+export 'src/ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
 export 'src/ui/widgets/wizard_exchange_option.dart' show WizardExchangeOption;
 export 'src/withdraw/ui/withdraw_router.dart'
     show ExchangeWithdrawalHost, WithdrawRoute;

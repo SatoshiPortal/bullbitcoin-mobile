@@ -4812,42 +4812,6 @@
   "@ledgerDefaultWalletLabel": {
     "description": "Default label for imported Ledger wallet"
   },
-  "exchangeBrandName": "BULL BITCOIN",
-  "@exchangeBrandName": {
-    "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "exchangeLandingConnectAccount": "আপোনাৰ Bull Bitcoin exchange account সংযোগ কৰক",
-  "@exchangeLandingConnectAccount": {
-    "description": "Subtitle text on the exchange landing screen encouraging users to connect"
-  },
-  "exchangeLandingRecommendedExchange": "প্ৰস্তাৱিত Bitcoin Exchange",
-  "@exchangeLandingRecommendedExchange": {
-    "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
-  },
-  "exchangeFeatureSelfCustody": "• Bitcoin সরাসৰি self-custody-তে কিনক",
-  "@exchangeFeatureSelfCustody": {
-    "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "exchangeFeatureDcaOrders": "• DCA, Limit orders আৰু Auto-buy",
-  "@exchangeFeatureDcaOrders": {
-    "description": "Feature bullet point describing DCA and automated buying features"
-  },
-  "exchangeFeatureSellBitcoin": "• Bitcoin বিক্ৰী কৰক, Bitcoin-ত পাওক",
-  "@exchangeFeatureSellBitcoin": {
-    "description": "Feature bullet point describing selling Bitcoin functionality"
-  },
-  "exchangeFeatureBankTransfers": "• বেংক ট্ৰান্সফাৰ পঠাওক আৰু বিল পৰিশোধ কৰক",
-  "@exchangeFeatureBankTransfers": {
-    "description": "Feature bullet point describing bank transfer and bill payment features"
-  },
-  "exchangeFeatureCustomerSupport": "• গ্ৰাহক সেৱাৰ সৈতে চেট কৰক",
-  "@exchangeFeatureCustomerSupport": {
-    "description": "Feature bullet point describing customer support chat feature"
-  },
-  "exchangeFeatureUnifiedHistory": "• একত্ৰিত লেনদেনৰ ইতিহাস",
-  "@exchangeFeatureUnifiedHistory": {
-    "description": "Feature bullet point describing unified transaction history feature"
-  },
   "priceFailedToLoad": "মূল্য লোড কৰিবলৈ বিফল হৈছে",
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
@@ -4860,21 +4824,9 @@
   "@statusScreenContinue": {
     "description": "Button text to proceed to next step"
   },
-  "exchangeLandingDisclaimerLegal": "Exchange সেৱাসমূহৰ প্ৰৱেশ কেৱল সেই দেশসমূহতে সীমাবদ্ধ থাকিব য'ত Bull Bitcoin আইনগতভাৱে পৰিচালনা কৰিব পাৰে আৰু ইয়াত KYC আৱশ্যক হ'ব পাৰে।",
-  "@exchangeLandingDisclaimerLegal": {
-    "description": "Legal disclaimer about exchange service availability and KYC requirements"
-  },
-  "exchangeLandingDisclaimerNotAvailable": "Bull Bitcoin mobile application-ত cryptocurrency exchange সেৱা উপলব্ধ নহয়।",
-  "@exchangeLandingDisclaimerNotAvailable": {
-    "description": "Disclaimer informing users that exchange services are not available in the mobile app"
-  },
   "exchangeLoginButton": "লগইন বা চাইন আপ কৰক",
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
-  },
-  "exchangeGoToWebsiteButton": "Bull Bitcoin exchange ৱেবছাইটলৈ যাওক",
-  "@exchangeGoToWebsiteButton": {
-    "description": "Button label for navigating to the Bull Bitcoin exchange website"
   },
   "exchangeAuthLoginFailedTitle": "লগইন বিফল হৈছে",
   "@exchangeAuthLoginFailedTitle": {

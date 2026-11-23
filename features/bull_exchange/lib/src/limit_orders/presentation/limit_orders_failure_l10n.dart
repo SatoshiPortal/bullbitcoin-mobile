@@ -1,5 +1,5 @@
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
+import 'package:bull_exchange/src/exchange_l10n.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_failure.dart';
 import 'package:flutter/widgets.dart';
 
 extension LimitOrdersFailureL10n on LimitOrdersFailure {

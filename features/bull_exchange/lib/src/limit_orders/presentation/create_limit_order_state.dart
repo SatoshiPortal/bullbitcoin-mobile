@@ -1,8 +1,8 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
+import 'package:secrets/secrets.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_amount_limits.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_failure.dart';
 
 enum CreateLimitOrderStep { intro, target, amount, wallet, confirmation, done }
 
@@ -17,7 +17,7 @@ final class CreateLimitOrderState {
   final double limitPrice;
   final double fiatAmount;
   final List<LimitOrderWallet> wallets;
-  final List<Wallet> appWallets;
+  final List<WalletRegistration> appWallets;
   final LimitOrderWallet? wallet;
   final String? selectedAppWalletId;
   final bool isResolvingAddress;
@@ -80,7 +80,7 @@ final class CreateLimitOrderState {
     double? limitPrice,
     double? fiatAmount,
     List<LimitOrderWallet>? wallets,
-    List<Wallet>? appWallets,
+    List<WalletRegistration>? appWallets,
     LimitOrderWallet? wallet,
     bool clearWallet = false,
     String? selectedAppWalletId,

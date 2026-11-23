@@ -1,45 +1,62 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
+import 'package:secrets/secrets.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_creation_context.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_failure.dart';
 
 import '../map_limit_order_failure.dart';
+import '../../../exchange_payout_wallets.dart';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class LoadLimitOrderCreationUsecase {
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final Exchange _exchange;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final Preferences _preferences;
+  final ExchangePayoutWallets _payouts;
   final ExchangeLimitOrders _orders;
 
   const LoadLimitOrderCreationUsecase(
-    this._getExchangeUserSummaryUsecase,
     this._exchange,
-    this._getWalletsUsecase,
+    this._preferences,
+    this._payouts,
     this._orders,
   );
 
   @useResult
   Future<Result<LimitOrderCreationContext, LimitOrdersFailure>>
   execute() async {
+    final settings = await _preferences.fetch();
+    final Environment environment;
+    switch (settings) {
+      case Ok(:final value):
+        environment = value.environment;
+      case Err():
+        return const Err(LimitOrdersAccountUnavailableFailure());
+    }
+    final exchangeEnvironment = switch (environment) {
+      Environment.mainnet => ExchangeEnvironment.mainnet,
+      Environment.testnet => ExchangeEnvironment.testnet,
+      Environment.regtest => null,
+    };
+    if (exchangeEnvironment == null) {
+      return const Err(LimitOrdersUnsupportedNetworkFailure());
+    }
+
     late final Result<DefaultWallets, LimitOrdersFailure> defaultWalletsResult;
     late final Result<UserSummary, LimitOrdersFailure> summaryResult;
-    late final List<Wallet> appWallets;
+    late final List<WalletRegistration> appWallets;
     // Observe every parallel read before yielding.
     // Future.wait returns programmer errors to the caller.
     await Future.wait<void>([
       _loadDefaultWallets().then<void>((value) {
         defaultWalletsResult = value;
       }),
-      _loadAppWallets().then<void>((value) {
+      _loadAppWallets(environment).then<void>((value) {
         appWallets = value;
       }),
-      _loadSummary().then<void>((value) {
+      _loadSummary(exchangeEnvironment).then<void>((value) {
         summaryResult = value;
       }),
     ]);
@@ -116,30 +133,11 @@ class LoadLimitOrderCreationUsecase {
     };
   }
 
-  Future<Result<UserSummary, LimitOrdersFailure>> _loadSummary() async {
-    try {
-      return Ok(await _getExchangeUserSummaryUsecase.execute());
-    } on Error {
-      rethrow;
-    } on GetExchangeUserSummaryCredentialException catch (e) {
-      log.info('Exchange account credential refused: ${e.runtimeType}');
-      return Err(LimitOrdersAccountUnavailableFailure('$e'));
-    } on GetExchangeUserSummaryException catch (e, st) {
-      log.severe(
-        message: 'Failed to load the account before creating a limit order',
-        error: e,
-        trace: st,
-      );
-      return Err(LimitOrdersAccountUnavailableFailure('$e'));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load the account before creating a limit order',
-        error: e,
-        trace: st,
-      );
-      return Err(LimitOrdersUnexpectedFailure('$e'));
-    }
-  }
+  Future<Result<UserSummary, LimitOrdersFailure>> _loadSummary(
+    ExchangeEnvironment environment,
+  ) async => (await _exchange.getUserSummary(environment)).mapErr(
+    (failure) => LimitOrdersAccountUnavailableFailure(failure.logMessage),
+  );
 
   Future<Result<DefaultWallets, LimitOrdersFailure>>
   _loadDefaultWallets() async => (await _exchange.getDefaultWallets()).mapErr(
@@ -153,30 +151,25 @@ class LoadLimitOrderCreationUsecase {
     },
   );
 
-  Future<List<Wallet>> _loadAppWallets() async {
-    try {
-      switch (await _getWalletsUsecase.execute()) {
+  Future<List<WalletRegistration>> _loadAppWallets(
+    Environment environment,
+  ) async {
+    final wallets = <WalletRegistration>[];
+    for (final network in <Network>[
+      BitcoinNetwork.fromName(environment.name),
+      LiquidNetwork.fromName(environment.name),
+    ]) {
+      switch (await _payouts.walletsForNetwork(network)) {
         case Ok(:final value):
-          return value
-              .where((w) => w.network.isBitcoin || w.network.isLiquid)
-              .toList();
-        // Same degrade as the catch below; the wallet repository already
-        // logged the raw reason.
+          wallets.addAll(
+            value.wallets.where((wallet) => wallet.network == network),
+          );
         case Err(:final failure):
           log.warning(
             'Failed to list wallets for a limit order: ${failure.runtimeType}',
           );
-          return const [];
       }
-    } on Error {
-      rethrow;
-    } catch (e, st) {
-      log.warning(
-        'Failed to list wallets for a limit order',
-        error: e,
-        trace: st,
-      );
-      return const [];
     }
+    return wallets;
   }
 }

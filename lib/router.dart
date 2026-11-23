@@ -2,7 +2,7 @@ import 'package:address_view/routes.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show BuyRoute, ExchangeHomeAction;
+    show BuyRoute, ExchangeHomeAction, ExchangeTradingGuard;
 import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -25,7 +25,6 @@ import 'package:signers/routes.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
-import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:network/network.dart';
 import 'package:settings/settings.dart';
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
@@ -159,8 +158,9 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     onEnter: ExchangeTradingGuard(
-      locator<ExchangeFacade>(),
-      rootNavigatorKey,
+      navigatorKey: rootNavigatorKey,
+      checkAvailability: locator<ExchangeFacade>().guardTradingEntry,
+      resolveAccess: locator<ExchangeFacade>().resolveAccess,
     ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
@@ -283,7 +283,7 @@ class AppRouter {
       ...ImportColdcardRouter.routes,
       ?_exchangeFeature.dcaRoute,
       ?_exchangeFeature.autoBuy,
-      LimitOrdersRouter.create,
+      ?_exchangeFeature.limitOrderCreate,
       ?_exchangeFeature.limitOrderDetails,
       ReplaceByFeeRouter.route,
       locator<Bip85Feature>().route,

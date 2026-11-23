@@ -53,6 +53,9 @@ catalogues:
   all_seed_view:
     path: features/all_seed_view
     description: authenticated recovery phrase viewer
+  bull_exchange:
+    path: features/bull_exchange
+    description: Exchange journeys and account settings
 entries:
   - {catalogue: all_seed_view, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: all_seed_view, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
@@ -252,9 +255,9 @@ entries:
   - {catalogue: app, key: autoswapMaxFeeInfo, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: autoswapAlwaysBlockEnabledInfo, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: autoswapAlwaysBlockDisabledInfo, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: exchangeLandingConnectAccount, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeLandingRecommendedExchange, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeGoToWebsiteButton, store: apple, word: exchange, euphemism: account}
+  - {catalogue: bull_exchange, key: exchangeLandingConnectAccount, store: apple, word: exchange, euphemism: account}
+  - {catalogue: bull_exchange, key: exchangeLandingRecommendedExchange, store: apple, word: exchange, euphemism: account}
+  - {catalogue: bull_exchange, key: exchangeGoToWebsiteButton, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeSupportChatWalletIssuesInfo, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: navigationTabExchange, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: coreScreensExternalTransfer, store: apple, word: swap, euphemism: transfer}
