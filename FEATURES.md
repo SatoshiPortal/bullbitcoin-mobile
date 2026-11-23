@@ -96,10 +96,7 @@ graph TB
     SWAP -->|payment requests| SATOSHIFIER
     WALLETS -->|payment requests, public extended keys| SATOSHIFIER
     SEND_TOOLS --> SPEND
-    SEND -->|reviewed Payjoin original| TX_HISTORY
-    PAY -->|reviewed Payjoin original| TX_HISTORY
-    SELL -->|reviewed Payjoin original| TX_HISTORY
-    TX_HISTORY -->|write-ahead Payjoin admission| SPEND
+    SPEND -->|write-ahead Payjoin admission| BULL_PAYJOIN
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER

@@ -1,8 +1,9 @@
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
-import 'package:spend/spend.dart';
 import 'package:sync/sync.dart' show WalletKey;
+
+import 'spend.dart';
 
 /// Signs the reviewed spend, then gives the engine a write-ahead admission
 /// that can be exercised only with the same wallet, network and transaction.
