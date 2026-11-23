@@ -363,7 +363,6 @@ class AppRouter {
       ...locator<TransactionsFeature>().routes,
       locator<ReceiveFeature>().route,
       _sendRoutes.payment,
-      ),
       locator<CoinsFeature>().route,
       ...locator<SwapFeature>().routes,
       ..._exchangeFeature.buyRoutes,
