@@ -170,6 +170,8 @@ translations:
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@(cd features/signers && fvm flutter gen-l10n)
+	@(cd features/scanning && fvm flutter gen-l10n)
+	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
 	@(cd features/access && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)

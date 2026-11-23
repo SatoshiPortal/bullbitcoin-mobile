@@ -924,10 +924,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "ใส่คําพูดของ mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "แตะคํากู้คืนในคําพูด\nคําสั่งซื้อ",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -3567,10 +3563,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "ข้อกําหนดที่จําเป็น",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "ชื่อ",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5513,10 +5505,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "ติดต่อ",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "ไม่มีสถิติที่มีอยู่",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5574,15 +5562,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "ความคืบหน้า UR: {parts} ส่วน",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "ที่อยู่",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5594,15 +5573,6 @@
   "onboardingRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "การสแกน: {percent}",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "หมายเลขอ้างอิง",
   "@transactionOrderLabelReferenceNumber": {
@@ -5735,10 +5705,6 @@
   "testBackupConfirm": "ยืนยัน",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "กระบวนการประมวลผลล้มเหลว",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "เลือกสถานที่",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6233,10 +6199,6 @@
   "encryptedVaultRecommendationText": "คุณไม่ต้องกังวลและคุณต้องเรียนรู้เกี่ยวกับการดําเนินงานความปลอดภัย.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
-  },
-  "urDecodingFailedMessage": "การถอดรหัสล้มเหลว",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "เลือกประเทศและการชําระเงิน",
   "@fundExchangeAccountSubtitle": {
@@ -7711,10 +7673,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "เลือกข้อความ",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "ชัดเจน",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7825,10 +7783,6 @@
   "swapTotalFees": "ค่าธรรมเนียม ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "การสแกนเสร็จสิ้น",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "อย่าลืม",
   "@payDone": {
@@ -9058,11 +9012,6 @@
   "autoswapActiveCardTitle": "Autoswap กำลังทำงานอยู่",
   "autoswapWarningExplanationBold": "โดยอัตโนมัติ",
   "autoswapInfoConsentMessage": "ขณะนี้ Autoswap เปิดใช้งานอยู่ แต่จะยังไม่ทำงานจนกว่าคุณจะยินยอม คุณต้องการเปิดใช้งานต่อไปหรือไม่?",
-  "nfcNotAvailable": "อุปกรณ์นี้ไม่รองรับ NFC",
-  "nfcDisabled": "NFC ถูกปิดใช้งานอยู่ กรุณาเปิดใช้งานในการตั้งค่า",
-  "nfcInvalidData": "ไม่พบข้อมูล NFC ที่รองรับ",
-  "nfcConnectionLost": "การเชื่อมต่อ NFC ขาดหาย กรุณาถืออุปกรณ์ไว้ใกล้แท็ก NFC แล้วลองใหม่อีกครั้ง",
-  "nfcWriteFailed": "การถ่ายโอนผ่าน NFC ล้มเหลว กรุณาลองใหม่อีกครั้ง",
   "deleteLogsTitle": "ลบบันทึก",
   "logsDeletedMessage": "ลบบันทึกแล้ว",
   "sendSelfTransfer": "โอนให้ตัวเอง",

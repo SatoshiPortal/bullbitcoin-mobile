@@ -4915,15 +4915,6 @@
   "@buyInsufficientBalanceTitle": {
     "description": "Title for insufficient balance error"
   },
-  "urProgressLabel": "UR Progress: {parts} partes",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "buyInputMaxAmountError": "Você não pode comprar mais do que",
   "@buyInputMaxAmountError": {
     "description": "Maximum amount error message"
@@ -5182,10 +5173,6 @@
       }
     }
   },
-  "urProcessingFailedMessage": "UR processamento falhou",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
-  },
   "transactionDetailLabelPayoutMethod": "Método de pagamento",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -5432,15 +5419,6 @@
     "description": "Label for scheduled date",
     "placeholders": {
       "date": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningProgressLabel": "Digitalização: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
         "type": "String"
       }
     }
@@ -6058,10 +6036,6 @@
   "@notLoggedInTitle": {
     "description": "Title for not logged in state"
   },
-  "urDecodingFailedMessage": "UR decodificação falhou",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
   "transactionDetailLabelOrderNumber": "Número de ordem",
   "transactionDetailLabelPaymentDescription": "Descrição do pagamento",
   "@transactionDetailLabelOrderNumber": {
@@ -6501,10 +6475,6 @@
   "dcaConfirmFrequencyWeekly": "Toda semana",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
-  },
-  "scanningCompletedMessage": "Verificação concluída",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "autoswapMaxFeeInfoText": "Se a taxa total do swap ficar acima da porcentagem definida, o auto swap será bloqueado",
   "@autoswapMaxFeeInfoText": {
@@ -7944,10 +7914,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Digite todas as palavras de seu mnemônico",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "mempoolSettingsDescription": "Configurar servidores de mempool personalizados para diferentes redes. Cada rede pode usar seu próprio servidor para o explorador de blocos e estimativa de taxas.",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
@@ -8163,10 +8129,6 @@
   "@transactionSwapProgressConfirmed": {
     "description": "Swap progress step: confirmed"
   },
-  "requiredHint": "Requisitos",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "x pub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -8291,10 +8253,6 @@
   "exportTransactionsInvalidDateRange": "A data de início deve ser anterior à data de término",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
-  },
-  "submitButton": "Submeter-me",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
   },
   "importWatchOnlyTitle": "Importar apenas relógio",
   "@importWatchOnlyTitle": {
@@ -8464,10 +8422,6 @@
   "continueButton": "Continue",
   "@continueButton": {
     "description": "Default button text for success state"
-  },
-  "optionalPassphraseHint": "Passphrase opcional",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
   },
   "importWatchOnlyDisclaimerDescription": "Certifique-se de que o caminho de derivação que você escolher combina com o que produziu o xpub dado verificando o primeiro endereço derivado da carteira antes do uso. Usar o caminho errado pode levar à perda de fundos",
   "@importWatchOnlyDisclaimerDescription": {
@@ -9180,11 +9134,6 @@
   "autoswapActiveCardTitle": "O Autoswap está ativo",
   "autoswapWarningExplanationBold": "automaticamente",
   "autoswapInfoConsentMessage": "O Autoswap está habilitado no momento, mas não será acionado até que você dê seu consentimento. Deseja mantê-lo ativado?",
-  "nfcNotAvailable": "NFC não é compatível com este dispositivo",
-  "nfcDisabled": "O NFC está desativado. Ative-o nas configurações.",
-  "nfcInvalidData": "Nenhum dado NFC compatível foi encontrado",
-  "nfcConnectionLost": "Conexão NFC perdida. Aproxime seu dispositivo da tag NFC e tente novamente.",
-  "nfcWriteFailed": "Falha na transferência NFC. Tente novamente.",
   "deleteLogsTitle": "Excluir registros",
   "logsDeletedMessage": "Registros excluídos",
   "sendSelfTransfer": "Transferência própria",

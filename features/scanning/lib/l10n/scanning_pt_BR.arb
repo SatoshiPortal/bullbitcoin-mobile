@@ -1,0 +1,46 @@
+{
+  "@@locale": "pt_BR",
+  "scanningProgressLabel": "Digitalização: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} partes",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Verificação concluída",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR decodificação falhou",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR processamento falhou",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "Digitalização NFC",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "Conexão NFC perdida. Aproxime seu dispositivo da tag NFC e tente novamente.",
+  "nfcWriteFailed": "Falha na transferência NFC. Tente novamente.",
+  "nfcDisabled": "O NFC está desativado. Ative-o nas configurações.",
+  "nfcNotAvailable": "NFC não é compatível com este dispositivo",
+  "nfcFailed": "Oops! Algo correu mal",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "Nenhum dado NFC compatível foi encontrado"
+}

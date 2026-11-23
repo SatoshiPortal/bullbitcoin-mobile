@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/localizations.dart';
 import 'package:scanning/scanning.dart';
 import 'package:bull_ui/bull_ui.dart';
 
@@ -14,10 +12,7 @@ Future<String?> scanArkPayment(
       title: title,
       scannerBuilder:
           scannerBuilder ??
-          (onScanned) => QrScannerWidget(
-            labels: context.loc.qrScanning,
-            onScanned: onScanned,
-          ),
+          (onScanned) => QrScannerWidget(onScanned: onScanned),
     ),
   ),
 );

@@ -397,7 +397,6 @@ void main({bool isInitialized = false}) {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: MnemonicWidget(
-            labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
             initialLength: bip39.MnemonicLength.words12,
             allowPassphrase: true,
             allowLabel: false,

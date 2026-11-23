@@ -1,0 +1,29 @@
+{
+  "@@locale": "ru",
+  "scanningProgressLabel": "Сканирование: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "Прогресс UR: {parts} частей",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Завершение сканирования",
+  "urDecodingFailedMessage": "UR decoding failed",
+  "urProcessingFailedMessage": "UR-обработка потерпела неудачу",
+  "scanNfcButton": "Scan NFC",
+  "nfcConnectionLost": "Соединение NFC потеряно. Поднесите устройство к метке NFC и попробуйте снова.",
+  "nfcWriteFailed": "Передача по NFC не удалась. Попробуйте снова.",
+  "nfcDisabled": "NFC отключен. Включите его в настройках.",
+  "nfcNotAvailable": "NFC не поддерживается на этом устройстве",
+  "nfcFailed": "Упс! Что-то не так",
+  "nfcInvalidData": "Поддерживаемые данные NFC не найдены"
+}

@@ -14,56 +14,6 @@ import 'package:scanning/scanning.dart';
 export 'package:bb_mobile/generated/l10n/localization.dart'
     show AppLocalizations, lookupAppLocalizations;
 
-extension ScanningLocalization on AppLocalizations {
-  QrScanningLabels get qrScanning => (
-    scanningProgressLabel: scanningProgressLabel,
-    urProgressLabel: urProgressLabel,
-    scanningCompletedMessage: scanningCompletedMessage,
-    urDecodingFailedMessage: urDecodingFailedMessage,
-    urProcessingFailedMessage: urProcessingFailedMessage,
-  );
-
-  NfcScanningLabels get nfcScanning => (
-    scanNfcButton: scanNfcButton,
-    nfcConnectionLost: nfcConnectionLost,
-    nfcWriteFailed: nfcWriteFailed,
-    nfcDisabled: nfcDisabled,
-    nfcNotAvailable: nfcNotAvailable,
-    nfcFailed: oopsSomethingWentWrong,
-    nfcInvalidData: nfcInvalidData,
-  );
-}
-
-extension MnemonicEntryLocalization on AppLocalizations {
-  MnemonicEntryLabels get mnemonicEntry => (
-    mnemonicWordCountLabel: mnemonicWordCountLabel,
-    mnemonicLanguageAmbiguous: mnemonicLanguageAmbiguous,
-    mnemonicLanguageSuggestion: mnemonicLanguageSuggestion,
-    mnemonicLanguageName: mnemonicLanguageName,
-    passphraseOption: passphraseOption,
-    passphraseOptionOnSubtitle: passphraseOptionOnSubtitle,
-    passphraseOptionOffSubtitle: passphraseOptionOffSubtitle,
-    passphraseLabel: passphraseLabel,
-    optionalPassphraseHint: optionalPassphraseHint,
-    passphraseShow: passphraseShow,
-    passphraseHide: passphraseHide,
-    passphraseClearedNotice: passphraseClearedNotice,
-    continueWithoutPassphrase: continueWithoutPassphrase,
-    passphraseWhitespaceWarning: passphraseWhitespaceWarning,
-    recipientsInfoLabel: recipientsInfoLabel,
-    requiredHint: requiredHint,
-    submitButton: submitButton,
-    mnemonicShuffleKeyboardHint: mnemonicShuffleKeyboardHint,
-    mnemonicLanguageLabel: mnemonicLanguageLabel,
-    mnemonicPossibleLastWords: mnemonicPossibleLastWords,
-    emptyMnemonicWordsError: emptyMnemonicWordsError,
-    mnemonicInvalidChecksumError: mnemonicInvalidChecksumError,
-    mnemonicUnknownWordError: mnemonicUnknownWordError,
-    mnemonicOtherLanguageWordsError: mnemonicOtherLanguageWordsError,
-    oopsSomethingWentWrong: oopsSomethingWentWrong,
-  );
-}
-
 // Flutter's generated delegate list still names the SDK design libraries.
 // Keep the app on the standalone delegates across automatic regeneration.
 const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
@@ -74,5 +24,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   ExchangeLocalizations.delegate,
   SignersLocalizations.delegate,
   LabelEditorLocalizations.delegate,
+  ScanningLocalizations.delegate,
+  MnemonicEntryLocalizations.delegate,
   ...GlobalMaterialLocalizations.delegates,
 ];

@@ -15,6 +15,9 @@ dependencies:
   bull_ui:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
   material_ui: ^1.11.0
   primitives:
   unorm_dart: ^0.3.2
@@ -22,3 +25,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter:
+  generate: true

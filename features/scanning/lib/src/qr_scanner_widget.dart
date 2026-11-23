@@ -5,18 +5,16 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 
-import 'scanning_labels.dart';
+import '../generated/l10n/scanning_localizations.dart';
 
 class QrScannerWidget extends StatefulWidget {
   final void Function(String data) onScanned;
-  final QrScanningLabels labels;
   final ResolutionPreset resolution;
   final Duration scanDelay;
 
   const QrScannerWidget({
     super.key,
     required this.onScanned,
-    required this.labels,
     this.resolution = ResolutionPreset.high,
     this.scanDelay = const Duration(milliseconds: 1000),
   });
@@ -90,30 +88,27 @@ class _ScannerState extends State<QrScannerWidget> {
   }
 
   void _processUrData(String data) {
+    final labels = ScanningLocalizations.of(context);
     try {
       _urReader.receive(data);
 
       setState(() {
         if (_urReader.expectedParts != null) {
           final percent = (_urReader.progress * 100).toInt();
-          _progressText = widget.labels.scanningProgressLabel('$percent');
+          _progressText = labels.scanningProgressLabel('$percent');
         } else {
-          _progressText = widget.labels.urProgressLabel(
-            '${_urReader.processedParts}',
-          );
+          _progressText = labels.urProgressLabel('${_urReader.processedParts}');
         }
       });
 
       if (_urReader.isComplete) {
         if (_urReader.decoded case final result?) {
-          setState(
-            () => _progressText = widget.labels.scanningCompletedMessage,
-          );
+          setState(() => _progressText = labels.scanningCompletedMessage);
           final decoded = result.toString();
           _urReader.reset();
           widget.onScanned(decoded);
         } else {
-          setState(() => _progressText = widget.labels.urDecodingFailedMessage);
+          setState(() => _progressText = labels.urDecodingFailedMessage);
         }
       }
     } catch (e) {
@@ -123,7 +118,7 @@ class _ScannerState extends State<QrScannerWidget> {
         trace: StackTrace.current,
       );
       _urReader.reset();
-      setState(() => _progressText = widget.labels.urProcessingFailedMessage);
+      setState(() => _progressText = labels.urProcessingFailedMessage);
     }
   }
 }

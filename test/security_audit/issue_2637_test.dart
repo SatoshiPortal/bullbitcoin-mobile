@@ -16,7 +16,7 @@ void main() {
       final catchBody = source.substring(catchStart);
 
       expect(catchBody, contains('_urReader.reset()'));
-      expect(catchBody, contains('widget.labels.urProcessingFailedMessage'));
+      expect(catchBody, contains('labels.urProcessingFailedMessage'));
     });
 
     test('scanner resets the reader before delivering a decoded result', () {

@@ -890,10 +890,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Въведете всички думи от вашата мнемонична фраза",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "Докоснете думите за възстановяване в правилния ред",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -2906,10 +2902,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "Задължително",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -4359,10 +4351,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "submitButton": "Изпрати",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "Няма налична статистика",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -4412,15 +4400,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "Прогрес UR: {parts} части",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "Бележки към адреса",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -4432,15 +4411,6 @@
   "onboardingRecoverWallet": "Възстанови портфейла.",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "Сканиране: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "Номер на справка",
   "@transactionOrderLabelReferenceNumber": {
@@ -4537,10 +4507,6 @@
   "testBackupConfirm": "Потвърди",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "Обработката на UR не успя.",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "Изберете място за сейфа.",
   "@backupWalletChooseVaultLocationTitle": {
@@ -4935,10 +4901,6 @@
   "encryptedVaultRecommendationText": "Не сте сигурни и ви трябва още време, за да научите повече за практиките за сигурност на резервното копие.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
-  },
-  "urDecodingFailedMessage": "Декодирането на UR не успя.",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "Изберете вашата държава и начин на плащане",
   "@fundExchangeAccountSubtitle": {
@@ -6072,10 +6034,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "Опционална парола",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "Изчисти всичко",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -6145,10 +6103,6 @@
   "swapTotalFees": "Общо такси ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "Сканирането завърши",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "Готово",
   "@payDone": {
@@ -7390,11 +7344,6 @@
   "autoswapActiveCardTitle": "Автообменът е активен",
   "autoswapWarningExplanationBold": "автоматично",
   "autoswapInfoConsentMessage": "Автообменът в момента е активиран, но няма да се задейства, докато не дадете съгласие. Искате ли да го оставите включен?",
-  "nfcNotAvailable": "NFC не се поддържа на това устройство",
-  "nfcDisabled": "NFC е изключен. Активирайте го в настройките.",
-  "nfcInvalidData": "Не бяха намерени поддържани NFC данни",
-  "nfcConnectionLost": "Връзката с NFC е изгубена. Задръжте устройството си близо до NFC тага и опитайте отново.",
-  "nfcWriteFailed": "Прехвърлянето през NFC не бе успешно. Моля, опитайте отново.",
   "deleteLogsTitle": "Изтрий логовете",
   "logsDeletedMessage": "Логовете са изтрити",
   "sendSelfTransfer": "Прехвърляне към себе си",

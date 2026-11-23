@@ -924,10 +924,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "당신의 mnemonic의 모든 단어를 입력하십시오",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "복구 단어를 탭\n견적 요청",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -3567,10 +3563,6 @@
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
   },
-  "requiredHint": "견적 요청",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
   "importWatchOnlyXpub": "xpub 파일",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5509,10 +5501,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "submitButton": "제출하기",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "통계 없음",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5570,15 +5558,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "UR 진행: {parts} 부품",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "회사 소개",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
@@ -5590,15 +5569,6 @@
   "onboardingRecoverWallet": "지갑 복구",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
-  },
-  "scanningProgressLabel": "스캐닝: {percent} %",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
   },
   "transactionOrderLabelReferenceNumber": "참고 번호",
   "@transactionOrderLabelReferenceNumber": {
@@ -5731,10 +5701,6 @@
   "testBackupConfirm": "제품정보",
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
-  },
-  "urProcessingFailedMessage": "UR 처리 실패",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
   },
   "backupWalletChooseVaultLocationTitle": "Vault 위치 선택",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6233,10 +6199,6 @@
   "encryptedVaultRecommendationText": "당신은 확실하지 않고 당신은 백업 보안 관행에 대해 더 많은 시간을 필요로.",
   "@encryptedVaultRecommendationText": {
     "description": "Text explaining when to use encrypted vault"
-  },
-  "urDecodingFailedMessage": "UR 해독 실패",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
   },
   "fundExchangeAccountSubtitle": "국가 및 결제 방법 선택",
   "@fundExchangeAccountSubtitle": {
@@ -7711,10 +7673,6 @@
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
-  "optionalPassphraseHint": "선택 Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
   "exchangeFileUploadClearAll": "모든 것",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
@@ -7825,10 +7783,6 @@
   "swapTotalFees": "총 요금 ",
   "@swapTotalFees": {
     "description": "Total fees label"
-  },
-  "scanningCompletedMessage": "스캔 완료",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
   },
   "payDone": "한국어",
   "@payDone": {
@@ -9069,11 +9023,6 @@
   "autoswapActiveCardTitle": "Autoswap 활성화됨",
   "autoswapWarningExplanationBold": "자동으로",
   "autoswapInfoConsentMessage": "Autoswap이 현재 활성화되어 있지만 동의하기 전까지는 실행되지 않습니다. 계속 켜두시겠습니까?",
-  "nfcNotAvailable": "이 기기는 NFC를 지원하지 않습니다",
-  "nfcDisabled": "NFC가 비활성화되어 있습니다. 설정에서 활성화해 주세요.",
-  "nfcInvalidData": "지원되는 NFC 데이터를 찾을 수 없습니다",
-  "nfcConnectionLost": "NFC 연결이 끊어졌습니다. 기기를 NFC 태그 가까이에 대고 다시 시도해 주세요.",
-  "nfcWriteFailed": "NFC 전송에 실패했습니다. 다시 시도해 주세요.",
   "deleteLogsTitle": "로그 삭제",
   "logsDeletedMessage": "로그가 삭제되었습니다",
   "sendSelfTransfer": "자체 전송",

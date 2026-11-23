@@ -1,0 +1,29 @@
+{
+  "@@locale": "pt",
+  "scanningProgressLabel": "Digitalização: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} partes",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Verificação concluída",
+  "urDecodingFailedMessage": "UR decodificação falhou",
+  "urProcessingFailedMessage": "UR processamento falhou",
+  "scanNfcButton": "Digitalização NFC",
+  "nfcConnectionLost": "Ligação NFC perdida. Mantenha o dispositivo perto da tag NFC e tente novamente.",
+  "nfcWriteFailed": "A transferência NFC falhou. Por favor, tente novamente.",
+  "nfcDisabled": "O NFC está desativado. Ative-o nas definições.",
+  "nfcNotAvailable": "O NFC não é suportado neste dispositivo",
+  "nfcFailed": "Oops! Algo correu mal",
+  "nfcInvalidData": "Não foram encontrados dados NFC suportados"
+}

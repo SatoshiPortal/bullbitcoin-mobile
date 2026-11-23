@@ -17,24 +17,24 @@ void main() {
 
     final payloads = <String>[];
     await tester.pumpWidget(
-      wrapWithTheme(
-        Builder(
-          builder: (context) => TextButton(
-            onPressed: () => NfcBottomSheet.showReadNfc(
-              context: context,
-              title: 'Read NFC',
-              labels: (
-                scanNfcButton: 'Scan NFC',
-                nfcConnectionLost: 'Connection lost',
-                nfcWriteFailed: 'Write failed',
-                nfcDisabled: 'NFC disabled',
-                nfcNotAvailable: 'NFC unavailable',
-                nfcFailed: 'Could not scan NFC',
-                nfcInvalidData: 'Unsupported tag',
+      MaterialApp(
+        locale: const Locale('fr'),
+        supportedLocales: ScanningLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          ScanningLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        theme: ThemeData(extensions: testBullExtensions),
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => NfcBottomSheet.showReadNfc(
+                context: context,
+                title: 'Read NFC',
+                onDataReceived: payloads.add,
               ),
-              onDataReceived: payloads.add,
+              child: const Text('Start'),
             ),
-            child: const Text('Start'),
           ),
         ),
       ),
@@ -42,7 +42,7 @@ void main() {
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
     expect(payloads, isEmpty);
-    expect(find.text('Could not scan NFC'), findsOneWidget);
+    expect(find.text("Oups ! Une erreur s'est produite"), findsOneWidget);
     expect(find.textContaining('private payload'), findsNothing);
     await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();

@@ -47,7 +47,6 @@ Future<void> pumpWidget(
         // MnemonicWidget owns its own scroll and docks the keyboard, so it is
         // given bounded height (the test surface) rather than an outer scroll.
         body: MnemonicWidget(
-          labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
           initialLength: length,
           onSubmit: onSubmit,
           allowAutoFillWords: allowAutoFillWords,

@@ -1,11 +1,11 @@
+import '../generated/l10n/mnemonic_entry_localizations.dart';
 import 'mnemonic_entry_failure.dart';
-import 'mnemonic_entry_labels.dart';
 
 /// The only place a [MnemonicEntryFailure] becomes a user-facing string, so the
 /// failure family itself stays Flutter-free. The `sealed` switch makes a missing
 /// message a compile error.
 extension MnemonicEntryFailureL10n on MnemonicEntryFailure {
-  String toTranslated(MnemonicEntryLabels labels) => switch (this) {
+  String toTranslated(MnemonicEntryLocalizations labels) => switch (this) {
     MnemonicEntryIncompleteFailure() => labels.emptyMnemonicWordsError,
     MnemonicEntryInvalidChecksumFailure() =>
       labels.mnemonicInvalidChecksumError,

@@ -5,17 +5,17 @@ import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:gif/gif.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
 
+import '../generated/l10n/scanning_localizations.dart';
+
 class NfcScannerWidget extends StatefulWidget {
   final FutureOr<void> Function(NFCTag tag) onScanned;
   final void Function(Object error)? onError;
   final bool scanOnInit;
   final Widget? loadingWidget;
-  final String rescanLabel;
 
   const NfcScannerWidget({
     super.key,
     required this.onScanned,
-    required this.rescanLabel,
     this.onError,
     this.scanOnInit = true,
     this.loadingWidget,
@@ -85,7 +85,7 @@ class _NfcPageState extends State<NfcScannerWidget> {
 
         if (_tag != null)
           BullButton.secondary(
-            label: widget.rescanLabel,
+            label: ScanningLocalizations.of(context).scanNfcButton,
             onPressed: _scan,
             iconData: Icons.nfc,
           ),

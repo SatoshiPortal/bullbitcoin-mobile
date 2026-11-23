@@ -1299,25 +1299,6 @@
   "pasteInputDefaultHint": "Collez une adresse de paiement ou une facture",
   "copyDialogButton": "Copier",
   "closeDialogButton": "Fermer",
-  "scanningProgressLabel": "Analyse : {percent} %",
-  "@scanningProgressLabel": {
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
-  "urProgressLabel": "Progression UR : {parts} parties",
-  "@urProgressLabel": {
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningCompletedMessage": "Analyse terminée",
-  "urDecodingFailedMessage": "Échec du décodage UR",
-  "urProcessingFailedMessage": "Échec du traitement UR",
   "scanNfcButton": "Scanner NFC",
   "viewLogsLabel": "Voir les journaux",
   "errorSharingLogsMessage": "Erreur lors du partage des journaux : {error}",
@@ -1328,10 +1309,6 @@
       }
     }
   },
-  "submitButton": "Soumettre",
-  "optionalPassphraseHint": "Passphrase facultative",
-  "requiredHint": "Obligatoire",
-  "emptyMnemonicWordsError": "Entrez tous les mots de votre mnémonique",
   "tryAgainButton": "Réessayer",
   "errorGenericTitle": "Oups ! Une erreur s'est produite",
   "confirmSendTitle": "Confirmer l'envoi",
@@ -3568,11 +3545,6 @@
   "liquidRiskDisclosureTitle": "Avertissement sur les risques du Liquid Bitcoin pour le portefeuille de paiements instantanés",
   "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
   "fundExchangeJurisdictionColombia": "🇨🇴 Colombie",
-  "nfcNotAvailable": "Le NFC n'est pas pris en charge sur cet appareil",
-  "nfcDisabled": "Le NFC est désactivé. Activez-le dans les paramètres.",
-  "nfcInvalidData": "Aucune donnée NFC prise en charge n'a été trouvée",
-  "nfcConnectionLost": "Connexion NFC perdue. Maintenez votre appareil près de la puce NFC et réessayez.",
-  "nfcWriteFailed": "Le transfert NFC a échoué. Veuillez réessayer.",
   "sendCoordinatingPayjoinTransaction": "Coordination d'une transaction Payjoin.",
   "sendErrorInvoiceExpired": "Cette facture a expiré. Demandez une nouvelle facture au destinataire.",
   "importWalletColdcardMk4": "Coldcard Mk4",
@@ -3670,9 +3642,6 @@
   "payjoinUseToggle": "Utiliser Payjoin",
   "addressViewErrorWalletNotFound": "Ce portefeuille est introuvable.",
   "addressViewErrorLoadFailed": "Impossible de charger vos adresses. Veuillez réessayer.",
-  "mnemonicPossibleLastWords": "{count} derniers mots possibles",
-  "mnemonicInvalidChecksumError": "Cette phrase de récupération n’est pas valide. Un mot est mal saisi ou mal placé.",
-  "mnemonicUnknownWordError": "Certains mots ne figurent pas dans la liste de récupération — les numéros en rouge les indiquent.",
   "sellDepositAddress": "Adresse de dépôt",
   "payDepositAddress": "Adresse de dépôt",
   "sellDepositAddressChangedError": "L'adresse de dépôt de cet ordre a changé de façon inattendue. Pour votre sécurité, ne payez pas cet ordre : revenez en arrière et créez-en un nouveau.",
@@ -3978,11 +3947,6 @@
   "walletDiscoverySucceeded": "Recherche terminée",
   "walletDiscoveryFailed": "Impossible de terminer la recherche. Veuillez réessayer.",
   "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}",
-  "mnemonicLanguageLabel": "Langue de la phrase de récupération",
-  "mnemonicLanguageSuggestion": "Ces mots correspondent à la langue {language}. Sélectionnez-la pour continuer.",
-  "mnemonicLanguageAmbiguous": "Ces mots correspondent à plusieurs langues. Sélectionnez la langue de votre phrase de récupération.",
-  "mnemonicLanguageName": "{language, select, english{Anglais} french{Français} spanish{Espagnol} italian{Italien} portuguese{Portugais} czech{Tchèque} korean{Coréen} simplifiedChinese{Chinois (simplifié)} traditionalChinese{Chinois (traditionnel)} japanese{Japonais} other{Langue inconnue}}",
-  "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position.",
   "importMnemonicScanServerUnavailable": "Impossible de joindre un serveur pour vérifier ce portefeuille. Vous pouvez quand même l'importer.",
   "importMnemonicScanTimeout": "Le serveur a mis trop de temps à vérifier ce portefeuille. Vous pouvez quand même l'importer.",
   "importMnemonicScanInvalidMnemonic": "Ces mots n'ont pas pu être vérifiés pour ce type de portefeuille.",
@@ -4031,7 +3995,6 @@
   "exchangeAccessLogoutIncomplete": "La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.",
   "exchangeAccessRetryLogout": "Terminer la déconnexion",
   "bitcoinSettingsAutoTransferTitle": "Échange automatique",
-  "passphraseOption": "J’ai une passphrase",
   "passphraseWhitespaceWarning": "Les espaces au début ou à la fin font partie de votre passphrase.",
   "passphraseBackupPrompt": "Saisissez votre passphrase pour vérifier votre sauvegarde.",
   "passphraseIncorrect": "Passphrase incorrecte.",
@@ -4042,15 +4005,10 @@
   "onboardingScanUnavailableTitle": "Impossible de vérifier l’historique des transactions Bitcoin.",
   "onboardingScanUnavailableMessage": "Votre historique Bitcoin n’a pas pu être vérifié. Vous pouvez réessayer ou continuer sans vérification.",
   "onboardingContinueWithoutChecking": "Continuer sans vérification",
-  "passphraseClearedNotice": "Votre passphrase a été effacée par sécurité. Saisissez-la à nouveau ou choisissez de continuer sans passphrase.",
-  "continueWithoutPassphrase": "Continuer sans passphrase",
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "settingsDarkModeTitle": "Mode sombre",
   "settingsSourceCodeTitle": "Code source",
   "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer.",
-  "mnemonicWordCountLabel": "Mots",
-  "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
-  "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée",
   "networkWalletReuseNoRecoveryPhrase": "Ce portefeuille n'a pas de phrase de récupération, il ne peut donc pas être réutilisé ici. Importez une phrase de récupération ou créez un nouveau portefeuille.",
   "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné.",
   "transactionOrderTypeSellUsdt": "Vendre des USDT",

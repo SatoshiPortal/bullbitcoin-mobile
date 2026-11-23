@@ -21,10 +21,10 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../generated/l10n/mnemonic_entry_localizations.dart';
 import 'bip39_word_list.dart';
 import 'mnemonic_entry_failure.dart';
 import 'mnemonic_entry_failure_l10n.dart';
-import 'mnemonic_entry_labels.dart';
 import 'mnemonic_keyboard_layout.dart';
 
 /// User-supplied recovery input. Consume immediately; never log or persist it.
@@ -83,7 +83,6 @@ class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
   final bip39.MnemonicLength initialLength;
   final void Function(Mnemonic) onSubmit;
-  final MnemonicEntryLabels labels;
   final String? submitLabel;
   final bool allowPassphrase;
   final bool allowLabel;
@@ -97,7 +96,6 @@ class MnemonicWidget extends StatefulWidget {
     this.language = bip39.Language.english,
     required this.initialLength,
     required this.onSubmit,
-    required this.labels,
     this.submitLabel,
     this.allowPassphrase = true,
     this.allowLabel = true,
@@ -399,7 +397,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BullText(
-          widget.labels.mnemonicWordCountLabel,
+          MnemonicEntryLocalizations.of(context).mnemonicWordCountLabel,
           role: .caption,
           color: context.bull.textMuted,
         ),
@@ -426,6 +424,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
     return ListenableBuilder(
       listenable: Listenable.merge(_controllers),
       builder: (context, _) {
+        final labels = MnemonicEntryLocalizations.of(context);
         final words = _words;
         // Ambiguity is a property of a complete phrase: a partial one shares
         // words between wordlists far too often to be worth announcing.
@@ -447,13 +446,13 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
           children: [
             if (ambiguous)
               Text(
-                widget.labels.mnemonicLanguageAmbiguous,
+                labels.mnemonicLanguageAmbiguous,
                 style: context.bullType.body,
               ),
             if (matches.length == 1 && matches.single != _language)
               BullButton.secondary(
-                label: widget.labels.mnemonicLanguageSuggestion(
-                  widget.labels.mnemonicLanguageName(matches.single.name),
+                label: labels.mnemonicLanguageSuggestion(
+                  labels.mnemonicLanguageName(matches.single.name),
                 ),
                 onPressed: () => _selectLanguage(matches.single),
                 size: BullButtonSize.small,
@@ -466,7 +465,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                     _entryLanguages.contains,
                   ))
                     BullButton.secondary(
-                      label: widget.labels.mnemonicLanguageName(language.name),
+                      label: labels.mnemonicLanguageName(language.name),
                       onPressed: () => _selectLanguage(language),
                       size: BullButtonSize.small,
                       compact: true,
@@ -513,8 +512,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
 
   @override
   Widget build(BuildContext context) {
-    final errorMessage =
-        _failure?.toTranslated(widget.labels) ?? widget.externalError;
+    final labels = MnemonicEntryLocalizations.of(context);
+    final errorMessage = _failure?.toTranslated(labels) ?? widget.externalError;
 
     return Column(
       children: [
@@ -540,7 +539,6 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                   const Gap(14),
 
                   MnemonicSentenceWidget(
-                    labels: widget.labels,
                     controllers: _controllers,
                     language: _language,
                     allowAutoFillWords: widget.allowAutoFillWords,
@@ -564,19 +562,15 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     BullText(
-                                      widget.labels.passphraseOption,
+                                      labels.passphraseOption,
                                       style: context.bullType.body.copyWith(
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     BullText(
                                       _showPassphrase
-                                          ? widget
-                                                .labels
-                                                .passphraseOptionOnSubtitle
-                                          : widget
-                                                .labels
-                                                .passphraseOptionOffSubtitle,
+                                          ? labels.passphraseOptionOnSubtitle
+                                          : labels.passphraseOptionOffSubtitle,
                                       style: context.bullType.label.copyWith(
                                         fontWeight: FontWeight.w400,
                                       ),
@@ -599,26 +593,26 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                       const Gap(8),
                       BullSecretTextInput(
                         key: ValueKey(_passphraseGeneration),
-                        label: widget.labels.passphraseLabel,
-                        hint: widget.labels.optionalPassphraseHint,
+                        label: labels.passphraseLabel,
+                        hint: labels.optionalPassphraseHint,
                         onChanged: updatePassphrase,
-                        showLabel: widget.labels.passphraseShow,
-                        hideLabel: widget.labels.passphraseHide,
+                        showLabel: labels.passphraseShow,
+                        hideLabel: labels.passphraseHide,
                       ),
                       if (_passphraseCleared && passphrase.isEmpty) ...[
                         BullText(
-                          widget.labels.passphraseClearedNotice,
+                          labels.passphraseClearedNotice,
                           style: context.bullType.body,
                         ),
                         TextButton(
                           onPressed: () =>
                               setState(() => _passphraseCleared = false),
-                          child: Text(widget.labels.continueWithoutPassphrase),
+                          child: Text(labels.continueWithoutPassphrase),
                         ),
                       ],
                       if (passphrase != passphrase.trim())
                         BullText(
-                          widget.labels.passphraseWhitespaceWarning,
+                          labels.passphraseWhitespaceWarning,
                           style: context.bullType.body,
                         ),
                     ],
@@ -627,8 +621,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                   if (widget.allowLabel) ...[
                     const Gap(16),
                     BullLabeledTextInput(
-                      label: widget.labels.recipientsInfoLabel,
-                      hint: widget.labels.requiredHint,
+                      label: labels.recipientsInfoLabel,
+                      hint: labels.requiredHint,
                       value: label,
                       onChanged: updateLabel,
                       maxLines: 1,
@@ -663,7 +657,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: BullButton.primary(
-                  label: widget.submitLabel ?? widget.labels.submitButton,
+                  label: widget.submitLabel ?? labels.submitButton,
                   onPressed: onSubmit,
                 ),
               ),
@@ -827,7 +821,6 @@ class MnemonicSentenceWidget extends StatefulWidget {
   final List<TextEditingController> controllers;
   final bip39.Language language;
   final bool allowAutoFillWords;
-  final MnemonicEntryLabels labels;
 
   /// A slot, owned by the parent, into which this widget publishes its docked
   /// keyboard bar builder. The parent renders it below the scroll area so the
@@ -846,7 +839,6 @@ class MnemonicSentenceWidget extends StatefulWidget {
     super.key,
     required this.controllers,
     required this.language,
-    required this.labels,
     this.allowAutoFillWords = true,
     this.keyboardBarSlot,
     this.onLanguageSelected,
@@ -1263,6 +1255,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
           return const SizedBox.shrink();
         }
         final language = widget.language;
+        final labels = MnemonicEntryLocalizations.of(context);
         final controller = widget.controllers[query.index];
         final prefix = query.prefix;
         final paranoid = _paranoid.value;
@@ -1287,6 +1280,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
         }
         final (:suggestions, :notice) = _suggestionsFor(
           query,
+          labels: labels,
           paranoid: paranoid,
         );
         final onLanguageSelected = widget.onLanguageSelected;
@@ -1317,7 +1311,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
           },
           shuffleActive: paranoid,
           onToggleShuffle: _toggleParanoid,
-          shuffleHint: widget.labels.mnemonicShuffleKeyboardHint,
+          shuffleHint: labels.mnemonicShuffleKeyboardHint,
           suggestions: suggestions,
           suggestionNotice: notice,
           onSuggestion: (word) => _onHintTap(query, language, controller, word),
@@ -1325,7 +1319,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
             for (final entry in _entryLanguages)
               BullKeyboardLanguage(
                 code: _languageCode(entry),
-                name: widget.labels.mnemonicLanguageName(entry.name),
+                name: labels.mnemonicLanguageName(entry.name),
               ),
           ],
           selectedLanguage: _entryLanguages.indexOf(language),
@@ -1335,7 +1329,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
                   _entryLanguages[index],
                   _activeField.value,
                 ),
-          languageHint: widget.labels.mnemonicLanguageLabel,
+          languageHint: labels.mnemonicLanguageLabel,
         );
       },
     );
@@ -1348,6 +1342,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// checksum candidates stands in while the field is empty.
   ({List<String> suggestions, String? notice}) _suggestionsFor(
     _HintQuery query, {
+    required MnemonicEntryLocalizations labels,
     required bool paranoid,
   }) {
     final isLastWord = query.index == widget.controllers.length - 1;
@@ -1362,7 +1357,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       return (
         suggestions: const <String>[],
         notice: candidates != null && query.prefix.isEmpty
-            ? widget.labels.mnemonicPossibleLastWords(pool.length)
+            ? labels.mnemonicPossibleLastWords(pool.length)
             : null,
       );
     }

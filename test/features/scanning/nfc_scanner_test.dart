@@ -33,7 +33,6 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: NfcScannerWidget(
-                rescanLabel: 'Scan again',
                 onScanned: tags.add,
                 onError: errors.add,
                 loadingWidget: const Text('Waiting for tag'),

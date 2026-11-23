@@ -1,0 +1,29 @@
+{
+  "@@locale": "fi",
+  "scanningProgressLabel": "Skannataan: {percent}%",
+  "@scanningProgressLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR:n eteneminen: {parts} osaa",
+  "@urProgressLabel": {
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Skannaus valmis",
+  "urDecodingFailedMessage": "UR:n dekoodaus epäonnistui",
+  "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
+  "scanNfcButton": "Skannaa NFC",
+  "nfcConnectionLost": "NFC-yhteys katkesi. Pidä laitettasi NFC-tunnisteen lähellä ja yritä uudelleen.",
+  "nfcWriteFailed": "NFC-siirto epäonnistui. Yritä uudelleen.",
+  "nfcDisabled": "NFC on pois käytöstä. Ota se käyttöön asetuksista.",
+  "nfcNotAvailable": "NFC ei ole tuettu tällä laitteella",
+  "nfcFailed": "Hups! Jotain meni pieleen",
+  "nfcInvalidData": "Tuettua NFC-dataa ei löytynyt"
+}

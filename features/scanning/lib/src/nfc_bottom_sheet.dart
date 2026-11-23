@@ -14,9 +14,9 @@ import 'package:bull_ui/bull_ui.dart'
         BullThemeX,
         BullTypographyX;
 
+import '../generated/l10n/scanning_localizations.dart';
 import 'nfc_payload_parser.dart';
 import 'nfc_scanner_widget.dart';
-import 'scanning_labels.dart';
 
 enum _NfcOperation { read, write }
 
@@ -26,9 +26,9 @@ class NfcBottomSheet {
   static Future<void> showReadNfc({
     required BuildContext context,
     required String title,
-    required NfcScanningLabels labels,
     required FutureOr<void> Function(String payload) onDataReceived,
   }) async {
+    final labels = ScanningLocalizations.of(context);
     var didReadRecords = false;
     final connectionLostMessage = labels.nfcConnectionLost;
     final payload = await _runWithNfcSession<String?>(
@@ -61,10 +61,10 @@ class NfcBottomSheet {
   static Future<void> showWriteNfc({
     required BuildContext context,
     required String title,
-    required NfcScanningLabels labels,
     required String data,
     required FutureOr<void> Function() onSuccess,
   }) async {
+    final labels = ScanningLocalizations.of(context);
     final writeFailedMessage = labels.nfcWriteFailed;
     final didWrite = await _runWithNfcSession<bool>(
       context: context,
@@ -82,7 +82,7 @@ class NfcBottomSheet {
   static Future<T?> _runWithNfcSession<T>({
     required BuildContext context,
     required String title,
-    required NfcScanningLabels labels,
+    required ScanningLocalizations labels,
     required _NfcOperation operation,
     required Future<T?> Function(NFCTag tag) action,
   }) async {
@@ -149,7 +149,6 @@ class NfcBottomSheet {
                 ),
                 Expanded(
                   child: NfcScannerWidget(
-                    rescanLabel: labels.scanNfcButton,
                     onError: (error) =>
                         _handleNfcError(sheetContext, error, labels),
                     onScanned: (tag) async {
@@ -183,7 +182,7 @@ class NfcBottomSheet {
 
   static Future<NFCAvailability?> _nfcAvailability(
     BuildContext context,
-    NfcScanningLabels labels,
+    ScanningLocalizations labels,
   ) async {
     try {
       return await FlutterNfcKit.nfcAvailability;
@@ -283,7 +282,7 @@ class NfcBottomSheet {
   static void _showAvailabilityError(
     BuildContext context,
     NFCAvailability availability,
-    NfcScanningLabels labels,
+    ScanningLocalizations labels,
   ) {
     if (!context.mounted) return;
 
@@ -298,7 +297,7 @@ class NfcBottomSheet {
   static void _handleNfcError(
     BuildContext context,
     Object error,
-    NfcScanningLabels labels, {
+    ScanningLocalizations labels, {
     _NfcOperation? operation,
   }) {
     log.warning('NFC operation failed', error: error.runtimeType);

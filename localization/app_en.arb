@@ -4826,59 +4826,9 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "scanningProgressLabel": "Scanning: {percent}%",
-  "@scanningProgressLabel": {
-    "description": "Progress indicator for UR QR code scanning",
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
-  "urProgressLabel": "UR Progress: {parts} parts",
-  "@urProgressLabel": {
-    "description": "Progress message showing parts processed for multi-part UR codes",
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
-  "scanningCompletedMessage": "Scanning completed",
-  "@scanningCompletedMessage": {
-    "description": "Success message when UR scanning completes"
-  },
-  "urDecodingFailedMessage": "UR decoding failed",
-  "@urDecodingFailedMessage": {
-    "description": "Error message when UR decoding fails"
-  },
-  "urProcessingFailedMessage": "UR processing failed",
-  "@urProcessingFailedMessage": {
-    "description": "Error message when UR processing encounters an exception"
-  },
   "scanNfcButton": "Scan NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
-  },
-  "nfcNotAvailable": "NFC is not supported on this device",
-  "@nfcNotAvailable": {
-    "description": "Error message shown when NFC is not available on the current device"
-  },
-  "nfcDisabled": "NFC is disabled. Enable it in settings.",
-  "@nfcDisabled": {
-    "description": "Error message shown when NFC is disabled on the current device"
-  },
-  "nfcInvalidData": "No supported NFC data was found",
-  "@nfcInvalidData": {
-    "description": "Error message shown when an NFC tag is read but no supported payload can be parsed"
-  },
-  "nfcConnectionLost": "NFC connection lost. Hold your device near the NFC tag and try again.",
-  "@nfcConnectionLost": {
-    "description": "Error message shown when an NFC tag connection is lost before the read or write completes"
-  },
-  "nfcWriteFailed": "NFC transfer failed. Please try again.",
-  "@nfcWriteFailed": {
-    "description": "Error message shown when an NFC write to a hardware wallet fails"
   },
   "deleteLogsTitle": "Delete logs",
   "@deleteLogsTitle": {
@@ -4900,22 +4850,6 @@
         "type": "String"
       }
     }
-  },
-  "submitButton": "Submit",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
-  "optionalPassphraseHint": "Optional Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
-  "requiredHint": "Required",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
-  "emptyMnemonicWordsError": "Enter all words of your mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
   },
   "tryAgainButton": "Try Again",
   "@tryAgainButton": {
@@ -10659,23 +10593,6 @@
   "@addressViewErrorLoadFailed": {
     "description": "Shown when loading or paginating the wallet address list fails"
   },
-  "mnemonicPossibleLastWords": "{count} possible last words",
-  "@mnemonicPossibleLastWords": {
-    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
-  "@mnemonicInvalidChecksumError": {
-    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
-  },
-  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
-  "@mnemonicUnknownWordError": {
-    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
-  },
   "sellDepositAddress": "Deposit address",
   "@sellDepositAddress": {
     "description": "Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to"
@@ -10811,10 +10728,6 @@
   "swapErrorRouteUnavailableGeneric": "This swap is not available.",
   "@swapErrorRouteUnavailableGeneric": {
     "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
-  },
-  "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
-  "@mnemonicShuffleKeyboardHint": {
-    "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
   },
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "@settingsScreenPrivacyTitle": {
@@ -12887,44 +12800,6 @@
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
   },
-  "mnemonicLanguageLabel": "Recovery phrase language",
-  "@mnemonicLanguageLabel": {
-    "description": "Label for the BIP39 wordlist picker, independent of app language."
-  },
-  "mnemonicLanguageSuggestion": "These words match {language}. Select that language to continue.",
-  "@mnemonicLanguageSuggestion": {
-    "description": "Suggestion only; never silently changes the mnemonic language.",
-    "placeholders": {
-      "language": {
-        "type": "String"
-      }
-    }
-  },
-  "mnemonicLanguageAmbiguous": "These words match more than one language. Select the language of your recovery phrase.",
-  "@mnemonicLanguageAmbiguous": {
-    "description": "Requires explicit language confirmation when wordlists overlap."
-  },
-  "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
-  "@mnemonicLanguageName": {
-    "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
-    "placeholders": {
-      "language": {
-        "type": "String"
-      }
-    }
-  },
-  "mnemonicOtherLanguageWordsError": "These words belong to the {language} word list, not {selected}, and do not form a valid recovery phrase in {language} either. Check each word and its position.",
-  "@mnemonicOtherLanguageWordsError": {
-    "description": "Complete phrase whose words belong to another BIP39 wordlist than the selected one, with an invalid checksum there too. Never names a word.",
-    "placeholders": {
-      "language": {
-        "type": "String"
-      },
-      "selected": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicScanServerUnavailable": "Couldn't reach a server to check this wallet. You can still import it.",
   "@importMnemonicScanServerUnavailable": {
     "description": "ImportMnemonic: scan of one wallet type failed because no Electrum server could be reached; the import stays possible"
@@ -13263,8 +13138,6 @@
   "@broadcastSignedTxErrorNetworkNotEnabled": {
     "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
   },
-  "passphraseOption": "I have a passphrase",
-  "@passphraseOption": {},
   "passphraseWhitespaceWarning": "Leading or trailing spaces are part of your passphrase.",
   "@passphraseWhitespaceWarning": {},
   "passphraseBackupPrompt": "Enter your passphrase to verify your backup.",
@@ -13291,14 +13164,6 @@
   "@onboardingContinueWithoutChecking": {
     "description": "Continue recovering a wallet when the history scan failed."
   },
-  "passphraseClearedNotice": "For your privacy, your passphrase was cleared. Enter it again or choose to continue without one.",
-  "@passphraseClearedNotice": {
-    "description": "Recovery notice after clearing a transient passphrase."
-  },
-  "continueWithoutPassphrase": "Continue without a passphrase",
-  "@continueWithoutPassphrase": {
-    "description": "Explicitly allow recovery without re-entering the cleared passphrase."
-  },
   "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
@@ -13314,18 +13179,6 @@
   "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
   "@parentCustodyMetadataUnavailable": {
     "description": "Refusal to import or delete a seed when durable parent custody state is missing or corrupt; never recreate it automatically."
-  },
-  "mnemonicWordCountLabel": "Words",
-  "@mnemonicWordCountLabel": {
-    "description": "Label above the control choosing how many words the recovery phrase has"
-  },
-  "passphraseOptionOffSubtitle": "Optional extra word (BIP39)",
-  "@passphraseOptionOffSubtitle": {
-    "description": "Subtitle of the passphrase switch while it is off"
-  },
-  "passphraseOptionOnSubtitle": "Entered below, never shown",
-  "@passphraseOptionOnSubtitle": {
-    "description": "Subtitle of the passphrase switch while it is on: the passphrase field below stays obscured"
   },
   "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
   "@networkWalletReuseNoRecoveryPhrase": {

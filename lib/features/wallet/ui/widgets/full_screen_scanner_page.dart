@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/localizations.dart';
 import 'package:scanning/scanning.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -39,10 +37,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
       body: Stack(
         fit: .expand,
         children: [
-          QrScannerWidget(
-            labels: context.loc.qrScanning,
-            onScanned: _onScanned,
-          ),
+          QrScannerWidget(onScanned: _onScanned),
           if (data.isNotEmpty)
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.25,

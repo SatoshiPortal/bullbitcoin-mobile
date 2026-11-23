@@ -24,7 +24,6 @@ Future<void> host(
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: MnemonicWidget(
-        labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
         initialLength: bip39.MnemonicLength.words12,
         language: language,
         allowAutoFillWords: false,
@@ -69,8 +68,8 @@ const ambiguous = [
   'wagon',
 ];
 
-AppLocalizations loc(WidgetTester tester) =>
-    AppLocalizations.of(tester.element(find.byType(MnemonicWidget)));
+MnemonicEntryLocalizations loc(WidgetTester tester) =>
+    MnemonicEntryLocalizations.of(tester.element(find.byType(MnemonicWidget)));
 
 String fieldText(WidgetTester tester, int index) =>
     tester
@@ -381,7 +380,7 @@ void main() {
       await fill(tester, words);
       // Find by the localization itself rather than assuming its English wording.
       final context = tester.element(find.byType(MnemonicWidget));
-      final loc = AppLocalizations.of(context);
+      final loc = MnemonicEntryLocalizations.of(context);
       final action = find.text(
         loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('spanish')),
       );
@@ -441,7 +440,6 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: MnemonicWidget(
-              labels: lookupAppLocalizations(const Locale('en')).mnemonicEntry,
               language: language,
               initialLength: bip39.MnemonicLength.words12,
               allowAutoFillWords: false,

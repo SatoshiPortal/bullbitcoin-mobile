@@ -1,0 +1,46 @@
+{
+  "@@locale": "cs",
+  "scanningProgressLabel": "Skenování: {percent}%",
+  "@scanningProgressLabel": {
+    "description": "Progress indicator for UR QR code scanning",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "urProgressLabel": "UR Progress: {parts} díly",
+  "@urProgressLabel": {
+    "description": "Progress message showing parts processed for multi-part UR codes",
+    "placeholders": {
+      "parts": {
+        "type": "String"
+      }
+    }
+  },
+  "scanningCompletedMessage": "Skenování dokončeno",
+  "@scanningCompletedMessage": {
+    "description": "Success message when UR scanning completes"
+  },
+  "urDecodingFailedMessage": "UR dekódování selhalo",
+  "@urDecodingFailedMessage": {
+    "description": "Error message when UR decoding fails"
+  },
+  "urProcessingFailedMessage": "UR zpracování selhalo",
+  "@urProcessingFailedMessage": {
+    "description": "Error message when UR processing encounters an exception"
+  },
+  "scanNfcButton": "Čeština",
+  "@scanNfcButton": {
+    "description": "Button label to initiate NFC scanning"
+  },
+  "nfcConnectionLost": "Připojení NFC bylo ztraceno. Přiložte zařízení k NFC štítku a zkuste to znovu.",
+  "nfcWriteFailed": "Přenos NFC selhal. Zkuste to prosím znovu.",
+  "nfcDisabled": "NFC je vypnuté. Zapněte ho v nastavení.",
+  "nfcNotAvailable": "Toto zařízení nepodporuje NFC",
+  "nfcFailed": "Oops! Něco šlo špatně",
+  "@nfcFailed": {
+    "description": "Error title when something goes wrong"
+  },
+  "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC"
+}
