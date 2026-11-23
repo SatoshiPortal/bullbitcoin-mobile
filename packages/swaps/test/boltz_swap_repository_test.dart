@@ -121,12 +121,13 @@ void main() {
     int fastest = 50,
     bool customElectrum = false,
     List<SwapWalletInfo> wallets = const [],
+    NewAddressFor? newAddressFor,
   }) => BoltzSwapRepository(
     boltz: boltz,
     environment: NetworkEnv.mainnet,
     electrum: _PassthroughElectrum(custom: customElectrum),
     lockupChain: lockupChain,
-    newAddressFor: (walletId) async => Ok('addr-of-$walletId'),
+    newAddressFor: newAddressFor ?? (walletId) async => Ok('addr-of-$walletId'),
     walletTx: (txid, {required walletId}) async => walletTxs[txid],
     walletTxs: (walletId, {bool sync = false}) async =>
         walletTxs.values.toList(),
@@ -780,6 +781,45 @@ void main() {
   });
 
   group('refund', () {
+    test(
+      'an unavailable destination never persists or broadcasts a refund',
+      () async {
+        when(() => storage.fetch(any()))
+            .thenAnswer((_) async => chainModel(refundAddress: null));
+        const failure = SwapsUnexpectedFailure('Receive address unavailable');
+        final requested = <String>[];
+        final repository = repo(
+          newAddressFor: (walletId) async {
+            requested.add(walletId);
+            return const Err(failure);
+          },
+        );
+
+        final result = await repository.resolveScriptPath(
+          chainSwap(refundAddress: null),
+        );
+
+        expect(
+          result,
+          isA<Err<Swap, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            same(failure),
+          ),
+        );
+        expect(requested, ['w-liquid']);
+        verifyNever(() => storage.store(any()));
+        verifyNever(
+          () => boltz.getChainRefundTxSize(
+            swapId: any(named: 'swapId'),
+            refundAddress: any(named: 'refundAddress'),
+            isCooperative: any(named: 'isCooperative'),
+            electrum: any(named: 'electrum'),
+          ),
+        );
+      },
+    );
+
     test('broadcasts and settles with fee floored and capped', () async {
       when(
         () => boltz.refundLbtcToBtcChainSwap(

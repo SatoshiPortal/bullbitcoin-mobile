@@ -176,6 +176,32 @@ void main() {
         }
         verifyNoMoreInteractions(sdk);
       });
+
+      test('typed label unavailability preserves the issued address', () async {
+        when(() => native.receive(key, advance: true))
+            .thenAnswer((_) async => Ok((address: issuedAddress, index: 9)));
+        when(() => labels.fetch(reference: issuedAddress))
+            .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+
+        final result = await repository.receiveAddress(
+          walletId: origin,
+          advance: true,
+        );
+
+        expect(
+          result,
+          isA<Ok<WalletAddress, AddressViewFailure>>()
+              .having(
+                (result) => result.value.address,
+                'address',
+                issuedAddress,
+              )
+              .having((result) => result.value.index, 'index', 9)
+              .having((result) => result.value.labels, 'labels', isEmpty),
+        );
+        verify(() => native.receive(key, advance: true)).called(1);
+        verify(() => labels.fetch(reference: issuedAddress)).called(1);
+      });
     });
   }
 }
