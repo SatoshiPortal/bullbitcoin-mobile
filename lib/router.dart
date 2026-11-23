@@ -1,4 +1,3 @@
-import 'package:all_seed_view/setup.dart';
 import 'package:address_view/routes.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:secrets/storage.dart';
