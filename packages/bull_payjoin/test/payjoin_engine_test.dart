@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show Value;
@@ -116,6 +117,7 @@ void main() {
     registerFallbackValue(BigInt.zero);
     registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(Uint8List(0));
+    registerFallbackValue((PayjoinReceiverModel _) async {});
   });
 
   PayjoinReceiverModel receiver({
@@ -1078,7 +1080,13 @@ void main() {
           amountSat: prePost.amountSat,
           networkFeesSatPerVb: 1,
         ),
-        throwsA(isA<PayjoinSenderKeptException>()),
+        throwsA(
+          isA<PayjoinSenderKeptException>().having(
+            (error) => error.publicationUnknown,
+            'publication unknown',
+            mayBeDelivered,
+          ),
+        ),
       );
 
       // Only a request that provably never left the device lets expiry
@@ -1189,7 +1197,13 @@ void main() {
         amountSat: posted.amountSat,
         networkFeesSatPerVb: 1,
       ),
-      throwsStateError,
+      throwsA(
+        isA<PayjoinSenderKeptException>().having(
+          (error) => error.publicationUnknown,
+          'publication unknown',
+          true,
+        ),
+      ),
     );
 
     // The original is already on the directory: the receiver's proposal must
@@ -1353,7 +1367,7 @@ void main() {
         originalTransactionId: 'original-tx',
       );
       final proposal = model.copyWith(
-        proposalPsbt: 'proposal',
+        proposalPsbt: oneInputPsbt,
         txId: 'payjoin-tx',
       );
       await local.storeReceiver(model);
@@ -1370,7 +1384,7 @@ void main() {
       ).thenAnswer(
         (_) async => [
           PayjoinUtxo(
-            outpoint: (txId: 'wallet-utxo', vout: 0),
+            outpoint: (txId: '11' * 32, vout: 0),
             value: Sats.fromInt(100000),
             scriptPubkey: Uint8List.fromList([0, 20]),
             confirmed: true,
@@ -1395,8 +1409,19 @@ void main() {
           hasReceiverOutput: any(named: 'hasReceiverOutput'),
           inputPairs: any(named: 'inputPairs'),
           signPsbt: any(named: 'signPsbt'),
+          persistBeforePost: any(named: 'persistBeforePost'),
         ),
-      ).thenAnswer((_) async => proposal);
+      ).thenAnswer((invocation) async {
+        final persist =
+            invocation.namedArguments[#persistBeforePost]
+                as Future<void> Function(PayjoinReceiverModel);
+        await persist(proposal);
+        expect(
+          (await local.fetchReceiver(model.id))?.proposalPsbt,
+          oneInputPsbt,
+        );
+        return proposal;
+      });
       final proposed = engine.payjoinStream.firstWhere(
         (session) => session.status == internal.PayjoinStatus.proposed,
       );
@@ -1651,7 +1676,8 @@ void main() {
     'receiver retains its reservation until durable spend handoff succeeds',
     () async {
       final model = receiver(
-        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransaction: base64Decode(oneInputPsbt).sublist(8, 90)
+          ..fillRange(5, 37, 0x22),
         originalTransactionId: 'original-tx',
         proposalPsbt: oneInputPsbt,
         transactionId: 'payjoin-tx',
@@ -2059,7 +2085,7 @@ void main() {
       }
     });
 
-    test('already expired is never sent again, evidence or not', () async {
+    test('an expired sender with evidence is observed and reserved, never sent again', () async {
       final model = expiredSender().copyWith(
         isExpired: true,
         hasNetworkEvidence: true,
@@ -2079,7 +2105,7 @@ void main() {
           psbt: any(named: 'psbt'),
         ),
       );
-      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
     });
 
     test('a later resume never broadcasts an abandoned proposal', () async {
@@ -3283,8 +3309,12 @@ void main() {
       );
 
       // The first attempt expires with its automatic fallback broadcast
-      // having failed (e.g. offline): the session becomes retryable and its
-      // watcher deliberately stays armed.
+      // having definitively failed before any delivery. Only absent network
+      // evidence makes it retryable; the earlier observer stays armed.
+      expect(
+        await local.setSenderNetworkEvidence(first.id, present: false),
+        isTrue,
+      );
       await local.markExpired(first.copyWith(isExpired: true));
 
       // Retry: a NEW original PSBT, hence a NEW original txid.
@@ -3430,6 +3460,16 @@ void main() {
       await local.storeReceiver(receiver());
 
       expect(await engine.getInputReservations(), isEmpty);
+    });
+
+    test('an expired receiver proposal still reserves its input', () async {
+      final model = receiver(proposalPsbt: oneInputPsbt)
+          .copyWith(isExpired: true);
+      await local.storeReceiver(model);
+
+      final reservations = await engine.getInputReservations();
+      expect(reservations.single.outpoint, (txId: '11' * 32, vout: 0));
+      expect(reservations.single.sessionId, model.id);
     });
 
     test('an undecodable session is a failure, never no reservation', () async {

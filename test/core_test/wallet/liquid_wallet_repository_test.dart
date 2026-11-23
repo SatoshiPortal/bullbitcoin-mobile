@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 import 'dart:io';
@@ -45,8 +44,6 @@ class _Pset extends Mock implements lwk.PartiallySignedElementsTransaction {}
 
 class _Transaction extends Mock implements lwk.LiquidTransaction {}
 
-class _MockValues extends Mock implements SyncWalletValuesDatasource {}
-
 class _MockFrozenDatasource extends Mock implements SyncFreezesDatasource {}
 
 void main() {
@@ -58,7 +55,6 @@ void main() {
   late sync.Wallet wallet;
   late int walletOpens;
   final sdk = _Sdk();
-  late _MockValues values;
   late _MockFrozenDatasource frozen;
   late LiquidWalletRepository repository;
   late Result<UnsignedSpend, SyncFailure> built;
@@ -93,7 +89,6 @@ void main() {
     spender = _Spender();
     walletOpens = 0;
     reset(sdk);
-    values = _MockValues();
     frozen = _MockFrozenDatasource();
     store = FakeSecureStoragePlatform()..install();
     final scratch = Directory.systemTemp.createTempSync('ben-liquid-test-');
@@ -109,7 +104,6 @@ void main() {
         walletOpens++;
         return Ok(wallet);
       },
-      walletValuesDatasource: values,
       freezesDatasource: frozen,
       // The address check needs lwk's native library; these tests cover
       // selection, so they accept every address.

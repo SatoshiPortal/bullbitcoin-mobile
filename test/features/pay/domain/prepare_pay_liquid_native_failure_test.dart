@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-
 import 'dart:io';
 
 import 'package:fees/fees.dart';
@@ -68,10 +66,6 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => Directory.systemTemp.path),
       // The native wallet cannot be opened.
       wallet: (_) async => const Err(SyncStorageFailure()),
-      // No coin is read: nothing is frozen and no input is selected.
-      walletValuesDatasource: SyncWalletValuesDatasource(
-        load: (_) async => throw StateError('no value read expected'),
-      ),
       freezesDatasource: frozen,
     );
   });

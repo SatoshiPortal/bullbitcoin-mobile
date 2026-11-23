@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
+import 'package:spend/spend.dart';
 import 'package:sync/sync.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -512,6 +513,7 @@ void main() {
       const id = 'wpkh([01234567/84h/0h/0h])';
       final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
       final catalog = locator<WalletCatalogPort>();
+      final spend = locator<Spend>();
       expect(await catalog.find(key), isA<Err>());
       expect(
         await inventoryFixture.inventory.registerWallet(
@@ -541,6 +543,14 @@ void main() {
       );
       inventoryFixture.inventory.lock();
       expect(await catalog.list(), isA<Err>());
+      expect(
+        await spend.validateBitcoinSelection(walletId: id),
+        isA<Err<void, SpendFailure>>().having(
+          (result) => result.failure,
+          'locked inventory failure',
+          isA<SpendUnavailableFailure>(),
+        ),
+      );
       expect(await inventoryFixture.inventory.unlock('1234'), isA<Ok>());
       expect(await catalog.find(key), isA<Ok>());
     },

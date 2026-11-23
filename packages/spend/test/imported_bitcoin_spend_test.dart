@@ -159,6 +159,55 @@ void main() {
     );
     expect(connections.networks, [BitcoinNetwork.mainnet]);
   });
+
+  test(
+    'a definitive connection failure stays distinct from uncertainty',
+    () async {
+      connections.failure = const SyncConnectionFailure();
+      expect(
+        await spend.broadcastImportedBitcoin(
+          transaction: hex,
+          network: BitcoinNetwork.mainnet,
+          isPsbt: false,
+        ),
+        _failure<SpendBroadcastConnectionFailure>(),
+      );
+    },
+  );
+
+  test('reports a captured network rejected by connection admission', () async {
+    connections.failure = const SyncUnauthorizedNetworkFailure();
+    expect(
+      await spend.broadcastImportedBitcoin(
+        transaction: hex,
+        network: BitcoinNetwork.testnet,
+        isPsbt: false,
+      ),
+      _failure<SpendDeveloperAuthorizationFailure>(),
+    );
+    expect(connections.networks, [BitcoinNetwork.testnet]);
+  });
+
+  test('a test preparation cannot publish a Payjoin reservation', () async {
+    final prepared = SpendFixtures.preparedBitcoin(
+      unsignedPsbt: publicBitcoinPsbt,
+      fee: Sats.fromInt(100),
+    );
+    final result = await spend.handOffToPayjoin(
+      prepared,
+      sessionId: 'session',
+      signedPsbt: publicBitcoinPsbt,
+      persist: () async => fail('An unbound preparation must not persist'),
+    );
+    expect(
+      result,
+      isA<Err<PayjoinSpendHandoff, SpendFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SpendInvalidRequestFailure>(),
+      ),
+    );
+  });
 }
 
 Matcher _failure<F extends SpendFailure>() => isA<Err<String, SpendFailure>>()
