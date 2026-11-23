@@ -1,12 +1,9 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
+import 'package:send/send.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-
-import '../../../../fake_index_price_reader.dart';
 
 class _MockGetSettings extends Mock implements Preferences {}
 
@@ -29,23 +26,20 @@ SendFailure _failure(Result<double, SendFailure> result) => switch (result) {
 
 void main() {
   late _MockGetSettings getSettings;
-  late FakeIndexPriceReader getIndexPrice;
-  late GetSendExchangeRateUsecase usecase;
+  late _FakeIndexPriceReader getIndexPrice;
+  late Send send;
 
   setUp(() {
     getSettings = _MockGetSettings();
     when(getSettings.fetch).thenAnswer((_) async => Ok(_settings()));
-    getIndexPrice = FakeIndexPriceReader(fiatAmount: 114214.20);
-    usecase = GetSendExchangeRateUsecase(
-      getSettingsUsecase: getSettings,
-      getIndexPrice: getIndexPrice.call,
-    );
+    getIndexPrice = _FakeIndexPriceReader(fiatAmount: 114214.20);
+    send = Send.open(preferences: getSettings, readPrice: getIndexPrice.call);
   });
 
   test(
     'gives the mainnet price of one bitcoin in the settings currency',
     () async {
-      expect(_rate(await usecase.execute()), 114214.20);
+      expect(_rate(await send.exchangeRate()), 114214.20);
       expect(getIndexPrice.requests.single, (
         network: BitcoinNetwork.mainnet,
         currency: SupportedCurrency.usd,
@@ -54,7 +48,7 @@ void main() {
   );
 
   test('asks the requested currency', () async {
-    expect(_rate(await usecase.execute(currencyCode: 'cad')), 114214.20);
+    expect(_rate(await send.exchangeRate(currencyCode: 'cad')), 114214.20);
     expect(getIndexPrice.requests.single.currency, SupportedCurrency.cad);
   });
 
@@ -63,7 +57,7 @@ void main() {
       getSettings.fetch,
     ).thenAnswer((_) async => Ok(_settings(environment: Environment.testnet)));
 
-    _rate(await usecase.execute());
+    _rate(await send.exchangeRate());
     expect(getIndexPrice.requests.single.network, BitcoinNetwork.testnet);
   });
 
@@ -71,7 +65,7 @@ void main() {
     getIndexPrice.failure = const PricerNetworkFailure('offline');
 
     expect(
-      _failure(await usecase.execute()),
+      _failure(await send.exchangeRate()),
       isA<SendPriceUnavailableFailure>(),
     );
   });
@@ -79,7 +73,7 @@ void main() {
   test('a currency without a price is a price unavailable failure, never '
       'asked', () async {
     expect(
-      _failure(await usecase.execute(currencyCode: 'JPY')),
+      _failure(await send.exchangeRate(currencyCode: 'JPY')),
       isA<SendPriceUnavailableFailure>(),
     );
     expect(getIndexPrice.requests, isEmpty);
@@ -88,7 +82,35 @@ void main() {
   test('a failed settings read is an unexpected failure', () async {
     when(getSettings.fetch).thenThrow(Exception('storage locked'));
 
-    expect(_failure(await usecase.execute()), isA<SendUnexpectedFailure>());
+    expect(_failure(await send.exchangeRate()), isA<SendUnexpectedFailure>());
     expect(getIndexPrice.requests, isEmpty);
   });
+}
+
+/// Stands in for `Pricer.getIndexPrice`: answers [fiatAmount] in the
+/// requested currency, or [failure] when set, and records each request.
+class _FakeIndexPriceReader {
+  double fiatAmount;
+  PricerFailure? failure;
+  DateTime fetchedAt = DateTime.utc(2026, 11, 4, 12);
+  final List<({BitcoinNetwork network, SupportedCurrency currency})> requests =
+      [];
+
+  _FakeIndexPriceReader({this.fiatAmount = 100000, this.failure});
+
+  Future<Result<BitcoinPrice, PricerFailure>> call({
+    required BitcoinNetwork network,
+    required SupportedCurrency currency,
+  }) async {
+    requests.add((network: network, currency: currency));
+    final failure = this.failure;
+    if (failure != null) return Err(failure);
+    return Ok(
+      BitcoinPrice(
+        currency: currency,
+        fiatAmount: fiatAmount,
+        fetchedAt: fetchedAt,
+      ),
+    );
+  }
 }

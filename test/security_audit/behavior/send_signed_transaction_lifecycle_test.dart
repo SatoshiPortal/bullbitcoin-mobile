@@ -52,7 +52,6 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -101,8 +100,7 @@ class _MockDetectBitcoinStringUsecase extends Mock
 
 class _MockPreferences extends Mock implements Preferences {}
 
-class _MockGetSendExchangeRateUsecase extends Mock
-    implements GetSendExchangeRateUsecase {}
+class _MockSend extends Mock implements Send {}
 
 class _MockFees extends Mock implements Fees {}
 
@@ -253,7 +251,7 @@ class _TestSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.loadPreferencesUsecase,
-    required super.getSendExchangeRateUsecase,
+    required super.readExchangeRate,
     required super.loadNetworkFeesUsecase,
     required super.getWalletUtxosUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -375,7 +373,7 @@ void main() {
       loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
         _MockPreferences(),
       ),
-      getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
+      readExchangeRate: _MockSend().exchangeRate,
       loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: _MockFees()),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       spend: SendSpendTestDouble(
