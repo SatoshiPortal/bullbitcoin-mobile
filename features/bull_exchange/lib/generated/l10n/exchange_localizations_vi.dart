@@ -1202,4 +1202,106 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Cài đặt';
+
+  @override
+  String get transactionHistoryTitle => 'Lịch sử giao dịch';
+
+  @override
+  String get exchangeHomeDepositButton => 'Nạp tiền';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Rút tiền';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'Không thể lấy cấu hình DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Tắt mua định kỳ';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Kích hoạt mua định kỳ';
+
+  @override
+  String get exchangeDcaHideSettings => 'Ẩn cài đặt';
+
+  @override
+  String get exchangeDcaViewSettings => 'Xem cài đặt';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Hủy mua định kỳ Bitcoin?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Kế hoạch mua Bitcoin định kỳ của bạn sẽ dừng lại, và các lệnh mua theo lịch sẽ kết thúc. Để bắt đầu lại, bạn sẽ cần thiết lập một kế hoạch mới.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Hủy';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Có, tắt';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'giờ';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'ngày';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'tuần';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'tháng';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Mạng Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Mạng Lightning';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Mạng Liquid';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Bạn đang mua $amount mỗi $frequency qua $network miễn là tài khoản của bạn còn tiền.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Nhẹ';
+
+  @override
+  String get exchangeKycLevelLimited => 'Giới hạn';
+
+  @override
+  String get exchangeKycCardTitle => 'Hoàn tất KYC của bạn';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Để gỡ bỏ giới hạn giao dịch';
+
+  @override
+  String get homeActionBuy => 'Mua';
+
+  @override
+  String get homeActionSell => 'Bán';
+
+  @override
+  String get homeActionPay => 'Thanh toán';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

@@ -1193,4 +1193,106 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Nastavení';
+
+  @override
+  String get transactionHistoryTitle => 'Historie transakcí';
+
+  @override
+  String get exchangeHomeDepositButton => 'Vklad';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Čeština';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'Nelze získat konfiguraci DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Deactivate Recurring Koupit';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Aktivace opakovaného nákupu';
+
+  @override
+  String get exchangeDcaHideSettings => 'Skrýt nastavení';
+
+  @override
+  String get exchangeDcaViewSettings => 'Zobrazit nastavení';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Zrušit nákup Bitcoinu?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Váš opakovaný plán nákupu Bitcoin se zastaví a naplánované nákupy skončí. Chcete-li restartovat, budete muset nastavit nový plán.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Hledat';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Ano, deaktivovat';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'hodina';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'den';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'týden';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'měsíc';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin sítě';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Bleskové sítě';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Tekutý síť';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Kupujete $amount každý $frequency prostřednictvím $network, pokud máte prostředky ve vašem účtu.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Čeština';
+
+  @override
+  String get exchangeKycLevelLimited => 'Čeština';
+
+  @override
+  String get exchangeKycCardTitle => 'Kompletní KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Chcete-li odstranit limity transakce';
+
+  @override
+  String get homeActionBuy => 'Koupit';
+
+  @override
+  String get homeActionSell => 'Prodat';
+
+  @override
+  String get homeActionPay => 'Zaplatit';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

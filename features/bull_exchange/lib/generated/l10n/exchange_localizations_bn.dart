@@ -1200,4 +1200,107 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'সেটিংস';
+
+  @override
+  String get transactionHistoryTitle => 'লেনদেনের ইতিহাস';
+
+  @override
+  String get exchangeHomeDepositButton => 'জমা';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'উত্তোলন';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'DCA কনফিগারেশন পাওয়া যাচ্ছে না';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'আবর্তিত ক্রয় নিষ্ক্রিয় করুন';
+
+  @override
+  String get exchangeDcaActivateTitle => 'আবর্তিত ক্রয় সক্রিয় করুন';
+
+  @override
+  String get exchangeDcaHideSettings => 'সেটিং লুকান';
+
+  @override
+  String get exchangeDcaViewSettings => 'সেটিং দেখুন';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'বিটকয়েন আবর্তিত ক্রয় বাতিল করবেন?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'আপনার আবর্তিত বিটকয়েন ক্রয় পরিকল্পনা বন্ধ হবে, এবং নির্ধারিত ক্রয় শেষ হবে। পুনরায় শুরু করতে, আপনাকে একটি নতুন পরিকল্পনা তৈরি করতে হবে।';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'বাতিল';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'হ্যাঁ, নিষ্ক্রিয় করুন';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ঘণ্টা';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'দিন';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'সপ্তাহ';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'মাস';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'বিটকয়েন নেটওয়ার্ক';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'লাইটনিং নেটওয়ার্ক';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'লিকুইড নেটওয়ার্ক';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'আপনি $network মাধ্যমে প্রতি $frequency $amount কিনছেন যতক্ষণ আপনার অ্যাকাউন্টে তহবিল আছে';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'হালকা';
+
+  @override
+  String get exchangeKycLevelLimited => 'সীমিত';
+
+  @override
+  String get exchangeKycCardTitle => 'আপনার KYC সম্পূর্ণ করুন';
+
+  @override
+  String get exchangeKycCardSubtitle => 'লেনদেন সীমা অপসারণ করতে';
+
+  @override
+  String get homeActionBuy => 'কিনুন';
+
+  @override
+  String get homeActionSell => 'বিক্রি করুন';
+
+  @override
+  String get homeActionPay => 'পেমেন্ট করুন';
+
+  @override
+  String get homeActionTransfer => 'সোয়াপ করুন';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

@@ -1202,4 +1202,108 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'პარამეტრები';
+
+  @override
+  String get transactionHistoryTitle => 'ტრანზაქციების ისტორია';
+
+  @override
+  String get exchangeHomeDepositButton => 'შემოტანა';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'გატანა';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'DCA კონფიგურაციის მიღება ვერ მოხერხდა';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'განმეორებადი ყიდვის გამორთვა';
+
+  @override
+  String get exchangeDcaActivateTitle => 'განმეორებადი ყიდვის ჩართვა';
+
+  @override
+  String get exchangeDcaHideSettings => 'პარამეტრების დამალვა';
+
+  @override
+  String get exchangeDcaViewSettings => 'პარამეტრების ნახვა';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'გააუქმოთ Bitcoin-ის განმეორებადი ყიდვა?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'თქვენი Bitcoin-ის განმეორებადი ყიდვის გეგმა შეჩერდება და დაგეგმილი ყიდვები დასრულდება. ხელახლა დასაწყებად დაგჭირდებათ ახალი გეგმის შექმნა.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'გაუქმება';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'დიახ, გამორთვა';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'საათი';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'დღე';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'კვირა';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'თვე';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin ქსელი';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning ქსელი';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid ქსელი';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'თქვენ ყიდულობთ $amount-ს ყოველ $frequency-ში $network-ის მეშვეობით, სანამ თქვენს ანგარიშზე თანხაა.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'მსუბუქი';
+
+  @override
+  String get exchangeKycLevelLimited => 'შეზღუდული';
+
+  @override
+  String get exchangeKycCardTitle => 'დაასრულეთ თქვენი KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'ტრანზაქციის ლიმიტების მოსახსნელად';
+
+  @override
+  String get homeActionBuy => 'ყიდვა';
+
+  @override
+  String get homeActionSell => 'გაყიდვა';
+
+  @override
+  String get homeActionPay => 'გადახდა';
+
+  @override
+  String get homeActionTransfer => 'სვაპი';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

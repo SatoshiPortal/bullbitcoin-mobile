@@ -1173,4 +1173,107 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'الترتيبات';
+
+  @override
+  String get transactionHistoryTitle => 'سجل المعاملات';
+
+  @override
+  String get exchangeHomeDepositButton => 'الإيداع';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'الانسحاب';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'غير قادر على الحصول على تشكيلة DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Deactivate Recurring Buy';
+
+  @override
+  String get exchangeDcaActivateTitle => 'تفعيل الشراء المتكرر';
+
+  @override
+  String get exchangeDcaHideSettings => 'أماكن الاختباء';
+
+  @override
+  String get exchangeDcaViewSettings => 'بيئات اليقظة';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => '(ألغى (بيتكوين) المُتكرر؟?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'خطّة شراء (بيتكوين) المتكررة ستتوقّف، والمشتريات المقرّرة ستنتهي للراحة، عليك أن تضع خطة جديدة.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'إلغاء';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'نعم، إبطال مفعوله';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ساعة';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'اليوم';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'الأسبوع';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'الشهر';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'شبكة بيتكوين';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'شبكة البرق';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'شبكة السائل';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'أنت تشتري $amount كل $frequency عبر $network طالما هناك أموال في حسابك.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'الضوء';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limited';
+
+  @override
+  String get exchangeKycCardTitle => 'أكمل KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'إزالة القيود المفروضة على المعاملات';
+
+  @override
+  String get homeActionBuy => 'شراء';
+
+  @override
+  String get homeActionSell => 'بيع';
+
+  @override
+  String get homeActionPay => 'دفع';
+
+  @override
+  String get homeActionTransfer => 'مبادلة';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

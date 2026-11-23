@@ -1208,4 +1208,107 @@ class ExchangeLocalizationsDe extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Einstellungen';
+
+  @override
+  String get transactionHistoryTitle => 'Transaktionsverlauf';
+
+  @override
+  String get exchangeHomeDepositButton => 'Einzahlen';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Abheben';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Sparplan-Einstellungen konnten nicht abgerufen werden';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Sparplan deaktivieren';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Sparplan aktivieren';
+
+  @override
+  String get exchangeDcaHideSettings => 'Einstellungen ausblenden';
+
+  @override
+  String get exchangeDcaViewSettings => 'Einstellungen anzeigen';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Bitcoin-Sparplan beenden?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Ihr regelmäßiger Bitcoin-Kaufplan wird beendet und geplante Käufe werden eingestellt. Um ihn wieder aufzunehmen, müssen Sie einen neuen Plan erstellen.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Abbrechen';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Ja, beenden';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'Stunde';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'Tag';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'Woche';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'Monat';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin-Netzwerk';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning-Netzwerk';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid-Netzwerk';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Sie kaufen $amount jeden $frequency über $network, solange Sie Guthaben auf Ihrem Konto haben.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Basis';
+
+  @override
+  String get exchangeKycLevelLimited => 'Begrenzt';
+
+  @override
+  String get exchangeKycCardTitle => 'Füllen Sie Ihre KYC-Daten aus';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Um Transaktionslimits zu entfernen';
+
+  @override
+  String get homeActionBuy => 'Kaufen';
+
+  @override
+  String get homeActionSell => 'Verkauf';
+
+  @override
+  String get homeActionPay => 'Zahlen';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

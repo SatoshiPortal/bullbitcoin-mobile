@@ -1211,6 +1211,110 @@ class ExchangeLocalizationsPt extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Configurações';
+
+  @override
+  String get transactionHistoryTitle => 'Histórico de transações';
+
+  @override
+  String get exchangeHomeDepositButton => 'Depósito';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Retirar';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Incapaz de obter configuração DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Desativar a recuperação';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Ativar a recuperação';
+
+  @override
+  String get exchangeDcaHideSettings => 'Ocultar configurações';
+
+  @override
+  String get exchangeDcaViewSettings => 'Ver configurações';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Cancelar Bitcoin Recurring Comprar?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Seu plano de compra Bitcoin recorrente vai parar, e as compras programadas terminarão. Para reiniciar, você precisará criar um novo plano.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancelar';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Sim, desactivar';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'hora da hora';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'dia';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'semana';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'mês';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Rede de Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Rede de relâmpago';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Rede líquida';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Você está comprando $amount cada $frequency via $network desde que haja fundos em sua conta.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Luz';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limitação';
+
+  @override
+  String get exchangeKycCardTitle => 'Completar seu KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Para remover limites de transação';
+
+  @override
+  String get homeActionBuy => 'Comprar';
+
+  @override
+  String get homeActionSell => 'Vender';
+
+  @override
+  String get homeActionPay => 'Pagar';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2328,4 +2432,105 @@ class ExchangeLocalizationsPtBr extends ExchangeLocalizationsPt {
 
   @override
   String get exchangeAuthLoginFailedOkButton => 'ESTÁ BEM';
+
+  @override
+  String get settingsScreenTitle => 'Configurações';
+
+  @override
+  String get transactionHistoryTitle => 'Histórico de transações';
+
+  @override
+  String get exchangeHomeDepositButton => 'Depósito';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Retirar';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Incapaz de obter configuração DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Desativar a recuperação';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Ativar a recuperação';
+
+  @override
+  String get exchangeDcaHideSettings => 'Ocultar configurações';
+
+  @override
+  String get exchangeDcaViewSettings => 'Ver configurações';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Cancelar Bitcoin Recurring Comprar?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Seu plano de compra Bitcoin recorrente vai parar, e as compras programadas terminarão. Para reiniciar, você precisará criar um novo plano.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancelar';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Sim, desactivar';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'hora da hora';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'dia';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'semana';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'mês';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Rede de Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Rede de relâmpago';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Rede líquida';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Você está comprando $amount cada $frequency via $network desde que haja fundos em sua conta.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Luz';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limitação';
+
+  @override
+  String get exchangeKycCardTitle => 'Completar seu KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Para remover limites de transação';
+
+  @override
+  String get homeActionBuy => 'Comprar';
+
+  @override
+  String get homeActionSell => 'Vender';
+
+  @override
+  String get homeActionPay => 'Pagar';
+
+  @override
+  String get homeActionTransfer => 'Swap';
 }

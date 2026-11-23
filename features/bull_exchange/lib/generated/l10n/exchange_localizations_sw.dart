@@ -1197,4 +1197,107 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Mipangilio';
+
+  @override
+  String get transactionHistoryTitle => 'Historia ya muamala';
+
+  @override
+  String get exchangeHomeDepositButton => 'Weka Fedha';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Ondoa';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'Imeshindwa kupata usanidi wa DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Zima Ununuzi wa Kujirudia';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Washa Ununuzi wa Kujirudia';
+
+  @override
+  String get exchangeDcaHideSettings => 'Ficha mipangilio';
+
+  @override
+  String get exchangeDcaViewSettings => 'Tazama mipangilio';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Ghairi Ununuzi wa Kujirudia wa Bitcoin?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Mpango wako wa ununuzi wa Bitcoin wa kujirudia utasimama, na ununuzi uliopangwa utaisha. Ili kuanza tena, utahitaji kuweka mpango mpya.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Ghairi';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Ndiyo, zima';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'saa';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'siku';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'wiki';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'mwezi';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Mtandao wa Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Mtandao wa Lightning';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Mtandao wa Liquid';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Unanunua $amount kila $frequency kupitia $network maadamu kuna fedha kwenye akaunti yako.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Nyepesi';
+
+  @override
+  String get exchangeKycLevelLimited => 'Mdogo';
+
+  @override
+  String get exchangeKycCardTitle => 'Kamilisha KYC yako';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Ili kuondoa vikomo vya miamala';
+
+  @override
+  String get homeActionBuy => 'Nunua';
+
+  @override
+  String get homeActionSell => 'Uza';
+
+  @override
+  String get homeActionPay => 'Lipa';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

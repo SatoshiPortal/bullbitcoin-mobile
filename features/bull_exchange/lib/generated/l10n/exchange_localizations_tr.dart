@@ -1194,4 +1194,107 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Ayarlar';
+
+  @override
+  String get transactionHistoryTitle => 'İşlem geçmişi';
+
+  @override
+  String get exchangeHomeDepositButton => 'Deposit';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Withdraw';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'DCA yapılandırması için kullanılamaz';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Deactivate Recurring Buy';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Activate Recurring Buy';
+
+  @override
+  String get exchangeDcaHideSettings => 'Gizle ayarları';
+
+  @override
+  String get exchangeDcaViewSettings => 'View settings';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Bitcoin Recurring Buy?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Tekrarlanan Bitcoin satın alma planı durdurulacak ve planlanan satınlar sona erecek. Yeniden başlamak için, yeni bir plan kurmak gerekir.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancel';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Evet, deactivate';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'saat';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'gün';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'hafta';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'ay';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin Network';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning Network';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Sıvı Ağ Ağı';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Hesabınızda fon bulunduğu sürece, $network üzerinden her $frequency $amount satın alıyorsunuz.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Işık Işığı';
+
+  @override
+  String get exchangeKycLevelLimited => 'Sınırlı';
+
+  @override
+  String get exchangeKycCardTitle => 'Tamam your Complete your K';
+
+  @override
+  String get exchangeKycCardSubtitle => 'İşlem sınırlarını kaldırmak';
+
+  @override
+  String get homeActionBuy => 'Satın Al';
+
+  @override
+  String get homeActionSell => 'Sat';
+
+  @override
+  String get homeActionPay => 'Öde';
+
+  @override
+  String get homeActionTransfer => 'Takas';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

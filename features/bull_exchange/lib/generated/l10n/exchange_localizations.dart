@@ -2176,6 +2176,196 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Trading is unavailable.'**
   String get exchangeTradingUnavailable;
+
+  /// The title of the settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsScreenTitle;
+
+  /// Title for the transaction history page and settings entry
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction History'**
+  String get transactionHistoryTitle;
+
+  /// Button label for depositing funds to the exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get exchangeHomeDepositButton;
+
+  /// Button label for withdrawing funds from the exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get exchangeHomeWithdrawButton;
+
+  /// Error message when DCA configuration cannot be retrieved
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to get DCA configuration'**
+  String get exchangeDcaUnableToGetConfig;
+
+  /// Title shown when DCA is active and can be deactivated
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Recurring Buy'**
+  String get exchangeDcaDeactivateTitle;
+
+  /// Title shown when DCA is inactive and can be activated
+  ///
+  /// In en, this message translates to:
+  /// **'Activate Recurring Buy'**
+  String get exchangeDcaActivateTitle;
+
+  /// Link text to hide DCA settings details
+  ///
+  /// In en, this message translates to:
+  /// **'Hide settings'**
+  String get exchangeDcaHideSettings;
+
+  /// Link text to view DCA settings details
+  ///
+  /// In en, this message translates to:
+  /// **'View settings'**
+  String get exchangeDcaViewSettings;
+
+  /// Title of the dialog confirming DCA cancellation
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Bitcoin Recurring Buy?'**
+  String get exchangeDcaCancelDialogTitle;
+
+  /// Message explaining the consequences of canceling DCA
+  ///
+  /// In en, this message translates to:
+  /// **'Your recurring Bitcoin purchase plan will stop, and scheduled buys will end. To restart, you\'ll need to set up a new plan.'**
+  String get exchangeDcaCancelDialogMessage;
+
+  /// Button label to cancel the DCA cancellation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get exchangeDcaCancelDialogCancelButton;
+
+  /// Button label to confirm DCA deactivation
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, deactivate'**
+  String get exchangeDcaCancelDialogConfirmButton;
+
+  /// DCA frequency unit: hour
+  ///
+  /// In en, this message translates to:
+  /// **'hour'**
+  String get exchangeDcaFrequencyHour;
+
+  /// DCA frequency unit: day
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get exchangeDcaFrequencyDay;
+
+  /// DCA frequency unit: week
+  ///
+  /// In en, this message translates to:
+  /// **'week'**
+  String get exchangeDcaFrequencyWeek;
+
+  /// DCA frequency unit: month
+  ///
+  /// In en, this message translates to:
+  /// **'month'**
+  String get exchangeDcaFrequencyMonth;
+
+  /// DCA network option: Bitcoin
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin Network'**
+  String get exchangeDcaNetworkBitcoin;
+
+  /// DCA network option: Lightning
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning Network'**
+  String get exchangeDcaNetworkLightning;
+
+  /// DCA network option: Liquid
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid Network'**
+  String get exchangeDcaNetworkLiquid;
+
+  /// Summary message describing the DCA configuration
+  ///
+  /// In en, this message translates to:
+  /// **'You are buying {amount} every {frequency} via {network} as long as there are funds in your account.'**
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  );
+
+  /// Format for displaying address label and address
+  ///
+  /// In en, this message translates to:
+  /// **'{addressLabel}: {address}'**
+  String exchangeDcaAddressDisplay(String addressLabel, String address);
+
+  /// KYC verification level: Light
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get exchangeKycLevelLight;
+
+  /// KYC verification level: Limited
+  ///
+  /// In en, this message translates to:
+  /// **'Limited'**
+  String get exchangeKycLevelLimited;
+
+  /// Title of the KYC completion card
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your KYC'**
+  String get exchangeKycCardTitle;
+
+  /// Subtitle explaining why to complete KYC
+  ///
+  /// In en, this message translates to:
+  /// **'To remove transaction limits'**
+  String get exchangeKycCardSubtitle;
+
+  /// Label for the Buy action button on the wallet home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get homeActionBuy;
+
+  /// Label for the Sell action button on the wallet home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sell'**
+  String get homeActionSell;
+
+  /// Label for the Pay action button on the wallet home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get homeActionPay;
+
+  /// Label for the Transfer action button on the wallet home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Swap'**
+  String get homeActionTransfer;
+
+  /// Accessible name of the Exchange home button that opens the price chart
+  ///
+  /// In en, this message translates to:
+  /// **'Show price chart'**
+  String get priceChartShowTooltip;
 }
 
 class _ExchangeLocalizationsDelegate

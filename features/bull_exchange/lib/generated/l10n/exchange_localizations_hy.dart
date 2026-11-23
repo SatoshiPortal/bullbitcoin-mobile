@@ -1208,4 +1208,109 @@ class ExchangeLocalizationsHy extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Կարգավորումներ';
+
+  @override
+  String get transactionHistoryTitle => 'Գործարքների պատմություն';
+
+  @override
+  String get exchangeHomeDepositButton => 'Ավանդ';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Հանել';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Հնարավոր չէ ստանալ DCA կարգավորումները';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Ապաակտիվացնել կրկնվող գնումը';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Ակտիվացնել կրկնվող գնումը';
+
+  @override
+  String get exchangeDcaHideSettings => 'Թաքցնել կարգավորումները';
+
+  @override
+  String get exchangeDcaViewSettings => 'Դիտել կարգավորումները';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Չեղարկե՞լ Bitcoin-ի կրկնվող գնումը';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Ձեր կրկնվող Bitcoin գնման ծրագիրը կկանգնի, և պլանավորված գնումները կավարտվեն։ Վերսկսելու համար ձեզ անհրաժեշտ կլինի սահմանել նոր ծրագիր։';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Չեղարկել';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Այո, ապաակտիվացնել';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ժամ';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'օր';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'շաբաթ';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'ամիս';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin ցանց';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning ցանց';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid ցանց';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Դուք գնում եք $amount ամեն $frequency-ը $network-ի միջոցով, քանի դեռ ձեր հաշվում միջոցներ կան։';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel՝ $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Թեթև';
+
+  @override
+  String get exchangeKycLevelLimited => 'Սահմանափակ';
+
+  @override
+  String get exchangeKycCardTitle => 'Ավարտեք ձեր KYC-ը';
+
+  @override
+  String get exchangeKycCardSubtitle =>
+      'Գործարքների սահմանաչափերը հանելու համար';
+
+  @override
+  String get homeActionBuy => 'Գնել';
+
+  @override
+  String get homeActionSell => 'Վաճառել';
+
+  @override
+  String get homeActionPay => 'Վճարել';
+
+  @override
+  String get homeActionTransfer => 'Փոխանակել';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

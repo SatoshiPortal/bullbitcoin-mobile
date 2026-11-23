@@ -1193,6 +1193,109 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'सेटिंग्स';
+
+  @override
+  String get transactionHistoryTitle => 'लेनदेन इतिहास';
+
+  @override
+  String get exchangeHomeDepositButton => 'जमा';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'निकासी';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'डीसीए विन्यास प्राप्त करने में असमर्थ';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Recurring Buy';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Recurring Buy';
+
+  @override
+  String get exchangeDcaHideSettings => 'सेटिंग छुपाएं';
+
+  @override
+  String get exchangeDcaViewSettings => 'सेटिंग्स देखें';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'बिटकॉइन रीकरिंग खरीद रद्द करें?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'आपकी आवर्ती बिटकॉइन खरीद योजना रुक जाएगी और निर्धारित खरीद समाप्त हो जाएगी। फिर से शुरू करने के लिए, आपको एक नई योजना स्थापित करने की आवश्यकता होगी।।';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'रद्द करना';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'हाँ, निष्क्रिय';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'घंटे';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'दिन';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'सप्ताह';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'महीना';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'बिटकॉइन नेटवर्क';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'लाइटनिंग नेटवर्क';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'तरल नेटवर्क';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'आप $amount हर $frequency को $network के माध्यम से खरीद रहे हैं, जब तक आपके खाते में धन हो।।';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'प्रकाश';
+
+  @override
+  String get exchangeKycLevelLimited => 'लिमिटेड';
+
+  @override
+  String get exchangeKycCardTitle => 'पूरा करें केवाईसी';
+
+  @override
+  String get exchangeKycCardSubtitle => 'लेनदेन की सीमा को दूर करने के लिए';
+
+  @override
+  String get homeActionBuy => 'खरीदें';
+
+  @override
+  String get homeActionSell => 'बेचें';
+
+  @override
+  String get homeActionPay => 'भुगतान करें';
+
+  @override
+  String get homeActionTransfer => 'स्वैप करें';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2303,4 +2406,104 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
 
   @override
   String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get settingsScreenTitle => 'Settings';
+
+  @override
+  String get transactionHistoryTitle => 'Lenden Itihaas';
+
+  @override
+  String get exchangeHomeDepositButton => 'Deposit';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Withdraw';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'DCA configuration nahi mil raha';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Recurring Buy Deactivate Karo';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Recurring Buy Activate Karo';
+
+  @override
+  String get exchangeDcaHideSettings => 'Settings chhupao';
+
+  @override
+  String get exchangeDcaViewSettings => 'Settings dekho';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Bitcoin Recurring Buy Cancel Karein?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Aapka recurring Bitcoin purchase plan band ho jayega, aur scheduled buys khatam ho jayengi. Restart karne ke liye, aapko naya plan setup karna hoga.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancel';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Haan, deactivate karo';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ghanta';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'din';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'hafta';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'mahina';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin Network';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning Network';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid Network';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Aap jab tak account mein funds hain, har $frequency mein $amount $network ke zariye kharid rahe hain.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Light';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limited';
+
+  @override
+  String get exchangeKycCardTitle => 'Apna KYC complete karo';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Transaction limits hatane ke liye';
+
+  @override
+  String get homeActionBuy => 'Kharido';
+
+  @override
+  String get homeActionSell => 'Becho';
+
+  @override
+  String get homeActionPay => 'Pay Karo';
+
+  @override
+  String get homeActionTransfer => 'Swap Karo';
 }

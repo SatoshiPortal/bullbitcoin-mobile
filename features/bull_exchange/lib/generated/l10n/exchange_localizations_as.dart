@@ -1199,4 +1199,107 @@ class ExchangeLocalizationsAs extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'ছেটিংছ';
+
+  @override
+  String get transactionHistoryTitle => 'লেনদেনৰ ইতিহাস';
+
+  @override
+  String get exchangeHomeDepositButton => 'জমা কৰক';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'উলিওৱা কৰক';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'DCA কনফিগাৰেচন পাবলৈ অক্ষম';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'নিয়মিত ক্ৰয় নিষ্ক্ৰিয় কৰক';
+
+  @override
+  String get exchangeDcaActivateTitle => 'নিয়মিত ক্ৰয় সক্ৰিয় কৰক';
+
+  @override
+  String get exchangeDcaHideSettings => 'ছেটিংছ লুকুৱাওক';
+
+  @override
+  String get exchangeDcaViewSettings => 'ছেটিংছ চাওক';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Bitcoin নিয়মিত ক্ৰয় বাতিল কৰিবনে?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'আপোনাৰ নিয়মিত Bitcoin ক্ৰয় পৰিকল্পনা বন্ধ হ\'ব, আৰু নিৰ্ধাৰিত ক্ৰয়সমূহ শেষ হ\'ব। পুনৰ আৰম্ভ কৰিবলৈ, নতুন পৰিকল্পনা ছেট আপ কৰিব লাগিব।';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'বাতিল কৰক';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'হয়, নিষ্ক্ৰিয় কৰক';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ঘণ্টা';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'দিন';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'সপ্তাহ';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'মাহ';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin নেটৱৰ্ক';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning নেটৱৰ্ক';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid নেটৱৰ্ক';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'আপোনাৰ account-ত পুঁজি থকালৈকে আপুনি প্ৰতি $frequency-তে $network-ৰ জৰিয়তে $amount কিনি আছে।';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'লঘু';
+
+  @override
+  String get exchangeKycLevelLimited => 'সীমিত';
+
+  @override
+  String get exchangeKycCardTitle => 'আপোনাৰ KYC সম্পূৰ্ণ কৰক';
+
+  @override
+  String get exchangeKycCardSubtitle => 'লেনদেনৰ সীমা আঁতৰাবলৈ';
+
+  @override
+  String get homeActionBuy => 'কিনক';
+
+  @override
+  String get homeActionSell => 'বিক্ৰী কৰক';
+
+  @override
+  String get homeActionPay => 'পৰিশোধ কৰক';
+
+  @override
+  String get homeActionTransfer => 'Swap কৰক';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

@@ -1168,4 +1168,106 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'การตั้งค่า';
+
+  @override
+  String get transactionHistoryTitle => 'ประวัติธุรกรรม';
+
+  @override
+  String get exchangeHomeDepositButton => 'ฝากเงิน';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'ถอน';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'สามารถใช้งานได้ DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'การลบซ้ําซื้อ';
+
+  @override
+  String get exchangeDcaActivateTitle => 'การเปิดใช้งานซ้ํา';
+
+  @override
+  String get exchangeDcaHideSettings => 'การตั้งค่า';
+
+  @override
+  String get exchangeDcaViewSettings => 'ดูการตั้งค่า';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'ยกเลิก Bitcoin ซ้ํา?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'แผนของคุณสั่งซื้อ Bitcoin จะหยุด, และราคาที่กําหนด. เพื่อเริ่มต้น, คุณจะต้องตั้งค่าแผนใหม่.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'ยกเลิก';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'ใช่';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ชั่วโมง';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'วัน';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'สัปดาห์';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'เดือน';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'เครือข่าย Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'เครือข่ายไร้สาย';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'เครือข่ายของเหลว';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'คุณกำลังซื้อ $amount ทุก $frequency ผ่าน $network ตราบใดที่ยังมีเงินในบัญชีของคุณ';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'แสง';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limited';
+
+  @override
+  String get exchangeKycCardTitle => 'สมบูรณ์แบบของคุณ © 2019';
+
+  @override
+  String get exchangeKycCardSubtitle => 'เพื่อป้องกันการทําธุรกรรม';
+
+  @override
+  String get homeActionBuy => 'ซื้อ';
+
+  @override
+  String get homeActionSell => 'ขาย';
+
+  @override
+  String get homeActionPay => 'จ่าย';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

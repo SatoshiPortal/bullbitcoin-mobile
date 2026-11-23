@@ -1206,4 +1206,108 @@ class ExchangeLocalizationsIt extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Impostazioni';
+
+  @override
+  String get transactionHistoryTitle => 'Cronologia transazioni';
+
+  @override
+  String get exchangeHomeDepositButton => 'Deposito';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Prelievo';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Impossibile ottenere la configurazione del PAC';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Disattiva l\'acquisto ricorrente';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Attiva un acquisto ricorrente';
+
+  @override
+  String get exchangeDcaHideSettings => 'Nascondi le impostazioni';
+
+  @override
+  String get exchangeDcaViewSettings => 'Visualizza le impostazioni';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Cancella Bitcoin ricorrenti acquistare?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Il tuo piano di acquisto ricorrente di Bitcoin si fermerà, e gli acquisti programmati termineranno. Per ricominciare, dovrai organizzare un nuovo piano.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Annulla';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Sì, disattivare';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ora';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'giorno';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'settimana';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'mese';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Rete Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Rete Lightning';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Rete Liquid';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Stai acquistando $amount ogni $frequency via $network finché ci sono fondi sul tuo conto.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Verifica di base';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limitato';
+
+  @override
+  String get exchangeKycCardTitle => 'Completa la verifica KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Per rimuovere i limiti di transazione';
+
+  @override
+  String get homeActionBuy => 'Acquista';
+
+  @override
+  String get homeActionSell => 'Vendi';
+
+  @override
+  String get homeActionPay => 'Paga';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

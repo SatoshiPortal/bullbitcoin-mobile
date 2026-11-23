@@ -1182,4 +1182,106 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'تنظیمات';
+
+  @override
+  String get transactionHistoryTitle => 'تاریخچه تراکنش‌ها';
+
+  @override
+  String get exchangeHomeDepositButton => 'سپرده گذاری سپرده گذاری';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'برگرفته از:';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'عدم توانایی برای پیکربندی DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Recurring Buy';
+
+  @override
+  String get exchangeDcaActivateTitle => 'گزینه Recurring Buy';
+
+  @override
+  String get exchangeDcaHideSettings => 'تنظیمات Hide';
+
+  @override
+  String get exchangeDcaViewSettings => 'تنظیمات View';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'خرید Bitcoin Recurring?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'برنامه خرید مکرر Bitcoin شما متوقف خواهد شد و خرید برنامه ریزی شده پایان خواهد یافت. برای شروع مجدد، شما باید یک برنامه جدید ایجاد کنید.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'لغو';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'بله، غیرفعال کردن';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ساعت';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'روز';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'هفته';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'ماه';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'شبکه Bitcoin Network';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'شبکه Lightning Network';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'شبکه نقدینگی';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'شما $amount را هر $frequency از طریق $network خریداری می‌کنید، تا زمانی که در حساب شما پول وجود داشته باشد.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'نور';
+
+  @override
+  String get exchangeKycLevelLimited => 'محدود';
+
+  @override
+  String get exchangeKycCardTitle => 'تکمیل خود را KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'برای حذف محدودیت های معامله';
+
+  @override
+  String get homeActionBuy => 'خرید';
+
+  @override
+  String get homeActionSell => 'فروش';
+
+  @override
+  String get homeActionPay => 'پرداخت';
+
+  @override
+  String get homeActionTransfer => 'مبادله';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

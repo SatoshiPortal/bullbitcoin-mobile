@@ -1207,4 +1207,109 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Настройки';
+
+  @override
+  String get transactionHistoryTitle => 'История на транзакциите';
+
+  @override
+  String get exchangeHomeDepositButton => 'Депозит';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Тегли';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Конфигурацията за DCA не можа да бъде получена';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Деактивирай периодична покупка';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Активирай периодична покупка';
+
+  @override
+  String get exchangeDcaHideSettings => 'Скрий настройките';
+
+  @override
+  String get exchangeDcaViewSettings => 'Виж настройките';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Отмяна на периодична покупка на Bitcoin?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Планът ви за периодична покупка на Bitcoin ще бъде спрян и планираните покупки ще приключат. За да рестартирате, ще трябва да настроите нов план.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Отмени';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Да, деактивирай';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'час';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'ден';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'седмица';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'месец';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin мрежа';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning мрежа';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid мрежа';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Купувате $amount на всеки $frequency през $network, докато има средства в сметката ви.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Лек';
+
+  @override
+  String get exchangeKycLevelLimited => 'Ограничен';
+
+  @override
+  String get exchangeKycCardTitle => 'Завършете своя KYC';
+
+  @override
+  String get exchangeKycCardSubtitle =>
+      'За премахване на лимитите за транзакции';
+
+  @override
+  String get homeActionBuy => 'Купи';
+
+  @override
+  String get homeActionSell => 'Продай';
+
+  @override
+  String get homeActionPay => 'Плати';
+
+  @override
+  String get homeActionTransfer => 'Обмени';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

@@ -1212,4 +1212,107 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Ρυθμίσεις';
+
+  @override
+  String get transactionHistoryTitle => 'Ιστορικό συναλλαγών';
+
+  @override
+  String get exchangeHomeDepositButton => 'Προκαταβολή';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Withdraw';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Δεν είναι σε θέση να πάρει τη διαμόρφωση DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Απενεργοποιήστε το Recuring Buy';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Ενεργοποίηση Recuring Buy';
+
+  @override
+  String get exchangeDcaHideSettings => 'Κρυμμένες ρυθμίσεις';
+
+  @override
+  String get exchangeDcaViewSettings => 'Ρυθμίσεις προβολής';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Ακυρώστε Bitcoin Recurring Buy?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Το επαναλαμβανόμενο σχέδιο αγοράς Bitcoin θα σταματήσει και οι προγραμματισμένες αγορές θα τελειώσουν. Για να επανεκκινήσετε, θα πρέπει να δημιουργήσετε ένα νέο σχέδιο.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Ακύρωση';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Ναι, απενεργοποιημένη';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'ώρα';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'μέρα';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'εβδομάδα';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'μήνα';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin Network';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Δίκτυο Lightning Network';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid Network';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Αγοράζετε $amount κάθε $frequency μέσω $network, εφόσον υπάρχουν κεφάλαια στον λογαριασμό σας.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Φως';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limited';
+
+  @override
+  String get exchangeKycCardTitle => 'Πλήρης σας KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Για να αφαιρέσετε τα όρια συναλλαγών';
+
+  @override
+  String get homeActionBuy => 'Αγορά';
+
+  @override
+  String get homeActionSell => 'Πώληση';
+
+  @override
+  String get homeActionPay => 'Πληρωμή';
+
+  @override
+  String get homeActionTransfer => 'Ανταλλαγή';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

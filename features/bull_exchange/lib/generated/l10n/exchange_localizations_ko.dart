@@ -1120,4 +1120,106 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => '계정 설정';
+
+  @override
+  String get transactionHistoryTitle => '거래 내역';
+
+  @override
+  String get exchangeHomeDepositButton => '계좌정보';
+
+  @override
+  String get exchangeHomeWithdrawButton => '공지사항';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'DCA 구성을 얻을 수 없음';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Recurring 구매';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Recurring 구매';
+
+  @override
+  String get exchangeDcaHideSettings => '설정 숨기기';
+
+  @override
+  String get exchangeDcaViewSettings => '설정 보기';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Bitcoin Recurring 구매를 취소합니까?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Bitcoin 구매 계획은 중지되며, 예약 된 구매가 종료됩니다. 다시 시작하려면 새로운 계획을 설정해야합니다.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => '이름 *';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => '예, 비활성화';
+
+  @override
+  String get exchangeDcaFrequencyHour => '1시간';
+
+  @override
+  String get exchangeDcaFrequencyDay => '일 시';
+
+  @override
+  String get exchangeDcaFrequencyWeek => '주 메뉴';
+
+  @override
+  String get exchangeDcaFrequencyMonth => '1 개월';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin 네트워크';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning 네트워크';
+
+  @override
+  String get exchangeDcaNetworkLiquid => '액체 네트워크';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return '$amount 모든 $frequency를 구입하고 있습니다. $network 귀하의 계정에 자금이 있습니다.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => '제품 정보';
+
+  @override
+  String get exchangeKycLevelLimited => '가격 :';
+
+  @override
+  String get exchangeKycCardTitle => '지원하다 사이트맵';
+
+  @override
+  String get exchangeKycCardSubtitle => '거래 제한을 제거';
+
+  @override
+  String get homeActionBuy => '구매';
+
+  @override
+  String get homeActionSell => '판매';
+
+  @override
+  String get homeActionPay => '결제';
+
+  @override
+  String get homeActionTransfer => '스왑';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

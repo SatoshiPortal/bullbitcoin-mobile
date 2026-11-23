@@ -1213,4 +1213,109 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
   @override
   String get exchangeTradingUnavailable =>
       'Las operaciones no están disponibles.';
+
+  @override
+  String get settingsScreenTitle => 'Ajustes';
+
+  @override
+  String get transactionHistoryTitle => 'Historial de transacciones';
+
+  @override
+  String get exchangeHomeDepositButton => 'Depositar';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Retirar';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'No se puede obtener la configuración de DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Desactivar compra recurrente';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Activar compra recurrente';
+
+  @override
+  String get exchangeDcaHideSettings => 'Ocultar configuración';
+
+  @override
+  String get exchangeDcaViewSettings => 'Ver configuración';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      '¿Cancelar compra recurrente de Bitcoin?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Tu plan de compra recurrente de Bitcoin se detendrá y las compras programadas finalizarán. Para reiniciar, deberás configurar un nuevo plan.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancelar';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Sí, desactivar';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'hora';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'día';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'semana';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'mes';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Red Bitcoin';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Red Lightning';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Red Liquid';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Estás comprando $amount cada $frequency a través de $network mientras haya fondos en tu cuenta.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Ligera';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limitada';
+
+  @override
+  String get exchangeKycCardTitle => 'Completa tu verificación KYC';
+
+  @override
+  String get exchangeKycCardSubtitle =>
+      'Para eliminar los límites de transacción';
+
+  @override
+  String get homeActionBuy => 'Comprar';
+
+  @override
+  String get homeActionSell => 'Vender';
+
+  @override
+  String get homeActionPay => 'Pagar';
+
+  @override
+  String get homeActionTransfer => 'Intercambiar';
+
+  @override
+  String get priceChartShowTooltip => 'Mostrar el gráfico de precios';
 }

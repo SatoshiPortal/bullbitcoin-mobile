@@ -1080,4 +1080,106 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => '背景';
+
+  @override
+  String get transactionHistoryTitle => '交易记录';
+
+  @override
+  String get exchangeHomeDepositButton => '交存';
+
+  @override
+  String get exchangeHomeWithdrawButton => '草原';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => '无法获得发展中国家的组合';
+
+  @override
+  String get exchangeDcaDeactivateTitle => '2. 启动';
+
+  @override
+  String get exchangeDcaActivateTitle => '主动同意';
+
+  @override
+  String get exchangeDcaHideSettings => '良好做法';
+
+  @override
+  String get exchangeDcaViewSettings => '观点环境';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Cancel 购物?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      '您的经常性采购计划将停止,计划购买将结束。 为了重新启动,你需要制定新的计划.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancel';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => '是的,中止';
+
+  @override
+  String get exchangeDcaFrequencyHour => '小时';
+
+  @override
+  String get exchangeDcaFrequencyDay => '日 本';
+
+  @override
+  String get exchangeDcaFrequencyWeek => '每周';
+
+  @override
+  String get exchangeDcaFrequencyMonth => '月 本';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => '联合国';
+
+  @override
+  String get exchangeDcaNetworkLightning => '照明网络';
+
+  @override
+  String get exchangeDcaNetworkLiquid => '流动网络';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return '只要你的账户有资金,你就每$frequency次通过$network购买$amount.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel:$address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => '灯光';
+
+  @override
+  String get exchangeKycLevelLimited => '有限公司';
+
+  @override
+  String get exchangeKycCardTitle => '完成 KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => '取消交易限制';
+
+  @override
+  String get homeActionBuy => '购买';
+
+  @override
+  String get homeActionSell => '出售';
+
+  @override
+  String get homeActionPay => '支付';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

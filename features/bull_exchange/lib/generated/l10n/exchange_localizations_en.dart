@@ -1192,4 +1192,106 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Settings';
+
+  @override
+  String get transactionHistoryTitle => 'Transaction History';
+
+  @override
+  String get exchangeHomeDepositButton => 'Deposit';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Withdraw';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'Unable to get DCA configuration';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Deactivate Recurring Buy';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Activate Recurring Buy';
+
+  @override
+  String get exchangeDcaHideSettings => 'Hide settings';
+
+  @override
+  String get exchangeDcaViewSettings => 'View settings';
+
+  @override
+  String get exchangeDcaCancelDialogTitle => 'Cancel Bitcoin Recurring Buy?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Your recurring Bitcoin purchase plan will stop, and scheduled buys will end. To restart, you\'ll need to set up a new plan.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Cancel';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Yes, deactivate';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'hour';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'day';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'week';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'month';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin Network';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning Network';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid Network';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'You are buying $amount every $frequency via $network as long as there are funds in your account.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Light';
+
+  @override
+  String get exchangeKycLevelLimited => 'Limited';
+
+  @override
+  String get exchangeKycCardTitle => 'Complete your KYC';
+
+  @override
+  String get exchangeKycCardSubtitle => 'To remove transaction limits';
+
+  @override
+  String get homeActionBuy => 'Buy';
+
+  @override
+  String get homeActionSell => 'Sell';
+
+  @override
+  String get homeActionPay => 'Pay';
+
+  @override
+  String get homeActionTransfer => 'Swap';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

@@ -1203,4 +1203,108 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Налаштування';
+
+  @override
+  String get transactionHistoryTitle => 'Історія транзакцій';
+
+  @override
+  String get exchangeHomeDepositButton => 'Депозити';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Зняття';
+
+  @override
+  String get exchangeDcaUnableToGetConfig =>
+      'Неможливо отримати конфігурацію DCA';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Deactivate Recurring Купити';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Активувати продаж';
+
+  @override
+  String get exchangeDcaHideSettings => 'Приховати налаштування';
+
+  @override
+  String get exchangeDcaViewSettings => 'Перегляд налаштувань';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Скасувати Bitcoin Recurring Купити?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Зареєструвати тарифний план біткойн-продажу буде припинено, а регулярні покупки будуть завершені. Щоб перезапустити, потрібно налаштувати новий план.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Зареєструватися';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Так, деактивація';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'час';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'день';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'тиждень';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'місяць';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin мережа';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Мережа Lightning';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Мережа рідин';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Ви купуєте $amount кожен $frequency через $network до тих пір, поки є кошти в обліковому записі.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Світло';
+
+  @override
+  String get exchangeKycLevelLimited => 'Об\'єм';
+
+  @override
+  String get exchangeKycCardTitle => 'Завершіть КИЇВ';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Щоб видалити ліміти транзакцій';
+
+  @override
+  String get homeActionBuy => 'Купити';
+
+  @override
+  String get homeActionSell => 'Продати';
+
+  @override
+  String get homeActionPay => 'Сплатити';
+
+  @override
+  String get homeActionTransfer => 'Обміняти';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }

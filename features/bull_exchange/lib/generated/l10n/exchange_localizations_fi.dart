@@ -1193,4 +1193,107 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
 
   @override
   String get exchangeTradingUnavailable => 'Trading is unavailable.';
+
+  @override
+  String get settingsScreenTitle => 'Asetukset';
+
+  @override
+  String get transactionHistoryTitle => 'Tapahtumahistoria';
+
+  @override
+  String get exchangeHomeDepositButton => 'Talleta';
+
+  @override
+  String get exchangeHomeWithdrawButton => 'Nosta';
+
+  @override
+  String get exchangeDcaUnableToGetConfig => 'DCA-asetuksia ei saatu haettua';
+
+  @override
+  String get exchangeDcaDeactivateTitle => 'Poista toistuva osto käytöstä';
+
+  @override
+  String get exchangeDcaActivateTitle => 'Ota käyttöön toistuvat ostot';
+
+  @override
+  String get exchangeDcaHideSettings => 'Piilota asetukset';
+
+  @override
+  String get exchangeDcaViewSettings => 'Näytä asetukset';
+
+  @override
+  String get exchangeDcaCancelDialogTitle =>
+      'Peruutetaanko Bitcoinin toistuva osto?';
+
+  @override
+  String get exchangeDcaCancelDialogMessage =>
+      'Toistuva Bitcoin-ostosuunnitelmasi pysähtyy ja ajastetut ostot päättyvät. Käynnistääksesi sen uudelleen sinun täytyy luoda uusi suunnitelma.';
+
+  @override
+  String get exchangeDcaCancelDialogCancelButton => 'Peruuta';
+
+  @override
+  String get exchangeDcaCancelDialogConfirmButton => 'Kyllä, poista käytöstä';
+
+  @override
+  String get exchangeDcaFrequencyHour => 'tunti';
+
+  @override
+  String get exchangeDcaFrequencyDay => 'päivä';
+
+  @override
+  String get exchangeDcaFrequencyWeek => 'viikko';
+
+  @override
+  String get exchangeDcaFrequencyMonth => 'kuukausi';
+
+  @override
+  String get exchangeDcaNetworkBitcoin => 'Bitcoin-verkko';
+
+  @override
+  String get exchangeDcaNetworkLightning => 'Lightning-verkko';
+
+  @override
+  String get exchangeDcaNetworkLiquid => 'Liquid-verkko';
+
+  @override
+  String exchangeDcaSummaryMessage(
+    String amount,
+    String frequency,
+    String network,
+  ) {
+    return 'Ostat $amount joka $frequency verkossa $network niin kauan kuin tililläsi on varoja.';
+  }
+
+  @override
+  String exchangeDcaAddressDisplay(String addressLabel, String address) {
+    return '$addressLabel: $address';
+  }
+
+  @override
+  String get exchangeKycLevelLight => 'Kevyt';
+
+  @override
+  String get exchangeKycLevelLimited => 'Rajoitettu';
+
+  @override
+  String get exchangeKycCardTitle => 'Suorita KYC-tunnistautuminen';
+
+  @override
+  String get exchangeKycCardSubtitle => 'Poistaaksesi tapahtumarajat';
+
+  @override
+  String get homeActionBuy => 'Osta';
+
+  @override
+  String get homeActionSell => 'Myy';
+
+  @override
+  String get homeActionPay => 'Maksa';
+
+  @override
+  String get homeActionTransfer => 'Swappaa';
+
+  @override
+  String get priceChartShowTooltip => 'Show price chart';
 }
