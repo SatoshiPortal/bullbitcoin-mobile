@@ -26,8 +26,10 @@ import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show prepareBackgroundWalletStores;
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+import 'package:bb_mobile/foreground_wallet_startup.dart';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
@@ -327,7 +329,7 @@ class Bull {
         initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
       );
       if (setup case Err()) return setup;
-      if (!pinProtected) await initializeWalletRuntime(locator);
+      if (!pinProtected) await locator<ForegroundWalletStartup>().start();
       // Custody inventory is already installed, independently of this profile.
       await _setupArkRegtestProfile();
       Bloc.observer = AppBlocObserver();

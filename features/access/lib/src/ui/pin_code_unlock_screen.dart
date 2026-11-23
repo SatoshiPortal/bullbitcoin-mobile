@@ -168,7 +168,9 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
                   selector: (state) =>
-                      state.timeoutSeconds == 0 && !state.isVerifying,
+                      state.status != AppUnlockStatus.success &&
+                      state.timeoutSeconds == 0 &&
+                      !state.isVerifying,
                   builder: (context, padEnabled) {
                     return BullPinPad(
                       scrambleHint: context.loc.pinCodeScrambleKeypadHint,

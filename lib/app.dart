@@ -30,6 +30,7 @@ import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/foreground_wallet_startup.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_logs/bull_logs.dart';
@@ -46,10 +47,10 @@ import 'package:novlang/novlang.dart';
 @visibleForTesting
 void resumePayjoinsOnAppResume(
   AppLifecycleState state,
-  PayjoinLifecycle lifecycle,
+  ForegroundWalletStartup startup,
 ) {
   if (state == AppLifecycleState.resumed) {
-    unawaited(lifecycle.resume());
+    startup.resumePayjoins();
   }
 }
 
@@ -90,8 +91,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   // AppLifecycleListener — see lib/features/wallet/data/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
-    if (locator.isRegistered<PayjoinLifecycle>()) {
-      resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
+    if (locator.isRegistered<ForegroundWalletStartup>()) {
+      resumePayjoinsOnAppResume(state, locator<ForegroundWalletStartup>());
     }
     if (state == AppLifecycleState.resumed &&
         locator.isRegistered<ArkForegroundHost>()) {

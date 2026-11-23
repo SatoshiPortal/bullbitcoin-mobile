@@ -5,6 +5,8 @@ import 'package:secrets/storage.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+import 'package:bb_mobile/foreground_wallet_startup.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
 import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
@@ -254,7 +256,7 @@ class AppLocator {
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
     CoreLocator.registerUsecases(locator);
-    PayjoinSetup.setup(locator, startRecovery: startPayjoinRecovery);
+    PayjoinSetup.setup(locator, startRecovery: false);
 
     SyncLocator.setupForeground(locator);
 
@@ -271,8 +273,9 @@ class AppLocator {
               Ok(:final value) => value,
               Err() => false,
             },
-        onUnlocked: (context) {
-          unawaited(initializeWalletRuntime(locator));
+        onUnlocked: (context) async {
+          await locator<ForegroundWalletStartup>().start();
+          if (!context.mounted) return;
           unawaited(locator<RecoverBullFacade>().checkAtColdStart());
           completeAppStartupUnlock(context);
           context.goNamed(WalletRoute.walletHome.name);
@@ -289,7 +292,6 @@ class AppLocator {
       locator,
       readParent: WalletBip85Bindings.reader(locator),
     );
-    // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(
       locator,
@@ -307,7 +309,7 @@ class AppLocator {
       locator,
       initializeNew: initializeArkFunding && installation.wasNeverProvisioned,
     );
-    SpLocator.setup(locator, startForegroundWatchers: true);
+    SpLocator.setup(locator);
     SettingsLocator.setup(locator);
     setupBackgroundPreferences(
       locator,
@@ -336,15 +338,6 @@ class AppLocator {
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
     AutoSwapLocator.setup(locator);
-    // Lifecycle side effect lives in the composition root, not in DI
-    // registration: the background handler opts out via
-    // [startOrderSwapWatcher] so polling only runs in the foreground app.
-    if (startOrderSwapWatcher) {
-      locator<OrderSwapWatcher>().start();
-    }
-    if (startAutoswapWatcher) {
-      locator<AutoswapWatcher>().start();
-    }
 
     ExchangeLocator.setup(locator);
     DefaultWalletsLocator.setup(locator);
@@ -372,10 +365,20 @@ class AppLocator {
     ReplaceByFeeLocator.setup(locator);
     RecipientsLocator.setup(locator);
 
-    // Follows network switches from launch on, whether or not the swap
-    // watcher has started yet: the engine must match the network the first
-    // swap is created on. A switch stops and relaunches the watcher.
-    locator<SwapEngineSwitcher>().start();
+    locator.registerSingleton(
+      ForegroundWalletStartup(
+        initialize: () => initializeWalletRuntime(locator),
+        startWatchers: () {
+          SpLocator.startForegroundWatchers(locator);
+          if (startOrderSwapWatcher) locator<OrderSwapWatcher>().start();
+          if (startAutoswapWatcher) locator<AutoswapWatcher>().start();
+          locator<SwapEngineSwitcher>().start();
+        },
+        payjoin: startPayjoinRecovery
+            ? () => locator<PayjoinLifecycle>()
+            : null,
+      ),
+    );
     return const Ok(null);
   }
 }

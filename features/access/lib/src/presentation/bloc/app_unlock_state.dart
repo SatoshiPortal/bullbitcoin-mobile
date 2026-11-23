@@ -20,6 +20,7 @@ sealed class AppUnlockState with _$AppUnlockState {
   const AppUnlockState._();
 
   bool get canSubmit =>
+      status != AppUnlockStatus.success &&
       pinCode.length >= minPinCodeLength &&
       pinCode.length <= maxPinCodeLength &&
       !isVerifying &&
