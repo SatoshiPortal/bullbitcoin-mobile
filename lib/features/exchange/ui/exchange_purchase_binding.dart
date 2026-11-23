@@ -57,7 +57,6 @@ ExchangePurchaseHost exchangePurchaseHost(GetIt locator) => (
               PaymentDestinationType.lightningAddress,
           },
         },
-        allowLnurl: type != WalletAddressType.lightning,
         keyboardType: type == WalletAddressType.lightning
             ? TextInputType.emailAddress
             : TextInputType.text,
