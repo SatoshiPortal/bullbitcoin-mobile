@@ -1,8 +1,9 @@
 import 'package:background_tasks/background_tasks.dart';
+import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
-import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:wizard/src/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/domain/repository/wizard_repository.dart';
+import 'package:wizard/src/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -52,6 +53,8 @@ void main() {
       wizardRepository: wizard,
       settingsRepository: settings,
       intervals: intervals,
+      applyExchangeAccess: (_) async =>
+          const Err(ExchangeSessionClearFailure()),
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.savePending(any())).thenAnswer((_) async {});
@@ -203,21 +206,24 @@ void main() {
       verify(() => wizard.markComplete()).called(1);
     },
   );
-  test('retains exchange choice when callback is missing', () async {
-    when(() => wizard.readPending()).thenAnswer(
-      (_) async => const WizardChoices(
-        exchangeAccess: false,
-        touched: {WizardField.exchangeAccess},
-      ),
-    );
-    await usecase.execute();
-    final staged =
-        verify(() => wizard.savePending(captureAny())).captured.single
-            as WizardChoices;
-    expect(staged.exchangeAccess, isFalse);
-    expect(staged.touched, {WizardField.exchangeAccess});
-    verifyNever(() => wizard.clearPending());
-  });
+  test(
+    'retains exchange choice when the capability rejects the write',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          exchangeAccess: false,
+          touched: {WizardField.exchangeAccess},
+        ),
+      );
+      await usecase.execute();
+      final staged =
+          verify(() => wizard.savePending(captureAny())).captured.single
+              as WizardChoices;
+      expect(staged.exchangeAccess, isFalse);
+      expect(staged.touched, {WizardField.exchangeAccess});
+      verifyNever(() => wizard.clearPending());
+    },
+  );
 
   test('clears exchange choice only after successful application', () async {
     when(() => wizard.readPending()).thenAnswer(
@@ -230,7 +236,7 @@ void main() {
       intervals: intervals,
       applyExchangeAccess: (enabled) async {
         applied = enabled;
-        return true;
+        return const Ok(null);
       },
     );
     await applying.execute();

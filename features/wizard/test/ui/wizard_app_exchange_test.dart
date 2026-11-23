@@ -1,9 +1,11 @@
-import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
-import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
+import 'package:wizard/src/ui/screens/wizard_screen.dart';
+import 'package:wizard/src/ui/wizard_app.dart';
 import 'package:bull_exchange/bull_exchange.dart' show WizardExchangeOption;
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'test_branding.dart';
 
 /// The App Store does not allow the exchange: the wizard must not offer it on
 /// iOS, where only a superuser can turn it on later from the settings.
@@ -20,6 +22,7 @@ void main() {
       await tester.pumpWidget(
         WizardApp(
           notificationChannelId: 'payments',
+          branding: testBranding,
           exchangeAllowed: ExchangeAvailability.platformAllowed(platform),
           onDone: (_) {},
         ),

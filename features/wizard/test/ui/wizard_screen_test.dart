@@ -2,17 +2,17 @@ import 'dart:ui' show Tristate;
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
-import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/notification_permission_usecase.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/read_background_tasks_usecase.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
-import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
-import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:wizard/src/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/domain/repository/wizard_repository.dart';
+import 'package:wizard/src/domain/usecase/mark_wizard_complete_usecase.dart';
+import 'package:wizard/src/domain/usecase/notification_permission_usecase.dart';
+import 'package:wizard/src/domain/usecase/read_background_tasks_usecase.dart';
+import 'package:wizard/src/domain/usecase/save_pending_wizard_choices_usecase.dart';
+import 'package:wizard/src/presentation/bloc/wizard_bloc.dart';
+import 'package:wizard/src/ui/screens/wizard_screen.dart';
+import 'package:wizard/src/ui/widgets/customize_step.dart';
+import 'package:wizard/src/ui/widgets/mission_consent_row.dart';
+import 'package:wizard/generated/l10n/wizard_localizations.dart';
 import 'package:bull_exchange/bull_exchange.dart'
     show ExchangeLocalizations, WizardExchangeOption;
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
@@ -21,6 +21,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
+
+import 'test_branding.dart';
 
 class _FakeWizardRepository implements WizardRepository {
   WizardChoices? pending;
@@ -92,10 +94,10 @@ Future<void> _pump(WidgetTester tester, Widget home) async {
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: [
-        ...AppLocalizations.localizationsDelegates,
+        ...WizardLocalizations.localizationsDelegates,
         ExchangeLocalizations.delegate,
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: WizardLocalizations.supportedLocales,
       home: home,
     ),
   );
@@ -113,6 +115,7 @@ void main() {
           BlocProvider(
             create: (_) => _bloc(repository, _Permissions()),
             child: WizardScreen(
+              branding: testBranding,
               exchangeAllowed: allowed,
               backgroundTasksAvailable: false,
             ),
@@ -170,7 +173,8 @@ void main() {
       tester,
       BlocProvider(
         create: (_) => _bloc(repository, permissions),
-        child: const WizardScreen(
+        child: WizardScreen(
+          branding: testBranding,
           exchangeAllowed: true,
           backgroundTasksAvailable: true,
         ),

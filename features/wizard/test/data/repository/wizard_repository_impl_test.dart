@@ -1,7 +1,7 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
-import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
-import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/data/datasource/wizard_local_datasource.dart';
+import 'package:wizard/src/data/repository/wizard_repository_impl.dart';
+import 'package:wizard/src/domain/entity/wizard_choices.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

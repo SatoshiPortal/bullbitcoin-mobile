@@ -1,5 +1,5 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
+import 'package:wizard/src/domain/entity/wizard_choices.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
