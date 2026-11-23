@@ -12,13 +12,14 @@ import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wall
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
@@ -85,8 +86,7 @@ class SettingsRouter {
     onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
     onOpenTransactions: (context) =>
         context.pushNamed(TransactionsRoute.exchangeTransactions.name),
-    onOpenDefaultWallets: (context) =>
-        context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
+    onOpenDefaultWallets: DefaultWalletsNavigation.open,
     onOpenExchange: (context) =>
         context.goNamed(ExchangeRoute.exchangeHome.name),
     access: (
@@ -104,6 +104,17 @@ class SettingsRouter {
         queryParameters: {'from': 'settings'},
       ),
       onDisabled: (context) => context.goNamed(WalletRoute.walletHome.name),
+    ),
+    defaultWallets: (
+      payoutFields: exchangePayoutFields,
+      isAvailable: () async => switch (await locator<Preferences>().fetch()) {
+        Ok(:final value) => NetworkCapabilities.supports(
+          BitcoinNetwork.fromName(value.environment.name),
+          NetworkCapability.exchange,
+        ),
+        Err() => false,
+      },
+      unavailableRedirectPath: WalletRoute.walletHome.path,
     ),
   );
 
@@ -134,7 +145,6 @@ class SettingsRouter {
         builder: (context, state) =>
             QuickActionsSettingsScreen(cubit: locator<QuickActionsCubit>()),
       ),
-      DefaultWalletsRouter.route,
       ...exchangeSettingsRoutes,
       GoRoute(
         name: SettingsRoute.walletSettings.name,

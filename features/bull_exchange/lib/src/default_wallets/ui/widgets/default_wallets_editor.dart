@@ -1,13 +1,14 @@
+import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_failure_l10n.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_cubit.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_failure_l10n.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../default_wallets_payout_fields.dart';
+import '../../domain/validate_default_wallet_destination_usecase.dart';
 
 typedef DefaultWalletsFooterBuilder = Widget Function(
   BuildContext context,
@@ -16,11 +17,15 @@ typedef DefaultWalletsFooterBuilder = Widget Function(
 );
 
 class DefaultWalletsEditor extends StatelessWidget {
+  final Exchange exchange;
+  final DefaultWalletsPayoutFields payoutFields;
   final bool? showDescription;
   final EdgeInsetsGeometry? padding;
   final DefaultWalletsFooterBuilder? footerBuilder;
 
   const DefaultWalletsEditor({
+    required this.exchange,
+    required this.payoutFields,
     this.showDescription,
     this.padding,
     this.footerBuilder,
@@ -28,8 +33,14 @@ class DefaultWalletsEditor extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return BlocListener<DefaultWalletsCubit, DefaultWalletsState>(
+  Widget build(BuildContext context) => BlocProvider(
+    create: (_) => DefaultWalletsCubit(
+      exchange: exchange,
+      validateDestination: ValidateDefaultWalletDestinationUsecase(
+        payoutFields.validate,
+      ),
+    )..init(),
+    child: BlocListener<DefaultWalletsCubit, DefaultWalletsState>(
       listenWhen: (previous, current) =>
           (!previous.saveSuccess && current.saveSuccess) ||
           (previous.saveError == null && current.saveError != null),
@@ -44,12 +55,13 @@ class DefaultWalletsEditor extends StatelessWidget {
         }
       },
       child: _EditorContent(
+        payoutFields: payoutFields,
         showDescription: showDescription,
         padding: padding,
         footerBuilder: footerBuilder,
       ),
-    );
-  }
+    ),
+  );
 }
 
 class _EditorContent extends StatelessWidget {
@@ -58,8 +70,10 @@ class _EditorContent extends StatelessWidget {
   final bool? showDescription;
   final EdgeInsetsGeometry? padding;
   final DefaultWalletsFooterBuilder? footerBuilder;
+  final DefaultWalletsPayoutFields payoutFields;
 
   const _EditorContent({
+    required this.payoutFields,
     required this.showDescription,
     required this.padding,
     required this.footerBuilder,
@@ -126,16 +140,19 @@ class _EditorContent extends StatelessWidget {
                 const SizedBox(height: 24),
               ],
               _WalletAddressField(
+                payoutFields: payoutFields,
                 type: WalletAddressType.bitcoin,
                 label: context.loc.exchangeBitcoinWalletsBitcoinAddressLabel,
               ),
               const SizedBox(height: 24),
               _WalletAddressField(
+                payoutFields: payoutFields,
                 type: WalletAddressType.lightning,
                 label: context.loc.exchangeBitcoinWalletsLightningAddressLabel,
               ),
               const SizedBox(height: 24),
               _WalletAddressField(
+                payoutFields: payoutFields,
                 type: WalletAddressType.liquid,
                 label: context.loc.exchangeBitcoinWalletsLiquidAddressLabel,
               ),
@@ -162,8 +179,13 @@ class _EditorContent extends StatelessWidget {
 class _WalletAddressField extends StatefulWidget {
   final WalletAddressType type;
   final String label;
+  final DefaultWalletsPayoutFields payoutFields;
 
-  const _WalletAddressField({required this.type, required this.label});
+  const _WalletAddressField({
+    required this.type,
+    required this.label,
+    required this.payoutFields,
+  });
 
   @override
   State<_WalletAddressField> createState() => _WalletAddressFieldState();
@@ -212,20 +234,10 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
           ],
         ),
         const SizedBox(height: 8),
-        PaymentDestinationField(
+        widget.payoutFields.buildField(
+          type: type,
           value: isEditing ? inputValue : currentAddress,
           hint: context.loc.exchangeBitcoinWalletsEnterAddressHint,
-          acceptedTypes: {
-            switch (type) {
-              WalletAddressType.bitcoin => PaymentDestinationType.bitcoin,
-              WalletAddressType.liquid => PaymentDestinationType.liquid,
-              WalletAddressType.lightning =>
-                PaymentDestinationType.lightningAddress,
-            },
-          },
-          keyboardType: type == WalletAddressType.lightning
-              ? TextInputType.emailAddress
-              : TextInputType.text,
           enabled: !state.isSaving,
           onChanged: (value) {
             if (!isEditing) cubit.startEditing(type);

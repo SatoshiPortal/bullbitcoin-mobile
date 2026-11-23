@@ -5,7 +5,6 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
-import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -45,7 +44,6 @@ import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/public/dca_facade.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
@@ -329,9 +327,6 @@ class AppLocator {
     }
 
     ExchangeLocator.setup(locator);
-    locator.registerLazySingleton<DefaultWalletsFacade>(
-      () => DefaultWalletsFacade(locator<Exchange>()),
-    );
     AutoBuyLocator.setup(locator);
     LimitOrdersLocator.setup(locator);
     BuyLocator.setup(locator);

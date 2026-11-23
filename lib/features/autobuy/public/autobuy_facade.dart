@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.d
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/ui/screens/autobuy_screen.dart';
 import 'package:bb_mobile/features/autobuy/ui/widgets/autobuy_home_card.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,12 +13,12 @@ export '../ui/autobuy_router.dart' show AutoBuyRoute, AutoBuyRouter;
 class AutoBuyFacade {
   final SetAutoBuyUsecase _setAutoBuyUsecase;
   final GetAutoBuyStatusUsecase _getAutoBuyStatusUsecase;
-  final DefaultWalletsFacade _defaultWalletsFacade;
+  final Exchange _exchange;
 
   const AutoBuyFacade(
     this._setAutoBuyUsecase,
     this._getAutoBuyStatusUsecase,
-    this._defaultWalletsFacade,
+    this._exchange,
   );
 
   Widget buildHomeCard({
@@ -38,7 +38,7 @@ class AutoBuyFacade {
 
   Widget buildScreen() => BlocProvider<AutoBuyCubit>(
     create: (_) => _createCubit()..loadStatus(),
-    child: AutoBuyScreen(defaultWalletsFacade: _defaultWalletsFacade),
+    child: AutoBuyScreen(exchange: _exchange),
   );
 
   AutoBuyCubit _createCubit() =>

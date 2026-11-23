@@ -1,8 +1,8 @@
-import 'package:bb_mobile/features/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
+import 'package:bull_exchange/src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
+import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
@@ -12,13 +12,11 @@ import '../domain/usecases/save_default_wallet_usecase.dart';
 
 class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   DefaultWalletsCubit({
-    ValidateDefaultWalletDestinationUsecase? validateDestination,
+    required this._validateDestination,
     required Exchange exchange,
   }) : _getDefaultWallets = GetDefaultWalletsUsecase(exchange),
        _saveDefaultWallet = SaveDefaultWalletUsecase(exchange),
        _deleteDefaultWallet = DeleteDefaultWalletUsecase(exchange),
-       _validateDestination =
-           validateDestination ?? ValidateDefaultWalletDestinationUsecase(),
        super(const DefaultWalletsState());
 
   final ValidateDefaultWalletDestinationUsecase _validateDestination;

@@ -1,6 +1,6 @@
+import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
 import 'package:flutter/widgets.dart';
 
 extension DefaultWalletsFailureL10n on DefaultWalletsFailure {

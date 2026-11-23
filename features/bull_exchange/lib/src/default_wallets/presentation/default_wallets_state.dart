@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'default_wallets_state.freezed.dart';

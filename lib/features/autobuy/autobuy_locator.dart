@@ -4,7 +4,6 @@ import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class AutoBuyLocator {
@@ -23,7 +22,7 @@ class AutoBuyLocator {
       () => AutoBuyFacade(
         locator<SetAutoBuyUsecase>(),
         locator<GetAutoBuyStatusUsecase>(),
-        locator<DefaultWalletsFacade>(),
+        locator<Exchange>(),
       ),
     );
   }

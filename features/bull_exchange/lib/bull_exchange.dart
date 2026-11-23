@@ -2,6 +2,12 @@
 library;
 
 export 'src/bull_exchange_feature.dart' show BullExchangeFeature;
+export 'src/default_wallets/default_wallets_payout_fields.dart'
+    show DefaultWalletsPayoutFields;
+export 'src/default_wallets/ui/default_wallets_router.dart'
+    show DefaultWalletsNavigation;
+export 'src/default_wallets/ui/widgets/default_wallets_editor.dart'
+    show DefaultWalletsEditor, DefaultWalletsFooterBuilder;
 export 'src/exchange_landing_copy.dart' show ExchangeLandingCopy;
 export 'src/exchange_landing_navigation.dart' show BullExchangeNavigation;
 export 'src/funding/fund_exchange_router.dart' show FundExchangeRoute;

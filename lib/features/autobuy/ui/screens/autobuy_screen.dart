@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
-import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bb_mobile/features/exchange/ui/default_wallets_payout_binding.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButtonSize,
@@ -22,9 +24,9 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AutoBuyScreen extends StatelessWidget {
-  final DefaultWalletsFacade defaultWalletsFacade;
+  final Exchange exchange;
 
-  const AutoBuyScreen({required this.defaultWalletsFacade, super.key});
+  const AutoBuyScreen({required this.exchange, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,9 @@ class AutoBuyScreen extends StatelessWidget {
                   onRetry: context.read<AutoBuyCubit>().loadStatus,
                 ),
               AutoBuyStep.intro => _IntroStep(isRestricted: state.isRestricted),
-              AutoBuyStep.wallets => defaultWalletsFacade.buildEditor(
+              AutoBuyStep.wallets => DefaultWalletsEditor(
+                exchange: exchange,
+                payoutFields: exchangePayoutFields,
                 footerBuilder: (context, wallets, status) => BullButton.primary(
                   label: context.loc.continueButton,
                   onPressed:

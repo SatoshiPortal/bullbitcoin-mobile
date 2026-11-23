@@ -87,7 +87,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, orders, default payouts, KYC, stats and Confidential SEPA eligibility]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account and access settings, support chat, funding]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account and access settings, support chat, funding, default payouts]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account and access settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
@@ -102,7 +102,6 @@ graph TB
     PAY -->|KYC navigation and amount input| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
     DCA --> EXCHANGE_DOMAIN
-    DEFAULT_WALLETS -->|default payout reads and writes| EXCHANGE_DOMAIN
     AUTOBUY --> EXCHANGE_DOMAIN
     LIMIT_ORDERS --> EXCHANGE_DOMAIN
     SETTINGS --> EXCHANGE_DOMAIN
@@ -111,7 +110,7 @@ graph TB
     EXCHANGE_DOMAIN -->|encrypted credential import| LEGACY_STORAGE
     EXCHANGE_DOMAIN -->|database key and legacy credential lifecycle| SECRETS
     EXCHANGE_DOMAIN -->|account, KYC, statistics, chat, notifications, funding, virtual IBANs, orders and default payouts| BBX_API
-    BULL_EXCHANGE -->|support chat, account, statistics and funding| EXCHANGE_DOMAIN
+    BULL_EXCHANGE -->|support chat, account, statistics, funding and default payouts| EXCHANGE_DOMAIN
     EXCHANGE_DOMAIN -->|legacy environment selection| PREFERENCES
     RECIPIENTS -->|Confidential SEPA eligibility| EXCHANGE_DOMAIN
 
@@ -224,7 +223,6 @@ graph TB
     REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks Package]
     DCA[DCA]
-    DEFAULT_WALLETS[Default Wallets]
     LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
     PAY[Pay]
@@ -316,7 +314,7 @@ graph TB
     AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
     AUTOSWAP --> TRANSFER
-    AUTOBUY --> DEFAULT_WALLETS
+    AUTOBUY -->|default payout editor| BULL_EXCHANGE
     BIP85 --> SECRETS
     BACKUPS --> BIP85
     APP_STARTUP --> RECOVERBULL
@@ -350,7 +348,6 @@ graph TB
     IMPORT_WALLET[Wallet Import]
     IMPORT_WALLET --> SETTINGS
     SETTINGS --> SWAPS
-    SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
     SETTINGS --> PAY
     SETTINGS --> TX_HISTORY
@@ -367,7 +364,6 @@ graph TB
     PAY --> EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
     WITHDRAWAL --> EXCHANGE
-    LIMIT_ORDERS -->|default-wallet editor navigation| DEFAULT_WALLETS
     LIMIT_ORDERS -->|funding navigation and amount input| BULL_EXCHANGE
     EXCHANGE -->|composes virtual IBAN funding view| RECIPIENTS
     HW_WALLETS --> CORE
@@ -472,8 +468,7 @@ graph TB
     AUTOSWAP --> SETTINGS
     IMPORT_WALLET --> SIGNERS
     CONSOLIDATION --> SEND
-    DEFAULT_WALLETS --> EXCHANGE
-    DEFAULT_WALLETS -->|public destination validation and input| WALLETS
+    EXCHANGE -->|supplies shared destination validation and input| WALLETS
     WALLETS --> FEES_PACKAGE
     TX_HISTORY --> FEES_PACKAGE
     SEND --> FEES_PACKAGE
@@ -523,7 +518,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,BACKUPS,SWAPS,WITHDRAWAL,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams

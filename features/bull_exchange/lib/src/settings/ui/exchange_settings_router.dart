@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../default_wallets/ui/default_wallets_router.dart';
 import '../domain/usecases/get_account_info_usecase.dart';
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
@@ -40,6 +41,7 @@ final class ExchangeSettingsHost {
   final void Function(BuildContext) onOpenDefaultWallets;
   final void Function(BuildContext) onOpenExchange;
   final ExchangeAccessSettingsHost? access;
+  final DefaultWalletsHost? defaultWallets;
 
   const ExchangeSettingsHost({
     required this.exchange,
@@ -57,11 +59,14 @@ final class ExchangeSettingsHost {
     required this.onOpenDefaultWallets,
     required this.onOpenExchange,
     this.access,
+    this.defaultWallets,
   });
 }
 
 class ExchangeSettingsRouter {
   static List<RouteBase> routes(ExchangeSettingsHost config) => [
+    if (config.defaultWallets case final host?)
+      defaultWalletsRoute(config.exchange, host),
     if (config.access case final access?)
       exchangeAccessSettingsRoute(
         host: access,
