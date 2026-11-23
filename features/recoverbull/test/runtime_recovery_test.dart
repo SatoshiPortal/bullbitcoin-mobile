@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/testing.dart';
 import 'package:bull_recoverbull/src/data/secrets_vault_repository.dart';
 import 'package:bull_recoverbull/src/public/recoverbull_runtime.dart';
 import 'package:bull_tor/tor.dart';
@@ -40,12 +41,12 @@ void main() {
       secure.entries.clear();
       final routes = _Routes();
       final owners = _Owners();
-      final runtime = await RecoverBullRuntime.open(
-        databasePath: file.path,
+      final runtime = await RecoverBullRuntime.openWithStorage(
+        storage: recoverBullStorageForTesting(file.path),
         secrets: secrets,
         wallets: owners,
         environment: owners,
-        legacy: owners,
+        configuredServer: () async => null,
         routes: routes,
         clients: const TorHttpClientFactory(),
       );

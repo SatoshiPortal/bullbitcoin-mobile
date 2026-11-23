@@ -50,10 +50,6 @@ import 'package:path_provider/path_provider.dart';
 class Bull {
   static Future<Result<void, Failure>> init() async {
     final bullDirectory = await getApplicationDocumentsDirectory();
-    final payjoinDatabasePath = p.join(
-      bullDirectory.path,
-      payjoinDatabaseFilename,
-    );
 
     await initializeLogging(
       directory: bullDirectory,
@@ -259,7 +255,6 @@ class Bull {
           tor: tor,
           torHttp: http,
         ),
-        payjoinDatabasePath: payjoinDatabasePath,
         arkFundingDatabasePath: p.join(
           bullDirectory.path,
           'ark-funding.sqlite',

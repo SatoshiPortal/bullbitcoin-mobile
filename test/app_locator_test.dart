@@ -140,7 +140,6 @@ void main() {
               torHttp: http,
             ),
           ),
-          payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
           arkFundingDatabasePath: '${directory.path}/ark-funding.sqlite',
           initializeArkFunding: initialize,
           startPayjoinRecovery: false,
@@ -390,7 +389,6 @@ void main() {
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
-        payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
         startPayjoinRecovery: false,
         startOrderSwapWatcher: false,
         startAutoswapWatcher: false,
@@ -471,7 +469,6 @@ void main() {
       openMempool: (tor, http) async => Ok(
         createMempoolForTesting(database: database, tor: tor, torHttp: http),
       ),
-      payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
       startPayjoinRecovery: false,
       startOrderSwapWatcher: false,
       startAutoswapWatcher: false,

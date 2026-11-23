@@ -91,24 +91,16 @@ class AppLocator {
       databasePath: databasePath,
     );
     WalletRecoverBullBindings.setup(locator);
-    final admission = locator.isRegistered<RuntimeAdmission>()
-        ? locator<RuntimeAdmission>()
-        : null;
     final family = selectedDatabasePath == databasePath ? null : 'regtest';
-    final cutover =
-        locator.isRegistered<RecoverBullCutover>(instanceName: family)
-        ? locator<RecoverBullCutover>(instanceName: family)
-        : null;
     final feature = await RecoverBullFeature.mount(
-      databasePath: selectedDatabasePath,
       secrets: locator<Secrets>(),
       wallets: locator<RecoverBullWalletPort>(),
       environment: locator<RecoverBullEnvironmentPort>(),
       legacy: locator<RecoverBullLegacySettingsPort>(),
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
-      admission: admission,
-      cutover: cutover,
+      admission: locator<RuntimeAdmission>(),
+      cutover: locator<RecoverBullCutover>(instanceName: family),
     );
     locator.registerSingleton<RecoverBullFeature>(
       feature,
@@ -121,7 +113,6 @@ class AppLocator {
   static Future<Result<void, Failure>> setup(
     GetIt locator,
     SqliteDatabase database, {
-    required String payjoinDatabasePath,
     required Future<Result<Labels, LabelFailure>> Function(
       Future<Sync> Function() sync,
       Future<Wallet> Function(String) openWallet,
@@ -250,12 +241,7 @@ class AppLocator {
     });
     locator.registerSingleton(FeesFeature.mount(fees: () => locator<Fees>()));
     CoreLocator.registerUsecases(locator);
-    PayjoinSetup.setup(
-      locator,
-      database,
-      payjoinDatabasePath,
-      startRecovery: startPayjoinRecovery,
-    );
+    PayjoinSetup.setup(locator, startRecovery: startPayjoinRecovery);
 
     SyncLocator.setupForeground(locator);
 

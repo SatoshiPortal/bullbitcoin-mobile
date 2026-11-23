@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 
 import '../../domain/recoverbull_server_url.dart';
 
@@ -117,25 +114,6 @@ final class RecoverBullDatabase extends _$RecoverBullDatabase {
 
   RecoverBullDatabase(super.executor);
   RecoverBullDatabase.forTesting(super.executor);
-
-  factory RecoverBullDatabase.open(String path) =>
-      RecoverBullDatabase.forTesting(
-        NativeDatabase.createInBackground(
-          File(path),
-          setup: (database) {
-            final version =
-                database.select('PRAGMA user_version').single['user_version']
-                    as int;
-            if (version > schema) {
-              throw const RecoverBullUnsupportedSchemaException();
-            }
-            database.execute('PRAGMA busy_timeout = 2000');
-            database.execute('PRAGMA journal_mode = WAL');
-            database.execute('PRAGMA synchronous = FULL');
-            database.execute('PRAGMA secure_delete = ON');
-          },
-        ),
-      );
 
   @override
   int get schemaVersion => schema;

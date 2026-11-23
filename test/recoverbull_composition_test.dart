@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/migration.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:drift/native.dart';
@@ -19,6 +20,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:secrets/secrets.dart';
 
 class _NativeTor implements TorNativeInitializer {
@@ -84,15 +86,26 @@ void main() {
         ),
       );
       // Wallet's native runtime requires the Payjoin owner's reservation port.
-      PayjoinSetup.setup(
-        services,
-        database,
-        '${directory.path}/payjoin.sqlite',
-        startRecovery: false,
-      );
+      PayjoinSetup.setup(services, startRecovery: false);
       wallet.WalletLocator.setup(services);
 
       expect(services.isRegistered<EmbeddedTor>(), isFalse);
+      final gate = NativeFileGate(File('${directory.path}/lifecycle.lock'));
+      final admission = await gate.acquire(
+        exclusive: false,
+        timeout: const Duration(seconds: 2),
+      ) as RuntimeAdmission;
+      services.registerSingleton<RuntimeAdmission>(
+        admission,
+        dispose: (value) => value.close(),
+      );
+      services.registerSingleton(
+        RecoverBullCutover(
+          file: File('${directory.path}/encrypted.sqlite'),
+          standalone: File('${directory.path}/recoverbull.sqlite'),
+          regtest: false,
+        ),
+      );
       await AppLocator.setupRecoverBull(
         services,
         databasePath: '${directory.path}/recoverbull.sqlite',

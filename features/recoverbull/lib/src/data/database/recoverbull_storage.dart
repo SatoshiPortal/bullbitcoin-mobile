@@ -9,9 +9,7 @@ import 'recoverbull_database.dart';
 
 /// Owns a single connection and preserves unavailable or future databases.
 final class RecoverBullStorage {
-  final String path;
-  final RecoverBullCutover? cutover;
-  final RuntimeAdmission? admission;
+  final Future<RecoverBullDatabase> Function(RecoverBullStorage) _openDurable;
   Future<RecoverBullDatabase>? _opening;
   RecoverBullDatabase? _database;
   LifecycleHandle? _handle;
@@ -19,7 +17,24 @@ final class RecoverBullStorage {
   bool _temporary = false;
   RecoverBullFailure? _unavailableFailure;
 
-  RecoverBullStorage(this.path, {this.cutover, this.admission});
+  RecoverBullStorage({
+    required RecoverBullCutover cutover,
+    required RuntimeAdmission admission,
+  }) : _openDurable = ((owner) async {
+         final opened = await cutover.open(admission);
+         if (opened case Ok(:final value)) {
+           if (owner._disposed) {
+             await value.handle.close();
+             throw const LifecycleException('recoverbull_disposed');
+           }
+           owner._handle = value.handle;
+           return value.database;
+         }
+         throw const LifecycleException('recoverbull_open');
+       });
+
+  RecoverBullStorage.forTesting(Future<RecoverBullDatabase> Function() open)
+    : _openDurable = ((_) => open());
 
   bool get isTemporary => _temporary;
   RecoverBullFailure? get unavailableFailure => _unavailableFailure;
@@ -34,34 +49,12 @@ final class RecoverBullStorage {
   }
 
   Future<RecoverBullDatabase> _open() async {
-    final selected = cutover;
-    final lease = admission;
-    if (selected != null || lease != null) {
-      if (selected == null || lease == null) {
-        throw const LifecycleException('recoverbull_admission');
-      }
-      final opened = await selected.open(lease);
-      if (opened case Ok(:final value)) {
-        if (_disposed) {
-          await value.handle.close();
-          throw const LifecycleException('recoverbull_disposed');
-        }
-        _handle = value.handle;
-        return _accept(value.database);
-      }
-      throw const LifecycleException('recoverbull_open');
-    }
-    final database = RecoverBullDatabase.open(path);
     try {
-      await database.forceOpen();
+      return await _accept(await _openDurable(this));
     } on Exception catch (error) {
       _unavailableFailure = recoverBullStorageFailure(error);
-      await database.close();
-      // Replacing corrupt metadata would silently discard own-operation
-      // markers and alarms. Preserve the file and offer manual-key recovery.
       rethrow;
     }
-    return _accept(database);
   }
 
   /// Only after a failed durable open and an explicit user recovery choice.
@@ -85,7 +78,12 @@ final class RecoverBullStorage {
 
   Future<RecoverBullDatabase> _accept(RecoverBullDatabase database) async {
     if (_disposed) {
-      await database.close();
+      if (_handle case final handle?) {
+        await handle.close();
+        _handle = null;
+      } else {
+        await database.close();
+      }
       throw StateError('RecoverBull storage is disposed');
     }
     _database = database;

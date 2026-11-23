@@ -38,18 +38,16 @@ final class RecoverBullFeature {
   ];
 
   static Future<RecoverBullFeature> mount({
-    required String databasePath,
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
     required RecoverBullLegacySettingsPort legacy,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
-    RecoverBullCutover? cutover,
-    RuntimeAdmission? admission,
+    required RecoverBullCutover cutover,
+    required RuntimeAdmission admission,
   }) async {
     final runtime = await RecoverBullRuntime.open(
-      databasePath: databasePath,
       secrets: secrets,
       wallets: wallets,
       environment: environment,

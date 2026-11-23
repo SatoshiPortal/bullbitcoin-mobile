@@ -9,8 +9,6 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -31,12 +29,7 @@ import 'package:sync/sync.dart'
     show InputReservationPort, WalletConnectionPort, BitcoinSpendStatus;
 
 abstract final class PayjoinSetup {
-  static void setup(
-    GetIt locator,
-    SqliteDatabase database,
-    String databasePath, {
-    bool startRecovery = true,
-  }) {
+  static void setup(GetIt locator, {bool startRecovery = true}) {
     bool? capturedRegtest;
     Future<bool> isCurrent() async {
       try {
@@ -71,17 +64,9 @@ abstract final class PayjoinSetup {
       return openPayjoin(
         regtestHostProfile: profile,
         isCurrent: isCurrent,
-        databasePath: databasePath,
-        admission: locator.isRegistered<RuntimeAdmission>()
-            ? locator<RuntimeAdmission>()
-            : null,
-        productionCutover: locator.isRegistered<PayjoinCutover>()
-            ? locator<PayjoinCutover>()
-            : null,
-        regtestCutover:
-            locator.isRegistered<PayjoinCutover>(instanceName: 'regtest')
-            ? locator<PayjoinCutover>(instanceName: 'regtest')
-            : null,
+        admission: locator<RuntimeAdmission>(),
+        productionCutover: locator<PayjoinCutover>(),
+        regtestCutover: locator<PayjoinCutover>(instanceName: 'regtest'),
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
           locator<WalletNativeRuntime>().wallet,
@@ -115,7 +100,6 @@ abstract final class PayjoinSetup {
           spendWallet: locator<WalletFacade>(),
         ),
         labels: locator<PayjoinLabelsPort>(),
-        legacyData: PayjoinLegacyDataAdapter(database),
         log: const AppPayjoinLogAdapter(),
         codec: const AppPayjoinCodecAdapter(),
       );
@@ -129,9 +113,7 @@ abstract final class PayjoinSetup {
     // Opening the package database and resuming sessions must not delay
     // runApp. Background isolates (workmanager handler) register the roles
     // but must NOT start recovery: the engine's own invariant is that only
-    // the foreground composition root resumes sessions — a BG isolate would
-    // open payjoin.sqlite concurrently with the foreground engine and run
-    // the legacy migration + recovery sweep inside a ~30s iOS budget.
+    // the foreground composition root resumes sessions.
     if (startRecovery) {
       unawaited(
         Future<void>(() async {

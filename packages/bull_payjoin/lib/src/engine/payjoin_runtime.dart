@@ -6,7 +6,6 @@ import 'package:bull_payjoin/src/engine/payjoin_regtest_transport.dart';
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_cutover.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
-import 'package:bull_payjoin/src/data/payjoin_migration.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/domain/payjoin_failure.dart';
 import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
@@ -30,21 +29,60 @@ import 'package:primitives/primitives.dart';
 import 'package:synchronized/synchronized.dart';
 
 Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
-  required String databasePath,
+  required RuntimeAdmission admission,
+  required PayjoinCutover productionCutover,
+  required PayjoinCutover regtestCutover,
   required PayjoinWalletPort wallet,
   required PayjoinBlockchainPort blockchain,
   required PayjoinFeesPort fees,
   required PayjoinTransactionPort transactions,
   required PayjoinLabelsPort labels,
-  required PayjoinLegacyDataPort legacyData,
   required PayjoinLogPort log,
   required PayjoinCodecPort codec,
   PayjoinRegtestProfile? regtestProfile,
   RegtestHostProfile? regtestHostProfile,
   Future<bool> Function()? isCurrent,
-  RuntimeAdmission? admission,
-  PayjoinCutover? productionCutover,
-  PayjoinCutover? regtestCutover,
+}) => openPayjoinWithStorage(
+  openStorage: (regtest) async {
+    final cutover = regtest ? regtestCutover : productionCutover;
+    final opened = await cutover.open(admission);
+    if (opened case Ok(:final value)) {
+      return Ok((database: value.database, close: value.handle.close));
+    }
+    return const Err(
+      PayjoinStorageFailure('Could not open admitted Payjoin storage'),
+    );
+  },
+  wallet: wallet,
+  blockchain: blockchain,
+  fees: fees,
+  transactions: transactions,
+  labels: labels,
+  log: log,
+  codec: codec,
+  regtestProfile: regtestProfile,
+  regtestHostProfile: regtestHostProfile,
+  isCurrent: isCurrent,
+);
+
+typedef PayjoinRuntimeStorage = ({
+  PayjoinDatabase database,
+  Future<void> Function() close,
+});
+
+Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoinWithStorage({
+  required Future<Result<PayjoinRuntimeStorage, PayjoinFailure>> Function(bool)
+  openStorage,
+  required PayjoinWalletPort wallet,
+  required PayjoinBlockchainPort blockchain,
+  required PayjoinFeesPort fees,
+  required PayjoinTransactionPort transactions,
+  required PayjoinLabelsPort labels,
+  required PayjoinLogPort log,
+  required PayjoinCodecPort codec,
+  PayjoinRegtestProfile? regtestProfile,
+  RegtestHostProfile? regtestHostProfile,
+  Future<bool> Function()? isCurrent,
 }) async {
   // Scoped to this runtime rather than held in a library global: two runtimes
   // in one isolate (a retried open, a test) would otherwise overwrite each
@@ -66,43 +104,12 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     }
   }
   PayjoinRegtestTransport? fixtureTransport;
-  final cutover = regtest ? regtestCutover : productionCutover;
-  final PayjoinDatabase database;
-  final Future<void> Function() closeDatabase;
-  if (admission != null ||
-      productionCutover != null ||
-      regtestCutover != null) {
-    if (admission == null || cutover == null) {
-      return const Err(
-        PayjoinStorageFailure('Payjoin storage admission unavailable'),
-      );
-    }
-    final opened = await cutover.open(admission);
-    if (opened case Ok(:final value)) {
-      database = value.database;
-      closeDatabase = value.handle.close;
-    } else {
-      return const Err(
-        PayjoinStorageFailure('Could not open admitted Payjoin storage'),
-      );
-    }
-  } else {
-    if (regtest) {
-      databasePath =
-          '${File(databasePath).parent.path}${Platform.pathSeparator}payjoin-regtest.sqlite';
-    }
-    final opened = await _tryOpenDatabase(databasePath, payjoinLog);
-    if (opened == null) {
-      return const Err(PayjoinStorageFailure('Could not open Payjoin storage'));
-    }
-    database = opened;
-    closeDatabase = database.close;
-  }
+  final opened = await openStorage(regtest);
+  if (opened case Err(:final failure)) return Err(failure);
+  final (database: database, close: closeDatabase) =
+      (opened as Ok<PayjoinRuntimeStorage, PayjoinFailure>).value;
 
   try {
-    if (!regtest && cutover == null) {
-      await importLegacyPayjoinData(database, legacyData, log: log);
-    }
     if (regtestProfile != null) {
       try {
         fixtureTransport = PayjoinRegtestTransport(
@@ -120,7 +127,6 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     final current = unavailable == null ? isCurrent : () async => false;
     final local = LocalPayjoinDatasource(db: database);
     final policy = PayjoinPolicyStore(database);
-    if (regtest && cutover == null) await policy.ensureDefaults();
     await policy.load();
     final dio =
         transport?.createDio() ??
@@ -220,29 +226,6 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     return const Err(
       PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
     );
-  }
-}
-
-Future<PayjoinDatabase?> _tryOpenDatabase(
-  String databasePath,
-  logger.PayjoinLogger payjoinLog,
-) async {
-  final database = PayjoinDatabase.open(databasePath);
-  try {
-    // Force the lazy open NOW: drift spawns the background isolate, opens
-    // the file and runs schema migrations on the first statement, so a
-    // corrupt file or a schema downgrade surfaces here rather than
-    // mid-import.
-    await database.customSelect('SELECT 1').getSingle();
-    return database;
-  } catch (error, trace) {
-    await database.close();
-    payjoinLog.severe(
-      code: PayjoinLogCode.migrationFailure,
-      error: error,
-      trace: trace,
-    );
-    return null;
   }
 }
 

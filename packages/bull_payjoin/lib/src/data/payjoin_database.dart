@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 
 import 'payjoin_database.steps.dart';
 
@@ -115,19 +112,6 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   factory PayjoinDatabase.fromExecutor(QueryExecutor executor) =
       PayjoinDatabase._;
-
-  factory PayjoinDatabase.open(String path) {
-    return PayjoinDatabase._(
-      NativeDatabase.createInBackground(
-        File(path),
-        setup: (database) {
-          database.execute('PRAGMA busy_timeout = 2000;');
-          database.execute('PRAGMA journal_mode = WAL;');
-          database.execute('PRAGMA synchronous = FULL;');
-        },
-      ),
-    );
-  }
 
   factory PayjoinDatabase.forTesting(QueryExecutor executor) =
       PayjoinDatabase._;

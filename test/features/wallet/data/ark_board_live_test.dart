@@ -167,7 +167,6 @@ void main() {
         openMempool: (tor, http) async => Ok(
           createMempoolForTesting(database: database, tor: tor, torHttp: http),
         ),
-        payjoinDatabasePath: '${appDirectory.path}/payjoin.sqlite',
         startPayjoinRecovery: false,
         startOrderSwapWatcher: false,
         startAutoswapWatcher: false,
