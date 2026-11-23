@@ -1,7 +1,8 @@
 import 'package:address_view/address_view.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
@@ -24,7 +25,8 @@ final class LimitOrdersLocator {
       () => LoadLimitOrderCreationUsecase(
         locator<GetExchangeUserSummaryUsecase>(),
         locator<Exchange>(),
-        locator<GetWalletsUsecase>(),
+        locator<SecretsInventory>(),
+        locator<ActiveEnvironmentReader>(),
         orders(),
       ),
     );

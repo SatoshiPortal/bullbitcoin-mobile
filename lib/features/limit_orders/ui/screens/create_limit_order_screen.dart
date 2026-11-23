@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_defaults.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
@@ -406,7 +405,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               ),
               title: Text(_appWalletName(context, appWallet)),
               subtitle: Text(
-                appWallet.network.isLiquid
+                appWallet.isLiquid
                     ? context.loc.limitOrdersWalletLiquid
                     : context.loc.limitOrdersWalletBitcoin,
               ),
@@ -472,10 +471,10 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     };
   }
 
-  String _appWalletName(BuildContext context, Wallet wallet) {
+  String _appWalletName(BuildContext context, LimitOrderAppWallet wallet) {
     final label = wallet.label;
     if (label != null && label.isNotEmpty) return label;
-    return wallet.network.isLiquid
+    return wallet.isLiquid
         ? context.loc.limitOrdersWalletLiquid
         : context.loc.limitOrdersWalletBitcoin;
   }

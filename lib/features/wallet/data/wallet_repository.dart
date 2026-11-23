@@ -124,13 +124,12 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
   }
 
-  Future<Wallet> createWallet({
+  Future<String> createWallet({
     required Secret secret,
     required Network network,
     required ScriptType scriptType,
     String? label,
     bool isDefault = false,
-    bool sync = false,
     DateTime? birthday,
   }) async {
     final metadata = await _provisionSecretWallet(
@@ -141,7 +140,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       isDefault: isDefault,
       birthday: birthday,
     );
-    return _createdWallet(metadata, sync: sync);
+    return metadata.id;
   }
 
   /// Explicit mnemonic import only: default creation/startup keep their existing
@@ -434,15 +433,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       return Err(_classify(e, 'getWallets'));
     }
   }
-
-  @override
-  @useResult
-  Future<Result<List<Wallet>, WalletFailure>>
-  getDefaultMainnetBitcoinWallets() => getWallets(
-    environment: Environment.mainnet,
-    onlyDefaults: true,
-    onlyBitcoin: true,
-  );
 
   /// Exhaustive custody references, independent of origin and native reads.
   /// A partial result must never authorize destruction of a secret.

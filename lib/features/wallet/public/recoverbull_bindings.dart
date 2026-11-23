@@ -1,14 +1,13 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart';
 
 final class WalletRecoverBullBindings {
   static Future<Result<VaultContext, RecoverBullFailure>> restoreDefaults(
-    CreateDefaultWalletsUsecase create,
+    DefaultWalletProvisioning create,
     Secret secret,
     BitcoinNetwork network,
   ) async {
@@ -19,16 +18,15 @@ final class WalletRecoverBullBindings {
     if (result case Err()) return const Err(VaultStorageFailure());
     final wallets = result.fold((value) => value, (_) => const <Never>[]);
     final bitcoin = wallets
-        .where((wallet) => wallet.network.isBitcoin)
+        .where((wallet) => wallet.network == network)
         .toList();
     if (bitcoin.length != 1) return const Err(VaultContextChangedFailure());
     final wallet = bitcoin.single;
-    return Ok(
-      VaultContext(
-        fingerprint: Fingerprint(wallet.masterFingerprint),
-        network: wallet.network.bitcoin,
-      ),
-    );
+    final fingerprint = wallet.secretFingerprint;
+    if (wallet.signer != WalletSigner.local || fingerprint == null) {
+      return const Err(VaultContextChangedFailure());
+    }
+    return Ok(VaultContext(fingerprint: fingerprint, network: network));
   }
 
   static void recovered(BuildContext context) =>

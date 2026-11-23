@@ -1,7 +1,11 @@
-import 'package:primitives/primitives.dart' show Failure;
+import 'package:primitives/primitives.dart';
 
-sealed class DefaultWalletFailure extends Failure {
-  const DefaultWalletFailure([super.logMessage]);
+sealed class ProvisioningFailure extends Failure {
+  const ProvisioningFailure();
+}
+
+sealed class DefaultWalletFailure extends ProvisioningFailure {
+  const DefaultWalletFailure();
 }
 
 final class DefaultWalletAlreadyExistsFailure extends DefaultWalletFailure {
@@ -30,4 +34,8 @@ final class DefaultWalletUnexpectedFailure extends DefaultWalletFailure {
 
 final class DefaultWalletNetworkChangedFailure extends DefaultWalletFailure {
   const DefaultWalletNetworkChangedFailure();
+}
+
+final class DefaultWalletRepairFailure extends ProvisioningFailure {
+  const DefaultWalletRepairFailure();
 }

@@ -1,8 +1,9 @@
 import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
+import 'package:secrets/secrets.dart'
+    show WalletInventory, UnreadableWalletFailure;
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
 
@@ -14,13 +15,15 @@ import 'package:meta/meta.dart';
 class LoadLimitOrderCreationUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final Exchange _exchange;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final WalletInventory _inventory;
+  final ActiveEnvironmentReader _environment;
   final ExchangeLimitOrders _orders;
 
   const LoadLimitOrderCreationUsecase(
     this._getExchangeUserSummaryUsecase,
     this._exchange,
-    this._getWalletsUsecase,
+    this._inventory,
+    this._environment,
     this._orders,
   );
 
@@ -29,7 +32,7 @@ class LoadLimitOrderCreationUsecase {
   execute() async {
     late final Result<DefaultWallets, LimitOrdersFailure> defaultWalletsResult;
     late final Result<UserSummary, LimitOrdersFailure> summaryResult;
-    late final List<Wallet> appWallets;
+    late final List<LimitOrderAppWallet> appWallets;
     // Observe every parallel read before yielding.
     // Future.wait returns programmer errors to the caller.
     await Future.wait<void>([
@@ -153,21 +156,40 @@ class LoadLimitOrderCreationUsecase {
     },
   );
 
-  Future<List<Wallet>> _loadAppWallets() async {
+  Future<List<LimitOrderAppWallet>> _loadAppWallets() async {
     try {
-      switch (await _getWalletsUsecase.execute()) {
-        case Ok(:final value):
-          return value
-              .where((w) => w.network.isBitcoin || w.network.isLiquid)
-              .toList();
-        // Same degrade as the catch below; the wallet repository already
-        // logged the raw reason.
-        case Err(:final failure):
-          log.warning(
-            'Failed to list wallets for a limit order: ${failure.runtimeType}',
-          );
-          return const [];
+      final environment = await _environment.readActiveEnvironment();
+      final networks = switch (environment) {
+        Ok(:final value) => <Network>[
+          BitcoinNetwork.fromName(value.name),
+          LiquidNetwork.fromName(value.name),
+        ],
+        Err() => null,
+      };
+      if (networks == null) return const [];
+      final destinations = <LimitOrderAppWallet>[];
+      for (final network in networks) {
+        switch (await _inventory.walletsForNetwork(network)) {
+          case Ok(:final value):
+            destinations.addAll(
+              value.wallets.map(
+                (wallet) => LimitOrderAppWallet(
+                  id: wallet.id,
+                  label: wallet.label,
+                  isLiquid: wallet.network is LiquidNetwork,
+                ),
+              ),
+            );
+          case Err(failure: UnreadableWalletFailure()):
+            continue;
+          case Err(:final failure):
+            log.warning(
+              'Failed to list wallets for a limit order: ${failure.runtimeType}',
+            );
+            return const [];
+        }
       }
+      return destinations;
     } on Error {
       rethrow;
     } catch (e, st) {

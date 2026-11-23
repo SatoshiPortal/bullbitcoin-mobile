@@ -27,6 +27,7 @@ graph TB
     ARK --> BULL_PRICER
     ARK --> BULL_LOGGER
     ARK -->|funding and wallet display data| SYNC
+    ARK -->|board fees| FEES_PACKAGE
     TX_HISTORY -->|Payjoin signing guard| ARK_PROTOCOL
     TX_HISTORY -->|Payjoin receiver fees| FEES_PACKAGE
     TX_HISTORY -->|Payjoin admission| LEGACY_STORAGE
@@ -242,6 +243,11 @@ graph TB
     OVERVIEW --> QUICK_ACTIONS
     OVERVIEW --> BULL_UI
     OVERVIEW --> SYNC
+    OVERVIEW --> SECRETS
+    OVERVIEW --> SP
+    OVERVIEW --> SWAPS
+    SETTINGS -->|manual discovery| OVERVIEW
+    EXCHANGE -->|purchase polling| OVERVIEW
     OVERVIEW --> BULL_LOGGER
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -391,6 +397,7 @@ graph TB
     PHYSICAL_BACKUP_VERIFICATION --> SECRETS
     ONBOARDING --> SETTINGS
     ONBOARDING --> WALLETS
+    ONBOARDING -->|default account creation| PROVISIONING
 
     %% Legacy Core-to-feature dependencies, pending extraction
 
@@ -435,11 +442,12 @@ graph TB
     SETTINGS --> LABELS
     COINS -->|public revision stream and coins| SYNC
     COINS -->|authorized wallet identity| SECRETS
-    COINS -->|legacy foreground refresh| WALLETS
+    COINS -->|coin selection navigation| WALLETS
     SETTINGS --> SWAPS
     SETTINGS --> EXCHANGE
     SETTINGS --> TX_HISTORY
     LIMIT_ORDERS --> EXCHANGE
+    LIMIT_ORDERS -->|active wallet destinations| SECRETS
     EXCHANGE -->|Buy and withdrawal order details navigation| TX_HISTORY
     SUPPORT -->|support chat navigation| BULL_EXCHANGE
     TX_HISTORY -->|exchange orders and recorded fiat amounts| EXCHANGE
@@ -542,7 +550,8 @@ graph TB
     SEND_TOOLS --> FEES_UI
     SEND_TOOLS --> BULL_UI
     SWAPS --> FEES_PACKAGE
-    CORE -->|WalletFacade reads for network status| WALLETS
+    NETWORK -->|service status wallet identity| SECRETS
+    NETWORK -->|historical backup timing| RECOVERBULL
     SWAPS --> FEES_UI
     WIZARD -->|translation warning| SETTINGS_HUB
     APP_STARTUP -->|translation warning| SETTINGS_HUB
@@ -596,9 +605,9 @@ graph TB
 
 ## Foreground synchronization
 
-Wallet owns the private foreground synchronization queue and consumes the Silent capability and the Swap activity capability. Silent receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing a Silent/swap source dependency on wallet synchronization. The Swap activity capability keeps its direct refresh path so a queued pass never enqueues itself.
+Overview owns the foreground synchronization queue. It selects exact wallet keys from the admitted Secrets inventory and resolves each descriptor through Sync before a pass. Polling, manual discovery, regular refresh, Silent scanning and Swap scheduling share the same queue. Swap's direct refresh path stays callable from the queue without re-enqueueing work. Coins observes Electrum completions and native revisions by exact key. The headless job maintains its own admission and resource lifetime.
 
-The wallet and wallet address repositories live in `lib/features/wallet/data`. Swap reads wallet selection from Secrets and wallet balances, coins and spend admission from Sync. The wallet synchronizer calls the mounted Swap activity capability to refresh orders. `test/architecture/foreground_sync_dependencies_test.dart` resolves the remaining app feature edges through imports and transitive exports.
+The app wallet projection still supplies the legacy home and send selection. Limit Orders uses the Secrets inventory for receiving destinations. Network diagnostics read the active default from Secrets and backup history from RecoverBull. Ark Board checks the exact local default account and delegates its manual scan to Sync. Notifications owns the localized payment channel copy.
 
 ## Core Dependencies
 
@@ -696,7 +705,6 @@ The architecture test records source dependencies, including internal imports an
 | `default_wallets → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/default_wallets/ui/widgets/default_wallets_editor.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `exchange → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/exchange/ui/screens/exchange_auth_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `settings → wallet_import` | Opens the import hub through its typed navigation. The shell supplies the active environment for hardware visibility. | `lib/features/settings/ui/settings_item.dart -> package:wallet_import/wallet_import.dart` |
-| `limit_orders → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/limit_orders/limit_orders_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
@@ -741,7 +749,7 @@ Wallet publishes destination validation and input through `public/payment_destin
 
 ## Network settings and service status
 
-The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. Network use cases call Electrum, Mempool, Preferences and Tor, as well as the Payjoin, Pricer and RecoverBull diagnostics capabilities. The network member requests a Bitcoin fee estimate from Fees with the Mempool source. The shell supplies the default wallet environment and Tor requirement through WalletFacade. Background Electrum composition remains independent of the network UI.
+The settings hub, onboarding and wallet error actions use `NetworkNavigation`. The app mounts the network member once and adds its root routes and its nested Tor route. The settings hub owns its service-health use case and presentation, with a status session independent of the diagnostics screen. Network use cases call Electrum, Mempool, Preferences and Tor, as well as the Payjoin, Pricer and RecoverBull diagnostics capabilities. The network member requests a Bitcoin fee estimate from Fees with the Mempool source. Network reads default wallet presence from Secrets and the mainnet Bitcoin backup timestamp from RecoverBull. Background Electrum composition remains independent of the network UI.
 
 ## Wallet-independent transaction values
 

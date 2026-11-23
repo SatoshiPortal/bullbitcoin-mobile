@@ -1,14 +1,14 @@
 import 'package:swaps/order_swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/read_send_recipient_amount_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class VerifyExchangePayinUsecase {
-  final WalletRepository _walletRepository;
+  final ReadSendRecipientAmountUsecase _recipientAmount;
 
-  VerifyExchangePayinUsecase(this._walletRepository);
+  VerifyExchangePayinUsecase(this._recipientAmount);
 
   @useResult
   Future<Result<void, SendFailure>> execute({
@@ -26,7 +26,7 @@ class VerifyExchangePayinUsecase {
     }
 
     try {
-      final actualAmount = await _walletRepository.getAmountSentToAddress(
+      final actualAmount = await _recipientAmount.execute(
         psbtOrPset: psbtOrPset,
         address: order.payinAddress,
         walletId: walletId,

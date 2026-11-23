@@ -1,7 +1,8 @@
 import 'package:swaps/order_swaps.dart';
 import 'package:swap_feature/swap_feature.dart';
-import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart';
+
+import 'sync_outcome.dart';
 
 class SyncOrderSwapsUsecase {
   final SwapActivity _swaps;

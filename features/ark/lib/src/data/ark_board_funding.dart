@@ -12,16 +12,8 @@ import 'package:sync/sync.dart' as sync;
 import 'package:sync/write.dart';
 
 import 'package:fees/fees.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
 
-import '../domain/network_x.dart';
-import '../domain/wallet.dart' as wallet;
-import 'foreground_wallet_sync.dart';
-import 'models/wallet_metadata_model.dart';
-
-import 'package:bull_ark/ark_wallet_setup.dart';
-
-import 'wallet_registrations.dart';
+import 'sqlite_ark_funding_reservations.dart';
 
 /// Main-wallet Board funding. No Bark key, raw PSBT or data binding leaves here.
 /// Every ambiguous signer/delivery result retains the original operation/holds.
@@ -29,8 +21,9 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   final ArkClient _client;
   final WalletNativeRuntime _runtime;
   final SqliteArkFundingReservations _authority;
-  final WalletRegistrations _metadata;
-  final ForegroundWalletSync _sourceSync;
+  final WalletInventory _inventory;
+  final Future<Result<void, sync.SyncFailure>> Function(sync.WalletKey)
+  _sourceSync;
   final Secrets _secrets;
   final Fees _fees;
   final ParentCustodyAdmissionPort _custody;
@@ -48,7 +41,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     required this._client,
     required this._runtime,
     required this._authority,
-    required this._metadata,
+    required this._inventory,
     required this._sourceSync,
     required this._secrets,
     required this._fees,
@@ -100,17 +93,21 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         }
       }
       final metadata = await _eligible(sourceWalletId);
-      final parent = metadata.seedFingerprint;
+      final parent = metadata.secretFingerprint;
       if (parent == null) throw const _HostFailure(ArkAccountRecoveryFailure());
       _require(parent == config.id.parent);
-      await _sourceSync.synchronize(metadata, reason: sync.SyncReason.manual);
+      _sync(
+        await _sourceSync(
+          sync.WalletKey(id: metadata.id, network: metadata.network),
+        ),
+      );
       final handle = _sync(
         await _runtime.wallet(
-          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+          sync.WalletKey(id: metadata.id, network: metadata.network),
         ),
       );
       _sync(await handle.load());
-      final fastest = switch (await _fees.estimate(metadata.network.shared)) {
+      final fastest = switch (await _fees.estimate(metadata.network)) {
         Ok(:final value) => value.fastest,
         Err() => throw const _HostFailure(ArkNetworkUnavailableFailure()),
       };
@@ -353,7 +350,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       await _fresh(review);
       final handle = _sync(
         await _runtime.wallet(
-          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+          sync.WalletKey(id: metadata.id, network: metadata.network),
         ),
       );
       final loaded = _sync(await handle.load());
@@ -393,7 +390,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         await secret.sign.psbt(
           entry.binding.unsignedPsbt,
           network: BitcoinNetwork.regtest,
-          scriptType: metadata.scriptType.shared,
+          scriptType: metadata.scriptType,
         ),
       );
       _sync(await _authority.recordSigned(operationId, signed));
@@ -422,7 +419,7 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
       );
       final receipt = _sync(
         await _runtime.broadcast(
-          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+          sync.WalletKey(id: metadata.id, network: metadata.network),
           sync.SignedPsbt(signed),
           network: BitcoinNetwork.regtest,
           built: built,
@@ -470,11 +467,15 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
             ),
           );
       final metadata = await _eligible(key.id, expected: binding);
-      _require(metadata.seedFingerprint == parent);
-      await _sourceSync.synchronize(metadata, reason: sync.SyncReason.manual);
+      _require(metadata.secretFingerprint == parent);
+      _sync(
+        await _sourceSync(
+          sync.WalletKey(id: metadata.id, network: metadata.network),
+        ),
+      );
       final handle = _sync(
         await _runtime.wallet(
-          sync.WalletKey(id: metadata.id, network: metadata.network.shared),
+          sync.WalletKey(id: metadata.id, network: metadata.network),
         ),
       );
       final loaded = _sync(await handle.load());
@@ -604,27 +605,33 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
     return operation;
   }
 
-  Future<WalletMetadataModel> _eligible(
+  Future<WalletRegistration> _eligible(
     String walletId, {
     ArkFundingBinding? expected,
   }) async {
-    final metadata = await _metadata.fetch(walletId);
-    _require(metadata != null);
-    if (metadata == null) {
-      throw const _HostFailure(ArkServiceUnavailableFailure());
-    }
+    final metadata = _secret(await _inventory.readWallet(walletId));
+    // The legacy source checked account zero in the wallet ID. The public
+    // descriptor path must also identify account zero before signing.
+    final idOrigin = RegExp(r'\[[a-fA-F0-9]+/84h/\d+h/0h\]');
+    final path = metadata.derivationPath;
+    final accountPath = RegExp(r"^m/84[hH']/\d+[hH']/0[hH']$");
     _require(
-      metadata.network == wallet.Network.bitcoinRegtest &&
-          metadata.signer == Signer.local &&
+      metadata.id == walletId &&
+          metadata.network == BitcoinNetwork.regtest &&
+          metadata.signer == WalletSigner.local &&
+          metadata.isDefault &&
           metadata.scriptType == ScriptType.bip84 &&
-          metadata.account == '0h' &&
-          metadata.seedFingerprint != null,
+          idOrigin.hasMatch(metadata.id) &&
+          path != null &&
+          accountPath.hasMatch(path) &&
+          metadata.secretFingerprint != null,
     );
     if (expected != null) {
       _require(
         metadata.id == expected.key.id &&
+            metadata.network == expected.key.network &&
             expected.key.network == BitcoinNetwork.regtest &&
-            metadata.seedFingerprint == expected.sourceParent,
+            metadata.secretFingerprint == expected.sourceParent,
       );
     }
     return metadata;

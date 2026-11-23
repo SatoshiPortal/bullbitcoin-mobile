@@ -10,7 +10,8 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:bb_mobile/storage_owner_manifest.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:background_tasks/wallet_jobs.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
+import 'package:bb_mobile/features/settings/public/language_locale.dart';
+import 'package:notifications/payment_store.dart' show PaymentNotifications;
 import 'package:bull_ark/ark_background_setup.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
@@ -97,8 +98,14 @@ Future<BackgroundTaskRunner> bootstrapAdmittedBackgroundRunner(
           clock,
           intervals: intervals,
           preferencesFile: preferencesFile,
-          openNotifications: PaymentNotifications.initializeBackground,
-          paymentCopy: PaymentNotifications.copy,
+          openNotifications: (documents, language, resources) =>
+              PaymentNotifications.initializeBackground(
+                documents,
+                language?.locale,
+                resources.onClose,
+              ),
+          paymentCopy: (language) =>
+              PaymentNotifications.copy(language?.locale),
         );
       },
     },

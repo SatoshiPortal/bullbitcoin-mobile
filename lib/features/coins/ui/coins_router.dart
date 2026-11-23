@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
@@ -43,7 +45,9 @@ class CoinsRouter {
         return const SizedBox.shrink();
       }
       return BlocProvider(
-        create: (_) => locator<CoinsCubit>(param1: wallet.id)..load(),
+        create: (_) => locator<CoinsCubit>(
+          param1: WalletKey(id: wallet.id, network: wallet.network.shared),
+        )..load(),
         child: CoinsScreen(
           onSend: (outpoints) => onSend(context, wallet, outpoints),
           onSweep: (outpoints) => onSweep(context, wallet, outpoints),

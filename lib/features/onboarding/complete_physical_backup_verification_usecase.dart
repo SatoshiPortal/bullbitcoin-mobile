@@ -1,53 +1,54 @@
+import 'package:bull_recoverbull/storage.dart';
 import 'package:primitives/legacy_exceptions.dart';
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
 
 class CompletePhysicalBackupVerificationUsecase {
-  final WalletRepository _walletRepository;
-  final Preferences _settingsRepository;
+  final RecoverBullWalletBackups _backups;
+  final RecoverBullWalletBackups _regtestBackups;
 
-  CompletePhysicalBackupVerificationUsecase({
-    required this._walletRepository,
-    required this._settingsRepository,
-  });
+  const CompletePhysicalBackupVerificationUsecase({
+    required RecoverBullWalletBackups backups,
+    required RecoverBullWalletBackups regtestBackups,
+  }) : _backups = backups,
+       _regtestBackups = regtestBackups;
 
-  Future<void> execute() async {
-    try {
-      final settings = (await _settingsRepository.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
+  Future<void> execute(List<WalletRegistration> wallets) async {
+    final bitcoin = wallets
+        .where((wallet) => wallet.network is BitcoinNetwork)
+        .toList();
+    if (bitcoin.length != 1) {
+      throw CompletePhysicalBackupVerificationException(
+        'Bitcoin default unavailable',
       );
-      final defaultWallets = switch (await _walletRepository.getWallets(
-        onlyDefaults: true,
-        environment: settings.environment,
-      )) {
-        Ok(:final value) => value,
-        // Wrapped into this use-case's own exception by the catch below.
-        Err(:final failure) =>
-          throw CompletePhysicalBackupVerificationException(
-            'default wallets read failed: ${failure.runtimeType}',
-          ),
-      };
-      if (defaultWallets.isEmpty) {
-        throw Exception('No default wallet found');
-      }
-      // There should only be one default Bitcoin wallet
-
-      for (final defaultWallet in defaultWallets) {
-        await _walletRepository.updateBackupInfo(
-          walletId: defaultWallet.id,
-          isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
-          isPhysicalBackupTested: true,
-          latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
-          latestPhysicalBackup: DateTime.now(),
+    }
+    final wallet = bitcoin.single;
+    final fingerprint = wallet.secretFingerprint;
+    if (fingerprint == null ||
+        wallet.signer != WalletSigner.local ||
+        wallets.any(
+          (other) =>
+              other.signer != WalletSigner.local ||
+              other.secretFingerprint != fingerprint ||
+              other.network.env != wallet.network.env,
+        )) {
+      throw CompletePhysicalBackupVerificationException(
+        'default secret unavailable',
+      );
+    }
+    final records = wallet.network.env == NetworkEnv.regtest
+        ? _regtestBackups
+        : _backups;
+    switch (await records.recordPhysicalVerification(
+      walletId: wallet.id,
+      fingerprint: fingerprint,
+    )) {
+      case Ok():
+        return;
+      case Err():
+        throw CompletePhysicalBackupVerificationException(
+          'backup verification failed',
         );
-      }
-    } on CompletePhysicalBackupVerificationException {
-      rethrow;
-    } catch (e) {
-      throw CompletePhysicalBackupVerificationException(e.toString());
     }
   }
 }

@@ -1,12 +1,11 @@
 import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
 import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_amount_display_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/watch_coins_activity_usecase.dart';
 
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
@@ -25,33 +24,28 @@ const _syncReloadDebounce = Duration(seconds: 3);
 /// and reacts to wallet syncs. No business decisions live here.
 class CoinsCubit extends Cubit<CoinsState> {
   CoinsCubit({
-    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
+    required WatchCoinsActivityUsecase watchActivity,
     WatchCoinsAmountDisplayUsecase? watchAmountDisplayUsecase,
-    required String walletId,
+    required WalletKey walletKey,
     required this._getUtxosUsecase,
     required this._freezeUtxosUsecase,
     required this._unfreezeUtxosUsecase,
     required this._refreshCoinsUsecase,
     required this._loadCoinLabelFilters,
-    required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
-    required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-  }) : super(CoinsState(walletId: walletId)) {
+  }) : super(CoinsState(walletId: walletKey.id)) {
     _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
       preferences,
     ) {
       if (!isClosed) emit(state.copyWith(amountDisplay: preferences));
     });
-    _startedSub = watchStartedWalletSyncsUsecase
-        .execute(walletId: walletId)
-        .listen((_) {
-          if (!isClosed) emit(state.copyWith(syncing: true));
-        });
-    _revisionsSubscription = watchWalletRevisionsUsecase
-        ?.execute(walletId: walletId)
-        .listen((_) => _scheduleReload());
-    _finishedSub = watchFinishedWalletSyncsUsecase
-        .execute(walletId: walletId)
-        .listen((_) => _scheduleReload());
+    final activity = watchActivity.execute(walletKey);
+    _startedSub = activity.started.listen((_) {
+      if (!isClosed) emit(state.copyWith(syncing: true));
+    });
+    _revisionsSubscription = activity.revisions.listen(
+      (_) => _scheduleReload(),
+    );
+    _finishedSub = activity.finished.listen((_) => _scheduleReload());
   }
 
   final GetUtxosUsecase _getUtxosUsecase;

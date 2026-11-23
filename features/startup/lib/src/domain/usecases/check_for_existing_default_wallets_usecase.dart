@@ -52,8 +52,10 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     for (final wallet in defaults) {
-      final fingerprint = wallet.masterFingerprint;
-      if (fingerprint == null) return const Err(AppStartupWalletCheckFailure());
+      final fingerprint = wallet.secretFingerprint;
+      if (wallet.signer != WalletSigner.local || fingerprint == null) {
+        return const Err(AppStartupWalletCheckFailure());
+      }
       switch (await _secrets.fetch(fingerprint)) {
         case Ok():
           break;
@@ -64,7 +66,8 @@ class CheckForExistingDefaultWalletsUsecase {
               .where(
                 (candidate) =>
                     candidate.network == bitcoin &&
-                    candidate.masterFingerprint == fingerprint,
+                    candidate.signer == WalletSigner.local &&
+                    candidate.secretFingerprint == fingerprint,
               )
               .toList();
           if (matches.length != 1) {

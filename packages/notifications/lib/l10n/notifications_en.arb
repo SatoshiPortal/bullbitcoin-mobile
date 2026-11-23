@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "receivePaymentReceived": "Payment received!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  },
+  "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
+  "@backgroundPaymentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

@@ -1,6 +1,5 @@
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:bull_recoverbull/storage.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
@@ -28,20 +27,22 @@ class OnboardingLocator {
     // Usecases
     locator.registerFactory<CompletePhysicalBackupVerificationUsecase>(
       () => CompletePhysicalBackupVerificationUsecase(
-        walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<Preferences>(),
+        backups: locator<RecoverBullWalletBackups>(),
+        regtestBackups: locator<RecoverBullWalletBackups>(
+          instanceName: 'regtest',
+        ),
       ),
     );
 
     locator.registerFactory<CreateOnboardingWalletUsecase>(
       () => CreateOnboardingWalletUsecase(
-        defaultWallets: locator<DefaultWalletsFacade>(),
+        defaultWallets: locator<DefaultWalletProvisioning>(),
       ),
     );
 
     locator.registerFactory<RecoverOnboardingWalletUsecase>(
       () => RecoverOnboardingWalletUsecase(
-        defaultWallets: locator<DefaultWalletsFacade>(),
+        defaultWallets: locator<DefaultWalletProvisioning>(),
         completePhysicalBackupVerificationUsecase:
             locator<CompletePhysicalBackupVerificationUsecase>(),
       ),

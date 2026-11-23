@@ -1,6 +1,5 @@
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/create_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_rate_usecase.dart';
@@ -126,7 +125,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
     );
   }
 
-  Future<void> selectAppWallet(Wallet appWallet) async {
+  Future<void> selectAppWallet(LimitOrderAppWallet appWallet) async {
     final requestId = ++_destinationRequestId;
     emit(
       state.copyWith(
@@ -145,7 +144,7 @@ final class CreateLimitOrderCubit extends Cubit<CreateLimitOrderState> {
           state.copyWith(
             isResolvingAddress: false,
             wallet: LimitOrderWallet(
-              type: appWallet.network.isLiquid
+              type: appWallet.isLiquid
                   ? LimitOrderWalletType.liquid
                   : LimitOrderWalletType.bitcoin,
               address: value,

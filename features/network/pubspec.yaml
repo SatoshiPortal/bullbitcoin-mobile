@@ -37,6 +37,7 @@ dependencies:
   meta: ^1.17.0
   preferences:
   primitives:
+  secrets:
   url_launcher: ^6.3.2
 
 dev_dependencies:

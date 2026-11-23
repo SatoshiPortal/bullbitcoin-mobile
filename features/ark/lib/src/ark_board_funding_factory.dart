@@ -2,19 +2,22 @@
 library;
 
 import 'package:ark/ark.dart';
-import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:get_it/get_it.dart';
+
+import 'ark_foreground_runtime.dart' show ArkBoardFundingBinding;
+
 import 'package:bull_ark/ark_setup.dart'
     show ArkBoardFundingPort, ArkFailure, ArkServiceUnavailableFailure;
-import 'package:bull_ark/ark_wallet_setup.dart';
+
+import 'data/sqlite_ark_funding_reservations.dart';
+
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
 import 'package:fees/fees.dart';
 
-import '../data/ark_board_funding.dart';
-import '../data/foreground_wallet_sync.dart';
-import '../data/wallet_registrations.dart';
+import 'data/ark_board_funding.dart';
+
+import 'package:sync/sync.dart' show WalletKey, SyncFailure;
 
 import 'package:sync/write.dart' show WalletNativeRuntime;
 
@@ -22,8 +25,8 @@ import 'package:sync/write.dart' show WalletNativeRuntime;
 final class WalletArkFundingFactory {
   final SqliteArkFundingReservations _authority;
   final WalletNativeRuntime _runtime;
-  final WalletRegistrations _metadata;
-  final ForegroundWalletSync _sourceSync;
+  final WalletInventory _inventory;
+  final Future<Result<void, SyncFailure>> Function(WalletKey) _sourceSync;
   final Secrets _secrets;
   final Fees _fees;
   final ParentCustodyAdmissionPort _custody;
@@ -33,7 +36,7 @@ final class WalletArkFundingFactory {
   WalletArkFundingFactory({
     required this._authority,
     required this._runtime,
-    required this._metadata,
+    required this._inventory,
     required this._sourceSync,
     required this._secrets,
     required this._fees,
@@ -55,7 +58,7 @@ final class WalletArkFundingFactory {
     final actor = WalletArkBoardFunding(
       authority: _authority,
       runtime: _runtime,
-      metadata: _metadata,
+      inventory: _inventory,
       sourceSync: _sourceSync,
       secrets: _secrets,
       fees: _fees,
@@ -83,16 +86,24 @@ final class WalletArkFundingFactory {
   }
 }
 
-/// Constructs one legacy Bitcoin funding actor per Ark runtime.
-ArkBoardFundingBinding arkBoardFundingBinding(GetIt locator) {
+/// Constructs one Bitcoin funding actor per Ark runtime.
+ArkBoardFundingBinding arkBoardFundingBinding({
+  required SqliteArkFundingReservations authority,
+  required WalletNativeRuntime runtime,
+  required WalletInventory inventory,
+  required Future<Result<void, SyncFailure>> Function(WalletKey) synchronize,
+  required Secrets secrets,
+  required Fees fees,
+  required ParentCustodyAdmissionPort custody,
+}) {
   final factory = WalletArkFundingFactory(
-    authority: locator<SqliteArkFundingReservations>(),
-    runtime: locator<WalletNativeRuntime>(),
-    metadata: locator<WalletRegistrations>(),
-    sourceSync: locator<ForegroundWalletSync>(),
-    secrets: locator<Secrets>(),
-    fees: locator<Fees>(),
-    custody: locator<ParentCustodyAdmissionPort>(),
+    authority: authority,
+    runtime: runtime,
+    inventory: inventory,
+    sourceSync: synchronize,
+    secrets: secrets,
+    fees: fees,
+    custody: custody,
   );
   return (bind: factory.bindRealClient, close: factory.close);
 }

@@ -1,0 +1,7 @@
+{
+  "@@locale": "ar",
+  "receivePaymentReceived": "تم استلام الدفع!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

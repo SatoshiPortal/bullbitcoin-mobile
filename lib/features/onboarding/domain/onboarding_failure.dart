@@ -11,7 +11,7 @@ sealed class OnboardingFailure extends Failure {
 
 /// The wallet-setup step (creating or recovering the default wallets)
 /// failed — used by both the create and the recover flow, since both wrap
-/// the same [CreateDefaultWalletsUsecase].
+/// the same `DefaultWalletProvisioning`.
 final class OnboardingWalletSetupFailure extends OnboardingFailure {
   const OnboardingWalletSetupFailure();
 }
