@@ -64,8 +64,27 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:wallet_import/setup.dart'
+    show
+        ProvisionDescriptorWallet,
+        ProvisionMnemonicWallet,
+        ProvisionXpubWallet;
 
 class WalletLocator {
+  static ({
+    ProvisionMnemonicWallet mnemonic,
+    ProvisionDescriptorWallet descriptor,
+    ProvisionXpubWallet xpub,
+  })
+  importOperations(GetIt services) {
+    final repository = services<WalletRepository>();
+    return (
+      mnemonic: repository.importWallet,
+      descriptor: repository.importDescriptor,
+      xpub: repository.importWatchOnlyXpub,
+    );
+  }
+
   static void setup(GetIt locator, {Receive Function()? receive}) {
     Future<WalletKey> keyFor(String id) =>
         WalletSyncBinding.keyForId(locator<WalletRegistrations>(), id);

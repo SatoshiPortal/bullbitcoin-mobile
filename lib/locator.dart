@@ -9,7 +9,6 @@ import 'package:secrets/storage.dart';
 import 'package:material_ui/material_ui.dart' show AssetImage;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:wallet_import/setup.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:secrets/bip85.dart';
@@ -462,16 +461,16 @@ class AppLocator {
     );
 
     locator.registerLazySingleton(() {
-      final wallet = locator<WalletRepository>();
+      final operations = WalletLocator.importOperations(locator);
       return ImportFeature.mount(
         preferences: locator<Preferences>(),
         servers: locator<ElectrumServersPort>(),
         secrets: locator<Secrets>(),
         inventory: inventory,
         admission: locator<ParentCustodyAdmissionPort>(),
-        provisionMnemonic: wallet.importWallet,
-        provisionDescriptor: wallet.importDescriptor,
-        provisionXpub: wallet.importWatchOnlyXpub,
+        provisionMnemonic: operations.mnemonic,
+        provisionDescriptor: operations.descriptor,
+        provisionXpub: operations.xpub,
         networkOf: SettingsFacade.networkOf,
         onImported: (context) {
           context.read<WalletBloc>().add(const WalletStarted());
