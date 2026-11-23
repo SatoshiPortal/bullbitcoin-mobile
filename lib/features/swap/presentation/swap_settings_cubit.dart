@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
+import 'package:swaps/swaps.dart' show SwapServer;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
@@ -31,12 +31,18 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   Future<void> load() async {
     final swapServer = await _getSwapServerUsecase.execute();
     if (isClosed) return;
-    emit(
-      state.copyWith(
-        swapServer: swapServer.server,
-        swapServerEnvironment: swapServer.environment,
-      ),
-    );
+    switch (swapServer) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            swapServer: value.server,
+            swapServerEnvironment: value.environment,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+    }
     final routeSettings = await _getSwapRouteSettingsUsecase.execute();
     if (isClosed) return;
     switch (routeSettings) {

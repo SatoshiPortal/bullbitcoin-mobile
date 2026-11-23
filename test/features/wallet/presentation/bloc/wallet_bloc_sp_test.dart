@@ -14,11 +14,10 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
@@ -63,8 +62,11 @@ class _MockWatchStarted extends Mock
 class _MockWatchFinished extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
 
-class _MockWatchElectrumSyncResults extends Mock
-    implements WatchElectrumSyncResultsUsecase {}
+abstract interface class _ElectrumResults {
+  Stream<ElectrumSyncResult> execute();
+}
+
+class _MockWatchElectrumSyncResults extends Mock implements _ElectrumResults {}
 
 class _MockSyncCoordinator extends Mock implements SyncCoordinator {}
 
@@ -189,7 +191,7 @@ WalletBloc _makeBloc({
     watchWalletSyncEventsUsecase: WatchWalletSyncEventsUsecase(
       watchStarted: watchStarted,
       watchFinished: watchFinished,
-      watchElectrum: watchElectrum,
+      watchElectrum: watchElectrum.execute,
     ),
     syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator),
     getUnconfirmedIncomingBalanceUsecase: _MockGetUnconfirmed(),

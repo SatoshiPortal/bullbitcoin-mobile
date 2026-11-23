@@ -19,6 +19,11 @@ extension BoltzSwapFailureToReceiveFailure on SwapsFailure {
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() ||
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
     SwapsUnexpectedFailure() => ReceiveUnexpectedFailure(logMessage),
   };
 }

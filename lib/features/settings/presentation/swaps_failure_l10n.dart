@@ -17,6 +17,11 @@ extension SwapsFailureL10n on SwapsFailure {
     // never fit to show a user.
     SwapsBusyFailure() ||
     SwapsAuthorizationFailure() ||
+    SwapsUnsupportedNetworkFailure() ||
+    SwapsInvalidServerFailure() ||
+    SwapsInvalidAutoSwapSettingsFailure() ||
+    SwapsInvalidLockupFailure() ||
+    SwapsStorageFailure() ||
     SwapsUnexpectedFailure() => context.loc.swapsFailureUnexpected,
   };
 }

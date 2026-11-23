@@ -1,34 +1,20 @@
-import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:bb_mobile/features/swap/domain/regtest_boltz_profile.dart';
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/swaps.dart'
+    show SwapServer, SwapServerSettings, SwapsUnsupportedNetworkFailure;
 
-/// The Boltz backend for the network the app is on.
 class GetSwapServerUsecase {
-  final SwapServerSettingRepository _swapServerSettingRepository;
-  final Preferences _settingsRepository;
+  final SwapServerSettings _servers;
 
-  const GetSwapServerUsecase({
-    required this._swapServerSettingRepository,
-    required this._settingsRepository,
-  });
+  const GetSwapServerUsecase(this._servers);
 
-  Future<({SwapServer server, NetworkEnv environment})> execute() async {
-    final environment = ((await _settingsRepository.fetch()).fold(
-      (value) => value,
-      (failure) => throw Exception('Preferences read failed'),
-    )).environment;
-    final profile = RegtestBoltzProfile.forNetwork(environment.networkEnv);
-    if (profile != null) {
-      final server = SwapServer.parse(profile.api.toString(), isTestnet: true);
-      if (server == null) throw StateError('Invalid regtest Boltz endpoint');
-      return (server: server, environment: environment.networkEnv);
-    }
-    final isTestnet = environment.requireHistoricalTestnet();
-    return (
-      server: await _swapServerSettingRepository.fetch(isTestnet: isTestnet),
-      environment: environment.networkEnv,
-    );
-  }
+  @useResult
+  Future<Result<({SwapServer server, NetworkEnv environment}), SwapFailure>>
+  execute() async => (await _servers.readServer()).mapErr(
+    (failure) => switch (failure) {
+      SwapsUnsupportedNetworkFailure() => const SwapUnsupportedNetworkFailure(),
+      _ => const SwapStorageFailure(),
+    },
+  );
 }

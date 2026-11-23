@@ -1,5 +1,5 @@
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 

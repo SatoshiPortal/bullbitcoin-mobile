@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
+import 'package:swaps/swaps.dart' show SwapServer;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';

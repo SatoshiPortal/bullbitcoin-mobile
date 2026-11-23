@@ -57,12 +57,11 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecas
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
     as core;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
@@ -294,10 +293,8 @@ class WalletLocator {
         wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
-        isSyncing: sync.isSyncing,
         syncStarted: sync.started,
         syncFinished: sync.finished,
-        electrumSyncResultStream: sync.results,
       );
     });
     locator.registerLazySingleton<WalletTransactionRepository>(
@@ -391,7 +388,7 @@ class WalletLocator {
       () => WatchWalletSyncEventsUsecase(
         watchStarted: locator<WatchStartedWalletSyncsUsecase>(),
         watchFinished: locator<WatchFinishedWalletSyncsUsecase>(),
-        watchElectrum: locator<WatchElectrumSyncResultsUsecase>(),
+        watchElectrum: () => locator<ForegroundWalletSync>().results,
       ),
     );
     // Bloc

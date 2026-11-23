@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
+import 'package:swaps/swaps.dart' show AutoSwap, AutoSwapSettings;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
@@ -8,7 +7,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetSettings extends Mock implements GetAutoSwapSettingsUsecase {}
+class _MockGetSettings extends Mock implements AutoSwapSettings {}
 
 class _MockSwapFacade extends Mock implements SwapFacade {}
 
@@ -42,7 +41,7 @@ void main() {
       boltzProvider: boltz,
       exchangeProvider: exchange,
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => valid);
+    when(() => getSettings.readAutoSwap()).thenAnswer((_) async => Ok(valid));
     when(() => swapFacade.getRoute()).thenAnswer((_) async => SwapRoute.boltz);
     when(() => boltz.execute(any()))
         .thenAnswer((_) async => const Ok('boltz-swap'));
@@ -111,8 +110,8 @@ void main() {
   });
 
   test('does not call a provider while consent is pending', () async {
-    when(() => getSettings.execute())
-        .thenAnswer((_) async => valid.copyWith(showWarning: true));
+    when(() => getSettings.readAutoSwap())
+        .thenAnswer((_) async => Ok(valid.copyWith(showWarning: true)));
 
     final result = await usecase.execute();
 
@@ -122,8 +121,8 @@ void main() {
   });
 
   test('does not call a provider with invalid settings', () async {
-    when(() => getSettings.execute())
-        .thenAnswer((_) async => valid.copyWith(recipientWalletId: null));
+    when(() => getSettings.readAutoSwap())
+        .thenAnswer((_) async => Ok(valid.copyWith(recipientWalletId: null)));
 
     final result = await usecase.execute();
 

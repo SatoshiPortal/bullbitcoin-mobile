@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/address_view/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/features/address_view/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 
 class WalletAddressRepositoryImpl implements WalletAddressRepository {
   final WalletNativeLifecycle _native;
@@ -47,7 +47,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     required bool advance,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) throw WalletError.notFound(walletId);
+    if (metadata == null) throw WalletNotFoundException(walletId);
     // Retry only native admission, never label lookup after an issued address.
     // Busy may follow a reconciled write: an advance can skip an index, but
     // the writer's durable high-water mark prevents address reuse.
@@ -102,7 +102,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
   }) async {
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
-    if (walletMetadata == null) throw WalletError.notFound(walletId);
+    if (walletMetadata == null) throw WalletNotFoundException(walletId);
 
     final key = WalletKey(
       id: walletMetadata.id,
@@ -206,7 +206,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
   }) async {
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
-    if (walletMetadata == null) throw WalletError.notFound(walletId);
+    if (walletMetadata == null) throw WalletNotFoundException(walletId);
 
     if (!walletMetadata.network.isBitcoin) {
       // LWK currently doesn't support fetching
@@ -264,7 +264,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw WalletError.notFound(walletId);
+      throw WalletNotFoundException(walletId);
     }
 
     final key = WalletKey(id: metadata.id, network: metadata.network.shared);

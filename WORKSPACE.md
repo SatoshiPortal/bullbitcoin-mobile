@@ -236,9 +236,14 @@ graph TD
   signers --> sync
   swaps --> rust_bindings
   swaps --> boltz_stream
+  swaps --> bull_logger
+  swaps --> electrum
+  swaps --> fees
   swaps --> legacy_storage
+  swaps --> preferences
   swaps --> primitives
   swaps --> secrets
+  swaps --> sync
   sync --> legacy_storage
   sync --> rust_bindings
   sync --> bull_logger

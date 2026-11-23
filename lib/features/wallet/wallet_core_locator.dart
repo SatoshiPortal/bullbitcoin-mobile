@@ -1,5 +1,6 @@
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 
 import 'domain/usecases/get_default_wallet_network_usecase.dart';
 import 'domain/usecases/is_tor_required_usecase.dart';
@@ -18,15 +19,14 @@ import 'package:bb_mobile/features/send/public/send_setup.dart'
     show BitcoinWalletRepository, LiquidWalletRepository;
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transactions_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sync/sync.dart' show Sync, Wallet;
@@ -113,15 +113,9 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
-    locator.registerFactory<WatchElectrumSyncResultsUsecase>(
-      () => WatchElectrumSyncResultsUsecase(
-        walletRepository: locator<WalletRepository>(),
-      ),
-    );
     locator.registerFactory<CheckWalletSyncingUsecase>(
-      () => CheckWalletSyncingUsecase(
-        walletRepository: locator<WalletRepository>(),
-      ),
+      () =>
+          CheckWalletSyncingUsecase(locator<ForegroundWalletSync>().isSyncing),
     );
 
     locator.registerLazySingleton<CheckLiquidConsolidationUsecase>(

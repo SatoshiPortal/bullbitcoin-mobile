@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
     show LiquidWalletRepository;

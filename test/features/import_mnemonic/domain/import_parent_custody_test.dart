@@ -136,10 +136,8 @@ void main() {
         allowInitialScan = true,
         reason = SyncReason.auto,
       }) async {},
-      isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
-      electrumSyncResultStream: const Stream.empty(),
     );
     settings = _Settings();
     when(settings.fetch).thenAnswer(

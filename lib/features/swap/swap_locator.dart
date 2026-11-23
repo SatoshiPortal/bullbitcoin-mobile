@@ -15,7 +15,7 @@ import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_domain;
 import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/public/send_setup.dart'
@@ -29,7 +29,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
@@ -41,8 +41,6 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:labels/labels.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
-import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:swaps/swaps.dart';
@@ -245,18 +243,10 @@ class SwapLocator {
       () => SetSwapRouteOverrideUsecase(locator<SwapRouteSettingRepository>()),
     );
     locator.registerFactory<GetSwapServerUsecase>(
-      () => GetSwapServerUsecase(
-        swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.Preferences>(),
-      ),
+      () => GetSwapServerUsecase(locator<SwapServerSettings>()),
     );
     locator.registerFactory<SetSwapServerUsecase>(
-      () => SetSwapServerUsecase(
-        swapServerSettingRepository: locator<SwapServerSettingRepository>(),
-        settingsRepository: locator<settings_domain.Preferences>(),
-        swapEngineSwitcher: locator<SwapEngineSwitcher>(),
-        swapStore: locator<SwapStore>(),
-      ),
+      () => SetSwapServerUsecase(locator<SwapServerSettings>()),
     );
     locator.registerFactory<SwapSettingsCubit>(
       () => SwapSettingsCubit(

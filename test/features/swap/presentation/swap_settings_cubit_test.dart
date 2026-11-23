@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
+import 'package:swaps/swaps.dart' show SwapServer;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
@@ -42,8 +42,10 @@ void main() {
     getServer = _MockGetSwapServerUsecase();
     setServer = _MockSetSwapServerUsecase();
     when(() => getServer.execute()).thenAnswer(
-      (_) async =>
-          (server: SwapServer.mainnetDefault, environment: NetworkEnv.mainnet),
+      (_) async => const Ok((
+        server: SwapServer.mainnetDefault,
+        environment: NetworkEnv.mainnet,
+      )),
     );
     when(() => getSettings.execute()).thenAnswer(
       (_) async => const Ok((
@@ -157,8 +159,10 @@ void main() {
 
   test('marks the testnet default as the default on testnet', () async {
     when(() => getServer.execute()).thenAnswer(
-      (_) async =>
-          (server: SwapServer.testnetDefault, environment: NetworkEnv.testnet),
+      (_) async => const Ok((
+        server: SwapServer.testnetDefault,
+        environment: NetworkEnv.testnet,
+      )),
     );
     final cubit = build();
     addTearDown(cubit.close);
