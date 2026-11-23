@@ -127,13 +127,31 @@ void main() {
       );
     });
 
+    test('create sends COP amounts without decimals', () async {
+      final http = FakeBbxHttp(body: {'result': _order});
+      final _ = await repository(http).create(
+        LimitOrderDraft(
+          limitPrice: 400000000.4,
+          fiatAmount: 200000.6,
+          currency: FiatCurrency.cop,
+          address: 'bc1qaddress',
+        ),
+      );
+      final element =
+          (jsonDecode(sent(http)) as Map<String, dynamic>)['params']['element']
+              as Map<String, dynamic>;
+      expect(element['limitPrice'], '400000000');
+      expect(element['fiatAmount'], '200001');
+      expect(element['currencyCode'], 'COP');
+    });
+
     test('create sends the old request with the old rounding', () async {
       final http = FakeBbxHttp(body: {'result': _order});
       final _ = await repository(http).create(
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,
-          currencyCode: 'CAD',
+          currency: FiatCurrency.cad,
           address: 'bc1qaddress',
         ),
       );
@@ -355,7 +373,7 @@ void main() {
                 LimitOrderDraft(
                   limitPrice: 1,
                   fiatAmount: 1,
-                  currencyCode: 'CAD',
+                  currency: FiatCurrency.cad,
                   address: 'bc1',
                 ),
               ),
@@ -376,7 +394,7 @@ void main() {
                 LimitOrderDraft(
                   limitPrice: 1,
                   fiatAmount: 1,
-                  currencyCode: 'CAD',
+                  currency: FiatCurrency.cad,
                   address: 'bc1',
                 ),
               ),

@@ -17,7 +17,7 @@ void main() {
       LimitOrderDraft(
         limitPrice: 1,
         fiatAmount: 1,
-        currencyCode: 'CAD',
+        currency: FiatCurrency.cad,
         address: 'bc1qfallback',
       ),
     ),
@@ -110,7 +110,7 @@ void main() {
         verify(() => repository.create(captureAny())).captured.single
             as LimitOrderDraft;
     expect(draft.address, 'bc1qexample');
-    expect(draft.currencyCode, 'CAD');
+    expect(draft.currency, FiatCurrency.cad);
   });
 
   test('forwards a rate failure untouched', () async {

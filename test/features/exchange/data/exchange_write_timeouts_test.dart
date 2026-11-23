@@ -26,7 +26,7 @@ void main() {
             SettingsEntity(
               environment: environment,
               bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'CAD',
+              currency: FiatCurrency.cad,
             ),
           ),
         );
@@ -79,7 +79,7 @@ void main() {
             LimitOrderDraft(
               limitPrice: 90000,
               fiatAmount: 100,
-              currencyCode: 'CAD',
+              currency: FiatCurrency.cad,
               address: 'bc1qaddress',
             ),
           ),

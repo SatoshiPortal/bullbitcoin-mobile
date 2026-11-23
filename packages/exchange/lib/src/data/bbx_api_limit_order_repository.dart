@@ -34,9 +34,9 @@ final class BbxApiLimitOrderRepository {
         'create the limit order',
         ExchangeLimitOrderProblem.create,
         (api) => api.orderTriggers.addLimitOrder(
-          limitPrice: draft.limitPrice.toStringAsFixed(2),
-          fiatAmount: draft.fiatAmount.toStringAsFixed(2),
-          currencyCode: draft.currencyCode,
+          limitPrice: draft.limitPrice.toStringAsFixed(draft.currency.decimals),
+          fiatAmount: draft.fiatAmount.toStringAsFixed(draft.currency.decimals),
+          currencyCode: draft.currency.code,
           estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
           address: draft.address,
         ),

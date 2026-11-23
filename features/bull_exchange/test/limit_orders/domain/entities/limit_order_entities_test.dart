@@ -23,7 +23,7 @@ void main() {
       final draft = LimitOrderDraft(
         limitPrice: 50000,
         fiatAmount: 100,
-        currencyCode: 'CAD',
+        currency: FiatCurrency.cad,
         address: 'bc1qexample',
       );
 
@@ -35,7 +35,7 @@ void main() {
         () => LimitOrderDraft(
           limitPrice: 50000,
           fiatAmount: 0,
-          currencyCode: 'CAD',
+          currency: FiatCurrency.cad,
           address: 'bc1qexample',
         ),
         throwsArgumentError,
@@ -47,7 +47,7 @@ void main() {
         () => LimitOrderDraft(
           limitPrice: 50000,
           fiatAmount: 100,
-          currencyCode: 'CAD',
+          currency: FiatCurrency.cad,
           address: '   ',
         ),
         throwsArgumentError,

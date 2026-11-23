@@ -44,7 +44,7 @@ class CreateLimitOrderUsecase {
           LimitOrderDraft(
             limitPrice: limitPrice,
             fiatAmount: fiatAmount,
-            currencyCode: currency.code,
+            currency: currency,
             address: trimmedAddress,
           ),
         )).mapErr(mapLimitOrderFailure);
