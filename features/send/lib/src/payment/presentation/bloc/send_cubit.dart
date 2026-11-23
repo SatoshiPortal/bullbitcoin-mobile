@@ -6,7 +6,6 @@ import 'package:spend/spend.dart';
 import 'package:send/src/payment/domain/usecases/load_send_display_preferences_usecase.dart';
 
 import '../../domain/send_amount_conversion.dart';
-import '../../domain/usecases/get_send_amount_quotes_usecase.dart';
 
 import 'package:send/src/payment/domain/fixed_amount_wallet_choice_policy.dart';
 import 'package:send/src/payment/domain/usecases/prepare_internal_recipient_usecase.dart';
@@ -44,7 +43,6 @@ import 'package:fees_feature/fee_ui.dart';
 import 'package:send/src/payment/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/create_send_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_cross_chain_quote_usecase.dart';
-import 'package:send/src/payment/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:send/src/payment/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:address_view/payment_destination.dart';
 import 'package:send/src/payment/domain/usecases/broadcast_payjoin_original_usecase.dart';
@@ -70,7 +68,6 @@ import 'package:send/src/payment/presentation/send_wallet_view.dart';
 import 'package:send/src/payment/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:send/src/payment/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:send/src/payment/domain/usecases/watch_send_swap_usecase.dart';
-import 'package:send/src/payment/domain/send_failure.dart';
 import 'package:send/src/payment/domain/bitcoin_recipient_list_policy.dart';
 import 'package:send/src/payment/domain/boltz_swap_failure_to_send_failure.dart';
 import 'package:send/src/payment/domain/usecases/create_boltz_send_swap_usecase.dart';

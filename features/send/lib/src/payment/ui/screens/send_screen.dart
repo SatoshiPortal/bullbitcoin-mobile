@@ -28,7 +28,6 @@ import 'package:primitives/primitives.dart'
 
 import 'dart:math' as math;
 
-import 'package:send/src/payment/domain/send_failure.dart';
 import 'package:send/src/payment/domain/internal_recipient_policy.dart';
 
 import 'package:fees/fees.dart';

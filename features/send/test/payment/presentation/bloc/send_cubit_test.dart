@@ -46,7 +46,6 @@ import 'package:send/src/payment/domain/usecases/load_send_coins_usecase.dart';
 import 'package:send/src/payment/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
-import 'package:send/src/payment/domain/send_failure.dart';
 import 'package:send/src/payment/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:send/src/payment/domain/usecases/create_send_swap_usecase.dart';
 import 'package:address_view/payment_destination.dart';
