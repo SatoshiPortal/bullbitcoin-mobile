@@ -251,7 +251,7 @@ void main() {
           'failure',
           disposed
               ? isA<GoogleDriveDisposedFailure>()
-              : isA<GoogleDriveUnavailableFailure>(),
+              : isA<GoogleDriveAuthorizationRequiredFailure>(),
         ),
       );
       expect(tokens.recoveryRequests, [false]);
