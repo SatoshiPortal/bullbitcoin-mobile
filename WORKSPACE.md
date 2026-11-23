@@ -86,6 +86,8 @@ graph TD
   style notifications stroke:#8f25de
   novlang["novlang"]
   style novlang stroke:#dd8ff2
+  onboarding["onboarding"]
+  style onboarding stroke:#b7c5b0
   onion["onion"]
   style onion stroke:#cb1217
   physical_backup_verification["physical_backup_verification"]
@@ -297,6 +299,16 @@ graph TD
   network --> primitives
   notifications --> bull_logger
   notifications --> primitives
+  onboarding --> bull_recoverbull
+  onboarding --> bull_ui
+  onboarding --> mnemonic_entry
+  onboarding --> network
+  onboarding --> novlang
+  onboarding --> preferences
+  onboarding --> primitives
+  onboarding --> screen_privacy
+  onboarding --> settings
+  onboarding --> wallet_import
   physical_backup_verification --> bull_ui
   physical_backup_verification --> primitives
   physical_backup_verification --> screen_privacy
@@ -465,6 +477,7 @@ graph TD
     label_editor
     mnemonic_entry
     network
+    onboarding
     physical_backup_verification
     receive
     scanning
