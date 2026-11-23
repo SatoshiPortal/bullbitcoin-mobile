@@ -230,6 +230,11 @@ graph TB
     FEES_PACKAGE[Fees Package]
     FEES_PACKAGE -->|receiver fee estimation port| BULL_PAYJOIN
     FEES_UI[Fees Feature]
+    OVERVIEW[Wallet Overview workspace feature]
+    WALLETS -->|balance cards and refresh controls| OVERVIEW
+    OVERVIEW --> BITCOIN_PRICE
+    OVERVIEW --> QUICK_ACTIONS
+    OVERVIEW --> BULL_UI
     WALLETS[Wallets]
     EXCHANGE[Exchange]
     SUPPORT[Support]

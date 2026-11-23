@@ -1,0 +1,14 @@
+name: overview
+description: Wallet overview and detail presentation.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: '3.14.0'
+  flutter: '3.50.0'
+dependencies:
+  bitcoin_price:
+  bull_quick_actions:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  material_ui: ^1.11.0
