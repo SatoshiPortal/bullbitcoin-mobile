@@ -48,7 +48,7 @@ void main() {
         wallets,
         settings,
         Secrets(scratchDirectory: () async => scratch.path),
-        create,
+        create.call,
       );
       final result = await adapter.restoreDefaults(
         VaultContext(
@@ -86,7 +86,7 @@ void main() {
       Secrets(
         scratchDirectory: () async => throw StateError('Unexpected access'),
       ),
-      _Create(),
+      _Create().call,
     );
 
     expect(
@@ -127,7 +127,7 @@ void main() {
             wallets,
             settings,
             Secrets(scratchDirectory: () async => scratch.path),
-            create,
+            create.call,
           );
           final captured = VaultContext(
             fingerprint: Fingerprint('73c5da0a'),
@@ -169,7 +169,7 @@ void main() {
         _Wallets(),
         settings,
         Secrets(scratchDirectory: () async => scratch.path),
-        create,
+        create.call,
       );
       final result = await adapter.restoreDefaults(
         VaultContext(

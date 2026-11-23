@@ -5,7 +5,7 @@ import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:swaps/swaps.dart';
+import 'package:swaps/swaps.dart' show SwapsFailure;
 
 class _Wallets extends Mock implements WalletInventory {}
 
@@ -27,7 +27,7 @@ void main() {
         .thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
-  for (final (actsOnLiquid, network) in [
+  for (final (actsOnLiquid, network) in <(bool, Network)>[
     (false, BitcoinNetwork.testnet),
     (true, LiquidNetwork.testnet),
   ]) {

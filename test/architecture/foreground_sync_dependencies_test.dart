@@ -14,7 +14,7 @@ import 'package:path/path.dart' as p;
 // Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
-// These four edges are documented in FEATURES.md.
+// Ark also uses the published camera scanner. These edges are documented in FEATURES.md.
 // QR and NFC consumers use the scanning feature's public capabilities; its
 // implementation has no dependencies on those consumers (see FEATURES.md).
 // Label Editor publishes the existing note, label and import/export UI. Its
@@ -24,6 +24,7 @@ import 'package:path/path.dart' as p;
 // Exchange workspace UI consumers use the published routes (see FEATURES.md).
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
+  'ark': 'scanning',
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price coins fees',
@@ -42,7 +43,7 @@ const _allowedTargets = <String, String>{
   'support': 'bull_exchange',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions wallet_import',
   'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };

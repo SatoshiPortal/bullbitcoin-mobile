@@ -17,7 +17,6 @@ import 'dart:io';
 import 'package:transactions/testing.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:transactions/transactions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:dio/dio.dart';
@@ -46,7 +45,7 @@ void main() {
   late _MockTransactions transactions;
   late ScriptedWalletConnections servers;
   late AppPayjoinTransactionAdapter adapter;
-  const key = WalletKey(id: _walletId, network: BitcoinNetwork.testnet);
+  final key = WalletKey(id: _walletId, network: BitcoinNetwork.testnet);
 
   test('poll state codes survive the persisted host adapter', () async {
     final directory = await Directory.systemTemp.createTemp(
@@ -488,9 +487,7 @@ void main() {
       (_) async =>
           Ok(walletRegistrationForTesting(id: _walletId, network: key.network)),
     );
-    finished.add(
-      const WalletKey(id: _walletId, network: BitcoinNetwork.mainnet),
-    );
+    finished.add(WalletKey(id: _walletId, network: BitcoinNetwork.mainnet));
     finished.add(key);
     await pumpEventQueue();
     expect(completions, hasLength(1));
