@@ -35,18 +35,6 @@ class ExchangeSessionScope extends StatefulWidget {
   static bool watchHasAccount(BuildContext context) =>
       context.select((ExchangeBloc bloc) => bloc.state.session != null);
 
-  static Stream<bool> accountChanges(BuildContext context) {
-    final bloc = context.read<ExchangeBloc>();
-    return Stream<bool>.multi((controller) {
-      controller.addSync(bloc.state.session != null);
-      final subscription = bloc.stream.listen(
-        (state) => controller.addSync(state.session != null),
-        onDone: controller.closeSync,
-      );
-      controller.onCancel = subscription.cancel;
-    });
-  }
-
   static ExchangeDashboardState watchDashboard(BuildContext context) =>
       context.select((ExchangeBloc bloc) => bloc.state);
 

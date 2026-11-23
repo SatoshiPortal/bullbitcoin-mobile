@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bull_ui/bull_ui.dart'
     show BullScaffold, BullTopBar, BullButton, BullText, Gap, BullTypographyX;
 import 'package:exchange/exchange.dart';
@@ -41,16 +39,35 @@ GoRoute exchangeAuthRoute({
         child: _AuthAccessGate(
           host: host,
           onExit: onExit,
-          child: _SettingsAuthenticationReturn(
-            onExit: exitSettingsAuth,
-            watchAccess: host.watchAccess,
-            child: Scaffold(
-              body: ExchangeAuthScreen(host: host, onExit: exitSettingsAuth),
+          child: Scaffold(
+            body: ExchangeAuthScreen(
+              host: host,
+              onExit: exitSettingsAuth,
+              onDone: exitSettingsAuth,
             ),
           ),
         ),
       );
     }
+    // A stored key is the only way out forward (B2): the route never waits
+    // for the account read.
+    void onSignedIn() {
+      if (fromSupport) {
+        final isIOSNonSuperuser = showWebsiteOnly(context);
+        context.goNamed(
+          ExchangeSupportChatNavigation.routeName,
+          queryParameters: isIOSNonSuperuser ? {} : {'from': 'exchange'},
+          extra: draft,
+        );
+        return;
+      }
+      if (showWebsiteOnly(context)) {
+        onExit(context);
+        return;
+      }
+      context.goNamed(BullExchangeNavigation.dashboardName);
+    }
+
     // Support and the landing page open sign-in with `go`, which leaves
     // nothing to go back to.
     return NoTransitionPage(
@@ -60,31 +77,11 @@ GoRoute exchangeAuthRoute({
         child: _AuthAccessGate(
           host: host,
           onExit: onExit,
-          child: _AccountSignInReturn(
-            changes: host.accountSignedInChanges,
-            onSignedIn: (context) {
-              if (fromSupport) {
-                final isIOSNonSuperuser = showWebsiteOnly(context);
-                context.goNamed(
-                  ExchangeSupportChatNavigation.routeName,
-                  queryParameters: isIOSNonSuperuser
-                      ? {}
-                      : {'from': 'exchange'},
-                  extra: draft,
-                );
-                return;
-              }
-              if (showWebsiteOnly(context)) {
-                onExit(context);
-                return;
-              }
-              context.goNamed(BullExchangeNavigation.dashboardName);
-            },
-            child: Scaffold(
-              body: ExchangeAuthScreen(
-                host: host,
-                onExit: () => onExit(context),
-              ),
+          child: Scaffold(
+            body: ExchangeAuthScreen(
+              host: host,
+              onExit: () => onExit(context),
+              onDone: onSignedIn,
             ),
           ),
         ),
@@ -92,46 +89,6 @@ GoRoute exchangeAuthRoute({
     );
   },
 );
-
-class _SettingsAuthenticationReturn extends StatefulWidget {
-  const _SettingsAuthenticationReturn({
-    required this.child,
-    required this.onExit,
-    required this.watchAccess,
-  });
-
-  final Widget child;
-  final VoidCallback onExit;
-  final Stream<ExchangeAccess> Function() watchAccess;
-
-  @override
-  State<_SettingsAuthenticationReturn> createState() =>
-      _SettingsAuthenticationReturnState();
-}
-
-class _SettingsAuthenticationReturnState
-    extends State<_SettingsAuthenticationReturn> {
-  StreamSubscription<ExchangeAccess>? _subscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _subscription = widget.watchAccess().listen((status) {
-      if (mounted && status.isSignedIn) {
-        widget.onExit();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
-}
 
 class _AuthAccessGate extends StatelessWidget {
   const _AuthAccessGate({
@@ -175,43 +132,4 @@ class _AuthAccessGate extends StatelessWidget {
       );
     },
   );
-}
-
-class _AccountSignInReturn extends StatefulWidget {
-  const _AccountSignInReturn({
-    required this.changes,
-    required this.onSignedIn,
-    required this.child,
-  });
-
-  final Stream<bool> Function(BuildContext) changes;
-  final void Function(BuildContext) onSignedIn;
-  final Widget child;
-
-  @override
-  State<_AccountSignInReturn> createState() => _AccountSignInReturnState();
-}
-
-class _AccountSignInReturnState extends State<_AccountSignInReturn> {
-  StreamSubscription<bool>? _subscription;
-
-  @override
-  void initState() {
-    super.initState();
-    bool? signedIn;
-    _subscription = widget.changes(context).listen((value) {
-      final justSignedIn = signedIn == false && value;
-      signedIn = value;
-      if (mounted && justSignedIn) widget.onSignedIn(context);
-    });
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
 }

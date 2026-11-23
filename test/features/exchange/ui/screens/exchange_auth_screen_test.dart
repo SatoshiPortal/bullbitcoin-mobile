@@ -91,6 +91,7 @@ void main() {
     testWidgets('authentication WebView: $scenario', (tester) async {
       var generations = 0;
       var exits = 0;
+      var dones = 0;
       final platform = _Platform();
       if (scenario == 'no-session') platform.cookies.cookies = [];
       WebViewPlatform.instance = platform;
@@ -155,6 +156,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: ExchangeAuthScreen(
             onExit: () => exits++,
+            onDone: () => dones++,
             host: exchangeAuthHost(() => capability),
           ),
         ),
@@ -190,6 +192,7 @@ void main() {
       expect(generations, scenario == 'no-session' ? 0 : 1);
       expect(platform.cookies.clears, 0);
       expect(exits, 0);
+      expect(dones, 0);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
       verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);

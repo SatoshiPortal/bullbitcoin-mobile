@@ -25,7 +25,6 @@ ExchangeAuthHost exchangeAuthHost(Exchange Function() exchange) => (
   testnetKycUrl: Uri.parse(ExchangeDefaults.bbKycTestUrl),
   currentAccess: () => exchange().currentAccess,
   watchAccess: () => exchange().watchAccess(),
-  accountSignedInChanges: ExchangeSessionScope.accountChanges,
   retryAccess: (_) async {
     final _ = await exchange().resolveAccess();
   },
