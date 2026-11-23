@@ -37,7 +37,6 @@ class TestPhysicalBackupFlowNavigator extends StatelessWidget {
             builder: (context) => switch (flow) {
               TestPhysicalBackupFlow.backup => ShowMnemonicScreen(
                 access: access,
-                access: access,
                 onTestSucceeded: onTestSucceeded,
                 successImage: successImage,
               ),

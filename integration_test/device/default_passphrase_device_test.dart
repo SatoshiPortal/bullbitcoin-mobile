@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:preferences/preferences.dart';
+import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
 import 'package:secrets/storage.dart';
 import 'package:bull_recoverbull/storage.dart';
 import 'package:backups/testing.dart';

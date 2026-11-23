@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bull_ui/bull_ui.dart' show BuildContext, SizedBox;
+import 'package:bull_ui/bull_ui.dart' show SizedBox;
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
