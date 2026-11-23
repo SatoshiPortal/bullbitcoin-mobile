@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ark/funding.dart';
+import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -61,6 +62,63 @@ void main() {
   tearDown(() async {
     expect(await runtime.close(), isA<Ok>());
     await directory.delete(recursive: true);
+  });
+
+  test(
+    'Liquid fixed and drain requests require exactly one amount mode',
+    () async {
+      for (final request in [
+        (amount: null, drain: false),
+        (amount: 1000, drain: true),
+      ]) {
+        expect(
+          await spend.prepareLiquid(
+            walletId: 'wallet',
+            address: 'recipient',
+            amountSat: request.amount,
+            drain: request.drain,
+            feeRate: const RelativeFee(25),
+          ),
+          _failure<SpendInvalidRequestFailure>(),
+        );
+      }
+    },
+  );
+
+  test(
+    'Liquid preparation fails closed when the wallet cannot be resolved',
+    () async {
+      final unavailableSpend = Spend.open(
+        sync: runtime,
+        secrets: Secrets(scratchDirectory: () async => directory.path),
+        arkFunding: const ArkFundingSigningGuard(authority: null),
+        catalog: _UnavailableSpendCatalog(),
+      );
+      expect(
+        await unavailableSpend.prepareLiquid(
+          walletId: 'wallet',
+          address: 'recipient',
+          amountSat: 1000,
+          feeRate: const RelativeFee(25),
+        ),
+        _failure<SpendUnavailableFailure>(),
+      );
+      expect(connections.networks, isEmpty);
+    },
+  );
+
+  test('a resumed Liquid payin rejects an empty amount', () async {
+    expect(
+      await spend.resumeLiquidPayin(
+        signedPset: 'pset',
+        walletId: 'wallet',
+        network: LiquidNetwork.regtest,
+        address: 'recipient',
+        amount: Sats.zero,
+      ),
+      _failure<SpendInvalidRequestFailure>(),
+    );
+    expect(connections.networks, isEmpty);
   });
 
   test('global freezes refuse an imported input before connection', () async {
@@ -218,6 +276,12 @@ final class _NoSpendCatalog implements SpendCatalog {
   @override
   Future<Result<SpendWallet, SpendFailure>> resolve(String walletId) async =>
       throw StateError('An imported spend must never resolve a wallet');
+}
+
+final class _UnavailableSpendCatalog implements SpendCatalog {
+  @override
+  Future<Result<SpendWallet, SpendFailure>> resolve(String walletId) async =>
+      const Err(SpendUnavailableFailure());
 }
 
 final class _Reservations implements InputReservationPort {
