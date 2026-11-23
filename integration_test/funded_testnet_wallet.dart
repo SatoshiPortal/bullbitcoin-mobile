@@ -1,32 +1,34 @@
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:flutter_test/flutter_test.dart' show fail;
-import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+import 'package:bb_mobile/locator.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, ScriptType;
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
+
+import 'initialization_result.dart';
 
 /// Coins and Payjoin use the same Alice account in the aggregated suite.
-Future<Wallet> openFundedTestnetWallet({
+Future<WalletKey> openFundedTestnetWallet({
   required String mnemonic,
   required Secrets secrets,
-  required WalletRepository wallets,
+  required SecretsInventory inventory,
+  required WalletNativeLifecycle native,
 }) async {
   final words = mnemonic.split(' ');
   const language = Language.english;
-  final existing = switch (await secrets.find(
-    words: words,
-    language: language,
-  )) {
-    Ok(:final value) => value,
-    Err(:final failure) => fail('secret lookup failed: ${failure.runtimeType}'),
-  };
-  final secret =
+  final existing = requireValue(
+    await secrets.find(words: words, language: language),
+    'find the fixture secret',
+  );
+  final Secret secret =
       existing ??
-      switch (await secrets.import(words: words, language: language)) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
+      requireValue(
+        await secrets.import(words: words, language: language),
+        'import the fixture secret',
+      );
 
   const network = Network.bitcoinTestnet;
   const scriptType = ScriptType.bip84;
@@ -35,13 +37,57 @@ Future<Wallet> openFundedTestnetWallet({
     network: network,
     scriptType: scriptType,
   );
-  return switch (await wallets.getWallet(id)) {
-    Ok(:final value) => value,
-    Err(failure: WalletNotFoundFailure()) => await wallets.createWallet(
+  final key = WalletKey(id: id, network: BitcoinNetwork.testnet);
+  if (requireValue(await inventory.findWallet(id), 'read the fixture wallet') ==
+      null) {
+    final metadata = await WalletMetadataService.deriveFromSecret(
       secret: secret,
       network: network,
       scriptType: scriptType,
-    ),
-    Err(:final failure) => fail('wallet lookup failed: ${failure.runtimeType}'),
-  };
+      isDefault: false,
+    );
+    requireValue(await native.prepareCreate(key), 'prepare the fixture wallet');
+    requireValue(
+      await inventory.registerWallet(
+        RegisteredWallet(
+          id: id,
+          secretFingerprint: secret.id.hex,
+          masterFingerprint: metadata.masterFingerprint,
+          signer: WalletSigner.local.name,
+          network: metadata.networkCode,
+          xpub: metadata.xpub,
+          externalDescriptor: metadata.externalPublicDescriptor,
+          internalDescriptor: metadata.internalPublicDescriptor,
+          label: null,
+          birthday: null,
+          isDefault: false,
+        ),
+      ),
+      'register the fixture wallet',
+    );
+    final created = await native.create(key);
+    if (created is Err) {
+      requireValue(
+        await inventory.removeWallet(id),
+        'remove the failed fixture',
+      );
+    }
+    requireValue(created, 'create the fixture wallet');
+  }
+  return key;
+}
+
+Future<Wallet> syncFundedTestnetWallet(WalletKey key) async {
+  final native = locator<WalletNativeRuntime>();
+  requireValue(await native.initialize(), 'initialize Sync');
+  final descriptor = requireValue(
+    await locator<WalletCatalogPort>().find(key),
+    'read the fixture descriptor',
+  );
+  requireValue(
+    await locator<ElectrumSync>().execute(descriptor),
+    'sync the fixture wallet',
+  );
+  requireValue(await native.refresh(key), 'publish the synced fixture wallet');
+  return requireValue(await native.loadWallet(key), 'load the fixture wallet');
 }

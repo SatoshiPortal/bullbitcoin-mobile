@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/background_wallet_storage_guard.dart';
+
 // Security audit reproducer for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2599
 // Finding: wallet databases, Payjoin state, and logs are stored in iOS Documents without backup exclusion.
 // Regression test for the fix.
@@ -50,10 +52,11 @@ void main() {
     );
 
     test('background stores use Documents without opening Payjoin or custody', () {
-      final source = [
-        'lib/background_bootstrap.dart',
-        'lib/features/wallet/background_setup.dart',
-      ].map((path) => File(path).readAsStringSync()).join('\n');
+      final bootstrap = File('lib/background_bootstrap.dart')
+          .readAsStringSync();
+      final walletSetup = File('lib/features/wallet/background_setup.dart')
+          .readAsStringSync();
+      final source = '$bootstrap\n$walletSetup';
       expect(source, contains('await getApplicationDocumentsDirectory()'));
       expect(source, contains('openExisting(documents.path)'));
       expect(
@@ -81,7 +84,10 @@ void main() {
       );
       expect(source, isNot(contains('AppLocator.setup(')));
       expect(source, isNot(contains('payjoinDatabaseFilename')));
-      expect(source, isNot(contains('package:secrets/')));
+      expectOnlyBackgroundWalletStorage(
+        bootstrap: bootstrap,
+        walletSetup: walletSetup,
+      );
       final admission = source.indexOf(
         'final admitted = await cutover.admit()',
       );

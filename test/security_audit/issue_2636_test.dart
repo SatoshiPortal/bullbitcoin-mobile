@@ -14,12 +14,30 @@ void main() {
         'features/wallet_import/lib/src/ui/watch_only/scan_watch_only_screen.dart',
       ).readAsStringSync();
 
-      // The latch is set before reading the QR, including the derivation prompt.
+      final latch = source.indexOf('_handled = true;');
+      final read = source.indexOf('await readWatchOnlyQr(');
+      expect(latch, greaterThanOrEqualTo(0));
+      expect(read, greaterThan(latch));
+
+      final qr = File('features/wallet_import/lib/src/ui/watch_only_qr.dart')
+          .readAsStringSync();
+      expect(qr, contains('return Ok(choice);'));
       expect(
-        source.indexOf('_handled = true'),
-        lessThan(source.indexOf('await readWatchOnlyQr')),
+        qr,
+        contains(
+          'if (input == null || !context.mounted) return const Ok(null);',
+        ),
       );
-      expect(source, contains(RegExp(r'else\s*\{\s*_handled = false;')));
+      expect(
+        source.substring(read),
+        matches(
+          RegExp(
+            r'if \(watchOnly case Ok\(value: final value\?\)\) \{\s*'
+            r'ImportNavigation\.replaceWithWatchOnly\(context, value\);\s*'
+            r'\} else \{\s*_handled = false;',
+          ),
+        ),
+      );
     });
   });
 }

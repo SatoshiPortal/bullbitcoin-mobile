@@ -14,7 +14,22 @@ void main() {
       expect(source, contains('xprv'));
       expect(source, contains('yprv'));
       expect(source, contains('zprv'));
-      expect(source, contains('_privateKey.hasMatch'));
+      final rejection = source.indexOf('if (_privateKey.hasMatch(text))');
+      final parse = source.indexOf('sat.Satoshifier.parse(normalized)');
+      expect(rejection, greaterThanOrEqualTo(0));
+      expect(parse, greaterThan(rejection));
+      expect(
+        source.substring(rejection, parse),
+        contains('return const Err(InvalidWatchOnlyInputFailure())'),
+      );
+      expect(
+        source,
+        contains('_privateKey.hasMatch(value.descriptor.external)'),
+      );
+      expect(
+        source,
+        contains('_privateKey.hasMatch(value.descriptor.internal)'),
+      );
     });
   });
 }

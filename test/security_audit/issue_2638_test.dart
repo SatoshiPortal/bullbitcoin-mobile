@@ -16,8 +16,19 @@ void main() {
         final source = File(
           'features/wallet_import/lib/src/domain/watch_only_input.dart',
         ).readAsStringSync();
+        expect(source, contains(r"RegExp(r'^\[[^\]]+\]')"));
+        expect(source, contains('_keyOrigin.firstMatch(trimmed)?.group(0)'));
         expect(source, contains('trimmed.substring(origin?.length ?? 0)'));
-        expect(source, contains('Err<WatchOnlyInput, ImportFailure>'));
+        expect(source, contains('sat.Satoshifier.parse(normalized)'));
+        expect(source, contains('keyOrigin: origin,'));
+        expect(
+          source,
+          matches(
+            RegExp(
+              r'_\s*=>\s*const Err<WatchOnlyInput, ImportFailure>\(\s*InvalidWatchOnlyInputFailure\(\)',
+            ),
+          ),
+        );
       },
     );
   });
