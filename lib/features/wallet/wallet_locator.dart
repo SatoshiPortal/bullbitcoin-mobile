@@ -293,7 +293,6 @@ class WalletLocator {
       return WalletRepository(
         native: locator<WalletNativeRuntime>(),
         walletRegistrations: locator<WalletRegistrations>(),
-        wallet: locator<WalletNativeRuntime>().wallet,
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
         syncStarted: sync.started,
