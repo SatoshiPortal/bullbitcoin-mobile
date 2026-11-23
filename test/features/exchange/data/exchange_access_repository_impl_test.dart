@@ -1,7 +1,6 @@
 import '../fixtures/legacy_access.dart';
 
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -589,9 +588,7 @@ void main() {
       final resolving = repository.resolve();
       await readStarted.future;
       var authorized = false;
-      final entry = GuardExchangeTradingUsecase(repository, () async => true)
-          .execute()
-          .then((value) {
+      final entry = repository.tradingAvailability().then((value) {
             authorized = true;
             return value;
           });
