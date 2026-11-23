@@ -4,7 +4,7 @@ import 'package:exchange/testing.dart';
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
@@ -17,9 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:novlang/novlang.dart';
-
-class _Exchange extends Mock implements ExchangeFacade {}
 
 class _Access extends Mock implements ExchangeAccessLifecycle {}
 
@@ -64,12 +63,12 @@ void main() {
   testWidgets('support login preserves the authentication source and draft', (
     tester,
   ) async {
-    final exchange = _Exchange();
+    final exchange = _Access();
     when(
-      () => exchange.currentAccess,
+      () => exchange.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+    addTearDown(() => locator.unregister<Exchange>());
     final lifecycle = _Access();
     when(() => lifecycle.enable(forSupport: true))
         .thenAnswer((_) async => const Ok(null));
@@ -155,15 +154,15 @@ void main() {
     })
   >
   pumpTrade(WidgetTester tester, {void Function(BuildContext)? onExit}) async {
-    final exchange = _Exchange();
+    final exchange = _Access();
     final changes = StreamController<ExchangeAccess>.broadcast();
     ExchangeAccess current = const ExchangeAccessEnabled(
       ExchangeAccessSession.signedIn,
     );
-    when(() => exchange.currentAccess).thenAnswer((_) => current);
-    when(exchange.watchAccess).thenAnswer((_) => changes.stream);
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    when(() => exchange.current).thenAnswer((_) => current);
+    when(exchange.watch).thenAnswer((_) => changes.stream);
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+    addTearDown(() => locator.unregister<Exchange>());
     final cubit = _ExchangeCubit();
     when(() => cubit.state).thenReturn(const ExchangeState());
     final router = GoRouter(
@@ -237,13 +236,13 @@ void main() {
   ) async {
     const signedIn = ExchangeAccessEnabled(ExchangeAccessSession.signedIn);
     const signedOut = ExchangeAccessEnabled(ExchangeAccessSession.signedOut);
-    final exchange = _Exchange();
+    final exchange = _Access();
     final changes = StreamController<ExchangeAccess>.broadcast();
     ExchangeAccess current = signedIn;
-    when(() => exchange.currentAccess).thenAnswer((_) => current);
-    when(exchange.watchAccess).thenAnswer((_) => changes.stream);
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    when(() => exchange.current).thenAnswer((_) => current);
+    when(exchange.watch).thenAnswer((_) => changes.stream);
+    locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+    addTearDown(() => locator.unregister<Exchange>());
     final cubit = _ExchangeCubit();
     // The cubit resets to its empty state when the session ends.
     when(() => cubit.state).thenReturn(const ExchangeState());

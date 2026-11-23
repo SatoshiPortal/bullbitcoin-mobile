@@ -21,7 +21,10 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'dart:io';
 
 import 'package:access/setup.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
+import 'package:exchange/testing.dart' show exchangeForTesting;
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -63,7 +66,7 @@ class ImportPreferences extends Mock implements Preferences {}
 
 class ElectrumServers extends Mock implements ElectrumServersPort {}
 
-class Exchange extends Mock implements ExchangeFacade {}
+class _ExchangeAccess extends Mock implements ExchangeAccessLifecycle {}
 
 class SilentPreferences extends Mock implements Preferences {}
 
@@ -120,7 +123,7 @@ void main() {
     'actual shell routes keep unavailable Ark entries inert and navigable',
     (tester) async {
       final directory = Directory.systemTemp.createTempSync('ark-route-');
-      final exchange = Exchange();
+      final exchange = _ExchangeAccess();
       final wallets = Wallets();
       final quickActions = createQuickActionsCubit(
         storage: Memory(),
@@ -131,7 +134,7 @@ void main() {
         secrets: Secrets(scratchDirectory: () async => directory.path),
         wallets: wallets,
       );
-      locator.registerSingleton<ExchangeFacade>(exchange);
+      locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
       locator.registerSingleton<QuickActionsCubit>(quickActions);
       final exchangePrompt = createExchangePromptCubit(
         storage: Memory(),
@@ -363,7 +366,7 @@ void main() {
         await inventoryFixture.close();
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
-        await locator.unregister<ExchangeFacade>();
+        await locator.unregister<Exchange>();
         await locator.unregister<QuickActionsCubit>();
         await exchangePrompt.close();
         await locator.unregister<ExchangePromptCubit>();

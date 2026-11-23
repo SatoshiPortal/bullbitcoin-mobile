@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:exchange/testing.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +13,13 @@ class _Preferences extends Mock implements SaveExchangePreferencesUsecase {}
 
 class _Announcements extends Mock implements GetExchangeAnnouncementsUsecase {}
 
-class _WatchAccess extends Mock implements WatchExchangeAccessUsecase {}
+/// The access source the cubit reads: the current value and its changes.
+abstract interface class _AccessSource {
+  ExchangeAccess get current;
+  Stream<ExchangeAccess> execute();
+}
+
+class _WatchAccess extends Mock implements _AccessSource {}
 
 class _Authentication extends Mock
     implements CompleteExchangeAuthenticationUsecase {}
