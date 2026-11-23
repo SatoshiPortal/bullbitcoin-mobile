@@ -1,4 +1,3 @@
-import 'package:swaps/order_swaps.dart';
 import 'package:spend/spend.dart';
 import 'package:spend/testing.dart';
 import 'package:primitives/primitives.dart' show LiquidNetwork, Sats;

@@ -1,4 +1,3 @@
-import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
 
 import 'domain/usecases/get_send_amount_quotes_usecase.dart';

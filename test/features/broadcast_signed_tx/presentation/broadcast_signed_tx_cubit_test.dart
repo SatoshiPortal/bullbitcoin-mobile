@@ -1,6 +1,3 @@
-import '../../../frozen_outpoints_fixture.dart';
-
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:satoshifier/bbqr.dart';
 
 import 'package:preferences/preferences.dart';

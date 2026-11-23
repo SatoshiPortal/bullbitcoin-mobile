@@ -1,7 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
-import 'package:swaps/order_swaps.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
 import 'package:spend/fee_preview.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart' show NetworkX;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'

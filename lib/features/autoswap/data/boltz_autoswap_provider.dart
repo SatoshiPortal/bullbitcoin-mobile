@@ -1,4 +1,3 @@
-import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:fees/fees.dart';
 import 'package:preferences/preferences.dart';
