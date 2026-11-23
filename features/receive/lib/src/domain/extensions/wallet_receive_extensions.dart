@@ -1,4 +1,3 @@
-import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:receive/receive.dart';
 
 extension WalletReceiveExtension on ReceiveWallet {

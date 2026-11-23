@@ -13,7 +13,10 @@ extension ReceiveWalletL10n on ReceiveWallet {
       ? isBitcoin
             ? context.loc.globalDefaultBitcoinWalletLabel
             : context.loc.globalDefaultLiquidWalletLabel
-      : label ?? id;
+      : label ??
+            (network.env == NetworkEnv.regtest && id.endsWith(':regtest')
+                ? id.substring(0, id.length - ':regtest'.length)
+                : id);
 }
 
 extension ReceivePaymentNetworkL10n on PaymentNetwork {

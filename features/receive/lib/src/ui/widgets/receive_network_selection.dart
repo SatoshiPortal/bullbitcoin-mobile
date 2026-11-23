@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:receive/src/ui/receive_localizations.dart';
-import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/src/domain/extensions/wallet_receive_extensions.dart';
 import 'package:receive/src/ui/receive_router.dart';

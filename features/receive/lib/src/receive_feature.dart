@@ -4,7 +4,6 @@ import 'package:receive/receive.dart';
 
 import 'package:receive/src/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:preferences/preferences.dart';
-import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:address_view/address_view.dart';
 import 'package:transactions/transactions.dart';
 import 'package:labels/labels.dart';
@@ -101,7 +100,7 @@ final class ReceiveFeature {
       locator<ActiveEnvironmentReader>(),
       inventory,
       loadWallet,
-      signerDevices,
+      signerDevices.read,
     );
     locator.registerFactory<PrepareReceiveAddressUsecase>(
       () => PrepareReceiveAddressUsecase(locator<AddressView>()),

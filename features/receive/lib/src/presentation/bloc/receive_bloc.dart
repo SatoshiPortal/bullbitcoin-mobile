@@ -25,7 +25,6 @@ import 'package:primitives/primitives.dart'
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show StringFormatting;
-import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:address_view/address_view.dart';
 import 'package:clock/clock.dart';
 import 'package:receive/src/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -76,8 +75,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._watchReceivePayjoinMinAmountUsecase,
     required this._getReceivePayjoinPolicyUsecase,
     required this._setReceivePayjoinEnabledUsecase,
-    this._refreshAfterLightningPayment,
-    this._resolveEntry,
+    required this._refreshAfterLightningPayment,
+    required this._resolveEntry,
     this._wallet,
     bool pollAmountQuotes = true,
     this._getReceiveSwapLimitsUsecase,
@@ -163,8 +162,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
   final CreateReceiveOrder _createReceiveOrderSwapUsecase;
-  final Future<void> Function()? _refreshAfterLightningPayment;
-  final Future<Result<ReceiveWallet, ReceiveFailure>> Function(ReceiveWallet)?
+  final Future<void> Function() _refreshAfterLightningPayment;
+  final Future<Result<ReceiveWallet, ReceiveFailure>> Function(ReceiveWallet)
   _resolveEntry;
   final GetReceiveSwapRouteUsecase _getReceiveSwapRouteUsecase;
   final CreateBoltzReceiveSwapUsecase _createBoltzReceiveSwapUsecase;
@@ -1662,7 +1661,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       //  A failed sync is dropped though (the use-case logs it): the swap
       //  already completed, and the balance reconciles on the next sync
       //  anyway, so there is nothing to tell the user.
-      await _refreshAfterLightningPayment?.call();
+      await _refreshAfterLightningPayment();
     }
   }
 
@@ -1758,7 +1757,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
     if (swap.status == SwapStatus.completed) {
-      await _refreshAfterLightningPayment?.call();
+      await _refreshAfterLightningPayment();
     }
   }
 
@@ -1854,8 +1853,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveWallet? entry,
   ) async {
     if (entry == null) return const Ok(null);
-    final resolve = _resolveEntry;
-    return resolve == null ? Ok(entry) : resolve(entry);
+    return _resolveEntry(entry);
   }
 
   void _watchLightningSwap(String swapId) {

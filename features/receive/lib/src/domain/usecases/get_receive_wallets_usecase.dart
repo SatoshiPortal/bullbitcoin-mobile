@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart' as native;
 import 'package:signers/storage.dart';
@@ -14,17 +13,22 @@ typedef LoadReceiveWallet =
       native.WalletKey key,
     );
 
+typedef ReadReceiveSigner =
+    Future<Result<SignerDevice?, SignerDeviceFailure>> Function(
+      String walletId,
+    );
+
 class GetReceiveWalletsUsecase {
   final ActiveEnvironmentReader _environment;
   final WalletInventory _inventory;
   final LoadReceiveWallet _loadWallet;
-  final SignerDevices _devices;
+  final ReadReceiveSigner _readSigner;
 
   const GetReceiveWalletsUsecase(
     this._environment,
     this._inventory,
     this._loadWallet,
-    this._devices,
+    this._readSigner,
   );
 
   @useResult
@@ -89,7 +93,7 @@ class GetReceiveWalletsUsecase {
   }
 
   Future<ReceiveWallet?> _project(WalletRegistration registration) async {
-    final device = await _devices.read(registration.id);
+    final device = await _readSigner(registration.id);
     if (device case Err(:final failure)) {
       log.warning(
         'Failed to read receive wallet signer: ${failure.runtimeType}',
@@ -100,7 +104,7 @@ class GetReceiveWalletsUsecase {
       native.WalletKey(id: registration.id, network: registration.network),
     );
     final balance = switch (loaded) {
-      Ok(:final value) => value.balances.now.data?.totalSat,
+      Ok(:final value) => value.balances.now.data,
       Err(:final failure) => _unavailableBalance(failure),
     };
     return ReceiveWallet(
@@ -112,11 +116,12 @@ class GetReceiveWalletsUsecase {
       scriptType: registration.scriptType,
       derivationPath: registration.derivationPath,
       signerDevice: (device as Ok<SignerDevice?, SignerDeviceFailure>).value,
-      balanceSat: balance,
+      balanceSat: balance?.totalSat,
+      confirmedBalanceSat: balance?.confirmedSat,
     );
   }
 
-  static BigInt? _unavailableBalance(native.SyncFailure failure) {
+  static native.Balances? _unavailableBalance(native.SyncFailure failure) {
     log.warning(
       'Failed to read receive wallet balance: ${failure.runtimeType}',
     );

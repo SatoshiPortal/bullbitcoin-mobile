@@ -12,6 +12,7 @@ final class ReceiveWallet {
   final String? derivationPath;
   final SignerDevice? signerDevice;
   final BigInt? balanceSat;
+  final BigInt? confirmedBalanceSat;
 
   const ReceiveWallet({
     required this.id,
@@ -23,6 +24,7 @@ final class ReceiveWallet {
     this.derivationPath,
     this.signerDevice,
     this.balanceSat,
+    this.confirmedBalanceSat,
   });
 
   bool get isBitcoin => network is BitcoinNetwork;
