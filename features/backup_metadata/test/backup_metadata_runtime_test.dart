@@ -6,11 +6,11 @@ import 'dart:typed_data';
 
 import 'package:labels/backup.dart';
 import 'package:backup_storage/backup_storage.dart';
-import 'package:backup_metadata/backup_metadata_runtime.dart';
 import 'package:backup_metadata/backup_metadata.dart';
 import 'package:backup_metadata/setup.dart';
 import 'package:backup_metadata/src/data/backup_metadata_repository_impl.dart';
 import 'package:backup_metadata/src/data/backup_metadata_store.dart';
+import 'package:backup_metadata/src/domain/usecases/apply_restore_usecase.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
