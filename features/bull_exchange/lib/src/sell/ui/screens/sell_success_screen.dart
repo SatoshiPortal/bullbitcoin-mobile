@@ -63,7 +63,9 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
 
     final showBalanceMessage = order?.isBalancePayout == true;
     final showPayjoinStatus =
-        order != null && order.payjoinOutcome != OrderPayjoinOutcome.none;
+        order != null &&
+        order.payjoinOutcome != OrderPayjoinOutcome.none &&
+        order.payjoinOutcome != OrderPayjoinOutcome.abandoned;
 
     return BullSuccessScreen(
       title: context.loc.sellTitle,
@@ -89,6 +91,8 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
                         BullAsyncStatusState.succeeded,
                       OrderPayjoinOutcome.plainSend =>
                         BullAsyncStatusState.fallback,
+                      OrderPayjoinOutcome.abandoned =>
+                        BullAsyncStatusState.hidden,
                     },
                     inProgressLabel: context.loc.payjoinInProgress,
                     succeededLabel: context.loc.payjoinViaPayjoin,

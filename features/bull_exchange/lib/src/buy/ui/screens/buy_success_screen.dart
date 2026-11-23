@@ -108,6 +108,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
               OrderPayjoinOutcome.inProgress => BullAsyncStatusState.inProgress,
               OrderPayjoinOutcome.succeeded => BullAsyncStatusState.succeeded,
               OrderPayjoinOutcome.plainSend => BullAsyncStatusState.fallback,
+              OrderPayjoinOutcome.abandoned => BullAsyncStatusState.hidden,
             },
             inProgressLabel: context.loc.payjoinInProgress,
             succeededLabel: context.loc.payjoinSucceeded,

@@ -302,7 +302,12 @@ enum OrderPayjoinOutcome {
   succeeded,
 
   /// The exchange settled through an ordinary transaction instead.
-  plainSend;
+  plainSend,
+
+  /// Attached, but the order ended (cancelled, expired, rejected, failed, or
+  /// completed without a reported transaction) and no transaction is known:
+  /// nothing will settle through it any more.
+  abandoned;
 
   bool get isOngoing => this == OrderPayjoinOutcome.inProgress;
   bool get hasPayjoin => this != OrderPayjoinOutcome.none;
@@ -753,6 +758,9 @@ sealed class Order with _$Order {
     // A settled order that never produced a payjoin txid was paid plainly,
     // whether because nobody answered or because the customer opted out.
     if (transactionId != null) return OrderPayjoinOutcome.plainSend;
+    // A terminal order without any txid will never report one: stop treating
+    // its payjoin as ongoing (B12). An unknown status is not terminal.
+    if (orderStatus.isTerminal) return OrderPayjoinOutcome.abandoned;
     return OrderPayjoinOutcome.inProgress;
   }
 

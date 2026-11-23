@@ -10,6 +10,7 @@ void main() {
     String? bip21URI,
     OrderPayjoinDetails? payjoinDetails,
     String? bitcoinTransactionId,
+    OrderStatus orderStatus = OrderStatus.inProgress,
   }) => Order.buy(
     orderId: 'o1',
     orderType: OrderType.buy,
@@ -21,7 +22,7 @@ void main() {
     payoutCurrency: 'BTC',
     payinMethod: OrderPaymentMethod.cadBalance,
     payoutMethod: OrderPaymentMethod.bitcoin,
-    orderStatus: OrderStatus.inProgress,
+    orderStatus: orderStatus,
     payinStatus: OrderPayinStatus.completed,
     payoutStatus: OrderPayoutStatus.inProgress,
     confirmationDeadline: DateTime.utc(2026, 7, 28, 12, 5),
@@ -90,6 +91,50 @@ void main() {
     ).payjoinOutcome;
 
     expect(outcome, OrderPayjoinOutcome.inProgress);
+  });
+
+  test('a terminal order without a txid has an abandoned payjoin (B12)', () {
+    for (final status in OrderStatus.values) {
+      final outcome = buyOrder(
+        bip21URI: endpoint,
+        payjoinDetails: OrderPayjoinDetails(),
+        orderStatus: status,
+      ).payjoinOutcome;
+      expect(
+        outcome,
+        status.isTerminal
+            ? OrderPayjoinOutcome.abandoned
+            : OrderPayjoinOutcome.inProgress,
+        reason: '$status',
+      );
+      expect(outcome.isOngoing, !status.isTerminal, reason: '$status');
+    }
+  });
+
+  test('a terminal order with a txid keeps what the txid says', () {
+    expect(
+      buyOrder(
+        bip21URI: endpoint,
+        bitcoinTransactionId: plainTxId,
+        orderStatus: OrderStatus.canceled,
+      ).payjoinOutcome,
+      OrderPayjoinOutcome.plainSend,
+    );
+    expect(
+      buyOrder(
+        bip21URI: endpoint,
+        payjoinDetails: OrderPayjoinDetails(txid: payjoinTxId),
+        orderStatus: OrderStatus.completed,
+      ).payjoinOutcome,
+      OrderPayjoinOutcome.succeeded,
+    );
+  });
+
+  test('an order without a payjoin stays none whatever its status', () {
+    expect(
+      buyOrder(orderStatus: OrderStatus.canceled).payjoinOutcome,
+      OrderPayjoinOutcome.none,
+    );
   });
 
   test('exposes the endpoint verbatim', () {
