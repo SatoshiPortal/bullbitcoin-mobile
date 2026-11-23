@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.da
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -14,7 +14,7 @@ final class CreateNetworkWalletUsecase {
   final DeveloperEnvironmentReader _settings;
   final WalletInventory _inventory;
   final Secrets _secrets;
-  final CreateDefaultWalletsUsecase _createDefaults;
+  final DefaultWalletProvisioning _createDefaults;
 
   CreateNetworkWalletUsecase(
     this._settings,

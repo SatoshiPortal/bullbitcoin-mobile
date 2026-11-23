@@ -44,7 +44,6 @@ abstract interface class WalletRegistrations {
   Future<List<WalletMetadataModel>> fetchAll();
   Future<void> insert(WalletMetadataModel metadata);
   Future<void> delete(String id);
-  Future<void> recordBackup(WalletMetadataModel metadata);
   Future<void> recordSyncTime(String id, DateTime time);
 }
 
@@ -127,11 +126,6 @@ final class SecretsWalletRegistrations
   @override
   Future<void> delete(String id) async {
     _value(await _inventory.removeWallet(id));
-  }
-
-  @override
-  Future<void> recordBackup(WalletMetadataModel metadata) async {
-    _value(await _backupStore(metadata.networkCode).write(_backup(metadata)));
   }
 
   @override

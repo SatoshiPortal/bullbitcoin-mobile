@@ -11,7 +11,12 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_exchange/bull_exchange.dart'
-    show BuyRoute, ExchangeHomeAction, ExchangeTradingGuard, PayRoute, SellRoute;
+    show
+        BuyRoute,
+        ExchangeHomeAction,
+        ExchangeTradingGuard,
+        PayRoute,
+        SellRoute;
 import 'package:bb_mobile/features/exchange/ui/exchange_purchase_binding.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_payin_binding.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -58,7 +63,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/silent_wallet_balance.dart'
     show SilentWalletPresentation;
-import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:preferences/preferences.dart';

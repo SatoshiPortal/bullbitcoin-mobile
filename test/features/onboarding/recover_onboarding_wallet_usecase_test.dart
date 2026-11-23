@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:provisioning/provisioning.dart';
+import 'package:secrets/secrets.dart' show WalletRegistration;
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockCreateDefaultWalletsUsecase extends Mock
-    implements CreateDefaultWalletsUsecase {}
+    implements DefaultWalletProvisioning {}
 
 class _MockCompletePhysicalBackupVerificationUsecase extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
@@ -27,12 +27,13 @@ void main() {
     completePhysicalBackupVerificationUsecase =
         _MockCompletePhysicalBackupVerificationUsecase();
     usecase = RecoverOnboardingWalletUsecase(
-      defaultWallets: DefaultWalletsFacade(createDefaultWalletsUsecase),
+      defaultWallets: createDefaultWalletsUsecase,
       completePhysicalBackupVerificationUsecase:
           completePhysicalBackupVerificationUsecase,
     );
 
     registerFallbackValue(<String>[]);
+    registerFallbackValue(<WalletRegistration>[]);
     registerFallbackValue(Language.english);
   });
 
@@ -56,7 +57,9 @@ void main() {
       final failure = (result as Err<void, OnboardingFailure>).failure;
       expect(failure, isA<OnboardingWalletSetupFailure>());
       expect(failure.logMessage, isNull);
-      verifyNever(() => completePhysicalBackupVerificationUsecase.execute());
+      verifyNever(
+        () => completePhysicalBackupVerificationUsecase.execute(any()),
+      );
     });
 
     test(
@@ -70,7 +73,7 @@ void main() {
             passphrase: '',
           ),
         ).thenAnswer((_) async => const Ok([]));
-        when(() => completePhysicalBackupVerificationUsecase.execute())
+        when(() => completePhysicalBackupVerificationUsecase.execute(any()))
             .thenThrow(Exception('No default wallet found'));
 
         final result = await usecase.execute(
@@ -94,7 +97,7 @@ void main() {
           passphrase: passphrase,
         ),
       ).thenAnswer((_) async => const Ok([]));
-      when(() => completePhysicalBackupVerificationUsecase.execute())
+      when(() => completePhysicalBackupVerificationUsecase.execute(any()))
           .thenAnswer((_) async {});
       expect(
         await usecase.execute(
@@ -120,7 +123,7 @@ void main() {
           mnemonicWords: any(named: 'mnemonicWords'),
         ),
       ).thenAnswer((_) async => const Ok([]));
-      when(() => completePhysicalBackupVerificationUsecase.execute())
+      when(() => completePhysicalBackupVerificationUsecase.execute(any()))
           .thenAnswer((_) async {});
 
       final result = await usecase.execute(

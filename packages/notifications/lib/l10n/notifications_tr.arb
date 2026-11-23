@@ -1,0 +1,7 @@
+{
+  "@@locale": "tr",
+  "receivePaymentReceived": "Ödeme alındı!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

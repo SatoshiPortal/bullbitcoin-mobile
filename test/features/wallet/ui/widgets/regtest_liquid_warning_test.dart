@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -19,7 +19,7 @@ class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletInventory {}
 
-class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
+class _Defaults extends Mock implements DefaultWalletProvisioning {}
 
 class _WalletBloc extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}

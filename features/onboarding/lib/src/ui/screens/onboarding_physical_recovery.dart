@@ -1,4 +1,5 @@
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullButtonSize, BullFadingLinearProgress;
 
 import 'dart:async';
 
@@ -12,7 +13,6 @@ import 'package:onboarding/src/ui/widgets/app_bar.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 
 class OnboardingPhysicalRecovery extends StatefulWidget {
   const OnboardingPhysicalRecovery({super.key});

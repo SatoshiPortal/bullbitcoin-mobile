@@ -3,11 +3,8 @@ import 'dart:convert';
 
 import 'package:ark/ark.dart';
 import 'package:fees/fees.dart';
-import 'package:bb_mobile/features/wallet/data/ark_board_funding.dart';
-import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:bull_ark/testing.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +17,7 @@ import 'package:sync/write.dart';
 
 import 'ark_funding_test_fixture.dart';
 
-class _Metadata extends Mock implements WalletRegistrations {}
+class _Metadata extends Mock implements WalletInventory {}
 
 class _Client extends Mock implements ArkClient {}
 
@@ -47,7 +44,22 @@ void main() {
   late _Metadata metadata;
   late FakeSecureStoragePlatform keystore;
   late WalletNativeRuntime runtime;
-  late ForegroundWalletSync sourceSync;
+  late _Catalog catalog;
+  Future<Result<void, SyncFailure>> Function(WalletKey) syncSource = (
+    _,
+  ) async => const Ok(null);
+  Future<Result<void, SyncFailure>> sourceSync(WalletKey key) =>
+      syncSource(key);
+  WalletRegistration registration({Fingerprint? parent}) =>
+      walletRegistrationForTesting(
+        id: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+        isDefault: true,
+        signer: WalletSigner.local,
+        masterFingerprint: parent ?? Fingerprint('00112233'),
+        secretFingerprint: parent ?? Fingerprint('00112233'),
+        derivationPath: "m/84'/1'/0'",
+      );
   late WalletArkBoardFunding actor;
   late Secrets secrets;
   late _Fees fees;
@@ -59,7 +71,7 @@ void main() {
     client: client,
     runtime: runtime,
     authority: fixture.store,
-    metadata: metadata,
+    inventory: metadata,
     sourceSync: sourceSync,
     secrets: secrets,
     fees: fees,
@@ -86,13 +98,13 @@ void main() {
       documentsDirectory: () async => fixture.directory.path,
       readRevision: (_) async => const Err(SyncNotFoundFailure()),
     );
+    catalog = _Catalog();
     runtime = WalletNativeRuntime.open(
-      catalog: _Catalog(),
+      catalog: catalog,
       reserved: _Reserved(),
       inputReservations: fixture.store,
       fundingReservations: fixture.store,
       deleteCatalogEntry: (key) async {
-        await metadata.delete(key.id);
         return const Ok(null);
       },
       sync: engine,
@@ -100,9 +112,11 @@ void main() {
       freezes: _Freezes(),
       connections: connections,
     );
-    sourceSync = ForegroundWalletSync(engine, native: runtime);
     selectSource = (_) async => fundingWalletId;
-    when(() => metadata.fetch(any())).thenAnswer((_) async => null);
+    syncSource = (_) async => const Ok(null);
+    when(
+      () => metadata.readWallet(any()),
+    ).thenAnswer((_) async => const Err(WalletRegistrationNotFoundFailure()));
     actor = createActor();
   });
   tearDown(() async {
@@ -171,6 +185,56 @@ void main() {
     },
   );
 
+  for (final candidate in [
+    walletRegistrationForTesting(
+      id: fundingWalletId,
+      network: BitcoinNetwork.regtest,
+      isDefault: true,
+      signer: WalletSigner.local,
+      secretFingerprint: Fingerprint('00112233'),
+      derivationPath: "m/84'/1'/1'",
+    ),
+    walletRegistrationForTesting(
+      id: fundingWalletId,
+      network: BitcoinNetwork.regtest,
+      isDefault: true,
+      signer: WalletSigner.local,
+      secretFingerprint: Fingerprint('00112233'),
+      derivationPath: null,
+    ),
+    walletRegistrationForTesting(
+      id: fundingWalletId,
+      network: BitcoinNetwork.regtest,
+      signer: WalletSigner.local,
+      secretFingerprint: Fingerprint('00112233'),
+      derivationPath: "m/84'/1'/0'",
+    ),
+    walletRegistrationForTesting(
+      id: fundingWalletId,
+      network: BitcoinNetwork.regtest,
+      isDefault: true,
+      signer: WalletSigner.none,
+      derivationPath: "m/84'/1'/0'",
+    ),
+  ]) {
+    test(
+      'refuses ineligible source ${candidate.signer} ${candidate.derivationPath} ${candidate.isDefault}',
+      () async {
+        when(() => metadata.readWallet(fundingWalletId))
+            .thenAnswer((_) async => Ok(candidate));
+        final result = await actor.prepare(
+          config(account),
+          Sats.fromInt(20000),
+        );
+        expect(result, isA<Err<ArkBoardPreparation, ArkFailure>>());
+        verifyZeroInteractions(client);
+        verifyZeroInteractions(fees);
+        verifyZeroInteractions(custody);
+        expect(keystore.reads, 0);
+      },
+    );
+  }
+
   test(
     'mainnet refuses before source selection, Secrets or any Ark native call',
     () async {
@@ -203,6 +267,38 @@ void main() {
       verifyZeroInteractions(client);
     },
   );
+  test(
+    'a failed source sync is ignored before reading the native source',
+    () async {
+      final synced = <WalletKey>[];
+      syncSource = (key) async {
+        synced.add(key);
+        return const Err(SyncBusyFailure());
+      };
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
+      final source = WalletKey(
+        id: fundingWalletId,
+        network: BitcoinNetwork.regtest,
+      );
+      when(catalog.list).thenAnswer((_) async => const Ok([]));
+      when(() => catalog.find(source))
+          .thenAnswer((_) async => const Err(SyncStorageFailure()));
+      final result = await actor.prepare(config(account), Sats.fromInt(20000));
+      expect(synced, [source]);
+      verify(() => catalog.find(source)).called(1);
+      expect(
+        result,
+        isA<Err<ArkBoardPreparation, ArkFailure>>().having(
+          (r) => r.failure,
+          'native source failure',
+          isA<ArkFeatureStorageFailure>(),
+        ),
+      );
+      expect(keystore.reads, 0);
+      verifyZeroInteractions(client);
+    },
+  );
   test('an unresolved original account operation returns its identity, no reprepare', () async {
     await fixture.reserve('original', account: account.canonical);
     final result = await actor.prepare(config(account), Sats.fromInt(20000));
@@ -230,7 +326,7 @@ void main() {
       await actor.confirm(account, 'operation', 'not-the-durable-binding'),
       isA<Err<ArkOperation, ArkFailure>>(),
     );
-    verifyNever(() => metadata.fetch(any()));
+    verifyNever(() => metadata.readWallet(any()));
     expect(keystore.reads, 0);
     expect(
       sourceOk(await fixture.store.readBoardReview('operation')).phase,
@@ -246,7 +342,7 @@ void main() {
     );
     expect(await actor.confirm(other, 'operation', data.$2), isA<Err>());
     expect(await actor.readPrepared(other, 'operation'), isA<Err>());
-    verifyNever(() => metadata.fetch(any()));
+    verifyNever(() => metadata.readWallet(any()));
     expect(keystore.reads, 0);
   });
   test(
@@ -273,7 +369,7 @@ void main() {
         );
       }
       expect(keystore.reads, 0);
-      verifyNever(() => metadata.fetch(any()));
+      verifyNever(() => metadata.readWallet(any()));
       expect(
         sourceOk(await fixture.store.readBoardReview('operation')).signedPsbt,
         isNull,
@@ -330,7 +426,7 @@ void main() {
           );
         }
         expect(keystore.reads, 0);
-        verifyNever(() => metadata.fetch(any()));
+        verifyNever(() => metadata.readWallet(any()));
         expect(
           sourceOk(await fixture.store.readBoardReview('operation')).phase,
           phase,
@@ -344,8 +440,8 @@ void main() {
       final data = await review(
         validUntil: DateTime.now().toUtc().subtract(const Duration(seconds: 1)),
       );
-      when(() => metadata.fetch(fundingWalletId))
-          .thenAnswer((_) async => fundingMetadata);
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
       expect(
         await actor.confirm(account, 'operation', data.$2),
         isA<Err>().having(
@@ -364,8 +460,8 @@ void main() {
   for (final minimum in [20000, 54321]) {
     test('native Board minimum $minimum survives the host boundary', () async {
       final data = await review();
-      when(() => metadata.fetch(fundingWalletId))
-          .thenAnswer((_) async => fundingMetadata);
+      when(() => metadata.readWallet(fundingWalletId))
+          .thenAnswer((_) async => Ok(registration()));
       // The public confirm path exercises the same native-result mapper as
       // prepare. Refusal precedes signing, so no native source wallet is opened.
       when(() => client.synchronize(account, renew: false)).thenAnswer(
@@ -394,8 +490,8 @@ void main() {
   }
   test('legacy below-minimum failure never invents a minimum', () async {
     final data = await review();
-    when(() => metadata.fetch(fundingWalletId))
-        .thenAnswer((_) async => fundingMetadata);
+    when(() => metadata.readWallet(fundingWalletId))
+        .thenAnswer((_) async => Ok(registration()));
     when(() => client.synchronize(account, renew: false)).thenAnswer(
       (_) async =>
           const Err(ArkValidationFailure(ArkFailureReason.belowMinimum)),
@@ -414,8 +510,8 @@ void main() {
     'changed source parent refuses without using the old reviewed key',
     () async {
       final data = await review();
-      when(() => metadata.fetch(fundingWalletId)).thenAnswer(
-        (_) async => fundingMetadata.copyWith(masterFingerprint: 'ffeeddcc'),
+      when(() => metadata.readWallet(fundingWalletId)).thenAnswer(
+        (_) async => Ok(registration(parent: Fingerprint('ffeeddcc'))),
       );
       expect(await actor.confirm(account, 'operation', data.$2), isA<Err>());
       expect(keystore.reads, 0);
@@ -462,7 +558,6 @@ void main() {
         reserved: _Reserved(),
         inputReservations: fixture.store,
         deleteCatalogEntry: (key) async {
-          await metadata.delete(key.id);
           return const Ok(null);
         },
         sync: engine,
@@ -473,7 +568,7 @@ void main() {
       final factory = WalletArkFundingFactory(
         authority: fixture.store,
         runtime: unconfigured,
-        metadata: metadata,
+        inventory: metadata,
         sourceSync: sourceSync,
         secrets: secrets,
         fees: fees,
@@ -495,7 +590,7 @@ void main() {
     final factory = WalletArkFundingFactory(
       authority: fixture.store,
       runtime: runtime,
-      metadata: metadata,
+      inventory: metadata,
       sourceSync: sourceSync,
       secrets: secrets,
       fees: fees,

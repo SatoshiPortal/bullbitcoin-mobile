@@ -14,7 +14,8 @@ import 'package:path/path.dart' as p;
 // Silent receives a fingerprint reader through composition, not a wallet import.
 // Ark integration reviewed on 2026-11-19: send and swap use its public facade;
 // settings and wallet use its published UI and foreground setup capabilities.
-// See the dependency notes in the consuming members' READMEs.
+// See the dependency notes in the consuming members' READMEs. Ark also uses
+// the published camera scanner.
 // QR and NFC consumers use the scanning feature's public capabilities; its
 // implementation has no dependencies on those consumers.
 // Label Editor publishes the existing note, label and import/export UI. Its
@@ -26,23 +27,23 @@ import 'package:path/path.dart' as p;
 // Wallet Import owns mnemonic input and scanning; Wallet uses its data types.
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
+  'ark': 'scanning',
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price coins fees',
   'coins': 'address_view bitcoin_price',
-  'exchange': 'address_view bull_exchange transactions wallet',
+  'exchange': 'address_view bull_exchange overview transactions wallet',
   'network': 'recoverbull',
-  'onboarding':
-      'mnemonic_entry network recoverbull settings wallet wallet_import',
-  'overview': 'bitcoin_price quick_actions',
+  'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
+  'overview': 'bitcoin_price quick_actions silent swap',
   'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
-  'send': 'address_view ark coins fees label_editor scanning signers silent swap transactions wallet',
-  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
+  'send': 'address_view ark coins fees label_editor receive scanning signers silent swap transactions wallet',
+  'settings': 'access address_view all_seed_view ark backups bip85 bitcoin_price bull_exchange exchange fees label_editor logs network overview quick_actions receive recoverbull send silent swap transactions wallet wallet_import',
   'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull scanning send settings signers silent swap transactions wallet_import',
+  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions wallet_import',
   'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };

@@ -45,9 +45,10 @@ final class ForegroundWalletSync {
 
   Future<Result<void, SyncFailure>> synchronizeKey(
     WalletKey key,
-    WalletCatalogPort catalog,
-  ) async => switch (await catalog.find(key)) {
-    Ok(:final value) => await synchronizeDescriptor(value),
+    WalletCatalogPort catalog, {
+    SyncReason reason = SyncReason.auto,
+  }) async => switch (await catalog.find(key)) {
+    Ok(:final value) => await synchronizeDescriptor(value, reason: reason),
     Err(:final failure) => Err(failure),
   };
 

@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:workmanager/workmanager.dart';
 
+import '../background_rollout.dart';
 import '../domain/background_task.dart';
 import '../domain/ports/background_task_scheduler_port.dart';
 import '../domain/repositories/background_sync_interval_repository.dart';
+import 'shared_preferences_background_sync_interval_repository.dart';
 
 final class WorkmanagerScheduler implements BackgroundTaskSchedulerPort {
   final Workmanager _workmanager;
@@ -46,6 +48,15 @@ final class WorkmanagerScheduler implements BackgroundTaskSchedulerPort {
 // outside this queue so an obsolete suspended initialization cannot hold Off.
 Future<void> _pendingSchedule = Future.value();
 int _scheduleGeneration = 0;
+
+/// Applies the app's persisted schedule and rollout policy at startup and
+/// after a settings change.
+Future<void> configureBackgroundTasks(BackgroundTaskDispatcher dispatcher) =>
+    applyBackgroundTaskSchedule(
+      dispatcher: dispatcher,
+      intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+      enabled: backgroundSyncAvailable,
+    );
 
 /// Schedules the periodic background tasks at the interval the user chose,
 /// and removes the obsolete ones. Called at startup and whenever the

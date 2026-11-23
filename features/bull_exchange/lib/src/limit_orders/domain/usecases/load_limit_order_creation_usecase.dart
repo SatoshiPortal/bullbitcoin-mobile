@@ -186,6 +186,7 @@ class LoadLimitOrderCreationUsecase {
           );
       }
     }
+    wallets.sort((left, right) => left.id.compareTo(right.id));
     return wallets;
   }
 }

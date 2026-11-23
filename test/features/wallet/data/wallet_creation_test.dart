@@ -59,6 +59,7 @@ void main() {
   late SqliteDatabase database;
   late WalletRegistrations metadata;
   late _Native native;
+  late _Values values;
   late WalletRepository repository;
   late Secret secret;
   late WalletMetadataModel row;
@@ -97,7 +98,7 @@ void main() {
     native = _Native();
     when(() => native.prepareCreate(any()))
         .thenAnswer((_) async => const Ok(null));
-    final values = _Values();
+    values = _Values();
     when(() => values.getBalance(key: any(named: 'key'))).thenAnswer(
       (_) async => Balances(
         confirmedSat: BigInt.zero,
@@ -111,7 +112,6 @@ void main() {
     repository = WalletRepository(
       native: native,
       walletRegistrations: metadata,
-      wallet: (_) async => throw StateError('no native access expected'),
       walletValuesDatasource: values,
       synchronize: (
         _, {
@@ -129,7 +129,7 @@ void main() {
     });
   });
 
-  Future<Wallet> createSecret() => repository.createWallet(
+  Future<String> createSecret() => repository.createWallet(
     secret: secret,
     network: Network.bitcoinMainnet,
     scriptType: ScriptType.bip84,
@@ -244,12 +244,12 @@ void main() {
       verifyZeroInteractions(reporter);
       expect(storage.entries, secretsBefore);
       when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
-      final wallet = path == 'secret'
+      final walletId = path == 'secret'
           ? await createSecret()
           : (await importPublic(
               path,
-            ) as Ok<Wallet, ImportWatchOnlyFailure>).value;
-      expect((await metadata.fetchAll()).single.id, wallet.id);
+            ) as Ok<Wallet, ImportWatchOnlyFailure>).value.id;
+      expect((await metadata.fetchAll()).single.id, walletId);
       expect(storage.entries, secretsBefore);
       verifyNever(() => native.delete(any()));
     });
@@ -277,12 +277,22 @@ void main() {
       (call) => runtime.create(call.positionalArguments.single as WalletKey),
     );
     try {
-      final wallet = await createSecret();
-      expect((await metadata.fetchAll()).single.id, wallet.id);
+      final walletId = await createSecret();
+      expect((await metadata.fetchAll()).single.id, walletId);
     } finally {
       await runtime.close();
     }
   });
+
+  test(
+    'creating an account returns its committed id without reading balances',
+    () async {
+      when(() => native.create(any())).thenAnswer((_) async => const Ok(null));
+      final id = await createSecret();
+      expect((await metadata.fetchAll()).single.id, id);
+      verifyNever(() => values.getBalance(key: any(named: 'key')));
+    },
+  );
 
   test('existing metadata survives a rejected creation', () async {
     final existing = row.copyWith(label: 'original');

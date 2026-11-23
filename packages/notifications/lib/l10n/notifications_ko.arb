@@ -1,0 +1,7 @@
+{
+  "@@locale": "ko",
+  "receivePaymentReceived": "지불받은!",
+  "@receivePaymentReceived": {
+    "description": "Success message after receiving payment"
+  }
+}

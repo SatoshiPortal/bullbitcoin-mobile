@@ -30,7 +30,7 @@ void main() {
 
   setUp(() {
     coordinator = _MockSyncCoordinator();
-    usecase = SyncWalletsUsecase(coordinator);
+    usecase = SyncWalletsUsecase(coordinator.sync);
   });
 
   for (final mixed in [false, true]) {

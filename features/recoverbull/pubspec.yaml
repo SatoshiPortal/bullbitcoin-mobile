@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   primitives:
+  preferences:
   file_system:
   backup_storage:
   secrets:

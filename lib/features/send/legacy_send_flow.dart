@@ -18,7 +18,7 @@ import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/read_send_recipient_amount_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:coins/coins.dart';
 import 'package:send/send.dart';
@@ -68,6 +68,8 @@ import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart' show WalletConnectionPort;
+import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:receive/receive.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
@@ -204,13 +206,20 @@ abstract final class LegacySendFlow {
     locator.registerFactory<SendSpPaymentForSendUsecase>(
       () => SendSpPaymentForSendUsecase(locator<Silent>()),
     );
+    locator.registerFactory<ReadSendRecipientAmountUsecase>(
+      () => ReadSendRecipientAmountUsecase(
+        locator<SecretsInventory>(),
+        locator<WalletNativeRuntime>(),
+      ),
+    );
     locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
       () => VerifyChainSwapAmountSendUsecase(
-        walletRepository: locator<WalletRepository>(),
+        recipientAmount: locator<ReadSendRecipientAmountUsecase>(),
       ),
     );
     locator.registerFactory<VerifyExchangePayinUsecase>(
-      () => VerifyExchangePayinUsecase(locator<WalletRepository>()),
+      () =>
+          VerifyExchangePayinUsecase(locator<ReadSendRecipientAmountUsecase>()),
     );
     locator.registerFactory<GetSendPayjoinEnabledUsecase>(
       () => GetSendPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
@@ -241,10 +250,10 @@ abstract final class LegacySendFlow {
     >(
       (wallet, options) => SendCubit(
         prepareInternalRecipientUsecase: PrepareInternalRecipientUsecase(
-          locator<WalletFacade>(),
+          locator<Receive>(),
         ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-          locator<WalletFacade>(),
+          locator<WalletNativeRuntime>().changes,
         ),
         wallet: wallet,
         mode: switch (options?.spWalletLabel) {

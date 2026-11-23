@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:background_tasks/wallet_jobs.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -33,7 +32,7 @@ void main() {
       await PaymentNotifications.initializeBackground(
         documents.path,
         null,
-        resources,
+        resources.onClose,
       ),
       isNull,
     );

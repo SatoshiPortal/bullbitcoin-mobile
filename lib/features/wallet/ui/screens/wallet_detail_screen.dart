@@ -9,7 +9,6 @@ import 'package:settings/settings.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
@@ -91,6 +90,11 @@ class WalletDetailScreen extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: WalletDetailBalanceCard(
+                        background: AssetImage(
+                          wallet.isLiquid
+                              ? Assets.backgrounds.bgInstantWallet.path
+                              : Assets.backgrounds.bgSecureWallet.path,
+                        ),
                         isLiquid: wallet.isLiquid,
                         signer: wallet.signer,
                         balanceText: WalletDetailBalanceAmount(

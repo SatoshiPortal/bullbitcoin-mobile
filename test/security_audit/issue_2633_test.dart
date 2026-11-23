@@ -16,7 +16,7 @@ void main() {
       );
       final creationPaths = [
         method(
-          'Future<Wallet> createWallet(',
+          'Future<String> createWallet(',
           'Future<Wallet> _createdWallet(',
         ),
         method(

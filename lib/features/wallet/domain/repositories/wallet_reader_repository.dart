@@ -7,7 +7,4 @@ import 'package:primitives/primitives.dart';
 abstract interface class WalletReaderRepository {
   @useResult
   Future<Result<Wallet, WalletFailure>> getWallet(String walletId);
-
-  @useResult
-  Future<Result<List<Wallet>, WalletFailure>> getDefaultMainnetBitcoinWallets();
 }

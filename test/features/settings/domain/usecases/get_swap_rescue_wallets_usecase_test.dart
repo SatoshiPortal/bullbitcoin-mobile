@@ -1,86 +1,101 @@
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:swaps/swaps.dart' show SwapsFailure;
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _Wallets extends Mock implements WalletInventory {}
 
-class _MockSettingsRepository extends Mock implements Preferences {}
+class _Environment extends Mock implements ActiveEnvironmentReader {}
 
 void main() {
-  late _MockWalletRepository wallets;
-  late _MockSettingsRepository settings;
+  late _Wallets wallets;
+  late _Environment environment;
   late GetSwapRescueWalletsUsecase usecase;
 
-  setUpAll(() => registerFallbackValue(Environment.mainnet));
-
   setUp(() {
-    wallets = _MockWalletRepository();
-    settings = _MockSettingsRepository();
+    wallets = _Wallets();
+    environment = _Environment();
     usecase = GetSwapRescueWalletsUsecase(
-      walletRepository: wallets,
-      settingsRepository: settings,
+      inventory: wallets,
+      environment: environment,
     );
-    when(() => settings.fetch()).thenAnswer(
-      (_) async => Ok(
-        SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+    when(environment.readActiveEnvironment)
+        .thenAnswer((_) async => const Ok(Environment.testnet));
+  });
+
+  for (final (actsOnLiquid, network) in <(bool, Network)>[
+    (false, BitcoinNetwork.testnet),
+    (true, LiquidNetwork.testnet),
+  ]) {
+    test('swap rescue reads only the admitted $network accounts', () async {
+      final wallet = walletRegistrationForTesting(
+        id: 'destination',
+        network: network,
+      );
+      when(() => wallets.walletsForNetwork(network))
+          .thenAnswer((_) async => Ok(walletSelectionForTesting([wallet])));
+
+      expect(
+        await usecase.execute(actsOnLiquid: actsOnLiquid),
+        isA<Ok<List<WalletRegistration>, SwapsFailure>>().having(
+          (result) => result.value,
+          'wallets',
+          [wallet],
         ),
+      );
+      verify(() => wallets.walletsForNetwork(network)).called(1);
+    });
+  }
+
+  test('a watch-only account is offered as a rescue destination', () async {
+    final watchOnly = walletRegistrationForTesting(
+      id: 'watch-only',
+      network: BitcoinNetwork.testnet,
+    );
+    expect(watchOnly.signer, WalletSigner.none);
+    when(() => wallets.walletsForNetwork(BitcoinNetwork.testnet))
+        .thenAnswer((_) async => Ok(walletSelectionForTesting([watchOnly])));
+
+    expect(
+      await usecase.execute(actsOnLiquid: false),
+      isA<Ok<List<WalletRegistration>, SwapsFailure>>().having(
+        (result) => result.value,
+        'wallets',
+        [watchOnly],
       ),
     );
-    when(
-      () => wallets.getWallets(
-        environment: any(named: 'environment'),
-        onlyBitcoin: any(named: 'onlyBitcoin'),
-        onlyLiquid: any(named: 'onlyLiquid'),
-      ),
-    ).thenAnswer((_) async => const Ok(<Wallet>[]));
   });
 
   test(
-    'a swap acting on Liquid lists Liquid wallets of the active environment',
+    'an incomplete inventory fails instead of offering fewer accounts',
     () async {
-      expect(
-        await usecase.execute(actsOnLiquid: true),
-        isA<Ok<List<Wallet>, WalletFailure>>(),
+      final readable = walletRegistrationForTesting(
+        id: 'readable',
+        network: BitcoinNetwork.testnet,
+      );
+      when(() => wallets.walletsForNetwork(BitcoinNetwork.testnet)).thenAnswer(
+        (_) async =>
+            Ok(walletSelectionForTesting([readable], isComplete: false)),
       );
 
-      verify(
-        () => wallets.getWallets(
-          environment: Environment.testnet,
-          onlyBitcoin: false,
-          onlyLiquid: true,
-        ),
-      ).called(1);
+      expect(
+        await usecase.execute(actsOnLiquid: false),
+        isA<Err<List<WalletRegistration>, SwapsFailure>>(),
+      );
     },
   );
 
-  test('a swap acting on Bitcoin lists Bitcoin wallets', () async {
+  test('unavailable inventory fails before offering a destination', () async {
+    when(() => wallets.walletsForNetwork(LiquidNetwork.testnet))
+        .thenAnswer((_) async => const Err(UnreadableWalletFailure()));
+
     expect(
-      await usecase.execute(actsOnLiquid: false),
-      isA<Ok<List<Wallet>, WalletFailure>>(),
+      await usecase.execute(actsOnLiquid: true),
+      isA<Err<List<WalletRegistration>, SwapsFailure>>(),
     );
-
-    verify(
-      () => wallets.getWallets(
-        environment: Environment.testnet,
-        onlyBitcoin: true,
-        onlyLiquid: false,
-      ),
-    ).called(1);
-  });
-
-  test('unreadable settings are a failure, not a crash', () async {
-    when(() => settings.fetch()).thenThrow(Exception('db closed'));
-
-    final result = await usecase.execute(actsOnLiquid: true);
-
-    expect(result, isA<Err<List<Wallet>, WalletFailure>>());
   });
 }

@@ -14,5 +14,10 @@ dependencies:
     sdk: flutter
   go_router: ^18.1.4
   material_ui: ^1.11.0
+  preferences:
   primitives:
+  secrets:
+  silent:
+  swap_feature:
+  swaps:
   sync:

@@ -3,6 +3,12 @@ import 'package:sync/sync.dart';
 import 'src/domain/usecases/wallet_history_events.dart';
 
 export 'transactions.dart';
+export 'src/data/payjoin_blockchain_adapter.dart'
+    show AppPayjoinBlockchainAdapter;
+export 'src/data/payjoin_broadcast_wallet.dart' show payjoinBroadcastWallet;
+export 'src/data/payjoin_transaction_adapter.dart'
+    show AppPayjoinTransactionAdapter;
+export 'src/data/payjoin_wallet_adapter.dart' show PayjoinWalletAdapter;
 export 'src/data/csv_transaction_export_formatter.dart';
 export 'src/data/models/wallet_transaction_model.dart';
 export 'src/data/wallet_history_datasource.dart';
