@@ -129,7 +129,7 @@ OnboardingFeature _mount({
 }) {
   final image = MemoryImage(
     base64Decode(
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jR9sAAAAASUVORK5CYII=',
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpeqz8AAAAASUVORK5CYII=',
     ),
   );
   return OnboardingFeature.mount(
