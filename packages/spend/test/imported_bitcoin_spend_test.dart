@@ -79,7 +79,7 @@ void main() {
             drain: request.drain,
             feeRate: const RelativeFee(25),
           ),
-          _failure<SpendInvalidRequestFailure>(),
+          _failure<PreparedLiquidSpend, SpendInvalidRequestFailure>(),
         );
       }
     },
@@ -101,7 +101,7 @@ void main() {
           amountSat: 1000,
           feeRate: const RelativeFee(25),
         ),
-        _failure<SpendUnavailableFailure>(),
+        _failure<PreparedLiquidSpend, SpendUnavailableFailure>(),
       );
       expect(connections.networks, isEmpty);
     },
@@ -116,7 +116,7 @@ void main() {
         address: 'recipient',
         amount: Sats.zero,
       ),
-      _failure<SpendInvalidRequestFailure>(),
+      _failure<SpendBroadcastReceipt, SpendInvalidRequestFailure>(),
     );
     expect(connections.networks, isEmpty);
   });
@@ -132,7 +132,7 @@ void main() {
         network: BitcoinNetwork.regtest,
         isPsbt: false,
       ),
-      _failure<SpendSelectedInputsUnavailableFailure>(),
+      _failure<String, SpendSelectedInputsUnavailableFailure>(),
     );
     expect(connections.networks, isEmpty);
   });
@@ -172,7 +172,7 @@ void main() {
           network: BitcoinNetwork.regtest,
           isPsbt: false,
         ),
-        _failure<SpendDeveloperAuthorizationFailure>(),
+        _failure<String, SpendDeveloperAuthorizationFailure>(),
       );
       expect(connections.networks, [BitcoinNetwork.regtest]);
     },
@@ -200,7 +200,7 @@ void main() {
         network: BitcoinNetwork.mainnet,
         isPsbt: true,
       ),
-      _failure<SpendInvalidTransactionFailure>(),
+      _failure<String, SpendInvalidTransactionFailure>(),
     );
     expect(connections.networks, isEmpty);
   });
@@ -213,7 +213,7 @@ void main() {
         network: BitcoinNetwork.mainnet,
         isPsbt: false,
       ),
-      _failure<SpendBroadcastOutcomeUnknownFailure>(),
+      _failure<String, SpendBroadcastOutcomeUnknownFailure>(),
     );
     expect(connections.networks, [BitcoinNetwork.mainnet]);
   });
@@ -228,7 +228,7 @@ void main() {
           network: BitcoinNetwork.mainnet,
           isPsbt: false,
         ),
-        _failure<SpendBroadcastConnectionFailure>(),
+        _failure<String, SpendBroadcastConnectionFailure>(),
       );
     },
   );
@@ -241,7 +241,7 @@ void main() {
         network: BitcoinNetwork.testnet,
         isPsbt: false,
       ),
-      _failure<SpendDeveloperAuthorizationFailure>(),
+      _failure<String, SpendDeveloperAuthorizationFailure>(),
     );
     expect(connections.networks, [BitcoinNetwork.testnet]);
   });
@@ -269,7 +269,7 @@ void main() {
   });
 }
 
-Matcher _failure<F extends SpendFailure>() => isA<Err<String, SpendFailure>>()
+Matcher _failure<R, F extends SpendFailure>() => isA<Err<R, SpendFailure>>()
     .having((error) => error.failure, 'failure', isA<F>());
 
 final class _NoSpendCatalog implements SpendCatalog {
