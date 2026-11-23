@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -23,6 +25,7 @@ class ScanQrPage extends StatelessWidget {
             fit: .expand,
             children: [
               QrScannerWidget(
+                labels: context.loc.qrScanning,
                 onScanned: cubit.onQrScanned,
                 resolution: ResolutionPreset.high,
                 scanDelay:

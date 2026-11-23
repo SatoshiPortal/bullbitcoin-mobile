@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:material_ui/material_ui.dart';
@@ -24,7 +24,10 @@ class ScanNfcPage extends StatelessWidget {
       body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
-          return NfcScannerWidget(onScanned: cubit.onNfcScanned);
+          return NfcScannerWidget(
+            onScanned: cubit.onNfcScanned,
+            rescanLabel: context.loc.scanNfcButton,
+          );
         },
       ),
     );

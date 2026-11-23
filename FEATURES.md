@@ -203,11 +203,11 @@ graph TB
     WITHDRAWAL[Withdrawal]
     SEND[Send]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
-    SCANNING[QR and NFC Scanning]
+    SCANNING[QR and NFC Scanning workspace member]
     IMPORT_COLDCARD[Coldcard Import]
     BROADCAST_SIGNED_TX -->|public QR and NFC scanning| SCANNING
     IMPORT_COLDCARD -->|public NFC scanning| SCANNING
-    CORE -->|signer NFC callback| SCANNING
+    CORE -->|composes signer NFC callback| SCANNING
     SCANNING --> SIGNERS
     RECEIVE --> SIGNERS
     WALLETS --> SIGNERS

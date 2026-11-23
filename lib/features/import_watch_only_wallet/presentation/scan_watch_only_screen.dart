@@ -4,7 +4,8 @@ import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -37,6 +38,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
         fit: .expand,
         children: [
           QrScannerWidget(
+            labels: context.loc.qrScanning,
             scanDelay: widget.signerDevice?.supportedQrType == QrType.urqr
                 ? const Duration(milliseconds: 10)
                 : const Duration(milliseconds: 50),

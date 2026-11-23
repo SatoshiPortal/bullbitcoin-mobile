@@ -37,7 +37,9 @@ import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
 import 'package:signers/routes.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/public/buy_facade.dart';
@@ -145,6 +147,7 @@ class AppLocator {
         writeNfc: (context, title, data, onSuccess) =>
             NfcBottomSheet.showWriteNfc(
               context: context,
+              labels: context.loc.nfcScanning,
               title: title,
               data: data,
               onSuccess: onSuccess,

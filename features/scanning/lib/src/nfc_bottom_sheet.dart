@@ -1,16 +1,22 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/nfc_payload_parser.dart';
-import 'package:bb_mobile/features/scanning/ui/widgets/nfc_scanner_widget.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullShapesX, BullSnackBar, BullText, BullTypographyX;
+    show
+        BullBottomSheet,
+        BullShapesX,
+        BullSnackBar,
+        BullText,
+        BullThemeX,
+        BullTypographyX;
+
+import 'nfc_payload_parser.dart';
+import 'nfc_scanner_widget.dart';
+import 'scanning_labels.dart';
 
 enum _NfcOperation { read, write }
 
@@ -20,13 +26,15 @@ class NfcBottomSheet {
   static Future<void> showReadNfc({
     required BuildContext context,
     required String title,
+    required NfcScanningLabels labels,
     required FutureOr<void> Function(String payload) onDataReceived,
   }) async {
     var didReadRecords = false;
-    final connectionLostMessage = context.loc.nfcConnectionLost;
+    final connectionLostMessage = labels.nfcConnectionLost;
     final payload = await _runWithNfcSession<String?>(
       context: context,
       title: title,
+      labels: labels,
       operation: _NfcOperation.read,
       action: (_) async {
         final payload = Platform.isIOS
@@ -40,7 +48,10 @@ class NfcBottomSheet {
     );
 
     if (payload == null || payload.isEmpty) {
-      if (didReadRecords) _showInvalidDataError(context);
+      if (didReadRecords && context.mounted) {
+        log.warning('NFC tag contained no supported payload');
+        BullSnackBar.show(context, message: labels.nfcInvalidData);
+      }
       return;
     }
 
@@ -50,13 +61,15 @@ class NfcBottomSheet {
   static Future<void> showWriteNfc({
     required BuildContext context,
     required String title,
+    required NfcScanningLabels labels,
     required String data,
     required FutureOr<void> Function() onSuccess,
   }) async {
-    final writeFailedMessage = context.loc.nfcWriteFailed;
+    final writeFailedMessage = labels.nfcWriteFailed;
     final didWrite = await _runWithNfcSession<bool>(
       context: context,
       title: title,
+      labels: labels,
       operation: _NfcOperation.write,
       action: (_) => _writeNfcData(data, iosErrorMessage: writeFailedMessage),
     );
@@ -69,14 +82,15 @@ class NfcBottomSheet {
   static Future<T?> _runWithNfcSession<T>({
     required BuildContext context,
     required String title,
+    required NfcScanningLabels labels,
     required _NfcOperation operation,
     required Future<T?> Function(NFCTag tag) action,
   }) async {
-    final availability = await _nfcAvailability(context);
+    final availability = await _nfcAvailability(context, labels);
     if (availability == null) return null;
 
     if (availability != NFCAvailability.available) {
-      _showAvailabilityError(context, availability);
+      _showAvailabilityError(context, availability, labels);
       return null;
     }
 
@@ -93,14 +107,14 @@ class NfcBottomSheet {
         );
       } catch (e) {
         await _finishNfcSession();
-        _handleNfcError(context, e);
+        _handleNfcError(context, e, labels);
         return null;
       }
 
       try {
         return await action(tag);
       } catch (e) {
-        _handleNfcError(context, e, operation: operation);
+        _handleNfcError(context, e, labels, operation: operation);
         return null;
       }
     }
@@ -115,7 +129,7 @@ class NfcBottomSheet {
             height: 450,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: sheetContext.appColors.surface,
+              color: sheetContext.bull.surface,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(sheetContext.bullShapes.sheet),
               ),
@@ -129,20 +143,27 @@ class NfcBottomSheet {
                     style: sheetContext.bullType.subtitle.copyWith(
                       fontWeight: FontWeight.w400,
                     ),
-                    color: sheetContext.appColors.text,
+                    color: sheetContext.bull.text,
                     textAlign: TextAlign.center,
                   ),
                 ),
                 Expanded(
                   child: NfcScannerWidget(
-                    onError: (error) => _handleNfcError(sheetContext, error),
+                    rescanLabel: labels.scanNfcButton,
+                    onError: (error) =>
+                        _handleNfcError(sheetContext, error, labels),
                     onScanned: (tag) async {
                       var didCompleteAction = false;
                       try {
                         result = await action(tag);
                         didCompleteAction = true;
                       } catch (e) {
-                        _handleNfcError(sheetContext, e, operation: operation);
+                        _handleNfcError(
+                          sheetContext,
+                          e,
+                          labels,
+                          operation: operation,
+                        );
                       }
                       if (didCompleteAction && sheetContext.mounted) {
                         Navigator.of(sheetContext).pop();
@@ -160,11 +181,14 @@ class NfcBottomSheet {
     return result;
   }
 
-  static Future<NFCAvailability?> _nfcAvailability(BuildContext context) async {
+  static Future<NFCAvailability?> _nfcAvailability(
+    BuildContext context,
+    NfcScanningLabels labels,
+  ) async {
     try {
       return await FlutterNfcKit.nfcAvailability;
     } catch (e) {
-      _handleNfcError(context, e);
+      _handleNfcError(context, e, labels);
       return null;
     }
   }
@@ -198,7 +222,10 @@ class NfcBottomSheet {
             rethrow;
           }
 
-          log.warning('NFC read interrupted; restarting polling', error: e);
+          log.warning(
+            'NFC read interrupted; restarting polling',
+            error: e.runtimeType,
+          );
           iosErrorMessage = connectionLostMessage;
           await _setIosAlertMessage(connectionLostMessage);
           await FlutterNfcKit.iosRestartPolling();
@@ -238,7 +265,7 @@ class NfcBottomSheet {
     try {
       await FlutterNfcKit.finish(iosErrorMessage: iosErrorMessage);
     } catch (e) {
-      log.warning('Failed to finish NFC session', error: e);
+      log.warning('Failed to finish NFC session', error: e.runtimeType);
     }
   }
 
@@ -246,44 +273,43 @@ class NfcBottomSheet {
     try {
       await FlutterNfcKit.setIosAlertMessage(message);
     } catch (e) {
-      log.warning('Failed to update iOS NFC alert message', error: e);
+      log.warning(
+        'Failed to update iOS NFC alert message',
+        error: e.runtimeType,
+      );
     }
   }
 
   static void _showAvailabilityError(
     BuildContext context,
     NFCAvailability availability,
+    NfcScanningLabels labels,
   ) {
     if (!context.mounted) return;
 
     final message = switch (availability) {
-      NFCAvailability.disabled => context.loc.nfcDisabled,
-      NFCAvailability.not_supported => context.loc.nfcNotAvailable,
-      NFCAvailability.available => context.loc.nfcNotAvailable,
+      NFCAvailability.disabled => labels.nfcDisabled,
+      NFCAvailability.not_supported => labels.nfcNotAvailable,
+      NFCAvailability.available => labels.nfcNotAvailable,
     };
     BullSnackBar.show(context, message: message);
   }
 
   static void _handleNfcError(
     BuildContext context,
-    Object error, {
+    Object error,
+    NfcScanningLabels labels, {
     _NfcOperation? operation,
   }) {
-    log.warning('NFC operation failed', error: error);
+    log.warning('NFC operation failed', error: error.runtimeType);
     if (!context.mounted || _isUserCancelled(error)) return;
 
     final message = operation == _NfcOperation.write
-        ? context.loc.nfcWriteFailed
+        ? labels.nfcWriteFailed
         : _isNfcReadInterrupted(error)
-        ? context.loc.nfcConnectionLost
-        : context.loc.nfcError(error.toString());
+        ? labels.nfcConnectionLost
+        : labels.nfcError;
     BullSnackBar.show(context, message: message);
-  }
-
-  static void _showInvalidDataError(BuildContext context) {
-    log.warning('NFC tag contained no supported payload');
-    if (!context.mounted) return;
-    BullSnackBar.show(context, message: context.loc.nfcInvalidData);
   }
 
   static bool _isUserCancelled(Object error) =>

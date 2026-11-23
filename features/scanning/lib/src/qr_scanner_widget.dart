@@ -1,19 +1,22 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullThemeX, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 
+import 'scanning_labels.dart';
+
 class QrScannerWidget extends StatefulWidget {
   final void Function(String data) onScanned;
+  final QrScanningLabels labels;
   final ResolutionPreset resolution;
   final Duration scanDelay;
 
   const QrScannerWidget({
     super.key,
     required this.onScanned,
+    required this.labels,
     this.resolution = ResolutionPreset.high,
     this.scanDelay = const Duration(milliseconds: 1000),
   });
@@ -42,10 +45,9 @@ class _ScannerState extends State<QrScannerWidget> {
           onScan: (result) {
             if (!mounted) return;
 
-            if (result.isValid &&
-                result.text != null &&
-                result.text!.isNotEmpty) {
-              _processQrData(result.text!);
+            final text = result.text;
+            if (result.isValid && text != null && text.isNotEmpty) {
+              _processQrData(text);
             }
           },
           resolution: widget.resolution,
@@ -62,14 +64,14 @@ class _ScannerState extends State<QrScannerWidget> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: context.appColors.secondary,
+                color: context.bull.secondary,
                 borderRadius: BorderRadius.circular(context.bullShapes.card),
               ),
               child: Text(
                 _progressText,
                 style: context.bullType.label.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: context.appColors.onSecondary,
+                  color: context.bull.onSecondary,
                 ),
                 textAlign: .center,
               ),
@@ -94,32 +96,34 @@ class _ScannerState extends State<QrScannerWidget> {
       setState(() {
         if (_urReader.expectedParts != null) {
           final percent = (_urReader.progress * 100).toInt();
-          _progressText = context.loc.scanningProgressLabel('$percent');
+          _progressText = widget.labels.scanningProgressLabel('$percent');
         } else {
-          _progressText = context.loc.urProgressLabel(
+          _progressText = widget.labels.urProgressLabel(
             '${_urReader.processedParts}',
           );
         }
       });
 
       if (_urReader.isComplete) {
-        if (_urReader.decoded != null) {
-          setState(() => _progressText = context.loc.scanningCompletedMessage);
-          final decoded = _urReader.decoded!.toString();
+        if (_urReader.decoded case final result?) {
+          setState(
+            () => _progressText = widget.labels.scanningCompletedMessage,
+          );
+          final decoded = result.toString();
           _urReader.reset();
           widget.onScanned(decoded);
         } else {
-          setState(() => _progressText = context.loc.urDecodingFailedMessage);
+          setState(() => _progressText = widget.labels.urDecodingFailedMessage);
         }
       }
     } catch (e) {
       log.severe(
         message: 'UR processing failed',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
       _urReader.reset();
-      setState(() => _progressText = context.loc.urProcessingFailedMessage);
+      setState(() => _progressText = widget.labels.urProcessingFailedMessage);
     }
   }
 }

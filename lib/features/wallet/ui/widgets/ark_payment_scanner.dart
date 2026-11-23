@@ -1,4 +1,6 @@
-import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 /// Reuses the camera decoder without parsing or choosing a payment protocol.
@@ -8,15 +10,17 @@ Future<String?> scanArkPayment(
   Widget Function(ValueChanged<String>)? scannerBuilder,
 }) => Navigator.of(context).push<String>(
   MaterialPageRoute(
-    builder: (_) => _ArkPaymentScanner(
+    builder: (context) => _ArkPaymentScanner(
       title: title,
-      scannerBuilder: scannerBuilder ?? _camera,
+      scannerBuilder:
+          scannerBuilder ??
+          (onScanned) => QrScannerWidget(
+            labels: context.loc.qrScanning,
+            onScanned: onScanned,
+          ),
     ),
   ),
 );
-
-Widget _camera(ValueChanged<String> onScanned) =>
-    QrScannerWidget(onScanned: onScanned);
 
 class _ArkPaymentScanner extends StatefulWidget {
   final String title;

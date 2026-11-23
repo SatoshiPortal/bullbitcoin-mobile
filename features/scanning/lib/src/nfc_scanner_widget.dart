@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:gif/gif.dart';
@@ -12,10 +10,12 @@ class NfcScannerWidget extends StatefulWidget {
   final void Function(Object error)? onError;
   final bool scanOnInit;
   final Widget? loadingWidget;
+  final String rescanLabel;
 
   const NfcScannerWidget({
     super.key,
     required this.onScanned,
+    required this.rescanLabel,
     this.onError,
     this.scanOnInit = true,
     this.loadingWidget,
@@ -69,7 +69,10 @@ class _NfcPageState extends State<NfcScannerWidget> {
             width: 250,
             height: 250,
             child: Gif(
-              image: AssetImage(Assets.animations.nfcPoll.path),
+              image: const AssetImage(
+                'assets/nfc_poll.gif',
+                package: 'scanning',
+              ),
               autostart: Autostart.loop,
             ),
           ),
@@ -82,7 +85,7 @@ class _NfcPageState extends State<NfcScannerWidget> {
 
         if (_tag != null)
           BullButton.secondary(
-            label: context.loc.scanNfcButton,
+            label: widget.rescanLabel,
             onPressed: _scan,
             iconData: Icons.nfc,
           ),

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
@@ -33,6 +33,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: NfcScannerWidget(
+                rescanLabel: 'Scan again',
                 onScanned: tags.add,
                 onError: errors.add,
                 loadingWidget: const Text('Waiting for tag'),

@@ -1,0 +1,32 @@
+name: scanning
+description: Reusable QR and NFC scanners.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  bull_logger:
+  bull_ui:
+  convert: ^3.1.2
+  crypto: ^3.0.7
+  flutter:
+    sdk: flutter
+  flutter_nfc_kit: ^3.6.1
+  flutter_zxing: ^3.1.1
+  gif: ^2.3.0
+  material_ui: ^1.11.0
+  ndef: ^0.4.0
+  signers:
+
+flutter:
+  assets:
+    - assets/nfc_poll.gif
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

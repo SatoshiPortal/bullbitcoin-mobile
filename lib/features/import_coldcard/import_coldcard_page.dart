@@ -2,7 +2,8 @@ import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -113,6 +114,7 @@ class ImportColdcardPage extends StatelessWidget {
                   label: context.loc.scanNfcButton,
                   onPressed: () => NfcBottomSheet.showReadNfc(
                     context: context,
+                    labels: context.loc.nfcScanning,
                     title: context.loc.importColdcardScanNfcSheetTitle(
                       deviceName,
                     ),

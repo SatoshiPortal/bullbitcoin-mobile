@@ -16,6 +16,7 @@ workspace:
   - packages/exchange
   - features/label_editor
   - features/network
+  - features/scanning
   - features/signers
   - features/access
   - features/ark
@@ -64,6 +65,7 @@ dependencies:
   labels:
   label_editor:
   network:
+  scanning:
   signers:
   ark:
   bull_ark:

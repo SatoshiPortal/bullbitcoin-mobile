@@ -8,9 +8,30 @@ import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:signers/routes.dart' show SignersLocalizations;
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:scanning/scanning.dart';
 
 export 'package:bb_mobile/generated/l10n/localization.dart'
     show AppLocalizations, lookupAppLocalizations;
+
+extension ScanningLocalization on AppLocalizations {
+  QrScanningLabels get qrScanning => (
+    scanningProgressLabel: scanningProgressLabel,
+    urProgressLabel: urProgressLabel,
+    scanningCompletedMessage: scanningCompletedMessage,
+    urDecodingFailedMessage: urDecodingFailedMessage,
+    urProcessingFailedMessage: urProcessingFailedMessage,
+  );
+
+  NfcScanningLabels get nfcScanning => (
+    scanNfcButton: scanNfcButton,
+    nfcConnectionLost: nfcConnectionLost,
+    nfcWriteFailed: nfcWriteFailed,
+    nfcDisabled: nfcDisabled,
+    nfcNotAvailable: nfcNotAvailable,
+    nfcError: oopsSomethingWentWrong,
+    nfcInvalidData: nfcInvalidData,
+  );
+}
 
 // Flutter's generated delegate list still names the SDK design libraries.
 // Keep the app on the standalone delegates across automatic regeneration.

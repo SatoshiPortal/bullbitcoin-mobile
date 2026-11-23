@@ -4,7 +4,8 @@ import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
@@ -98,6 +99,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     label: context.loc.broadcastSignedTxNfcButton,
                     onPressed: () => NfcBottomSheet.showReadNfc(
                       context: context,
+                      labels: context.loc.nfcScanning,
                       title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
                       onDataReceived: (payload) => cubit.onQrScanned(payload),
                     ),

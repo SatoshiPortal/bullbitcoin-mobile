@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
+import 'package:scanning/scanning.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:cbor/cbor.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +32,14 @@ void main() {
           theme: AppTheme.themeData(AppThemeType.light),
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: QrScannerWidget(onScanned: scans.add)),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: QrScannerWidget(
+                labels: context.loc.qrScanning,
+                onScanned: scans.add,
+              ),
+            ),
+          ),
         ),
       );
       await tester.pumpAndSettle();

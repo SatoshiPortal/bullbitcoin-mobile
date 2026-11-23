@@ -1,7 +1,7 @@
 import 'dart:convert' show base64, utf8;
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/utils/nfc_payload_parser.dart';
+import 'package:scanning/testing.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ndef/ndef.dart' as ndef;
