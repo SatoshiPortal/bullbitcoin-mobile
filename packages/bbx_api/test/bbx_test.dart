@@ -490,6 +490,45 @@ void main() {
     });
   });
 
+  group('session rejection', () {
+    test('a 401 marks the client as rejected', () async {
+      final client = bbx(FakeHttp(status: 401, body: {'result': null}));
+      expect(client.sessionRejected, isFalse);
+
+      await client.users.getUserSummary();
+
+      expect(client.sessionRejected, isTrue);
+    });
+
+    test('a 401 to a write marks it too', () async {
+      final client = bbx(FakeHttp(status: 401, body: {'result': null}));
+
+      await client.users.saveUserPreferences(
+        const UserPreferences(language: 'en'),
+      );
+
+      expect(client.sessionRejected, isTrue);
+    });
+
+    test('another refusal does not', () async {
+      final client = bbx(FakeHttp(status: 403, body: {'result': null}));
+
+      await client.users.getUserSummary();
+
+      expect(client.sessionRejected, isFalse);
+    });
+
+    test('a request that was not sent does not', () async {
+      final http = FakeHttp(status: 401, body: {'result': null});
+      final client = bbx(http, readActiveApiKey: () => okApiKey(null));
+
+      await client.users.getUserSummary();
+
+      expect(http.requests, isEmpty);
+      expect(client.sessionRejected, isFalse);
+    });
+  });
+
   group('timeouts', () {
     test('no timeout by default', () async {
       final http = FakeHttp(body: {'result': null});

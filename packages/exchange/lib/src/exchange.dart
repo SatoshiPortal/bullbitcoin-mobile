@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bbx_api/bbx_api.dart'
     show Bbx, BbxCredentialUnavailableFailure, BbxTimeouts;
 import 'package:primitives/primitives.dart';
@@ -301,6 +303,19 @@ final class Exchange {
             }
             return result;
           } finally {
+            // A 401 to a key of this session means the key is no longer
+            // valid, whatever call got it: expire that session. The access
+            // lifecycle ignores an epoch that has already ended.
+            if (access != null &&
+                (client.sessionRejected ||
+                    (untimedClient?.sessionRejected ?? false))) {
+              unawaited(
+                ExpireExchangeSessionUsecase(access).execute(
+                  epoch: value.epoch,
+                  isTestnet: value.environment == ExchangeEnvironment.testnet,
+                ),
+              );
+            }
             untimedClient?.dispose();
             client.dispose();
           }
@@ -1095,10 +1110,12 @@ Exchange exchangeWithTransportForTesting({
   required ExchangeSessionReader readSession,
   required OpenInventoryClient openClient,
   OpenInventoryClient? openUntimedClient,
+  ExchangeAccessLifecycle? access,
 }) => Exchange._open(
   mainnetEndpoint: Uri.parse('https://mainnet.example.invalid'),
   testnetEndpoint: Uri.parse('https://testnet.example.invalid'),
   readSession: readSession,
   openClient: openClient,
   openUntimedClient: openUntimedClient ?? openClient,
+  access: access,
 );

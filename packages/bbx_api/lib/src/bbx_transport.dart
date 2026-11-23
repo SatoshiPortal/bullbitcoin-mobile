@@ -18,6 +18,13 @@ final class BbxTransport {
 
   BbxTransport({required this.http, required this.readActiveApiKey});
 
+  bool _sessionRejected = false;
+
+  /// Whether the server answered HTTP 401 to a request this transport sent:
+  /// every request carries the key read for it, so the key is no longer
+  /// valid. Never set by a request that was not sent.
+  bool get sessionRejected => _sessionRejected;
+
   /// A transport for the API at [endpoint], with [timeouts] on each phase.
   factory BbxTransport.open({
     required String endpoint,
@@ -169,8 +176,10 @@ final class BbxTransport {
       if (e.error case final Error bug) {
         Error.throwWithStackTrace(bug, e.stackTrace);
       }
+      if (e.response?.statusCode == 401) _sessionRejected = true;
       return Err(transportFailure(e));
     }
+    if (response.statusCode == 401) _sessionRejected = true;
     if (response.statusCode != 200) {
       return Err(
         BbxHttpFailure(response.statusCode, origin: StackTrace.current),
