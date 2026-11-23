@@ -15,41 +15,71 @@ typedef RunOrderOperation = Future<Result<T, ExchangeFailure>> Function<T>(
 );
 
 final class BbxApiOrderRepository implements ExchangeOrders {
-  final RunOrderOperation _run;
+  final RunOrderOperation _read;
+  final RunOrderOperation _write;
   final bool _isTestnet;
 
-  BbxApiOrderRepository({required this._run, required this._isTestnet});
+  BbxApiOrderRepository({
+    required this._read,
+    required this._write,
+    required this._isTestnet,
+  });
 
   @override
   Future<Result<Order, ExchangeFailure>> getOrder(String orderId) =>
-      _run((api) => _readOrder(api.orders.getOrderSummary(orderId)));
+      _read((api) => _readOrder(api.orders.getOrderSummary(orderId)));
 
   @override
   Future<Result<BuyOrder, ExchangeFailure>> refreshBuyOrder(String orderId) =>
-      _run((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
+      _read((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
 
   @override
   Future<Result<SellOrder, ExchangeFailure>> refreshSellOrder(String orderId) =>
-      _run((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
+      _read((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
 
   @override
   Future<Result<FiatPaymentOrder, ExchangeFailure>> refreshPayOrder(
     String orderId,
-  ) => _run((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
+  ) => _read((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
 
   @override
   Future<Result<BuyOrder, ExchangeFailure>> confirmBuyOrder(String orderId) =>
-      _run((api) => _readOrder(api.orders.confirmOrderSummary(orderId)));
+      _write((api) => _readOrder(api.orders.confirmOrderSummary(orderId)));
 
   @override
   Future<Result<WithdrawOrder, ExchangeFailure>> confirmWithdrawOrder(
-    String orderId,
-  ) => _run((api) => _readOrder(api.orders.confirmOrderSummary(orderId)));
+    String orderId, {
+    ({
+      String recipientId,
+      String email,
+      String? securityQuestion,
+      String? securityAnswer,
+    })?
+    interacUpdate,
+  }) => _write((api) async {
+    final result = await _readOrder<WithdrawOrder>(
+      api.orders.confirmOrderSummary(orderId),
+    );
+    if (result is Ok<WithdrawOrder, ExchangeFailure> && interacUpdate != null) {
+      final update = await api.recipients.updateInteracSecurityDetails(
+        recipientId: interacUpdate.recipientId,
+        email: interacUpdate.email,
+        securityQuestion: interacUpdate.securityQuestion,
+        securityAnswer: interacUpdate.securityAnswer,
+      );
+      if (update case Err()) {
+        log.warning(
+          'Withdrawal completed without updating Interac security details',
+        );
+      }
+    }
+    return result;
+  });
 
   @override
   Future<Result<BuyOrder, ExchangeFailure>> accelerateBuyOrder(
     String orderId,
-  ) => _run((api) => _readOrder(api.orders.unbatchAndExpressOrder(orderId)));
+  ) => _write((api) => _readOrder(api.orders.unbatchAndExpressOrder(orderId)));
 
   @override
   Future<Result<BuyOrder, ExchangeFailure>> placeBuyOrder({
@@ -59,7 +89,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     required OrderBitcoinNetwork network,
     required bool isOwner,
     String? payjoinBip21,
-  }) => _run(
+  }) => _write(
     (api) => _readOrder(
       api.orders.createOrderBuy(
         fiatCurrency: currency.code,
@@ -80,7 +110,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
-  }) => _run(
+  }) => _write(
     (api) => _readOrder(
       api.orders.sellToBalance(
         fiatCurrency: currency.code,
@@ -101,7 +131,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     String? paymentDescription,
     SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
-  }) => _run(
+  }) => _write(
     (api) => _readOrder(
       api.orders.sellToRecipient(
         recipientId: recipientId,
@@ -125,7 +155,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     SepaPaymentProcessor? paymentProcessor,
     String? securityQuestion,
     String? securityAnswer,
-  }) => _run(
+  }) => _write(
     (api) => _readOrder(
       api.orders.createWithdrawalOrder(
         fiatAmount: fiatAmount,
@@ -139,7 +169,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
   );
 
   @override
-  Future<Result<Order?, ExchangeFailure>> getOrderByTxId(String txId) => _run(
+  Future<Result<Order?, ExchangeFailure>> getOrderByTxId(String txId) => _read(
     (api) async => switch (await _listOrderSummaries(api)) {
       Ok(:final value) => switch (value.firstWhereOrNull(
         (s) => orderSummaryMatchesTxId(s, txId),
@@ -157,7 +187,7 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     int? limit,
     int? offset,
     OrderType? type,
-  }) => _run((api) async {
+  }) => _read((api) async {
     final List<Order> orders = [];
     switch (await _listOrderSummaries(api)) {
       case Err(:final failure):
@@ -187,7 +217,18 @@ final class BbxApiOrderRepository implements ExchangeOrders {
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
     required String address,
-  }) => _run((api) async {
+    bool enablePreference = false,
+  }) => _write((api) async {
+    bbx.UserSummary? summary;
+    if (enablePreference) {
+      switch (await api.users.getUserSummary()) {
+        case Ok(value: final value?):
+          summary = value;
+        case Ok() || Err():
+          return const Err(ExchangeAccountUnavailableFailure());
+      }
+    }
+
     switch (await api.orderTriggers.createDca(
       amount: amount,
       currencyCode: currency.code,
@@ -229,6 +270,23 @@ final class BbxApiOrderRepository implements ExchangeOrders {
             frequency == null ||
             network == null) {
           return const Err(ExchangeOrderLoadFailure());
+        }
+        if (summary != null) {
+          final preference = await api.users.saveUserPreferences(
+            bbx.UserPreferences(
+              language: summary.language,
+              defaultFiatCurrencyCode: summary.currency,
+              dcaEnabled: 'true',
+              autoBuyEnabled: summary.autoBuy.isActive.toString(),
+              emailNotifications: summary.emailNotificationsEnabled.toString(),
+            ),
+          );
+          if (preference case Err(:final failure)) {
+            log.warning(
+              'DCA created but enabling the preference failed',
+              error: failure.runtimeType,
+            );
+          }
         }
         return Ok(
           Dca(

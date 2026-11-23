@@ -99,31 +99,11 @@ class SetDcaUsecase {
       }
     }
 
-    // Read the preference set BEFORE creating anything on the exchange. The
-    // DCA flag is operative — the exchange web client stops a recurring buy
-    // by writing it — and saveUserPreferences replaces the whole stored set,
-    // so the enabling write must carry the current values. Aborting here is
-    // clean: nothing exists on the exchange yet.
     final exchangeEnvironment = environment.requireHistoricalTestnet()
         ? ExchangeEnvironment.testnet
         : ExchangeEnvironment.mainnet;
 
-    final UserSummary summary;
-    switch (await _exchange.getUserSummary(exchangeEnvironment)) {
-      case Ok(:final value):
-        summary = value;
-      case Err(:final failure):
-        log.warning(
-          'DCA aborted before creation: user summary unavailable: '
-          '${failure.logMessage ?? failure.runtimeType}',
-        );
-        return const Err(
-          DcaAccountUnavailableFailure('user summary unavailable'),
-        );
-    }
-
-    final Dca dca;
-    switch (await _exchange
+    final result = await _exchange
         .orders(exchangeEnvironment)
         .createDca(
           amount: amount,
@@ -131,9 +111,18 @@ class SetDcaUsecase {
           frequency: frequency,
           network: network,
           address: address,
-        )) {
+          enablePreference: true,
+        );
+    switch (result) {
       case Ok(:final value):
-        dca = value;
+        return Ok(value);
+      case Err(
+        failure: ExchangeAccountUnavailableFailure() ||
+            ExchangeCredentialReadFailure(),
+      ):
+        return const Err(
+          DcaAccountUnavailableFailure('user summary unavailable'),
+        );
       case Err(:final failure):
         log.warning(
           'Exchange rejected DCA creation',
@@ -141,26 +130,5 @@ class SetDcaUsecase {
         );
         return const Err(DcaOrderCreationFailure('createDca rejected'));
     }
-
-    if (await _exchange.saveUserPreference(
-          exchangeEnvironment,
-          language: summary.language,
-          currency: summary.currency,
-          dcaEnabled: true,
-          autoBuyEnabled: summary.autoBuy.isActive.toString(),
-          emailNotificationsEnabled: summary.emailNotificationsEnabled,
-        )
-        case Err(:final failure)) {
-      // The recurring buy already exists on the exchange at this point, so
-      // this must NOT be reported as a failure: the user would be told
-      // nothing happened and could create a second one. The repository
-      // already logged the reason, so note the outcome and continue.
-      log.warning(
-        'DCA created but enabling the preference failed: '
-        '${failure.logMessage ?? failure.runtimeType}',
-      );
-    }
-
-    return Ok(dca);
   }
 }

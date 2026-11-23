@@ -91,6 +91,8 @@ typedef ExchangeNotificationOperations = ({
   Future<void> Function() close,
 });
 
+enum _CompletionCheck { none, read, write }
+
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
@@ -192,7 +194,7 @@ final class Exchange {
       ExchangeEnvironment? environment,
       ExchangeFailure Function()? credentialReadFailure,
       bool untimed = false,
-      bool checkCompletion = false,
+      _CompletionCheck completionCheck = _CompletionCheck.none,
     }) async {
       switch (await sessionSnapshot()) {
         case Err(failure: ExchangeCredentialReadFailure())
@@ -229,14 +231,18 @@ final class Exchange {
                       readKey,
                     ),
             );
+            // A committed write remains successful even if the session
+            // changes before its response arrives.
+            if (completionCheck == _CompletionCheck.write &&
+                result is Ok<T, ExchangeFailure>) {
+              return result;
+            }
             if (stale) return const Err(ExchangeOperationStaleFailure());
-            if (checkCompletion) {
+            if (completionCheck != _CompletionCheck.none) {
               switch (await sessionSnapshot()) {
                 case Ok(value: final current) when current == value:
                   break;
                 case _:
-                  // An unverified completion may have committed a mutation.
-                  // Never publish it into another session or retry the write.
                   return const Err(ExchangeOperationStaleFailure());
               }
             }
@@ -356,7 +362,7 @@ final class Exchange {
           (client, _) =>
               BbxApiExchangeRecipientRepository(api: client)
                   .getDefaultWallets(),
-          checkCompletion: true,
+          completionCheck: _CompletionCheck.read,
         ),
         save: ({required walletType, required address, existingRecipientId}) =>
             withClient(
@@ -367,7 +373,7 @@ final class Exchange {
                         address: address,
                         existingRecipientId: existingRecipientId,
                       ),
-              checkCompletion: true,
+              completionCheck: _CompletionCheck.write,
             ),
         delete:
             ({required recipientId, required walletType, required address}) =>
@@ -378,15 +384,20 @@ final class Exchange {
                         walletType: walletType,
                         address: address,
                       ),
-                  checkCompletion: true,
+                  completionCheck: _CompletionCheck.write,
                 ),
       ),
       (environment) => BbxApiOrderRepository(
         isTestnet: environment == ExchangeEnvironment.testnet,
-        run: <T>(operation) => withClient<T>(
+        read: <T>(operation) => withClient<T>(
           (client, _) => operation(client),
           environment: environment,
-          checkCompletion: true,
+          completionCheck: _CompletionCheck.read,
+        ),
+        write: <T>(operation) => withClient<T>(
+          (client, _) => operation(client),
+          environment: environment,
+          completionCheck: _CompletionCheck.write,
         ),
       ),
       (

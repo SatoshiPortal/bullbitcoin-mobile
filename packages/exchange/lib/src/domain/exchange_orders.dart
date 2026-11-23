@@ -49,10 +49,20 @@ abstract interface class ExchangeOrders {
   });
   @useResult
   Future<Result<BuyOrder, ExchangeFailure>> confirmBuyOrder(String orderId);
+
+  /// An optional update uses the same session as the confirmation. Its
+  /// failure leaves the confirmed withdrawal successful.
   @useResult
   Future<Result<WithdrawOrder, ExchangeFailure>> confirmWithdrawOrder(
-    String orderId,
-  );
+    String orderId, {
+    ({
+      String recipientId,
+      String email,
+      String? securityQuestion,
+      String? securityAnswer,
+    })?
+    interacUpdate,
+  });
   @useResult
   Future<Result<BuyOrder, ExchangeFailure>> refreshBuyOrder(String orderId);
   @useResult
@@ -77,6 +87,10 @@ abstract interface class ExchangeOrders {
     int? offset,
     OrderType? type,
   });
+
+  /// When [enablePreference] is set, the existing preference set is read
+  /// before creating the DCA. Enabling it after creation is best-effort on
+  /// the same session.
   @useResult
   Future<Result<Dca, ExchangeFailure>> createDca({
     required double amount,
@@ -84,5 +98,6 @@ abstract interface class ExchangeOrders {
     required DcaBuyFrequency frequency,
     required DcaNetwork network,
     required String address,
+    bool enablePreference = false,
   });
 }

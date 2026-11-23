@@ -10,12 +10,10 @@ import 'package:meta/meta.dart';
 class ConfirmWithdrawOrderUsecase {
   final Exchange _exchange;
   final Preferences _settingsRepository;
-  final RecipientsFacade _recipientsFacade;
 
   ConfirmWithdrawOrderUsecase({
     required this._exchange,
     required this._settingsRepository,
-    required this._recipientsFacade,
   });
 
   @useResult
@@ -24,7 +22,6 @@ class ConfirmWithdrawOrderUsecase {
     InteracSecurityDetails? interacSecurityDetails,
     bool saveSecurityDetailsAsDefault = false,
   }) async {
-    final WithdrawOrder order;
     try {
       final SettingsEntity settings;
       switch (await _settingsRepository.fetch()) {
@@ -53,12 +50,23 @@ class ConfirmWithdrawOrderUsecase {
       final repo = _exchange.orders(
         isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet,
       );
-      switch (await repo.confirmWithdrawOrder(orderId)) {
-        case Ok(:final value):
-          order = value;
-        case Err(:final failure):
-          return Err(mapWithdrawOrderFailure(failure));
-      }
+      final details = interacSecurityDetails;
+      final result = await repo.confirmWithdrawOrder(
+        orderId,
+        interacUpdate: details == null
+            ? null
+            : (
+                recipientId: details.recipientId,
+                email: details.email,
+                securityQuestion: saveSecurityDetailsAsDefault
+                    ? details.securityQuestion
+                    : null,
+                securityAnswer: saveSecurityDetailsAsDefault
+                    ? details.securityAnswer
+                    : null,
+              ),
+      );
+      return result.mapErr(mapWithdrawOrderFailure);
     } on Exception catch (_, st) {
       // The raw error is deliberately dropped, as for order creation: it must
       // not carry order payment data into diagnostics.
@@ -69,38 +77,6 @@ class ConfirmWithdrawOrderUsecase {
       );
       return const Err(
         WithdrawUnexpectedFailure('Failed to confirm the withdrawal order'),
-      );
-    }
-
-    // The withdrawal is already confirmed at this point, so failing to save
-    // the recipient's Interac details must not turn it into a failure.
-    await _updateInteracSecurityDetails(
-      interacSecurityDetails,
-      saveAsDefault: saveSecurityDetailsAsDefault,
-    );
-    return Ok(order);
-  }
-
-  Future<void> _updateInteracSecurityDetails(
-    InteracSecurityDetails? details, {
-    required bool saveAsDefault,
-  }) async {
-    if (details == null) return;
-    try {
-      final result = await _recipientsFacade.updateInteracSecurityDetails(
-        recipientId: details.recipientId,
-        email: details.email,
-        securityQuestion: saveAsDefault ? details.securityQuestion : null,
-        securityAnswer: saveAsDefault ? details.securityAnswer : null,
-      );
-      if (result case Err()) {
-        log.warning(
-          'Withdrawal completed without updating Interac security details',
-        );
-      }
-    } catch (_) {
-      log.warning(
-        'Withdrawal completed without updating Interac security details',
       );
     }
   }
