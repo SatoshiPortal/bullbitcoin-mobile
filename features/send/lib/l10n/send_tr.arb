@@ -563,7 +563,7 @@
   "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sendErrorInvoiceExpiryTooShort": "Bu faturanın süresi çok erken doluyor. Alıcıdan yeni bir fatura isteyin.",
-  "closeDialogButton": "Close",
+  "closeDialogButton": "Kapat",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   }

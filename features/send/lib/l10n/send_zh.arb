@@ -216,5 +216,5 @@
   "sendErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sendErrorInvoiceExpiryTooShort": "该发票即将过期，剩余时间不足。请向收款人索取新的发票。",
-  "closeDialogButton": "近距离"
+  "closeDialogButton": "关闭"
 }
