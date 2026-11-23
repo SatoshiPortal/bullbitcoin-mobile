@@ -54,6 +54,7 @@ void main() {
         groupIdsPath: '${directory.path}/group-ids.sqlite',
         hasSilentPaymentsWallet: () async => true,
         defaultBitcoinWalletLabel: 'Default Bitcoin',
+        unnamedWalletLabel: 'Unnamed wallet',
         backupVerified: (reference, network) async =>
             reference == secret && network.isMainnet,
       );
