@@ -1370,6 +1370,102 @@ void main() {
     );
   }
 
+  test(
+    'resuming an unfunded Lightning order reviews its pinned payin',
+    () async {
+      final wallet = _liquidWallet(balanceSat: 1000000);
+      final quote = _MockOrderSwapQuote();
+      final record = _MockOrderSwapRecord();
+      final order = _MockOrderSwap();
+      const invoice = PaymentRequest.bolt11(
+        invoice: 'lnbc1-resumed',
+        amountSat: 50000,
+        paymentHash: 'hash',
+        expiresAt: 2000000000,
+        isTestnet: false,
+      );
+      when(() => quote.inAmountSat).thenReturn(BigInt.from(50500));
+      when(() => record.localId).thenReturn('resumed-lightning-order');
+      when(() => record.localPayinTransactionId).thenReturn(null);
+      when(() => record.localStatus)
+          .thenReturn(OrderSwapLocalStatus.awaitingUserConfirmation);
+      when(() => record.order).thenReturn(order);
+      when(() => order.payinAddress).thenReturn('lq1pinnedpayin');
+      when(() => order.payinAmountSat).thenReturn(BigInt.from(51000));
+      when(() => order.payoutAmountSat).thenReturn(BigInt.from(50000));
+      when(
+        () => getSendSwapQuoteUsecase.execute(
+          wallet: wallet,
+          amountSat: BigInt.from(50000),
+        ),
+      ).thenAnswer((_) async => Ok(quote));
+      when(
+        () => createSendSwapUsecase.execute(
+          walletId: wallet.id,
+          invoice: invoice as Bolt11PaymentRequest,
+          amountSat: 50000,
+          quote: quote,
+          note: '',
+        ),
+      ).thenAnswer((_) async => Ok(record));
+      when(() => watchSendSwapUsecase.execute('resumed-lightning-order'))
+          .thenAnswer((_) => const Stream.empty());
+      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+          .thenAnswer((_) async => []);
+      when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
+          .thenAnswer((_) async => false);
+      when(
+        () => prepareLiquidSendUsecase.execute(
+          walletId: wallet.id,
+          address: 'lq1pinnedpayin',
+          feeRate: any(named: 'feeRate'),
+          amountSat: 51000,
+          drain: false,
+          selectedInputs: null,
+          hasFrozenInputs: false,
+        ),
+      ).thenAnswer((_) async => const Ok('reviewed-payin'));
+      when(
+        () => verifyExchangePayinUsecase.execute(
+          psbtOrPset: 'reviewed-payin',
+          record: record,
+          walletId: wallet.id,
+        ),
+      ).thenAnswer((_) async => const Ok(null));
+      when(
+        () =>
+            calculateLiquidAbsoluteFeesUsecase.execute(pset: 'reviewed-payin'),
+      ).thenAnswer((_) async => 100);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          sendType: SendType.lightning,
+          selectedWallet: SendWalletBitcoin(wallet),
+          paymentRequest: invoice,
+          amount: '50000',
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          liquidFeesList: _sweepFeeOptions,
+          unsignedPsbt: 'obsolete-payin',
+          signedLiquidTx: 'obsolete-signature',
+        ),
+      );
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.lightningOrder, same(record));
+      expect(cubit.state.step, SendStep.confirm);
+      expect(cubit.state.confirmedAmountSat, 50000);
+      expect(cubit.state.unsignedPsbt, 'reviewed-payin');
+      expect(cubit.state.signedLiquidTx, isNull);
+      verify(() => watchSendSwapUsecase.execute('resumed-lightning-order'))
+          .called(1);
+      verifyZeroInteractions(broadcastLiquidTxUsecase);
+    },
+  );
+
   test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {
     final wallet = _liquidWallet(balanceSat: 1000000);
     final quote = _MockOrderSwapQuote();
