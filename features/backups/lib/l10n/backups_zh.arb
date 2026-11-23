@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "安保",
   "testBackupWriteDownPhrase": "写你的恢复短语\n更正",
   "testBackupDigitalCopy": "数字复印件",
   "backupWalletEncryptedVaultTag": "简便和简单(1分钟)",

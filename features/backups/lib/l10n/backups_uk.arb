@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "Bitcoin у USD",
   "walletDetailsUnnamedWalletFallback": "Без назви Wallet",
   "backupWalletTitle": "Резервне копіювання гаманця",
   "testBackupTitle": "Тестування резервної копії вашого гаманця",

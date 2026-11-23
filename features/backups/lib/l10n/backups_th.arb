@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "รักษาความปลอดภัย Bitcoin",
   "testBackupWriteDownPhrase": "เขียนวลีของคุณ\nการแก้ไขที่ถูกต้อง",
   "@testBackupWriteDownPhrase": {
     "description": "Main instruction header for physical backup screen"

@@ -1,4 +1,5 @@
 {
+  "globalDefaultBitcoinWalletLabel": "Sichere Bitcoin-Wallet",
   "testBackupWriteDownPhrase": "Schreiben Sie Ihre Wiederherstellungsphrase\nin der richtigen Reihenfolge.",
   "testBackupDigitalCopy": "Digitale Kopie",
   "backupWalletEncryptedVaultTag": "Einfach und schnell (1 Minute)",

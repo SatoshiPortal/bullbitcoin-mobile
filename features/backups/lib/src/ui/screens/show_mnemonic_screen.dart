@@ -63,10 +63,10 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
       builder: (context) {
         return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
           builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.label ??
-                      context.loc.walletDetailsUnnamedWalletFallback;
+            final wallet = state.selectedWallet;
+            final walletName = wallet == null
+                ? context.loc.walletDetailsUnnamedWalletFallback
+                : context.backupWalletName(wallet);
             final title = context.loc.testBackupWalletTitle(walletName);
 
             return Scaffold(
