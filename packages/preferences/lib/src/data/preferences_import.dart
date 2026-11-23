@@ -153,6 +153,7 @@ final class _PreparedPreferences implements PreparedOwner {
     if (readiness case Ok(value: OwnerReadiness.initialized)) {
       return const Err(LegacyImportVerificationFailed());
     }
+    LegacyImportFailure? consentFailure;
     final result = await importLegacyDatabase(
       id: preferencesImportReceipt,
       source: source.file,
@@ -167,6 +168,11 @@ final class _PreparedPreferences implements PreparedOwner {
           return false;
         }
         if (!await _isEmpty()) return false;
+        final consent = await _readStandaloneConsent();
+        if (consent case Err(:final failure)) {
+          consentFailure = failure;
+          return false;
+        }
         for (final entry in _columns.entries) {
           final table = entry.key;
           final columns = entry.value;
@@ -232,11 +238,16 @@ final class _PreparedPreferences implements PreparedOwner {
             return false;
           }
         }
-        await _importStandalonePermissions();
+        if (!await _writeStandaloneConsent(
+          (consent as Ok<bool?, LegacyImportFailure>).value,
+        )) {
+          return false;
+        }
         await checkpoint?.call('import-verify');
         return true;
       },
     );
+    if (consentFailure case final failure?) return Err(failure);
     if (result is Ok<void, LegacyImportFailure>) {
       await checkpoint?.call('import-commit');
     }
@@ -276,39 +287,34 @@ final class _PreparedPreferences implements PreparedOwner {
         .isEmpty;
   }
 
-  Future<void> _importStandalonePermissions() async {
+  Future<Result<bool?, LegacyImportFailure>> _readStandaloneConsent() async {
     final read = readStandalonePermission;
-    if (read == null) return;
-    final expected = <List<Object?>>[];
-    switch (await read()) {
-      case Ok(value: (:final sourceUrl, permissionGranted: final granted)):
-        final row = [
-          'default',
-          granted && sourceUrl == defaultRecoverBullServerUrl ? 1 : 0,
-        ];
-        await store.database.customStatement(
-          'INSERT INTO recoverbull_permission_overrides '
-          '(family, is_permission_granted) VALUES (?, ?)',
-          row,
-        );
-        expected.add(row);
-      case Ok(value: null):
-        break;
-      case Err():
-        throw const _RecoverBullPermissionUnavailable();
-    }
+    if (read == null) return const Ok(null);
+    return (await read()).map(
+      (consent) => consent == null
+          ? null
+          : consent.permissionGranted &&
+                consent.sourceUrl == defaultRecoverBullServerUrl,
+    );
+  }
+
+  Future<bool> _writeStandaloneConsent(bool? consent) async {
+    if (consent == null) return true;
+    final row = ['default', consent ? 1 : 0];
+    await store.database.customStatement(
+      'INSERT INTO recoverbull_permission_overrides '
+      '(family, is_permission_granted) VALUES (?, ?)',
+      row,
+    );
     final rows = await store.database
         .customSelect(
           'SELECT family, is_permission_granted '
           'FROM recoverbull_permission_overrides ORDER BY family',
         )
         .get();
-    if (!_sameRawValues(
-      expected,
-      rows.map((row) => row.data.values.toList()).toList(),
-    )) {
-      throw const _RecoverBullPermissionUnavailable();
-    }
+    return _sameRawValues([
+      row,
+    ], rows.map((row) => row.data.values.toList()).toList());
   }
 
   @override
@@ -316,65 +322,79 @@ final class _PreparedPreferences implements PreparedOwner {
     try {
       await store.database.customSelect('SELECT 1').get();
       await checkpoint?.call('fresh-schema');
-      await store.database.transaction(() async {
-        final readiness = await receipt();
-        if (readiness case Ok(value: OwnerReadiness.initialized)) return;
-        if (readiness is! Ok<OwnerReadiness, LegacyImportFailure> ||
-            readiness.value != OwnerReadiness.pending) {
-          throw const _FreshConflict();
-        }
-        if (!await _isEmpty()) throw const _FreshConflict();
-        final defaults = <String, List<Object?>>{
-          'settings': [
-            1,
-            'mainnet',
-            'sats',
-            0,
-            'unitedStatesEnglish',
-            'USD',
-            0,
-            0,
-            0,
-            0,
-            9050,
-            'automatic',
-            null,
-            'system',
-            0,
-            1,
-          ],
-          'recoverbull': [1, 0],
-        };
-        for (final entry in defaults.entries) {
-          final columns = _columns[entry.key];
-          if (columns == null) throw const _FreshConflict();
-          await store.database.customStatement(
-            'INSERT INTO ${entry.key} ($columns) VALUES (${List.filled(entry.value.length, '?').join(',')})',
-            entry.value,
-          );
-          final rows = await store.database
-              .customSelect('SELECT $columns FROM ${entry.key} ORDER BY id')
-              .get();
-          if (!_sameRawValues(
-                rows.map((row) => row.data.values.toList()).toList(),
-                [entry.value],
-              ) ||
-              !_sameRawValues(await _sequence(entry.key), [
-                [1],
-              ])) {
-            throw const _FreshConflict();
-          }
-        }
-        await _importStandalonePermissions();
-        await checkpoint?.call('fresh-seeds');
-        await store.database.customStatement(
-          'INSERT INTO legacy_import_receipts (id) VALUES (?)',
-          [preferencesFreshReceipt],
-        );
-        await checkpoint?.call('fresh-receipt');
-      });
-      await checkpoint?.call('fresh-commit');
-      return const Ok(null);
+      final result = await store.database
+          .transaction<Result<void, LegacyImportFailure>>(() async {
+            switch (await receipt()) {
+              case Err(:final failure):
+                return Err(failure);
+              case Ok(value: OwnerReadiness.initialized):
+                return const Ok(null);
+              case Ok(value: OwnerReadiness.pending):
+                break;
+              case Ok():
+                return const Err(LegacyImportVerificationFailed());
+            }
+            if (!await _isEmpty()) {
+              return const Err(LegacyImportVerificationFailed());
+            }
+            final consent = await _readStandaloneConsent();
+            if (consent case Err(:final failure)) return Err(failure);
+            final defaults = <String, List<Object?>>{
+              'settings': [
+                1,
+                'mainnet',
+                'sats',
+                0,
+                'unitedStatesEnglish',
+                'USD',
+                0,
+                0,
+                0,
+                0,
+                9050,
+                'automatic',
+                null,
+                'system',
+                0,
+                1,
+              ],
+              'recoverbull': [1, 0],
+            };
+            for (final entry in defaults.entries) {
+              final columns = _columns[entry.key];
+              if (columns == null) throw const _FreshConflict();
+              await store.database.customStatement(
+                'INSERT INTO ${entry.key} ($columns) VALUES (${List.filled(entry.value.length, '?').join(',')})',
+                entry.value,
+              );
+              final rows = await store.database
+                  .customSelect('SELECT $columns FROM ${entry.key} ORDER BY id')
+                  .get();
+              if (!_sameRawValues(
+                    rows.map((row) => row.data.values.toList()).toList(),
+                    [entry.value],
+                  ) ||
+                  !_sameRawValues(await _sequence(entry.key), [
+                    [1],
+                  ])) {
+                throw const _FreshConflict();
+              }
+            }
+            if (!await _writeStandaloneConsent(
+              (consent as Ok<bool?, LegacyImportFailure>).value,
+            )) {
+              throw const _FreshConflict();
+            }
+            await checkpoint?.call('fresh-seeds');
+            await store.database.customStatement(
+              'INSERT INTO legacy_import_receipts (id) VALUES (?)',
+              [preferencesFreshReceipt],
+            );
+            await checkpoint?.call('fresh-receipt');
+            return const Ok(null);
+          });
+      if (result case Ok()) await checkpoint?.call('fresh-commit');
+      return result;
     } on _FreshConflict {
       return const Err(LegacyImportVerificationFailed());
     } on Exception {
@@ -412,8 +432,4 @@ bool _sameRawValues(Object? a, Object? b) {
 
 final class _FreshConflict implements Exception {
   const _FreshConflict();
-}
-
-final class _RecoverBullPermissionUnavailable implements Exception {
-  const _RecoverBullPermissionUnavailable();
 }

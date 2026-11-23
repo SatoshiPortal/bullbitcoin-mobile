@@ -79,11 +79,10 @@ final class RecoverBullSettingsAdapter
   Future<bool> _runtimeIsCurrent() async {
     if (_closed) return false;
     try {
-      final settings = (await _settings.fetch()).fold(
-        (value) => value,
-        (failure) => throw Exception('Preferences read failed'),
-      );
-      return !_closed && _matchesRuntime(settings);
+      return switch (await _settings.fetch()) {
+        Ok(:final value) => !_closed && _matchesRuntime(value),
+        Err() => false,
+      };
     } on Exception {
       return false;
     }
