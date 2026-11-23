@@ -19,7 +19,6 @@ import 'package:bb_mobile/features/settings/public/language_locale.dart';
 import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
 
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -43,7 +42,7 @@ import 'package:swaps/swaps.dart';
 import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart'
     as core;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
@@ -130,44 +129,6 @@ class WalletLocator {
             overviewSync().coordinator.pollWallet(id, isActive: isActive),
       ),
       dispose: (followUp) => followUp.dispose(),
-    );
-    locator.registerLazySingleton<WalletFacade>(
-      () => WalletFacade(
-        spendStatus: spendStatus,
-        broadcastSpend: locator<BroadcastObservationFollowUp>().wrap((
-          id,
-          transaction, {
-          required network,
-          built,
-          owner,
-          replacing,
-        }) async {
-          try {
-            return await locator<WalletNativeRuntime>().broadcast(
-              await keyFor(id),
-              transaction,
-              network: network,
-              built: built,
-              owner: owner,
-              replacing: replacing,
-            );
-          } on WalletSnapshotException catch (error) {
-            return Err(error.failure);
-          }
-        }),
-        protectObservedSpend: (id, txid) async {
-          try {
-            return WalletSyncBinding.value<bool>(
-              await locator<WalletNativeRuntime>().protectObservedSpend(
-                await keyFor(id),
-                txid,
-              ),
-            );
-          } on Exception {
-            return false;
-          }
-        },
-      ),
     );
     locator.registerLazySingleton<DefaultWalletRepair>(
       () => DefaultWalletRepair(locator<Secrets>(), (secret, network) async {

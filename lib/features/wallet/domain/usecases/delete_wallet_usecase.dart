@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart'
     as core;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:swaps/order_swaps.dart';
