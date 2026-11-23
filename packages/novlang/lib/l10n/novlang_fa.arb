@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "عبارت یادآور انتقال",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "عبارت یادآور انتقال حذف شود؟",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "این کار کلید اصلی انتقال را از حافظه امن حذف می‌کند. دفعه بعد که برنامه به آن نیاز داشته باشد، با همان اثر انگشت دوباره از seed کیف پول شما استخراج می‌شود. انتقال‌های در حال انجام تحت تأثیر قرار نمی‌گیرند."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "این کار کلید اصلی انتقال را از حافظه امن حذف می‌کند. دفعه بعد که برنامه به آن نیاز داشته باشد، با همان اثر انگشت دوباره از seed کیف پول شما استخراج می‌شود. انتقال‌های در حال انجام تحت تأثیر قرار نمی‌گیرند.",
+  "receive__receiveTransferFee_apple": "هزینه انتقال",
+  "receive__swapErrorAmountBelowMinimum_apple": "مقدار کمتر از حداقل مقدار انتقال است: {min} ساتوشی",
+  "receive__swapErrorAmountAboveMaximum_apple": "مقدار بیش از حداکثر مقدار انتقال است: {max} ساتوشی",
+  "receive__swapTransferTitle_apple": "انتقال",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "نرخ در دسترس نیست. لطفاً بعداً دوباره امتحان کنید.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "این انتقال در دسترس نیست."
 }

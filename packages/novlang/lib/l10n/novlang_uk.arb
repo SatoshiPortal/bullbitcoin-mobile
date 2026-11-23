@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Мнемоніка переказів",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Видалити мнемоніку переказів?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Це видалить головний ключ переказів із захищеного сховища. Його буде повторно виведено з seed-фрази вашого гаманця, коли застосунку він знадобиться наступного разу, з тим самим відбитком. Поточні перекази це не торкнеться."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Це видалить головний ключ переказів із захищеного сховища. Його буде повторно виведено з seed-фрази вашого гаманця, коли застосунку він знадобиться наступного разу, з тим самим відбитком. Поточні перекази це не торкнеться.",
+  "receive__receiveTransferFee_apple": "Комісія переказу",
+  "receive__swapErrorAmountBelowMinimum_apple": "Сума менша за мінімальну суму переказу: {min} сат",
+  "receive__swapErrorAmountAboveMaximum_apple": "Сума перевищує максимальну суму переказу: {max} сат",
+  "receive__swapTransferTitle_apple": "Переказ",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Курс недоступний. Будь ласка, спробуйте пізніше.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Цей переказ недоступний."
 }

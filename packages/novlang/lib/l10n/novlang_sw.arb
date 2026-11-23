@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemoniki ya uhamisho",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Futa mnemoniki ya uhamisho?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Hii inaondoa ufunguo mkuu wa uhamisho kutoka kwenye hifadhi salama. Utatolewa upya kutoka kwenye seed ya pochi yako wakati ujao programu itakapouhitaji, ukiwa na alama ya kidole ile ile. Uhamisho unaoendelea hauathiriwi."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Hii inaondoa ufunguo mkuu wa uhamisho kutoka kwenye hifadhi salama. Utatolewa upya kutoka kwenye seed ya pochi yako wakati ujao programu itakapouhitaji, ukiwa na alama ya kidole ile ile. Uhamisho unaoendelea hauathiriwi.",
+  "receive__receiveTransferFee_apple": "Ada ya Uhamisho",
+  "receive__swapErrorAmountBelowMinimum_apple": "Kiasi kiko chini ya kiwango cha chini cha uhamisho: sats {min}",
+  "receive__swapErrorAmountAboveMaximum_apple": "Kiasi kinazidi kiwango cha juu cha uhamisho: sats {max}",
+  "receive__swapTransferTitle_apple": "Hamisha",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Kiwango hakipatikani. Tafadhali jaribu tena baadaye.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Uhamisho huu haupatikani."
 }

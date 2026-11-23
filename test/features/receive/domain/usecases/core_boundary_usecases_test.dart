@@ -1,22 +1,22 @@
-import 'package:primitives/primitives.dart' show ScriptType;
-
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:preferences/preferences.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:sync/sync.dart' as native;
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:receive/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide Network, ScriptType;
+import 'package:primitives/primitives.dart';
 
 class _Reporter extends Mock implements LoggerReporter {}
 
-class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
+class _Environment extends Mock implements ActiveEnvironmentReader {}
+
+class _Inventory extends Mock implements WalletInventory {}
 
 class _MockGetReceiveAddressUsecase extends Mock implements AddressView {}
 
@@ -35,64 +35,90 @@ WalletAddress _address() => WalletAddress(
   updatedAt: DateTime(2026),
 );
 
-Wallet _wallet() => Wallet(
-  origin: 'w1',
-  network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
-  scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
-  balanceSat: BigInt.from(50000),
-  confirmedBalanceSat: BigInt.from(50000),
-);
-
 void main() {
   group('GetReceiveWalletsUsecase', () {
-    test('forwards the wallets on success', () async {
-      final inner = _MockGetWalletsUsecase();
-      when(
-        () => inner.execute(
-          onlyDefaults: any(named: 'onlyDefaults'),
-          onlyBitcoin: any(named: 'onlyBitcoin'),
-          onlyLiquid: any(named: 'onlyLiquid'),
-          sync: any(named: 'sync'),
-        ),
-      ).thenAnswer((_) async => Ok([_wallet()]));
+    final registration = walletRegistrationForTesting(
+      id: 'w1',
+      network: BitcoinNetwork.testnet,
+      isDefault: true,
+    );
+    late _Environment preferences;
+    late _Inventory inventory;
+    late GetReceiveWalletsUsecase read;
+    late List<native.WalletKey> requested;
+    late List<String> signerReads;
 
-      final result = await GetReceiveWalletsUsecase(inner)
-          .execute(onlyBitcoin: true);
-
-      expect(result, isA<Ok<List<Wallet>, ReceiveFailure>>());
+    setUp(() {
+      preferences = _Environment();
+      inventory = _Inventory();
+      requested = [];
+      signerReads = [];
+      when(() => preferences.readActiveEnvironment())
+          .thenAnswer((_) async => const Ok(Environment.testnet));
+      read = GetReceiveWalletsUsecase(
+        preferences,
+        inventory,
+        (key) async {
+          requested.add(key);
+          return const Err(native.SyncNotFoundFailure());
+        },
+        (id) async {
+          signerReads.add(id);
+          return const Ok(null);
+        },
+      );
     });
 
     test(
-      'converts a throw into a sanitized failure, raw reason logs-only',
+      'a missing balance keeps the exact-network wallet eligible for receive',
       () async {
-        final inner = _MockGetWalletsUsecase();
-        when(
-          () => inner.execute(
-            onlyDefaults: any(named: 'onlyDefaults'),
-            onlyBitcoin: any(named: 'onlyBitcoin'),
-            onlyLiquid: any(named: 'onlyLiquid'),
-            sync: any(named: 'sync'),
-          ),
-        ).thenThrow(Exception(_rawReason));
-
-        final result = await GetReceiveWalletsUsecase(inner)
-            .execute(onlyBitcoin: true);
-
-        switch (result) {
-          case Ok():
-            fail('a throw must not be reported as wallets');
-          case Err(:final failure):
-            expect(failure, isA<ReceiveUnexpectedFailure>());
-            expect(failure.logMessage, contains('app.sqlite'));
-        }
+        when(() => inventory.walletsForNetwork(BitcoinNetwork.testnet))
+            .thenAnswer(
+              (_) async => Ok(walletSelectionForTesting([registration])),
+            );
+        final result = await read.execute(onlyBitcoin: true);
+        final wallet =
+            (result as Ok<List<ReceiveWallet>, ReceiveFailure>).value.single;
+        expect(wallet.id, 'w1');
+        expect(wallet.network, BitcoinNetwork.testnet);
+        expect(wallet.balanceSat, isNull);
+        expect(
+          requested.single,
+          native.WalletKey(id: 'w1', network: BitcoinNetwork.testnet),
+        );
       },
     );
+
+    test('a locked inventory must not resurrect an entry wallet', () async {
+      when(() => inventory.readWallet('w1'))
+          .thenAnswer((_) async => const Err(FetchSecretFailure()));
+      final result = await read.resolveEntry(
+        const ReceiveWallet(
+          id: 'w1',
+          network: BitcoinNetwork.testnet,
+          signsLocally: true,
+          scriptType: ScriptType.bip84,
+        ),
+      );
+      expect(result, isA<Err<ReceiveWallet, ReceiveFailure>>());
+      expect(requested, isEmpty);
+      expect(signerReads, isEmpty);
+    });
+
+    test('a same-id wallet on the wrong network is not loaded', () async {
+      when(() => inventory.readWallet('w1'))
+          .thenAnswer((_) async => Ok(registration));
+      final result = await read.resolveEntry(
+        const ReceiveWallet(
+          id: 'w1',
+          network: LiquidNetwork.testnet,
+          signsLocally: true,
+          scriptType: ScriptType.bip84,
+        ),
+      );
+      expect(result, isA<Err<ReceiveWallet, ReceiveFailure>>());
+      expect(requested, isEmpty);
+    });
   });
 
   group('PrepareReceiveAddressUsecase', () {

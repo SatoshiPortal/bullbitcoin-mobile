@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Frase mnemonica dei trasferimenti",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Eliminare la frase mnemonica dei trasferimenti?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Questa operazione rimuove la chiave master dei trasferimenti dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. I trasferimenti in corso non vengono toccati."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Questa operazione rimuove la chiave master dei trasferimenti dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. I trasferimenti in corso non vengono toccati.",
+  "receive__receiveTransferFee_apple": "Commissione di trasferimento",
+  "receive__swapErrorAmountBelowMinimum_apple": "L'importo è inferiore all'importo minimo di trasferimento: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "L'importo supera l'importo massimo di trasferimento: {max} sats",
+  "receive__swapTransferTitle_apple": "Trasferimento",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Tasso non disponibile. Riprova più tardi.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Questo trasferimento non è disponibile."
 }

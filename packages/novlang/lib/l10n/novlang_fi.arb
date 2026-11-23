@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Siirron mnemoninen lause",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Poistetaanko siirron mnemoninen lause?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Tämä poistaa siirron pääavaimen suojatusta tallennustilasta. Se johdetaan uudelleen lompakkosi siemenestä seuraavalla kerralla, kun sovellus tarvitsee sitä, samalla sormenjäljellä. Käynnissä olevat siirrot eivät vaikuta."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Tämä poistaa siirron pääavaimen suojatusta tallennustilasta. Se johdetaan uudelleen lompakkosi siemenestä seuraavalla kerralla, kun sovellus tarvitsee sitä, samalla sormenjäljellä. Käynnissä olevat siirrot eivät vaikuta.",
+  "receive__receiveTransferFee_apple": "Siirtokulu",
+  "receive__swapErrorAmountBelowMinimum_apple": "Määrä on alle minimisiirtomäärän: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Määrä ylittää suurimman sallitun siirtomäärän: {max} sats",
+  "receive__swapTransferTitle_apple": "Siirto",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Kurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Tämä siirto ei ole saatavilla."
 }

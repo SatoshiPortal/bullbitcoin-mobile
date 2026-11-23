@@ -1,10 +1,11 @@
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
+import 'package:receive/testing.dart';
+import 'package:swaps/order_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockOrderSwaps extends Mock implements OrderSwaps {}
+class _MockOrderSwaps extends Mock implements ReadOrderSwaps {}
 
 const _rawReason = 'boltz 502: <html>nginx upstream at 10.0.0.7</html>';
 
@@ -21,7 +22,7 @@ void main() {
         ),
       );
 
-      final first = await WatchReceiveOrderSwapUsecase(swaps)
+      final first = await WatchReceiveOrderSwapUsecase(() => swaps)
           .execute('order-1')
           .first;
 
@@ -50,7 +51,7 @@ void main() {
       ),
     );
 
-    final first = await WatchReceiveOrderSwapUsecase(swaps)
+    final first = await WatchReceiveOrderSwapUsecase(() => swaps)
         .execute('order-1')
         .first;
 
@@ -77,7 +78,7 @@ void main() {
       ),
     );
 
-    final first = await WatchReceiveOrderSwapUsecase(swaps)
+    final first = await WatchReceiveOrderSwapUsecase(() => swaps)
         .execute('order-1')
         .first;
 

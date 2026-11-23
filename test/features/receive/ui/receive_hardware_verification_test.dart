@@ -1,12 +1,11 @@
 import 'package:signers/routes.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
 import 'package:signers/signers.dart';
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:receive/testing.dart';
+import 'package:receive/receive.dart' show ReceiveWallet;
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,15 +27,12 @@ void main() {
         final device = ledger
             ? SignerDevice.ledgerNanoX
             : SignerDevice.bitbox02;
-        final wallet = Wallet(
-          origin: 'hardware',
-          network: Network.bitcoinMainnet,
-          xpubFingerprint: '00000000',
+        final wallet = ReceiveWallet(
+          id: 'hardware',
+          network: BitcoinNetwork.mainnet,
           scriptType: ScriptType.bip84,
-          xpub: '',
-          externalPublicDescriptor: '',
-          internalPublicDescriptor: '',
-          signer: SignerEntity.remote,
+          signsLocally: false,
+          derivationPath: "m/84'/0'/0'",
           signerDevice: device,
           balanceSat: BigInt.zero,
         );

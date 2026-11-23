@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemoniği",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer mnemoniği silinsin mi?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Bu işlem, transfer ana anahtarını güvenli depolamadan kaldırır. Uygulamanın ihtiyaç duyduğu bir sonraki seferde cüzdan seed'inizden aynı parmak iziyle yeniden türetilecektir. Devam eden transferler etkilenmez."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Bu işlem, transfer ana anahtarını güvenli depolamadan kaldırır. Uygulamanın ihtiyaç duyduğu bir sonraki seferde cüzdan seed'inizden aynı parmak iziyle yeniden türetilecektir. Devam eden transferler etkilenmez.",
+  "receive__receiveTransferFee_apple": "Transfer Ücreti",
+  "receive__swapErrorAmountBelowMinimum_apple": "Tutar minimum transfer miktarının altında: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Tutar maksimum transfer miktarını aşıyor: {max} sats",
+  "receive__swapTransferTitle_apple": "Transfer",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Oran kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Bu transfer kullanılamıyor."
 }

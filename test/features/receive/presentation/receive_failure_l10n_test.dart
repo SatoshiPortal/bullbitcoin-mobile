@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show PaymentNetwork;
 import 'package:receive/receive.dart';
-import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
+import 'package:receive/testing.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:material_ui/material_ui.dart';

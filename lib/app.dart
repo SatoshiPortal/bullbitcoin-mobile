@@ -7,6 +7,7 @@ import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:backups/backups.dart';
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
+import 'package:bb_mobile/generated/novlang/novlang_receive_localizations.dart';
 import 'package:network/setup.dart' show NetworkLocalizations;
 import 'package:bull_exchange/bull_exchange.dart'
     show ExchangeLocalizations, ExchangeSessionScope;
@@ -216,6 +217,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       localizationsDelegates: [
                         AddressViewLocalizations.delegate,
                         SendLocalizations.delegate,
+                        NovlangReceiveLocalizationsDelegate(novlangPolicy),
                         NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
                         NovlangAnnouncementsLocalizationsDelegate(
                           novlangPolicy,

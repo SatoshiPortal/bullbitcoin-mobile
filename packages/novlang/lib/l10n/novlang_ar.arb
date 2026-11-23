@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "الكلمات الاستذكارية للتحويل",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "حذف الكلمات الاستذكارية للتحويل؟",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "تؤدي هذه العملية إلى إزالة المفتاح الرئيسي للتحويل من التخزين الآمن. سيُشتق من جديد من seed محفظتك عند الحاجة إليه في المرة القادمة، بنفس البصمة. التحويلات الجارية لا تتأثر."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "تؤدي هذه العملية إلى إزالة المفتاح الرئيسي للتحويل من التخزين الآمن. سيُشتق من جديد من seed محفظتك عند الحاجة إليه في المرة القادمة، بنفس البصمة. التحويلات الجارية لا تتأثر.",
+  "receive__receiveTransferFee_apple": "رسوم التحويل",
+  "receive__swapErrorAmountBelowMinimum_apple": "المبلغ أقل من الحد الأدنى لمبلغ التحويل: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "المبلغ يتجاوز الحد الأقصى لمبلغ التحويل: {max} sats",
+  "receive__swapTransferTitle_apple": "تحويل",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "السعر غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "هذا التحويل غير متاح."
 }

@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_polling.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:receive/testing.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -15,17 +13,12 @@ void main() {
         final requests = <(String, bool Function())>[];
         final selected = ValueNotifier<(String?, int?)>(('displayed', null));
         final completions = <Completer<void>>[];
-        final poll = PollReceiveWalletUsecase(
-          WalletFacade(
-            const Stream.empty(),
-            pollWallet: (id, {required isActive}) async {
-              requests.add((id, isActive));
-              final completion = Completer<void>();
-              completions.add(completion);
-              await completion.future;
-            },
-          ),
-        );
+        final poll = PollReceiveWalletUsecase((id, {required isActive}) async {
+          requests.add((id, isActive));
+          final completion = Completer<void>();
+          completions.add(completion);
+          await completion.future;
+        });
         final path = '/receive/${liquid ? 'liquid' : 'bitcoin'}';
         final root = GlobalKey<NavigatorState>();
         final router = GoRouter(

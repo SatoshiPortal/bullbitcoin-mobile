@@ -50,7 +50,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/public/pay_facade.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/send/public/send_route.dart';
@@ -322,7 +322,7 @@ class AppRouter {
         ),
       ).route,
       ...locator<TransactionsFeature>().routes,
-      ReceiveRouter.route,
+      locator<ReceiveFeature>().route,
       SendRouter.route(
         openSignedTransactionReader: (context, prepared, network) =>
             context.pushNamed<String>(

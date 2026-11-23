@@ -17,7 +17,6 @@ export '../ui/settings_router.dart' show SettingsRoute;
 export '../ui/widgets/superuser_tap_unlocker.dart' show SuperuserTapUnlocker;
 export '../ui/widgets/translation_warning_bottom_sheet.dart'
     show TranslationWarningBottomSheet;
-export 'payjoin_disclaimer_dialog.dart';
 export '../reporting_setup.dart' show refreshReportingConsent;
 export '../background_setup.dart' show setupBackgroundPreferences;
 

@@ -18,8 +18,6 @@ const _legacyImports = {
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
   'lib/features/settings/ui/widgets/settings_failure_listener.dart -> router.dart',
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
-  'lib/features/receive/ui/receive_router.dart -> locator.dart',
-  'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
   'lib/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart -> locator.dart',
 };

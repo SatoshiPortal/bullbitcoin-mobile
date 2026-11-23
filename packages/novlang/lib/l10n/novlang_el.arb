@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Μνημονική φράση μεταφοράς",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Διαγραφή μνημονικής φράσης μεταφοράς;",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Αυτό αφαιρεί το κύριο κλειδί μεταφορών από την ασφαλή αποθήκευση. Θα παραχθεί ξανά από το seed του πορτοφολιού σας την επόμενη φορά που θα το χρειαστεί η εφαρμογή, με το ίδιο αποτύπωμα. Οι μεταφορές σε εξέλιξη δεν επηρεάζονται."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Αυτό αφαιρεί το κύριο κλειδί μεταφορών από την ασφαλή αποθήκευση. Θα παραχθεί ξανά από το seed του πορτοφολιού σας την επόμενη φορά που θα το χρειαστεί η εφαρμογή, με το ίδιο αποτύπωμα. Οι μεταφορές σε εξέλιξη δεν επηρεάζονται.",
+  "receive__receiveTransferFee_apple": "Τέλος μεταφοράς",
+  "receive__swapErrorAmountBelowMinimum_apple": "Το ποσό είναι κάτω από το ελάχιστο ποσό μεταφοράς: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Το ποσό υπερβαίνει το μέγιστο ποσό μεταφοράς: {max} sats",
+  "receive__swapTransferTitle_apple": "Μεταφορά",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Η ισοτιμία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Αυτή η μεταφορά δεν είναι διαθέσιμη."
 }

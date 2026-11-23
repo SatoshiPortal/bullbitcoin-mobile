@@ -263,8 +263,7 @@ graph TB
     IMPORT_WATCH_ONLY -->|public QR scanning| SCANNING
     WALLETS -->|public QR scanning| SCANNING
     SCANNING --> BULL_UI
-    RECEIVE[Receive]
-    RECEIVE_REQUEST[Receive requests, address selection and notes<br/>Workspace Member]
+    RECEIVE[Receive routes, requests and address selection<br/>Workspace Feature]
     TRANSFER[Transfer]
     TX_HISTORY[Transactions<br/>Workspace Feature]
 
@@ -284,16 +283,14 @@ graph TB
     ADDRESS_LABELS -->|scan and clear labels| SP
     ADDRESS_LABELS --> PREFERENCES
     PAY -->|indexed address| ADDRESS_LABELS
-    RECEIVE -->|indexed address| ADDRESS_LABELS
     SELL -->|indexed address| ADDRESS_LABELS
-    RECEIVE --> RECEIVE_REQUEST
-    WALLETS -->|transfer address selection| RECEIVE_REQUEST
-    RECEIVE_REQUEST --> ADDRESS_LABELS
-    RECEIVE_REQUEST --> LABELS
-    RECEIVE_REQUEST --> PRIMITIVES
-    RECEIVE_REQUEST --> BULL_LOGGER
-    RECEIVE_REQUEST --> BULL_PRICER
-    RECEIVE_REQUEST --> PREFERENCES
+    WALLETS -->|transfer address selection| RECEIVE
+    RECEIVE --> ADDRESS_LABELS
+    RECEIVE --> LABELS
+    RECEIVE --> PRIMITIVES
+    RECEIVE --> BULL_LOGGER
+    RECEIVE --> BULL_PRICER
+    RECEIVE --> PREFERENCES
     BG_TASKS[Background Tasks Package]
     LIMIT_ORDERS[Limit Orders]
     SELL[Sell]
@@ -345,7 +342,7 @@ graph TB
     SWAPS -->|fund and broadcast| SPEND
     SWAPS -->|fees| FEES_PACKAGE
     SWAPS -->|destination input, receive and refund addresses| ADDRESS_LABELS
-    SWAPS -->|Ark transfer recipient address| RECEIVE_REQUEST
+    SWAPS -->|Ark transfer recipient address| RECEIVE
     SWAPS -->|hardware signer metadata| SIGNERS
     SWAPS -->|coin selection sheet| COINS
     SWAPS --> BULL_UI
@@ -453,9 +450,11 @@ graph TB
     PAY --> BTC_PRICE
     PAY --> TX_HISTORY
     RECEIVE --> BULL_PAYJOIN
-    RECEIVE -->|public targeted routine sync| WALLETS
-    RECEIVE --> SETTINGS
-    RECEIVE --> SWAPS
+    RECEIVE -->|typed wallet inventory| SECRETS
+    RECEIVE -->|exact-network wallet balances| SYNC
+    SETTINGS -->|Payjoin disclosure widget| RECEIVE
+    SWAPS -->|legacy Lightning fallback uses receive values| RECEIVE
+    WALLETS -->|typed receive navigation| RECEIVE
     RECEIVE --> TX_HISTORY
     SELL -->|public spend admission and routine sync| WALLETS
     SELL --> EXCHANGE
@@ -657,7 +656,7 @@ Shared widgets are published by `bull_ui`. App-specific screens, adapters and lo
 
 - **Send**: Depends on Spend, Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **Receive and Address View capabilities**: `features/receive` owns request admission, pricing, address notes and transfer/next-unused selection. `features/address_view` mounts the Settings address history and uses the active Secrets inventory, Sync and Labels for indexed reads, address issuance and label enrichment. The app still owns the Receive routes, Lightning fallback, shared polling and incoming-payment observation.
+- **Receive and Address View capabilities**: `features/receive` mounts the existing Bitcoin, Liquid, Lightning and Payjoin routes. It reads the authorized Secrets inventory, native Sync balances and Signers associations, observes payments through Transactions, and watches order status through Swaps. `features/address_view` mounts address history under Settings and owns indexed reads, address issuance and label enrichment. The shell binds existing wallet polling, post-payment sync and Settings consent; `SwapFeature` creates Lightning-to-Liquid fallback orders.
 - **Backups**: Uses the Secrets wallet inventory and the RecoverBull backup facts
 
 ### Exchange-Related Features

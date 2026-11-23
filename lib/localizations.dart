@@ -4,6 +4,7 @@ import 'package:backups/backups.dart';
 import 'package:access/setup.dart' show AccessLocalizations;
 import 'package:wallet_import/wallet_import.dart' show ImportLocalizations;
 import 'package:address_view/routes.dart' show AddressViewLocalizations;
+import 'package:receive/setup.dart' show ReceiveLocalizations;
 import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:announcements/announcements.dart'
@@ -30,6 +31,7 @@ const appLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   AddressViewLocalizations.delegate,
   SendLocalizations.delegate,
   BackupsFeature.localizationsDelegate,
+  ReceiveLocalizations.delegate,
   AnnouncementsLocalizations.delegate,
   BitcoinPriceLocalizations.delegate,
   ExchangeLocalizations.delegate,

@@ -298,11 +298,19 @@ graph TD
   preferences --> legacy_storage
   preferences --> secrets
   receive --> address_view
+  receive --> bull_payjoin
+  receive --> bull_ui
   receive --> bull_logger
   receive --> bull_pricer
+  receive --> label_editor
   receive --> labels
   receive --> preferences
   receive --> primitives
+  receive --> secrets
+  receive --> signers
+  receive --> swaps
+  receive --> sync
+  receive --> transactions
   rust_bindings --> onion
   satoshifier --> primitives
   satoshifier --> rust_bindings

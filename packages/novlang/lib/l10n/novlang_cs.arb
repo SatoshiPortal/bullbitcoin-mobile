@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "Mnemotechnická fráze převodů",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "Smazat mnemotechnickou frázi převodů?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Tím se hlavní klíč převodů odstraní ze zabezpečeného úložiště. Při příští potřebě aplikace bude znovu odvozen z seedu vaší peněženky se stejným otiskem. Probíhající převody nejsou dotčeny."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "Tím se hlavní klíč převodů odstraní ze zabezpečeného úložiště. Při příští potřebě aplikace bude znovu odvozen z seedu vaší peněženky se stejným otiskem. Probíhající převody nejsou dotčeny.",
+  "receive__receiveTransferFee_apple": "Poplatek za převod",
+  "receive__swapErrorAmountBelowMinimum_apple": "Částka je pod minimální částkou převodu: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "Částka překračuje maximální částku převodu: {max} sats",
+  "receive__swapTransferTitle_apple": "Převod",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "Kurz není dostupný. Zkuste to prosím později.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "Tento převod není k dispozici."
 }

@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "转账助记词",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "删除转账助记词？",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。"
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。",
+  "receive__receiveTransferFee_apple": "转账费用",
+  "receive__swapErrorAmountBelowMinimum_apple": "金额低于最低转账金额：{min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "金额超过最高转账金额：{max} sats",
+  "receive__swapTransferTitle_apple": "转账",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "汇率不可用。请稍后重试。",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "此转账不可用。"
 }

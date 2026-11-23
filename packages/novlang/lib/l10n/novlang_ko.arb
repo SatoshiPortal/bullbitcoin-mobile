@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "이체 니모닉",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "이체 니모닉을 삭제할까요?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "이 작업은 보안 저장소에서 이체 마스터 키를 제거합니다. 앱에서 다시 필요할 때 지갑 시드로부터 동일한 핑거프린트로 다시 파생됩니다. 진행 중인 이체에는 영향이 없습니다."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "이 작업은 보안 저장소에서 이체 마스터 키를 제거합니다. 앱에서 다시 필요할 때 지갑 시드로부터 동일한 핑거프린트로 다시 파생됩니다. 진행 중인 이체에는 영향이 없습니다.",
+  "receive__receiveTransferFee_apple": "이체 수수료",
+  "receive__swapErrorAmountBelowMinimum_apple": "금액이 최소 이체 금액보다 적습니다: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "금액이 최대 이체 금액을 초과합니다: {max} sats",
+  "receive__swapTransferTitle_apple": "이체",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "시세를 사용할 수 없습니다. 나중에 다시 시도해 주세요.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "이 이체는 사용할 수 없습니다."
 }

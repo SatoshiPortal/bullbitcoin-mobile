@@ -45,6 +45,9 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
     keys: signerKeys,
   );
   if (signers case Err(:final failure)) return Err(failure);
+  final signerDevices =
+      (signers as Ok<SignerDevices, SignerDeviceFailure>).value;
+  services.registerSingleton(signerDevices);
   final freshness = await SyncFreshness.open(
     file: syncFile,
     admission: admission,
@@ -76,7 +79,7 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
   );
   final registrations = SecretsWalletRegistrations(
     inventory,
-    (signers as Ok<SignerDevices, SignerDeviceFailure>).value,
+    signerDevices,
     (freshness as Ok<SyncFreshness, SyncFailure>).value,
     mainBackups,
     regtestBackups,

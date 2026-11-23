@@ -232,5 +232,11 @@
   "quick_actions__transfer_apple": "Transfer",
   "all_seed_view__allSeedViewSwapMnemonicTitle_apple": "გადარიცხვების მნემონიკა",
   "all_seed_view__allSeedViewDeleteSwapMnemonicTitle_apple": "წაიშალოს გადარიცხვების მნემონიკა?",
-  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება."
+  "all_seed_view__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება.",
+  "receive__receiveTransferFee_apple": "გადარიცხვის საკომისიო",
+  "receive__swapErrorAmountBelowMinimum_apple": "თანხა ნაკლებია გადარიცხვის მინიმალურ ოდენობაზე: {min} sats",
+  "receive__swapErrorAmountAboveMaximum_apple": "თანხა აღემატება გადარიცხვის მაქსიმალურ ოდენობას: {max} sats",
+  "receive__swapTransferTitle_apple": "გადარიცხვა",
+  "receive__bitcoinPriceExchangeRateUnavailable_apple": "კურსი მიუწვდომელია. გთხოვთ, სცადოთ მოგვიანებით.",
+  "receive__swapErrorRouteUnavailableGeneric_apple": "ეს გადარიცხვა ხელმისაწვდომი არ არის."
 }
