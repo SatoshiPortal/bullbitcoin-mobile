@@ -1,10 +1,9 @@
 import 'package:meta/meta.dart';
+import 'package:labels/backup.dart';
 import 'package:primitives/primitives.dart';
 
 import '../backup_metadata_failure.dart';
 import '../entities/backup_inventory.dart';
-import '../entities/labels_merge.dart';
-import '../entities/labels_snapshot.dart';
 
 /// Implemented by the labels owner.
 abstract interface class BackupLabelsPort {

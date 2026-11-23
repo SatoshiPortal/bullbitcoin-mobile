@@ -70,6 +70,11 @@ final class LabelsStorageNotReadyFailure extends LabelFailure {
   const LabelsStorageNotReadyFailure();
 }
 
+/// The label inventory changed while the restore preview was open.
+final class LabelBackupStalePlanFailure extends LabelFailure {
+  const LabelBackupStalePlanFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class LabelUnexpectedFailure extends LabelFailure {
