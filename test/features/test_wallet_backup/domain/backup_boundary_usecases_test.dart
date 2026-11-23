@@ -17,6 +17,8 @@ class _Environment implements ActiveEnvironmentReader {
 }
 
 void main() {
+  setUp(() => FakeSecureStoragePlatform().install());
+
   test('an empty bitcoin inventory produces a distinct failure', () async {
     final directory = await Directory.systemTemp.createTemp(
       'backup-inventory-',

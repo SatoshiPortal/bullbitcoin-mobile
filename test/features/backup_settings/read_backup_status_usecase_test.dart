@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/storage.dart';
+import 'package:secrets/testing.dart';
 
 import '../../support/inventory_fixture.dart';
 
@@ -16,6 +17,8 @@ class _Settings implements ActiveEnvironmentReader {
 }
 
 void main() {
+  setUp(() => FakeSecureStoragePlatform().install());
+
   final legacyDate = DateTime.utc(2026, 1, 2);
   final physicalDate = DateTime.utc(2026, 2, 3);
 
