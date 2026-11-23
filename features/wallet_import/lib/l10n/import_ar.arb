@@ -1,0 +1,360 @@
+{
+  "importQrDeviceSpecterStep2": "أدخل بنك",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "Click XPUB - QR Code",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "Krux",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep7": "إذا لزم الأمر، اختيار \"خيارات\" لتغيير نوع العنوان",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "Specter",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "\"غير قابل للضغط\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceJadeStep5": "اختيار \"والت\" من قائمة الخيارات",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceSeedsignerName": "SeedSigner",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "emptyMnemonicWordsError": "أدخل كل كلماتك",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importQrDeviceKruxStep4": "اضغط زر \"الكاميرا المفتوحة\"",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceJadeStep6": "اختيار \"إكسبورت إكسبوب\" من قائمة المحفظة",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceSeedsignerStep5": "اختر \"سينغل سيغ\" ثم إختيار نوعك المفضل من الكتاب المقدس.",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "تأكد من تحديث جهازك إلى آخر شركة",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "اتبع تعليمات الجهاز لفتح الجادى",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep10": "أدخل بطاقة لمحفظة سبيكتر و إستيراد",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSpecterStep1": "القوة على جهاز سبكتر",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep9": "أدخل بطاقة لمحفظة البذور وإستيراد",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceJadeStep9": "قم بمسح شفرة (كيو آر) التي تراها على جهازك.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceSpecterStep3": "أدخل بذورك/كيكي",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDeviceSpecterStep8": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDeviceJadeStep2": "\"اختار \"مود آر من القائمة الرئيسية",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceScanPrompt": "امسح رمز QR من {deviceName}",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceSpecterStep9": "امسح رمز QR عرض على سبيكتر",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importWatchOnlySelectDerivation": "Derivation Select",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "requiredHint": "المطلوبة",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "importQrDeviceSeedsignerStep6": "اختر \"Animated\" كخيار التصدير. في إصدارات SeedSigner الأقدم، اختر \"Sparrow\".",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep3": "امسحوا البذور أو ادخلوا عبارة البذور الـ12 أو الـ 24",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDeviceKruxStep1": "شغل جهازك",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceSpecterStep4": "اتبعي العجلات وفقاً لطريقة اختيارك",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDeviceButtonOpenCamera": "افتح الكاميرا",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "passphraseLabel": "جواز السفر",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "التعليمات الخاصة بالحشرات",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDeviceSeedsignerStep10": "المجموع الكلي",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep4": "\"اختار \"إكسبورت",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSpecterStep5": "اختيار \"المفاتيح العامة الرئيسية\"",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKruxInstructionsTitle": "التعليمات الكيروية",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "Keystone Instructions",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "submitButton": "Submit",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "importQrDeviceKeystoneName": "Keystone",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep1": "القوة على جهازك",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "شغل جهازك",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDeviceSeedsignerStep2": "إفتح قائمة \"الرعاة\"",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceJadeStep8": "اضغط زر \"الكاميرا المفتوحة\"",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "الإنشاءات كاملة",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDeviceSeedsignerStep8": "افحصوا شفرة (كيو آر) التي ظهرت على بذوركم",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceSpecterStep6": "اختر \"مفتاح الغناء\"",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "هذا هو!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "importQrDeviceKeystoneStep2": "فتحه عن طريق الدخول إلى",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep5": "قم بمسح شفرة (كيو آر) التي تراها على جهازك.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceKruxStep2": "مفتاح عمومي ممتد",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "تعليمات البذور",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceKruxStep6": "هذا هو!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "optionalPassphraseHint": "التصاريح الاختيارية",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "importQrDeviceTitle": "Connect {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceButtonInstructions": "التعليمات",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceJadeStep4": "اختيار \"خيار\" من القائمة الرئيسية",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Instructions",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceKeystoneStep1": "القوة على حجرك",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importQrDeviceKeystoneStep3": "تأرجح *** (ثلاث نقاط) في الزاوية العليا",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceKeystoneStep10": "(كيستون) الآن متصل ومستعد لاستخدامه مع (بول واليت).",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceKeystoneStep5": "اختيار \"BUL\" من قائمة المحافظ",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceKeystoneStep6": "على هاتفك النقال، نقر \"كاميرا مفتوحة\"",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDevicePassportStep2": "أدخل رمز PIN الخاص بك",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDevicePassportStep4": "اختيار \"Connect App\"",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "importQrDevicePassportStep7": "في تطبيق محفظة BULL، اختر \"Segwit (BIP84)\" كخيار الاشتقاق",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "في محفظة BUL، اختيار نوعك المفضل المشتق. إذا كنت غير متأكد، اختيار \"Segwit (BIP84)\"",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDevicePassportStep1": "شغّل جهاز Passport الخاص بك",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "افحصوا شفرة (كيو آر) التي ظهرت على (كيستون)",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDevicePassportName": "المؤسسة",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "importQrDevicePassportStep9": "اكتمل الإعداد.",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceKeystoneStep9": "أدخلي بطاقة لمحفظة (كيستون) الخاص بكِ واستخدمي (إيمبورت)",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDevicePassportStep6": "امسح رمز QR المعروض على جهاز Passport",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDevicePassportInstructionsTitle": "مؤسسة تعليمات جوازات السفر",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "importQrDevicePassportStep5": "اختيار \"Bull\"",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "اختيار \"Wallet\"",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDevicePassportStep8": "أدخل تسمية لمحفظة Passport واضغط على \"الواردات\"",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importColdcardQInstructionsTitle": "تعليمات Coldcard Q",
+  "importColdcardQStep1": "سجّل الدخول إلى جهاز Coldcard Q الخاص بك",
+  "importColdcardQStep2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "importColdcardQStep3": "اختر قائمة الإعدادات المتقدمة",
+  "importColdcardQStep4": "اضغط \"تصدير المحفظة\"",
+  "importColdcardQStep5": "اختر \"واصف\" (descriptor) كنوع للتصدير",
+  "importColdcardQStep6": "اضغط \"Enter\" في الشاشة الأولى",
+  "importColdcardQStep7": "اضغط \"Enter\" في الشاشة الثانية",
+  "importColdcardQStep8": "اختر نوع العنوان الخاص بك (استخدم Segwit إن لم تكن متأكدًا)",
+  "importColdcardQStep9": "بالنسبة لرمز QR، اضغط زر رمز QR على الجهاز. سيعرض الجهاز رمز QR",
+  "importColdcardQStep10": "بالنسبة لـ NFC، اضغط زر NFC على الجهاز",
+  "importColdcardQStep11": "اضغط زر \"فتح الكاميرا\" / \"مسح NFC\"",
+  "importColdcardQStep12": "امسح رمز QR الظاهر على جهازك أو قرّب NFC هاتفك من NFC جهاز Coldcard",
+  "importColdcardQStep13": "هذا كل شيء!",
+  "importColdcardMk4InstructionsTitle": "تعليمات Coldcard Mk4",
+  "importColdcardMk4Step1": "سجّل الدخول إلى جهاز Coldcard Mk4 الخاص بك",
+  "importColdcardMk4Step2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
+  "importColdcardMk4Step3": "اختر قائمة الإعدادات المتقدمة",
+  "importColdcardMk4Step4": "اضغط \"تصدير المحفظة\"",
+  "importColdcardMk4Step5": "اختر \"واصف\" (descriptor) كنوع للتصدير",
+  "importColdcardMk4Step6": "اضغط \"Enter\" في الشاشة الأولى",
+  "importColdcardMk4Step7": "اضغط \"Enter\" في الشاشة الثانية",
+  "importColdcardMk4Step8": "اختر نوع العنوان الخاص بك (استخدم Segwit إن لم تكن متأكدًا)",
+  "importColdcardMk4Step9": "اضغط الرقم 3 لتشغيل NFC على Coldcard",
+  "importColdcardMk4Step10": "اضغط زر \"مسح NFC\"",
+  "importColdcardMk4Step11": "قرّب NFC هاتفك من NFC جهاز Coldcard",
+  "importColdcardMk4Step12": "هذا كل شيء!",
+  "recipientsInfoLabel": "التسمية"
+}

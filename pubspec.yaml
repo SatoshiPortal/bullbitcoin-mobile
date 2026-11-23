@@ -28,6 +28,7 @@ workspace:
   - features/ark
   - features/fees
   - features/swap
+  - features/wallet_import
   - packages/fees
   - packages/ark
   - packages/secrets
@@ -70,6 +71,7 @@ dependencies:
   all_seed_view:
   bip85:
   access:
+  wallet_import:
   announcements:
   backups:
   bitcoin_price:

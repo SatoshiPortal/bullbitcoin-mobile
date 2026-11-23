@@ -22,10 +22,6 @@
   "@swapMax": {
     "description": "MAX button label"
   },
-  "importQrDeviceSpecterStep2": "Εισάγετε το PIN σας",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "importColdcardInstructionsStep10": "Εγκατάσταση ολοκληρωμένη",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -85,10 +81,6 @@
   "fundExchangeSinpeLabelPhone": "Στείλε σε αυτόν τον αριθμό τηλεφώνου",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "importQrDeviceKruxStep3": "Click XPUB - QR Code",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "Προχωρημένες επιλογές",
   "@sellAdvancedOptions": {
@@ -180,10 +172,6 @@
   "exchangeFileUploadStatusInReview": "Στην επισκόπηση",
   "@exchangeFileUploadStatusInReview": {
     "description": "Status badge when files are under review"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "addressViewNoAddressesFound": "Δεν υπάρχουν διευθύνσεις που",
   "@addressViewNoAddressesFound": {
@@ -305,10 +293,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "importQrDeviceJadeStep7": "Εάν χρειαστεί, επιλέξτε \"Επιλογές\" για να αλλάξετε τον τύπο διευθύνσεων",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -330,10 +314,6 @@
   "swapInsufficientFunds": "Ανεπαρκή κεφάλαια",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "importQrDeviceSpecterName": "Πουτερ",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "transactionDetailLabelSwapFees": "Swap τέλη",
   "@transactionDetailLabelSwapFees": {
@@ -410,14 +390,6 @@
   "payNotLoggedIn": "Όχι αγκάλιασε",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
-  },
-  "importQrDeviceSpecterStep7": "Αποτελέσιμο \"Use SLIP-132\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
-  "importQrDeviceJadeStep5": "Επιλέξτε \"Wallet\" από τη λίστα επιλογών",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
   },
   "transactionFilterBuy": "Αγοράστε αγορά αγορά",
   "@transactionFilterBuy": {
@@ -658,10 +630,6 @@
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
   },
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
   "payFeeTooHigh": "Το Fee είναι ασυνήθιστα υψηλό",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
@@ -887,10 +855,6 @@
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
   },
-  "importQrDeviceKruxStep4": "Κάντε κλικ στο κουμπί \"ανοιχτή κάμερα\"",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
   "payPasteInvoice": "Paste Invoice",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -930,10 +894,6 @@
   "okButton": "ΕΝΤΆΞΕΙ",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "importQrDeviceKeystoneStep3": "Πατήστε το *** (τρεις κουκίδες) στην κορυφαία γωνία",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
   },
   "exchangeAmountInputValidationInvalid": "Ακυρωμένο ποσό",
   "@exchangeAmountInputValidationInvalid": {
@@ -1067,10 +1027,6 @@
   "@importMnemonicSegwit": {
     "description": "Label for Segwit (BIP84) wallet type"
   },
-  "importQrDeviceJadeStep6": "Επιλέξτε \"Export Xpub\" από το μενού πορτοφολιού",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
   "buyContinue": "Συνεχίστε να συνεχίζετε",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1187,10 +1143,6 @@
   "broadcastSignedTxCameraButton": "Κάμερα",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
-  },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
   },
   "importWalletImportMnemonic": "Εισαγωγή Mnemonic",
   "@importWalletImportMnemonic": {
@@ -1314,10 +1266,6 @@
   "walletDeletionConfirmationCancelButton": "Ακύρωση",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "importQrDeviceSeedsignerStep5": "Επιλέξτε \"Single Sig\", στη συνέχεια επιλέξτε τον προτιμώμενο τύπο σεναρίων σας (εκείνοι ιθαγενείς Segwit αν δεν είναι σίγουροι).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payNoRecipientsFound": "Κανένας παραλήπτης δεν βρέθηκε να πληρώσει.",
   "@payNoRecipientsFound": {
@@ -1758,17 +1706,9 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "importQrDeviceJadeFirmwareWarning": "Βεβαιωθείτε ότι η συσκευή σας ενημερώνεται στο τελευταίο firmware",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
   "buyInputContinue": "Συνεχίστε να συνεχίζετε",
   "@buyInputContinue": {
     "description": "Continue button on buy input"
-  },
-  "importQrDeviceJadeStep3": "Ακολουθήστε τις οδηγίες της συσκευής για να ξεκλειδώσετε το Jade",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "paySecurityQuestionLengthError": "Πρέπει να είναι 10-40 χαρακτήρες",
   "@paySecurityQuestionLengthError": {
@@ -1822,10 +1762,6 @@
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
   },
-  "importQrDeviceSpecterStep10": "Εισάγετε μια ετικέτα για το πορτοφόλι σας και την εισαγωγή βρύσης",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
-  },
   "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
   "@dcaWalletTypeBitcoin": {
     "description": "Radio button option for Bitcoin wallet"
@@ -1869,10 +1805,6 @@
   "fundExchangeWarningTactic7": "Σας λένε να μην ανησυχείτε για αυτή την προειδοποίηση",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
-  },
-  "importQrDeviceSpecterStep1": "Power on your Specter συσκευή",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "transactionNoteAddTitle": "Προσθήκη σημείωση",
   "@transactionNoteAddTitle": {
@@ -1970,10 +1902,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "importQrDeviceKeystoneStep10": "Το Keystone σας είναι τώρα συνδεδεμένο και έτοιμο να χρησιμοποιήσει με το BULL Wallet.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
   "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -2013,10 +1941,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Η Google θα σας ζητήσει να μοιραστείτε προσωπικές πληροφορίες με αυτή την εφαρμογή.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "importQrDeviceSeedsignerStep9": "Εισάγετε μια ετικέτα για το πορτοφόλι SeedSigner και την εισαγωγή βρύσης",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
   },
   "importWatchOnlyScanQR": "Scan QR",
   "@importWatchOnlyScanQR": {
@@ -2084,10 +2008,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "importQrDeviceKeystoneStep5": "Επιλέξτε \"BULL\" από τη λίστα των πορτοφολών",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Εφαρμογή ηλεκτρονικού ταχυδρομείου",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2111,10 +2031,6 @@
   "settingsSecurityPinTitle": "Ασφάλεια Pin Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "importQrDeviceJadeStep9": "Βάλτε τον κωδικό QR που βλέπετε στη συσκευή σας.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "transactionDetailLabelPayjoinCompleted": "Πλήρης",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2316,10 +2232,6 @@
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
-  "importQrDeviceKeystoneStep6": "Στο κινητό σας, πατήστε \"ανοιχτή κάμερα\"",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "bip85Hex": "HEX",
   "@bip85Hex": {
     "description": "Label for hex type entropy"
@@ -2412,10 +2324,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "importQrDeviceSpecterStep3": "Εισάγετε το σπόρο/κλειδί σας (που σας ταιριάζει ποτέ)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
   "payPayeeAccountNumber": "Αριθμός λογαριασμού Payee",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
@@ -2477,10 +2385,6 @@
   "selectCoinsManuallyLabel": "Επιλέξτε νομίσματα",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
-  },
-  "importQrDevicePassportStep2": "Εισάγετε το PIN σας",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
   },
   "buyShouldBuyAtLeast": "Θα πρέπει να αγοράσετε τουλάχιστον",
   "@buyShouldBuyAtLeast": {
@@ -2697,10 +2601,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "importQrDeviceSpecterStep8": "Στην κινητή σας συσκευή, πατήστε Open Camera",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
   "sellSendPaymentContinue": "Συνεχίστε να συνεχίζετε",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
@@ -2745,10 +2645,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "importQrDeviceJadeStep2": "Επιλέξτε \"QR Mode\" από το κύριο μενού",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
   "rbfErrorAlreadyConfirmed": "Η αρχική συναλλαγή έχει επιβεβαιωθεί",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -2785,15 +2681,6 @@
   "importQrDeviceImport": "Εισαγόμενη εισαγωγή",
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
-  },
-  "importQrDeviceScanPrompt": "Βάλτε τον κωδικό QR από το {deviceName}",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
@@ -2835,17 +2722,9 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importQrDeviceSpecterStep9": "Βάλτε τον κωδικό QR που εμφανίζεται στο Specter σας",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
-  },
-  "importWatchOnlySelectDerivation": "Επιλέξτε έκπτωση",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
   },
   "hwPassport": "Ίδρυμα Passport",
   "@hwPassport": {
@@ -3034,10 +2913,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "Επιλέξτε \"Connect App\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
   "payAddRecipient": "Προσθήκη πειθαρχία",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
@@ -3141,10 +3016,6 @@
   "connectHardwareWalletSeedSigner": "SeedSigner",
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
-  },
-  "importQrDevicePassportStep7": "Στην εφαρμογή BULL wallet, επιλέξτε \"Segwit (BIP84)\" ως επιλογή παραγωγής",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "delete": "Διαγράψτε",
   "@delete": {
@@ -3427,10 +3298,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "importQrDeviceKeystoneStep8": "Στο πορτοφόλι BULL, επιλέξτε τον προτιμώμενο τύπο διάθεσης. Αν δεν είστε σίγουροι, επιλέξτε \"Segwit (BIP84)\"",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
   "fundExchangeCrIbanUsdTitle": "Τραπεζική Μεταφορά (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -3462,10 +3329,6 @@
   "sendReceiveNetworkFee": "Λήψη δικτύου Fee",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "importQrDeviceSeedsignerStep6": "Επιλέξτε «Animated» ως επιλογή εξαγωγής. Σε παλαιότερο υλικολογισμικό SeedSigner, επιλέξτε «Sparrow».",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
   },
   "swapValidationMaximumAmount": "Μέγιστη ποσότητα είναι {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -3572,10 +3435,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "importQrDeviceSeedsignerStep3": "Βάλτε ένα SeedQR ή εισάγετε τη φράση των 12 ή 24 λέξεων σπόρων σας",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "replaceByFeeFastestTitle": "Πιο γρήγορα",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
@@ -3599,10 +3458,6 @@
   "payFeeBumpSuccessful": "Fee beat",
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
-  },
-  "importQrDeviceKruxStep1": "Μετάβαση στη συσκευή Krux σας",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
   },
   "transactionSwapProgressFundsClaimed": "Ταμεία\nΑπαιτείται",
   "@transactionSwapProgressFundsClaimed": {
@@ -3628,10 +3483,6 @@
   "transactionSwapProgressPaymentMade": "Πληρωμή πληρωμής\nMade Made",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
-  },
-  "importQrDeviceSpecterStep4": "Ακολουθήστε τις προσφορές σύμφωνα με την επιλεγμένη μέθοδο σας",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
   },
   "coreSwapsChainPending": "Η ανταλλαγή δεν έχει ακόμη αρχικοποιηθεί.",
   "@coreSwapsChainPending": {
@@ -3772,17 +3623,9 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "importQrDevicePassportStep1": "Ενεργοποιήστε τη συσκευή Passport σας",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "fundExchangeBankTransferWireDescription": "Στείλτε μια μεταφορά καλωδίων από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις λεπτομέρειες της τράπεζας του Bull Bitcoin παρακάτω. Η τράπεζά σας μπορεί να απαιτεί μόνο μερικά μέρη αυτών των λεπτομερειών.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
-  },
-  "importQrDeviceKeystoneStep7": "Βάλτε τον κωδικό QR που εμφανίζεται στο Keystone",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
   },
   "coldcardStep3": "Επιλέξτε \"Scan οποιοδήποτε QR code\" επιλογή",
   "@coldcardStep3": {
@@ -3811,10 +3654,6 @@
   "receiveTotalFee": "Total Fee",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceButtonOpenCamera": "Ανοίξτε την κάμερα",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "dcaConfirmFrequency": "Συχνότητα συχνότητας",
   "@dcaConfirmFrequency": {
@@ -3985,10 +3824,6 @@
   "@exchangeSettingsRecipientsTitle": {
     "description": "Title for the recipients button in exchange settings"
   },
-  "importQrDevicePassportName": "Ίδρυμα Passport",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "fundExchangeMethodCanadaPostSubtitle": "Καλύτερα για όσους προτιμούν να πληρώνουν σε άτομο",
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
@@ -4061,10 +3896,6 @@
   "fundExchangeCrIbanCrcLabelIban": "IBAN Account Number (Colones Only)",
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Οδηγίες",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
   },
   "receiveAwaitingPayment": "Περιμένοντας πληρωμή...",
   "@receiveAwaitingPayment": {
@@ -4161,10 +3992,6 @@
   "autoswapMaxFeeInfo": "Εάν το συνολικό τέλος ανταλλαγής είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη ανταλλαγή θα αποκλειστεί",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
-  },
-  "importQrDevicePassportStep9": "Η ρύθμιση ολοκληρώθηκε.",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
   },
   "swapProgressRefundedMessage": "Η ανταλλαγή επιστράφηκε με επιτυχία.",
   "@swapProgressRefundedMessage": {
@@ -4317,10 +4144,6 @@
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
-  "importQrDeviceSeedsignerStep10": "Εγκατάσταση ολοκληρωμένη",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "sendReceive": "Παραλαβή",
   "@sendReceive": {
     "description": "Label for receive transaction type"
@@ -4349,10 +4172,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "importQrDeviceKeystoneStep9": "Εισάγετε μια ετικέτα για το πορτοφόλι Keystone και πατήστε \"Import\"",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
   "payEnterAmountTitle": "Εισάγετε το ποσό",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
@@ -4380,10 +4199,6 @@
   "coreSwapsChainPaid": "Περιμένοντας την πληρωμή του παρόχου ανταλλαγής για να λάβετε επιβεβαίωση. Αυτό μπορεί να πάρει λίγο χρόνο για να ολοκληρωθεί.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
-  },
-  "importQrDevicePassportStep6": "Σαρώστε τον κωδικό QR που εμφανίζεται στο Passport σας",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
   },
   "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
@@ -4445,17 +4260,9 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "importQrDeviceSeedsignerStep4": "Επιλέξτε \"Export Xpub\"",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
   "payTransitNumber": "Αριθμός διαμετακόμισης",
   "@payTransitNumber": {
     "description": "Label for transit number"
-  },
-  "importQrDeviceSpecterStep5": "Επιλέξτε \"Master public κλειδιά\"",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
   },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
@@ -4552,14 +4359,6 @@
   "physicalBackupDescription": "Γράψτε 12 λέξεις σε ένα κομμάτι χαρτί. Κρατήστε τους ασφαλείς και βεβαιωθείτε ότι δεν τα χάσετε.",
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
-  },
-  "importQrDeviceKruxInstructionsTitle": "Οδηγίες Krux",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone Οδηγίες",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "globalDefaultLiquidWalletLabel": "Instant πληρωμές",
   "@globalDefaultLiquidWalletLabel": {
@@ -4701,10 +4500,6 @@
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
   },
-  "importQrDevicePassportInstructionsTitle": "Ίδρυμα Passport Οδηγίες",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
   "rbfFeeRate": "Fee rate: {rate} sat/vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
@@ -4806,10 +4601,6 @@
   "sendRecipientAddressOrInvoice": "Η διεύθυνση ή το τιμολόγιο",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "importQrDeviceKeystoneName": "Keystone",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "payBitcoinAddress": "Bitcoin διεύθυνση Bitcoin",
   "@payBitcoinAddress": {
@@ -4972,10 +4763,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "importQrDeviceSeedsignerStep1": "Power on your SeedSigner συσκευή",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "exchangeRecipientsTitle": "Μαθητές",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -4995,10 +4782,6 @@
   "dcaSelectWalletTypeLabel": "Επιλέξτε Bitcoin Wallet Type",
   "@dcaSelectWalletTypeLabel": {
     "description": "Label above wallet type selection radio buttons"
-  },
-  "importQrDeviceJadeStep1": "Μετατρέψτε τη συσκευή Jade",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "payNotLoggedInDescription": "Δεν είστε συνδεδεμένοι. Παρακαλούμε συνδεθείτε για να συνεχίσετε να χρησιμοποιείτε το χαρακτηριστικό πληρωμής.",
   "@payNotLoggedInDescription": {
@@ -5092,10 +4875,6 @@
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
   },
-  "importQrDeviceSeedsignerStep2": "Ανοίξτε το μενού \"Seeds\"",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "exchangeAmountInputValidationZero": "Το ποσό πρέπει να είναι μεγαλύτερο από το μηδέν",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
@@ -5188,10 +4967,6 @@
   "@withdrawConfirmPayee": {
     "description": "Field label for payee (Bill Payment)"
   },
-  "importQrDeviceJadeStep8": "Κάντε κλικ στο κουμπί \"ανοιχτή κάμερα\"",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
   "payPhoneNumberHint": "Εισάγετε τον αριθμό τηλεφώνου",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
@@ -5215,10 +4990,6 @@
   "receiveDetails": "Λεπτομέρειες λεπτομέρειες",
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
-  },
-  "importQrDeviceSpecterStep11": "Setup είναι πλήρης",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "sendCustomFee": "Custom Fee",
   "@sendCustomFee": {
@@ -5447,10 +5218,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "Επιλέξτε \"Bull\"",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
   "sendInvoicePaid": "Invoice Paid",
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
@@ -5523,10 +5290,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "Επιλέξτε \"Wallet\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "exchangeAuthErrorMessage": "Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
@@ -5542,10 +5305,6 @@
   "transactionSwapStatusTransferStatus": "Κατάσταση ανταλλαγής",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
-  },
-  "importQrDeviceSeedsignerStep8": "Βάλτε τον κωδικό QR που εμφανίζεται στο SeedSigner",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
   },
   "backupKeyTitle": "Backup Key Backup",
   "@backupKeyTitle": {
@@ -5671,21 +5430,9 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "importQrDeviceSpecterStep6": "Επιλέξτε \"Single key\"",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceJadeStep10": "Αυτό είναι!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
   "payPayeeAccountNumberHint": "Εισαγάγετε τον αριθμό λογαριασμού",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "importQrDevicePassportStep8": "Εισάγετε μια ετικέτα για το πορτοφόλι Passport και πατήστε \"Εισαγωγή\"",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
   },
   "pinStatusSettingUpDescription": "Δημιουργία κωδικού PIN σας",
   "@pinStatusSettingUpDescription": {
@@ -5706,10 +5453,6 @@
   "settingsDevModeWarningTitle": "Dev Mode",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "importQrDeviceKeystoneStep4": "Πατήστε \"Connect Software Wallet\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
   },
   "rbfOriginalTransaction": "Original συναλλαγή",
   "@rbfOriginalTransaction": {
@@ -6218,10 +5961,6 @@
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
   },
-  "importQrDeviceKeystoneStep2": "Unlock it εισάγοντας το PIN σας",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "receiveBitcoinTransactionWillTakeTime": "Η συναλλαγή Bitcoin θα πάρει λίγο χρόνο για να επιβεβαιώσει.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
@@ -6240,10 +5979,6 @@
       }
     }
   },
-  "importQrDeviceSeedsignerStep7": "Στην κινητή σας συσκευή, πατήστε Open Camera",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
   "addressViewChangeAddressesDescription": "Display πορτοφόλι Αλλαγή διευθύνσεων",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
@@ -6260,17 +5995,9 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "importQrDeviceKruxStep5": "Βάλτε τον κωδικό QR που βλέπετε στη συσκευή σας.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "fundExchangeHelpTransferCode": "Προσθέστε αυτό ως το λόγο για τη μεταφορά",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
-  },
-  "importQrDeviceKruxStep2": "Κάντε κλικ Extended Public Key",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "payOwnerName": "Ιδιοκτήτης όνομα",
   "@payOwnerName": {
@@ -6354,10 +6081,6 @@
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "Δείτε τις οδηγίες SeedSigner",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "payFilterByType": "Φίλτρο τύπου",
   "@payFilterByType": {
@@ -6456,10 +6179,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "importQrDeviceKruxStep6": "Αυτό είναι!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
   "payUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -6491,15 +6210,6 @@
   "coreScreensPageNotFound": "Page δεν βρέθηκε",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "importQrDeviceTitle": "Connect {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFeatureDcaOrders": "DCA, εντολές περιορισμού και αυτόματη αγορά",
   "@exchangeFeatureDcaOrders": {
@@ -6540,10 +6250,6 @@
   "fundExchangeBankTransfer": "Τράπεζα Μεταφοράς",
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
-  },
-  "importQrDeviceButtonInstructions": "Οδηγίες",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
   },
   "buyLevel3Limit": "Επίπεδο 3 όριο: {amount}",
   "@buyLevel3Limit": {
@@ -6611,10 +6317,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "importQrDeviceJadeStep4": "Επιλέξτε \"Επιλογές\" από το κύριο μενού",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "transactionFilterSend": "Αποστολή αποστολής",
   "@transactionFilterSend": {
     "description": "Filter option to show only sent transactions"
@@ -6655,10 +6357,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Οδηγίες",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "paySendMax": "Max",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
@@ -6670,10 +6368,6 @@
   "importMnemonicSelectType": "Επιλέξτε έναν τύπο πορτοφολιού για εισαγωγή",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "importQrDeviceKeystoneStep1": "Power on your Keystone",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 προσδιοριστικές εντροπίες",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -9080,33 +8774,6 @@
   "importColdcardConnectTitle": "Σύνδεση {deviceName}",
   "importColdcardConnectDescription": "Εισαγωγή του descriptor πορτοφολιού από το {deviceName} σας",
   "importColdcardScanNfcSheetTitle": "Πλησιάστε το {deviceName} σας για εισαγωγή του descriptor πορτοφολιού μέσω NFC",
-  "importColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
-  "importColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
-  "importColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
-  "importColdcardQStep3": "Επιλέξτε το μενού advanced/settings",
-  "importColdcardQStep4": "Πατήστε «export wallet»",
-  "importColdcardQStep5": "Επιλέξτε «descriptor» ως τύπο εξαγωγής",
-  "importColdcardQStep6": "Πατήστε «Enter» στην πρώτη οθόνη",
-  "importColdcardQStep7": "Πατήστε «Enter» στη δεύτερη οθόνη",
-  "importColdcardQStep8": "Επιλέξτε τον τύπο διεύθυνσης (χρησιμοποιήστε Segwit αν δεν είστε σίγουροι)",
-  "importColdcardQStep9": "Για QR, πατήστε το κουμπί κωδικού QR στη συσκευή. Θα σας εμφανίσει έναν κωδικό QR στη συσκευή",
-  "importColdcardQStep10": "Για NFC, πατήστε το κουμπί NFC στη συσκευή",
-  "importColdcardQStep11": "Πατήστε το κουμπί «Open the camera» / «Scan NFC»",
-  "importColdcardQStep12": "Σαρώστε τον κωδικό QR που βλέπετε στη συσκευή σας ή τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
-  "importColdcardQStep13": "Αυτό είναι όλο!",
-  "importColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
-  "importColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
-  "importColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
-  "importColdcardMk4Step3": "Επιλέξτε το μενού advanced/settings",
-  "importColdcardMk4Step4": "Πατήστε «export wallet»",
-  "importColdcardMk4Step5": "Επιλέξτε «descriptor» ως τύπο εξαγωγής",
-  "importColdcardMk4Step6": "Πατήστε «Enter» στην πρώτη οθόνη",
-  "importColdcardMk4Step7": "Πατήστε «Enter» στη δεύτερη οθόνη",
-  "importColdcardMk4Step8": "Επιλέξτε τον τύπο διεύθυνσης (χρησιμοποιήστε Segwit αν δεν είστε σίγουροι)",
-  "importColdcardMk4Step9": "Πατήστε τον αριθμό 3 για να ξεκινήσετε το NFC του Coldcard",
-  "importColdcardMk4Step10": "Πατήστε το κουμπί «Scan NFC»",
-  "importColdcardMk4Step11": "Τοποθετήστε το NFC του τηλεφώνου πάνω στο NFC του Coldcard",
-  "importColdcardMk4Step12": "Αυτό είναι όλο!",
   "fundExchangeCopDailyLimitWarning": "Αν υπερβείτε το ημερήσιο όριο συναλλαγών σας, η συναλλαγή θα αποτύχει. Θα χρειαστεί να επικοινωνήσετε με την υποστήριξη πελατών.",
   "fundExchangeCopSenderName": "Όνομα αποστολέα",
   "fundExchangeCopIssuingBank": "Τράπεζα έκδοσης",

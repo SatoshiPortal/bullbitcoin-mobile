@@ -233,7 +233,17 @@ graph TB
     RECEIVE --> SIGNERS
     WALLETS --> SIGNERS
     IMPORT_COLDCARD --> SIGNERS
-    IMPORT_QR_DEVICE --> SIGNERS
+    WALLET_IMPORT[Wallet Import member]
+    WALLET_IMPORT --> SIGNERS
+    WALLET_IMPORT --> BULL_UI
+    WALLET_IMPORT --> SECRETS
+    WALLET_IMPORT --> ELECTRUM
+    WALLET_IMPORT --> SYNC
+    WALLET_IMPORT --> PREFERENCES
+    IMPORT_COLDCARD --> WALLET_IMPORT
+    IMPORT_WATCH_ONLY --> WALLET_IMPORT
+    IMPORT_MNEMONIC --> WALLET_IMPORT
+    IMPORT_WALLET --> WALLET_IMPORT
     IMPORT_WATCH_ONLY[Watch-Only Wallet Import]
     IMPORT_WATCH_ONLY -->|public QR scanning| SCANNING
     WALLETS -->|public QR scanning| SCANNING
@@ -323,6 +333,8 @@ graph TB
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES
     IMPORT_MNEMONIC --> WALLETS
+    IMPORT_MNEMONIC --> SECRETS
+    ONBOARDING --> WALLET_IMPORT
     IMPORT_MNEMONIC --> MNEMONIC_ENTRY
     ONBOARDING --> MNEMONIC_ENTRY
     APP_STARTUP --> MNEMONIC_ENTRY
@@ -535,7 +547,6 @@ graph TB
     TX_HISTORY --> ELECTRUM
     WIZARD --> SETTINGS
 
-    IMPORT_MNEMONIC --> ELECTRUM
 
     %% Wallet readers and spend preparation assigned to their app owners
     ADDRESS_MGMT --> SYNC
@@ -551,7 +562,6 @@ graph TB
     SELL --> UTXO_MGMT
     SEND --> ADDRESS_MGMT
     SWAPS --> ADDRESS_MGMT
-    IMPORT_MNEMONIC --> SYNC
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
@@ -560,7 +570,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG,BULL_UI,ARK_PROTOCOL,FEES_PACKAGE packageStyle
-    class SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,DCA,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
+    class WALLET_IMPORT,SCANNING,IMPORT_COLDCARD,IMPORT_WATCH_ONLY,IMPORT_MNEMONIC,ONBOARDING,SETTINGS,ACCESS,LABEL_EDITOR,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES_UI,WALLETS,EXCHANGE,BULL_EXCHANGE,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,BACKUPS,SWAPS,SWAP_SETTINGS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,DCA,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,SP,MERCHANT_MAP,ARK featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -715,12 +725,14 @@ Develop also removes the price chart’s shell locator import and its obsolete e
 
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
-RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly.
+RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, network, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. Startup restore and onboarding consume the mnemonic entry member directly. Onboarding also uses the read-only Bitcoin history scan published by Wallet Import.
 
 
 ## Regtest Electrum storage and watch-only import
 
 Electrum owns foreground preparation of its current-schema storage and exposes it through `electrum.foregroundStorage` (`package:electrum/setup.dart`). Startup passes the single normalized Settings snapshot through SettingsBootstrap before awaiting this passive barrier; it performs no network IO. Regtest provisions both Bitcoin and Liquid rows in one idempotent transaction, preserves custom endpoints and options, and replaces only obsolete managed defaults. The regtest endpoint host comes from BULL_REGTEST_HOST at build time, with a loopback default, and is read only for a captured regtest selection. Mainnet/testnet preparation validates both production views for their existing hot switch and never creates fixture rows. Background entry points inspect readiness without seeding or repairing storage.
+
+`ImportFeature.mount` contributes the QR device instruction routes and composes the mnemonic prescan. The member owns mnemonic entry, hardware instructions, QR descriptor selection, public watch-only validation and their translations. The app import flows own confirmation and scanner acquisition. Mnemonic duplicate checks read the active, network-scoped Secrets inventory, and confirmation registers mnemonic and watch-only wallets in Secrets through the foreground wallet provisioning path.
 
 Watch-only import captures the selected Bitcoin environment before parsing. Test-family public-key versions may represent testnet or regtest; the captured selection resolves that ambiguity while preserving the public key. Regtest accepts software BIP84 watch-only input, retains the original network identity and refuses hardware provenance or a mainnet key. The existing capability policy controls explorer actions and Lightning availability. Receive uses that same Lightning capability when choosing its initial Liquid/Lightning mode, so a regtest Liquid wallet opens a supported selection.
 

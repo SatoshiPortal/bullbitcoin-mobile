@@ -177,6 +177,7 @@ translations:
 	@(cd features/all_seed_view && fvm flutter gen-l10n)
 	@(cd features/silent && fvm flutter gen-l10n)
 	@(cd features/swap && fvm flutter gen-l10n)
+	@(cd features/wallet_import && fvm flutter gen-l10n)
 	@(cd features/label_editor && fvm flutter gen-l10n)
 	@(cd features/fees && fvm flutter gen-l10n)
 	@(cd features/network && fvm flutter gen-l10n)

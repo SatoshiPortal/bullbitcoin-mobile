@@ -47,7 +47,12 @@ final class InventoryRepository {
       ];
       return rows.isNotEmpty && wallets.isEmpty
           ? const Err(UnreadableWalletFailure())
-          : Ok(WalletSelection(wallets));
+          : Ok(
+              WalletSelection(
+                wallets,
+                isComplete: wallets.length == rows.length,
+              ),
+            );
     }, Err.new);
   }
 

@@ -1,3 +1,4 @@
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bip32_keys/bip32_keys.dart'
     show changeVersionBytes, Slip132Format;
 import 'package:signers/signers.dart';
@@ -36,10 +37,8 @@ void main() {
   test(
     'the same public account derives bcrt in regtest and tb in testnet',
     () async {
-      final entity = await WatchOnlyWalletEntity.parse(
-        vpub,
-        selectedNetwork: Network.bitcoinRegtest,
-      );
+      final result = await parse.execute(vpub, environment: NetworkEnv.regtest);
+      final entity = (result as Ok).value;
       final bip32Pubkey = (entity as WatchOnlyXpubEntity).bip32Pubkey;
       final descriptor = bdk.Descriptor(
         descriptor: 'wpkh($bip32Pubkey/0/*)',
@@ -74,14 +73,12 @@ void main() {
     expect(entity.network, Network.bitcoinRegtest);
     expect(entity.signer, SignerEntity.none);
     expect((entity as WatchOnlyDescriptorEntity).signerDevice, isNull);
-    await expectLater(
-      WatchOnlyWalletEntity.parse(
-        descriptor,
-        selectedNetwork: Network.bitcoinRegtest,
-        signerDevice: SignerDevice.seedsigner,
-      ),
-      throwsFormatException,
+    final hardware = await WatchOnlyInput.parse(
+      descriptor,
+      environment: NetworkEnv.regtest,
+      signerDevice: SignerDevice.seedsigner,
     );
+    expect((hardware as Err).failure, isA<InvalidWatchOnlyInputFailure>());
   });
 
   test(
@@ -92,33 +89,35 @@ void main() {
       final entity =
           (result as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>).value;
       expect(entity.pubkey, tpub);
-      final hardwareScanned = await WatchOnlyWalletEntity.parse(
-        tpub,
-        signerDevice: SignerDevice.seedsigner,
-      );
+      final hardwareScanned =
+          (await WatchOnlyInput.parse(
+                tpub,
+                signerDevice: SignerDevice.seedsigner,
+              ) as Ok).value
+              as WatchOnlyInput;
       expect(
-        () => hardwareScanned.captureNetwork(Network.bitcoinRegtest),
-        throwsFormatException,
+        hardwareScanned.captureEnvironment(NetworkEnv.regtest),
+        isA<Err>(),
       );
-      final scanned = await WatchOnlyWalletEntity.parse(tpub);
+      final scanned =
+          (await WatchOnlyInput.parse(tpub) as Ok).value as WatchOnlyInput;
+      final bound = scanned.captureEnvironment(NetworkEnv.regtest);
       expect(
-        scanned.captureNetwork(Network.bitcoinRegtest).scriptType.name,
-        'bip84',
+        ((bound as Ok).value as WatchOnlyInput).scriptType,
+        ScriptType.bip84,
       );
-      final legacyScanned = await WatchOnlyWalletEntity.parse(
-        '[73c5da0a/44h/1h/0h]$tpub',
-      );
-      expect(
-        () => legacyScanned.captureNetwork(Network.bitcoinRegtest),
-        throwsFormatException,
-      );
+      final legacyScanned =
+          (await WatchOnlyInput.parse('[73c5da0a/44h/1h/0h]$tpub') as Ok).value
+              as WatchOnlyInput;
+      expect(legacyScanned.captureEnvironment(NetworkEnv.regtest), isA<Err>());
       expect(entity.network, Network.bitcoinRegtest);
-      await expectLater(
-        WatchOnlyWalletEntity.parse(
-          '[73c5da0a/44h/1h/0h]$tpub',
-          selectedNetwork: Network.bitcoinRegtest,
-        ),
-        throwsFormatException,
+      final invalidOrigin = await WatchOnlyInput.parse(
+        '[73c5da0a/44h/1h/0h]$tpub',
+        environment: NetworkEnv.regtest,
+      );
+      expect(
+        (invalidOrigin as Err).failure,
+        isA<InvalidWatchOnlyInputFailure>(),
       );
       expect(
         () => entity.captureNetwork(Network.bitcoinTestnet),

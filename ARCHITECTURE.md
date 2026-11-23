@@ -51,7 +51,9 @@ Open a package through its published capability and mount a feature through its 
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
 
-Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input. The import feature still reaches into Wallets internals; replacing that dependency with a published capability remains a scoped follow-up.
+Import, onboarding and app-startup recovery use `package:mnemonic_entry/mnemonic_entry.dart` for typed mnemonic input.
+
+`ImportFeature.mount` composes the QR device instruction routes and the read-only mnemonic prescan. The mnemonic preflight uses the active Secrets wallet inventory. The confirmation routes use the Wallet repository to provision native wallets and register them in that same encrypted inventory.
 
 ## 🎯 The architecture we tend toward
 

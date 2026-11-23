@@ -1,18 +1,11 @@
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:mnemonic_entry/mnemonic_entry.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
-
-typedef Mnemonic = ({
-  String label,
-  String passphrase,
-  List<String> words,
-  bip39.Language language,
-});
 
 /// What the chain scan before import reports for one script type.
 ///

@@ -1,3 +1,4 @@
+import 'package:wallet_import/wallet_import.dart';
 import '../../../support/wallet_registrations.dart';
 
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
@@ -81,8 +82,9 @@ void main() {
     );
     registerFallbackValue(row);
     registerFallbackValue(WalletSyncBinding.keyFromMetadata(row));
-    descriptor = await WatchOnlyWalletEntity.parse(
-      row.externalPublicDescriptor,
+    final parsed = await WatchOnlyInput.parse(row.externalPublicDescriptor);
+    descriptor = WatchOnlyWalletEntity.fromInput(
+      (parsed as Ok).value as WatchOnlyInput,
     ) as WatchOnlyDescriptorEntity;
     directory = await Directory.systemTemp.createTemp('wallet-create-');
     reporter = _Reporter();

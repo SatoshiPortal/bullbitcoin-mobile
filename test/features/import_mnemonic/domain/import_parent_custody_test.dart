@@ -1,5 +1,6 @@
 import 'package:all_seed_view/testing.dart';
 
+import '../../../support/inventory_fixture.dart';
 import '../../../support/wallet_registrations.dart';
 
 import 'dart:async';
@@ -99,6 +100,7 @@ void main() {
   final parent = Fingerprint('73c5da0a');
   late Directory directory;
   late WalletRegistrations metadata;
+  late InventoryFixture fixture;
   late SqliteParentCustodyAdmission admission;
   late Secrets secrets;
   late WalletRepository repository;
@@ -109,12 +111,13 @@ void main() {
   late _Settings settings;
   late SeedReferences references;
 
-  setUp(() {
+  setUp(() async {
     directory = Directory.systemTemp.createTempSync('import-custody-');
     log = Logger.replace(directory: directory);
     FakeSecureStoragePlatform().install();
     secrets = Secrets(scratchDirectory: () async => directory.path);
     metadata = MemoryWalletRegistrations();
+    fixture = await InventoryFixture.open(directory);
     admission = SqliteParentCustodyAdmission(
       directory: () async => directory.path,
       mayCreate: true,
@@ -149,7 +152,7 @@ void main() {
     importer = ImportWalletUsecase(
       checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
         secrets: secrets,
-        metadata: metadata,
+        inventory: fixture.inventory,
         settings: settings,
       ),
       secrets: secrets,
@@ -169,6 +172,7 @@ void main() {
     );
   });
   tearDown(() async {
+    await fixture.close();
     await log.flush();
     directory.deleteSync(recursive: true);
   });
@@ -224,7 +228,7 @@ void main() {
       ImportWalletUsecase(
         checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
           secrets: secrets,
-          metadata: metadata,
+          inventory: fixture.inventory,
           settings: settings,
         ),
         secrets: secrets,
@@ -394,6 +398,7 @@ void main() {
       await delete.execute(walletId: (imported as Ok).value.id),
       isA<Ok>(),
     );
+    await fixture.close();
     await log.flush();
     final diagnostics = log.logsFile.readAsStringSync();
     expect(diagnostics, contains('Seed cleanup refused reason=custody_state'));

@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 import 'package:secrets/storage.dart';
+import 'package:material_ui/material_ui.dart' show AssetImage;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:labels/labels.dart';
 import 'package:electrum/electrum.dart';
 import 'package:secrets/bip85.dart';
@@ -24,7 +27,7 @@ import 'package:network/network.dart' show NetworkFeature;
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart' show Err, Failure;
 import 'package:electrum/setup.dart'
-    show RegtestElectrumProfile, ReadElectrumPreferences;
+    show ElectrumServersPort, ReadElectrumPreferences, RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
@@ -394,6 +397,14 @@ class AppLocator {
       ),
     );
 
+    locator.registerLazySingleton(
+      () => ImportFeature.mount(
+        preferences: locator<Preferences>(),
+        servers: locator<ElectrumServersPort>(),
+        secrets: locator<Secrets>(),
+        qrIllustration: AssetImage(Assets.misc.qRPlaceholder.path),
+      ),
+    );
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);

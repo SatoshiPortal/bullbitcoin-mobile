@@ -1,0 +1,360 @@
+{
+  "importQrDeviceSpecterStep2": "Digite seu PIN",
+  "@importQrDeviceSpecterStep2": {
+    "description": "Specter instruction step 2"
+  },
+  "importQrDeviceKruxStep3": "Clique em XPUB - QR Code",
+  "@importQrDeviceKruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "importQrDeviceKruxName": "Krux",
+  "@importQrDeviceKruxName": {
+    "description": "Name of Krux device"
+  },
+  "importQrDeviceJadeStep5": "Selecione \"Wallet\" na lista de opções",
+  "@importQrDeviceJadeStep5": {
+    "description": "Jade instruction step 5"
+  },
+  "importQrDeviceJadeStep7": "Se necessário, selecione \"Opções\" para alterar o tipo de endereço",
+  "@importQrDeviceJadeStep7": {
+    "description": "Jade instruction step 7"
+  },
+  "importQrDeviceSpecterName": "Espectro",
+  "@importQrDeviceSpecterName": {
+    "description": "Name of Specter device"
+  },
+  "importQrDeviceSpecterStep7": "Desativar \"Use SLIP-132\"",
+  "@importQrDeviceSpecterStep7": {
+    "description": "Specter instruction step 7"
+  },
+  "importQrDeviceSeedsignerName": "Sementes",
+  "@importQrDeviceSeedsignerName": {
+    "description": "Name of SeedSigner device"
+  },
+  "importQrDeviceKruxStep4": "Clique no botão \"Câmera aberta\"",
+  "@importQrDeviceKruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "importQrDeviceKeystoneStep3": "Toque no *** (três pontos) no canto superior direito",
+  "@importQrDeviceKeystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "importQrDeviceJadeName": "Blockstream Jade",
+  "@importQrDeviceJadeName": {
+    "description": "Name of Blockstream Jade device"
+  },
+  "importQrDeviceJadeStep6": "Selecione \"Export Xpub\" no menu da carteira",
+  "@importQrDeviceJadeStep6": {
+    "description": "Jade instruction step 6"
+  },
+  "importQrDeviceSeedsignerStep5": "Escolha \"Single Sig\", em seguida, selecione o seu tipo de script preferido (escolher Native Segwit se não tiver certeza).",
+  "@importQrDeviceSeedsignerStep5": {
+    "description": "SeedSigner instruction step 5"
+  },
+  "importQrDeviceJadeFirmwareWarning": "Certifique-se de que seu dispositivo é atualizado para o firmware mais recente",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
+  "importQrDeviceJadeStep3": "Siga as instruções do dispositivo para desbloquear o Jade",
+  "@importQrDeviceJadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "importQrDeviceSpecterStep1": "Poder no seu dispositivo Specter",
+  "@importQrDeviceSpecterStep1": {
+    "description": "Specter instruction step 1"
+  },
+  "importQrDeviceSpecterStep10": "Digite um rótulo para a sua carteira Specter e toque em Importar",
+  "@importQrDeviceSpecterStep10": {
+    "description": "Specter instruction step 10"
+  },
+  "importQrDeviceSeedsignerStep9": "Digite um rótulo para a sua carteira SeedSigner e toque em Importar",
+  "@importQrDeviceSeedsignerStep9": {
+    "description": "SeedSigner instruction step 9"
+  },
+  "importQrDeviceJadeStep9": "Analise o código QR que você vê no seu dispositivo.",
+  "@importQrDeviceJadeStep9": {
+    "description": "Jade instruction step 9"
+  },
+  "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
+  "@importQrDeviceKeystoneStep5": {
+    "description": "Keystone instruction step 5"
+  },
+  "importQrDeviceKeystoneStep10": "Seu Keystone agora está conectado e pronto para usar com BULL Wallet.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "importQrDeviceKeystoneStep6": "Em seu celular, clique em \"câmera aberta\"",
+  "@importQrDeviceKeystoneStep6": {
+    "description": "Keystone instruction step 6"
+  },
+  "importQrDevicePassportStep2": "Digite seu PIN",
+  "@importQrDevicePassportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "importQrDeviceSpecterStep3": "Digite sua semente/chave (cose que alguma vez a opção lhe convier)",
+  "@importQrDeviceSpecterStep3": {
+    "description": "Specter instruction step 3"
+  },
+  "importQrDeviceSpecterStep9": "Digitalize o código QR exibido no seu Specter",
+  "@importQrDeviceSpecterStep9": {
+    "description": "Specter instruction step 9"
+  },
+  "importQrDeviceJadeStep2": "Selecione \"Modo QR\" no menu principal",
+  "@importQrDeviceJadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "importQrDeviceSpecterStep8": "No seu dispositivo móvel, toque em Abrir Câmara",
+  "@importQrDeviceSpecterStep8": {
+    "description": "Specter instruction step 8"
+  },
+  "importQrDevicePassportStep7": "Selecione \"Código QR\"",
+  "@importQrDevicePassportStep7": {
+    "description": "Passport instruction step 7"
+  },
+  "importQrDeviceScanPrompt": "Digitalizar o código QR do seu {deviceName}",
+  "@importQrDeviceScanPrompt": {
+    "description": "Instruction to scan QR from device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDevicePassportStep4": "Selecione \"Carteira de contato\"",
+  "@importQrDevicePassportStep4": {
+    "description": "Passport instruction step 4"
+  },
+  "importQrDeviceSeedsignerStep6": "Selecione \"Animated\" como opção de exportação. Em versões mais antigas do firmware do SeedSigner, selecione \"Sparrow\".",
+  "@importQrDeviceSeedsignerStep6": {
+    "description": "SeedSigner instruction step 6"
+  },
+  "importQrDeviceKeystoneStep8": "Na carteira BULL, escolha o seu tipo de derivação preferido. Se você não tem certeza, selecione \"Segwit (BIP84)\"",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceSpecterStep4": "Siga as instruções de acordo com o seu método escolhido",
+  "@importQrDeviceSpecterStep4": {
+    "description": "Specter instruction step 4"
+  },
+  "importQrDeviceKruxStep1": "Ligue o seu dispositivo Krux",
+  "@importQrDeviceKruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "importQrDeviceKeystoneStep7": "Digitalize o código QR exibido em seu Keystone",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceSeedsignerStep3": "Digitalize um SeedQR ou insira sua frase de semente de 12 ou 24 palavras",
+  "@importQrDeviceSeedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "importQrDevicePassportStep1": "Poder no seu dispositivo de passaporte",
+  "@importQrDevicePassportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "importQrDeviceButtonOpenCamera": "Abra a câmera",
+  "@importQrDeviceButtonOpenCamera": {
+    "description": "ImportQrDevice: Button to open camera for QR scanning"
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label for optional passphrase input field"
+  },
+  "importQrDevicePassportName": "Passaporte da Fundação",
+  "@importQrDevicePassportName": {
+    "description": "Name of Foundation Passport device"
+  },
+  "importQrDeviceSpecterInstructionsTitle": "Instruções de espectro",
+  "@importQrDeviceSpecterInstructionsTitle": {
+    "description": "Title for Specter setup instructions"
+  },
+  "importQrDeviceKeystoneStep9": "Digite um rótulo para sua carteira Keystone e toque em \"Importar\"",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
+  },
+  "importQrDeviceSpecterStep5": "Selecione \"Mestrar chaves públicas\"",
+  "@importQrDeviceSpecterStep5": {
+    "description": "Specter instruction step 5"
+  },
+  "importQrDeviceKeystoneInstructionsTitle": "Instruções de Keystone",
+  "@importQrDeviceKeystoneInstructionsTitle": {
+    "description": "Title for Keystone setup instructions"
+  },
+  "importQrDeviceKruxInstructionsTitle": "Instruções de Krux",
+  "@importQrDeviceKruxInstructionsTitle": {
+    "description": "Title for Krux setup instructions"
+  },
+  "importQrDevicePassportStep9": "Digitalizar o código QR exibido no seu Passaporte",
+  "@importQrDevicePassportStep9": {
+    "description": "Passport instruction step 9"
+  },
+  "importQrDeviceSeedsignerStep10": "Configuração completa",
+  "@importQrDeviceSeedsignerStep10": {
+    "description": "SeedSigner instruction step 10"
+  },
+  "importQrDevicePassportStep6": "Selecione \"Single-sig\"",
+  "@importQrDevicePassportStep6": {
+    "description": "Passport instruction step 6"
+  },
+  "importQrDeviceKeystoneName": "Chaveiro",
+  "@importQrDeviceKeystoneName": {
+    "description": "Name of Keystone device"
+  },
+  "importQrDeviceSeedsignerStep4": "Selecione \"Export Xpub\"",
+  "@importQrDeviceSeedsignerStep4": {
+    "description": "SeedSigner instruction step 4"
+  },
+  "importQrDeviceSeedsignerStep1": "Poder no seu dispositivo SeedSigner",
+  "@importQrDeviceSeedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "importQrDeviceJadeStep1": "Ligue o dispositivo Jade",
+  "@importQrDeviceJadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "importQrDevicePassportInstructionsTitle": "Instruções do passaporte da Fundação",
+  "@importQrDevicePassportInstructionsTitle": {
+    "description": "Title for Passport setup instructions"
+  },
+  "importQrDeviceJadeStep8": "Clique no botão \"Câmera aberta\"",
+  "@importQrDeviceJadeStep8": {
+    "description": "Jade instruction step 8"
+  },
+  "importQrDeviceSeedsignerStep2": "Abra o menu \"Sementes\"",
+  "@importQrDeviceSeedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep8": "Digitalize o código QR exibido no SeedSigner",
+  "@importQrDeviceSeedsignerStep8": {
+    "description": "SeedSigner instruction step 8"
+  },
+  "importQrDeviceKeystoneStep4": "Toque em \"Connect Software Wallet\"",
+  "@importQrDeviceKeystoneStep4": {
+    "description": "Keystone instruction step 4"
+  },
+  "importQrDevicePassportStep8": "No seu dispositivo móvel, toque em \"câmera aberta\"",
+  "@importQrDevicePassportStep8": {
+    "description": "Passport instruction step 8"
+  },
+  "importQrDeviceSpecterStep11": "A configuração é completa",
+  "@importQrDeviceSpecterStep11": {
+    "description": "Specter instruction step 11"
+  },
+  "importQrDevicePassportStep5": "Selecione a opção \"Sparrow\"",
+  "@importQrDevicePassportStep5": {
+    "description": "Passport instruction step 5"
+  },
+  "importQrDevicePassportStep3": "Selecione \"Conta de gerenciamento\"",
+  "@importQrDevicePassportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "importQrDeviceButtonInstructions": "Instruções",
+  "@importQrDeviceButtonInstructions": {
+    "description": "ImportQrDevice: Button to show setup instructions"
+  },
+  "importQrDeviceKruxStep6": "É isso!",
+  "@importQrDeviceKruxStep6": {
+    "description": "Krux instruction step 6"
+  },
+  "importQrDeviceTitle": "Conecte {deviceName}",
+  "@importQrDeviceTitle": {
+    "description": "AppBar title for QR device import",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "importQrDeviceKeystoneStep1": "Poder no seu Keystone",
+  "@importQrDeviceKeystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "importQrDeviceJadeInstructionsTitle": "Instruções Blockstream Jade",
+  "@importQrDeviceJadeInstructionsTitle": {
+    "description": "Title for Jade setup instructions"
+  },
+  "importQrDeviceSpecterStep6": "Escolha \"Chave única\"",
+  "@importQrDeviceSpecterStep6": {
+    "description": "Specter instruction step 6"
+  },
+  "importQrDeviceJadeStep10": "É isso!",
+  "@importQrDeviceJadeStep10": {
+    "description": "Jade instruction step 10"
+  },
+  "importQrDeviceKeystoneStep2": "Desbloqueie-o entrando em seu PIN",
+  "@importQrDeviceKeystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "importQrDeviceSeedsignerStep7": "No seu dispositivo móvel, toque em Abrir Câmara",
+  "@importQrDeviceSeedsignerStep7": {
+    "description": "SeedSigner instruction step 7"
+  },
+  "importQrDeviceKruxStep2": "Clique em Extended Public Key",
+  "@importQrDeviceKruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "importQrDeviceKruxStep5": "Analise o código QR que você vê no seu dispositivo.",
+  "@importQrDeviceKruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "importQrDeviceSeedsignerInstructionsTitle": "Instruções do SeedSigner",
+  "@importQrDeviceSeedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner setup instructions"
+  },
+  "importQrDeviceJadeStep4": "Selecione \"Opções\" no menu principal",
+  "@importQrDeviceJadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "emptyMnemonicWordsError": "Digite todas as palavras de seu mnemônico",
+  "@emptyMnemonicWordsError": {
+    "description": "Error message when not all mnemonic words are filled in"
+  },
+  "importWatchOnlySelectDerivation": "Selecione a derivação",
+  "@importWatchOnlySelectDerivation": {
+    "description": "Title for bottom sheet to select wallet derivation type"
+  },
+  "requiredHint": "Requisitos",
+  "@requiredHint": {
+    "description": "Placeholder hint for required label field"
+  },
+  "submitButton": "Submeter-me",
+  "@submitButton": {
+    "description": "Default button label to submit mnemonic"
+  },
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "optionalPassphraseHint": "Passphrase opcional",
+  "@optionalPassphraseHint": {
+    "description": "Placeholder hint for passphrase field"
+  },
+  "recipientsInfoLabel": "Etiqueta",
+  "importColdcardQInstructionsTitle": "Instruções do Coldcard Q",
+  "importColdcardQStep1": "Faça login no seu dispositivo Coldcard Q",
+  "importColdcardQStep2": "Adicionar uma senha se você tiver um (opcional)",
+  "importColdcardQStep3": "Selecione o menu avançado/configurações",
+  "importColdcardQStep4": "Clique em \"exportar carteira\"",
+  "importColdcardQStep5": "Selecione \"descritor\" como tipo de exportação",
+  "importColdcardQStep6": "Pressione \"Enter\" na primeira tela",
+  "importColdcardQStep7": "Pressione \"Enter\" na segunda tela",
+  "importColdcardQStep8": "Selecione o tipo de endereço (use Segwit em caso de dúvida)",
+  "importColdcardQStep9": "Para QR, clique no botão de código QR no dispositivo. Ele mostrará um código QR no dispositivo",
+  "importColdcardQStep10": "Para NFC, clique no botão NFC no dispositivo",
+  "importColdcardQStep11": "Clique no botão \"Abrir a câmera\" / \"Escanear NFC\"",
+  "importColdcardQStep12": "Escaneie o código QR que aparece no seu dispositivo ou coloque o NFC do celular sobre o NFC do Coldcard",
+  "importColdcardQStep13": "É isso!",
+  "importColdcardMk4InstructionsTitle": "Instruções do Coldcard Mk4",
+  "importColdcardMk4Step1": "Faça login no seu dispositivo Coldcard Mk4",
+  "importColdcardMk4Step2": "Adicionar uma senha se você tiver um (opcional)",
+  "importColdcardMk4Step3": "Selecione o menu avançado/configurações",
+  "importColdcardMk4Step4": "Clique em \"exportar carteira\"",
+  "importColdcardMk4Step5": "Selecione \"descritor\" como tipo de exportação",
+  "importColdcardMk4Step6": "Pressione \"Enter\" na primeira tela",
+  "importColdcardMk4Step7": "Pressione \"Enter\" na segunda tela",
+  "importColdcardMk4Step8": "Selecione o tipo de endereço (use Segwit em caso de dúvida)",
+  "importColdcardMk4Step9": "Clique no número 3 para iniciar o NFC do Coldcard",
+  "importColdcardMk4Step10": "Clique no botão \"Escanear NFC\"",
+  "importColdcardMk4Step11": "Coloque o NFC do celular sobre o NFC do Coldcard",
+  "importColdcardMk4Step12": "É isso!"
+}

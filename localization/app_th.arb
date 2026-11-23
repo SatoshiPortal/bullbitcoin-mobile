@@ -22,10 +22,6 @@
   "@swapMax": {
     "description": "MAX button label"
   },
-  "importQrDeviceSpecterStep2": "ใส่ PIN ของคุณ",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "importColdcardInstructionsStep10": "การตั้งค่าที่สมบูรณ์",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -109,10 +105,6 @@
   "fundExchangeSinpeLabelPhone": "ส่งโทรศัพท์นี้",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "importQrDeviceKruxStep3": "คลิก XPUB - รหัส QR",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@sellAdvancedOptions": {
@@ -216,10 +208,6 @@
   "fundExchangeCanadaPostStep5": "5. 5. 5. ชําระเงินเงินสดหรือบัตรเดบิต",
   "@fundExchangeCanadaPostStep5": {
     "description": "Step 5 for Canada Post payment process"
-  },
-  "importQrDeviceKruxName": "แม่",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "addressViewNoAddressesFound": "ไม่มีที่อยู่",
   "@addressViewNoAddressesFound": {
@@ -349,10 +337,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "importQrDeviceJadeStep7": "ถ้าคุณต้องการ \"ตัวเลือก\" เพื่อเปลี่ยนที่อยู่",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "transactionNetworkLightning": "ฟ้าผ่า",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -374,10 +358,6 @@
   "swapInsufficientFunds": "เงินทุนไม่เพียงพอ",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "importQrDeviceSpecterName": "ตัวอย่าง",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "transactionDetailLabelSwapFees": "ค่าธรรมเนียม",
   "@transactionDetailLabelSwapFees": {
@@ -459,17 +439,9 @@
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
   },
-  "importQrDeviceSpecterStep7": "ทําซ้ํา \"ใช้ SLIP-132\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
   "customLocationTitle": "รายการที่กําหนดเอง",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
-  },
-  "importQrDeviceJadeStep5": "เลือก \"กระเป๋าสตางค์\" จากรายการ",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
   },
   "transactionFilterBuy": "ซื้อ",
   "@transactionFilterBuy": {
@@ -727,10 +699,6 @@
   "bip85Mnemonic": "Mnemonic",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
-  },
-  "importQrDeviceSeedsignerName": "เมล็ด",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
   },
   "payFeeTooHigh": "ค่าธรรมเนียมที่ผิดปกติสูง",
   "@payFeeTooHigh": {
@@ -1005,10 +973,6 @@
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
   },
-  "importQrDeviceKruxStep4": "คลิก \"เปิดกล้อง\"",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
   "payPasteInvoice": "พิธีการศุลกากร",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -1060,10 +1024,6 @@
   "okButton": "ตกลง",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "importQrDeviceKeystoneStep3": "แตะ *** (สามจุด) ในมุมด้านบน",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
   },
   "exchangeAmountInputValidationInvalid": "ปริมาณ",
   "@exchangeAmountInputValidationInvalid": {
@@ -1225,10 +1185,6 @@
   "@importMnemonicSegwit": {
     "description": "Label for Segwit (BIP84) wallet type"
   },
-  "importQrDeviceJadeStep6": "เลือก \"ส่งออก Xasa\" จากเมนูกระเป๋าสตางค์",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
   "buyContinue": "อ่านต่อ",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1362,10 +1318,6 @@
   "broadcastSignedTxCameraButton": "กล้อง",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
-  },
-  "importQrDeviceJadeName": "บล็อก",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
   },
   "importWalletImportMnemonic": "นําเข้า Mnemonic",
   "@importWalletImportMnemonic": {
@@ -1513,10 +1465,6 @@
   "walletDeletionConfirmationCancelButton": "ยกเลิก",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "importQrDeviceSeedsignerStep5": "เลือก \"Sig\", เลือกสคริปต์ของคุณที่คุณต้องการ (choose Segative Segre).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payNoRecipientsFound": "ไม่มีผู้รับรับชําระเงิน.",
   "@payNoRecipientsFound": {
@@ -2035,17 +1983,9 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "importQrDeviceJadeFirmwareWarning": "ให้แน่ใจว่าอุปกรณ์ของคุณอัปเดตเฟิร์มแวร์ล่าสุด",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
   "buyInputContinue": "อ่านต่อ",
   "@buyInputContinue": {
     "description": "Continue button on buy input"
-  },
-  "importQrDeviceJadeStep3": "ติดตามอุปกรณ์เพื่อปลดล็อค ปักกิ่ง",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "paySecurityQuestionLengthError": "ต้อง 10-40 ตัวอักษร",
   "@paySecurityQuestionLengthError": {
@@ -2098,10 +2038,6 @@
   "sellOrderCompleted": "สั่งซื้อ!",
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
-  },
-  "importQrDeviceSpecterStep10": "ใส่ฉลากสําหรับกระเป๋าสตางค์ของคุณและแตะนําเข้า",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
   },
   "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2158,10 +2094,6 @@
   "fundExchangeWarningTactic7": "พวกเขาบอกคุณเกี่ยวกับคําเตือนนี้",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
-  },
-  "importQrDeviceSpecterStep1": "แหล่งจ่ายไฟของคุณ",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "transactionNoteAddTitle": "บันทึก",
   "@transactionNoteAddTitle": {
@@ -2271,10 +2203,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "importQrDeviceKeystoneStep10": "แจ็คของคุณตอนนี้เชื่อมต่อและพร้อมที่จะใช้งานด้วยชิป.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
   "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -2314,10 +2242,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google ขอให้คุณแบ่งปันข้อมูลส่วนบุคคลกับแอปนี้.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "importQrDeviceSeedsignerStep9": "ใส่ฉลากสําหรับกระเป๋าสตางค์ของคุณและแตะนําเข้า",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
   },
   "testCompletedSuccessMessage": "คุณสามารถกู้คืนการเข้าถึงกระเป๋าสตางค์ Bitcoin",
   "@testCompletedSuccessMessage": {
@@ -2389,10 +2313,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "importQrDeviceKeystoneStep5": "เลือก \"BULL\" จากรายการของกระเป๋าเงิน",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "อีเมล",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2416,10 +2336,6 @@
   "settingsSecurityPinTitle": "ความปลอดภัย",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "importQrDeviceJadeStep9": "สแกนรหัส QR เพื่อดูอุปกรณ์ของคุณ.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "transactionDetailLabelPayjoinCompleted": "สมบูรณ์",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2661,10 +2577,6 @@
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
-  "importQrDeviceKeystoneStep6": "บนโทรศัพท์มือถือของคุณคลิก \"เปิดกล้อง\"",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "bip85Hex": "HEX",
   "@bip85Hex": {
     "description": "Label for hex type entropy"
@@ -2777,10 +2689,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "importQrDeviceSpecterStep3": "ใส่เมล็ดของคุณ / เครื่องมือ (chose) ที่เป็นตัวเลือกที่คุณต้องการ",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
   "payPayeeAccountNumber": "จํานวนบัญชี",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
@@ -2860,10 +2768,6 @@
   "selectCoinsManuallyLabel": "เลือกเหรียญด้วยตนเอง",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
-  },
-  "importQrDevicePassportStep2": "ใส่ PIN ของคุณ",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
   },
   "buyShouldBuyAtLeast": "คุณควรซื้ออย่างน้อย",
   "@buyShouldBuyAtLeast": {
@@ -3112,10 +3016,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "importQrDeviceSpecterStep8": "บนโทรศัพท์มือถือของคุณ, แตะกล้องเปิด",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
   "sellSendPaymentContinue": "อ่านต่อ",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
@@ -3172,10 +3072,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "importQrDeviceJadeStep2": "เลือก \"QR\" จากเมนูหลัก",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
   "rbfErrorAlreadyConfirmed": "การทําธุรกรรมเดิมจะถูกได้รับการยืนยัน",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -3221,15 +3117,6 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceScanPrompt": "สแกนคิวอาร์โค้ดจาก {deviceName} ของคุณ",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Mree",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
     "description": "Payment method title for SINPE Móvil in method list"
@@ -3270,17 +3157,9 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importQrDeviceSpecterStep9": "การสแกนรหัส QR จะแสดงในตัวอย่างของคุณ",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "buyInputKycPending": "สําเนารหัส",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
-  },
-  "importWatchOnlySelectDerivation": "เลือก",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
   },
   "hwPassport": "หนังสือเดินทาง",
   "@hwPassport": {
@@ -3493,10 +3372,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "เลือก \"Connect App\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
   "payAddRecipient": "เพิ่มค่า",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
@@ -3618,10 +3493,6 @@
   "connectHardwareWalletSeedSigner": "เมล็ด",
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
-  },
-  "importQrDevicePassportStep7": "ในแอป BULL wallet ให้เลือก \"Segwit (BIP84)\" เป็นตัวเลือกการสร้างคีย์",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "delete": "ลบ",
   "@delete": {
@@ -3961,10 +3832,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "importQrDeviceKeystoneStep8": "ในกระเป๋าเงินสีทองเลือกของคุณ หากคุณไม่จําเป็นต้องเลือก \"Segwit)",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
   "fundExchangeCrIbanUsdTitle": "ธนาคาร (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -3996,10 +3863,6 @@
   "sendReceiveNetworkFee": "รับค่าธรรมเนียมเครือข่าย",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "importQrDeviceSeedsignerStep6": "เลือก \"Animated\" เป็นตัวเลือกการส่งออก สำหรับเฟิร์มแวร์ SeedSigner รุ่นเก่า ให้เลือก \"Sparrow\"",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
   },
   "swapValidationMaximumAmount": "จำนวนสูงสุดคือ {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -4134,10 +3997,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "importQrDeviceSeedsignerStep3": "การสแกนเมล็ดQR หรือป้อน 12 - หรือ 24 วลี",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "replaceByFeeFastestTitle": "รวดเร็ว",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
@@ -4170,10 +4029,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "importQrDeviceKruxStep1": "เปิดบนอุปกรณ์",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "transactionSwapProgressFundsClaimed": "เงินทุน\nการเรียกร้อง",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
@@ -4198,10 +4053,6 @@
   "transactionSwapProgressPaymentMade": "การชําระเงิน\nผลิตจาก",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
-  },
-  "importQrDeviceSpecterStep4": "ปฏิบัติตามวิธีการเลือกของคุณ",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
   },
   "coreSwapsChainPending": "Swap ยังไม่ได้เริ่มต้น",
   "@coreSwapsChainPending": {
@@ -4354,17 +4205,9 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "importQrDevicePassportStep1": "เปิดเครื่อง Passport ของคุณ",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "fundExchangeBankTransferWireDescription": "ส่งสายสายจากบัญชีธนาคารของคุณโดยใช้ข้อมูลธนาคาร Bitcoin บัญชีธนาคารของคุณอาจจําเป็นต้องใช้ชิ้นส่วนเหล่านี้.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
-  },
-  "importQrDeviceKeystoneStep7": "สแกนรหัส QR จะแสดงบนแม่เหล็กของคุณ",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
   },
   "coldcardStep3": "เลือก \"รหัส QR)",
   "@coldcardStep3": {
@@ -4403,10 +4246,6 @@
   "receiveTotalFee": "ค่าธรรมเนียม",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceButtonOpenCamera": "เปิดกล้อง",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "dcaConfirmFrequency": "ความถี่",
   "@dcaConfirmFrequency": {
@@ -4610,10 +4449,6 @@
   "@exchangeSettingsRecipientsTitle": {
     "description": "Title for the recipients button in exchange settings"
   },
-  "importQrDevicePassportName": "หนังสือเดินทาง",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "fundExchangeMethodCanadaPostSubtitle": "ที่ดีที่สุดสําหรับผู้ที่ต้องการจ่ายเงินในบุคคล",
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
@@ -4706,10 +4541,6 @@
   "fundExchangeCrIbanCrcLabelIban": "หมายเลขบัญชี IART (Colones)",
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "คําแนะนํา",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
   },
   "testBackupScreenshot": "ภาพหน้าจอ",
   "@testBackupScreenshot": {
@@ -4834,10 +4665,6 @@
   "autoswapMaxFeeInfo": "หากค่าธรรมเนียม Swap รวมสูงกว่าเปอร์เซ็นต์ที่ตั้งไว้ Auto Swap จะถูกบล็อก",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
-  },
-  "importQrDevicePassportStep9": "ตั้งค่าเสร็จสมบูรณ์",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
   },
   "swapProgressRefundedMessage": "คืนเงิน Swap เรียบร้อยแล้ว",
   "@swapProgressRefundedMessage": {
@@ -5002,10 +4829,6 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
-  "importQrDeviceSeedsignerStep10": "การตั้งค่าที่สมบูรณ์",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "sendReceive": "ลงทะเบียน",
   "@sendReceive": {
     "description": "Label for receive transaction type"
@@ -5042,10 +4865,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "importQrDeviceKeystoneStep9": "ใส่ฉลากสําหรับกระเป๋าสตางค์และแตะ \"Import\"",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
   "tapWordsInOrderTitle": "แตะคํากู้คืนในคําพูด\nคําสั่งซื้อ",
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
@@ -5077,10 +4896,6 @@
   "coreSwapsChainPaid": "กำลังรอการยืนยันการชำระเงินจากผู้ให้บริการ Swap ซึ่งอาจใช้เวลาสักครู่",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
-  },
-  "importQrDevicePassportStep6": "สแกนคิวอาร์โค้ดที่แสดงบน Passport ของคุณ",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
   },
   "sendSatsPerVB": "เบาะ / VB",
   "@sendSatsPerVB": {
@@ -5164,17 +4979,9 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "importQrDeviceSeedsignerStep4": "เลือก \"ส่งออก Xasa\"",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
   "payTransitNumber": "จํานวน",
   "@payTransitNumber": {
     "description": "Label for transit number"
-  },
-  "importQrDeviceSpecterStep5": "เลือก \"โปรแกรมสาธารณะ\"",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
   },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "Iada Gica (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
@@ -5288,17 +5095,9 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "importQrDeviceKruxInstructionsTitle": "คําแนะนํา",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
   "transactionOrderLabelOriginName": "ชื่อ",
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "คําแนะนํา",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "globalDefaultLiquidWalletLabel": "การชําระเงินทันที",
   "@globalDefaultLiquidWalletLabel": {
@@ -5448,10 +5247,6 @@
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
   },
-  "importQrDevicePassportInstructionsTitle": "หนังสือเดินทาง",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
   "rbfFeeRate": "ค่าธรรมเนียม: {rate} นั่ง/Vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
@@ -5569,10 +5364,6 @@
   "sendRecipientAddressOrInvoice": "ที่อยู่อีเมล",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "importQrDeviceKeystoneName": "แจ็ค",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "payBitcoinAddress": "โทรศัพท์",
   "@payBitcoinAddress": {
@@ -5772,10 +5563,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "importQrDeviceSeedsignerStep1": "อุปกรณ์บนเมล็ดพันธุ์ของคุณ",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "exchangeRecipientsTitle": "การเก็บรักษา",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -5799,10 +5586,6 @@
   "backupWalletHowToDecideVaultModalTitle": "วิธีการตัดสินใจ",
   "@backupWalletHowToDecideVaultModalTitle": {
     "description": "Modal title for vault location comparison help"
-  },
-  "importQrDeviceJadeStep1": "เปิดบนอุปกรณ์บาร์บีคิวของคุณ",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "payNotLoggedInDescription": "คุณยังไม่ได้เข้าสู่ระบบ โปรดลงชื่อเข้าใช้คุณสมบัติการชําระเงิน.",
   "@payNotLoggedInDescription": {
@@ -5916,10 +5699,6 @@
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
-  "importQrDeviceSeedsignerStep2": "เปิดเมนู \"ดู\"",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "exchangeAmountInputValidationZero": "จํานวนเงินที่ต้องการมากกว่าศูนย์",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
@@ -6032,10 +5811,6 @@
   "@withdrawConfirmPayee": {
     "description": "Field label for payee (Bill Payment)"
   },
-  "importQrDeviceJadeStep8": "คลิก \"เปิดกล้อง\"",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
   "payPhoneNumberHint": "ใส่โทรศัพท์",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
@@ -6082,10 +5857,6 @@
   "receiveDetails": "รายละเอียด",
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
-  },
-  "importQrDeviceSpecterStep11": "การตั้งค่าเสร็จสมบูรณ์",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "sendCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
   "@sendCustomFee": {
@@ -6350,10 +6121,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "เลือก \"Bull\"",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
   "sendInvoicePaid": "พิธีการศุลกากร",
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
@@ -6449,10 +6216,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "เลือก \"Wallet\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "exchangeAuthErrorMessage": "ข้อผิดพลาดเกิดขึ้นโปรดลองบล็อกในอีกครั้ง.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
@@ -6472,10 +6235,6 @@
   "transactionSwapStatusTransferStatus": "สถานะ Swap",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
-  },
-  "importQrDeviceSeedsignerStep8": "สแกนรหัส QR ที่แสดงบนเมล็ดพันธุ์ของคุณ",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
   },
   "backupKeyTitle": "การสํารองข้อมูล",
   "@backupKeyTitle": {
@@ -6643,21 +6402,9 @@
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
   },
-  "importQrDeviceSpecterStep6": "เลือก \"เดียว\"",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceJadeStep10": "นั่นคือ!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
   "payPayeeAccountNumberHint": "ใส่บัญชี",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "importQrDevicePassportStep8": "ใส่ชื่อสำหรับกระเป๋า Passport ของคุณ แล้วแตะ \"การนำเข้า\"",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
   },
   "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
   "bip85NoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
@@ -6693,10 +6440,6 @@
   "settingsDevModeWarningTitle": "หน่วยความจํา",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "importQrDeviceKeystoneStep4": "แตะ \"เชื่อมต่อซอฟต์แวร์กระเป๋าสตางค์\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
   },
   "rbfOriginalTransaction": "ธุรกรรมทั่วไป",
   "@rbfOriginalTransaction": {
@@ -7347,10 +7090,6 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "importQrDeviceKeystoneStep2": "ปลดล็อกรหัสของคุณ",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "receiveBitcoinTransactionWillTakeTime": "การทําธุรกรรม Bitcoin จะใช้เวลาประมาณ.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
@@ -7373,10 +7112,6 @@
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
   },
-  "importQrDeviceSeedsignerStep7": "บนโทรศัพท์มือถือของคุณ, แตะกล้องเปิด",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
   "addressViewChangeAddressesDescription": "แสดงกระเป๋า การเปลี่ยนแปลง",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
@@ -7393,17 +7128,9 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "importQrDeviceKruxStep5": "สแกนรหัส QR เพื่อดูอุปกรณ์ของคุณ.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "fundExchangeHelpTransferCode": "เพิ่มเหตุผลนี้สําหรับการถ่ายโอน",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
-  },
-  "importQrDeviceKruxStep2": "คลิกขยายสาธารณะ",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "recoverButton": "การกู้คืน",
   "@recoverButton": {
@@ -7495,10 +7222,6 @@
   "walletDetailsDescriptorLabel": "ข้อความ",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "คําแนะนําเมล็ดพันธุ์",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "payFilterByType": "ตัวกรอง",
   "@payFilterByType": {
@@ -7621,10 +7344,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "importQrDeviceKruxStep6": "นั่นคือ!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
   "payUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -7656,15 +7375,6 @@
   "coreScreensPageNotFound": "หน้า",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "importQrDeviceTitle": "เชื่อมต่อ {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFeatureDcaOrders": "• DCA, การสั่งซื้อและอัตโนมัติ",
   "@exchangeFeatureDcaOrders": {
@@ -7709,10 +7419,6 @@
   "fundExchangeBankTransfer": "โอนธนาคาร",
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
-  },
-  "importQrDeviceButtonInstructions": "คําแนะนํา",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
   },
   "buyLevel3Limit": "ระดับ 3: {amount}",
   "@buyLevel3Limit": {
@@ -7793,10 +7499,6 @@
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
   },
-  "importQrDeviceJadeStep4": "เลือก \"ตัวเลือก\" จากเมนูหลัก",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "backupWalletSavingToDeviceTitle": "ประหยัดพลังงานของคุณ.",
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
@@ -7845,10 +7547,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "importQrDeviceJadeInstructionsTitle": "บล็อก",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "paySendMax": "สูงสุด",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
@@ -7864,10 +7562,6 @@
   "importMnemonicSelectType": "เลือกกระเป๋าสําหรับนําเข้า",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "importQrDeviceKeystoneStep1": "พลังงานบนแม่เหล็กของคุณ",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 การกําหนดข้อมูล",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -8981,33 +8675,6 @@
   "importColdcardConnectTitle": "เชื่อมต่อ {deviceName}",
   "importColdcardConnectDescription": "นำเข้า wallet descriptor จาก {deviceName} ของคุณ",
   "importColdcardScanNfcSheetTitle": "แตะ {deviceName} เพื่อนำเข้า wallet descriptor ผ่าน NFC",
-  "importColdcardQInstructionsTitle": "คำแนะนำสำหรับ Coldcard Q",
-  "importColdcardQStep1": "เข้าสู่ระบบอุปกรณ์ Coldcard Q ของคุณ",
-  "importColdcardQStep2": "ใส่ passphrase หากคุณมี (ไม่บังคับ)",
-  "importColdcardQStep3": "เลือกเมนูขั้นสูง/การตั้งค่า",
-  "importColdcardQStep4": "กด \"export wallet\"",
-  "importColdcardQStep5": "เลือก \"descriptor\" เป็นประเภทการส่งออก",
-  "importColdcardQStep6": "กด \"Enter\" บนหน้าจอแรก",
-  "importColdcardQStep7": "กด \"Enter\" บนหน้าจอที่สอง",
-  "importColdcardQStep8": "เลือกประเภทที่อยู่ของคุณ (ใช้ Segwit หากไม่แน่ใจ)",
-  "importColdcardQStep9": "สำหรับ QR ให้กดปุ่ม QR code บนอุปกรณ์ อุปกรณ์จะแสดง QR code ให้คุณ",
-  "importColdcardQStep10": "สำหรับ NFC ให้กดปุ่ม NFC บนอุปกรณ์",
-  "importColdcardQStep11": "กดปุ่ม \"Open the camera\" / \"Scan NFC\"",
-  "importColdcardQStep12": "สแกน QR code ที่แสดงบนอุปกรณ์ของคุณ หรือวางโทรศัพท์ไว้บน NFC ของ Coldcard",
-  "importColdcardQStep13": "เท่านี้ก็เสร็จแล้ว!",
-  "importColdcardMk4InstructionsTitle": "คำแนะนำสำหรับ Coldcard Mk4",
-  "importColdcardMk4Step1": "เข้าสู่ระบบอุปกรณ์ Coldcard Mk4 ของคุณ",
-  "importColdcardMk4Step2": "ใส่ passphrase หากคุณมี (ไม่บังคับ)",
-  "importColdcardMk4Step3": "เลือกเมนูขั้นสูง/การตั้งค่า",
-  "importColdcardMk4Step4": "กด \"export wallet\"",
-  "importColdcardMk4Step5": "เลือก \"descriptor\" เป็นประเภทการส่งออก",
-  "importColdcardMk4Step6": "กด \"Enter\" บนหน้าจอแรก",
-  "importColdcardMk4Step7": "กด \"Enter\" บนหน้าจอที่สอง",
-  "importColdcardMk4Step8": "เลือกประเภทที่อยู่ของคุณ (ใช้ Segwit หากไม่แน่ใจ)",
-  "importColdcardMk4Step9": "กดหมายเลข 3 เพื่อเริ่มการทำงาน NFC ของ Coldcard",
-  "importColdcardMk4Step10": "กดปุ่ม \"Scan NFC\"",
-  "importColdcardMk4Step11": "วางโทรศัพท์ไว้บน NFC ของ Coldcard",
-  "importColdcardMk4Step12": "เท่านี้ก็เสร็จแล้ว!",
   "fundExchangeCopDailyLimitWarning": "หากคุณทำธุรกรรมเกินวงเงินรายวัน ธุรกรรมจะไม่สำเร็จ คุณจะต้องติดต่อฝ่ายบริการลูกค้า",
   "fundExchangeCopSenderName": "ชื่อผู้โอน",
   "fundExchangeCopIssuingBank": "ธนาคารผู้ออก",
