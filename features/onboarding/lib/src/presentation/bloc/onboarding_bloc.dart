@@ -16,13 +16,10 @@ part 'onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
-    required CreateOnboardingWallet createWallet,
-    required RecoverOnboardingWallet recoverWallet,
-    required ScanOnboardingWalletUsecase scanOnboardingWalletUsecase,
-  }) : _createWallet = createWallet,
-       _recoverWallet = recoverWallet,
-       _scanOnboardingWalletUsecase = scanOnboardingWalletUsecase,
-       super(const OnboardingState()) {
+    required this._createWallet,
+    required this._recoverWallet,
+    required this._scanOnboardingWalletUsecase,
+  }) : super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
 

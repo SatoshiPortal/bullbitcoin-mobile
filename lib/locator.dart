@@ -89,7 +89,7 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/secrets.dart' hide Language;
 import 'package:spend/setup.dart' show SpendCatalog;
 import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
