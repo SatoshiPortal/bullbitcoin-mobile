@@ -82,10 +82,8 @@ void main() {
     registerFallbackValue(CheckSinpeParams(phoneNumber: '8888-8888'));
     registerFallbackValue(ListCadBillersParams(searchTerm: 'hydro'));
 
-    when(() => getPreferredJurisdiction.execute()).thenAnswer(
-      (_) async =>
-          const Ok(GetPreferredJurisdictionUsecase.defaultJurisdiction),
-    );
+    when(() => getPreferredJurisdiction.execute())
+        .thenAnswer((_) async => const Ok(Jurisdiction.canada));
     when(() => getRecipients.execute(any()))
         .thenAnswer((_) async => const Err(RecipientsLoadFailure()));
     when(() => getAccountOwnerName.execute()).thenAnswer(

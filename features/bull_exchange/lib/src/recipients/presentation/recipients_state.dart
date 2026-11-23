@@ -3,8 +3,8 @@ part of 'recipients_bloc.dart';
 @freezed
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
-    String? preferredJurisdiction,
-    String? jurisdictionFilter,
+    Jurisdiction? preferredJurisdiction,
+    Jurisdiction? jurisdictionFilter,
     ConfidentialSepaAvailability? confidentialSepaAvailability,
     @Default(false) bool isLoadingConfidentialSepaAvailability,
     RecipientsFailure? failedToLoadConfidentialSepaAvailability,
@@ -60,35 +60,33 @@ sealed class RecipientsState with _$RecipientsState {
       selectableRecipientTypes.contains(RecipientType.sepaEur) &&
       selectableRecipientTypes.contains(RecipientType.confidentialSepaEur) &&
       (jurisdictionFilter == null ||
-          jurisdictionFilter == RecipientType.sepaEur.jurisdictionCode);
+          jurisdictionFilter == RecipientType.sepaEur.jurisdiction);
 
   bool get onlyOwnerRecipients => allowedRecipientFilters.isOwner ?? false;
 
   bool get onlyNonOwnerRecipients => allowedRecipientFilters.isOwner == false;
 
-  Set<String> get availableJurisdictions =>
-      selectableRecipientTypes.map((type) => type.jurisdictionCode).toSet();
+  Set<Jurisdiction> get availableJurisdictions =>
+      selectableRecipientTypes.map((type) => type.jurisdiction).toSet();
 
-  String? get selectedJurisdiction {
+  Jurisdiction? get selectedJurisdiction {
     if (preferredJurisdiction != null) {
       if (selectableRecipientTypes.any(
-        (t) => t.jurisdictionCode == preferredJurisdiction,
+        (t) => t.jurisdiction == preferredJurisdiction,
       )) {
         return preferredJurisdiction;
       } else {
         // Preferred jurisdiction is not available in the current filters
         // so we fall back to the first available jurisdiction
-        return selectableRecipientTypes
-            .map((t) => t.jurisdictionCode)
-            .firstOrNull;
+        return selectableRecipientTypes.map((t) => t.jurisdiction).firstOrNull;
       }
     }
     return null;
   }
 
-  Set<RecipientType> recipientTypesForJurisdiction(String jurisdiction) {
+  Set<RecipientType> recipientTypesForJurisdiction(Jurisdiction jurisdiction) {
     return selectableRecipientTypes
-        .where((type) => type.jurisdictionCode == jurisdiction)
+        .where((type) => type.jurisdiction == jurisdiction)
         .toSet();
   }
 

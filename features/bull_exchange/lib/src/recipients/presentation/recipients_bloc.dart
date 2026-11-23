@@ -96,15 +96,15 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     }
     await _loadFirstPage(emit, clearList: true);
 
-    // Not surfaced as a failure: a missing preference only changes which
-    //  jurisdiction is offered first, and the default covers it. The reason
-    //  is logged inside the use-case.
-    final preferredJurisdictionCode =
-        switch (await _getPreferredJurisdictionUsecase.execute()) {
-          Ok(:final value) => value,
-          Err() => GetPreferredJurisdictionUsecase.defaultJurisdiction,
-        };
-    emit(state.copyWith(preferredJurisdiction: preferredJurisdictionCode));
+    // Not surfaced as a failure: a missing preference only means no
+    //  jurisdiction is offered first; the user picks one. The reason is
+    //  logged inside the use-case.
+    final preferredJurisdiction = switch (await _getPreferredJurisdictionUsecase
+        .execute()) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
+    emit(state.copyWith(preferredJurisdiction: preferredJurisdiction));
   }
 
   Future<void> _onMoreLoaded(
@@ -325,7 +325,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         .where(
           (type) =>
               type != hiddenSepaType &&
-              (jurisdiction == null || type.jurisdictionCode == jurisdiction),
+              (jurisdiction == null || type.jurisdiction == jurisdiction),
         )
         .toList();
   }

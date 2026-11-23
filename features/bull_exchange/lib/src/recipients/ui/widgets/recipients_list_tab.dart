@@ -154,7 +154,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             style: context.bullType.body,
           ),
           const Gap(8.0),
-          BlocSelector<RecipientsBloc, RecipientsState, String?>(
+          BlocSelector<RecipientsBloc, RecipientsState, Jurisdiction?>(
             selector: (state) => state.jurisdictionFilter,
             builder: (context, selected) {
               return JurisdictionsDropdown(
@@ -165,7 +165,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
                     RecipientsEvent.jurisdictionChanged(newJurisdiction),
                   );
                   if (newJurisdiction != null &&
-                      _selectedRecipient?.jurisdictionCode != newJurisdiction) {
+                      _selectedRecipient?.jurisdiction != newJurisdiction) {
                     setState(() => _selectedRecipient = null);
                   }
                 },

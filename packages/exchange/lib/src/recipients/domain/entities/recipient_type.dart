@@ -1,3 +1,5 @@
+import '../../../domain/catalog/jurisdiction.dart';
+
 /// VALUE OBJECT: recipient type
 /// Value objects are immutable and defined by their attributes
 /// They encapsulate validation and behavior related to the type itself
@@ -33,31 +35,22 @@ enum RecipientType {
     );
   }
 
-  String get jurisdictionCode {
-    switch (this) {
-      case RecipientType.interacEmailCad:
-      case RecipientType.billPaymentCad:
-      case RecipientType.bankTransferCad:
-        return 'CA';
-      case RecipientType.sepaEur:
-      case RecipientType.confidentialSepaEur:
-        return 'EU';
-      case RecipientType.speiClabeMxn:
-      case RecipientType.speiSmsMxn:
-      case RecipientType.speiCardMxn:
-        return 'MX';
-      case RecipientType.sinpeIbanUsd:
-      case RecipientType.sinpeIbanCrc:
-      case RecipientType.sinpeMovilCrc:
-        return 'CR';
-      case RecipientType.bankAccountArgentina:
-        return 'AR';
-      case RecipientType.pseColombia:
-        return 'CO';
-      case RecipientType.nequiColombia:
-        return 'CO';
-    }
-  }
+  Jurisdiction get jurisdiction => switch (this) {
+    RecipientType.interacEmailCad ||
+    RecipientType.billPaymentCad ||
+    RecipientType.bankTransferCad => Jurisdiction.canada,
+    RecipientType.sepaEur ||
+    RecipientType.confidentialSepaEur => Jurisdiction.europe,
+    RecipientType.speiClabeMxn ||
+    RecipientType.speiSmsMxn ||
+    RecipientType.speiCardMxn => Jurisdiction.mexico,
+    RecipientType.sinpeIbanUsd ||
+    RecipientType.sinpeIbanCrc ||
+    RecipientType.sinpeMovilCrc => Jurisdiction.costaRica,
+    RecipientType.bankAccountArgentina => Jurisdiction.argentina,
+    RecipientType.pseColombia ||
+    RecipientType.nequiColombia => Jurisdiction.colombia,
+  };
 
   String get currencyCode {
     switch (this) {

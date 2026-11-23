@@ -3,29 +3,25 @@ import 'package:exchange/exchange.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
-/// The jurisdiction whose recipient types should be offered first, derived
-/// from the currency on the user's exchange account.
+/// The jurisdiction whose recipient types should be offered first: the one
+/// of the market of the user's exchange account currency, from the catalog.
+/// Null when the account has no currency the app has a market for; then no
+/// jurisdiction is offered first.
 ///
 class GetPreferredJurisdictionUsecase {
-  /// Used when the account currency is unknown, and by callers when this
-  /// use-case fails. Declared here so both paths agree on one value.
-  static const defaultJurisdiction = 'CA';
-
   final Exchange _exchange;
 
   const GetPreferredJurisdictionUsecase(this._exchange);
 
   @useResult
-  Future<Result<String, RecipientsFailure>> execute() async {
+  Future<Result<Jurisdiction?, RecipientsFailure>> execute() async {
     switch (await _exchange.getUserSummary()) {
       case Ok(value: final summary):
-        return Ok(switch (summary.currency) {
-          'EUR' => 'EU',
-          'MXN' => 'MX',
-          'CRC' => 'CR',
-          'ARS' => 'AR',
-          'COP' => 'CO',
-          _ => defaultJurisdiction,
+        final currency = summary.currency;
+        if (currency == null) return const Ok(null);
+        return Ok(switch (ExchangeCatalog.parse(currency)) {
+          KnownCurrency(:final market) => market.jurisdiction,
+          UnknownCurrency() => null,
         });
       case Err(:final failure):
         log.warning(

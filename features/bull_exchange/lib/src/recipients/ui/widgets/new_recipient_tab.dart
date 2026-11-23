@@ -35,7 +35,7 @@ class NewRecipientTab extends StatefulWidget {
 }
 
 class NewRecipientTabState extends State<NewRecipientTab> {
-  String? _selectedJurisdiction;
+  Jurisdiction? _selectedJurisdiction;
   RecipientType? _selectedRecipientType;
   StreamSubscription<RecipientsState>? stateSubscription;
 

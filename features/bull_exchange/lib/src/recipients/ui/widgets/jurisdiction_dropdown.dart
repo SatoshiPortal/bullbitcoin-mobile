@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem;
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +13,8 @@ class JurisdictionsDropdown extends StatelessWidget {
     this.includeAllOption = false,
   });
 
-  final String? selectedJurisdiction;
-  final void Function(String?) onChanged;
+  final Jurisdiction? selectedJurisdiction;
+  final void Function(Jurisdiction?) onChanged;
   final bool includeAllOption;
 
   @override
@@ -22,29 +23,31 @@ class JurisdictionsDropdown extends StatelessWidget {
       (RecipientsBloc bloc) => bloc.state.allowedRecipientFilters,
     );
     final jurisdictions = filters.types
-        .map((type) => type.jurisdictionCode)
+        .map((type) => type.jurisdiction)
         .toSet();
 
-    return BullDropdown<String?>(
+    return BullDropdown<Jurisdiction?>(
       value: selectedJurisdiction,
       onChanged: onChanged,
       items: [
         if (includeAllOption && jurisdictions.length > 1)
-          BullPickerItem<String?>(
+          BullPickerItem<Jurisdiction?>(
             value: null,
             label: context.loc.recipientsJurisdictionAll,
           ),
         for (final jurisdiction in jurisdictions)
-          BullPickerItem<String?>(
+          BullPickerItem<Jurisdiction?>(
             value: jurisdiction,
             label: switch (jurisdiction) {
-              'CA' => context.loc.recipientsJurisdictionCanada,
-              'EU' => context.loc.recipientsJurisdictionEurope,
-              'MX' => context.loc.recipientsJurisdictionMexico,
-              'CR' => context.loc.recipientsJurisdictionCostaRica,
-              'AR' => context.loc.recipientsJurisdictionArgentina,
-              'CO' => context.loc.recipientsJurisdictionColombia,
-              _ => jurisdiction,
+              Jurisdiction.canada => context.loc.recipientsJurisdictionCanada,
+              Jurisdiction.europe => context.loc.recipientsJurisdictionEurope,
+              Jurisdiction.mexico => context.loc.recipientsJurisdictionMexico,
+              Jurisdiction.costaRica =>
+                context.loc.recipientsJurisdictionCostaRica,
+              Jurisdiction.argentina =>
+                context.loc.recipientsJurisdictionArgentina,
+              Jurisdiction.colombia =>
+                context.loc.recipientsJurisdictionColombia,
             },
           ),
       ],

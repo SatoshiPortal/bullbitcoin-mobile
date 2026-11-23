@@ -89,7 +89,7 @@ void main() {
               ],
               isOwner: true,
             ),
-            jurisdictionFilter: 'EU',
+            jurisdictionFilter: Jurisdiction.europe,
             confidentialSepaAvailability: availability,
             recipients: const [_recipient],
           ),
@@ -321,7 +321,7 @@ void main() {
         types: [RecipientType.sepaEur],
         isOwner: true,
       ),
-      jurisdictionFilter: 'EU',
+      jurisdictionFilter: Jurisdiction.europe,
       recipients: const [_recipient],
     );
     await pumpList(tester, initialState: initial, updates: updates.stream);
@@ -363,7 +363,7 @@ void main() {
           types: [RecipientType.sepaEur, RecipientType.confidentialSepaEur],
           isOwner: true,
         ),
-        jurisdictionFilter: 'EU',
+        jurisdictionFilter: Jurisdiction.europe,
         failedToLoadConfidentialSepaAvailability:
             const RecipientsNetworkFailure(),
         recipients: const [_recipient],
@@ -393,7 +393,7 @@ void main() {
           types: [RecipientType.confidentialSepaEur],
           isOwner: true,
         ),
-        jurisdictionFilter: 'EU',
+        jurisdictionFilter: Jurisdiction.europe,
         confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
         failedToLoadConfidentialSepaAvailability:
             const RecipientsNetworkFailure(),
@@ -416,7 +416,7 @@ void main() {
           types: [RecipientType.sepaEur],
           isOwner: true,
         ),
-        jurisdictionFilter: 'EU',
+        jurisdictionFilter: Jurisdiction.europe,
         recipients: const [_recipient],
         loadedPages: 1,
         totalRecipients: 100,
@@ -466,7 +466,7 @@ void main() {
             types: [RecipientType.sinpeMovilCrc],
             isOwner: true,
           ),
-          jurisdictionFilter: 'CR',
+          jurisdictionFilter: Jurisdiction.costaRica,
           recipients: const [recipient],
         ),
       );
@@ -509,7 +509,7 @@ void main() {
             types: [RecipientType.sepaEur],
             isOwner: true,
           ),
-          jurisdictionFilter: 'EU',
+          jurisdictionFilter: Jurisdiction.europe,
           recipients: [_recipient, unknown, other, wrongType],
         ),
       );
@@ -535,7 +535,7 @@ void main() {
               types: [RecipientType.confidentialSepaEur],
               isOwner: true,
             ),
-            jurisdictionFilter: 'EU',
+            jurisdictionFilter: Jurisdiction.europe,
             confidentialSepaAvailability:
                 ConfidentialSepaAvailability.unavailable,
             recipients: [confidential],

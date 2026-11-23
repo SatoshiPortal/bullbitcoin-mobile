@@ -7,8 +7,9 @@ sealed class RecipientsEvent with _$RecipientsEvent {
   const factory RecipientsEvent.refreshed() = RecipientsRefreshed;
   const factory RecipientsEvent.confidentialSepaAvailabilityRetried() =
       RecipientsConfidentialSepaAvailabilityRetried;
-  const factory RecipientsEvent.jurisdictionChanged(String? jurisdiction) =
-      RecipientsJurisdictionChanged;
+  const factory RecipientsEvent.jurisdictionChanged(
+    Jurisdiction? jurisdiction,
+  ) = RecipientsJurisdictionChanged;
   const factory RecipientsEvent.searchChanged(String query) =
       RecipientsSearchChanged;
   const factory RecipientsEvent.added(RecipientFormDataModel recipient) =
