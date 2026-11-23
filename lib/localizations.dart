@@ -11,26 +11,12 @@ import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:signers/routes.dart' show SignersLocalizations;
 import 'package:silent/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bull_ui/bull_ui.dart' show BullOnchainSendLabels;
 import 'package:material_ui/material_ui.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:scanning/scanning.dart';
 
 export 'package:bb_mobile/generated/l10n/localization.dart'
     show AppLocalizations, lookupAppLocalizations;
-
-extension OnchainSendLabelsL10n on AppLocalizations {
-  BullOnchainSendLabels get onchainSendLabels => (
-    from: coreScreensFromLabel,
-    to: coreScreensToLabel,
-    selfTransfer: sendSelfTransfer,
-    payjoin: sendPayjoinLabel,
-    note: receiveNote,
-    amount: coreScreensAmountLabel,
-    networkFee: coreScreensNetworkFeesLabel,
-    feePriority: coreScreensFeePriorityLabel,
-  );
-}
 
 // Flutter's generated delegate list still names the SDK design libraries.
 // Keep the app on the standalone delegates across automatic regeneration.
