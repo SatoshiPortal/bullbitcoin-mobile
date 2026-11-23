@@ -309,6 +309,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
     final reservations = <api.PayjoinInputReservation>[];
     for (final payjoin in payjoins) {
+      // A receiver stops polling the directory once the request arrives, so
+      // elapsed expiry must release its coin even without a live expiry event.
+      if (payjoin is PayjoinReceiverModel && payjoin.isExpiryTimePassed) {
+        continue;
+      }
       // A receiver holds the inputs of its proposal, a sender those of its
       // original; a receiver with no proposal yet holds nothing.
       final (psbt, role) = switch (payjoin) {
@@ -907,6 +912,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ) async {
     if (receiver.proposalPsbt != null) {
       _watchCommittedReceiver(receiver);
+      if (receiver.originalTxBytes != null &&
+          _pdkPayjoinDatasource.receiverProposalNeedsFallback(receiver)) {
+        final fallback = await _broadcastOriginalWithRetry(receiver.toEntity());
+        if (fallback is PayjoinReceiver) return fallback;
+      }
       return receiver.toEntity() as PayjoinReceiver;
     }
 
@@ -1193,10 +1203,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         return;
       }
       if (latest == null || latest.isAborted || latest.isCompleted) return;
-      result = latest.proposalPsbt != null
-          ? latest.toEntity() as PayjoinReceiver
-          : (await _broadcastOriginalWithRetry(latest.toEntity()))
-                as PayjoinReceiver?;
+      // The proposal POST reports relay or expiry failures explicitly. Even
+      // if a relay accepted it before failing, the same sender inputs prevent
+      // the original and the payjoin from both confirming.
+      final postFailed =
+          e is PayjoinNotFoundException || e is PayjoinExpiredException;
+      if (latest.proposalPsbt != null && !postFailed) {
+        result = latest.toEntity() as PayjoinReceiver;
+      } else if (latest.originalTxBytes != null) {
+        result = (await _broadcastOriginalWithRetry(
+          latest.toEntity(),
+        )) as PayjoinReceiver?;
+        if (result == null && latest.proposalPsbt != null) {
+          _watchCommittedReceiver(latest);
+        }
+      }
     }
 
     if (result != null) {
@@ -1922,8 +1943,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final expiredModel = freshModel.copyWith(isExpired: true);
     final payjoin = expiredModel.toEntity();
 
-    // TODO: Unfreeze the utxo used in the payjoin
-
     if (expiredModel is PayjoinReceiverModel &&
         expiredModel.originalTxBytes == null) {
       // No sender ever contacted this endpoint. It is not a transaction and
@@ -1939,15 +1958,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     if (payjoin is PayjoinReceiver &&
         payjoin.originalTxBytes != null &&
-        payjoin.proposalPsbt == null) {
-      // We received the sender's original transaction but never sent a
-      //  proposal before expiring, so broadcast that original automatically —
-      //  the receiver still gets paid, and (per BIP78) doing so imposes the
-      //  mining-fee cost that makes UTXO probing non-free.
-      // Guard on proposalPsbt == null: once a proposal has gone out, the
-      //  sender owns finalizing/broadcasting the payjoin transaction, which
-      //  spends the same inputs. Broadcasting the original here would just
-      //  race our own in-flight payjoin for no benefit.
+        (payjoin.proposalPsbt == null ||
+            (freshModel is PayjoinReceiverModel &&
+                _pdkPayjoinDatasource.receiverProposalNeedsFallback(
+                  freshModel,
+                )))) {
+      // We received the sender's original but never acknowledged a proposal
+      // before expiry. Broadcast the original so the receiver still gets
+      // paid and (per BIP78) UTXO probing still costs a mining fee.
+      // A successfully acknowledged proposal instead leaves finalization to
+      // the sender. A write-ahead proposal with no acknowledgement keeps the
+      // original fallback even if we died during the POST.
       //
       //  Emit only the terminal outcome — mirroring the sender-expiry
       //  fallback below — so a receive screen watching this session doesn't
@@ -2132,7 +2153,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           if (!fresh.isExpired) return;
           if (fresh.proposalPsbt != null) {
             _watchCommittedReceiver(fresh);
-            return;
+            if (!_pdkPayjoinDatasource.receiverProposalNeedsFallback(fresh)) {
+              return;
+            }
           }
           if (fresh.originalTxBytes == null) {
             _stopWatching(fresh.id);
@@ -2302,6 +2325,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         //  it should be processed.
         await _processPayjoinRequest(model);
       } else if (model.txId != null) {
+        if (_pdkPayjoinDatasource.receiverProposalNeedsFallback(model)) {
+          // Serialize recovery with manual fallback and chain observers.
+          // Re-read on entry so a concurrent settlement cannot be undone.
+          await _withSessionLock(model.id, () async {
+            final fresh = await _localPayjoinDatasource.fetchReceiver(model.id);
+            if (fresh == null ||
+                fresh.isCompleted ||
+                fresh.isAborted ||
+                !_pdkPayjoinDatasource.receiverProposalNeedsFallback(fresh)) {
+              return;
+            }
+            final result = await _broadcastOriginalWithRetry(fresh.toEntity());
+            if (result != null) {
+              _payjoinStreamController.add(result);
+            } else {
+              _watchCommittedReceiver(fresh);
+            }
+          });
+          return;
+        }
         // A proposal was already sent before the app closed. Resume watching
         //  for the payjoin transaction to appear on-chain so the session can
         //  be completed and its transaction labelled.

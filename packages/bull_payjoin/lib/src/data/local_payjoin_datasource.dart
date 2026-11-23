@@ -297,9 +297,7 @@ class LocalPayjoinDatasource {
         // keep being "resumed" on every app start.
         expr =
             expr &
-            (row.isExpired.equals(false) |
-                (row.proposalPsbt.isNotNull() &
-                    Constant(includeExpiredReservations))) &
+            row.isExpired.equals(false) &
             row.isCompleted.equals(false) &
             row.isAborted.equals(false);
       }

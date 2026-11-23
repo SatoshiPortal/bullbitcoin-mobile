@@ -557,13 +557,7 @@ class PdkPayjoinDatasource {
     // A published signature cannot be revoked. The receiver's contribution
     // must be reserved even if this process dies during the request.
     await persistBeforePost(pendingModel);
-    try {
-      await _sendPayjoinProposal(proposal, persister, pendingModel);
-    } catch (_) {
-      // The sender may already have the proposal. Keep the row and observe
-      // both transactions rather than falling back from a stale request.
-      return pendingModel;
-    }
+    await _sendPayjoinProposal(proposal, persister, pendingModel);
 
     _log.fine(
       code: PayjoinLogCode.proposalSent,
@@ -572,6 +566,30 @@ class PdkPayjoinDatasource {
     );
 
     return pendingModel.copyWith(receiver: persister.toJson());
+  }
+
+  /// A write-ahead proposal that never recorded a successful POST response.
+  /// The sender may still hold it; an original broadcast spends the same
+  /// sender inputs, so at most one payment can confirm.
+  bool receiverProposalNeedsFallback(PayjoinReceiverModel model) {
+    if (model.proposalPsbt == null) return false;
+    final persister = InMemoryJsonReceiverSessionPersister.fromJson(
+      model.receiver,
+      log: _log,
+    );
+    // PDK replay refuses expired event logs. Inspect the final journal event
+    // instead: a successful response advances FinalizedProposal to
+    // PostedPayjoinProposal. An unreadable log is not proof of a failed POST.
+    final last = persister.events.lastOrNull;
+    if (last == null) return false;
+    try {
+      return switch (jsonDecode(last)) {
+        {'FinalizedProposal': Object _} => true,
+        _ => false,
+      };
+    } on FormatException {
+      return false;
+    }
   }
 
   /// Formally cancels a receiver session that was declined below the
