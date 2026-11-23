@@ -16,11 +16,6 @@ final class PaymentNotifications {
   static AppLocalizations localization(Language? language) =>
       lookupAppLocalizations(language?.locale ?? const Locale('en'));
 
-  static NotificationsFacade create(
-    NotificationStoreRepository outbox,
-    Language? language,
-  ) => NotificationsFacade(outbox: outbox, gateway: gateway(language));
-
   /// The payment channel. A tap opens the app: no notification carries a
   /// destination.
   static LocalNotificationPort gateway(Language? language) =>

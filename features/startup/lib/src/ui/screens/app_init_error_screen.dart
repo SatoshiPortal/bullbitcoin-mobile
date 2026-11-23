@@ -2,8 +2,6 @@ import 'package:preferences/preferences.dart' show Language;
 
 import 'dart:ui' show PlatformDispatcher;
 
-import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:startup/generated/l10n/startup_localizations.dart';

@@ -231,6 +231,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                               child: BullSupportScope(
                                 onContactSupport: SupportFacade.contactSupport,
                                 child: locator<StartupFeature>().gate(
+                                  logs: () => locator<LogsFacade>(),
                                   splash: const OnboardingSplash(loading: true),
                                   openOnboarding: () => AppRouter.router.go(
                                     OnboardingRoute.onboarding.path,

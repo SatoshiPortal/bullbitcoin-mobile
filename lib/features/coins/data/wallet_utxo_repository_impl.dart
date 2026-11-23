@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:sync/sync.dart' show CoinFreezes;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';

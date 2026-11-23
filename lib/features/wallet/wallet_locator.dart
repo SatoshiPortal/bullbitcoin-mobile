@@ -1,6 +1,5 @@
 import 'package:notifications/payment_store.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:secrets/custody.dart';
 import 'package:preferences/preferences.dart';
 import 'package:receive/receive.dart' show Receive;
@@ -22,7 +21,8 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 
 import 'data/payment_notifications.dart';
-import 'data/wallet_payment_observer.dart';
+
+import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
 
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';

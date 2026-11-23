@@ -11,10 +11,7 @@ final class ForegroundWalletSynchronization {
   final ElectrumSync _sync;
   final WalletNativeRuntime? _native;
 
-  const ForegroundWalletSynchronization(
-    this._sync, {
-    WalletNativeRuntime? native,
-  }) : _native = native;
+  const ForegroundWalletSynchronization(this._sync, {this._native});
 
   Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {

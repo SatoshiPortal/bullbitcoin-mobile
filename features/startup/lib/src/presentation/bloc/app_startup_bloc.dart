@@ -1,14 +1,9 @@
-import 'dart:async';
-
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:startup/src/domain/app_startup_failure.dart';
-import 'package:startup/src/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:startup/src/domain/usecases/initialize_required_tor_usecase.dart';
+import 'package:startup/src/domain/usecases/prepare_wallet_startup_usecase.dart';
 import 'package:startup/src/domain/usecases/restore_missing_default_secret_usecase.dart';
-import 'package:swaps/swaps.dart' show SwapStartup;
-import 'package:startup/src/domain/usecases/get_startup_pin_status_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart'
     show WidgetsBinding, WidgetsBindingObserver, AppLifecycleState;
@@ -23,23 +18,16 @@ part 'app_startup_state.dart';
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     with WidgetsBindingObserver {
   AppStartupBloc({
-    required this._getStartupPinStatusUsecase,
-    required this._checkForExistingDefaultWalletsUsecase,
-    required this._initializeRequiredTorUsecase,
+    required this._prepareWalletStartup,
     required this._restoreMissingDefaultSecretUsecase,
-    required this._swapStartup,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     on<AppStartupUnlocked>(_onAppStartupUnlocked);
     WidgetsBinding.instance.addObserver(this);
   }
 
-  final GetStartupPinStatusUsecase _getStartupPinStatusUsecase;
-  final CheckForExistingDefaultWalletsUsecase
-  _checkForExistingDefaultWalletsUsecase;
-  final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
+  final PrepareWalletStartupUsecase _prepareWalletStartup;
   final RestoreMissingDefaultSecretUsecase _restoreMissingDefaultSecretUsecase;
-  final SwapStartup _swapStartup;
 
   /// Stores the recovery phrase of a default wallet whose secret is missing,
   /// then starts the app again. The words go straight to the use case and are
@@ -101,48 +89,21 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
 
     await _logAppVersion();
 
-    if (!_authenticated) {
-      switch (await _getStartupPinStatusUsecase.execute()) {
-        case Ok(value: true):
-          emit(const AppStartupState.success(isPinCodeSet: true));
-          return;
-        case Ok(value: false):
-          break;
-        case Err(failure: AppStartupKeychainLockedFailure()):
-          _waitForKeychainUnlock();
-          return;
-        case Err(:final failure):
-          emit(AppStartupState.failure(failure));
-          return;
-      }
-    }
-
-    final bool doDefaultWalletsExist;
-    switch (await _checkForExistingDefaultWalletsUsecase.execute()) {
+    switch (await _prepareWalletStartup.execute(
+      authenticated: _authenticated,
+    )) {
       case Ok(:final value):
-        doDefaultWalletsExist = value;
+        emit(
+          AppStartupState.success(
+            isPinCodeSet: value.requiresPin,
+            hasDefaultWallets: value.hasDefaultWallets,
+          ),
+        );
       case Err(failure: AppStartupKeychainLockedFailure()):
         _waitForKeychainUnlock();
-        return;
       case Err(:final failure):
         emit(AppStartupState.failure(failure));
-        return;
     }
-
-    if (doDefaultWalletsExist) {
-      await _swapStartup.execute();
-    }
-
-    // Warm the embedded client without delaying the startup screen. The
-    // coordinator makes this single-flight with any concurrent consumer.
-    unawaited(_initializeTorInBackground());
-
-    emit(
-      AppStartupState.success(
-        isPinCodeSet: false,
-        hasDefaultWallets: doDefaultWalletsExist,
-      ),
-    );
   }
 
   Future<void> _onAppStartupUnlocked(
@@ -177,7 +138,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   /// startup — the app works fine without knowing its own version string —
   /// so it is caught rather than modelled as a failure.
   ///
-  /// Still awaited, unlike [_initializeTorInBackground]: it is what puts the
+  /// Still awaited, unlike Tor warmup: it is what puts the
   /// version at the top of a startup log, and detaching it would let later
   /// lines overtake it. The catch is what makes awaiting safe; before this
   /// change the same call was awaited under the handler's outer try.
@@ -189,18 +150,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       );
     } on Object catch (e, st) {
       log.warning('Could not read package info', error: e, trace: st);
-    }
-  }
-
-  Future<void> _initializeTorInBackground() async {
-    try {
-      await _initializeRequiredTorUsecase.execute();
-    } catch (error, stackTrace) {
-      log.severe(
-        message: 'Required Tor initialization failed',
-        error: error,
-        trace: stackTrace,
-      );
     }
   }
 }

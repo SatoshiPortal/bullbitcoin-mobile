@@ -2,7 +2,6 @@ import 'package:startup/src/ui/screens/restore_default_secret_screen.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:startup/src/l10n.dart';
 import 'package:bull_logs/bull_logs.dart';
-import 'package:get_it/get_it.dart';
 import 'package:startup/src/domain/app_startup_failure.dart';
 import 'package:startup/src/presentation/app_startup_failure_l10n.dart';
 import 'package:startup/src/presentation/bloc/app_startup_bloc.dart';
@@ -19,10 +18,12 @@ class AppStartupWidget extends StatefulWidget {
     required this.onUnlocked,
     required this.splash,
     required this.openOnboarding,
+    required this.logs,
   });
 
   final Widget app;
   final Widget splash;
+  final LogsFacade Function() logs;
   final VoidCallback openOnboarding;
   final Future<void> Function() onUnlocked;
 
@@ -61,7 +62,10 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               }
               return widget.app;
             } else if (state is AppStartupFailureState) {
-              return AppStartupFailureScreen(failure: state.failure);
+              return AppStartupFailureScreen(
+                failure: state.failure,
+                logs: widget.logs,
+              );
             }
 
             // TODO: remove this when all states are handled and return the
@@ -105,9 +109,14 @@ class AppStartupListener extends StatelessWidget {
 }
 
 class AppStartupFailureScreen extends StatefulWidget {
-  const AppStartupFailureScreen({super.key, required this.failure});
+  const AppStartupFailureScreen({
+    super.key,
+    required this.failure,
+    required this.logs,
+  });
 
   final AppStartupFailure failure;
+  final LogsFacade Function() logs;
 
   @override
   State<AppStartupFailureScreen> createState() =>
@@ -190,7 +199,7 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
                 textColor: context.appColors.onPrimary,
               ),
               const SizedBox(height: 24),
-              ShareLogsWidget(facade: GetIt.I<LogsFacade>()),
+              ShareLogsWidget(facade: widget.logs()),
             ],
           ),
         ),

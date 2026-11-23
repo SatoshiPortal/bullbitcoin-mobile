@@ -3,6 +3,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show BitcoinRecoveryWallet;
 
 /// Puts a default wallet's missing seed back from the user's recovery phrase.
 ///

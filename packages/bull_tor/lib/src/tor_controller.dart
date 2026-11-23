@@ -5,6 +5,7 @@ import 'domain/entities/tor_connection_state.dart';
 import 'domain/entities/tor_proxy_endpoint.dart';
 import 'domain/entities/tor_session.dart';
 import 'domain/entities/tor_transport.dart';
+import 'domain/entities/tor_route.dart';
 import 'domain/usecases/close_tor_usecase.dart';
 import 'domain/usecases/ensure_tor_ready_usecase.dart';
 import 'domain/usecases/get_tor_connection_usecase.dart';

@@ -15,16 +15,12 @@ class CheckForExistingDefaultWalletsUsecase {
   final DefaultWalletRepair _repair;
 
   const CheckForExistingDefaultWalletsUsecase({
-    required ActiveEnvironmentReader preferences,
-    required WalletInventory inventory,
-    required Future<Result<bool, SecretFailure>> Function() hasWallets,
-    required Secrets secrets,
-    required DefaultWalletRepair repair,
-  }) : _preferences = preferences,
-       _inventory = inventory,
-       _hasWallets = hasWallets,
-       _secrets = secrets,
-       _repair = repair;
+    required this._preferences,
+    required this._inventory,
+    required this._hasWallets,
+    required this._secrets,
+    required this._repair,
+  });
 
   @useResult
   Future<Result<bool, AppStartupFailure>> execute() async {

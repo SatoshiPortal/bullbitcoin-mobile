@@ -11,11 +11,7 @@ library;
 
 export 'src/domain/database_open_failure.dart';
 export 'src/domain/wallet_registration.dart'
-    show
-        BitcoinRecoveryWallet,
-        WalletRegistration,
-        WalletSelection,
-        WalletSigner;
+    show WalletRegistration, WalletSelection, WalletSigner;
 export 'src/public/keychains.dart'
     show AccessKeychain, ExchangeKeychain, SilentPaymentKeychain, SwapKeychain;
 export 'src/public/extensions.dart'
