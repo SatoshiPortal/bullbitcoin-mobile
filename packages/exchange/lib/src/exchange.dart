@@ -487,6 +487,7 @@ final class Exchange {
 
   /// Returns false only after scanning a complete, stable session inventory.
   /// A signed-out account cannot establish absence.
+  @useResult
   Future<Result<bool, ExchangeFailure>> hasPendingOrders() =>
       _hasPendingOrders();
 
@@ -505,21 +506,25 @@ final class Exchange {
 
   /// Reads the account, distinguishing an HTTP 401 from an absent local key.
   Future<Result<UserSummary, ExchangeFailure>> getAccount(
+  @useResult
     ExchangeEnvironment environment,
   ) => _getAccount(environment);
 
   /// Reads the summary with the historical account-availability semantics.
   Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
+  @useResult
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
 
   Future<Result<List<Announcement>, ExchangeFailure>> listAnnouncements(
+  @useResult
     ExchangeEnvironment environment,
   ) => _listAnnouncements(environment);
 
   /// Replaces the account's preference set. Supply all existing values that
   /// should be retained when changing only one field.
   Future<Result<void, ExchangeFailure>> saveUserPreference(
+  @useResult
     ExchangeEnvironment environment, {
     String? language,
     String? currency,
@@ -567,16 +572,19 @@ final class Exchange {
   );
 
   Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
+  @useResult
     int? page,
     int? pageSize,
   }) => _chat.getMessages(page: page, pageSize: pageSize);
 
   Future<Result<void, ExchangeFailure>> sendSupportMessage({
+  @useResult
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   }) => _chat.sendMessage(text: text, attachments: attachments);
 
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
+  @useResult
   getSupportAttachment(String attachmentId) =>
       _chat.getAttachment(attachmentId);
 
@@ -587,9 +595,11 @@ final class Exchange {
       _notifications.messages();
 
   Future<Result<void, ExchangeFailure>> connectNotifications() =>
+  @useResult
       _notifications.connect();
 
   Future<Result<void, ExchangeFailure>> reconnectNotifications() =>
+  @useResult
       _notifications.reconnect();
 
   void disconnectNotifications() => _notifications.disconnect();
