@@ -137,7 +137,6 @@ void main() {
         onSignIn: (_) {},
         onExit: (_) {},
       ).settingsRoutes,
-      appSettingsRoutes: const [],
       backupRoutes: const [],
       priceRoutes: const [],
     );

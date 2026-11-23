@@ -4,6 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test(
+    'refresh updates the live gate without accessing the boot mirror',
+    () async {
+      Report.consent = true;
+
+      await Report.refreshConsent(() async => false);
+
+      expect(Report.consent, isFalse);
+    },
+  );
+
   // No SharedPreferences mock is installed, so the boot-mirror write throws
   // (no platform channel) — the failure SettingsRepository swallows.
   test('an opt-out turns the live gate off even when the mirror write '
