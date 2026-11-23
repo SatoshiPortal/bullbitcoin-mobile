@@ -12,7 +12,6 @@ import 'package:backups/backups.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotifications;
 import 'package:bull_recoverbull/storage.dart';
 import 'package:bull_recoverbull/setup.dart';
-import 'package:provisioning/default_wallets.dart';
 import 'package:overview/setup.dart';
 import 'package:sync/sync.dart' show WalletRevisionState;
 import 'package:startup/setup.dart';

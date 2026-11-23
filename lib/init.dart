@@ -33,10 +33,9 @@ import 'package:startup/startup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:bull_ark/ark_wallet_setup.dart' show arkBoardFundingBinding;
+import 'package:bull_ark/ark_wallet_setup.dart'
+    show arkBoardFundingBinding, SqliteArkFundingReservations;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
-import 'package:secrets/custody.dart' show ParentCustodyAdmissionPort;
-import 'package:ark/funding.dart' show SqliteArkFundingReservations;
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:fees/fees.dart';
 import 'package:sync/write.dart' show WalletNativeRuntime;

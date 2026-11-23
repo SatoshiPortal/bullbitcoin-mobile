@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
-import 'package:provisioning/default_wallets.dart';
 import 'package:notifications/payment_store.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:secrets/custody.dart';
