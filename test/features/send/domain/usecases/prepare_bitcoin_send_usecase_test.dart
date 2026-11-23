@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/send/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_amount_input_fields.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullKeyboardActions,
         BullButton,
         BullInfoCard,
         BullInputText,
@@ -70,7 +70,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.payTitle)),
       body: SafeArea(
-        child: BBKeyboardActions(
+        child: BullKeyboardActions(
+          doneText: context.loc.doneButton,
           disableScroll: true,
           child: Form(
             key: _formKey,
@@ -119,7 +120,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                     label: context.loc.buyInputCompleteKyc,
                     onPressed: () {
                       context.pushReplacementNamed(
-                        ExchangeRoute.exchangeKyc.name,
+                        BullExchangeNavigation.kycName,
                       );
                     },
                   ),

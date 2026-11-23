@@ -1,29 +1,27 @@
 import 'initialization_result.dart';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide Network, ScriptType;
+import 'package:primitives/primitives.dart' hide Network;
 
 import 'developer_network.dart';
+import 'funded_testnet_wallet.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -192,29 +190,21 @@ Future<void> main({bool isInitialized = false}) async {
         if (enabled case Err(:final failure)) throw failure;
       }
 
-      final receiverSecret = switch (await secrets.import(
-        words: receiverMnemonic!.split(' '),
-        language: bip39.Language.english,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      final senderSecret = switch (await secrets.import(
-        words: senderMnemonic!.split(' '),
-        language: bip39.Language.english,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      receiverWallet = await walletRepository.createWallet(
-        secret: receiverSecret,
-        network: Network.bitcoinTestnet,
-        scriptType: ScriptType.bip84,
+      receiverWallet = await openFundedTestnetWallet(
+        mnemonic: receiverMnemonic ?? fail('missing Alice fixture'),
+        secrets: secrets,
+        wallets: walletRepository,
       );
-      senderWallet = await walletRepository.createWallet(
-        secret: senderSecret,
-        network: Network.bitcoinTestnet,
-        scriptType: ScriptType.bip84,
+      senderWallet = await openFundedTestnetWallet(
+        mnemonic: senderMnemonic ?? fail('missing Bob fixture'),
+        secrets: secrets,
+        wallets: walletRepository,
+      );
+      expect(
+        senderWallet.id,
+        isNot(receiverWallet.id),
+        reason:
+            'The funded Payjoin requires distinct sender and receiver accounts',
       );
     });
 

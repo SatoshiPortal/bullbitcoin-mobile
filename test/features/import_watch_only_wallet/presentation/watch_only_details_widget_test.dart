@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network;
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
@@ -40,7 +40,7 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
     selectedNetwork: selectedNetwork,
     signerDevice: selectedNetwork == Network.bitcoinRegtest
         ? null
-        : SignerDeviceEntity.seedsigner,
+        : SignerDevice.seedsigner,
   );
   final cubit = _MockImportWatchOnlyCubit();
   when(() => cubit.state).thenReturn(
@@ -85,10 +85,7 @@ void main() {
     expect(find.text('Type'), findsOneWidget);
     expect(find.text(satoshifier.Derivation.bip84.label), findsOneWidget);
     expect(find.text('Signing Device'), findsOneWidget);
-    expect(
-      find.text(SignerDeviceEntity.seedsigner.displayName),
-      findsOneWidget,
-    );
+    expect(find.text(SignerDevice.seedsigner.displayName), findsOneWidget);
     expect(find.text('Label'), findsOneWidget);
     expect(find.text('Import'), findsOneWidget);
 
@@ -117,10 +114,7 @@ void main() {
     );
     expect(find.text('Regtest'), findsOneWidget);
     expect(find.text('Signing Device'), findsNothing);
-    expect(
-      find.byType(DropdownButtonFormField<SignerDeviceEntity?>),
-      findsNothing,
-    );
+    expect(find.byType(DropdownButtonFormField<SignerDevice?>), findsNothing);
   });
 
   testWidgets(

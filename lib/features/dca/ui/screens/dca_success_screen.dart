@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullSuccessScreen;

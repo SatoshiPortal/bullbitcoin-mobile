@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
@@ -12,7 +12,7 @@ class CheckDuplicateMnemonicUsecase {
   final Secrets _secrets;
 
   final WalletMetadataDatasource _metadata;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   int _invalidCount = 0;
 
   CheckDuplicateMnemonicUsecase({
@@ -58,7 +58,10 @@ class CheckDuplicateMnemonicUsecase {
         case Err(:final failure):
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
         case Ok(value: final secret?):
-          final settings = await _settings.fetch();
+          final settings = (await _settings.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
           final network = Network.fromEnvironment(
             environment: settings.environment.networkEnv,
             isLiquid: false,

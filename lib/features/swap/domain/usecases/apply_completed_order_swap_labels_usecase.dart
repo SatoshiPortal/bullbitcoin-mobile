@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
@@ -11,7 +11,7 @@ class ApplyCompletedOrderSwapLabelsUsecase {
   final GetOrderSwapsAwaitingLabelsUsecase _getOrders;
   final MarkOrderSwapLabelsAppliedUsecase _markApplied;
   final WalletTransactionRepository _walletTransactions;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final DateTime Function() _now;
 
   ApplyCompletedOrderSwapLabelsUsecase(

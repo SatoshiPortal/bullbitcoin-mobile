@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:bb_mobile/localizations.dart';
@@ -7,7 +7,7 @@ import 'package:bull_ui/bull_ui.dart' show BullPickerChip;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/regtest_electrum_profile.dart';
+import 'package:electrum/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

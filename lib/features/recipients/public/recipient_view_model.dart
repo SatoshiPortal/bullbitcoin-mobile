@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_view_model.freezed.dart';

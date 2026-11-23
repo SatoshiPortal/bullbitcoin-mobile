@@ -6,27 +6,37 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Ok;
+    show BitcoinNetwork, BitcoinUnit, Ok, ScriptType;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockPrescan extends Mock {
+  Future<({BigInt satoshis, int transactions})> dryScan({
+    required String? externalDescriptor,
+    required String? internalDescriptor,
+    required Network? network,
+    required ElectrumConnection? electrumServer,
+  }) => super.noSuchMethod(
+    Invocation.method(#dryScan, [], {
+      #externalDescriptor: externalDescriptor,
+      #internalDescriptor: internalDescriptor,
+      #network: network,
+      #electrumServer: electrumServer,
+    }),
+  ) as Future<({BigInt satoshis, int transactions})>;
+}
 
 class _FakeConnection extends ElectrumConnection {
   const _FakeConnection()
@@ -68,19 +78,25 @@ void main() {
 
   late _MockSettingsRepository settings;
   late _FakeServersPort servers;
-  late _MockBitcoinWalletRepository wallets;
+  late _MockPrescan wallets;
   late Secrets secrets;
   late FakeSecureStoragePlatform storage;
 
-  CheckWalletStatusUsecase usecase() =>
-      CheckWalletStatusUsecase(settings, servers, wallets, secrets);
+  CheckWalletStatusUsecase usecase() => CheckWalletStatusUsecase(
+    settings,
+    servers,
+    secrets,
+    prescan: wallets.dryScan,
+  );
 
   void environment(Environment environment) =>
       when(() => settings.fetch()).thenAnswer(
-        (_) async => SettingsEntity(
-          environment: environment,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          SettingsEntity(
+            environment: environment,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
 
@@ -102,7 +118,7 @@ void main() {
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     settings = _MockSettingsRepository();
     servers = _FakeServersPort();
-    wallets = _MockBitcoinWalletRepository();
+    wallets = _MockPrescan();
     when(
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),

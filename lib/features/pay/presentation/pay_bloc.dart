@@ -4,15 +4,12 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:fees/fees.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
@@ -33,7 +30,7 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
+import 'package:fees_feature/fee_ui.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
@@ -50,7 +47,7 @@ part 'pay_event.dart';
 part 'pay_state.dart';
 
 class PayBloc extends Bloc<PayEvent, PayState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   PayBloc({
     required this._loadPayUserSummaryUsecase,
     required this._placePayOrderUsecase,
@@ -1219,7 +1216,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   // From Sell: Recalculate fees when UTXOs, RBF or the fee selection changes
   ///
   /// Every emit past an await reads the live state and gives up when it is gone:
-  /// this runs across `_getNetworkFeesUsecase` and a PSBT build, so a slow fetch
+  /// this runs across `_feeEstimates` and a PSBT build, so a slow fetch
   /// routinely outlives the screen. Merging into a pre-await snapshot instead
   /// would republish the payment state over whatever replaced it, re-arming
   /// Confirm on a payin already on the wire.
@@ -1689,8 +1686,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     );
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
-  // The shared modal in lib/core/widgets/fees/ sees the same snapshot and
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
+  // The shared modal in lib/features/fees/public/ sees the same snapshot and
   // action surface it gets from SendCubit and TransferBloc; the pay flow's own
   // state shape and event dispatch collapse here. Fee state only exists on
   // PayPaymentState, so every other state maps to the neutral defaults (the

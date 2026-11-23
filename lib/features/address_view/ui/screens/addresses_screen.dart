@@ -1,12 +1,20 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullBottomSheet,
+        BullButton,
+        BullSegmented,
+        BullShapesX,
+        BullText,
+        BullTextRole,
+        BullTypographyX,
+        Gap;
 
 class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key, required this.walletId});
@@ -79,11 +87,12 @@ class _AddressesScreenState extends State<AddressesScreen> {
                 onSelected: (value) {
                   if (value == context.loc.addressViewChangeType) {
                     if (context.read<AddressViewBloc>().state.isLiquid) {
-                      ComingSoonBottomSheet.show(
-                        context,
-
-                        description:
-                            context.loc.addressViewChangeAddressesDescription,
+                      BullBottomSheet.show<void>(
+                        context: context,
+                        child: _ChangeAddressesNotice(
+                          description:
+                              context.loc.addressViewChangeAddressesDescription,
+                        ),
                       );
                     }
                     setState(() {
@@ -178,6 +187,59 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   }
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChangeAddressesNotice extends StatelessWidget {
+  const _ChangeAddressesNotice({required this.description});
+
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: context.appColors.outline.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(context.bullShapes.dot),
+              ),
+            ),
+            const Gap(24),
+            Semantics(
+              header: true,
+              child: BullText(
+                context.loc.comingSoonTitle,
+                role: BullTextRole.subtitle,
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Gap(8),
+            Text(
+              description,
+              style: context.bullType.body.copyWith(
+                color: context.appColors.onSurface.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Gap(24),
+            BullButton.secondary(
+              label: context.loc.okButton,
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         ),

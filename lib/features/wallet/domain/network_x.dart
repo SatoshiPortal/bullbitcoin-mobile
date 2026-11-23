@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' as primitives;
 

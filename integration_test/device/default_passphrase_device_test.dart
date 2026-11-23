@@ -4,11 +4,10 @@ import 'dart:math';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:access/access.dart';
+import 'package:access/testing.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
@@ -28,7 +27,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/data/secrets_vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
-import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
+import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/delete_drive_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/export_drive_vault_usecase.dart';
@@ -63,7 +62,7 @@ T custodyValue<T>(Result<T, SecretFailure> result) => switch (result) {
 
 // These ports are never used for custody: the vault repository below uses
 // the real Secrets instance and the platform keystore on the device.
-final class _DeviceFiles extends Fake implements VaultFileRepository {}
+final class _DeviceFiles extends Fake implements FileSystem {}
 
 final class _DeviceDrive extends Fake implements GoogleDriveRepository {}
 
@@ -80,7 +79,7 @@ final class _DeviceWallets extends Fake implements rb.RecoverBullWalletPort {
 
 // Keep the actual PIN input route open without starting automatic unlock.
 // This isolates its real go_router Back callback, including on a no-PIN app.
-final class _DeviceCancelUnlock extends AppUnlockFacade {
+final class _DeviceCancelUnlock extends Access {
   const _DeviceCancelUnlock();
 
   @override
@@ -563,7 +562,7 @@ void registerPhysicalRecoveryTests() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: selectedBloc,
-            child: const VerifyMnemonicScreen(),
+            child: VerifyMnemonicScreen(onTestSucceeded: (_) {}),
           ),
         ),
       );
@@ -626,8 +625,9 @@ void registerReturnNavigationTest() {
           path: '/',
           builder: (_, _) => BlocProvider.value(
             value: bloc,
-            child: const ShowMnemonicScreen(
-              appUnlockFacade: _DeviceCancelUnlock(),
+            child: ShowMnemonicScreen(
+              onTestSucceeded: (_) {},
+              access: const _DeviceCancelUnlock(),
             ),
           ),
         ),

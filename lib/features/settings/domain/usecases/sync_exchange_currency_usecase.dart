@@ -1,26 +1,20 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Mirrors an app currency change onto the exchange account, when there is
-/// one. Skips silently when the user is signed out or the currency is not
-/// offered on the exchange — the app-side setting is already saved either way.
+/// one. Skips when the network has no exchange, the user is signed out or the
+/// currency is not offered on the exchange.
 class SyncExchangeCurrencyUsecase {
-  final SettingsRepository _settingsRepository;
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Preferences _settingsRepository;
+  final Exchange _exchange;
 
   const SyncExchangeCurrencyUsecase({
     required this._settingsRepository,
-    required this._mainnetExchangeUserRepository,
-    required this._testnetExchangeUserRepository,
+    required this._exchange,
   });
 
   @useResult
@@ -32,7 +26,10 @@ class SyncExchangeCurrencyUsecase {
 
     final Environment environment;
     try {
-      environment = (await _settingsRepository.fetch()).environment;
+      environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
     } on Error {
       rethrow;
     } catch (e, st) {
@@ -48,18 +45,18 @@ class SyncExchangeCurrencyUsecase {
       BitcoinNetwork.fromName(environment.name),
       NetworkCapability.exchange,
     )) {
-      return Err(SettingsNetworkUnavailableFailure(environment.networkEnv));
+      return const Ok(null);
     }
-    final userRepository = environment.requireHistoricalTestnet()
-        ? _testnetExchangeUserRepository
-        : _mainnetExchangeUserRepository;
+    final exchangeEnvironment = environment.requireHistoricalTestnet()
+        ? ExchangeEnvironment.testnet
+        : ExchangeEnvironment.mainnet;
 
     final UserSummary summary;
-    switch (await userRepository.getUserSummary()) {
+    switch (await _exchange.getUserSummary(exchangeEnvironment)) {
       case Ok(:final value):
         summary = value;
       case Err(:final failure):
-        if (failure is ExchangeUserNotAuthenticatedFailure) {
+        if (failure is ExchangeNotAuthenticatedFailure) {
           return const Ok(null);
         }
         // Without the summary a preference write would reset the other
@@ -75,7 +72,8 @@ class SyncExchangeCurrencyUsecase {
       return const Ok(null);
     }
 
-    final saved = await userRepository.saveUserPreference(
+    final saved = await _exchange.saveUserPreference(
+      exchangeEnvironment,
       language: summary.language,
       currency: currency.code,
       dcaEnabled: summary.dca.isActive,

@@ -1,0 +1,1022 @@
+{
+  "@@locale": "hi",
+  "bitboxErrorMultipleDevicesFound": "एकाधिक बिटबॉक्स उपकरण पाए गए। कृपया सुनिश्चित करें कि केवल एक डिवाइस जुड़ा हुआ है।।",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "मदद की जरूरत है?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "बुल बिटकॉइन वॉलेट आपको जेड पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "स्कैन क्लिक करें",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "अपने पासपोर्ट डिवाइस पर लॉगिन करें",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "पीएसबीटी क्लिक करें",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "सुनिश्चित करें कि आपका फोन USB अनुमतियाँ सक्षम है।।",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "फिर जेड आपको अपना खुद का क्यूआर कोड दिखाएगा।।",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "जोड़ी उपकरण",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "ledgerButtonNeedHelp": "मदद की जरूरत है?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerImportButton": "आयात प्रारंभ करें",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxActionPairDeviceButton": "प्रारंभ करना",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - अपने डिवाइस को करीब या आगे बढ़ने की कोशिश करें",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "ledgerActionFailedMessage": "{action} विफल",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep12": "बुल बिटकॉइन वॉलेट आपको बीजगणक पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "सुरक्षित कनेक्शन स्थापित करना।",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   - QR कोड को स्थिर और केन्द्रित रखें",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "ledgerHelpStep3": "सुनिश्चित करें कि आपका लेजर ब्लूटूथ चालू हो गया है।।",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "आपका बिटबॉक्स वॉलेट सफलतापूर्वक आयात किया गया है।।",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "psbtFlowPartProgress": "{total} का भाग {current}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyTitle": "लेजर पर पता सत्यापित करें",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "seedsignerStep1": "अपने बीजगणित डिवाइस को चालू करें",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerProcessingSign": "लेनदेन पर हस्ताक्षर करना",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "jadeStep6": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "ledgerVerifyButton": "पता सत्यापित करें",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "kruxStep14": "बुल बिटकॉइन वॉलेट आपको Krux पर QR कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "बुल बिटकॉइन वॉलेट आपको पासपोर्ट पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "कृपया अपने पासवर्ड को बिटबॉक्स डिवाइस पर जारी रखने के लिए दर्ज करें।।",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "psbtFlowScanDeviceQr": "बुल बिटकॉइन वॉलेट आपको {device} पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "ledgerSuccessVerifyTitle": "लेजर पर पता सत्यापित ..।",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "फाउंडेशन पासपोर्ट निर्देश",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "वॉलेट ने सफलतापूर्वक आयात किया",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "bitboxErrorOperationCancelled": "ऑपरेशन रद्द कर दिया गया था। फिर से प्रयास करें।।",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "ब्लॉकस्ट्रीम जेड पीएसबीटी निर्देश",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "psbtFlowReviewTransaction": "एक बार जब लेनदेन आपके {device} में आयात किया जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "लेनदेन पर हस्ताक्षर करना",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "ledgerErrorDeviceLocked": "लेजर डिवाइस बंद है। कृपया अपने डिवाइस को अनलॉक करें और फिर से कोशिश करें।।",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerHelpStep4": "सुनिश्चित करें कि आपने लेज़र लाइव से बिटकॉइन ऐप का नवीनतम संस्करण स्थापित किया है।।",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerSuccessSignDescription": "आपके लेन-देन पर सफलतापूर्वक हस्ताक्षर किए गए हैं।।",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "लेगैसी (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerHelpStep1": "अपने लेजर डिवाइस को फिर से शुरू करें।।",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerConnectingSubtext": "सुरक्षित कनेक्शन स्थापित करना।",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "डिवाइस युग्मित नहीं है। कृपया पहले जोड़ी प्रक्रिया को पूरा करें।।",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "अपनी घड़ी केवल बटुए की स्थापना ..।",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "bitboxActionImportWalletTitle": "आयात बिटबॉक्स वॉलेट",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "निर्देश",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "सुनिश्चित करें कि आपके पास अपने बिटबॉक्स पर स्थापित नवीनतम फर्मवेयर है।।",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "अनलॉक बिटबॉक्स डिवाइस",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "अपने Bitbox02 स्क्रीन के साथ इस पते की तुलना करें",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "ledgerVerifyAddressLabel": "सत्यापित करने के लिए पता:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "jadeStep1": "अपने जेड डिवाइस पर लॉगिन करें",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "psbtFlowTroubleScanningTitle": "यदि आपको कोई परेशानी स्कैनिंग है:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "seedsignerInstructionsTitle": "बीजगणित निर्देश",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "कृपया अपने Bitbox डिवाइस पर जोड़ी कोड को सत्यापित करें।।",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "Bitbox02 समस्या निवारण",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "साइन क्लिक करें",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "बिटबॉक्स डिवाइस से कनेक्ट करने में विफल रहा। कृपया अपने कनेक्शन की जांच करें।।",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "अपनी घड़ी केवल बटुए की स्थापना ..।",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "मैं किया हूँ",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "ledgerWalletTypeSegwitDescription": "मूल SegWit - अनुशंसित",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "bitboxActionImportWalletProcessing": "आयात वॉलेट",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "यदि आपको कोई परेशानी स्कैनिंग है:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "ledgerHelpTitle": "लेजर समस्या निवारण",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "psbtFlowMoveBack": "अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep2": "स्कैन क्लिक करें",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerWalletTypeLabel": "वॉलेट प्रकार:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "keystoneStep6": "   - क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "ledgerInstructionsIos": "यह सुनिश्चित करने के लिए कि आपका लेजर खोला गया है और ब्लूटूथ सक्षम बनाया गया है।।",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "passportStep14": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "psbtFlowSelectSeed": "एक बार जब लेनदेन आपके {device} में आयात किया जाता है, तो आपको उस बीज का चयन करना चाहिए जिसके साथ आप साइन करना चाहते हैं।।",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerSuccessAddressVerified": "सफलतापूर्वक सत्यापित पता!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "kruxStep10": "एक बार जब लेनदेन आपके क्रूक्स में आयात हो जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "सुरक्षित कनेक्शन स्थापित करने में विफल रहा। फिर से प्रयास करें।।",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "एक बार जब लेनदेन आपके कीस्टोन में आयात हो जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "दर्शक निर्देश",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "बिटबॉक्स डिवाइस नहीं मिला।।",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "ledgerScanningMessage": "पास के लेजर उपकरणों की तलाश ..।",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "bitboxScreenNestedSegwitBip49": "नेस्टेड Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "ledgerHelpStep2": "सुनिश्चित करें कि आपका फोन ब्लूटूथ चालू हो गया है और अनुमति दी गई है।।",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "keystoneStep5": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   - अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "अपने Krux पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "कृपया अपने लेजर डिवाइस पर बिटकॉइन ऐप खोलें और फिर से कोशिश करें।।",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - पुराने प्रारूप",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "seedsignerStep9": "गंतव्य पते और राशि की समीक्षा करें और अपने बीजगणक पर हस्ताक्षर करने की पुष्टि करें।।",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "QR कोड के साथ साइन इन करें",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "अपने कीस्टोन पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "Bitbox पर पता सत्यापित करें",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "वॉलेट ने सफलतापूर्वक आयात किया",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "साइन करना शुरू करें",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep14": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "ledgerSuccessVerifyDescription": "पता आपके लेजर डिवाइस पर सत्यापित किया गया है।।",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "psbtFlowSignTransaction": "हस्ताक्षर लेनदेन",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "ledgerConnectingMessage": "{deviceName} से कनेक्ट",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveQRCode": "QR कोड",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "अपने जेड पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "अज्ञात त्रुटि हुई",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowTransactionImported": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "kruxStep4": "कैमरा से लोड क्लिक करें",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "कृपया अपने Bitbox डिवाइस पर इस पते को सत्यापित करें",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "ledgerConnectTitle": "अपने लेजर डिवाइस कनेक्ट",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "bitboxScreenConnecting": "बिटबॉक्स से कनेक्ट",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "कृपया Bitbox डिवाइस पर अपना पासवर्ड दर्ज करें।।",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "पता आपके Bitbox डिवाइस पर सत्यापित किया गया है।।",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "ledgerHelpStep5": "सुनिश्चित करें कि आपका लेजर डिवाइस नवीनतम फर्मवेयर का उपयोग कर रहा है, आप लेजर लाइव डेस्कटॉप ऐप का उपयोग करके फर्मवेयर अपडेट कर सकते हैं।।",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "psbtFlowScanQrShown": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "कृपया अपने Bitbox डिवाइस पर पते की पुष्टि करें।।",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "कीस्टोन निर्देश",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "Bitbox पर पता दिखा रहा है ..।",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "लेन-देन ने सफलतापूर्वक हस्ताक्षर किया",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerSuccessImportDescription": "आपका लेजर वॉलेट सफलतापूर्वक आयात किया गया है।।",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionUnlockDeviceButton": "अनलॉक डिवाइस",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "ledgerInstructionsAndroidUsb": "सुनिश्चित करें कि आपका लेजर को बिटकॉइन ऐप खोला गया है और इसे यूएसबी के माध्यम से कनेक्ट किया गया है।।",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "bitboxScreenTryAgainButton": "फिर से प्रयास करें",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "psbtFlowClickDone": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxActionUnlockDeviceSuccess": "डिवाइस अनलॉक सफल",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "ऑपरेशन समय समाप्त हो गया। फिर से प्रयास करें।।",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "अपने {device} डिवाइस को चालू करें",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "स्कैन क्लिक करें",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "psbtFlowSignTransactionOnDevice": "अपने {device} पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "keystoneStep7": "   - अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "यदि आपको कोई परेशानी स्कैनिंग है:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "अपने Bitbox02 डिवाइस को अनप्लग करके शुरू करें और इसे फिर से कनेक्ट करें।।",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "बुल बिटकॉइन वॉलेट आपको कीस्टोन पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "ledgerErrorRejectedByUser": "लेन-देन को उपयोगकर्ता द्वारा लेजर डिवाइस पर अस्वीकार कर दिया गया था।।",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "passportStep10": "इसके बाद पासपोर्ट आपको अपना खुद का क्यूआर कोड दिखाएगा।।",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "कृपया अपने लेजर डिवाइस पर लेनदेन की पुष्टि करें ..।",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "seedsignerStep10": "बीजगणक तब आपको अपना खुद का क्यूआर कोड दिखाएगा।।",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   - अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "एक बार जब आपके बीजगणित में लेनदेन का आयात हो जाता है, तो आपको उस बीज का चयन करना चाहिए जिसके साथ आप साइन करना चाहते हैं।।",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "ledgerButtonManagePermissions": "एप्लिकेशन अनुमतियां प्रबंधित करें",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "मूल SegWit - अनुशंसित",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "Bitbox02 पर पुष्टि के लिए प्रतीक्षा ..।",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "सफलतापूर्वक जोड़ा गया डिवाइस",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "कोई बिटबॉक्स उपकरण नहीं मिला। सुनिश्चित करें कि आपका डिवाइस USB के माध्यम से संचालित और जुड़ा हुआ है।।",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "ledgerWalletTypeNestedSegwit": "नेस्टेड Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "kruxStep6": "यदि आपको कोई परेशानी स्कैनिंग है:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "ledgerProcessingVerify": "लेजर पर पता दिखा रहा है ..।",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "jadeStep2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "अपने कीस्टोन डिवाइस पर लॉगिन करें",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "हस्ताक्षर लेनदेन",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "\"Scan QR\" विकल्प का चयन करें",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "ledgerWalletTypeSelectTitle": "वॉलेट चुनें प्रकार",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerImportTitle": "आयात लेजर वॉलेट",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "bitboxScreenScanning": "उपकरणों के लिए स्कैनिंग",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "ledgerHelpSubtitle": "सबसे पहले, सुनिश्चित करें कि आपका लेजर डिवाइस अनलॉक हो गया है और बिटकॉइन ऐप खोला गया है। यदि आपका डिवाइस अभी भी ऐप से कनेक्ट नहीं है, तो निम्नलिखित प्रयास करें:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "bitboxActionImportWalletButton": "आयात प्रारंभ करें",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "oopsSomethingWentWrong": "ओप! कुछ गलत हो गया",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "jadeStep4": "बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "साइन करने के लिए PSBT की आवश्यकता है",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "kruxInstructionsTitle": "Krux निर्देश",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "ledgerErrorDeviceBusy": "कोई अन्य प्रोग्राम आपके Ledger का उपयोग कर रहा है। कृपया उसे बंद करें (उदाहरण के लिए, Ledger Live) और फिर से कोशिश करें।",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "कोई लेजर कनेक्शन उपलब्ध नहीं",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "bitboxScreenActionFailed": "{action} विफल",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "यदि आपको कोई परेशानी स्कैनिंग है:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "पता सत्यापित करें",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "सबसे पहले, सुनिश्चित करें कि आपका बिटबॉक्स02 डिवाइस आपके फोन यूएसबी पोर्ट से जुड़ा हुआ है। यदि आपका डिवाइस अभी भी ऐप से कनेक्ट नहीं है, तो निम्नलिखित प्रयास करें:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "सत्यापित करने के लिए पता:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "यूएसबी अनुमतियों को बिटबॉक्स उपकरणों से कनेक्ट करने की आवश्यकता होती है।।",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "कृपया अपने Bitbox डिवाइस पर लेनदेन की पुष्टि करें ..।",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "आपका बिटबॉक्स डिवाइस अब जोड़ा गया है और उपयोग करने के लिए तैयार है।।",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "अपने Bitbox डिवाइस की तलाश में..।",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "कनेक्शन का प्रकार प्रारंभिक नहीं है।।",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerErrorPermissionDenied": "Ledger डिवाइस से कनेक्ट करने के लिए ब्लूटूथ अनुमतियाँ आवश्यक हैं।",
+  "ledgerErrorNoDevicesFound": "कोई Ledger डिवाइस नहीं मिला। सुनिश्चित करें कि आपका डिवाइस चालू है और ब्लूटूथ सक्षम है।",
+  "ledgerErrorMultipleDevicesFound": "कई Ledger डिवाइस मिले। कृपया सुनिश्चित करें कि पास में केवल एक ही डिवाइस है।",
+  "ledgerErrorDeviceNotFound": "Ledger डिवाइस नहीं मिला।",
+  "ledgerErrorDeviceMismatch": "डिवाइस बेमेल का पता चला।",
+  "ledgerErrorInvalidPsbt": "अमान्य PSBT प्रारूप का पता चला।",
+  "ledgerErrorMissingDerivationPath": "व्युत्पत्ति पथ आवश्यक है",
+  "ledgerErrorMissingScriptType": "स्क्रिप्ट प्रकार आवश्यक है",
+  "ledgerProcessingVerifySubtext": "कृपया अपने लेजर डिवाइस पर पते की पुष्टि करें।।",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerInstructionsAndroidDual": "यह सुनिश्चित करने के लिए कि आपका लेजर खोला गया है और ब्लूटूथ सक्षम बनाया गया है।।",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "jadeStep9": "जब लेनदेन आपके जेड में आयात हो जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "आपके लेन-देन पर सफलतापूर्वक हस्ताक्षर किए गए हैं।।",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - अपने डिवाइस पर स्क्रीन चमक बढ़ाएं",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "सुनिश्चित करें कि आपका बिटबॉक्स02 यूएसबी के माध्यम से अनलॉक और जुड़ा हुआ है।।",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "बिटबॉक्स डिवाइस से अमान्य प्रतिक्रिया। फिर से प्रयास करें।।",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "वॉलेट प्रकार:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "एक बार जब लेनदेन आपके पासपोर्ट में आयात हो जाता है, तो गंतव्य पते और राशि की समीक्षा करें।।",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "बुल बिटकॉइन वॉलेट में \"I'm\" पर क्लिक करें।।",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "साइन करना शुरू करें",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "अपने पासपोर्ट पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "इसके बाद Krux आपको अपना खुद का QR कोड दिखाएगा।।",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "ledgerScanningTitle": "उपकरणों के लिए स्कैनिंग",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "आपका बिटबॉक्स डिवाइस अब अनलॉक और उपयोग करने के लिए तैयार है।।",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "पासवर्ड दर्ज करें",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "इसके बाद कीस्टोन आपको अपना खुद का QR कोड दिखा देगा।।",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "ledgerSuccessSignTitle": "लेन-देन ने सफलतापूर्वक हस्ताक्षर किया",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "bitboxActionPairDeviceTitle": "जोड़ी बिटबॉक्स डिवाइस",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   - अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "इस कोड को सत्यापित करें अपने Bitbox02 स्क्रीन से मेल खाता है, फिर डिवाइस पर पुष्टि करता है।।",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "अपने Krux डिवाइस पर लॉगिन करें",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "सफलतापूर्वक सत्यापित",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "वॉलेट चुनें प्रकार",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "एप्लिकेशन अनुमतियां प्रबंधित करें",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "psbtFlowMoveLaser": "क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "{device} तब आपको अपना खुद का QR कोड दिखाएगा।।",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenPairingCode": "जोड़ी कोड",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "ledgerProcessingImport": "आयात वॉलेट",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerErrorMissingAddress": "सत्यापन के लिए पता आवश्यक है",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "bitboxActionUnlockDeviceProcessing": "अनलॉकिंग डिवाइस",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "यदि आपको कोई परेशानी स्कैनिंग है:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "ledgerButtonTryAgain": "फिर से प्रयास करें",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "पता सत्यापित करें",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "अपने Bitbox डिवाइस कनेक्ट",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "ledgerSignTitle": "हस्ताक्षर लेनदेन",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "psbtFlowSignViaNfc": "NFC के ज़रिए साइन करें",
+  "psbtFlowSignViaNfcSheetTitle": "PSBT को NFC के ज़रिए भेजने के लिए अपने {deviceName} को टैप करें",
+  "psbtFlowColdcardQInstructionsTitle": "कोल्डकार्ड Q निर्देश",
+  "psbtFlowColdcardMk4InstructionsTitle": "कोल्डकार्ड Mk4 निर्देश",
+  "psbtFlowColdcardQStep1": "अपने कोल्डकार्ड Q डिवाइस पर लॉगिन करें",
+  "psbtFlowColdcardQStep2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "psbtFlowColdcardQStep3": "अपनी पसंदीदा साइनिंग विधि चुनें:",
+  "psbtFlowColdcardQStep4": "QR कोड के लिए:",
+  "psbtFlowColdcardQStep5": "   - अपने कोल्डकार्ड Q पर \"Scan any QR code\" चुनें",
+  "psbtFlowColdcardQStep6": "   - बुल वॉलेट में दिखाया गया QR कोड स्कैन करें",
+  "psbtFlowColdcardQStep7": "   - यदि आपको कोई परेशानी स्कैनिंग है:",
+  "psbtFlowColdcardQStep8": "     - अपने डिवाइस पर स्क्रीन की चमक बढ़ाएं",
+  "psbtFlowColdcardQStep9": "     - क्यूआर कोड पर लाल लेजर को ऊपर और नीचे ले जाएँ",
+  "psbtFlowColdcardQStep10": "     - अपने डिवाइस को थोड़ा सा वापस ले जाने की कोशिश करें",
+  "psbtFlowColdcardQStep11": "NFC के लिए:",
+  "psbtFlowColdcardQStep12": "   - अपने कोल्डकार्ड Q पर \"Ready to Sign\" चुनें, फिर NFC बटन टैप करें",
+  "psbtFlowColdcardQStep13": "   - अपने फ़ोन को कोल्डकार्ड Q पर टैप करें",
+  "psbtFlowColdcardQStep14": "   - PSBT के ट्रांसफर होने की प्रतीक्षा करें",
+  "psbtFlowColdcardQStep15": "एक बार जब लेनदेन आपके कोल्डकार्ड Q में आयात हो जाए, तो गंतव्य पते और राशि की समीक्षा करें।",
+  "psbtFlowColdcardQStep16": "अपने कोल्डकार्ड Q पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।",
+  "psbtFlowColdcardQStep17": "इसके बाद कोल्डकार्ड Q एक हस्ताक्षरित लेनदेन QR कोड दिखाएगा या NFC ट्रांसफर तैयार करेगा।",
+  "psbtFlowColdcardQStep18": "यदि आपने QR से साइन किया है, तो बुल बिटकॉइन वॉलेट में \"I'm done\" पर क्लिक करें।",
+  "psbtFlowColdcardQStep19": "बुल बिटकॉइन वॉलेट आपसे हस्ताक्षरित लेनदेन QR कोड स्कैन करने या इसे प्राप्त करने के लिए NFC का उपयोग करने के लिए कहेगा।",
+  "psbtFlowColdcardQStep20": "   - QR के लिए: कोल्डकार्ड Q पर QR कोड स्कैन करें",
+  "psbtFlowColdcardQStep21": "   - NFC के लिए: अपने फ़ोन को कोल्डकार्ड Q पर टैप करें",
+  "psbtFlowColdcardQStep22": "हस्ताक्षरित लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।",
+  "psbtFlowColdcardQStep23": "अब यह प्रसारण के लिए तैयार है। जैसे ही आप प्रसारण पर क्लिक करेंगे, लेनदेन Bitcoin नेटवर्क पर प्रकाशित हो जाएगा।",
+  "psbtFlowColdcardMk4Step1": "अपने कोल्डकार्ड Mk4 डिवाइस पर लॉगिन करें",
+  "psbtFlowColdcardMk4Step2": "यदि आपके पास एक (वैकल्पिक) है तो एक पासफ्रेज़ जोड़ें",
+  "psbtFlowColdcardMk4Step3": "अपने कोल्डकार्ड Mk4 पर \"Ready to Sign\" चुनें, फिर नंबर 3 बटन टैप करें",
+  "psbtFlowColdcardMk4Step4": "अपने फ़ोन को कोल्डकार्ड Mk4 पर टैप करें",
+  "psbtFlowColdcardMk4Step5": "PSBT के ट्रांसफर होने की प्रतीक्षा करें",
+  "psbtFlowColdcardMk4Step6": "एक बार जब लेनदेन आपके कोल्डकार्ड Mk4 में आयात हो जाए, तो गंतव्य पते और राशि की समीक्षा करें।",
+  "psbtFlowColdcardMk4Step7": "अपने कोल्डकार्ड Mk4 पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।",
+  "psbtFlowColdcardMk4Step8": "इसके बाद कोल्डकार्ड Mk4 हस्ताक्षरित लेनदेन को NFC ट्रांसफर के लिए तैयार करेगा।",
+  "psbtFlowColdcardMk4Step9": "बुल बिटकॉइन वॉलेट में, प्रसारण स्क्रीन पर NFC टैप करें।",
+  "psbtFlowColdcardMk4Step10": "हस्ताक्षरित लेनदेन प्राप्त करने के लिए अपने फ़ोन को कोल्डकार्ड Mk4 पर टैप करें।",
+  "psbtFlowColdcardMk4Step11": "हस्ताक्षरित लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।",
+  "psbtFlowColdcardMk4Step12": "बुल बिटकॉइन वॉलेट में लेनदेन के विवरण की समीक्षा करें।",
+  "psbtFlowColdcardMk4Step13": "अब यह प्रसारण के लिए तैयार है। जैसे ही आप प्रसारण पर क्लिक करेंगे, लेनदेन Bitcoin नेटवर्क पर प्रकाशित हो जाएगा।",
+  "bitboxErrorBluetoothPermissionDenied": "अपने बिटबॉक्स02 Nova से कनेक्ट करने के लिए ब्लूटूथ अनुमति आवश्यक है।",
+  "bitboxErrorBluetoothUnavailable": "ब्लूटूथ उपलब्ध नहीं है। ब्लूटूथ चालू करें और फिर से प्रयास करें।",
+  "bitboxErrorNoBleDevicesFound": "आस-पास कोई बिटबॉक्स02 Nova नहीं मिला। ब्लूटूथ जांचें और फिर से प्रयास करें।",
+  "bitboxErrorMultipleBleDevicesFound": "एकाधिक बिटबॉक्स02 Nova डिवाइस मिले। केवल एक को पास रखें और फिर से प्रयास करें।",
+  "bitboxErrorOperationFailed": "बिटबॉक्स ऑपरेशन विफल रहा। कृपया फिर से प्रयास करें।",
+  "bitboxScreenConnectSubtextBluetooth": "सुनिश्चित करें कि आपका बिटबॉक्स02 Nova अनलॉक है और ब्लूटूथ सक्षम है।",
+  "bitboxScreenScanningSubtextBluetooth": "आपके आस-पास बिटबॉक्स02 Nova की तलाश की जा रही है...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "बिटबॉक्स02 Nova समस्या निवारण",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "यदि आपका डिवाइस अभी भी ऐप से कनेक्ट नहीं होता है, तो निम्नलिखित प्रयास करें:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "सुनिश्चित करें कि ब्लूटूथ चालू है और इस ऐप के लिए अनुमति प्राप्त है।",
+  "bitboxScreenTroubleshootingBluetoothStep2": "सुनिश्चित करें कि आपके बिटबॉक्स02 Nova पर ब्लूटूथ सक्षम है।",
+  "bitboxScreenTroubleshootingBluetoothStep3": "अपने बिटबॉक्स02 Nova को पुनः आरंभ करें और फिर से कनेक्ट करने का प्रयास करें।",
+  "psbtFlowInvalidPsbtError": "यह लेनदेन पढ़ा नहीं जा सका। वापस जाएँ और इसे फिर से बनाएँ।",
+  "psbtFlowQrEncodingError": "इस लेनदेन को QR कोड में परिवर्तित नहीं किया जा सका।"
+}

@@ -1,3 +1,4 @@
 lib/core/storage/schemas/**/drift_schema_v*.json linguist-generated
 lib/core/storage/*.steps.dart linguist-generated
 test/migrations_test/**/generated/*.dart linguist-generated
+WORKSPACE.md linguist-generated

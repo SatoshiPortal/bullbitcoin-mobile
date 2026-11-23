@@ -1,40 +1,42 @@
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as domain;
-import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:get_it/get_it.dart';
+import 'package:preferences/preferences.dart' as domain;
 
 class SettingsLocator {
-  static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<SettingsDatasource>(
-      () => SettingsDatasource(sqlite: locator<SqliteDatabase>()),
-    );
-  }
-
-  static Future<void> registerRepositories(GetIt locator) async {
-    locator.registerLazySingleton<SettingsRepository>(
-      () =>
-          SettingsRepository(settingsDatasource: locator<SettingsDatasource>()),
+  static Future<void> registerRepositories(
+    GetIt locator,
+    domain.Preferences preferences,
+  ) async {
+    locator.registerSingleton<domain.Preferences>(
+      preferences,
+      dispose: (value) => value.close(),
     );
 
-    // Register the interface for new code, resolving to the same instance
-    locator.registerLazySingleton<domain.SettingsRepository>(
-      () => locator<SettingsRepository>(),
+    locator.registerLazySingleton<domain.AmountDisplayPreferencesReader>(
+      () => locator<domain.Preferences>(),
     );
-  }
-
-  static void registerUsecases(GetIt locator) {
-    locator.registerFactory<GetSettingsUsecase>(
-      () =>
-          GetSettingsUsecase(settingsRepository: locator<SettingsRepository>()),
+    locator.registerLazySingleton<domain.ActiveEnvironmentReader>(
+      () => locator<domain.Preferences>(),
     );
-    locator.registerFactory<WatchCurrencyChangesUsecase>(
-      () => WatchCurrencyChangesUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+    locator.registerLazySingleton<domain.ConnectionPreferencesReader>(
+      () => locator<domain.Preferences>(),
+    );
+    locator.registerLazySingleton<domain.DeveloperEnvironmentReader>(
+      () => locator<domain.Preferences>(),
+    );
+    locator.registerLazySingleton<domain.RuntimeDisplayPreferencesReader>(
+      () => locator<domain.Preferences>(),
+    );
+    locator.registerLazySingleton<domain.AmountInputPreferences>(
+      () => locator<domain.Preferences>(),
+    );
+    locator.registerLazySingleton<domain.TorProxyPreferencesReader>(
+      () => locator<domain.Preferences>(),
+    );
+    locator.registerLazySingleton<domain.ExchangeTestnetBasicAuthPreferences>(
+      () => locator<domain.Preferences>(),
+    );
+    locator.registerLazySingleton<domain.RecoverBullPreferences>(
+      () => locator<domain.Preferences>().recoverBull,
     );
   }
 }

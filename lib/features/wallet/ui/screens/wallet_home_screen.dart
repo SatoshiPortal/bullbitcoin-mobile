@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
@@ -23,6 +24,7 @@ class WalletHomeScreen extends StatefulWidget {
   final ArkForegroundHost? arkHost;
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
+  final Widget announcements;
   final VoidCallback onImportNetworkWallet;
   final VoidCallback onRecoverEncryptedVault;
   final QuickActionsCubit quickActions;
@@ -36,6 +38,7 @@ class WalletHomeScreen extends StatefulWidget {
     required this.arkHost,
     required this.createSetupCubit,
     required this.onEmptyMainnet,
+    required this.announcements,
     required this.onImportNetworkWallet,
     required this.onRecoverEncryptedVault,
     required this.quickActions,
@@ -116,10 +119,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
     context.read<WalletBloc>().add(const WalletRefreshed());
     // Only a price that never loaded (e.g. an offline start) is retried here:
     // re-fetching a working one would hit the price API on every navigation.
-    final priceBloc = context.read<BitcoinPriceBloc>();
-    if (!priceBloc.state.hasValidFiatRate && !priceBloc.state.loadingPrice) {
-      priceBloc.add(const BitcoinPriceFetched());
-    }
+    unawaited(BitcoinPriceFeature.refresh(context, onlyIfUnavailable: true));
   }
 
   @override
@@ -161,7 +161,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             waitForRefresh: context.read<WalletBloc>().waitForRefresh,
             onRefresh: () {
               setState(() => ++_arkRefresh);
-              context.read<BitcoinPriceBloc>().add(const BitcoinPriceFetched());
+              unawaited(BitcoinPriceFeature.refresh(context));
               return context.read<WalletBloc>().refresh();
             },
             // Clearance for the bar pinned at the bottom of this Stack, so
@@ -183,7 +183,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(child: AnnouncementCarousel()),
+              SliverToBoxAdapter(child: widget.announcements),
               const SliverToBoxAdapter(child: HomeWarnings()),
               const SliverToBoxAdapter(child: HomeConsolidationBanner()),
               SliverToBoxAdapter(

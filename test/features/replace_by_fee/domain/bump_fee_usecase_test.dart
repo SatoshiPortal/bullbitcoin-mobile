@@ -1,6 +1,6 @@
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
@@ -17,8 +17,7 @@ import 'package:sync/sync.dart'
         WalletKey,
         WalletRevision;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_wallet_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -28,7 +27,9 @@ class MockBitcoinWalletRepository extends Mock
 class MockBroadcastBitcoinTransactionUsecase extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
 
-class MockGetNetworkFeesUsecase extends Mock implements GetNetworkFeesUsecase {}
+class MockFees extends Mock implements Fees {}
+
+class _MockPreferences extends Mock implements Preferences {}
 
 void main() {
   setUpAll(() {
@@ -37,17 +38,28 @@ void main() {
 
   late MockBitcoinWalletRepository walletRepository;
   late MockBroadcastBitcoinTransactionUsecase broadcastUsecase;
-  late MockGetNetworkFeesUsecase getNetworkFeesUsecase;
+  late MockFees feeEstimates;
   late BumpFeeUsecase usecase;
 
   setUp(() {
     walletRepository = MockBitcoinWalletRepository();
     broadcastUsecase = MockBroadcastBitcoinTransactionUsecase();
-    getNetworkFeesUsecase = MockGetNetworkFeesUsecase();
+    feeEstimates = MockFees();
+    final preferences = _MockPreferences();
+    when(preferences.fetch).thenAnswer(
+      (_) async => const Ok(
+        SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      ),
+    );
     usecase = BumpFeeUsecase(
       bitcoinWalletRepository: walletRepository,
       broadcastBitcoinTransactionUsecase: broadcastUsecase,
-      getNetworkFeesUsecase: getNetworkFeesUsecase,
+      fees: feeEstimates,
+      preferences: preferences,
     );
   });
 
@@ -165,7 +177,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => TransactionSignatureStatus.valid);
+      ).thenAnswer((_) async => SignatureCheck.valid);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',
@@ -181,7 +193,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => TransactionSignatureStatus.invalid);
+      ).thenAnswer((_) async => SignatureCheck.invalid);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',
@@ -201,7 +213,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
         ),
-      ).thenAnswer((_) async => TransactionSignatureStatus.unverifiable);
+      ).thenAnswer((_) async => SignatureCheck.unverifiable);
 
       final result = await usecase.verifyOriginalTransaction(
         walletId: 'w1',
@@ -246,25 +258,22 @@ void main() {
         slow: NetworkFee.relativeSatPerKwu(1),
         minRelay: RelativeFee(25),
       );
-      when(() => getNetworkFeesUsecase.execute(isLiquid: false))
-          .thenAnswer((_) async => feeOptions);
+      when(() => feeEstimates.estimate(BitcoinNetwork.testnet))
+          .thenAnswer((_) async => const Ok(feeOptions));
 
       final result = await usecase.getNetworkFees();
 
       expect(result, isA<Ok<FeeOptions, ReplaceByFeeFailure>>());
     });
 
-    test(
-      'returns Err(ReplaceByFeeNetworkFeesFailure) on exception — no raw leak',
-      () async {
-        when(() => getNetworkFeesUsecase.execute(isLiquid: false))
-            .thenThrow(Exception('network unavailable'));
+    test('returns Err(ReplaceByFeeNetworkFeesFailure) when the estimate is unavailable', () async {
+      when(() => feeEstimates.estimate(BitcoinNetwork.testnet))
+          .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
 
-        final result = await usecase.getNetworkFees();
+      final result = await usecase.getNetworkFees();
 
-        expect(result, isA<Err<FeeOptions, ReplaceByFeeFailure>>());
-        expect((result as Err).failure, isA<ReplaceByFeeNetworkFeesFailure>());
-      },
-    );
+      expect(result, isA<Err<FeeOptions, ReplaceByFeeFailure>>());
+      expect((result as Err).failure, isA<ReplaceByFeeNetworkFeesFailure>());
+    });
   });
 }

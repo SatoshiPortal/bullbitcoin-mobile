@@ -1,13 +1,13 @@
 import 'package:bull_pricer/bull_pricer.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, FormatAmount, ScriptType;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -137,8 +137,11 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
     Device.screen = const Size(800, 1600);
+    final wallet = _wallet().copyWith(signer: SignerEntity.remote);
     final state = SendState(
       sendType: SendType.bitcoin,
+      wallets: [wallet],
+      selectedWallet: SendWalletBitcoin(wallet),
       paymentRequest: const PaymentRequest.bitcoin(
         address: 'bc1qfirst',
         isTestnet: false,
@@ -176,6 +179,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.byType(SendAddressScreen), findsOneWidget);
     expect(find.text('Add'), findsNothing);
     await tester.tap(find.byType(Switch));
     await tester.pumpAndSettle();

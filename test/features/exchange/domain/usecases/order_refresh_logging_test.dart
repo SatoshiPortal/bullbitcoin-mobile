@@ -1,31 +1,51 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Api extends Mock implements BullbitcoinApiDatasource {}
+import '../../data/bbx_api_test_http.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+/// Throws [error] for every request, counting them.
+class _Throwing implements HttpClientAdapter {
+  final Object error;
+  final List<Object?> requests = [];
+
+  _Throwing(this.error);
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    requests.add(options.data);
+    throw error;
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _Settings extends Mock implements Preferences {}
 
 class _Summary extends Mock implements GetExchangeUserSummaryUsecase {}
 
-class _GetSettings extends Mock implements GetSettingsUsecase {}
+class _GetSettings extends Mock implements Preferences {}
 
-class _Fees extends Mock implements GetNetworkFeesUsecase {}
+class _Fees extends Mock implements Fees {}
 
 class _Address extends Mock implements GetAddressAtIndexUsecase {}
 
@@ -59,18 +79,23 @@ void main() {
           log = Logger.replace(directory: Directory.current);
           await directory.delete(recursive: true);
         });
-        final api = _Api();
+        final transport = _Throwing(cause);
         final settings = _Settings();
-        when(() => api.getOrderSummary(orderId: orderId)).thenThrow(cause);
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
-        final repository = ExchangeOrderRepositoryImpl(
-          bullbitcoinApiDatasource: api,
+        final repository = BbxApiOrderRepository(
+          api: bbxForTesting(
+            endpoint: 'https://$host',
+            adapter: transport,
+            readActiveApiKey: bbxCredentialRead(null),
+          ),
           isTestnet: false,
         );
         final getOrder = GetOrderUsecase(
@@ -86,7 +111,7 @@ void main() {
           result = await LoadSellContextUsecase(
             getExchangeUserSummaryUsecase: _Summary(),
             getSettingsUsecase: _GetSettings(),
-            getNetworkFeesUsecase: _Fees(),
+            fees: _Fees(),
             getAddressAtIndexUsecase: _Address(),
             getIndexPrice: ({required network, required currency}) =>
                 throw StateError('unused'),
@@ -98,7 +123,7 @@ void main() {
           (result as Err).failure.logMessage,
           '${feature}_order_read_failed category=unexpected',
         );
-        verify(() => api.getOrderSummary(orderId: orderId)).called(1);
+        expect(transport.requests, hasLength(1));
         await log.flush();
         final disk = await log.logsFile.readAsString();
         final reports = verify(

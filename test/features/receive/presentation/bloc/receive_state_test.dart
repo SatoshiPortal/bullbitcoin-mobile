@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Sats;
+    show BitcoinNetwork, BitcoinUnit, Sats, ScriptType;
 
 /// Tests for the payjoin gating on [ReceiveState.isPayjoinLoading] and its
 /// downstream effect on [ReceiveState.paymentRequest]: with payjoin disabled
@@ -209,11 +209,12 @@ void main() {
 
     test('liquid: amount is in BTC (L-BTC) units and the note becomes '
         'message=', () {
+      final wallet = localWallet(network: Network.liquidMainnet);
       final state = ReceiveState(
         type: ReceiveType.liquid,
-        wallet: localWallet(network: Network.liquidMainnet),
+        wallet: wallet,
         liquidAddress: WalletAddress(
-          walletId: 'w1',
+          walletId: wallet.id,
           index: 0,
           address: 'lq1qqtestaddress',
           createdAt: DateTime(2026),

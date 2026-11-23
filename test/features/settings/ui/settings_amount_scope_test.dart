@@ -1,3 +1,5 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';

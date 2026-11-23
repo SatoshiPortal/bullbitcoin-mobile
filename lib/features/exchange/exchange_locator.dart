@@ -10,15 +10,9 @@ import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_acco
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_account_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
-    as settings_contract;
+import 'package:preferences/preferences.dart';
+import 'package:preferences/preferences.dart' as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
@@ -30,6 +24,7 @@ import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.da
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:exchange/exchange.dart';
 import 'package:get_it/get_it.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -37,19 +32,22 @@ class ExchangeLocator {
   static void setup(GetIt locator) {
     Future<bool> platformAllowed() async =>
         !Platform.isIOS ||
-        ((await locator<settings_contract.SettingsRepository>().fetch())
-                .isSuperuser ??
+        (((await locator<settings_contract.Preferences>().fetch()).fold(
+              (value) => value,
+              (failure) => throw Exception('Preferences read failed'),
+            )).isSuperuser ??
             false);
     locator.registerLazySingleton<ExchangeAccessRepository>(
       () => ExchangeAccessRepositoryImpl(
         apiKeyRepository: locator<ExchangeApiKeyRepository>(),
         readEnvironment: () async =>
-            (await locator<settings_contract.SettingsRepository>().fetch())
-                .environment
-                .requireHistoricalTestnet(),
+            ((await locator<settings_contract.Preferences>().fetch()).fold(
+              (value) => value,
+              (failure) => throw Exception('Preferences read failed'),
+            )).environment.requireHistoricalTestnet(),
         platformAllowed: platformAllowed,
         disconnectNotifications: () async =>
-            locator<ExchangeNotificationRepository>().disconnect(),
+            locator<Exchange>().disconnectNotifications(),
         clearCookies: () async {
           await WebViewCookieManager().clearCookies();
         },
@@ -97,49 +95,31 @@ class ExchangeLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetExchangeWebSettingsUsecase>(
       () => GetExchangeWebSettingsUsecase(
-        settingsRepository: locator<settings_contract.SettingsRepository>(),
+        preferences:
+            locator<settings_contract.ExchangeTestnetBasicAuthPreferences>(),
       ),
     );
     locator.registerFactory<GetExchangeAccountUsecase>(
       () => GetExchangeAccountUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
         expire: locator<ExpireExchangeSessionUsecase>(),
-        mainnetAccountRepository: ExchangeAccountRepositoryImpl(
-          locator<BullbitcoinApiDatasource>(
-            instanceName: 'mainnetExchangeApiDatasource',
-          ),
-        ),
-        testnetAccountRepository: ExchangeAccountRepositoryImpl(
-          locator<BullbitcoinApiDatasource>(
-            instanceName: 'testnetExchangeApiDatasource',
-          ),
-        ),
+        exchange: locator<Exchange>(),
       ),
     );
 
     locator.registerFactory<SaveExchangePreferencesUsecase>(
       () => SaveExchangePreferencesUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
+        exchange: locator<Exchange>(),
+        settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
       ),
     );
 
     locator.registerFactory<GetExchangeAnnouncementsUsecase>(
       () => GetExchangeAnnouncementsUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
+        exchange: locator<Exchange>(),
+        settingsRepository: locator<Preferences>(),
         access: locator<ExchangeAccessRepository>(),
       ),
     );
@@ -165,8 +145,8 @@ class ExchangeLocator {
 
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
-        settingsRepository: locator<settings_contract.SettingsRepository>(),
-        sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
+        settingsRepository: locator<settings_contract.Preferences>(),
+        exchange: locator<Exchange>(),
       ),
     );
 
@@ -180,9 +160,8 @@ class ExchangeLocator {
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
         access: locator<ExchangeAccessRepository>(),
-        settingsRepository: locator<settings_contract.SettingsRepository>(),
-        exchangeNotificationRepository:
-            locator<ExchangeNotificationRepository>(),
+        settingsRepository: locator<settings_contract.Preferences>(),
+        exchange: locator<Exchange>(),
       ),
     );
   }

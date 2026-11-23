@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/buy_payjoin_window.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -12,7 +12,7 @@ import 'package:primitives/primitives.dart';
 class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final PayjoinReceiver _payjoinReceiver;
   final PayjoinPolicyAccess _payjoinPolicy;
 
@@ -46,7 +46,10 @@ class CreateBuyOrderUsecase {
     int? payjoinAmountSat,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment.networkEnv;
       final exchangeNetwork = switch (environment) {
         NetworkEnv.mainnet => BitcoinNetwork.mainnet,

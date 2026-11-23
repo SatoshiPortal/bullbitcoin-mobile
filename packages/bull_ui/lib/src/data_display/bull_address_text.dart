@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 /// Truncated address with tap-to-copy. **New primitive** — deliberately not a
 /// port of `address_viewer.dart`, which depends on feature/app services
-/// (`Satoshifier`, `MempoolUrlBuilder`, `url_launcher`) that must not enter a
+/// (`Satoshifier`, `MempoolLinks`, `url_launcher`) that must not enter a
 /// UI package.
 ///
 /// Takes the **full** address; displays it truncated to `8…8` (per §14) and

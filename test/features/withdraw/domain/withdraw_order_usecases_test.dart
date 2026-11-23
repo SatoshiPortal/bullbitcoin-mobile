@@ -1,11 +1,9 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
@@ -18,7 +16,7 @@ import 'package:primitives/primitives.dart';
 class _MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettings extends Mock implements SettingsEntity {}
 
@@ -76,7 +74,7 @@ void main() {
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
   });
 
   group('CreateWithdrawOrderUsecase', () {
@@ -187,7 +185,7 @@ void main() {
     test('uses the testnet repository on testnet', () async {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.testnet);
-      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      when(settingsRepository.fetch).thenAnswer((_) async => Ok(settings));
       when(
         () => testnet.placeWithdrawalOrder(
           fiatAmount: any(named: 'fiatAmount'),

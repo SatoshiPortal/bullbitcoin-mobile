@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' show Keychain, bitcoinPublicDescriptor;
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show Err, Ok, Result, ScriptType, ScriptTypeX, XpubType;
 import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
@@ -99,27 +100,6 @@ class WalletMetadataService {
       script: script,
       account: account,
     );
-  }
-
-  /// Rebuilds the historical default-account origin used by BIP329 without
-  /// interpreting its coin type as an active wallet network. Coin type 1
-  /// deliberately remains unattributed between testnet and regtest here.
-  static String canonicalBip329Origin(String keyOrigin) {
-    final derivation = parseOrigin(origin: keyOrigin);
-    final coinType = RegExp(r'\[[a-fA-F0-9]+/\d+h/(\d+h)/\d+h\]')
-        .firstMatch(keyOrigin)
-        ?.group(1);
-    if (coinType != '0h' && coinType != '1h' && coinType != '1776h') {
-      throw const FormatException('Unsupported derivation coin type');
-    }
-    final prefix = coinType == '1776h' ? 'el' : '';
-    final path =
-        '[${derivation.fingerprint}/${derivation.script.purpose}h/$coinType/0h]';
-    return switch (derivation.script) {
-      ScriptType.bip84 => '${prefix}wpkh($path)',
-      ScriptType.bip49 => '${prefix}sh(wpkh($path))',
-      ScriptType.bip44 => '${prefix}pkh($path)',
-    };
   }
 
   static const regtestSuffix = ':regtest';
@@ -291,7 +271,7 @@ class WalletMetadataService {
       xpubFingerprint: bip32Xpub.fingerprintHex,
       signer: Signer.none,
       signerDevice: null,
-      xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
+      xpub: bip32Xpub.convert(scriptType.getXpubType(network.shared)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
       label: label,

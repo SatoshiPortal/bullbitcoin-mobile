@@ -17,7 +17,7 @@ SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
 sealed class TransferState with _$TransferState {
   const factory TransferState({
     @Default(false) bool isStarting,
-    Exception? startError,
+    SwapFailure? startError,
     @Default([]) List<Wallet> wallets,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     FeeOptions? liquidNetworkFees,

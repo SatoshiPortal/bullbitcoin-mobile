@@ -1,32 +1,22 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
-import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/limit_orders/data/datasources/limit_orders_api_datasource.dart';
-import 'package:bb_mobile/features/limit_orders/data/limit_order_repository_impl.dart';
-import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
+import 'package:exchange/exchange.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:primitives/primitives.dart';
+import 'package:exchange/testing.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
+import 'package:bb_mobile/features/recipients/data/bbx_api_recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bbx_api/bbx_api.dart'
+    show Bbx, BbxFailure, BbxCredentialUnavailableFailure;
+import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+
+import '../../features/exchange/data/bbx_api_test_http.dart';
 
 class _NoNetwork implements HttpClientAdapter {
   var sends = 0;
@@ -45,43 +35,45 @@ class _NoNetwork implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-class _Settings extends Fake implements SettingsRepository {
-  @override
-  Future<SettingsEntity> fetch() async => const SettingsEntity(
-    environment: Environment.testnet,
-    bitcoinUnit: BitcoinUnit.btc,
-    currencyCode: 'CAD',
-  );
-}
-
 void main() {
-  late Dio dio;
   late _NoNetwork network;
-  late ExchangeUserRepositoryImpl user;
-  late ExchangeSupportChatRepositoryImpl support;
-  late ExchangeOrderRepositoryImpl orders;
+  late Bbx api;
+  late Exchange user;
+  late BbxApiOrderRepository orders;
   Result<String?, ExchangeApiKeyFailure> credential = const Ok(null);
 
   setUp(() {
     credential = const Ok(null);
     network = _NoNetwork();
-    dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'))
-      ..httpClientAdapter = network;
-    addExchangeAuthentication(dio, () async => credential);
-    final api = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: dio);
-    user = ExchangeUserRepositoryImpl(bullbitcoinApiDatasource: api);
-    support = ExchangeSupportChatRepositoryImpl(
-      datasource: ExchangeSupportChatDatasource(bullbitcoinApiHttpClient: dio),
-      bullbitcoinApiDatasource: api,
+    api = bbxForTesting(
+      endpoint: testBbxEndpoint,
+      adapter: network,
+      readActiveApiKey: () async => switch (credential) {
+        Ok(:final value) => Ok<String?, BbxFailure>(value),
+        Err() => const Err<String?, BbxFailure>(
+          BbxCredentialUnavailableFailure(),
+        ),
+      },
     );
-    orders = ExchangeOrderRepositoryImpl(
-      bullbitcoinApiDatasource: api,
-      isTestnet: true,
+    user = exchangeWithTransportForTesting(
+      readSession: () async => switch (credential) {
+        Ok(:final value) => Ok((
+          environment: ExchangeEnvironment.testnet,
+          epoch: 0,
+          apiKey: value,
+        )),
+        Err() => const Err(ExchangeCredentialReadFailure()),
+      },
+      openClient: (endpoint, readKey) => bbxForTesting(
+        endpoint: endpoint.toString(),
+        adapter: network,
+        readActiveApiKey: readKey,
+      ),
     );
+    orders = BbxApiOrderRepository(api: api, isTestnet: true);
   });
   tearDown(() {
     expect(network.sends, 0);
-    dio.close();
   });
 
   for (final storageFailure in [false, true]) {
@@ -92,7 +84,7 @@ void main() {
             ? const Err(ExchangeApiKeyReadFailure())
             : const Ok(null);
         await expectLater(
-          orders.placeSellToRecipientOrderV2(
+          orders.placePayOrder(
             orderAmount: const FiatAmount(100),
             recipientId: 'own-account',
             paymentProcessor: SepaPaymentProcessor.regular,
@@ -111,27 +103,29 @@ void main() {
   test(
     'no session yields contextual empty results or authentication failures',
     () async {
-      final profile = await user.getUserSummary();
+      final profile = await user.getUserSummary(ExchangeEnvironment.testnet);
       expect(
         profile,
         isA<Err>().having(
           (r) => r.failure,
           'profile',
-          isA<ExchangeUserNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
-      final announcements = await user.listAnnouncements();
+      final announcements = await user.listAnnouncements(
+        ExchangeEnvironment.testnet,
+      );
       expect(
         announcements,
         isA<Ok>().having((r) => r.value, 'announcements', isEmpty),
       );
-      final messages = await support.getMessages();
+      final messages = await user.getSupportMessages();
       expect(
         messages,
         isA<Err>().having(
           (r) => r.failure,
           'chat',
-          isA<NotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       final history = await orders.getOrders();
@@ -148,24 +142,28 @@ void main() {
     () async {
       credential = const Err(ExchangeApiKeyReadFailure());
       expect(
-        await user.getUserSummary(),
+        await user.getUserSummary(ExchangeEnvironment.testnet),
         isA<Err>().having(
           (r) => r.failure,
           'profile',
-          isA<ExchangeUserCredentialUnavailableFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
       expect(
-        await user.listAnnouncements(),
+        await user.listAnnouncements(ExchangeEnvironment.testnet),
         isA<Err>().having(
           (r) => r.failure,
           'announcements',
-          isA<ExchangeUserCredentialUnavailableFailure>(),
+          isA<ExchangeCredentialReadFailure>(),
         ),
       );
       expect(
-        await support.getMessages(),
-        isA<Err>().having((r) => r.failure, 'chat', isA<LoadMessagesFailure>()),
+        await user.getSupportMessages(),
+        isA<Err>().having(
+          (r) => r.failure,
+          'chat',
+          isA<ExchangeChatLoadMessagesFailure>(),
+        ),
       );
       expect(
         await orders.getOrders(),
@@ -188,12 +186,9 @@ void main() {
   test(
     'shared Dio features distinguish missing credentials from read failures',
     () async {
-      final funding = BullBitcoinApiFundingGateway(authenticatedApiClient: dio);
-      final recipients = BullbitcoinApiRecipientsGateway(
-        authenticatedApiClient: dio,
-      );
-      final api = LimitOrdersApiDatasource(authenticatedApiClient: dio);
-      final limits = LimitOrderRepositoryImpl(api, api, _Settings());
+      final funding = user.funding;
+      final recipients = BbxApiRecipientsRepository(api: api);
+      final limits = user.limitOrders;
       expect(
         await funding.listInstitutions(
           jurisdiction: FundingJurisdiction.canada,
@@ -201,7 +196,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'funding',
-          isA<FundExchangeNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       expect(
@@ -217,7 +212,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'limit orders',
-          isA<LimitOrdersAccountUnavailableFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       credential = const Err(ExchangeApiKeyReadFailure());
@@ -228,7 +223,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'funding unavailable',
-          isA<FundExchangeUnexpectedFailure>(),
+          isA<ExchangeUnexpectedFailure>(),
         ),
       );
       expect(
@@ -244,7 +239,11 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'limit orders unavailable',
-          isA<LimitOrdersLoadFailure>(),
+          isA<ExchangeLimitOrderFailure>().having(
+            (failure) => failure.problem,
+            'problem',
+            ExchangeLimitOrderProblem.load,
+          ),
         ),
       );
     },

@@ -19,7 +19,6 @@ const _knownExceptions = <String, Set<String>>{
     'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart',
     'package:bull_recoverbull/src/data/secrets_vault_repository.dart',
     'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart',
-    'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart',
     'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart',
     'package:bull_recoverbull/src/domain/usecases/delete_drive_vault_usecase.dart',
     'package:bull_recoverbull/src/domain/usecases/export_drive_vault_usecase.dart',

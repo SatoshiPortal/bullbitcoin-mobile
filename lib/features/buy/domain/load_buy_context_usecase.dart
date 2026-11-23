@@ -1,13 +1,14 @@
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    as wallet
+    show Network, NetworkX;
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -17,10 +18,10 @@ import 'package:primitives/primitives.dart';
 
 class LoadBuyContextUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final Fees _fees;
   final IndexPriceReader _getIndexPrice;
 
   const LoadBuyContextUsecase({
@@ -28,7 +29,7 @@ class LoadBuyContextUsecase {
     required this._getSettingsUsecase,
     required this._getWalletsUsecase,
     required this._getReceiveAddressUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._fees,
     required this._getIndexPrice,
   });
 
@@ -41,7 +42,10 @@ class LoadBuyContextUsecase {
   userSummaryAndSettings() async {
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       return Ok((userSummary: userSummary, settings: settings));
     } catch (e, st) {
       log.severe(
@@ -86,8 +90,29 @@ class LoadBuyContextUsecase {
     required bool isLiquid,
   }) async {
     try {
-      return Ok(await _getNetworkFeesUsecase.execute(isLiquid: isLiquid));
-    } catch (e, st) {
+      final SettingsEntity settings;
+      switch (await _getSettingsUsecase.fetch()) {
+        case Ok(:final value):
+          settings = value;
+        case Err(:final failure):
+          final reason = 'Preferences read failed: ${failure.runtimeType}';
+          log.warning(reason);
+          return Err(BuyUnexpectedFailure(reason));
+      }
+      final network = wallet.Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: isLiquid,
+      );
+      switch (await _fees.estimate(network.shared)) {
+        case Ok(:final value):
+          return Ok(value);
+        case Err(:final failure):
+          final reason =
+              'Network fee estimation unavailable: ${failure.runtimeType}';
+          log.warning(reason);
+          return Err(BuyUnexpectedFailure(reason));
+      }
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to load the network fees',
         error: e,
@@ -106,7 +131,10 @@ class LoadBuyContextUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _getSettingsUsecase.execute();
+      settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the settings for the buy price',

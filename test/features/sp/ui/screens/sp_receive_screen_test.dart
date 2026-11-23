@@ -4,9 +4,9 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented, BullShimmerBox;
+import 'package:bull_ui/bull_ui.dart'
+    show BullQrCode, BullSegmented, BullShimmerBox, BullViewerActionButton;
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,6 +100,68 @@ void main() {
     expect(find.text('sp1qtestaddress'), findsOneWidget);
   });
 
+  testWidgets('opens the full address and copies from either surface', (
+    tester,
+  ) async {
+    final address = 'sp1q'.padRight(95, 'q');
+    final mockCubit = _MockSpCubit();
+    when(() => mockCubit.state).thenReturn(SpState(spAddress: address));
+    when(() => mockCubit.stream).thenAnswer((_) => const Stream.empty());
+    final copied = <String>[];
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        copied.add((call.arguments as Map<Object?, Object?>)['text'] as String);
+      }
+      return null;
+    });
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+
+    await tester.pumpWidget(_buildMockPage(mockCubit));
+    await tester.pumpAndSettle();
+    final loc = AppLocalizations.of(
+      tester.element(find.byType(SpReceiveScreen)),
+    );
+    final preview = find.widgetWithText(SelectableText, address);
+    final closeLabel = MaterialLocalizations.of(
+      tester.element(find.byType(SpReceiveScreen)),
+    ).closeButtonLabel;
+    final close = find.widgetWithText(BullViewerActionButton, closeLabel);
+    await tester.tap(find.text(address));
+    await tester.pumpAndSettle();
+    expect(preview, findsOneWidget);
+
+    await tester.tap(
+      find.widgetWithText(BullViewerActionButton, loc.copyDialogButton),
+    );
+    await tester.pumpAndSettle();
+    expect(copied, [address]);
+    expect(preview, findsNothing);
+    expect(find.text(loc.copiedToClipboard), findsOneWidget);
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pumpAndSettle();
+
+    final viewAction = find.byTooltip(loc.receiveViewDetails);
+    expect(tester.getSize(viewAction).shortestSide, greaterThanOrEqualTo(48));
+    await tester.tap(viewAction);
+    await tester.pumpAndSettle();
+    expect(preview, findsOneWidget);
+    await tester.tap(close);
+    await tester.pumpAndSettle();
+
+    final copyAction = find.byTooltip(loc.copyDialogButton);
+    expect(tester.getSize(copyAction).shortestSide, greaterThanOrEqualTo(48));
+    await tester.tap(copyAction);
+    await tester.pumpAndSettle();
+    expect(copied, [address, address]);
+    expect(find.text(loc.copiedToClipboard), findsOneWidget);
+    await tester.pump(const Duration(seconds: 6));
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('SP tab shows loading content without empty address widgets', (
     tester,
   ) async {
@@ -111,8 +173,9 @@ void main() {
     await tester.pump();
 
     expect(find.byType(BullShimmerBox), findsOneWidget);
-    expect(find.byType(QrDisplayWidget), findsNothing);
-    expect(find.byType(CopyInput), findsNothing);
+    expect(find.byType(BullQrCode), findsNothing);
+    expect(find.byIcon(Icons.copy_sharp), findsNothing);
+    expect(find.byIcon(Icons.visibility_outlined), findsNothing);
   });
 
   testWidgets('SP tab empty address state does not render QR or copy input', (
@@ -131,8 +194,9 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byType(QrDisplayWidget), findsNothing);
-    expect(find.byType(CopyInput), findsNothing);
+    expect(find.byType(BullQrCode), findsNothing);
+    expect(find.byIcon(Icons.copy_sharp), findsNothing);
+    expect(find.byIcon(Icons.visibility_outlined), findsNothing);
   });
 
   testWidgets(

@@ -1,7 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
 import 'package:meta/meta.dart';

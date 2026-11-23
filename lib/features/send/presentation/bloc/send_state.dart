@@ -11,18 +11,16 @@ import 'package:primitives/primitives.dart'
         Outpoint,
         Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/percentage.dart';
+import 'package:primitives/primitives.dart' show calculatePercentage;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
@@ -735,25 +733,12 @@ abstract class SendState with _$SendState {
         (selectedWallet!.network.isLiquid && sendType == SendType.bitcoin);
   }
 
-  NetworkFee? get selectedFee {
-    switch (selectedFeeOption) {
-      case FeeSelection.fastest:
-        return selectedWallet!.isLiquid
-            ? liquidFeesList?.fastest
-            : bitcoinFeesList?.fastest;
-      case FeeSelection.economic:
-        return selectedWallet!.isLiquid
-            ? liquidFeesList?.economic
-            : bitcoinFeesList?.economic;
-
-      case FeeSelection.slow:
-        return selectedWallet!.isLiquid
-            ? liquidFeesList?.slow
-            : bitcoinFeesList?.slow;
-      case FeeSelection.custom:
-        return customFee;
-    }
-  }
+  NetworkFee? get selectedFee => switch (selectedFeeOption) {
+    FeeSelection.fastest => feeOptions?.fastest,
+    FeeSelection.economic => feeOptions?.economic,
+    FeeSelection.slow => feeOptions?.slow,
+    FeeSelection.custom => customFee,
+  };
 
   bool get isChainSwap =>
       (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||

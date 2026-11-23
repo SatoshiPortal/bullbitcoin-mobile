@@ -1,0 +1,24 @@
+{
+  "currencySettingsDefaultFiatCurrencyLabel": "Varsayılan olarak",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "fiatCurrencySettingsLabel": "Fiat para birimi",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "priceChartFetchingHistory": "Fetching Price History...",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
+  "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin."
+}

@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/data/recoverbull_settings_adapter.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
@@ -11,19 +10,22 @@ import 'package:primitives/primitives.dart' show RegtestHostProfile;
 import '../domain/regtest_recoverbull_profile.dart';
 
 final class SettingsRecoverBullBindings {
-  static Future<String> setup(
+  static Future<({String path, Uri server})> setup(
     GetIt locator, {
     required String databasePath,
     @visibleForTesting String? regtestHost,
   }) async {
-    final settings = await locator<SettingsRepository>().fetch();
+    final settings = (await locator<Preferences>().fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     final network = settings.environment.networkEnv;
     final host = regtestHost == null
         ? RegtestHostProfile.forNetwork(network)
         : RegtestHostProfile.forNetwork(network, host: regtestHost);
     final adapter = RecoverBullSettingsAdapter(
-      locator<SettingsRepository>(),
-      locator<SqliteDatabase>(),
+      locator<Preferences>(),
+      locator<RecoverBullPreferences>(),
       locator<Tor>().embedded,
       locator<Tor>(),
       regtestProfile: host == null ? null : RegtestRecoverBullProfile(host),
@@ -33,9 +35,12 @@ final class SettingsRecoverBullBindings {
       dispose: (_) => adapter.close(),
     );
     locator.registerSingleton<RecoverBullEnvironmentPort>(adapter);
-    locator.registerSingleton<RecoverBullLegacySettingsPort>(adapter);
-    return host == null
-        ? databasePath
-        : p.join(p.dirname(databasePath), 'recoverbull-regtest.sqlite');
+    locator.registerSingleton<RecoverBullPermissionPort>(adapter);
+    return (
+      path: host == null
+          ? databasePath
+          : p.join(p.dirname(databasePath), 'recoverbull-regtest.sqlite'),
+      server: adapter.configuredServer,
+    );
   }
 }

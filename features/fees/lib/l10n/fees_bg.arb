@@ -1,0 +1,22 @@
+{
+  "retry": "Повтори",
+  "doneButton": "Готово",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "Фиксирани такси",
+  "sendBelowMinFeeRateError": "Таксата трябва да бъде поне 0.1 sat/vB.",
+  "sendCustomFee": "Персонализирана такса",
+  "sendEconomyFee": "Икономичен",
+  "sendEnterAbsoluteFee": "Въведете абсолютната такса в сатоши",
+  "sendEnterRelativeFee": "Въведете относителна такса в сатоши/vB",
+  "sendEstimatedDelivery": "Очаквано време за потвърждение ~ ",
+  "sendEstimatedDelivery10Minutes": "10 минути",
+  "sendEstimatedDelivery10to30Minutes": "10-30 минути",
+  "sendEstimatedDeliveryHours": "часове",
+  "sendEstimatedDeliveryHoursToDays": "часове до дни",
+  "sendFastFee": "Бързо",
+  "sendRelativeFees": "Относителни такси",
+  "sendSats": "сатоши",
+  "sendSatsPerVB": "сатоши/vB",
+  "sendSelectNetworkFee": "Изберете такса за мрежата",
+  "sendSubSatVbyteWarning": "Транзакциите под 1 sat/vB може да отнемат повече време за потвърждение и може да не се разпространят до всички възли."
+}

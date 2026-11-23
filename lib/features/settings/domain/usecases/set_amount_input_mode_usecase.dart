@@ -1,14 +1,15 @@
-import 'package:bb_mobile/features/settings/domain/repositories/amount_input_preference_repository.dart';
+import 'package:preferences/preferences.dart' show AmountInputPreferences;
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 class SetAmountInputModeUsecase {
-  final AmountInputPreferenceRepository _repository;
+  final AmountInputPreferences _preferences;
 
-  const SetAmountInputModeUsecase(this._repository);
+  const SetAmountInputModeUsecase(this._preferences);
 
   @useResult
-  Future<Result<void, SettingsFailure>> execute({required bool fiat}) =>
-      _repository.setStartInFiat(fiat);
+  Future<Result<void, SettingsFailure>> execute({required bool fiat}) async =>
+      (await _preferences.setStartAmountsInFiat(fiat))
+          .mapErr((failure) => SettingsStorageFailure(failure.logMessage));
 }

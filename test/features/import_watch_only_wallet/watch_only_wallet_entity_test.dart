@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,20 +14,20 @@ void main() {
     test('attaches signerDevice to descriptor imports', () async {
       final entity = await WatchOnlyWalletEntity.parse(
         descriptor,
-        signerDevice: SignerDeviceEntity.coldcardQ,
+        signerDevice: SignerDevice.coldcardQ,
       );
 
       expect(entity, isA<WatchOnlyDescriptorEntity>());
       expect(
         (entity as WatchOnlyDescriptorEntity).signerDevice,
-        SignerDeviceEntity.coldcardQ,
+        SignerDevice.coldcardQ,
       );
     });
 
     test('does not attach signerDevice to xpub imports', () async {
       final entity = await WatchOnlyWalletEntity.parse(
         xpub,
-        signerDevice: SignerDeviceEntity.coldcardQ,
+        signerDevice: SignerDevice.coldcardQ,
       );
 
       expect(entity, isA<WatchOnlyXpubEntity>());

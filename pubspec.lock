@@ -90,7 +90,7 @@ packages:
     source: hosted
     version: "2.13.1"
   auto_size_text:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: auto_size_text
       sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
@@ -163,7 +163,7 @@ packages:
     source: hosted
     version: "2.2.0"
   bip329_labels:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: bip329_labels
       sha256: "9a47f8b193fa0a7b0dfd86d289a45ceb376c43d462238854d9dce043f5156afa"
@@ -716,7 +716,7 @@ packages:
     source: hosted
     version: "7.0.1"
   file_picker:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: file_picker
       sha256: "079dc46b753abbddb7f77cd87e6ed9ecc62902580707514568321bdf8e050a86"
@@ -923,7 +923,7 @@ packages:
     source: hosted
     version: "2.13.0"
   flutter_secure_storage:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_secure_storage
       sha256: "6a79c298171e6165823c41db058e10ad0e0d1f10af361a7e7c8d74f058435f50"
@@ -1343,7 +1343,7 @@ packages:
     source: hosted
     version: "6.15.2"
   keyboard_actions:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: keyboard_actions
       sha256: b87ce4217ca4c31c735c81734d34a9ce08f27b056c1500fd5a1bc87a0cdc36b1
@@ -1375,7 +1375,7 @@ packages:
     source: hosted
     version: "3.0.2"
   ledger_bitcoin:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "packages/ledger-bitcoin"
       ref: d71f36e95a763491adab95fc1f5abf86f532ac4e
@@ -1832,7 +1832,7 @@ packages:
     source: hosted
     version: "3.0.3"
   qr_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: qr_flutter
       sha256: "5095f0fc6e3f71d08adef8feccc8cea4f12eec18a2e31c2e8d82cb6019f4b097"
@@ -2238,7 +2238,7 @@ packages:
     source: hosted
     version: "1.4.0"
   universal_ble:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: universal_ble
       sha256: bfbc5dea17fa04e365d3870309d8a8a49067ff5195a84d4f6f73c92aa96bf7ed

@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok;
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+    show BitcoinUnit, Err, Fingerprint, Ok, ScriptType;
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +14,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {
   int storeDeletions = 0;
@@ -86,10 +85,12 @@ void main() {
     wallets = _MockWalletRepository();
 
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     // A complete default set, so the test exercises the seed read alone.
@@ -121,10 +122,12 @@ void main() {
     'empty active regtest preserves an existing catalog without secret IO',
     () async {
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
         ),
       );
       when(
@@ -158,10 +161,12 @@ void main() {
 
   void onRegtest(List<Wallet> defaults) {
     when(settings.fetch).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(

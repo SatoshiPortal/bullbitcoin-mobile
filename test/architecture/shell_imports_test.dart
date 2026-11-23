@@ -11,54 +11,37 @@ const _legacyImports = {
   'lib/features/bip85_entropy/router.dart -> locator.dart',
   'lib/features/broadcast_signed_tx/router.dart -> locator.dart',
   'lib/features/import_mnemonic/router.dart -> locator.dart',
-  'lib/features/mempool_settings/router.dart -> locator.dart',
   'lib/features/replace_by_fee/router.dart -> locator.dart',
-  'lib/features/status_check/router.dart -> locator.dart',
   'lib/features/fund_exchange/fund_exchange_router.dart -> locator.dart',
-  'lib/features/app_unlock/ui/pin_code_unlock_screen.dart -> locator.dart',
-  'lib/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart -> locator.dart',
   'lib/features/dca/ui/dca_router.dart -> locator.dart',
   'lib/features/pay/ui/pay_router.dart -> locator.dart',
   'lib/features/transactions/ui/transactions_router.dart -> locator.dart',
   'lib/features/send/ui/send_router.dart -> locator.dart',
   'lib/features/backup_settings/ui/screens/backup_settings_screen.dart -> locator.dart',
   'lib/features/app_startup/ui/app_startup_widget.dart -> router.dart',
-  'lib/features/labels/ui/page.dart -> locator.dart',
-  'lib/features/labels/ui/labels_widget.dart -> locator.dart',
-  'lib/features/recipients/frameworks/ui/screens/recipients_screen.dart -> locator.dart',
+  'lib/features/recipients/ui/screens/recipients_screen.dart -> locator.dart',
   'lib/features/recipients/ui/screens/sepa_virtual_payee_activation_screen.dart -> locator.dart',
   'lib/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart -> locator.dart',
-  'lib/features/recipients/ui/screens/recipient_selection_screen_v2.dart -> locator.dart',
   'lib/features/recipients/ui/screens/virtual_iban_funding_screen.dart -> locator.dart',
   'lib/features/autobuy/ui/autobuy_router.dart -> locator.dart',
   'lib/features/limit_orders/ui/limit_orders_router.dart -> locator.dart',
   'lib/features/sp/ui/sp_router.dart -> locator.dart',
-  'lib/features/pin_code/ui/pin_code_setting_flow.dart -> locator.dart',
   'lib/features/buy/ui/buy_router.dart -> locator.dart',
-  'lib/features/psbt_flow/show_animated_qr/show_animated_qr_widget.dart -> locator.dart',
   'lib/features/autoswap/ui/screens/autoswap_settings_screen.dart -> locator.dart',
   'lib/features/autoswap/ui/widgets/autoswap_settings.dart -> locator.dart',
-  'lib/features/bitbox/presentation/cubit/bitbox_operation_cubit.dart -> locator.dart',
-  'lib/features/bitbox/ui/screens/bitbox_action_screen.dart -> locator.dart',
   'lib/features/test_wallet_backup/ui/test_wallet_backup_router.dart -> locator.dart',
   'lib/features/onboarding/ui/onboarding_router.dart -> locator.dart',
-  'lib/features/onboarding/ui/screens/onboarding_splash.dart -> locator.dart',
   'lib/features/sell/ui/sell_router.dart -> locator.dart',
   'lib/features/wallet/ui/screens/wallet_detail_screen.dart -> locator.dart',
-  'lib/features/wallet/ui/widgets/home_errors.dart -> locator.dart',
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
   'lib/features/settings/ui/widgets/settings_failure_listener.dart -> router.dart',
-  'lib/features/settings/ui/screens/exchange/transactions_screen.dart -> locator.dart',
   'lib/features/swap/ui/swap_router.dart -> locator.dart',
-  'lib/features/ledger/ui/screens/ledger_action_screen.dart -> locator.dart',
   'lib/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart -> locator.dart',
-  'lib/features/tor_settings/public/tor_settings_scope.dart -> locator.dart',
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_home_screen.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_auth_screen.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_kyc_screen.dart -> locator.dart',
   'lib/features/default_wallets/ui/default_wallets_router.dart -> locator.dart',
-  'lib/features/exchange_settings/ui/exchange_settings_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> locator.dart',
   'lib/features/receive/ui/receive_router.dart -> router.dart',
   'lib/features/coins/ui/coins_router.dart -> locator.dart',
@@ -70,6 +53,39 @@ const _legacyImports = {
 };
 
 void main() {
+  test('the shell uses the wallet facade for service status', () {
+    final shell = parseString(
+      content: File('lib/locator.dart').readAsStringSync(),
+    ).unit;
+    final facade = parseString(
+      content: File('lib/features/wallet/public/wallet_facade.dart')
+          .readAsStringSync(),
+    ).unit;
+
+    expect(
+      shell.directives
+          .whereType<ImportDirective>()
+          .map((directive) => directive.uri.stringValue)
+          .whereType<String>()
+          .where(
+            (uri) => const {
+              'get_default_wallet_network_usecase.dart',
+              'is_tor_required_usecase.dart',
+              'wallet_repository.dart',
+            }.contains(p.basename(uri)),
+          ),
+      isEmpty,
+    );
+    expect(
+      facade.directives
+          .whereType<ExportDirective>()
+          .map((directive) => directive.uri.stringValue)
+          .whereType<String>()
+          .where((uri) => uri.contains('/domain/usecases/')),
+      isEmpty,
+    );
+  });
+
   test('features and packages depend on owners, never on the shell', () {
     final root = Directory.current.path;
     final violations = <String>[];

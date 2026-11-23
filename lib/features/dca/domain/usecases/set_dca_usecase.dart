@@ -1,15 +1,11 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -19,10 +15,9 @@ class SetDcaUsecase {
   // TODO: Don't use the repositories of other domains directly, but use reduced
   // interfaces for each domain just for what is needed from them in the DCA context/domain
   final WalletRepository _wallet;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletAddressRepository _walletAddressRepository;
-  final ExchangeUserRepository _mainnetExchangeUserRepository;
-  final ExchangeUserRepository _testnetExchangeUserRepository;
+  final Exchange _exchange;
 
   SetDcaUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
@@ -30,8 +25,7 @@ class SetDcaUsecase {
     required this._wallet,
     required this._settingsRepository,
     required this._walletAddressRepository,
-    required this._mainnetExchangeUserRepository,
-    required this._testnetExchangeUserRepository,
+    required this._exchange,
   }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
        _testnetDcaRepository = testnetExchangeOrderRepository;
 
@@ -45,7 +39,10 @@ class SetDcaUsecase {
   }) async {
     final SettingsEntity settings;
     try {
-      settings = await _settingsRepository.fetch();
+      settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
     } catch (e, st) {
       if (e is Error) rethrow;
       log.severe(message: 'Failed to load settings', error: e, trace: st);
@@ -111,12 +108,12 @@ class SetDcaUsecase {
     // by writing it — and saveUserPreferences replaces the whole stored set,
     // so the enabling write must carry the current values. Aborting here is
     // clean: nothing exists on the exchange yet.
-    final userRepository = environment.requireHistoricalTestnet()
-        ? _testnetExchangeUserRepository
-        : _mainnetExchangeUserRepository;
+    final exchangeEnvironment = environment.requireHistoricalTestnet()
+        ? ExchangeEnvironment.testnet
+        : ExchangeEnvironment.mainnet;
 
     final UserSummary summary;
-    switch (await userRepository.getUserSummary()) {
+    switch (await _exchange.getUserSummary(exchangeEnvironment)) {
       case Ok(:final value):
         summary = value;
       case Err(:final failure):
@@ -147,7 +144,8 @@ class SetDcaUsecase {
       return const Err(DcaOrderCreationFailure('createDca rejected'));
     }
 
-    if (await userRepository.saveUserPreference(
+    if (await _exchange.saveUserPreference(
+          exchangeEnvironment,
           language: summary.language,
           currency: summary.currency,
           dcaEnabled: true,

@@ -10,7 +10,7 @@ void main() {
   group('Security audit #2645 network-specific default wallet', () {
     test('derive-next requests defaults without filtering environment', () {
       final source = File(
-        'lib/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart',
+        'lib/features/wallet/domain/read_default_bip85_parent_usecase.dart',
       ).readAsStringSync();
       final call = source.substring(
         source.indexOf('walletRepository.getWallets'),

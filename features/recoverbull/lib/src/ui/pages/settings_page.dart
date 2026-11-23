@@ -106,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           color: context.bull.onSurface,
                         ),
                       ),
-                      if (!_isEditing)
+                      if (!_isEditing && (settings?.serverEditable ?? false))
                         BullButton.secondary(
                           label: context.loc.recoverbullSettingsEdit,
                           onPressed: settings == null || state.busy

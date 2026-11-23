@@ -1,63 +1,69 @@
 import 'dart:async';
 
-import 'package:swaps/src/data/swap_storage.dart';
+import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:mocktail/mocktail.dart';
+import 'package:swaps/src/data/swap_storage.dart';
 import 'package:test/test.dart';
+
+import 'support/real_swap_backends.dart';
 
 class _MockRowStore extends Mock implements SwapRowStore {}
 
-class _MockSecretStore extends Mock implements SecretStore {}
+class _HeldKeychain extends ReproKeychainBackend {
+  final writeStarted = Completer<void>();
+  final releaseWrite = Completer<void>();
+  bool holdFirstWrite = false;
+
+  @override
+  Future<void> write({
+    required String key,
+    required String value,
+    required Map<String, String> options,
+  }) async {
+    if (holdFirstWrite && !writeStarted.isCompleted) {
+      writeStarted.complete();
+      await releaseWrite.future;
+    }
+    await super.write(key: key, value: value, options: options);
+  }
+}
 
 void main() {
-  late _MockSecretStore secrets;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late _HeldKeychain secrets;
   late SwapStorage storage;
 
   setUp(() {
-    secrets = _MockSecretStore();
-    storage = SwapStorage(rows: _MockRowStore(), secrets: secrets);
+    secrets = _HeldKeychain();
+    storage = SwapStorage(rows: _MockRowStore(), secrets: secrets.capability);
   });
 
   test('an absent counter reads as unset', () async {
-    when(() => secrets.read(any())).thenAnswer((_) async => null);
-
     expect(await storage.getSwapKeyIndex('cafe0001'), isNull);
   });
 
   test('a failed read is not mistaken for an unset counter', () async {
-    when(() => secrets.read(any())).thenThrow(Exception('keychain locked'));
-
+    secrets.scripted.add(Exception('keychain locked'));
     expect(storage.getSwapKeyIndex('cafe0001'), throwsException);
   });
 
   test(
     'concurrent reservations await the write and use the latest counter',
     () async {
-      var value = '0';
-      final writeStarted = Completer<void>();
-      final releaseWrite = Completer<void>();
-      when(() => secrets.read(any())).thenAnswer((_) async => value);
-      when(() => secrets.write(any(), any())).thenAnswer((invocation) async {
-        if (!writeStarted.isCompleted) {
-          writeStarted.complete();
-          await releaseWrite.future;
-        }
-        value = invocation.positionalArguments[1] as String;
-      });
-
+      secrets.values['swap_master_key_index_cafe0001'] = '0';
+      secrets.holdFirstWrite = true;
       final first = storage.reserveSwapKeyIndex('cafe0001', 2, 3);
-      await writeStarted.future;
+      await secrets.writeStarted.future;
       final second = storage.reserveSwapKeyIndex('cafe0001', 2, 3);
-      releaseWrite.complete();
-
+      secrets.releaseWrite.complete();
       expect(await Future.wait([first, second]), [3, 5]);
-      expect(value, '7');
+      expect(secrets.values['swap_master_key_index_cafe0001'], '7');
     },
   );
 
   test('a failed counter write does not return a reservation', () async {
-    when(() => secrets.read(any())).thenAnswer((_) async => '4');
-    when(() => secrets.write(any(), any())).thenThrow(Exception('locked'));
-
+    secrets.values['swap_master_key_index_cafe0001'] = '4';
+    secrets.scriptedWrites.add(Exception('locked'));
     await expectLater(
       storage.reserveSwapKeyIndex('cafe0001', 2, 0),
       throwsException,

@@ -9,16 +9,27 @@ environment:
 resolution: workspace
 
 dependencies:
+  legacy_storage:
+  drift: ^2.35.4
   flutter:
     sdk: flutter
   rust_bindings:
   sqlite3: ^3.5.2
   bull_logger:
   primitives:
+  secrets:
   meta: ^1.17.0
   crypto: ^3.0.7
+  bitcoin_base: ^7.3.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
 
 dev_dependencies:
+  drift_dev: ^2.35.3
+  build_runner: ^2.16.1
+  freezed: ^4.0.1
+  json_serializable: ^6.15.2
+  convert: ^3.1.2
   analyzer: ^13.0.0
   flutter_test:
     sdk: flutter

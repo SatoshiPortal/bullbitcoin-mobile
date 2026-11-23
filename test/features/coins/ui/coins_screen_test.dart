@@ -1,10 +1,8 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Outpoint;
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
 import 'package:bb_mobile/features/coins/ui/screens/coins_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,8 +13,6 @@ import 'package:mocktail/mocktail.dart';
 import '../wallet_utxo_fixture.dart';
 
 class _MockCoinsCubit extends Mock implements CoinsCubit {}
-
-class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 void main() {
   for (final isSweep in [false, true]) {
@@ -29,8 +25,12 @@ void main() {
         sats: 75000,
       );
       final coinsCubit = _MockCoinsCubit();
-      final settingsCubit = _MockSettingsCubit();
       final coinsState = CoinsState(
+        amountDisplay: (
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          hideAmounts: false,
+        ),
         walletId: utxo.walletId,
         utxos: [utxo],
         selecting: true,
@@ -42,17 +42,6 @@ void main() {
       when(() => coinsCubit.state).thenReturn(coinsState);
       when(() => coinsCubit.stream).thenAnswer((_) => const Stream.empty());
       when(() => coinsCubit.load()).thenAnswer((_) async {});
-      when(() => settingsCubit.state).thenReturn(
-        const SettingsState(
-          storedSettings: SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
-            hideAmounts: false,
-          ),
-        ),
-      );
-      when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
 
       final router = GoRouter(
         initialLocation: '/coins',
@@ -85,14 +74,11 @@ void main() {
       addTearDown(router.dispose);
 
       await tester.pumpWidget(
-        BlocProvider<SettingsCubit>.value(
-          value: settingsCubit,
-          child: MaterialApp.router(
-            theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-          ),
+        MaterialApp.router(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
         ),
       );
       await tester.pump();

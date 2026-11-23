@@ -1,18 +1,16 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
-import 'package:bb_mobile/features/sell/domain/get_sell_confidential_sepa_availability_usecase_v2.dart';
-import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
-import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit_v2.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_external_wallet_network_selection_screen.dart';
-import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen_v2.dart';
+import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_receive_payment_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_success_screen.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_wallet_selection_screen.dart';
-import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_route_guard_v2.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_route_guard.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show SizedBox;
@@ -22,10 +20,10 @@ import 'package:go_router/go_router.dart';
 enum SellRoute {
   sell('/sell'),
   sellWalletSelection('wallet-selection'),
-  sellPayoutV2('eur-payout-v2'),
-  sellRecipientsV2('eur-recipients-v2'),
-  sellVirtualIbanV2('eur-virtual-iban-v2'),
-  sellVirtualPayeeV2('eur-virtual-payee-v2'),
+  sellPayout('payout'),
+  sellRecipients('payout-recipients'),
+  sellVirtualIban('payout-virtual-iban'),
+  sellVirtualPayee('payout-virtual-payee'),
   sellExternalWalletNetworkSelection('external-wallet-network-selection'),
   sellExternalWalletReceivePayment('external-wallet-receive-payment'),
   sellSendPayment('send-payment'),
@@ -61,34 +59,24 @@ class SellRouter {
           GoRoute(
             name: SellRoute.sellWalletSelection.name,
             path: SellRoute.sellWalletSelection.path,
-            builder: (context, state) => BlocListener<SellBloc, SellState>(
-              listenWhen: (previous, current) =>
-                  current is SellPreparingPaymentState &&
-                  previous is! SellPreparingPaymentState &&
-                  current.fiatCurrency != FiatCurrency.eur &&
-                  current.selectedWallet != null,
-              listener: (context, state) {
-                context.pushNamed(SellRoute.sellSendPayment.name);
-              },
-              child: const SellWalletSelectionScreen(),
-            ),
+            builder: (context, state) => const SellWalletSelectionScreen(),
           ),
           GoRoute(
-            name: SellRoute.sellPayoutV2.name,
-            path: SellRoute.sellPayoutV2.path,
+            name: SellRoute.sellPayout.name,
+            path: SellRoute.sellPayout.path,
             builder: (context, state) {
               final source = state.extra;
-              if (source is! SellPayinSourceV2) {
-                return const SellPayoutRouteGuardV2(
+              if (source is! SellPayinSource) {
+                return const SellPayoutRouteGuard(
                   hasValidArguments: false,
                   child: SizedBox.shrink(),
                 );
               }
-              return SellPayoutRouteGuardV2(
+              return SellPayoutRouteGuard(
                 child: BlocProvider(
-                  create: (_) => SellPayoutCubitV2(
-                    locator<GetSellConfidentialSepaAvailabilityUsecaseV2>(),
-                  )..load(),
+                  create: (_) => SellPayoutCubit(
+                    locator<GetSellConfidentialSepaAvailabilityUsecase>(),
+                  )..load(context.read<SellBloc>().state.fiatCurrency),
                   child: BlocListener<SellBloc, SellState>(
                     listenWhen: (previous, current) =>
                         previous is SellPreparingPaymentState &&
@@ -102,29 +90,38 @@ class SellRouter {
                         );
                       }
                     },
-                    child: SellPayoutMethodScreenV2(source: source),
+                    child: SellPayoutMethodScreen(source: source),
                   ),
                 ),
               );
             },
           ),
           GoRoute(
-            name: SellRoute.sellRecipientsV2.name,
-            path: SellRoute.sellRecipientsV2.path,
-            builder: (context, state) => SellPayoutRouteGuardV2(
-              hasValidArguments:
-                  state.extra == RecipientType.sepaEur ||
-                  state.extra == RecipientType.confidentialSepaEur,
-              child: RecipientSelectionScreenV2(
-                isConfidential:
-                    state.extra == RecipientType.confidentialSepaEur,
-              ),
-            ),
+            name: SellRoute.sellRecipients.name,
+            path: SellRoute.sellRecipients.path,
+            builder: (context, state) {
+              final type = state.extra;
+              if (type is! RecipientType) {
+                return const SellPayoutRouteGuard(
+                  hasValidArguments: false,
+                  child: SizedBox.shrink(),
+                );
+              }
+              return SellPayoutRouteGuard(
+                hasValidArguments:
+                    type.currencyCode ==
+                    context.read<SellBloc>().state.fiatCurrency.code,
+                child: RecipientSelectionScreen.returning(
+                  types: [type],
+                  isOwner: true,
+                ),
+              );
+            },
           ),
           GoRoute(
-            name: SellRoute.sellVirtualIbanV2.name,
-            path: SellRoute.sellVirtualIbanV2.path,
-            builder: (context, state) => SellPayoutRouteGuardV2(
+            name: SellRoute.sellVirtualIban.name,
+            path: SellRoute.sellVirtualIban.path,
+            builder: (context, state) => SellPayoutRouteGuard(
               child: VirtualIbanOnboardingScreen(
                 onActivated: () =>
                     context.pop(RecipientType.confidentialSepaEur),
@@ -135,17 +132,17 @@ class SellRouter {
             ),
           ),
           GoRoute(
-            name: SellRoute.sellVirtualPayeeV2.name,
-            path: SellRoute.sellVirtualPayeeV2.path,
+            name: SellRoute.sellVirtualPayee.name,
+            path: SellRoute.sellVirtualPayee.path,
             builder: (context, state) {
               final recipientId = state.extra;
               if (recipientId is! String || recipientId.trim().isEmpty) {
-                return const SellPayoutRouteGuardV2(
+                return const SellPayoutRouteGuard(
                   hasValidArguments: false,
                   child: SizedBox.shrink(),
                 );
               }
-              return SellPayoutRouteGuardV2(
+              return SellPayoutRouteGuard(
                 child: SepaVirtualPayeeActivationScreen(
                   recipientId: recipientId,
                   onActivated: () =>
@@ -172,19 +169,8 @@ class SellRouter {
           GoRoute(
             name: SellRoute.sellExternalWalletNetworkSelection.name,
             path: SellRoute.sellExternalWalletNetworkSelection.path,
-            builder: (context, state) => BlocListener<SellBloc, SellState>(
-              listenWhen: (previous, current) =>
-                  current is SellPreparingPaymentState &&
-                  previous is! SellPreparingPaymentState &&
-                  current.fiatCurrency != FiatCurrency.eur &&
-                  current.selectedWallet == null,
-              listener: (context, state) {
-                context.pushNamed(
-                  SellRoute.sellExternalWalletReceivePayment.name,
-                );
-              },
-              child: const SellExternalWalletNetworkSelectionScreen(),
-            ),
+            builder: (context, state) =>
+                const SellExternalWalletNetworkSelectionScreen(),
           ),
           GoRoute(
             name: SellRoute.sellExternalWalletReceivePayment.name,

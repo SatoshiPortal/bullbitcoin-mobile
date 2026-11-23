@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bip85_entropy/public/bip85_registry.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -5,12 +7,9 @@ import 'dart:ui';
 import 'package:background_tasks/background_tasks.dart';
 
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -31,7 +30,7 @@ class _Bip85 extends Mock implements Bip85Repository {}
 
 class _Admission extends Mock implements ParentCustodyAdmissionPort {}
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
@@ -154,8 +153,9 @@ void main() {
           ),
         ]),
       );
-      final result = await ArkDerivationCollision(registry)
-          .hasCollision(parent);
+      final result = await ArkDerivationCollision(
+        Bip85Registry(registry.fetchAll),
+      ).hasCollision(parent);
       expect(result, isA<Ok<bool, ArkFailure>>());
       expect((result as Ok<bool, ArkFailure>).value, true);
     });
@@ -168,8 +168,9 @@ void main() {
             _entry(fingerprint: parent.hex, path: "39'/00'/012'/011811'"),
           ]),
         );
-        final result = await ArkDerivationCollision(registry)
-            .hasCollision(parent);
+        final result = await ArkDerivationCollision(
+          Bip85Registry(registry.fetchAll),
+        ).hasCollision(parent);
         expect(result, isA<Ok<bool, ArkFailure>>());
         expect((result as Ok<bool, ArkFailure>).value, true);
       },
@@ -182,8 +183,9 @@ void main() {
           _entry(fingerprint: parent.hex, path: "39'/1'/12'/11811'"),
         ]),
       );
-      final result = await ArkDerivationCollision(registry)
-          .hasCollision(parent);
+      final result = await ArkDerivationCollision(
+        Bip85Registry(registry.fetchAll),
+      ).hasCollision(parent);
       expect(result, isA<Ok<bool, ArkFailure>>());
       expect((result as Ok<bool, ArkFailure>).value, false);
     });
@@ -192,7 +194,8 @@ void main() {
       when(() => registry.fetchAll())
           .thenAnswer((_) async => const Err(Bip85StorageFailure()));
       expect(
-        await ArkDerivationCollision(registry).hasCollision(parent),
+        await ArkDerivationCollision(Bip85Registry(registry.fetchAll))
+            .hasCollision(parent),
         isA<Err<bool, ArkFailure>>(),
       );
     });
@@ -203,7 +206,8 @@ void main() {
             Ok([_entry(fingerprint: 'invalid', path: "39'/0'/12'/11811'")]),
       );
       expect(
-        await ArkDerivationCollision(registry).hasCollision(parent),
+        await ArkDerivationCollision(Bip85Registry(registry.fetchAll))
+            .hasCollision(parent),
         isA<Err<bool, ArkFailure>>(),
       );
     });
@@ -216,7 +220,8 @@ void main() {
               Ok([_entry(fingerprint: parent.hex, path: 'unknown/11811')]),
         );
         expect(
-          await ArkDerivationCollision(registry).hasCollision(parent),
+          await ArkDerivationCollision(Bip85Registry(registry.fetchAll))
+              .hasCollision(parent),
           isA<Err<bool, ArkFailure>>(),
         );
       },
@@ -372,7 +377,10 @@ void main() {
       settingsValue = _SettingsValue();
       final wallets = _Wallets();
       final wallet = _Wallet();
-      when(() => settings.fetch()).thenAnswer((_) async => settingsValue);
+      when(settings.readActiveEnvironment)
+          .thenAnswer((_) async => Ok(settingsValue.environment));
+      when(settings.readLanguage)
+          .thenAnswer((_) async => Ok(settingsValue.language));
       when(() => settingsValue.environment).thenReturn(Environment.regtest);
       when(() => wallets.fetchAll()).thenAnswer((_) async => [wallet]);
       when(() => wallet.networkCode).thenReturn('bitcoinRegtest');
@@ -380,9 +388,12 @@ void main() {
       when(() => wallet.isDefault).thenReturn(true);
       when(() => wallet.masterFingerprint).thenReturn('12345678');
       when(() => wallet.id).thenReturn('owned-regtest-wallet');
-      locator.registerSingleton<SettingsRepository>(settings);
+      locator.registerSingleton<ActiveEnvironmentReader>(settings);
+      locator.registerSingleton<RuntimeDisplayPreferencesReader>(settings);
       locator.registerSingleton<WalletMetadataDatasource>(wallets);
-      locator.registerSingleton<Bip85Repository>(_Bip85());
+      locator.registerSingleton<Bip85Registry>(
+        Bip85Registry(_Bip85().fetchAll),
+      );
       FakeSecureStoragePlatform().install();
       locator.registerSingleton<Secrets>(
         Secrets(scratchDirectory: () async => directory.path),

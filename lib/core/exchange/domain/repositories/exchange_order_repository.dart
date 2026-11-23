@@ -1,9 +1,8 @@
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
 
 abstract interface class ExchangeOrderRepository {
   /// [payjoinBip21] replaces [toAddress] on the wire when set: the exchange then
@@ -26,18 +25,12 @@ abstract interface class ExchangeOrderRepository {
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
   });
-  Future<FiatPaymentOrder> placeSellToRecipientOrderV2({
-    required OrderAmount orderAmount,
-    required String recipientId,
-    required OrderBitcoinNetwork network,
-    required SepaPaymentProcessor paymentProcessor,
-    bool usePayjoin = false,
-  });
   Future<FiatPaymentOrder> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
+    SepaPaymentProcessor? paymentProcessor,
     bool usePayjoin = false,
   });
   Future<WithdrawOrder> placeWithdrawalOrder({

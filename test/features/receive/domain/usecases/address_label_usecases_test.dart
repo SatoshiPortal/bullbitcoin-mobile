@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 Label _addressLabel({int id = 1, required String label}) =>
     Label.addr(id: id, address: 'bc1qtest', label: label);
@@ -18,9 +18,9 @@ void main() {
 
   group('LoadReceiveAddressLabelUsecase', () {
     test('returns the first user-authored label', () async {
-      final labels = _MockLabelsFacade();
-      when(() => labels.fetchByReference('bc1qtest'))
-          .thenAnswer((_) async => [_addressLabel(label: 'lunch money')]);
+      final labels = _MockLabels();
+      when(() => labels.fetch(reference: 'bc1qtest'))
+          .thenAnswer((_) async => Ok([_addressLabel(label: 'lunch money')]));
 
       final result = await LoadReceiveAddressLabelUsecase(labels)
           .execute('bc1qtest');
@@ -31,9 +31,9 @@ void main() {
 
     test('skips system labels — they are not user notes and must never '
         'pre-fill the counterparty-visible message', () async {
-      final labels = _MockLabelsFacade();
-      when(() => labels.fetchByReference('bc1qtest')).thenAnswer(
-        (_) async => [_addressLabel(label: LabelSystem.payjoin.label)],
+      final labels = _MockLabels();
+      when(() => labels.fetch(reference: 'bc1qtest')).thenAnswer(
+        (_) async => Ok([_addressLabel(label: LabelSystem.payjoin.label)]),
       );
 
       final result = await LoadReceiveAddressLabelUsecase(labels)
@@ -42,10 +42,21 @@ void main() {
       expect((result as Ok<String, ReceiveFailure>).value, '');
     });
 
+    test('uses an empty note when the label query fails', () async {
+      final labels = _MockLabels();
+      when(() => labels.fetch(reference: 'bc1qtest'))
+          .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+
+      final result = await LoadReceiveAddressLabelUsecase(labels)
+          .execute('bc1qtest');
+
+      expect((result as Ok<String, ReceiveFailure>).value, isEmpty);
+    });
+
     test('maps a thrown read into a sanitized failure', () async {
-      final labels = _MockLabelsFacade();
+      final labels = _MockLabels();
       when(
-        () => labels.fetchByReference('bc1qtest'),
+        () => labels.fetch(reference: 'bc1qtest'),
       ).thenThrow(Exception('drift: database is locked at /data/app.sqlite'));
 
       final result = await LoadReceiveAddressLabelUsecase(labels)
@@ -65,7 +76,7 @@ void main() {
 
   group('SaveReceiveAddressLabelUsecase', () {
     test('stores a non-empty note', () async {
-      final labels = _MockLabelsFacade();
+      final labels = _MockLabels();
       when(() => labels.store(any())).thenAnswer(
         (_) async => Ok<Label, LabelFailure>(_addressLabel(label: 'dinner')),
       );
@@ -81,11 +92,12 @@ void main() {
     test('an empty note DELETES the address labels instead of storing an '
         'empty one, which would annotate the address with a blank note '
         'forever', () async {
-      final labels = _MockLabelsFacade();
-      when(() => labels.fetchByReference('bc1qtest'))
-          .thenAnswer((_) async => [_addressLabel(id: 7, label: 'old note')]);
+      final labels = _MockLabels();
+      when(
+        () => labels.fetch(reference: 'bc1qtest'),
+      ).thenAnswer((_) async => Ok([_addressLabel(id: 7, label: 'old note')]));
       when(() => labels.trash(7))
-          .thenAnswer((_) async => const Ok<Null, LabelFailure>(null));
+          .thenAnswer((_) async => const Ok<void, LabelFailure>(null));
 
       final result = await SaveReceiveAddressLabelUsecase(labels)
           .execute(address: 'bc1qtest', walletId: 'w1', note: '');
@@ -97,7 +109,7 @@ void main() {
 
     test('lifts a LabelFailure from a failed store into this feature\'s '
         'family, so the receive UI never translates a foreign type', () async {
-      final labels = _MockLabelsFacade();
+      final labels = _MockLabels();
       when(() => labels.store(any())).thenAnswer(
         (_) async => const Err<Label, LabelFailure>(
           LabelUnexpectedFailure('drift: UNIQUE constraint failed'),
@@ -116,13 +128,27 @@ void main() {
       }
     });
 
+    test('a failed lookup leaves no labels to delete', () async {
+      final labels = _MockLabels();
+      when(() => labels.fetch(reference: 'bc1qtest'))
+          .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+
+      final result = await SaveReceiveAddressLabelUsecase(labels)
+          .execute(address: 'bc1qtest', walletId: 'w1', note: '');
+
+      expect(result, isA<Ok<void, ReceiveFailure>>());
+      verifyNever(() => labels.trash(any()));
+      verifyNever(() => labels.store(any()));
+    });
+
     test('reports a failed trash rather than silently keeping the old '
         'note', () async {
-      final labels = _MockLabelsFacade();
-      when(() => labels.fetchByReference('bc1qtest'))
-          .thenAnswer((_) async => [_addressLabel(id: 7, label: 'old note')]);
+      final labels = _MockLabels();
+      when(
+        () => labels.fetch(reference: 'bc1qtest'),
+      ).thenAnswer((_) async => Ok([_addressLabel(id: 7, label: 'old note')]));
       when(() => labels.trash(7)).thenAnswer(
-        (_) async => const Err<Null, LabelFailure>(LabelUnexpectedFailure()),
+        (_) async => const Err<void, LabelFailure>(LabelUnexpectedFailure()),
       );
 
       final result = await SaveReceiveAddressLabelUsecase(labels)

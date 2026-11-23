@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 
 import 'payjoin_database.steps.dart';
 
@@ -92,12 +89,20 @@ class PayjoinMigrations extends Table {
   Set<Column<Object>> get primaryKey => {name};
 }
 
+class LegacyImportReceipts extends Table {
+  TextColumn get id => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     PayjoinSenders,
     PayjoinReceivers,
     PayjoinPolicies,
     PayjoinMigrations,
+    LegacyImportReceipts,
   ],
 )
 final class PayjoinDatabase extends _$PayjoinDatabase {
@@ -105,18 +110,8 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   PayjoinDatabase._(super.executor);
 
-  factory PayjoinDatabase.open(String path) {
-    return PayjoinDatabase._(
-      NativeDatabase.createInBackground(
-        File(path),
-        setup: (database) {
-          database.execute('PRAGMA busy_timeout = 2000;');
-          database.execute('PRAGMA journal_mode = WAL;');
-          database.execute('PRAGMA synchronous = FULL;');
-        },
-      ),
-    );
-  }
+  factory PayjoinDatabase.fromExecutor(QueryExecutor executor) =
+      PayjoinDatabase._;
 
   factory PayjoinDatabase.forTesting(QueryExecutor executor) =
       PayjoinDatabase._;
@@ -126,64 +121,75 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: stepByStep(
-      from1To2: (m, schema) async {
-        await m.addColumn(
-          schema.payjoinReceivers,
-          schema.payjoinReceivers.isTrade,
-        );
-        await m.addColumn(
-          schema.payjoinPolicies,
-          schema.payjoinPolicies.sendEnabled,
-        );
-        await m.addColumn(
-          schema.payjoinPolicies,
-          schema.payjoinPolicies.buyEnabled,
-        );
-        await m.addColumn(
-          schema.payjoinPolicies,
-          schema.payjoinPolicies.sellEnabled,
-        );
-        // The single switch used to gate sending as well: a user who turned
-        // it on keeps payjoin on both sides of a payment with another user.
-        await customStatement(
-          'UPDATE payjoin_policies SET send_enabled = enabled',
-        );
-      },
-      from2To3: (m, schema) async {
-        try {
-          // One transaction: the column never exists without its backfill.
-          await transaction(() async {
-            await m.addColumn(
-              schema.payjoinSenders,
-              schema.payjoinSenders.hasNetworkEvidence,
-            );
-            // Schema 2 kept no trace of a payment that went out without a
-            // recorded outcome. An unfinished sender is therefore assumed to
-            // hold evidence; only sessions created from now on start without.
-            await customStatement(
-              'UPDATE payjoin_senders SET has_network_evidence = 1 '
-              'WHERE is_expired = 0 AND is_completed = 0 AND is_aborted = 0',
-            );
-          });
-        } catch (e) {
-          // A re-run, or another connection migrating at the same time, finds
-          // the column already there with its backfill: nothing left to do,
-          // and never a second backfill over later rows. Anything else is a
-          // real storage failure.
-          if (!'$e'.contains('duplicate column name: has_network_evidence')) {
-            rethrow;
-          }
-          final columns = await customSelect(
-            "PRAGMA table_info('payjoin_senders')",
-          ).get();
-          if (!columns.any(
-            (column) => column.read<String>('name') == 'has_network_evidence',
-          )) {
-            rethrow;
-          }
-        }
-      },
-    ),
+    onCreate: (m) => transaction(() async {
+      if (!await _hasReceiptsTable()) await m.createAll();
+    }),
+    onUpgrade: (m, from, to) async {
+      if (from < 1 || from >= to || to > schema) {
+        throw const _UnsupportedPayjoinSchema();
+      }
+      await _upgrade(m, from, to);
+    },
   );
+
+  Future<bool> _hasReceiptsTable() async =>
+      await customSelect(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'legacy_import_receipts'",
+      ).getSingleOrNull() !=
+      null;
+
+  OnUpgrade get _upgrade => stepByStep(
+    from1To2: (m, schema) async {
+      await m.addColumn(
+        schema.payjoinReceivers,
+        schema.payjoinReceivers.isTrade,
+      );
+      await m.addColumn(
+        schema.payjoinPolicies,
+        schema.payjoinPolicies.sendEnabled,
+      );
+      await m.addColumn(
+        schema.payjoinPolicies,
+        schema.payjoinPolicies.buyEnabled,
+      );
+      await m.addColumn(
+        schema.payjoinPolicies,
+        schema.payjoinPolicies.sellEnabled,
+      );
+      // The single switch used to gate sending as well: a user who turned
+      // it on keeps payjoin on both sides of a payment with another user.
+      await customStatement(
+        'UPDATE payjoin_policies SET send_enabled = enabled',
+      );
+    },
+    from2To3: (m, schema) async {
+      await transaction(() async {
+        final columns = await customSelect(
+          "PRAGMA table_info('payjoin_senders')",
+        ).get();
+        if (!columns.any(
+          (column) => column.read<String>('name') == 'has_network_evidence',
+        )) {
+          await m.addColumn(
+            schema.payjoinSenders,
+            schema.payjoinSenders.hasNetworkEvidence,
+          );
+          // Schema 2 kept no trace of a payment that went out without a
+          // recorded outcome. An unfinished sender is therefore assumed to
+          // hold evidence; only sessions created from now on start without.
+          await customStatement(
+            'UPDATE payjoin_senders SET has_network_evidence = 1 '
+            'WHERE is_expired = 0 AND is_completed = 0 AND is_aborted = 0',
+          );
+        }
+        if (!await _hasReceiptsTable()) {
+          await m.createTable(legacyImportReceipts);
+        }
+      });
+    },
+  );
+}
+
+final class _UnsupportedPayjoinSchema implements Exception {
+  const _UnsupportedPayjoinSchema();
 }

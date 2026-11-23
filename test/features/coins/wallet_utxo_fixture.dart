@@ -1,9 +1,9 @@
+import 'package:sync/sync.dart' show Keychain;
+
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
-import 'package:bb_mobile/features/labels/label.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:labels/labels.dart';
 
 /// Builds a [WalletUtxo] (Bitcoin variant) for tests with sensible defaults.
 ///
@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/labels/label.dart';
 WalletUtxo walletUtxoFixture({
   int confirmations = 1,
   bool isFrozen = false,
-  WalletAddressKeyChain keychain = WalletAddressKeyChain.external,
+  Keychain keychain = Keychain.external,
   List<String> labels = const [],
   int sats = 100000,
   String? txId,

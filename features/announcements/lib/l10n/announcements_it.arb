@@ -1,0 +1,11 @@
+{
+  "oopsSomethingWentWrong": "Ops! Qualcosa non va",
+  "announcementPayjoinTitle": "Aumenta la tua privacy",
+  "announcementPayjoinDescription": "Attiva il Payjoin per rendere più riservati i tuoi pagamenti in Bitcoin.",
+  "announcementDismissConfirmTitle": "Nascondere questo avviso?",
+  "announcementDismissConfirmBody": "Leggilo per saperne di più, oppure nascondilo. Gli avvisi nascosti non verranno più mostrati.",
+  "announcementDismissConfirmAction": "Nascondi",
+  "announcementDismissConfirmRead": "Leggi",
+  "announcementAppUpdateRequiredTitle": "Aggiorna BULL",
+  "announcementAppUpdateRequiredDescription": "Per usare il servizio di pagamenti Lightning e di swap, aggiorna l'app BULL alla nuova versione."
+}

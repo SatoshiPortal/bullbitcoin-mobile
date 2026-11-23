@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:preferences/preferences.dart' hide Environment;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:primitives/primitives.dart';
@@ -14,7 +13,7 @@ class _MockStore extends Mock implements SwapStore {}
 
 class _MockBoltz extends Mock implements BoltzSwapRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSwapWatcher extends Mock implements SwapWatcher {}
 
@@ -80,7 +79,8 @@ void main() {
     late SwitchableSwapEngine repository;
     late _MockSettingsRepository settingsRepository;
     late _MockSwapWatcher watcher;
-    late StreamController<settings.Environment> environments;
+    late StreamController<Result<settings.Environment, PreferencesFailure>>
+    environments;
     late List<NetworkEnv> builds;
     late SwapEngineSwitcher switcher;
 
@@ -90,7 +90,10 @@ void main() {
       repository = SwitchableSwapEngine(mainnet.parts);
       settingsRepository = _MockSettingsRepository();
       watcher = _MockSwapWatcher();
-      environments = StreamController<settings.Environment>.broadcast();
+      environments =
+          StreamController<
+            Result<settings.Environment, PreferencesFailure>
+          >.broadcast();
       builds = [];
       when(() => settingsRepository.environmentChangeStream)
           .thenAnswer((_) => environments.stream);
@@ -118,7 +121,7 @@ void main() {
 
     test('switching to testnet stops the watcher, swaps the engine and '
         'restarts the watcher', () async {
-      environments.add(settings.Environment.testnet);
+      environments.add(const Ok(settings.Environment.testnet));
       await pumpEventQueue();
 
       expect(builds, [NetworkEnv.testnet]);
@@ -126,8 +129,23 @@ void main() {
       verifyInOrder([() => watcher.stop(), () => watcher.start()]);
     });
 
+    test(
+      'failed notification keeps the current engine and later success resumes',
+      () async {
+        environments.add(const Err(PreferencesReadFailure()));
+        await pumpEventQueue();
+        expect(builds, isEmpty);
+        expect(repository.isTestnet, isFalse);
+        verifyNever(() => watcher.stop());
+        environments.add(const Ok(settings.Environment.testnet));
+        await pumpEventQueue();
+        expect(builds, [NetworkEnv.testnet]);
+        expect(repository.isTestnet, isTrue);
+      },
+    );
+
     test('a switch to the network already in use does nothing', () async {
-      environments.add(settings.Environment.mainnet);
+      environments.add(const Ok(settings.Environment.mainnet));
       await pumpEventQueue();
 
       expect(builds, isEmpty);

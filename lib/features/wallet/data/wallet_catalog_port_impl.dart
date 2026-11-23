@@ -53,6 +53,33 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
     }
   }
 
+  /// Resolve application metadata before invoking a native capability.
+  static WalletKey keyFromMetadata(WalletMetadataModel row) =>
+      value(descriptorFromMetadata(row)).key;
+
+  static Future<WalletKey> keyForId(
+    WalletMetadataDatasource metadata,
+    String id,
+  ) async {
+    try {
+      final row = await metadata.fetch(id);
+      if (row == null) {
+        throw const WalletSnapshotException(SyncNotFoundFailure());
+      }
+      return WalletKey(id: row.id, network: row.network.shared);
+    } on WalletSnapshotException {
+      rethrow;
+    } on Exception {
+      throw const WalletSnapshotException(SyncStorageFailure());
+    }
+  }
+
+  /// The legacy app repositories retain throwing boundaries until migrated.
+  static T value<T>(Result<T, SyncFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw WalletSnapshotException(failure),
+  };
+
   static Result<PublicWalletDescriptor, SyncFailure> descriptorFromMetadata(
     WalletMetadataModel row,
   ) {
@@ -95,7 +122,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
           ),
         );
       case LiquidNetwork():
-        // Liquid uses only the external descriptor, as WalletModel.fromMetadata does.
+        // Liquid uses only the external descriptor.
         if (!LiquidWalletDescriptor.isConfidentialDescriptor(external)) {
           return const Err(SyncInvalidCatalogFailure());
         }

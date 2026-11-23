@@ -22,6 +22,30 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
+|-- accessKeychain
+|   |-- isPinSet() -> bool
+|   |-- verifyPin(candidate) -> bool?
+|   |-- setPin(pin) -> void
+|   |-- deletePin() -> void
+|   |-- readAttempts() -> String?
+|   |-- writeAttempts(value) -> void
+|   |-- readLockedUntil() -> String?
+|   |-- writeLockedUntil(value) -> void
+|   `-- deleteLockedUntil() -> void
+|-- exchangeKeychain
+|   |-- read(isTestnet:) -> String?
+|   |-- write(value, isTestnet:) -> void
+|   `-- delete(isTestnet:) -> void
+|-- silentPaymentKeychain
+|   |-- readBackend() -> String?
+|   |-- writeBackend(value) -> void
+|   |-- deleteBackend() -> void
+|   |-- readAutoScan() -> String?
+|   `-- writeAutoScan(value) -> void
+|-- swapKeychain
+|   |-- read(key) -> String?
+|   |-- write(key, value) -> void
+|   `-- delete(key) -> void
 |-- generate([wordCount: MnemonicLength.words12]) -> Secret
 |-- import(words:, language:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
@@ -38,6 +62,7 @@ Secrets
 |   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
 |   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
 `-- databaseKeys(module:)
+    |-- open(name:, file:, [existingSchemaVersion:]) -> Future<Result<QueryExecutor, DatabaseOpenFailure>>
     |-- getOrCreate(name:) -> DatabaseKey
     |-- get(name:) -> DatabaseKey
     `-- reset(name:) -> void
@@ -176,6 +201,8 @@ Sealed display and challenge widgets obtain language in the same read as the wor
 
 `secrets.databaseKeys(module:)` scopes `getOrCreate(name:)`, `get(name:)` and `reset(name:)` to one module. Inject that handle instead of all of `Secrets`. Creation is serialized within the isolate and occurs only on a clean miss; corrupt entries are never replaced automatically. `get` never creates, and `reset` deletes without regeneration. The module owner must also discard the database encrypted by a reset key.
 
+For Drift workers, capture `Secrets.databaseOpener` on the root isolate. It binds the database name, module, file and expected schema without transferring keys or a live connection. The worker initializes the keystore bridge and returns only a keyed executor or a caller-supplied failure. The owner still controls admission and verifies its readiness receipt before exposing the database.
+
 ## Sealed widgets and failures
 
 The host styles the sealed word widgets with `wordBuilder` or `tileBuilder` and arranges them with `layoutBuilder`. `failureBuilder(context, failure, retry)` renders an error and can offer a new read after the keystore unlocks. The challenge reports `onSolved`, `onMistake` and `onProgress`; completing the selection is distinct from successful verification. A keystore failure is never reported as a wrong answer. The host supplies localized messages and owns authentication and capture protection around the screen.
@@ -193,3 +220,21 @@ RecoverBull creation, restoration and backup inspection use the package. Decrypt
 ## Read next
 
 [doc/design.md](doc/design.md): contracts, passphrase behavior, storage ownership, module layout, custody checks and contributor rules.
+
+## Legacy owner keychains
+
+`Secrets.accessKeychain`, `exchangeKeychain`, `silentPaymentKeychain` and `swapKeychain` expose closed handles. Access compares the PIN without returning it; a missing PIN is distinct from a mismatch and a failed read. All operations return `Result<…, SecretFailure>`. Exchange selects only mainnet or testnet; Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
+
+The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys are `failedUnlockAttemptsKey`, `unlockLockedUntilKey`, `exchange_api_key`, `exchange_api_key_testnet`, `sp_backend_config` and `sp_auto_scan_enabled`. These entries retain their exact bytes, with Android `resetOnError: false` and `migrateOnAlgorithmChange: false`, and iOS `first_unlock_this_device`. There is no data migration. SP configuration is not secret, but moving it to another store would require a separate migration. Exchange owns its diagnostics without duplicate keychain reporting; access operations retain sanitized boundary diagnostics.
+
+## Encrypted wallet inventory
+
+The Secrets schema owns wallet definitions, BIP85 derivation records and access views. `package:secrets/migration.dart` supplies the foreground participant for split-v1. It copies the inventory from a read-only schema-16 snapshot and verifies every destination value before committing its receipt in `access_state`. A wallet marked local keeps its expected seed fingerprint even when the seed cannot be read. Descriptor spelling, nullable labels and unknown legacy enum text survive the copy.
+
+The initial view preserves the legacy access policy. An existing PIN becomes a salted Argon2id verifier and the failed-attempt count and lockout are copied into the same transaction. The importer keeps the legacy file and keychain entries for coordinated retirement after all owners verify their data.
+
+The storage library opens an existing admitted inventory. Its foreground capability checks the session before reading or mutating wallet registrations and rechecks the session before returning data. Locking withdraws inventory access. Credential checks and attempt updates share one transaction. The active view's background grant controls a separate descriptor-only capability for sync.
+
+The host gives features the read-only `WalletInventory` from `package:secrets/secrets.dart`, implemented by the admitted `SecretsInventory`. A targeted lookup distinguishes a wallet not visible to this view, unreadable metadata and a storage read failure. The concrete chain and network come from storage, not from the derivation path or the app's current environment. Network selection returns readable wallets in wallet ID order and their explicit defaults; it neither chooses a fallback nor resolves competing defaults. These reads never expose descriptors. The descriptor catalog for native Sync remains a separate projection, not a metadata lookup for features.
+
+Reserve BIP85 indices per parent and application before deriving the child. Keep every reservation, including revoked entries, so a retry cannot return the same child. Historical paths retain their original spelling.

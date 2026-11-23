@@ -1,11 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart' show BullAmount, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 /// Renders whichever error the order creation failed with. Amount limits get
@@ -57,11 +55,11 @@ class BuyOrderFailureMessage extends StatelessWidget {
         Text(label, style: errorStyle),
         const Gap(4),
         if (isBitcoinLimit)
-          CurrencyText(
+          BullAmount.signedSats(
             ConvertAmount.btcToSats(amount),
-            showFiat: false,
             style: errorStyle,
             overrideHideAmounts: true,
+            interactive: false,
           )
         else
           Text(FormatAmount.fiat(amount, currency), style: errorStyle),

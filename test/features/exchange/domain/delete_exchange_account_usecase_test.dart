@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';

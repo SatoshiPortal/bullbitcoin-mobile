@@ -1,17 +1,17 @@
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockExchangeUserRepository extends Mock
-    implements ExchangeUserRepository {}
+import '../../../../core/exchange/fake_exchange_users.dart';
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockExchangeUserRepository extends Mock
+    implements ExchangeUserOperations {}
+
+class MockSettingsRepository extends Mock implements Preferences {}
 
 /// Stands in for whatever a foreign exception message may embed — a
 /// credential, a response body. It must never reach a [DcaFailure].
@@ -35,10 +35,9 @@ void main() {
     testnetUsers = MockExchangeUserRepository();
     usecase = StartDcaUsecase(
       settingsRepository: settings,
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
     );
-    when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
+    when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
 
   DcaFailure failureOf(Result<DcaStartData, DcaFailure> result) {
@@ -49,7 +48,8 @@ void main() {
   group('StartDcaUsecase', () {
     test('regtest refuses DCA before backend IO', () async {
       when(settings.fetch).thenAnswer(
-        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+        (_) async =>
+            Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
       expect(await usecase.execute(), isA<Err>());
       verifyZeroInteractions(mainnetUsers);
@@ -58,9 +58,9 @@ void main() {
 
     test('maps a not-logged-in repository failure to '
         'AccountUnavailableFailure', () async {
-      when(() => mainnetUsers.getUserSummary()).thenAnswer(
-        (_) async => const Err(ExchangeUserNotAuthenticatedFailure()),
-      );
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
       final failure = failureOf(await usecase.execute());
       expect(failure, isA<DcaAccountUnavailableFailure>());
@@ -70,7 +70,7 @@ void main() {
         'without carrying the raw reason', () async {
       when(() => mainnetUsers.getUserSummary()).thenAnswer(
         (_) async => const Err(
-          ExchangeUserSummaryUnavailableFailure(
+          ExchangeAccountUnavailableFailure(
             'getUserSummary failed: DioException',
           ),
         ),

@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
+import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -20,16 +20,13 @@ import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
   static const _supportedDevices = {
-    SignerDeviceEntity.coldcardQ,
-    SignerDeviceEntity.coldcardMk4,
+    SignerDevice.coldcardQ,
+    SignerDevice.coldcardMk4,
   };
 
-  final SignerDeviceEntity signerDevice;
+  final SignerDevice signerDevice;
 
-  factory ImportColdcardPage({
-    Key? key,
-    required SignerDeviceEntity signerDevice,
-  }) {
+  factory ImportColdcardPage({Key? key, required SignerDevice signerDevice}) {
     if (!_supportedDevices.contains(signerDevice)) {
       throw ArgumentError.value(
         signerDevice,
@@ -100,7 +97,7 @@ class ImportColdcardPage extends StatelessWidget {
             Gap(Device.screen.height * 0.05),
             Column(
               children: [
-                if (signerDevice == SignerDeviceEntity.coldcardQ) ...[
+                if (signerDevice == SignerDevice.coldcardQ) ...[
                   BullButton.secondary(
                     size: BullButtonSize.small,
                     label: context.loc.importColdcardButtonOpenCamera,
@@ -128,7 +125,7 @@ class ImportColdcardPage extends StatelessWidget {
                   size: BullButtonSize.small,
                   label: context.loc.importColdcardButtonInstructions,
                   onPressed: () {
-                    if (signerDevice == SignerDeviceEntity.coldcardQ) {
+                    if (signerDevice == SignerDevice.coldcardQ) {
                       ColdcardQInstructionsBottomSheet.show(context);
                     } else {
                       ColdcardMk4InstructionsBottomSheet.show(context);

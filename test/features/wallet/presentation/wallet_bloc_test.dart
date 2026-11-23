@@ -12,18 +12,18 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';

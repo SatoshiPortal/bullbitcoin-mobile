@@ -71,7 +71,51 @@ class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: colors.primary,
+        selectionColor: colors.primary.withValues(alpha: 0.3),
+        selectionHandleColor: colors.primary,
+      ),
       brightness: brightness,
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: brightness == Brightness.light
+            ? colors.background
+            : colors.surface,
+        modalBackgroundColor: brightness == Brightness.light
+            ? colors.background
+            : colors.surface,
+        modalBarrierColor: colors.scrim.withValues(
+          alpha: brightness == Brightness.light ? 0.45 : 0.60,
+        ),
+        constraints: const BoxConstraints(minWidth: double.infinity),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(shapes.sheet),
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        elevation: 0,
+        modalElevation: 0,
+      ),
+      dialogTheme: DialogThemeData(
+        barrierColor: colors.scrim.withValues(
+          alpha: brightness == Brightness.light ? 0.45 : 0.60,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationThemeData(
+        filled: true,
+        fillColor: colors.surface,
+        border: WidgetStateInputBorder.resolveWith(
+          (states) => OutlineInputBorder(
+            borderRadius: BorderRadius.circular(shapes.input),
+            borderSide: BorderSide(
+              color: states.contains(WidgetState.error)
+                  ? colors.error
+                  : colors.border,
+            ),
+          ),
+        ),
+      ),
       extensions: bullUiExtensions(
         colors: bullTheme,
         brightness: brightness,

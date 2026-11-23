@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/primitives/payment_network.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_database.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_table.drift.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
@@ -21,7 +22,7 @@ class _MockExchangeDatasource extends Mock
     implements ExchangePublicApiDatasource {}
 
 void main() {
-  late SqliteDatabase database;
+  late OrderSwapsDatabase database;
   late _MockExchangeDatasource remote;
   late _MockExchangeDatasource mainnetRemote;
   late OrderSwapRepositoryImpl repository;
@@ -29,7 +30,7 @@ void main() {
 
   setUp(() {
     now = DateTime.utc(2026, 8, 5, 12);
-    database = SqliteDatabase(NativeDatabase.memory());
+    database = OrderSwapsDatabase(NativeDatabase.memory());
     remote = _MockExchangeDatasource();
     mainnetRemote = _MockExchangeDatasource();
     repository = OrderSwapRepositoryImpl(
@@ -1531,7 +1532,7 @@ Future<Result<OrderSwapRecord, SwapFailure>> _create(
 );
 
 Future<void> _insertRecord(
-  SqliteDatabase database, {
+  OrderSwapsDatabase database, {
   required String localId,
   String? sourceWalletId,
   String? destinationWalletId,

@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:labels/labels.dart';
 
 class LabelExchangeOrdersUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final ListAllOrdersUsecase _listAllOrdersUsecase;
   final WalletTransactionRepository _walletTransactionRepository;
 
@@ -26,7 +26,10 @@ class LabelExchangeOrdersUsecase {
       final ordersToLabel = orders ?? await _listAllOrdersUsecase.execute();
       if (ordersToLabel.isEmpty) return;
 
-      final existingLabels = await _labelsFacade.fetchAll();
+      final existingLabels = (await _labelsFacade.fetch()).fold(
+        (labels) => labels,
+        (_) => const <Label>[],
+      );
       final existingLabelReferences = {
         for (final label in existingLabels) (label.label, label.reference),
       };

@@ -1,11 +1,13 @@
+import 'package:electrum/testing.dart';
+
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/features/electrum_settings/data/server_status_adapter.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
+import 'package:electrum/electrum.dart';
+import 'package:fees/fees.dart';
+import 'package:mempool/mempool.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A loopback URL nothing listens on.
@@ -19,21 +21,33 @@ Future<String> _closedUrl() async {
 // Sync reports these failures as values; the app's owners must turn them into
 // what their callers expect, never into an Error.
 void main() {
-  test('regtest fees from an unreachable server throw an Exception, so the '
-      'next server is tried', () async {
-    final connection = ElectrumConnection(
-      url: await _closedUrl(),
-      retry: 0,
-      timeout: 2,
-      stopGap: 20,
-      validateDomain: false,
-      isCustom: true,
-    );
-    await expectLater(
-      const RegtestFeesDatasource().fetch(connection),
-      throwsA(isA<Exception>()),
-    );
-  });
+  test(
+    'unreachable regtest Electrum reports a retryable connection failure',
+    () async {
+      final connection = WalletConnection(
+        url: await _closedUrl(),
+        retry: 0,
+        timeout: const Duration(seconds: 2),
+        stopGap: 20,
+        validateDomain: false,
+      );
+      final mempool = _Mempool();
+      final port = _RegtestConnection(connection);
+      final fees = Fees.open(
+        connections: port,
+        mempool: mempool,
+        readPreference: (_) async => null,
+        writePreference: (_, _) async {},
+      );
+
+      expect(
+        await fees.estimate(BitcoinNetwork.regtest),
+        isA<Err<FeeOptions, FeesFailure>>(),
+      );
+      expect(port.retryable, isTrue);
+      verifyZeroInteractions(mempool);
+    },
+  );
 
   test(
     'the Bitcoin probe of an unreachable server reports it offline',
@@ -50,4 +64,28 @@ void main() {
       );
     },
   );
+}
+
+class _Mempool extends Mock implements Mempool {}
+
+class _RegtestConnection implements WalletConnectionPort {
+  final WalletConnection connection;
+  bool retryable = false;
+
+  _RegtestConnection(this.connection);
+
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) async {
+    expect(network, BitcoinNetwork.regtest);
+    final result = await operation(connection);
+    if (result case Err(:final failure)) {
+      retryable = mayRetry(failure);
+    }
+    return result;
+  }
 }

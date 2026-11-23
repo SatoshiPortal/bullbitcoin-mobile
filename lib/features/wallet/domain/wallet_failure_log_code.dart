@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
 extension WalletFailureLogCode on WalletFailure {
   String get logCode => switch (this) {

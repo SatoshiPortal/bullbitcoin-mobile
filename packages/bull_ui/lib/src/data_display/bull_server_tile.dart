@@ -68,7 +68,7 @@ class BullServerTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         decoration: BoxDecoration(
-          color: colors.cardBackground,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(color: colors.border),
         ),

@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:ark/ark.dart' show ArkSnapshot;
 
-import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
@@ -100,7 +100,7 @@ final class ArkForegroundHost {
           metadata: locator<WalletMetadataDatasource>(),
           sourceSync: locator<ForegroundWalletSync>(),
           secrets: locator<Secrets>(),
-          fees: locator<FeesRepository>(),
+          fees: locator<Fees>(),
           custody: locator<ParentCustodyAdmissionPort>(),
         );
         return (bind: factory.bindRealClient, close: factory.close);

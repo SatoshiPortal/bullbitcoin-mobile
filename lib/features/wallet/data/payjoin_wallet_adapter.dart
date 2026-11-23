@@ -2,13 +2,10 @@ import 'ark_funding_signing_guard.dart';
 
 import 'package:sync/sync.dart' show WalletKey;
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
-    show SpendWallet;
+import 'package:sync/sync.dart' as sync;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
@@ -17,7 +14,8 @@ import 'package:sync/sync.dart' show BitcoinSpendStatus;
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
   final ArkFundingSigningGuard _arkFundingGuard;
-  final SpendWallet _wallet;
+  final Future<Result<sync.Wallet, sync.SyncFailure>> Function(WalletKey)
+  _wallet;
   final Future<BitcoinSpendStatus> Function(String walletId) _spendStatus;
   final SyncWalletValuesDatasource _values;
   final WalletMetadataDatasource _metadata;
@@ -65,8 +63,13 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: sync adds the
     // paths first, from the public descriptors.
-    final annotated = switch (await (await _wallet(walletId)).tx
-        .annotate(psbt)) {
+    final handle = switch (await _wallet(
+      WalletKey(id: walletId, network: network),
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
+    };
+    final annotated = switch (await handle.tx.annotate(psbt)) {
       Ok(:final value) => value,
       Err(:final failure) => throw StateError('sync: ${failure.logCode}'),
     };
@@ -86,9 +89,10 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   }) async {
     // No key is loaded: sync answers from the exact index at the latest committed revision, never from an older frame.
     // Outputs already spent are included, so one we owned and spent still answers as ours.
-    final metadata = await _loadMetadata(walletId, network);
-    final wallet = WalletModel.fromMetadata(metadata);
-    final ownership = await _values.getOwnership(wallet: wallet);
+    await _loadMetadata(walletId, network);
+    final ownership = await _values.getOwnership(
+      key: WalletKey(id: walletId, network: network),
+    );
     return PayjoinWalletOwnership(
       ownsScript: ownership.ownsScript,
       ownsOutpoint: ownership.ownsOutpoint,
@@ -101,12 +105,13 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
   }) async {
     await _requireSpend(walletId);
-    final metadata = await _loadMetadata(walletId, network);
-    final wallet = WalletModel.fromMetadata(metadata);
-    final utxos = await _values.getExactUtxos(wallet: wallet);
-    return utxos.whereType<BitcoinWalletUtxoModel>().map((utxo) {
+    await _loadMetadata(walletId, network);
+    final utxos = await _values.getExactUtxos(
+      key: WalletKey(id: walletId, network: network),
+    );
+    return utxos.whereType<sync.BitcoinCoin>().map((utxo) {
       return PayjoinUtxo(
-        outpoint: (txId: utxo.txId, vout: utxo.vout),
+        outpoint: utxo.outpoint,
         value: Sats(utxo.amountSat),
         scriptPubkey: utxo.scriptPubkey,
         confirmed: utxo.confirmations > 0,

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
 

@@ -8,7 +8,19 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/announcements
+  - features/bitcoin_price
+  - features/bull_exchange
+  - packages/labels
+  - packages/legacy_storage
+  - packages/exchange
+  - features/label_editor
+  - features/network
+  - features/signers
+  - features/access
   - features/ark
+  - features/fees
+  - packages/fees
   - packages/ark
   - packages/secrets
   - packages/bull_payjoin
@@ -18,10 +30,15 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/file_system
+  - packages/google_drive
   - packages/background_tasks
   - packages/notifications
   - packages/sync
+  - packages/electrum
   - packages/bull_tor
+  - packages/mempool
+  - packages/preferences
   - packages/screen_privacy
   - packages/bull_reporting
   - packages/screen_awake
@@ -38,10 +55,20 @@ workspace:
   - packages/boltz_stream
   - packages/bitbox_transport
   - packages/satoshifier
+  - packages/bbx_api
 
 dependencies:
+  access:
+  announcements:
+  bitcoin_price:
+  labels:
+  label_editor:
+  network:
+  signers:
   ark:
   bull_ark:
+  fees:
+  fees_feature:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:
@@ -49,15 +76,23 @@ dependencies:
   secrets:
   bull_payjoin:
   bull_pricer:
+  bbx_api:
+  bull_exchange:
+  exchange:
   novlang:
   btc_map:
   bull_ui:
   primitives:
+  file_system:
   background_tasks:
   notifications:
   flutter_local_notifications: ^23.0.2
   sync:
+  electrum:
   bull_tor:
+  mempool:
+  legacy_storage:
+  preferences:
   screen_privacy:
   bull_reporting:
   screen_awake:
@@ -70,11 +105,9 @@ dependencies:
   get_it: ^9.1.1
   flutter_svg: ^2.4.0
   go_router: ^18.1.4
-  flutter_secure_storage: ^10.3.3
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
   shared_preferences_platform_interface: ^2.4.2
-  qr_flutter: ^4.1.0
   decimal: ^3.2.4
   clock: ^1.1.2
   dio: ^5.9.0
@@ -82,12 +115,9 @@ dependencies:
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
-  file_picker: ^13.3.3
   rust_bindings:
   boltz_stream:
   bitbox_transport:
-  universal_ble: ^3.3.0
-  auto_size_text: ^3.0.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7
@@ -108,7 +138,6 @@ dependencies:
   bip21_uri: ^2.2.0
   bip32_keys: ^3.1.1
   bip39_mnemonic: ^4.1.0
-  bip329_labels: ^2.0.0
   bs58check: ^1.0.2
   gif: ^2.3.0
   custom_sliding_segmented_control: ^2.0.0
@@ -130,11 +159,6 @@ dependencies:
   satoshifier:
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
-  ledger_bitcoin:
-    git:
-      url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
-      path: packages/ledger-bitcoin
-      ref: d71f36e95a763491adab95fc1f5abf86f532ac4e
   permission_handler: ^13.0.2
   cbor: ^6.3.7
   ur:
@@ -150,9 +174,9 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.26.0
-  keyboard_actions: ^5.0.3
 
 dev_dependencies:
+  file_picker: ^13.3.3
   # Parse import, conditional export and part directives in the shell boundary test.
   analyzer: ^13.0.0
   build_runner: ^2.10.4
@@ -192,6 +216,8 @@ hooks:
   user_defines:
     payjoin:
       build: source
+    sqlite3:
+      source: sqlite3mc
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the

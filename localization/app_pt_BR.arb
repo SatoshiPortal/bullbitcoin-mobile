@@ -6,10 +6,6 @@
   "backupWarningLoseReasonKeystore": "Seu dispositivo invalida o keystore ao alterar a autenticação da tela de bloqueio ou do dispositivo",
   "backupWarningLoseReasonCloudRestore": "Restaurar seu dispositivo a partir de um backup na nuvem",
   "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
   "swapMax": "MAX",
   "@swapMax": {
     "description": "MAX button label"
@@ -29,10 +25,6 @@
   "payTransactionBroadcast": "Transmissão da transação",
   "@payTransactionBroadcast": {
     "description": "Success message after broadcasting"
-  },
-  "bitboxScreenNeedHelpButton": "Precisas de ajuda?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
   },
   "payPayinAmount": "Quantidade de pagamento",
   "@payPayinAmount": {
@@ -70,14 +62,6 @@
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
   },
-  "electrumTimeoutPositiveError": "O tempo limite deve ser positivo",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "psbtFlowClickScan": "Clique em Digitalizar",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
   "fundExchangeMethodRegularSepa": "SEPA regular",
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
@@ -89,10 +73,6 @@
   "buyPayoutWillBeSentIn": "Seu pagamento será enviado ",
   "@buyPayoutWillBeSentIn": {
     "description": "Text before countdown timer for payout"
-  },
-  "electrumPrivacyNoticeSave": "Salvar",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "importQrDeviceKruxStep3": "Clique em XPUB - QR Code",
   "@importQrDeviceKruxStep3": {
@@ -113,10 +93,6 @@
   "addressViewTransactions": "Transações",
   "@addressViewTransactions": {
     "description": "Label for number of transactions"
-  },
-  "kruxStep3": "Clique em PSBT",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "Opções avançadas",
   "@sellAdvancedOptions": {
@@ -168,11 +144,6 @@
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
   },
-  "electrumServerAlreadyExists": "Este servidor já existe",
-  "electrumServerUnreachable": "Servidor inacessível. Verifique o endereço e tente novamente.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
   "payExpiresIn": "Expira em {time}",
   "@payExpiresIn": {
     "description": "Label showing invoice expiration time",
@@ -185,14 +156,6 @@
   "receiveInvoiceCopied": "Fatura copiada para clipboard",
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
-  },
-  "passportStep1": "Entre no seu dispositivo de Passaporte",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
   },
   "fundExchangeInstantSepaInfo": "Use apenas para transações abaixo de € 20.000. Para transações maiores, use a opção SEPA regular.",
   "@fundExchangeInstantSepaInfo": {
@@ -222,14 +185,6 @@
   "@exchangeFileUploadStatusInReview": {
     "description": "Status badge when files are under review"
   },
-  "bitboxErrorMultipleDevicesFound": "Múltiplos dispositivos BitBox encontrados. Certifique-se de que apenas um dispositivo está conectado.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
-  },
-  "jadeStep13": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Jade. Analisa-o.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
-  },
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {
     "description": "Name of Krux device"
@@ -246,10 +201,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "ledgerImportButton": "Importação de início",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
   "onboardingEncryptedVaultDescription": "Recupere seu backup via nuvem usando seu PIN.",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
@@ -262,10 +213,6 @@
   "@transactionDetailLabelConfirmationTime": {
     "description": "Label for confirmation time"
   },
-  "bitboxScreenTroubleshootingStep2": "Certifique-se de que seu telefone tem permissões USB habilitadas.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
   "fundExchangeCanadaPostStep5": "5. Pague com dinheiro ou cartão de débito",
   "@fundExchangeCanadaPostStep5": {
     "description": "Step 5 for Canada Post payment process"
@@ -273,10 +220,6 @@
   "transactionDetailLabelSwapFees": "Taxas de swap",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
-  },
-  "ledgerButtonNeedHelp": "Precisas de ajuda?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
   },
   "backupWalletErrorSaveBackup": "Falhado para salvar o backup",
   "@backupWalletErrorSaveBackup": {
@@ -326,10 +269,6 @@
   "@exchangeCurrencyDropdownTitle": {
     "description": "Title for the currency selection dropdown"
   },
-  "bitboxActionPairDeviceProcessing": "Dispositivo de emparelhamento",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
-  },
   "onboardingRecoverYourWallet": "Recupere sua carteira",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -342,10 +281,6 @@
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
   },
-  "kruxStep7": "   - Aumente o brilho da tela em seu dispositivo",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
   "transactionStatusSwapExpired": "Swap Expirou",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
@@ -357,10 +292,6 @@
   "sellReplaceByFeeActivated": "Substitui-a-taxa activada",
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
-  },
-  "jadeStep11": "O Jade irá então mostrar-lhe o seu próprio código QR.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
   },
   "receiveServerNetworkFees": "Taxas de rede do servidor",
   "@receiveServerNetworkFees": {
@@ -426,22 +357,9 @@
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
   },
-  "ledgerActionFailedMessage": "{action}",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionNetworkLightning": "Luz",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
-  },
-  "electrumTitle": "Configurações do servidor Electrum",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
   },
   "payPayoutAmount": "Quantidade de pagamento",
   "@payPayoutAmount": {
@@ -450,14 +368,6 @@
   "fundExchangeCrIbanCrcTransferCodeWarning": "Você deve adicionar o código de transferência como \"mensagem\" ou \"razão\" ou \"descrição\" ao fazer o pagamento. Se você esquecer de incluir este código, seu pagamento pode ser rejeitado.",
   "@fundExchangeCrIbanCrcTransferCodeWarning": {
     "description": "Warning about including transfer code in payment"
-  },
-  "sendEstimatedDeliveryHoursToDays": "horas para dias",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
-  "jadeStep8": "   - Tente mover seu dispositivo mais perto ou mais longe",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
   },
   "paySecurityQuestionLength": "{count}/40 caracteres",
   "@paySecurityQuestionLength": {
@@ -497,10 +407,6 @@
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
   },
-  "bitboxActionPairDeviceButton": "Iniciar emparelhamento",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
-  },
   "importColdcardInstructionsTitle": "Instruções do Coldcard Q",
   "@importColdcardInstructionsTitle": {
     "description": "ImportColdcardQ: Title of instructions bottom sheet"
@@ -520,12 +426,6 @@
   "payPaymentPending": "Pagamento pendente",
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
-  },
-  "appUnlockButton": "Desbloqueio",
-  "appUnlockPinCheckError": "Não foi possível carregar as configurações de segurança. Reinicie o aplicativo.",
-  "appUnlockPinVerifyError": "Não foi possível verificar o seu PIN. Tente novamente.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
   },
   "importQrDeviceJadeStep7": "Se necessário, selecione \"Opções\" para alterar o tipo de endereço",
   "@importQrDeviceJadeStep7": {
@@ -697,21 +597,9 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "electrumNetworkLiquid": "Líquido",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "fundExchangeSepaDescription": "Envie uma transferência SEPA da sua conta bancária usando os detalhes abaixo ",
   "@fundExchangeSepaDescription": {
     "description": "Description for SEPA transfer (first part, before 'exactly')"
-  },
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
   },
   "transactionStatusPaymentRefunded": "Pagamento Reembolsado",
   "@transactionStatusPaymentRefunded": {
@@ -739,10 +627,6 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "seedsignerStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no SeedSigner. Analisa-o.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
   "backupWalletEncryptedVaultTag": "Fácil e simples (1 minuto)",
   "@backupWalletEncryptedVaultTag": {
     "description": "Tag indicating difficulty and time for encrypted vault backup"
@@ -754,10 +638,6 @@
   "coreScreensExternalTransfer": "Swap externo",
   "@coreScreensExternalTransfer": {
     "description": "Title for external transfer action"
-  },
-  "pinCodeSecurityPinTitle": "PIN de segurança",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
   },
   "sharedWithBullBitcoin": "compartilhado com Bull Bitcoin.",
   "@sharedWithBullBitcoin": {
@@ -779,18 +659,6 @@
   "@transactionStatusPaymentInProgress": {
     "description": "Status label for Lightning payments in progress"
   },
-  "electrumTimeoutWarning": "Seu timeout ({timeoutValue} segundos) é menor do que o valor recomendado ({recommended} segundos) para este Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "receiveSelectNetwork": "Selecione Rede",
   "@receiveSelectNetwork": {
     "description": "Dropdown to choose receiving network"
@@ -799,29 +667,13 @@
   "@buyTitle": {
     "description": "Screen title for buying Bitcoin"
   },
-  "seedsignerStep1": "Ligue o dispositivo SeedSigner",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "payEstimatedFee": "Taxa estimada",
   "@payEstimatedFee": {
     "description": "Label for estimated network fee"
   },
-  "electrumEmptyFieldError": "Este campo não pode estar vazio",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
-  },
   "sendSendAmount": "Enviar valor",
   "@sendSendAmount": {
     "description": "Label for amount being sent in swap"
-  },
-  "ledgerHelpStep3": "Certifique-se de que seu Ledger tem Bluetooth ligado.",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
-  },
-  "ledgerVerifyTitle": "Verificar endereço no Ledger",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
   },
   "payPaymentInProgress": "Pagamento em Progresso!",
   "@payPaymentInProgress": {
@@ -848,14 +700,6 @@
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "bitboxScreenConnectingSubtext": "Estabelecer uma ligação segura...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
-  "bitboxActionImportWalletSuccessSubtext": "Sua carteira BitBox foi importada com sucesso.",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
   "exchangeDcaNetworkBitcoin": "Rede de Bitcoin",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -867,10 +711,6 @@
   "buyCantBuyMoreThan": "Você não pode comprar mais do que",
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
-  },
-  "jadeStep7": "   - Mantenha o código QR estável e centralizado",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
   },
   "payFeeTooHigh": "A taxa é excepcionalmente alta",
   "@payFeeTooHigh": {
@@ -899,10 +739,6 @@
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
-  "keystoneStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
-  },
   "languageSettingsLabel": "Língua",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
@@ -910,10 +746,6 @@
   "importQrDeviceFingerprint": "Impressão digital",
   "@importQrDeviceFingerprint": {
     "description": "Label for device fingerprint"
-  },
-  "ledgerProcessingSign": "Transação de Assinatura",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
   },
   "fundExchangeBankTransferWireTitle": "Transferência bancária (fira)",
   "@fundExchangeBankTransferWireTitle": {
@@ -955,22 +787,6 @@
   "@fundExchangeOnlineBillPaymentHelpBillerName": {
     "description": "Help text for biller name field"
   },
-  "psbtFlowPartProgress": "Parte {current} de {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerVerifyButton": "Verificar endereço",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
-  },
   "payPayFromWallet": "Pagar da carteira",
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -1002,10 +818,6 @@
   "transactionSwapDescLnSendDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "pinCodeCreateButton": "Criar PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "backupWalletSuccessTitle": "Backup concluído!",
   "@backupWalletSuccessTitle": {
@@ -1039,10 +851,6 @@
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
-  "electrumServerOnline": "Online",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
-  },
   "sendCoinAmount": "Valor: {amount}",
   "@sendCoinAmount": {
     "description": "Label for UTXO amount",
@@ -1071,10 +879,6 @@
   "importQrDeviceKruxStep4": "Clique no botão \"Câmera aberta\"",
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "jadeStep6": "   - Aumente o brilho da tela em seu dispositivo",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
   },
   "okButton": "ESTÁ BEM",
   "@okButton": {
@@ -1128,17 +932,9 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "statusCheckUnknown": "Desconhecido",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "payMemo": "Memorando",
   "@payMemo": {
     "description": "Label for optional payment note"
-  },
-  "passportStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Passaporte. Analisa-o.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
   },
   "pinButtonChange": "Mudar PIN",
   "@pinButtonChange": {
@@ -1189,10 +985,6 @@
       }
     }
   },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "autoswapSelectWalletError": "Por favor, selecione uma carteira Bitcoin destinatário",
   "@autoswapSelectWalletError": {
     "description": "Validation error when trying to enable auto transfer without selecting a wallet"
@@ -1225,22 +1017,9 @@
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
   },
-  "psbtFlowScanDeviceQr": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no {device}. Analisa-o.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAppSettingsSaveButton": "Salvar",
   "@exchangeAppSettingsSaveButton": {
     "description": "Button label for saving exchange app settings"
-  },
-  "passportStep13": "A transação será importada na carteira Bull Bitcoin.",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
   },
   "buyYouPay": "Você paga",
   "@buyYouPay": {
@@ -1253,10 +1032,6 @@
   "buyKYCLevel": "KYC Nível",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
-  },
-  "kruxStep14": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Krux. Analisa-o.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
   },
   "fundExchangeETransferTitle": "Detalhes de E-Transfer",
   "@fundExchangeETransferTitle": {
@@ -1274,41 +1049,21 @@
   "@sellKYCApproved": {
     "description": "Status when verification complete"
   },
-  "seedsignerStep5": "   - Aumente o brilho da tela em seu dispositivo",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
   "fundExchangeAccountTitle": "Fina sua conta",
   "@fundExchangeAccountTitle": {
     "description": "Main title on the fund exchange account screen"
-  },
-  "passportStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
   },
   "sendOutputTooSmall": "Saída abaixo do limite de poeira",
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "bitboxScreenEnterPasswordSubtext": "Digite sua senha no dispositivo BitBox para continuar.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
   "swapTitle": "Swap interno",
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
-  "torSettingsStatusConnected": "Pronto",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "backupWalletHowToDecideBackupLosePhysical": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
-  },
-  "passportInstructionsTitle": "Instruções do passaporte da Fundação",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
   },
   "logSettingsLogsTitle": "Logs",
   "@logSettingsLogsTitle": {
@@ -1353,10 +1108,6 @@
   "exchangeSecurityAccessSettingsButton": "Configurações de acesso",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
-  },
-  "ledgerSuccessImportTitle": "Carteira importada com sucesso",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
   },
   "sendErrorLiquidWalletRequired": "Carteira líquida deve ser usada para um líquido para troca de raios",
   "@sendErrorLiquidWalletRequired": {
@@ -1419,17 +1170,9 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "ledgerSuccessVerifyTitle": "Verificando endereço no Ledger...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
-  },
   "importWalletImportMnemonic": "Importação Mnemonic",
   "@importWalletImportMnemonic": {
     "description": "Button to import wallet from seed phrase"
-  },
-  "systemLabelExchangeBuy": "Comprar",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
   },
   "payInvalidState": "Estado inválido",
   "@payInvalidState": {
@@ -1442,10 +1185,6 @@
   "fundExchangeOnlineBillPaymentHelpAccountNumber": "Este número de conta única é criado apenas para você",
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
-  },
-  "psbtFlowReadyToBroadcast": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
   },
   "testBackupSuccessTitle": "Teste concluído com sucesso!",
   "@testBackupSuccessTitle": {
@@ -1503,15 +1242,6 @@
   "@rbfSatsPerVbyte": {
     "description": "Unit label for fee rate input"
   },
-  "bip329LabelsImportSuccessPlural": "{count} rótulos importados",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendTransactionBuilt": "Transação pronta",
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
@@ -1523,10 +1253,6 @@
   "withdrawConfirmCard": "Cartão",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
-  },
-  "bitboxErrorOperationCancelled": "A operação foi cancelada. Por favor, tente novamente.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
   },
   "mempoolCustomServerUrl": "URL do servidor",
   "@mempoolCustomServerUrl": {
@@ -1551,14 +1277,6 @@
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
-  },
-  "mempoolCustomServerBottomSheetDescription": "Digite a URL do seu servidor de mempool personalizado. O servidor será validado antes de salvar.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
-  },
-  "electrumAddCustomServer": "Adicionar Servidor Personalizado",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
   },
   "fundExchangeContinueButton": "Continue",
   "@fundExchangeContinueButton": {
@@ -1602,10 +1320,6 @@
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
-  "psbtFlowIncreaseBrightness": "Aumentar o brilho da tela em seu dispositivo",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
-  },
   "sellWalletBalance": "Equilíbrio: {amount}",
   "@sellWalletBalance": {
     "description": "Shows available balance",
@@ -1623,10 +1337,6 @@
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
   },
-  "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
-  },
   "fundExchangeMethodBankTransferWire": "Transferência bancária (Wire ou EFT)",
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
@@ -1642,15 +1352,6 @@
   "dcaConfirmPaymentMethod": "Método de pagamento",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
-  },
-  "psbtFlowReviewTransaction": "Uma vez que a transação é importada em seu {device}, revise o endereço de destino e o valor.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "sellAmount": "Montante para venda",
   "@sellAmount": {
@@ -1695,10 +1396,6 @@
   "walletSettingsImportWalletTitle": "Carteira de importação",
   "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
-  },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT Instruções",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
   },
   "sellSendPaymentAdvanced": "Configurações avançadas",
   "@sellSendPaymentAdvanced": {
@@ -1795,10 +1492,6 @@
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
   },
-  "pinCodeManageTitle": "Gerenciar seu PIN de segurança",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
-  },
   "broadcastSignedTxPasteHint": "Cole um PSBT ou transação HEX",
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
@@ -1806,10 +1499,6 @@
   "swapYouPay": "Você paga",
   "@swapYouPay": {
     "description": "Label in swap card for payment amount"
-  },
-  "ledgerErrorDeviceLocked": "O dispositivo Ledger está bloqueado. Por favor, desbloqueie o dispositivo e tente novamente.",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
   },
   "paySinpeMonto": "Montante",
   "@paySinpeMonto": {
@@ -1830,10 +1519,6 @@
   "sellSecureBitcoinWallet": "Carteira Bitcoin segura",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
-  },
-  "torSettingsConnectionStatus": "Estado de conexão",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
   },
   "receiveConfirmed": "Confirmado",
   "@receiveConfirmed": {
@@ -1863,10 +1548,6 @@
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
-  "bip329LabelsImportSuccessSingular": "1 etiqueta importada",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
@@ -1888,10 +1569,6 @@
   "@buyExpressWithdrawal": {
     "description": "Fast withdrawal option"
   },
-  "sendEstimatedDelivery10Minutes": "10 minutos",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
-  },
   "importWalletSectionHardware": "Carteiras de hardware",
   "@importWalletSectionHardware": {
     "description": "Section header for hardware wallet types"
@@ -1907,10 +1584,6 @@
   "howToDecideBackupText1": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "ledgerSuccessSignDescription": "Sua transação foi assinada com sucesso.",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
   },
   "encryptedVaultTitle": "Vault criptografado",
   "@encryptedVaultTitle": {
@@ -1928,10 +1601,6 @@
   "@swapAvailableBalance": {
     "description": "Available balance label"
   },
-  "ledgerWalletTypeLegacy": "Legado (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
   "transactionSwapDescLnSendCompleted": "O pagamento Lightning foi enviado com sucesso! A tua troca já está completa.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -1939,10 +1608,6 @@
   "broadcastSignedTxScanQR": "Digitalizar o código QR da sua carteira de hardware",
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
-  },
-  "electrumPrivacyNoticeCancel": "Cancelar",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "swapProgressRefundInProgress": "Reembolso do swap em andamento",
   "@swapProgressRefundInProgress": {
@@ -1952,10 +1617,6 @@
   "@payNoDetailsAvailable": {
     "description": "Message when recipient details not available"
   },
-  "torSettingsPortValidationEmpty": "Digite um número de porta",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "buyConfirmBitcoinPrice": "Preço de Bitcoin",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -1963,10 +1624,6 @@
   "transactionDetailTransferProgress": "Progresso do swap",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
-  },
-  "ledgerHelpStep1": "Reinicie seu dispositivo Ledger.",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
   },
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Descrição do pagamento",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
@@ -1985,10 +1642,6 @@
   "broadcastSignedTxBroadcast": "Transmissão",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
-  },
-  "ledgerConnectingSubtext": "Estabelecer uma ligação segura...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
   },
   "sellMaximumAmount": "Quantidade máxima de venda: {amount}",
   "@sellMaximumAmount": {
@@ -2041,10 +1694,6 @@
       }
     }
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "payName": "Nome",
   "@payName": {
     "description": "Label for name field"
@@ -2089,10 +1738,6 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "exchangeLegacyTransactionsTitle": "Transações Legadas",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "coreScreensFeeDeductionExplanation": "Esta é a taxa total deduzida do montante enviado",
   "@coreScreensFeeDeductionExplanation": {
     "description": "Explanation text for fee deduction"
@@ -2105,10 +1750,6 @@
   "@buyEnterAmount": {
     "description": "Label for amount input field in buy flow"
   },
-  "kruxStep8": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
-  },
   "coldcardStep5": "Se você tiver problemas de digitalização:",
   "@coldcardStep5": {
     "description": "Coldcard troubleshooting header"
@@ -2116,10 +1757,6 @@
   "payShowQrCode": "Mostrar código QR",
   "@payShowQrCode": {
     "description": "Button to show QR code"
-  },
-  "ledgerHelpStep4": "Certifique-se de ter instalado a versão mais recente do aplicativo Bitcoin de Ledger Live.",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
   },
   "sellInsufficientBalance": "Balança de carteira insuficiente",
   "@sellInsufficientBalance": {
@@ -2165,10 +1802,6 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "electrumValidateDomain": "Validar domínio",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
-  },
   "fundExchangeInfoTransferCode": "Você deve adicionar o código de transferência como a \"mensagem\" ou \"razão\" ao fazer o pagamento.",
   "@fundExchangeInfoTransferCode": {
     "description": "Info card message about transfer code importance"
@@ -2212,10 +1845,6 @@
   "payNoPayments": "Sem pagamentos ainda",
   "@payNoPayments": {
     "description": "Empty state message"
-  },
-  "pinCodeProcessing": "Processamento",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
   },
   "paySecurityAnswer": "Resposta de segurança",
   "@paySecurityAnswer": {
@@ -2289,10 +1918,6 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
-  "bitboxErrorDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
-  },
   "exchangeAccountInfoTitle": "InformaÃ§Ã£o da conta",
   "@exchangeAccountInfoTitle": {
     "description": "Title for the account information section"
@@ -2313,10 +1938,6 @@
   "@importQrDeviceSpecterStep1": {
     "description": "Specter instruction step 1"
   },
-  "mempoolCustomServerDeleteMessage": "Tem a certeza de que deseja excluir este servidor de mempool personalizado? O servidor padrão será usado em vez disso.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
-  },
   "swapValidationInsufficientBalance": "Balança insuficiente",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2333,15 +1954,6 @@
   "@coldcardStep6": {
     "description": "Coldcard troubleshooting tip 1"
   },
-  "electrumInvalidRetryError": "Inválido Retry Valor da contagem: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "payInProgress": "Pagamento em Progresso!",
   "@payInProgress": {
     "description": "Title for payment in progress screen"
@@ -2353,10 +1965,6 @@
   "sendNetworkFees": "Taxas de rede",
   "@sendNetworkFees": {
     "description": "Label for network transaction fees"
-  },
-  "ledgerProcessingImportSubtext": "A montar a tua carteira só de relógio...",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
   },
   "walletDeletionConfirmationTitle": "Excluir carteira",
   "@walletDeletionConfirmationTitle": {
@@ -2390,17 +1998,9 @@
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
   },
-  "jadeStep15": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
-  },
   "exchangeDcaActivateTitle": "Ativar a recuperação",
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
-  },
-  "kruxStep15": "A transação será importada na carteira Bull Bitcoin.",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
   },
   "exchangeFeatureCustomerSupport": "• Chat com suporte ao cliente",
   "@exchangeFeatureCustomerSupport": {
@@ -2421,14 +2021,6 @@
   "pleaseWaitFetching": "Por favor, espere enquanto buscamos seu arquivo de backup.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
-  },
-  "psbtFlowInstructions": "Instruções",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
-  "systemLabelExchangeSell": "Venda",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
   },
   "sellOrderCompleted": "Ordem concluída!",
   "@sellOrderCompleted": {
@@ -2466,10 +2058,6 @@
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
-  "bitboxActionUnlockDeviceTitle": "Desbloquear dispositivo BitBox",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
-  },
   "importQrDeviceSpecterStep10": "Digite um rótulo para a sua carteira Specter e toque em Importar",
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
@@ -2477,10 +2065,6 @@
   "exchangeFileUploadNoFilesSelected": "Sem arquivos selecionados",
   "@exchangeFileUploadNoFilesSelected": {
     "description": "Message when no files are selected for upload"
-  },
-  "bitboxScreenTroubleshootingStep1": "Certifique-se de que tem o firmware mais recente instalado na sua BitBox.",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
   },
   "sellPleasePayInvoice": "Por favor, pague esta fatura",
   "@sellPleasePayInvoice": {
@@ -2518,10 +2102,6 @@
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
-  "bitboxActionImportWalletTitle": "Importação BitBox Carteira",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
-  },
   "payEmailHint": "Digite o endereço de e-mail",
   "@payEmailHint": {
     "description": "Hint for email input"
@@ -2547,15 +2127,6 @@
       }
     }
   },
-  "labelDeleteFailed": "Incapaz de excluir \"{label}\". Por favor, tente novamente.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payInvoiceDecoded": "Fatura decodificada com sucesso",
   "@payInvoiceDecoded": {
     "description": "Success message after decoding"
@@ -2563,10 +2134,6 @@
   "broadcastSignedTxReviewTransaction": "Revisão",
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
-  },
-  "bitboxScreenVerifyAddressSubtext": "Compare este endereço com o seu ecrã BitBox02",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
   },
   "exchangeKycLight": "Luz",
   "@exchangeKycLight": {
@@ -2601,17 +2168,9 @@
   "@walletButtonSend": {
     "description": "Button label to send funds"
   },
-  "torSettingsPortNumber": "Número de porta",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "sellCadBalance": "CADA Balanço",
   "@sellCadBalance": {
     "description": "Display text for CAD balance payout method"
-  },
-  "pinCodeCreateTitle": "Criar novo pino",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
   },
   "receiveEnterHere": "Entre aqui...",
   "@receiveEnterHere": {
@@ -2633,10 +2192,6 @@
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
-  "electrumReset": "Redefinição",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
-  },
   "importQrDeviceJadeStep9": "Analise o código QR que você vê no seu dispositivo.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
@@ -2644,10 +2199,6 @@
   "fundExchangeJurisdictionArgentina": "Argentina",
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
-  },
-  "psbtFlowTroubleScanningTitle": "Se você tiver problemas de digitalização:",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
   },
   "swapYouReceive": "Receber",
   "@swapYouReceive": {
@@ -2668,14 +2219,6 @@
   "exchangeFileUploadButton": "Carregar",
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
-  },
-  "electrumAdvancedOptions": "Opções avançadas",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "Verifique o código de emparelhamento no seu dispositivo BitBox...",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
   },
   "backupSettingsExportVault": "Padrão de exportação",
   "@backupSettingsExportVault": {
@@ -2709,22 +2252,6 @@
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
   },
-  "electrumServerUrlHint": "{network} {environment} URL do servidor",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumStopGapNegativeError": "O Gap não pode ser negativo",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Notificações de e-mail",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2736,10 +2263,6 @@
   "payFilterPayments": "Filtrar Pagamentos",
   "@payFilterPayments": {
     "description": "Button to filter payment list"
-  },
-  "ledgerVerifyAddressLabel": "Endereço para verificar:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
   },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Transferir Colones usando SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
@@ -2813,18 +2336,6 @@
   "@receiveLightningNetwork": {
     "description": "Lightning Network option"
   },
-  "seedsignerStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
-  "electrumLoadFailedError": "Falhados em servidores de carga",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "kruxStep5": "Digitalizar o código QR mostrado na carteira Bull",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "backupSettingsTested": "Testado",
   "@backupSettingsTested": {
     "description": "Status text shown when backup has been tested"
@@ -2869,10 +2380,6 @@
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
   },
-  "jadeStep1": "Entre no seu dispositivo Jade",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
   "sendErrorAmountAboveSwapLimits": "O montante está acima dos limites de swap",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -2909,10 +2416,6 @@
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
   },
-  "kruxStep2": "Clique em Sinalizar",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
-  },
   "fundExchangeMethodOnlineBillPayment": "Pagamento de Bill Online",
   "@fundExchangeMethodOnlineBillPayment": {
     "description": "Payment method: Online Bill Payment (Canada)"
@@ -2929,10 +2432,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "bitboxScreenTroubleshootingTitle": "Solução de problemas do BitBox02",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
   "backupSettingsLabelsButton": "Etiquetas",
   "@backupSettingsLabelsButton": {
     "description": "Button text to manage transaction labels"
@@ -2941,10 +2440,6 @@
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
   },
-  "kruxStep16": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
   "testYourWalletTitle": "Teste sua carteira",
   "@testYourWalletTitle": {
     "description": "Title for test your wallet screen"
@@ -2952,18 +2447,6 @@
   "buyKYCLevel1": "Nível 1 - Básico",
   "@buyKYCLevel1": {
     "description": "Basic verification tier"
-  },
-  "seedsignerInstructionsTitle": "Instruções do SeedSigner",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
-  "bitboxErrorConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
-  "electrumCancel": "Cancelar",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
   },
   "importQrDeviceKeystoneStep6": "Em seu celular, clique em \"câmera aberta\"",
   "@importQrDeviceKeystoneStep6": {
@@ -3042,17 +2525,9 @@
       }
     }
   },
-  "appUnlockAttemptSingular": "tentativa falhada",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "importQrDevicePassportStep2": "Digite seu PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "pinCodeContinue": "Continue",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
   },
   "swapTransferTo": "Swap para",
   "@swapTransferTo": {
@@ -3182,10 +2657,6 @@
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "electrumStopGap": "Pára com o Gap",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "exchangeFileUploadSelectFilesHint": "Toque em \"Selecionar arquivos\" para escolher documentos",
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
@@ -3206,10 +2677,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "psbtFlowDone": "Estou acabado",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "transactionSwapDescLnReceiveDefault": "A tua troca está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
@@ -3218,17 +2685,9 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "pinCodeCreateDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
-  },
   "testBackupRecoverWallet": "Recuperar Carteira",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "bitboxActionImportWalletProcessingSubtext": "A montar a tua carteira só de relógio...",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
   },
   "payTransitNumberHint": "Digite o número de trânsito",
   "@payTransitNumberHint": {
@@ -3272,10 +2731,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
-  },
   "allSeedViewPassphraseLabel": "Passphrase:",
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
@@ -3292,10 +2747,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "mempoolCustomServerDeleteTitle": "Excluir Servidor Personalizado?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "transactionDetailLabelExchangeRate": "Taxa de câmbio",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
@@ -3304,17 +2755,9 @@
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
   },
-  "priceChartFetchingHistory": "Fetching Price History...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
-  },
   "exchangeAccountInfoVerificationLevelLabel": "Nível de verificação",
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
-  },
-  "seedsignerStep3": "Digitalizar o código QR mostrado na carteira Bull",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
   },
   "testBackupRetrieveVaultDescription": "Teste para garantir que você pode recuperar seu cofre criptografado.",
   "@testBackupRetrieveVaultDescription": {
@@ -3343,15 +2786,6 @@
   "swapValidationSelectToWallet": "Selecione uma carteira de destino para o swap",
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
-  },
-  "electrumStopGapTooHighError": "Pare Gap parece muito alto. (Max. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
   },
   "exchangeCurrencyDropdownValidation": "Por favor, selecione uma moeda",
   "@exchangeCurrencyDropdownValidation": {
@@ -3390,10 +2824,6 @@
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
   },
-  "psbtFlowMoveBack": "Tente mover seu dispositivo de volta um pouco",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
   "exchangeFileUploadInstructionsWithParams": "Carregar até {maxFiles} arquivos. Formatos permitidos: PDF, JPG, PNG, GIF, HEIC. Tamanho máximo do arquivo: 10MB por arquivo.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3415,14 +2845,6 @@
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
   },
-  "keystoneStep4": "Se você tiver problemas de digitalização:",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
-  },
-  "passportStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
   "sendReplaceByFeeActivated": "Substitui-a-taxa activada",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
@@ -3434,14 +2856,6 @@
   "transactionDetailLabelPayinStatus": "Estado de Payin",
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
-  },
-  "exchangeAccountSettingsTitle": "Configurações da conta do Exchange",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
-  "ledgerWalletTypeLabel": "Tipo de carteira:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
   },
   "backupWalletEncryptedVaultTitle": "Vault criptografado",
   "@backupWalletEncryptedVaultTitle": {
@@ -3455,21 +2869,9 @@
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
   },
-  "bitboxActionImportWalletProcessing": "Carteira de importação",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
-  },
-  "ledgerWalletTypeSegwitDescription": "Nativo SegWit - Recomendado",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
-  },
   "addressViewBalance": "Balanço",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "exchangeRecipientsComingSoon": "Recipientes - Em breve",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
   },
   "exchangeDcaFrequencyWeek": "semana",
   "@exchangeDcaFrequencyWeek": {
@@ -3574,22 +2976,9 @@
   "@payFailedPayments": {
     "description": "Filter for failed payments"
   },
-  "electrumInvalidStopGapError": "Paragem inválida Valor Gap: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "walletDeletionErrorGeneric": "Falhado para excluir a carteira, tente novamente.",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
-  },
-  "keystoneStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
   },
   "sendFeeRateTooLow": "Taxas demasiado baixas",
   "@sendFeeRateTooLow": {
@@ -3623,10 +3012,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "keystoneStep2": "Clique em Digitalizar",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "fundExchangeSpeiTitle": "Transferência SPEI",
   "@fundExchangeSpeiTitle": {
     "description": "Screen title for SPEI transfer (Mexico)"
@@ -3642,15 +3027,6 @@
   "fundExchangeMethodRegularSepaSubtitle": "Somente uso para transações maiores acima de €30.000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
-  },
-  "electrumTimeoutTooHighError": "O tempo parece muito alto. (Max. {maxTimeout} segundos)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
   },
   "testBackupErrorIncorrectOrder": "Ordem de palavra incorreta. Por favor, tente novamente.",
   "@testBackupErrorIncorrectOrder": {
@@ -3692,10 +3068,6 @@
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
   },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "payAllTypes": "Todos os tipos",
   "@payAllTypes": {
     "description": "Option for all types filter"
@@ -3703,10 +3075,6 @@
   "coreScreensReceiveAmountLabel": "Receber valor",
   "@coreScreensReceiveAmountLabel": {
     "description": "Label for receive amount field"
-  },
-  "ledgerHelpTitle": "Resolução de problemas do Ledger",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
   },
   "sellErrorUnexpectedOrderType": "SellOrder esperado, mas recebeu um tipo de ordem diferente",
   "@sellErrorUnexpectedOrderType": {
@@ -3736,10 +3104,6 @@
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
   },
-  "pinCodeConfirmTitle": "Confirme o novo pino",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
-  },
   "sellQrCode": "Código QR",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
@@ -3755,10 +3119,6 @@
   "settingsCurrencyTitle": "Moeda",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
-  },
-  "electrumDragToReorder": "(Long pressione para arrastar e mudar prioridade)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
   },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
@@ -3828,14 +3188,6 @@
   "@exchangeLandingDisclaimerNotAvailable": {
     "description": "Disclaimer informing users that exchange services are not available in the mobile app"
   },
-  "ledgerSuccessAddressVerified": "Endereço verificado com sucesso!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
-  },
-  "kruxStep10": "Uma vez que a transação é importada em seu Krux, revise o endereço de destino e o valor.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
   "sendConnectDevice": "Dispositivo de conexão",
   "@sendConnectDevice": {
     "description": "Prompt to plug in hardware wallet"
@@ -3851,10 +3203,6 @@
   "sellNoInvoiceData": "Não existem dados de fatura disponíveis",
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "ledgerInstructionsIos": "Certifique-se de que seu Ledger está desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
   },
   "backupImportanceMessage": "Sem um backup, você eventualmente perderá o acesso ao seu dinheiro. É criticamente importante fazer um backup.",
   "@backupImportanceMessage": {
@@ -3880,10 +3228,6 @@
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
   },
-  "bitboxErrorDeviceNotFound": "Dispositivo BitBox não encontrado.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
   "payContinue": "Continue",
   "@payContinue": {
     "description": "Button to continue to next step"
@@ -3904,10 +3248,6 @@
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
   },
-  "exchangeAccountTitle": "Conta de troca",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
   "dcaConfirmNetworkLightning": "Luz",
   "@dcaConfirmNetworkLightning": {
     "description": "Lightning network label"
@@ -3915,10 +3255,6 @@
   "importQrDeviceImport": "Importação",
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
-  },
-  "bitboxScreenNestedSegwitBip49": "Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
   },
   "transactionTitle": "Transações",
   "@transactionTitle": {
@@ -3982,27 +3318,6 @@
     "description": "Success message for monthly frequency",
     "placeholders": {
       "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSpecterTitle": "Instruções de espectro",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
-  "bitboxErrorHandshakeFailed": "Falhou para estabelecer uma ligação segura. Por favor, tente novamente.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
-  },
-  "statusCheckOnline": "Online",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
-  "electrumInvalidTimeoutError": "Valor de Timeout inválido: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
         "type": "String"
       }
     }
@@ -4162,14 +3477,6 @@
   "@buyStandardWithdrawalDesc": {
     "description": "Explanation of standard withdrawal timing"
   },
-  "electrumCloseTooltip": "Fechar",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
-  },
-  "keystoneStep5": "   - Aumente o brilho da tela em seu dispositivo",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
   "dcaEnterLightningAddressLabel": "Entrar Lightning Endereço",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -4177,10 +3484,6 @@
   "sellInsufficientBalanceError": "Equilíbrio insuficiente na carteira selecionada para completar esta ordem de venda.",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
-  },
-  "electrumServerNotUsed": "Não usado",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
   },
   "payIbanHint": "Entrar IBAN",
   "@payIbanHint": {
@@ -4205,10 +3508,6 @@
   "importMnemonicSelectScriptType": "Importação Mnemonic",
   "@importMnemonicSelectScriptType": {
     "description": "AppBar title for script type selection"
-  },
-  "ledgerScanningMessage": "Procurando dispositivos Ledger nas proximidades...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
   },
   "sendCoinConfirmations": "{count} confirmações",
   "@sendCoinConfirmations": {
@@ -4291,15 +3590,6 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "psbtFlowSelectSeed": "Uma vez que a transação é importada em seu {device}, você deve selecionar a semente que deseja assinar com.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "payDebitCardNumberHint": "Digite número de cartão de débito",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -4332,10 +3622,6 @@
   "@transactionDetailLabelFromWallet": {
     "description": "Label for source wallet"
   },
-  "kruxStep11": "Clique nos botões para assinar a transação no seu Krux.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
   "settingsExchangeSettingsTitle": "Configurações de troca",
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
@@ -4343,10 +3629,6 @@
   "payAmountTooHigh": "Quantidade superior ao máximo",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
-  },
-  "kruxStep9": "   - Tente mover seu dispositivo para trás um pouco",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
   },
   "howToDecideBackupText2": "O cofre encriptado impede-te de ladrões que procuram roubar o teu apoio. Ele também impede que você perca acidentalmente seu backup, uma vez que ele será armazenado em sua nuvem. Provedores de armazenamento em nuvem como o Google ou a Apple não terão acesso ao seu Bitcoin porque a senha de criptografia é muito forte. Há uma pequena possibilidade de que o servidor web que armazena a chave de criptografia do seu backup possa ser comprometida. Neste caso, a segurança do backup em sua conta na nuvem pode estar em risco.",
   "@howToDecideBackupText2": {
@@ -4379,18 +3661,6 @@
   "fundExchangeETransferLabelBeneficiaryName": "Use isso como o nome do beneficiário E-transfer",
   "@fundExchangeETransferLabelBeneficiaryName": {
     "description": "Label for E-transfer beneficiary name"
-  },
-  "electrumRetryCountEmptyError": "Retry Count não pode estar vazio",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "passportStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
-  "keystoneStep8": "Uma vez que a transação é importada em seu Keystone, revise o endereço de destino e o valor.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
   },
   "importWalletSpecter": "Espectro",
   "@importWalletSpecter": {
@@ -4449,10 +3719,6 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "passportStep2": "Clique em assinar com o código QR",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
   "coreSwapsLnSendFailed": "Engole Falhado.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
@@ -4464,10 +3730,6 @@
   "payEnableRBF": "Habilitar RBF",
   "@payEnableRBF": {
     "description": "Checkbox to enable Replace-By-Fee"
-  },
-  "bip329LabelsExportSuccess": "Etiquetas exportadas com sucesso",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "totalFeesLabel": "Taxas totais",
   "@totalFeesLabel": {
@@ -4509,10 +3771,6 @@
   "coreSwapsLnSendRefundable": "Swap está pronto para ser reembolsado.",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
-  },
-  "mempoolCustomServerAdd": "Adicionar Servidor Personalizado",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
   },
   "exchangeFeatureSelfCustody": "• Comprar Bitcoin direto para self-custody",
   "@exchangeFeatureSelfCustody": {
@@ -4583,14 +3841,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "pinCodeRemoveButton": "Remover PIN de Segurança",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
-  "ledgerHelpStep2": "Certifique-se de que seu telefone tem Bluetooth ligado e permitido.",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
-  },
   "replaceByFeeOriginalTransactionTitle": "Transação original",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -4606,10 +3856,6 @@
   "testBackupPhysicalBackupTag": "Trustless (ter o seu tempo)",
   "@testBackupPhysicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes longer"
-  },
-  "sendRelativeFees": "Taxas relativas",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
   },
   "coreScreensNetworkFeesLabel": "Taxas de rede",
   "@coreScreensNetworkFeesLabel": {
@@ -4630,10 +3876,6 @@
   "payPriceWillRefreshIn": "Preço irá refrescar-se ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "bitboxActionVerifyAddressTitle": "Verificar o endereço no BitBox",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
   },
   "payDebitCardNumber": "Número de cartão de débito",
   "@payDebitCardNumber": {
@@ -4675,10 +3917,6 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "electrumBitcoinServerInfo": "Digite o endereço do servidor em formato: host:port (por exemplo, example.com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
-  },
   "logoutButton": "Logotipo",
   "@logoutButton": {
     "description": "Button to confirm logout action"
@@ -4691,10 +3929,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "sendEnterRelativeFee": "Insira taxa relativa em sats/vB",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
-  },
   "sellCopyInvoice": "Fatura de cópia",
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
@@ -4702,10 +3936,6 @@
   "receiveBitcoinConfirmationMessage": "Bitcoin transação levará um tempo para confirmar.",
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
-  },
-  "keystoneStep9": "Clique nos botões para assinar a transação em seu Keystone.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
   },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Backup físico: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
@@ -4743,10 +3973,6 @@
   "@payBitcoinPrice": {
     "description": "Label for Bitcoin exchange rate"
   },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - Formato antigo",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
-  },
   "dcaSuccessMessageDaily": "Você vai comprar {amount} todos os dias",
   "@dcaSuccessMessageDaily": {
     "description": "Success message for daily frequency",
@@ -4783,33 +4009,13 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "electrumDeleteFailedError": "Falhado para excluir servidor personalizado",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "replaceByFeeFastestTitle": "Mais rápido",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "electrumDeleteServerTitle": "Excluir servidor personalizado",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "Por favor, abra o aplicativo Bitcoin em seu dispositivo Ledger e tente novamente.",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
-  },
-  "torSettingsDescConnecting": "Criação Conexão do Tor",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
   "transactionStatusPayjoinRequested": "Pedir desculpa",
   "@transactionStatusPayjoinRequested": {
     "description": "Status label for payjoin transaction requests"
-  },
-  "torSettingsPortValidationInvalid": "Digite um número válido",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sendSwapTimeout": "Swap timed out",
   "@sendSwapTimeout": {
@@ -4835,10 +4041,6 @@
   "receiveVerifyAddressOnLedger": "Verificar endereço no Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
-  },
-  "seedsignerStep9": "Revise o endereço de destino e o valor, e confirme a assinatura no SeedSigner.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
   },
   "backupWalletPhysicalBackupDescription": "Escreva 12 palavras em um pedaço de papel. Mantenha-os seguros e certifique-se de não perdê-los.",
   "@backupWalletPhysicalBackupDescription": {
@@ -4920,10 +4122,6 @@
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
   },
-  "psbtFlowSignTransaction": "Transação de assinatura",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
   "testBackupNext": "Próximo",
   "@testBackupNext": {
     "description": "Button to proceed to verification quiz"
@@ -4940,17 +4138,9 @@
   "@payHighPriority": {
     "description": "High fee priority option"
   },
-  "ledgerSuccessVerifyDescription": "O endereço foi verificado no seu dispositivo Ledger.",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
-  },
   "sellBitcoinPriceLabel": "Preço de Bitcoin",
   "@sellBitcoinPriceLabel": {
     "description": "Label for Bitcoin price display"
-  },
-  "keystoneStep13": "A transação será importada na carteira Bull Bitcoin.",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
   },
   "swapInfoBanner": "Faça swap de Bitcoin entre suas carteiras com facilidade. Mantenha fundos na Carteira de Pagamento Instantâneo apenas para gastos do dia a dia.",
   "@swapInfoBanner": {
@@ -5003,17 +4193,9 @@
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
   },
-  "sendAbsoluteFees": "Taxas absolutas",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
-  },
   "payDescription": "Descrição",
   "@payDescription": {
     "description": "Label for payment description/memo field"
-  },
-  "torSettingsSaveButton": "Salvar",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
   },
   "exchangeLandingConnectAccount": "Conecte sua conta de câmbio Bull Bitcoin",
   "@exchangeLandingConnectAccount": {
@@ -5073,15 +4255,6 @@
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
   },
-  "ledgerConnectingMessage": "Conectando a {deviceName}",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "payPaymentDetails": "Detalhes do pagamento",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -5102,10 +4275,6 @@
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"
   },
-  "bitboxActionImportWalletSuccess": "Carteira importada com sucesso",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
   "sendTransactionSignedLedger": "Transação assinada com sucesso com Ledger",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
@@ -5118,29 +4287,13 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "pinCodeSettingsLabel": "Código PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
-  },
   "transactionFeesTotalDeducted": "Esta é a taxa total deduzida do montante enviado",
   "@transactionFeesTotalDeducted": {
     "description": "Fee deduction explanation for sending swaps"
   },
-  "ledgerSignButton": "Começar a assinar",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
-  },
-  "electrumPrivacyNoticeTitle": "Aviso de privacidade",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
-  },
   "transactionDetailLabelPayinMethod": "Método de pagamento",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
-  },
-  "jadeStep10": "Clique nos botões para assinar a transação no seu Jade.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
   },
   "exchangeAuthLoginFailedOkButton": "ESTÁ BEM",
   "@exchangeAuthLoginFailedOkButton": {
@@ -5275,10 +4428,6 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "ledgerConnectTitle": "Conecte seu dispositivo Ledger",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
   "importQrDevicePassportName": "Passaporte da Fundação",
   "@importQrDevicePassportName": {
     "description": "Name of Foundation Passport device"
@@ -5315,17 +4464,9 @@
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
   },
-  "kruxStep13": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
-  },
   "autoswapAlwaysBlockLabel": "Sempre bloquear altas taxas",
   "@autoswapAlwaysBlockLabel": {
     "description": "Label for toggle to always block high fee transfers"
-  },
-  "bitboxScreenConnecting": "Ligação ao BitBox",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
   },
   "pinValidationError": "PIN deve ser pelo menos {minLength} dígitos longo",
   "@pinValidationError": {
@@ -5351,10 +4492,6 @@
   "transactionDetailLabelLiquidTxId": "ID de transação líquida",
   "@transactionDetailLabelLiquidTxId": {
     "description": "Label for Liquid transaction ID"
-  },
-  "jadeStep14": "A transação será importada na carteira Bull Bitcoin.",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
   },
   "buySelfie": "Selfie com ID",
   "@buySelfie": {
@@ -5436,10 +4573,6 @@
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
   },
-  "bitboxScreenUnknownError": "O erro desconhecido ocorreu",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
   "receiveLiquid": "Líquido",
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
@@ -5498,10 +4631,6 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "psbtFlowScanQrShown": "Digitalizar o código QR mostrado na carteira Bull",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
   "importQrDeviceKeystoneInstructionsTitle": "Instruções de Keystone",
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
@@ -5509,10 +4638,6 @@
   "payDecodeFailed": "Falhado para decodificar fatura",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
   },
   "pinStatusProcessing": "Processamento",
   "@pinStatusProcessing": {
@@ -5530,10 +4655,6 @@
   "confirmLogoutMessage": "Tem a certeza de que deseja fazer login na sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar recursos de troca.",
   "@confirmLogoutMessage": {
     "description": "Confirmation message explaining logout consequences"
-  },
-  "seedsignerStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
   },
   "importColdcardTitle": "Conecte o Coldcard Q",
   "@importColdcardTitle": {
@@ -5583,10 +4704,6 @@
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
   },
-  "keystoneInstructionsTitle": "Instruções de Keystone",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
-  },
   "transactionOrderLabelOriginName": "Nome de origem",
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
@@ -5631,21 +4748,9 @@
   "@swapProgressRefundedMessage": {
     "description": "Refunded transfer message"
   },
-  "kruxStep4": "Clique em Carregar da câmera",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
-  },
-  "psbtFlowTransactionImported": "A transação será importada na carteira Bull Bitcoin.",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
   "autoswapEnableToggleLabel": "Ativar Auto Swap",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
-  },
-  "ledgerSuccessImportDescription": "Sua carteira Ledger foi importada com sucesso.",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
   },
   "withdrawAmountTitle": "Fiat de retirada",
   "@withdrawAmountTitle": {
@@ -5684,10 +4789,6 @@
   "sellSendPaymentFastest": "Mais rápido",
   "@sellSendPaymentFastest": {
     "description": "Fastest fee priority option"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "Por favor, confirme o endereço do seu dispositivo BitBox.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
   },
   "buyVerificationFailed": "Verificação falhada: {reason}",
   "@buyVerificationFailed": {
@@ -5737,10 +4838,6 @@
       }
     }
   },
-  "bitboxActionUnlockDeviceButton": "Desbloquear dispositivo",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
-  },
   "addressCardUsedLabel": "Usado",
   "@addressCardUsedLabel": {
     "description": "Label indicating an address has been used"
@@ -5753,10 +4850,6 @@
         "type": "String"
       }
     }
-  },
-  "electrumUnknownError": "Um erro ocorreu",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "sendReceive": "Receber",
   "@sendReceive": {
@@ -5802,15 +4895,6 @@
   "@importQrDeviceSeedsignerStep10": {
     "description": "SeedSigner instruction step 10"
   },
-  "statusCheckLastChecked": "Última verificação: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "transactionOrderLabelReferenceNumber": "Número de referência",
   "@transactionOrderLabelReferenceNumber": {
     "description": "Label for reference number in order details"
@@ -5818,10 +4902,6 @@
   "receiveLightning": "Luz",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
-  },
-  "psbtFlowClickDone": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
   },
   "screenshotLabel": "Tiro de tela",
   "@screenshotLabel": {
@@ -5847,10 +4927,6 @@
   "buyInputMaxAmountError": "Você não pode comprar mais do que",
   "@buyInputMaxAmountError": {
     "description": "Maximum amount error message"
-  },
-  "appUnlockAttemptPlural": "tentativas falhadas",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
   },
   "exchangeDcaAddressLabelBitcoin": "Endereço de Bitcoin",
   "@exchangeDcaAddressLabelBitcoin": {
@@ -5901,10 +4977,6 @@
   "@transactionDetailLabelStatus": {
     "description": "Label for status"
   },
-  "bitboxScreenVerifyOnDevice": "Por favor, verifique este endereço no seu dispositivo BitBox",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
   "receiveAddressCopied": "Endereço copiado para clipboard",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -5917,13 +4989,9 @@
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
   },
-  "sendSatsPerVB": "sats/vB",
+  "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "seedsignerStep2": "Clique em Digitalizar",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
   },
   "payBitcoinAddress": "Endereço de Bitcoin",
   "@payBitcoinAddress": {
@@ -5985,19 +5053,6 @@
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
     "description": "Payment method title for IBAN USD in method list"
   },
-  "torSettingsPortDisplay": "Porto: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "bitboxErrorOperationTimeout": "A operação acabou. Por favor, tente novamente.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
   "importQrDeviceSeedsignerStep4": "Selecione \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -6009,10 +5064,6 @@
   "importQrDeviceScanning": "A procurar...",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
-  },
-  "bitboxActionUnlockDeviceProcessingSubtext": "Digite sua senha no dispositivo BitBox...",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
   },
   "transactionStatusPending": "Pendente",
   "@transactionStatusPending": {
@@ -6062,17 +5113,9 @@
   "@payConfirmationRequired": {
     "description": "Message when user confirmation is needed"
   },
-  "bitboxActionVerifyAddressSuccessSubtext": "O endereço foi verificado no seu dispositivo BitBox.",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
-  },
   "coreSwapsChainExpired": "Swap expirado",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
-  },
-  "ledgerInstructionsAndroidUsb": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e conectá-lo via USB.",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
   },
   "backupWalletChooseVaultLocationTitle": "Escolha a localização do vault",
   "@backupWalletChooseVaultLocationTitle": {
@@ -6126,15 +5169,6 @@
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
   },
-  "psbtFlowSignTransactionOnDevice": "Clique nos botões para assinar a transação no seu {device}.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeRecipientsTitle": "Os participantes",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -6177,17 +5211,9 @@
   "@sellSendPaymentMxnBalance": {
     "description": "MXN balance payout method"
   },
-  "torSettingsStatusDisconnected": "Desconectado",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "hwLedger": "Ledger",
   "@hwLedger": {
     "description": "Name of Ledger hardware wallet"
-  },
-  "electrumProtocolError": "Não inclua protocolo (ssl:// ou tcp://).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "backupWalletGoogleDrivePrivacyMessage4": "nunca ",
   "@backupWalletGoogleDrivePrivacyMessage4": {
@@ -6237,10 +5263,6 @@
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
   },
-  "electrumAddServer": "Adicionar Servidor",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
   "importQrDeviceSeedsignerStep1": "Poder no seu dispositivo SeedSigner",
   "@importQrDeviceSeedsignerStep1": {
     "description": "SeedSigner instruction step 1"
@@ -6256,10 +5278,6 @@
   "importQrDeviceJadeStep1": "Ligue o dispositivo Jade",
   "@importQrDeviceJadeStep1": {
     "description": "Jade instruction step 1"
-  },
-  "bitboxActionSignTransactionSuccess": "Transação assinada com sucesso",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
   },
   "sellFastest": "Mais rápido",
   "@sellFastest": {
@@ -6281,10 +5299,6 @@
   "@receiveVerifyAddressLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
-  "ledgerHelpStep5": "Certifique-se de que O dispositivo Ledger está usando o firmware mais recente, você pode atualizar o firmware usando o aplicativo de desktop Ledger Live.",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
-  },
   "sellExchangeRate": "Taxa de câmbio",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -6292,10 +5306,6 @@
   "buyProofOfAddress": "Prova de Endereço",
   "@buyProofOfAddress": {
     "description": "Type of document required"
-  },
-  "electrumSavePriorityFailedError": "Falhado para salvar a prioridade do servidor",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
   },
   "allSeedViewTitle": "Visualizador de sementes",
   "@allSeedViewTitle": {
@@ -6324,14 +5334,6 @@
   "sendFastFee": "Rápido",
   "@sendFastFee": {
     "description": "Highest fee tier"
-  },
-  "exchangeLegacyTransactionsComingSoon": "Transações Legadas - Em breve",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
-  "bitboxScreenTryAgainButton": "Tente novamente",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
   },
   "fundExchangeCrIbanCrcRecipientNameHelp": "Use nosso nome corporativo oficial. Não use \"Bull Bitcoin\".",
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
@@ -6401,10 +5403,6 @@
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
   },
-  "pinCodeMismatchError": "PINs não correspondem",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
-  },
   "sellCalculating": "Cálculo...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
@@ -6459,10 +5457,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "Servidores padrão",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "withdrawConfirmRecipientName": "Nome do destinatário",
   "@withdrawConfirmRecipientName": {
     "description": "Field label for recipient name"
@@ -6470,10 +5464,6 @@
   "transactionDetailLabelAddressNotes": "Notas de endereço",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
-  },
-  "bitboxActionUnlockDeviceSuccess": "Dispositivo desbloqueado Com sucesso",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
   },
   "backupWalletHowToDecide": "Como decidir?",
   "@backupWalletHowToDecide": {
@@ -6507,10 +5497,6 @@
   "sendCustomFee": "Taxas personalizadas",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
-  },
-  "keystoneStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Keystone. Analisa-o.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
   },
   "backupWalletInstructionNoDigitalCopies": "Não faça cópias digitais de seu backup. Escreva-o em um pedaço de papel, ou gravado em metal.",
   "@backupWalletInstructionNoDigitalCopies": {
@@ -6552,17 +5538,9 @@
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
   },
-  "seedsignerStep7": "   - Tente mover seu dispositivo para trás um pouco",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
   "dcaSetupContinue": "Continue",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "mempoolCustomServerUrlEmpty": "Digite uma URL do servidor",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "fundExchangeErrorLoadingDetails": "Os detalhes do pagamento não podem ser carregados neste momento. Por favor, volte e tente novamente, escolha outro método de pagamento ou volte mais tarde.",
   "fundExchangeErrorTitleOrdPo404": "Opção de Pagamento Indisponível",
@@ -6600,15 +5578,6 @@
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
   },
-  "psbtFlowTurnOnDevice": "Ligue o dispositivo {device}",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "sellSendPaymentSecureWallet": "Carteira Bitcoin segura",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -6617,10 +5586,6 @@
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
   },
-  "ledgerButtonManagePermissions": "Gerenciar Permissões de Aplicativos",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
-  },
   "payAmountRequired": "O montante é necessário",
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
@@ -6628,10 +5593,6 @@
   "receiveCopyAddressOnly": "Copiar ou escanear endereço somente",
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
-  },
-  "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "buyKycPendingTitle": "Pendente de Verificação de ID KYC",
   "@buyKycPendingTitle": {
@@ -6699,10 +5660,6 @@
   "@fundExchangeMethodEmailETransferSubtitle": {
     "description": "Subtitle for Email E-Transfer payment method"
   },
-  "exchangeLogoutComingSoon": "Log Out - Chegando em breve",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
-  },
   "withdrawConfirmAccount": "Conta",
   "@withdrawConfirmAccount": {
     "description": "Field label for bank account"
@@ -6739,10 +5696,6 @@
   "@payCannotBumpFee": {
     "description": "Error when RBF is not available"
   },
-  "keystoneStep7": "   - Tente mover seu dispositivo para trás um pouco",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
   "backupSettingsLabel": "Backup da carteira",
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
@@ -6755,41 +5708,21 @@
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "seedsignerStep8": "Uma vez que a transação é importada em seu SeedSigner, você deve selecionar a semente que deseja assinar.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
-  },
   "paySecurityQuestion": "Pergunta de segurança",
   "@paySecurityQuestion": {
     "description": "Label for security question field"
-  },
-  "torSettingsStatusConnecting": "Conectando...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
   },
   "importWalletKrux": "Krux",
   "@importWalletKrux": {
     "description": "Button label for Krux hardware wallet"
   },
-  "jadeStep5": "Se você tiver problemas de digitalização:",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
   "receiveFeeExplanation": "Esta taxa será deduzida do montante enviado",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
   },
-  "ledgerWalletTypeNestedSegwit": "Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
-  },
   "coreSwapsStatusFailed": "Falhado",
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
-  },
-  "bitboxActionPairDeviceSuccess": "Dispositivo emparelhado com sucesso",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
   },
   "coreSwapsActionClose": "Fechar",
   "@coreSwapsActionClose": {
@@ -6799,17 +5732,9 @@
   "@testCompletedSuccessTitle": {
     "description": "Title shown when backup test is successful"
   },
-  "passportStep3": "Digitalizar o código QR mostrado na carteira Bull",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "swapContinueButton": "Continue",
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
-  },
-  "torSettingsProxyPort": "Porto Proxy de Tor",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
   },
   "exchangeLoginButton": "Login Ou Inscreva-se",
   "@exchangeLoginButton": {
@@ -6883,10 +5808,6 @@
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
   },
-  "jadeStep3": "Selecione \"Scan QR\" opção",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
-  },
   "quickAndEasyTag": "Rápido e fácil",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
@@ -6907,10 +5828,6 @@
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
-  "bitboxScreenTroubleshootingStep3": "Reinicie seu dispositivo BitBox02 desconectando e reconectando-o.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
-  },
   "dcaSetupFundAccount": "Fina sua conta",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -6919,17 +5836,9 @@
   "@exchangeAuthLoginFailedTitle": {
     "description": "Title of the dialog shown when exchange login fails"
   },
-  "electrumDefaultServersInfo": "Para proteger sua privacidade, os servidores padrão não são usados quando os servidores personalizados são configurados.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "settingsThemeTitle": "Tema",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "electrumDelete": "Excluir",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
   },
   "payFeeRate": "Taxa de taxa",
   "@payFeeRate": {
@@ -6979,10 +5888,6 @@
   "@exchangeDcaFrequencyMonth": {
     "description": "DCA frequency unit: month"
   },
-  "ledgerImportTitle": "Carteira de LED de importação",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
   "typeLabel": "Tipo: ",
   "@typeLabel": {
     "description": "Label for address type (Receive/Change)"
@@ -7023,10 +5928,6 @@
   "@rbfOriginalTransaction": {
     "description": "Header label for original transaction details"
   },
-  "electrumStopGapEmptyError": "O Gap não pode estar vazio",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
-  },
   "backupSettingsViewVaultKey": "Ver o Vault Chaveiro",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
@@ -7064,10 +5965,6 @@
   "@settingsDevModeWarningMessage": {
     "description": "Warning message displayed when enabling developer mode"
   },
-  "ledgerErrorRejectedByUser": "A transação foi rejeitada pelo usuário no dispositivo Ledger.",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
   "swapValidationMinimumAmount": "Quantidade mínima é {amount} {currency}",
   "@swapValidationMinimumAmount": {
     "description": "Validation error when amount is below minimum",
@@ -7096,33 +5993,13 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
-  "ledgerErrorDeviceBusy": "Outro programa está usando o seu Ledger. Por favor, feche-o (por exemplo, o Ledger Live) e tente novamente.",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "Não há conexão Ledger disponível",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
-  },
   "payFirstName": "Primeiro nome",
   "@payFirstName": {
     "description": "Label for first name field"
   },
-  "passportStep10": "O Passaporte irá então mostrar-lhe o seu próprio código QR.",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
-  "systemLabelSelfSpend": "Auto Spend",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
   "payRemoveRecipient": "Remover Recipiente",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
-  },
-  "bitboxActionVerifyAddressButton": "Verificar endereço",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
   },
   "pasteInputDefaultHint": "Cole um endereço de pagamento ou fatura",
   "@pasteInputDefaultHint": {
@@ -7169,21 +6046,9 @@
       }
     }
   },
-  "electrumConfirm": "Confirmação",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
-  "bitboxScreenSegwitBip84Subtitle": "Nativo SegWit - Recomendado",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
   "exchangeSupportChatWalletIssuesInfo": "Este chat é apenas para questões relacionadas com a troca em Funding/Buy/Sell/Withdraw/Pay.\nPara problemas relacionados à carteira, junte-se ao grupo telegrama clicando aqui.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
-  },
-  "seedsignerStep10": "O SeedSigner irá então mostrar-lhe o seu próprio código QR.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
   },
   "sendSubmarineSwap": "Swap Submarino",
   "@sendSubmarineSwap": {
@@ -7196,10 +6061,6 @@
   "urDecodingFailedMessage": "UR decodificação falhou",
   "@urDecodingFailedMessage": {
     "description": "Error message when UR decoding fails"
-  },
-  "ledgerProcessingSignSubtext": "Por favor, confirme a transação no seu dispositivo Ledger...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
   },
   "transactionDetailLabelOrderNumber": "Número de ordem",
   "transactionDetailLabelPaymentDescription": "Descrição do pagamento",
@@ -7242,21 +6103,9 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "bitboxScreenWaitingConfirmation": "À espera da confirmação de BitBox02...",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
-  },
   "notTestedStatus": "Não testado",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
-  },
-  "bitboxScreenScanningSubtext": "À procura do seu dispositivo BitBox...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
-  },
-  "torSettingsStatusUnknown": "Estado Desconhecido",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
   },
   "sellSwiftCode": "Código SWIFT/BIC",
   "@sellSwiftCode": {
@@ -7279,10 +6128,6 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "bitboxActionSignTransactionProcessingSubtext": "Por favor, confirme a transação no seu dispositivo BitBox...",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
-  },
   "payOrderNumber": "Número de ordem",
   "@payOrderNumber": {
     "description": "Label for order number"
@@ -7290,10 +6135,6 @@
   "sendSwapRefundCompleted": "Reembolso de Swap Completado",
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
-  },
-  "bitboxErrorConnectionTypeNotInitialized": "Tipo de conexão não inicializado.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
   },
   "swapContinue": "Continue",
   "@swapContinue": {
@@ -7393,10 +6234,6 @@
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "electrumInvalidNumberError": "Insira um número válido",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "payRecipientDetails": "Detalhes do destinatário",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -7414,10 +6251,6 @@
       }
     }
   },
-  "electrumRetryCount": "Contagem de Restrições",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
   "coreSwapsStatusCompleted": "Completada",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
@@ -7431,10 +6264,6 @@
   "fundExchangeWarningTitle": "Cuidado com os scammers",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "ledgerProcessingVerify": "Mostrando endereço no Ledger...",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
   },
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
@@ -7466,10 +6295,6 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "kruxStep6": "Se você tiver problemas de digitalização:",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
-  },
   "autoswapMaximumFeeError": "Limite máximo de taxa é {threshold}%",
   "@autoswapMaximumFeeError": {
     "description": "Validation error shown when fee threshold exceeds maximum",
@@ -7492,14 +6317,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "electrumAddFailedError": "Falhado em adicionar servidor personalizado",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
-  "jadeStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
   "importQrDevicePassportStep5": "Selecione a opção \"Sparrow\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
@@ -7507,10 +6324,6 @@
   "coreScreensFeePriorityLabel": "Prioridade de Taxas",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "bitboxErrorNoDevicesFound": "Nenhum dispositivo BitBox encontrado. Certifique-se de que seu dispositivo está ligado e conectado via USB.",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
   },
   "sellOrderNotFoundError": "A ordem de venda não foi encontrada. Por favor, tente novamente.",
   "@sellOrderNotFoundError": {
@@ -7557,17 +6370,9 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "jadeStep2": "Adicionar uma senha se você tiver um (opcional)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
-  },
   "sellErrorFeesNotCalculated": "Taxas de transação não calculadas. Por favor, tente novamente.",
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
-  },
-  "electrumTimeout": "Timeout (segundos)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
   },
   "transactionStatusSwapFailed": "Swap Failed",
   "@transactionStatusSwapFailed": {
@@ -7599,14 +6404,6 @@
   "@backupWalletLastBackupTest": {
     "description": "Label prefix for displaying timestamp of last physical backup test"
   },
-  "electrumCustomServers": "Servidores personalizados",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
-  },
-  "electrumSaveFailedError": "Falhado para salvar opções avançadas",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
   "sellSendPaymentPayoutRecipient": "Receptor de pagamento",
   "@sellSendPaymentPayoutRecipient": {
     "description": "Field label for payout recipient"
@@ -7614,14 +6411,6 @@
   "importColdcardImporting": "Importando a carteira Coldcard...",
   "@importColdcardImporting": {
     "description": "Status while importing"
-  },
-  "bitboxScreenWalletTypeLabel": "Tipo de carteira:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
-  },
-  "keystoneStep1": "Entre no seu dispositivo Keystone",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "exchangeAppSettingsEmailNotificationsDescription": "Receba notificações por e-mail para pedidos e atualizações de conta",
   "@exchangeAppSettingsEmailNotificationsDescription": {
@@ -7705,10 +6494,6 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
     "description": "Recommendation text for when to use encrypted vault"
   },
-  "keystoneStep3": "Digitalizar o código QR mostrado na carteira Bull",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "payIban": "IBAN",
   "@payIban": {
     "description": "Label for IBAN field"
@@ -7724,22 +6509,6 @@
   "autoswapMaxFeeInfoText": "Se a taxa total do swap ficar acima da porcentagem definida, o auto swap será bloqueado",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "appUnlockIncorrectPinError": "PIN incorreto. Por favor, tente novamente. {failedAttempts} {attemptsWord}",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
-  "bitboxActionSignTransactionTitle": "Transação de Sinais",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
   },
   "payPayee": "Pagamento",
   "@payPayee": {
@@ -7786,10 +6555,6 @@
         "type": "String"
       }
     }
-  },
-  "keystoneStep11": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
   },
   "backupWalletSavingToDeviceTitle": "Salvar ao seu dispositivo.",
   "@backupWalletSavingToDeviceTitle": {
@@ -7861,10 +6626,6 @@
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
   },
-  "exchangeAccountComingSoon": "Esta característica está chegando em breve.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
-  },
   "autoswapWarningSettingsLink": "Leve-me para configurações de auto-despertar",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
@@ -7873,10 +6634,6 @@
   "@confirmLogoutTitle": {
     "description": "Dialog title for logout confirmation"
   },
-  "passportStep8": "Uma vez que a transação é importada no seu Passaporte, revise o endereço de destino e o valor.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
-  },
   "exchangeAccountInfoLastNameLabel": "Sobrenome",
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
@@ -7884,10 +6641,6 @@
   "transactionDetailLabelCompletedAt": "Completa em",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
-  },
-  "electrumLiquidSslInfo": "Nenhum protocolo deve ser especificado, SSL será usado automaticamente.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
   },
   "addressViewChangeType": "Variação",
   "@addressViewChangeType": {
@@ -7929,10 +6682,6 @@
   "@howToDecideVaultLocationText1": {
     "description": "First paragraph explaining vault location decision"
   },
-  "ledgerWalletTypeSelectTitle": "Selecione a carteira Tipo",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
   "testBackupEncryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
   "@testBackupEncryptedVaultDescription": {
     "description": "Description for encrypted vault backup option"
@@ -7954,38 +6703,13 @@
   "@encryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
   },
-  "electrumDeleteConfirmation": "Tem a certeza de que deseja excluir este servidor?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupGoogleDrivePrivacyPart4": "nunca ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
   },
-  "bitboxActionImportWalletButton": "Importação de início",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
-  },
   "transactionDetailLabelPayoutAmount": "Quantidade de pagamento",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
-  },
-  "bitboxScreenScanning": "Digitalização de Dispositivos",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
-  "statusCheckTitle": "Estado de serviço",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "ledgerSuccessSignTitle": "Transação assinada com sucesso",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
   },
   "payCoinjoinFailed": "CoinJoin falhou",
   "@payCoinjoinFailed": {
@@ -8003,21 +6727,9 @@
   "@importQrDeviceSpecterStep6": {
     "description": "Specter instruction step 6"
   },
-  "ledgerScanningTitle": "Digitalização de Dispositivos",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
-  },
   "testBackupEnterKeyManually": "Digite a tecla de backup manualmente >>",
   "@testBackupEnterKeyManually": {
     "description": "Button text to manually enter backup key"
-  },
-  "bitboxActionPairDeviceTitle": "Dispositivo de BitBox de par",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
-  },
-  "bitboxScreenEnterPassword": "Digite a senha",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
   },
   "savingToDevice": "Salvar ao seu dispositivo.",
   "@savingToDevice": {
@@ -8026,10 +6738,6 @@
   "payPayeeAccountNumberHint": "Digite o número de conta",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "kruxStep12": "O Krux irá então mostrar-lhe o seu próprio código QR.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
   },
   "fundExchangeLabelSwiftCode": "Código SWIFT",
   "@fundExchangeLabelSwiftCode": {
@@ -8119,10 +6827,6 @@
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
-  "pinCodeChangeButton": "Mudar PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "sendScanBitcoinQRCode": "Digitalize qualquer código QR Bitcoin ou Lightning para pagar com bitcoin.",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -8138,14 +6842,6 @@
   "sellAccountNumber": "Número de conta",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
-  },
-  "passportStep7": "   - Tente mover seu dispositivo para trás um pouco",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
-  },
-  "keystoneStep10": "O Keystone irá então mostrar-lhe o seu próprio código QR.",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
   },
   "enterBackupKeyManuallyButton": "Digite a tecla de backup manualmente >>",
   "@enterBackupKeyManuallyButton": {
@@ -8168,14 +6864,6 @@
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
   },
-  "kruxStep1": "Entre no seu dispositivo Krux",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
-  "jadeStep4": "Digitalizar o código QR mostrado na carteira Bull",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "receiveConfirmedInFewSeconds": "Ele será confirmado em alguns segundos",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
@@ -8183,10 +6871,6 @@
   "backupWalletPhysicalBackupTitle": "Backup físico",
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
-  },
-  "ledgerErrorMissingPsbt": "PSBT é necessário para assinar",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
   },
   "swapSubtractFeesLabel": "Subtrair taxas de montante",
   "@swapSubtractFeesLabel": {
@@ -8225,10 +6909,6 @@
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
-  "bitboxScreenSelectWalletType": "Selecione a carteira Tipo",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
-  },
   "receiveNetworkUnavailable": "{network} não está disponível",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -8258,17 +6938,9 @@
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
   },
-  "pinCodeCheckingStatus": "Verificando o status PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
-  },
   "fundExchangeCrIbanCrcDescription": "Envie uma transferência bancária da sua conta bancária usando os detalhes abaixo ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
-  },
-  "kruxInstructionsTitle": "Instruções de Krux",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
   },
   "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
   "@exchangeDcaAddressLabelLightning": {
@@ -8277,10 +6949,6 @@
   "payReplaceByFeeActivated": "Substitui-a-taxa activada",
   "@payReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
-  },
-  "bitboxScreenManagePermissionsButton": "Gerenciar Permissões de Aplicativos",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
   },
   "dcaSetupInsufficientBalanceMessage": "Você não tem equilíbrio suficiente para criar esta ordem.",
   "@dcaSetupInsufficientBalanceMessage": {
@@ -8326,10 +6994,6 @@
   "@sendSwapFailed": {
     "description": "Message explaining swap failure and refund"
   },
-  "electrumPrivacyNoticeContent1": "Aviso de Privacidade: Usar seu próprio nó garante que nenhum terceiro pode vincular seu endereço IP, com suas transações.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
-  },
   "paySinpeNumeroComprobante": "Número de referência",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -8346,21 +7010,9 @@
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
-  "seedsignerStep13": "A transação será importada na carteira Bull Bitcoin.",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
-  },
   "transactionDetailLabelPayjoinCreationTime": "Tempo de criação Payjoin",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
-  },
-  "appUnlockEnterPinMessage": "Digite seu código do pino para desbloquear",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
-  },
-  "pinCodeAuthentication": "Autenticação",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
   },
   "payFeeBumpFailed": "Esboço de taxas falhou",
   "@payFeeBumpFailed": {
@@ -8373,10 +7025,6 @@
   "testBackupEncryptedVaultTitle": "Vault criptografado",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
-  },
-  "ledgerHelpSubtitle": "Primeiro, certifique-se de que o dispositivo Ledger está desbloqueado e o aplicativo Bitcoin é aberto. Se o dispositivo ainda não se conectar com o aplicativo, tente o seguinte:",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
   },
   "payUnsupportedInvoiceType": "Tipo de fatura não suportado",
   "@payUnsupportedInvoiceType": {
@@ -8442,10 +7090,6 @@
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
   },
-  "electrumDeletePrivacyNotice": "Aviso de privacidade:\n\nUsar seu próprio nó garante que nenhum terceiro pode vincular seu endereço IP com suas transações. Ao excluir seu último servidor personalizado, você estará se conectando a um servidor BullBitcoin.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "exchangeAccountInfoUserNumberLabel": "Número de utilizador",
   "@exchangeAccountInfoUserNumberLabel": {
     "description": "Label for user number field in account information"
@@ -8470,27 +7114,6 @@
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
   },
-  "pinCodeSettingUp": "Configurando seu código PIN",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "Por favor, conclua um backup da carteira antes de definir um PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
-  },
-  "bitboxScreenActionFailed": "{action}",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "O timeout não pode estar vazio",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
   "dcaSetupTitle": "Definir Recorrer Comprar",
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
@@ -8511,25 +7134,9 @@
   "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
     "description": "Subtitle description for IBAN CRC payment method"
   },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
-  },
   "sendReceiveAmount": "Receber valor",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "ledgerProcessingImport": "Carteira de importação",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
-  },
-  "psbtFlowMoveLaser": "Mova o laser vermelho para cima e para baixo sobre o código QR",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
-  "bitboxScreenPairingCode": "Código de Emparelhamento",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
   },
   "decryptVaultButton": "Descriptografar cofre",
   "@decryptVaultButton": {
@@ -8543,10 +7150,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "pinCodeConfirm": "Confirmação",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
   "fundExchangeSpeiDescription": "Transferir fundos usando seu CLABE",
   "@fundExchangeSpeiDescription": {
     "description": "Description for SPEI transfer method"
@@ -8554,10 +7157,6 @@
   "swapProgressPendingMessage": "O swap está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Você pode voltar para a tela inicial e aguardar.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "passportStep4": "Se você tiver problemas de digitalização:",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
   },
   "transactionSwapDescLnReceiveClaimable": "A transação em cadeia foi confirmada. Estamos agora a reivindicar os fundos para completar a sua troca.",
   "@transactionSwapDescLnReceiveClaimable": {
@@ -8571,10 +7170,6 @@
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
   },
-  "receiveReceiveAmount": "Receber valor",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "pinManageDescription": "Gerenciar seu PIN de segurança",
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
@@ -8587,10 +7182,6 @@
   "@receiveNoTimeToWait": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
-  },
   "fundExchangeCanadaPostStep3": "3. Diga ao caixa o valor que deseja carregar",
   "@fundExchangeCanadaPostStep3": {
     "description": "Step 3 for Canada Post payment process"
@@ -8602,18 +7193,6 @@
   "exchangeAppSettingsDefaultCurrencyLabel": "Moeda padrão",
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
-  },
-  "ledgerErrorMissingAddress": "O endereço é necessário para verificação",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
-  },
-  "ledgerButtonTryAgain": "Tente novamente",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "bitboxActionUnlockDeviceProcessing": "Desbloquear dispositivo",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
   },
   "dcaSetupScheduleMessage": "As compras de Bitcoin serão colocadas automaticamente por esta programação.",
   "@dcaSetupScheduleMessage": {
@@ -8639,17 +7218,9 @@
   "@payConfirmPayment": {
     "description": "Button text to confirm and execute payment"
   },
-  "seedsignerStep4": "Se você tiver problemas de digitalização:",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
   "autoswapMaxBalanceLabel": "Max equilíbrio de carteira instantânea",
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
-  },
-  "bitboxScreenAddressToVerify": "Endereço para verificar:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
   },
   "sellAdvancedSettings": "Configurações avançadas",
   "@sellAdvancedSettings": {
@@ -8694,10 +7265,6 @@
   "sellSelectCoinsManually": "Selecione moedas manualmente",
   "@sellSelectCoinsManually": {
     "description": "Option to manually select UTXOs"
-  },
-  "bitboxScreenConnectDevice": "Conecte seu dispositivo BitBox",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
   },
   "fundExchangeCrIbanUsdLabelRecipientName": "Nome do destinatário",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
@@ -8772,10 +7339,6 @@
   "@sellOrderFailed": {
     "description": "Error message when order fails"
   },
-  "bitboxErrorPermissionDenied": "As permissões USB são necessárias para se conectar a dispositivos BitBox.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
   "transactionOrderLabelOriginCedula": "Origem Cedula",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
@@ -8813,22 +7376,10 @@
   "@importQrDeviceWalletName": {
     "description": "Label for wallet name field"
   },
-  "appUnlockScreenTitle": "Autenticação",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
-  },
   "receiveAddLabel": "Adicionar etiqueta",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
   },
-  "ledgerErrorPermissionDenied": "São necessárias permissões de Bluetooth para conectar aos dispositivos Ledger.",
-  "ledgerErrorNoDevicesFound": "Nenhum dispositivo Ledger encontrado. Verifique se o seu dispositivo está ligado e com o Bluetooth ativado.",
-  "ledgerErrorMultipleDevicesFound": "Vários dispositivos Ledger encontrados. Certifique-se de que apenas um dispositivo esteja por perto.",
-  "ledgerErrorDeviceNotFound": "Dispositivo Ledger não encontrado.",
-  "ledgerErrorDeviceMismatch": "Incompatibilidade de dispositivo detectada.",
-  "ledgerErrorInvalidPsbt": "Formato PSBT inválido detectado.",
-  "ledgerErrorMissingDerivationPath": "O caminho de derivação é obrigatório",
-  "ledgerErrorMissingScriptType": "O tipo de script é obrigatório",
   "buyViewDetails": "Ver detalhes",
   "@buyViewDetails": {
     "description": "Button to view order details"
@@ -8857,14 +7408,6 @@
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
-  },
-  "bitboxActionPairDeviceSuccessSubtext": "Seu dispositivo BitBox agora está emparelhado e pronto para usar.",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
-  },
   "coldcardStep15": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
@@ -8873,25 +7416,13 @@
   "@fundExchangeCanadaPostTitle": {
     "description": "Screen title for Canada Post payment method"
   },
-  "electrumPrivacyNoticeContent2": "No entanto, Se você visualizar transações via mempool clicando em seu ID de Transação ou na página Detalhes Destinatários, essas informações serão conhecidas pelo BullBitcoin.",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "sellReceiveAmount": "Você receberá",
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
   },
-  "ledgerProcessingVerifySubtext": "Por favor, confirme o endereço no seu dispositivo Ledger.",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
-  },
   "exchangeSupportChatMessageEmptyError": "A mensagem não pode estar vazia",
   "@exchangeSupportChatMessageEmptyError": {
     "description": "Error message when trying to send an empty message"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "Sua transação foi assinada com sucesso.",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
   },
   "dcaConfirmFrequencyHourly": "Cada hora",
   "@dcaConfirmFrequencyHourly": {
@@ -8921,10 +7452,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxScreenTroubleshootingSubtitle": "Primeiro, certifique-se de que seu dispositivo BitBox02 está conectado à sua porta USB do telefone. Se o dispositivo ainda não se conectar com o aplicativo, tente o seguinte:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
   },
   "fundExchangeWarningTactic2": "Eles estão oferecendo-lhe um empréstimo",
   "@fundExchangeWarningTactic2": {
@@ -8994,21 +7521,9 @@
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
   },
-  "ledgerInstructionsAndroidDual": "Certifique-se de que seu Ledger está desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
   "dcaConfirmFrequencyMonthly": "Todos os meses",
   "@dcaConfirmFrequencyMonthly": {
     "description": "Monthly frequency label"
-  },
-  "seedsignerStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
-  },
-  "passportStep5": "   - Aumente o brilho da tela em seu dispositivo",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
   },
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "@sendErrorBuildFailed": {
@@ -9050,14 +7565,6 @@
   "@withdrawConfirmIban": {
     "description": "Field label for IBAN"
   },
-  "bitboxScreenConnectSubtext": "Certifique-se de que seu BitBox02 está desbloqueado e conectado via USB.",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
-  "bitboxErrorInvalidResponse": "Resposta inválida do dispositivo BitBox. Por favor, tente novamente.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
-  },
   "encryptedVaultStatusLabel": "Vault criptografado",
   "@encryptedVaultStatusLabel": {
     "description": "Status label for encrypted vault"
@@ -9090,10 +7597,6 @@
   "@mempoolCustomServerSaveSuccess": {
     "description": "Success message when custom server is saved"
   },
-  "bitboxActionSignTransactionButton": "Começar a assinar",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
-  },
   "coreScreensToLabel": "Para",
   "@coreScreensToLabel": {
     "description": "Label for destination/receiver field"
@@ -9101,10 +7604,6 @@
   "transactionFilterSend": "Enviar",
   "@transactionFilterSend": {
     "description": "Filter option to show only sent transactions"
-  },
-  "sendEnterAbsoluteFee": "Insira taxa absoluta em sats",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
   },
   "swapTransferAmount": "Valor do swap",
   "@swapTransferAmount": {
@@ -9117,10 +7616,6 @@
   "transactionDetailTitle": "Detalhes da transação",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
-  },
-  "jadeStep9": "Uma vez que a transação é importada em seu Jade, revise o endereço de destino e o valor.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
   },
   "paySwapInProgress": "Trocar em progresso...",
   "@paySwapInProgress": {
@@ -9137,10 +7632,6 @@
   "coreSwapsLnSendClaimable": "Swap está pronto para ser reivindicado.",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
-  },
-  "electrumRetryCountNegativeError": "Retry Count não pode ser negativo",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
   },
   "receiveCopyInvoice": "Fatura de cópia",
   "@receiveCopyInvoice": {
@@ -9239,10 +7730,6 @@
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
   },
-  "bitboxActionUnlockDeviceSuccessSubtext": "Seu dispositivo BitBox agora está desbloqueado e pronto para usar.",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
   "sendSuccessfullySent": "Enviado com sucesso",
   "@sendSuccessfullySent": {
     "description": "Title for successful send completion"
@@ -9299,10 +7786,6 @@
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "passportStep9": "Clique nos botões para assinar a transação no seu Passaporte.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
   "payOpenInvoice": "Fatura aberta",
   "@payOpenInvoice": {
     "description": "Button to open invoice"
@@ -9324,10 +7807,6 @@
   "@payFirstNameHint": {
     "description": "Hint for first name input"
   },
-  "pinCodeLoading": "A carregar",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
-  },
   "sellNetworkError": "Erro de rede. Por favor, tente novamente",
   "@sellNetworkError": {
     "description": "Error for connectivity issues"
@@ -9336,21 +7815,9 @@
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
   },
-  "electrumEnableSsl": "Habilitar SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
-  },
-  "bitboxActionVerifyAddressSuccess": "Endereço Verificado com sucesso",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
   "payCustomFee": "Taxas personalizadas",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "torSettingsDescDisconnected": "Tor proxy não está funcionando",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
   },
   "amountRequestedLabel": "Montante solicitado: {amount}",
   "@amountRequestedLabel": {
@@ -9360,10 +7827,6 @@
         "type": "String"
       }
     }
-  },
-  "ledgerSignTitle": "Transação de Sinais",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
   },
   "exchangeReferralsJoinMissionTitle": "Junte-se à missão",
   "@exchangeReferralsJoinMissionTitle": {
@@ -9385,10 +7848,6 @@
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
   },
-  "torSettingsPortValidationRange": "O porto deve estar entre 1 e 65535",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
   "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
@@ -9396,18 +7855,6 @@
   "backupSettingsStartBackup": "Iniciar backup",
   "@backupSettingsStartBackup": {
     "description": "Button text to start new backup process"
-  },
-  "torSettingsDescConnected": "Tor proxy está em execução e pronto",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
-  },
-  "bitboxScreenPairingCodeSubtext": "Verifique se este código corresponde à sua tela BitBox02 e, em seguida, confirme no dispositivo.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
-  },
-  "bitboxScreenVerifyAddress": "Verificar endereço",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
   },
   "encryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
   "@encryptedVaultDescription": {
@@ -9437,15 +7884,6 @@
   "@fundExchangeHelpBeneficiaryAddress": {
     "description": "Help text for beneficiary address field"
   },
-  "psbtFlowDeviceShowsQr": "O {device} irá então mostrar-lhe o seu próprio código QR.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapSelectWallet": "Selecione uma carteira Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
@@ -9457,10 +7895,6 @@
   "importColdcardInstructionsStep10": "Configuração completa",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
-  },
-  "mempoolSettingsCustomServer": "Servidor personalizado",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "transactionNoteHint": "Nota",
   "@transactionNoteHint": {
@@ -9537,10 +7971,6 @@
   "importWatchOnlyImport": "Importação",
   "@importWatchOnlyImport": {
     "description": "Button label to import watch-only wallet"
-  },
-  "mempoolSettingsTitle": "Servidor de Mempool",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
   },
   "confirmTransferTitle": "Confirmar transferência",
   "@confirmTransferTitle": {
@@ -9689,10 +8119,6 @@
       }
     }
   },
-  "bip329LabelsImportButton": "Etiquetas de importação",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
-  },
   "walletDetailsDerivationPathLabel": "Caminho de Derivação",
   "@walletDetailsDerivationPathLabel": {
     "description": "Label for the derivation path field in wallet details"
@@ -9756,10 +8182,6 @@
   "tryAgainButton": "Tente novamente",
   "@tryAgainButton": {
     "description": "Default button text for error state"
-  },
-  "mempoolSettingsDefaultServer": "Servidor padrão",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
   },
   "failedToDeriveBackupKey": "Falhado para derivar a chave de backup",
   "@failedToDeriveBackupKey": {
@@ -9870,10 +8292,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Labels",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "submitButton": "Submeter-me",
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
@@ -9924,10 +8342,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bip329LabelsHeading": "BIP329 Etiquetas Importação/Exportação",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
   "walletDetailsSignerLabel": "Sinalização",
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
@@ -9966,10 +8380,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bip329LabelsExportButton": "Etiquetas de exportação",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
   },
   "importWatchOnlyPasteHint": "Pasta xpub, ypub, zpub ou descritor",
   "@importWatchOnlyPasteHint": {
@@ -10046,10 +8456,6 @@
   "walletDetailsDescriptorLabel": "Descritores",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "bip329LabelsDescription": "Importar ou exportar etiquetas de carteira usando o formato padrão BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "importWatchOnlyScriptType": "Tipo de script",
   "@importWatchOnlyScriptType": {
@@ -10268,7 +8674,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Valores altos de stop gap aumentam significativamente o tempo de sincronização. Mantenha o aplicativo aberto em primeiro plano até a sincronização ser concluída — colocá-lo em segundo plano pode interrompê-la.",
   "wizardSkipButton": "Pular",
   "wizardPageIndicator": "PÁGINA {current} / {total}",
   "wizardNextButton": "Próximo",
@@ -10465,12 +8870,7 @@
   "onboardingAdvancedOptionsFooter": "Você pode alterar essas configurações mais tarde nas configurações do aplicativo",
   "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "A BitBox só é compatível com Android",
-  "pinCodeSaveError": "Não foi possível salvar seu PIN. Por favor, tente novamente.",
-  "pinCodeDeleteError": "Não foi possível excluir seu PIN. Por favor, tente novamente.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
-  "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente.",
-  "mempoolErrorInvalidUrl": "URL do servidor inválido. Insira um domínio ou endereço IP válido.",
   "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -10757,30 +9157,10 @@
   "swapRescueWalletHint": "Selecione uma carteira",
   "swapRescueButton": "Restaurar",
   "swapRescueSuccess": "Swap restaurado — agora ele será retomado",
-  "mempoolServerStatusOnline": "Online",
-  "mempoolServerStatusOffline": "Offline",
-  "mempoolServerStatusChecking": "Verificando...",
   "mempoolServerStatusUnknown": "Desconhecido",
-  "mempoolCustomServerSaveFailed": "Falha ao salvar o servidor",
-  "mempoolCustomServerInfoDescription": "Servidores mempool são usados para estimar taxas e abrir o explorador de blocos ao visualizar detalhes de transações.",
-  "mempoolCustomServerUseSsl": "Usar SSL",
-  "mempoolCustomServerSslAutoDetected": "(Detectado automaticamente)",
-  "mempoolCustomServerSslHelpText": "Para servidores locais (.local, IPs privados) e Tor (.onion), o SSL costuma ficar desativado. IPs públicos e domínios devem usar SSL.",
-  "mempoolErrorSameAsDefault": "Esta URL é igual à do servidor padrão. Use uma URL diferente.",
-  "mempoolErrorConnectionTimeout": "A conexão expirou. O servidor pode estar lento ou inacessível.",
-  "mempoolErrorHostNotFound": "Não foi possível encontrar este servidor. Verifique a URL e tente novamente.",
-  "mempoolErrorConnectionFailed": "Não foi possível conectar ao servidor. Verifique sua conexão de rede e tente novamente.",
-  "mempoolErrorNotMempoolServer": "Esta URL não parece ser um servidor mempool. Verifique o endereço.",
-  "mempoolErrorServerUnavailable": "O servidor está indisponível. Tente novamente mais tarde.",
-  "mempoolErrorServerError": "O servidor encontrou um erro. Tente novamente mais tarde.",
-  "mempoolErrorInvalidResponse": "O servidor retornou uma resposta inválida.",
-  "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor",
-  "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool",
-  "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado",
   "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
   "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
   "receivePayjoinNoUtxos": "Receba fundos primeiro para ativar isso.\nUTXOs são necessários para usar o payjoin.",
-  "receiveLiquidRiskDisclosureLabel": "Os pagamentos serão convertidos para Liquid L-BTC (não BTC). Saiba mais.",
   "payViewReceipt": "Ver recibo",
   "paySinpeReceipt": "Recibo SINPE",
   "transactionFilterWithdraw": "Retirada",
@@ -10790,6 +9170,7 @@
   "transactionFilterRefund": "Reembolso",
   "transactionListLoadingFailed": "Não foi possível carregar as transações.",
   "transactionLabelNetworkFees": "Taxas de rede",
+  "receiveLiquidRiskDisclosureLabel": "Os pagamentos serão convertidos para Liquid L-BTC (não BTC). Saiba mais.",
   "walletLiquidRiskDisclosureLabel": "Estes fundos são Liquid L-BTC (não BTC). Saiba mais.",
   "liquidRiskDisclosureSemanticLabel": "Abrir divulgação de risco do Liquid Bitcoin",
   "liquidRiskDisclosureTitle": "Divulgação de Risco do Liquid Bitcoin da Carteira de Pagamento Instantânea",
@@ -10811,49 +9192,7 @@
   "sendCoordinatingPayjoinTransaction": "Coordenando uma transação Payjoin.",
   "sendErrorInvoiceExpired": "Esta fatura expirou. Peça ao destinatário uma nova fatura.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar a Carteira de Pagamento Instantânea para fazer pagamentos menores.",
-  "sendSubSatVbyteWarning": "Transações com taxa abaixo de 1 sat/vB podem demorar mais para confirmar e podem não se propagar para todos os nós.",
-  "sendBelowMinFeeRateError": "A taxa deve ser de pelo menos 0.1 sat/vB.",
   "sendErrorInsufficientBalanceFrozenHint": "Saldo disponível insuficiente — {amount} está congelado. Descongele as moedas em Gerenciar moedas para usá-lo.",
-  "psbtFlowSignViaNfc": "Assinar via NFC",
-  "psbtFlowSignViaNfcSheetTitle": "Aproxime seu {deviceName} para enviar o PSBT via NFC",
-  "psbtFlowColdcardQInstructionsTitle": "Instruções do Coldcard Q",
-  "psbtFlowColdcardMk4InstructionsTitle": "Instruções do Coldcard Mk4",
-  "psbtFlowColdcardQStep1": "Faça login no seu dispositivo Coldcard Q",
-  "psbtFlowColdcardQStep2": "Adicionar uma senha se você tiver um (opcional)",
-  "psbtFlowColdcardQStep3": "Escolha o método de assinatura de sua preferência:",
-  "psbtFlowColdcardQStep4": "Para código QR:",
-  "psbtFlowColdcardQStep5": "   - Selecione \"Escanear qualquer código QR\" no seu Coldcard Q",
-  "psbtFlowColdcardQStep6": "   - Escaneie o código QR exibido na carteira Bull",
-  "psbtFlowColdcardQStep7": "   - Se tiver dificuldade para escanear:",
-  "psbtFlowColdcardQStep8": "     - Aumente o brilho da tela do seu dispositivo",
-  "psbtFlowColdcardQStep9": "     - Mova o laser vermelho para cima e para baixo sobre o código QR",
-  "psbtFlowColdcardQStep10": "     - Tente afastar um pouco o seu dispositivo",
-  "psbtFlowColdcardQStep11": "Para NFC:",
-  "psbtFlowColdcardQStep12": "   - Selecione \"Pronto para assinar\" no seu Coldcard Q e, em seguida, toque no botão NFC",
-  "psbtFlowColdcardQStep13": "   - Aproxime seu celular do Coldcard Q",
-  "psbtFlowColdcardQStep14": "   - Aguarde a transferência do PSBT",
-  "psbtFlowColdcardQStep15": "Depois que a transação for importada no seu Coldcard Q, revise o endereço de destino e o valor.",
-  "psbtFlowColdcardQStep16": "Clique nos botões para assinar a transação no seu Coldcard Q.",
-  "psbtFlowColdcardQStep17": "O Coldcard Q vai então exibir um código QR da transação assinada ou preparar a transferência por NFC.",
-  "psbtFlowColdcardQStep18": "Se você assinou com QR, clique em \"Estou feito\" na carteira Bull Bitcoin.",
-  "psbtFlowColdcardQStep19": "A carteira Bull Bitcoin vai pedir para você escanear o código QR da transação assinada ou usar NFC para recebê-la.",
-  "psbtFlowColdcardQStep20": "   - Para QR: escaneie o código QR no Coldcard Q",
-  "psbtFlowColdcardQStep21": "   - Para NFC: aproxime seu celular do Coldcard Q",
-  "psbtFlowColdcardQStep22": "A transação assinada será importada na carteira Bull Bitcoin.",
-  "psbtFlowColdcardQStep23": "Agora está pronta para ser transmitida. Assim que você clicar em transmitir, a transação será publicada na rede Bitcoin.",
-  "psbtFlowColdcardMk4Step1": "Faça login no seu dispositivo Coldcard Mk4",
-  "psbtFlowColdcardMk4Step2": "Adicionar uma senha se você tiver um (opcional)",
-  "psbtFlowColdcardMk4Step3": "Selecione \"Pronto para assinar\" no seu Coldcard Mk4 e, em seguida, toque no botão número 3",
-  "psbtFlowColdcardMk4Step4": "Aproxime seu celular do Coldcard Mk4",
-  "psbtFlowColdcardMk4Step5": "Aguarde a transferência do PSBT",
-  "psbtFlowColdcardMk4Step6": "Depois que a transação for importada no seu Coldcard Mk4, revise o endereço de destino e o valor.",
-  "psbtFlowColdcardMk4Step7": "Clique nos botões para assinar a transação no seu Coldcard Mk4.",
-  "psbtFlowColdcardMk4Step8": "O Coldcard Mk4 vai então preparar a transação assinada para transferência por NFC.",
-  "psbtFlowColdcardMk4Step9": "Na carteira Bull Bitcoin, toque em NFC na tela de transmissão.",
-  "psbtFlowColdcardMk4Step10": "Aproxime seu celular do Coldcard Mk4 para receber a transação assinada.",
-  "psbtFlowColdcardMk4Step11": "A transação assinada será importada na carteira Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step12": "Revise os detalhes da transação na carteira Bull Bitcoin.",
-  "psbtFlowColdcardMk4Step13": "Agora está pronta para ser transmitida. Assim que você clicar em transmitir, a transação será publicada na rede Bitcoin.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Aproxime seu Coldcard para receber a transação assinada via NFC",
@@ -10898,11 +9237,9 @@
   "fundExchangeCopGeneratePaymentLink": "Gerar link de pagamento",
   "fundExchangeCopRedirectMessage": "Você será redirecionado para uma página externa para realizar o pagamento.",
   "fundExchangeCopOpenPaymentLink": "Abrir link de pagamento",
-  "priceChartFailedToLoad": "Falha ao carregar o histórico de preços",
   "priceFailedToLoad": "Falha ao carregar o preço",
   "statusScreenTryAgain": "Tente novamente",
   "statusScreenContinue": "Continue",
-  "noteVisibleToSenderNotice": "Esta nota ficará visível para o destinatário do seu QR ou fatura.",
   "viewerAddressTab": "Endereço",
   "viewerPaymentUriTab": "URI de pagamento",
   "settingsErrorReportingTitle": "Relatório de erros",
@@ -10920,18 +9257,6 @@
   "backupWarningBackupLater": "NÃO, EU ENTENDO O RISCO",
   "transactionSwapOpenWithin24h": "Abra o aplicativo em até 24 horas para concluir o seu swap.",
   "importWatchOnlyXpubLabel": "XPUB",
-  "bitboxErrorBluetoothPermissionDenied": "É necessária permissão de Bluetooth para conectar ao seu BitBox02 Nova.",
-  "bitboxErrorBluetoothUnavailable": "O Bluetooth está indisponível. Ative o Bluetooth e tente novamente.",
-  "bitboxErrorNoBleDevicesFound": "Nenhum BitBox02 Nova encontrado nas proximidades. Verifique o Bluetooth e tente novamente.",
-  "bitboxErrorMultipleBleDevicesFound": "Vários dispositivos BitBox02 Nova encontrados. Mantenha apenas um por perto e tente novamente.",
-  "bitboxErrorOperationFailed": "Falha na operação do BitBox. Tente novamente.",
-  "bitboxScreenConnectSubtextBluetooth": "Certifique-se de que seu BitBox02 Nova está desbloqueado e o Bluetooth está habilitado.",
-  "bitboxScreenScanningSubtextBluetooth": "Procurando seu BitBox02 Nova nas proximidades...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "Solução de problemas do BitBox02 Nova",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Se o seu dispositivo ainda não conectar com o aplicativo, tente o seguinte:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Certifique-se de que o Bluetooth está ligado e permitido para este aplicativo.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "Certifique-se de que o Bluetooth está habilitado no seu BitBox02 Nova.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "Reinicie o seu BitBox02 Nova e tente conectar novamente.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
   "consolidationDone": "Concluído",
@@ -10959,12 +9284,7 @@
   "settingsPayjoinDisclaimerTitle": "Aviso sobre Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "Aviso sobre Payjoin",
   "settingsPayjoinAdvancedTitle": "Configurações avançadas do Payjoin",
-  "receiveAdditionalInformation": "Informações adicionais",
-  "receiveAdditionalInformationPlaceholder": "Adicione um valor ou uma mensagem para o remetente",
-  "receiveMessageForSender": "Mensagem para o remetente",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "O Payjoin está ativado, mas esta carteira ainda não tem saldo para contribuir. Ele será ativado assim que você receber fundos.",
-  "announcementAutoswapDescription": "Seu Liquid é convertido automaticamente em Bitcoin.",
   "addressViewErrorWalletNotFound": "Não foi possível encontrar esta carteira.",
   "addressViewErrorLoadFailed": "Não foi possível carregar seus endereços. Tente novamente.",
   "coreSwapsStatusNotStarted": "Não iniciado",
@@ -10979,19 +9299,6 @@
   "coreSwapsStatusUnknown": "Desconhecido",
   "sendSwapExpiredTitle": "Ordem expirada",
   "sendSwapExpiredMessage": "Esta ordem expirou antes de qualquer fundo ser enviado. Nada foi enviado da sua carteira.",
-  "torSettingsStatusCensored": "A conexão parece filtrada",
-  "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isso costuma indicar que a conexão está sendo filtrada.",
-  "torSettingsBootstrapProgress": "Conectando… {percent}%",
-  "torSettingsEmbeddedTitle": "Tor integrado",
-  "torSettingsEmbeddedDescription": "O Tor integrado é usado pelo RecoverBull e pelos servidores Bitcoin Electrum .onion. O restante do tráfego do app continua direto.",
-  "torSettingsTransportMode": "Método de conexão",
-  "torSettingsModeAutomatic": "Automático",
-  "torSettingsModeDirect": "Direta",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Tenta primeiro uma conexão Tor direta e usa o Snowflake se a rede parecer bloquear o Tor.",
-  "torSettingsModeDirectDescription": "Conecta-se diretamente à rede Tor, sem pluggable transport.",
-  "torSettingsModeSnowflakeDescription": "Usa proxies voluntários do Snowflake para alcançar o Tor a partir de uma rede filtrada.",
-  "torSettingsActiveTransport": "Transporte ativo: {transport}",
   "settingsScreenPrivacyTitle": "Privacidade da tela",
   "settingsScreenPrivacyDisabledMessage": "Agora as capturas de tela são permitidas em telas sensíveis",
   "settingsSearchHint": "Pesquisar nas configurações",
@@ -11026,11 +9333,7 @@
   "exchangeSupportChatLoadMessagesError": "Não foi possível carregar as mensagens. Tente novamente.",
   "exchangeSupportChatSendMessageError": "Não foi possível enviar sua mensagem. Tente novamente.",
   "exchangeSupportChatLoadAttachmentError": "Não foi possível abrir o anexo. Tente novamente.",
-  "statusCheckNoDefaultWalletError": "Nenhuma carteira Bitcoin padrão encontrada. Por favor, defina uma carteira padrão e tente novamente.",
-  "statusCheckResultsMayBeOutdated": "Os resultados podem estar desatualizados",
   "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente.",
-  "psbtFlowInvalidPsbtError": "Não foi possível ler esta transação. Volte e crie-a novamente.",
-  "psbtFlowQrEncodingError": "Não foi possível converter esta transação em um código QR.",
   "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
@@ -11062,15 +9365,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Esse tipo de arquivo não é aceito. Escolha outro.",
   "exchangeSettingsErrorDocumentUnreadable": "Não foi possível ler esse arquivo. Escolha outro.",
   "exchangeSettingsErrorUploadingDocument": "Não foi possível enviar o documento. Por favor, tente novamente.",
-  "labelsErrorNoteTooLong": "A nota não pode ter mais de {max} caracteres",
-  "labelsErrorNoteForbiddenCharacter": "A nota não pode conter o caractere {character}",
-  "labelsErrorFileTooLarge": "Esse arquivo é muito grande. Arquivos de etiquetas devem ter menos de {max}.",
-  "labelsErrorFileUnreadable": "Isto não parece ser um arquivo de etiquetas BIP-329. Verifique se escolheu o arquivo certo.",
-  "labelsErrorFileEmpty": "Esse arquivo não contém etiquetas para importar.",
-  "labelsErrorExportFailed": "Não foi possível salvar suas etiquetas. Tente novamente.",
-  "labelsErrorFileReservedName": "Esse arquivo usa um nome de etiqueta reservado pelo aplicativo. Renomeie-o no arquivo e tente novamente.",
-  "labelsErrorNoteForbiddenWhitespace": "A nota não pode conter quebras de linha nem tabulações",
-  "labelsErrorFileInvalidEntry": "Não foi possível ler algumas entradas desse arquivo. Verifique o arquivo e tente novamente.",
   "recipientsErrorLoadFailed": "Não foi possível carregar seus destinatários. Tente novamente.",
   "recipientsErrorSaveFailed": "Não foi possível salvar este destinatário. Verifique os dados e tente novamente.",
   "recipientsErrorSinpeLookupFailed": "Não foi possível verificar este número de telefone. Verifique-o e tente novamente.",
@@ -11248,11 +9542,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais.",
   "settingsDarkModeTitle": "Modo escuro",
   "settingsSourceCodeTitle": "Código-fonte",
-  "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
-  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
   "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado.",
-  "serverEncrypted": "Criptografado",
-  "serverUnencrypted": "Não criptografado",
   "backgroundTasksTitle": "Tarefas em segundo plano",
   "blockedInSystemSettings": "Bloqueado nas configurações do sistema",
   "notificationsBlockedMessage": "As notificações estão bloqueadas nas configurações do sistema.",
@@ -11261,6 +9551,5 @@
   "permissionsTitle": "Permissões",
   "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
   "wizardBackgroundTasksDescription": "Verifica pagamentos com o app fechado.",
-  "wizardNotificationsDescription": "Saiba quando um pagamento chegar.",
-  "pinCodeLengthHint": "Digite de {min} a {max} dígitos"
+  "wizardNotificationsDescription": "Saiba quando um pagamento chegar."
 }

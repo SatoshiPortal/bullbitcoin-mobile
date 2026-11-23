@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/coins/public/coins.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
@@ -26,6 +27,7 @@ class WalletRouter {
     required void Function(BuildContext) onCustomizeQuickActions,
     required ExchangePromptCubit exchangePrompt,
     required void Function(BuildContext) onActivateExchange,
+    required Widget Function() announcements,
     required NetworkWalletSetupCubit Function() createSetupCubit,
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
@@ -47,6 +49,7 @@ class WalletRouter {
           onCustomizeQuickActions: onCustomizeQuickActions,
           exchangePrompt: exchangePrompt,
           onActivateExchange: onActivateExchange,
+          announcements: announcements(),
         ),
       );
     },
@@ -55,6 +58,8 @@ class WalletRouter {
   static GoRoute walletDetailRoute({
     required Future<void> Function(BuildContext context, Wallet wallet)
     onOpenCoins,
+    required Future<Result<CoinSummary, CoinsFailure>> Function(String)
+    loadCoinSummary,
   }) => GoRoute(
     name: WalletRoute.walletDetail.name,
     path: WalletRoute.walletDetail.path,
@@ -63,7 +68,11 @@ class WalletRouter {
       if (walletId == null) {
         return const SizedBox.shrink();
       }
-      return WalletDetailScreen(walletId: walletId, onOpenCoins: onOpenCoins);
+      return WalletDetailScreen(
+        walletId: walletId,
+        onOpenCoins: onOpenCoins,
+        loadCoinSummary: loadCoinSummary,
+      );
     },
   );
 }

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Whether [ConsolidationBanner] should show for one wallet — the seam

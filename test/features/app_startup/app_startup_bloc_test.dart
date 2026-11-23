@@ -8,8 +8,8 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_us
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:access/access.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_startup_pin_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,8 +17,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class _MockResetAppDataUsecase extends Mock implements ResetAppDataUsecase {}
 
-class _MockCheckPinCodeExistsUsecase extends Mock
-    implements CheckPinCodeExistsUsecase {}
+class _MockAccess extends Mock implements Access {}
 
 class _MockCheckForExistingDefaultWalletsUsecase extends Mock
     implements CheckForExistingDefaultWalletsUsecase {}
@@ -44,7 +43,7 @@ void main() {
   );
 
   late _MockResetAppDataUsecase resetAppData;
-  late _MockCheckPinCodeExistsUsecase checkPinCodeExists;
+  late _MockAccess checkPinCodeExists;
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockInitializeRequiredTorUsecase initializeRequiredTor;
   late _MockRestoreMissingDefaultSecretUsecase restoreSecret;
@@ -52,7 +51,7 @@ void main() {
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
-    checkPinCodeExistsUsecase: checkPinCodeExists,
+    getStartupPinStatusUsecase: GetStartupPinStatusUsecase(checkPinCodeExists),
     checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
     initializeRequiredTorUsecase: initializeRequiredTor,
     restoreMissingDefaultSecretUsecase: restoreSecret,
@@ -61,7 +60,7 @@ void main() {
 
   setUp(() {
     resetAppData = _MockResetAppDataUsecase();
-    checkPinCodeExists = _MockCheckPinCodeExistsUsecase();
+    checkPinCodeExists = _MockAccess();
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     initializeRequiredTor = _MockInitializeRequiredTorUsecase();
     restoreSecret = _MockRestoreMissingDefaultSecretUsecase();
@@ -76,7 +75,7 @@ void main() {
   test('starts up when default wallets exist', () async {
     when(() => checkDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(true));
-    when(() => checkPinCodeExists.execute())
+    when(() => checkPinCodeExists.checkPinCodeExists())
         .thenAnswer((_) async => const Ok(true));
     final bloc = buildBloc();
     addTearDown(bloc.close);
@@ -101,8 +100,9 @@ void main() {
     () async {
       when(() => checkDefaultWallets.execute())
           .thenAnswer((_) async => const Ok(true));
-      when(() => checkPinCodeExists.execute())
-          .thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
+      when(
+        () => checkPinCodeExists.checkPinCodeExists(),
+      ).thenAnswer((_) async => const Err(AccessUnlockKeychainLockedFailure()));
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
@@ -113,7 +113,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(bloc.state, isA<AppStartupLoadingInProgress>());
-      verify(() => checkPinCodeExists.execute()).called(1);
+      verify(() => checkPinCodeExists.checkPinCodeExists()).called(1);
       verifyNever(() => startSwapEngine.execute());
     },
   );
@@ -140,7 +140,7 @@ void main() {
       expect(bloc.state, isA<AppStartupLoadingInProgress>());
       expect(bloc.state, isNot(isA<AppStartupFailureState>()));
       // Startup stopped there: nothing downstream may run on a locked keychain.
-      verifyNever(() => checkPinCodeExists.execute());
+      verifyNever(() => checkPinCodeExists.checkPinCodeExists());
     },
   );
 
@@ -169,8 +169,8 @@ void main() {
       'rethrowing it', () async {
     when(() => checkDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(true));
-    when(() => checkPinCodeExists.execute()).thenAnswer(
-      (_) async => const Err(AppUnlockUnexpectedFailure('keychain read')),
+    when(() => checkPinCodeExists.checkPinCodeExists()).thenAnswer(
+      (_) async => const Err(AccessUnlockUnexpectedFailure('keychain read')),
     );
     final bloc = buildBloc();
     addTearDown(bloc.close);
@@ -180,7 +180,7 @@ void main() {
       (s) => s is AppStartupFailureState,
     );
 
-    // Not an AppUnlockFailure: this feature never holds another feature's type.
+    // Not an AccessFailure: this feature never holds another feature's type.
     expect(
       (state as AppStartupFailureState).failure,
       isA<AppStartupPinCheckFailure>(),
@@ -283,7 +283,7 @@ void main() {
         ).thenAnswer((_) async => const Ok(null));
         when(() => checkDefaultWallets.execute())
             .thenAnswer((_) async => const Ok(true));
-        when(() => checkPinCodeExists.execute())
+        when(() => checkPinCodeExists.checkPinCodeExists())
             .thenAnswer((_) async => const Ok(true));
 
         final result = await bloc.restoreDefaultSecret(

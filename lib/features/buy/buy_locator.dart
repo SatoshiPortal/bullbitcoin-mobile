@@ -1,14 +1,15 @@
+import 'package:preferences/preferences.dart'
+    show AmountDisplayPreferencesReader, Preferences;
+import 'package:bb_mobile/features/buy/domain/watch_buy_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
@@ -35,7 +36,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         payjoinReceiver: locator<PayjoinReceiver>(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
       ),
@@ -48,8 +49,8 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
-        labelsFacade: locator<LabelsFacade>(),
+        settingsRepository: locator<Preferences>(),
+        labelsFacade: locator<Labels>(),
       ),
     );
     locator.registerFactory<RefreshBuyOrderUsecase>(
@@ -60,7 +61,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerFactory<AccelerateBuyOrderUsecase>(
@@ -71,7 +72,7 @@ class BuyLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerFactory<CancelAbandonedBuyPayjoinUsecase>(
@@ -91,10 +92,10 @@ class BuyLocator {
     locator.registerFactory<LoadBuyContextUsecase>(
       () => LoadBuyContextUsecase(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        fees: locator<Fees>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );
@@ -104,6 +105,9 @@ class BuyLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<BuyBloc>(
       () => BuyBloc(
+        watchBitcoinUnitUsecase: WatchBuyBitcoinUnitUsecase(
+          locator<AmountDisplayPreferencesReader>(),
+        ),
         syncBuyReceiptUsecase: locator<SyncBuyReceiptUsecase>(),
         loadBuyContextUsecase: locator<LoadBuyContextUsecase>(),
         confirmBuyOrderUsecase: locator<ConfirmBuyOrderUsecase>(),

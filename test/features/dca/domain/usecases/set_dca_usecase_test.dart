@@ -1,35 +1,31 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../core/exchange/fake_exchange_users.dart';
 
 class MockExchangeOrderRepository extends Mock
     implements ExchangeOrderRepository {}
 
 class MockWalletRepository extends Mock implements WalletRepository {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockWalletAddressRepository extends Mock
     implements WalletAddressRepository {}
 
 class MockExchangeUserRepository extends Mock
-    implements ExchangeUserRepository {}
+    implements ExchangeUserOperations {}
 
 // The preference write now goes straight to the repository, which is the
 // sanitizing boundary.
@@ -108,10 +104,9 @@ void main() {
       wallet: wallet,
       settingsRepository: settings,
       walletAddressRepository: walletAddress,
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
+      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
     );
-    when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
+    when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
 
   DcaFailure failureOf(Result<Dca, DcaFailure> result) {
@@ -122,10 +117,11 @@ void main() {
   group('SetDcaUsecase', () {
     test('regtest refuses before wallet or account access', () async {
       when(() => settings.fetch()).thenAnswer(
-        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+        (_) async =>
+            Ok(mainnetSettings.copyWith(environment: Environment.regtest)),
       );
       when(() => mainnetUsers.getUserSummary())
-          .thenAnswer((_) async => const Err(ExchangeUserUnexpectedFailure()));
+          .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
       final result = await usecase.execute(
         amount: 10,
         currency: FiatCurrency.cad,
@@ -308,7 +304,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async =>
-            const Err(ExchangeUserPreferencesSaveFailure('prefs write failed')),
+            const Err(ExchangePreferencesSaveFailure('prefs write failed')),
       );
 
       final result = await usecase.execute(
@@ -424,9 +420,9 @@ void main() {
         // writes it), and the enabling write must carry the full current set.
         // A failed summary read therefore aborts the flow while nothing exists
         // on the exchange yet, instead of creating a DCA it cannot enable.
-        when(() => mainnetUsers.getUserSummary()).thenAnswer(
-          (_) async => const Err(ExchangeUserNetworkFailure('timeout')),
-        );
+        when(
+          () => mainnetUsers.getUserSummary(),
+        ).thenAnswer((_) async => const Err(ExchangeNetworkFailure('timeout')));
 
         final result = await usecase.execute(
           amount: 10,

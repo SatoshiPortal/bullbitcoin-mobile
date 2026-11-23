@@ -1,0 +1,117 @@
+{
+  "@@locale": "cs",
+  "pinCodeAuthentication": "Ověřování",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeCreateTitle": "Vytvořit nový pin",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeCreateDescription": "Váš PIN chrání přístup k vaší peněžence a nastavením. Udržujte ho nezapomenutelný.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "Potvrzení nového kolíku",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeMismatchError": "PINy neodpovídají",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeSecurityPinTitle": "Bezpečnostní PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeChangeButton": "Změna PIN",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCreateButton": "Vytvořit PIN",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeRemoveButton": "Odebrat bezpečnostní PIN",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "pinCodeContinue": "Pokračovat",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "pinCodeConfirm": "Odeslat",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Čeština",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeCheckingStatus": "Kontrola stavu PIN",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeProcessing": "Zpracování",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeSettingUp": "Nastavení PIN kódu",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "pinCodeBackupRequiredWarning": "Před nastavením PIN dokončete zálohu peněženky",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "appUnlockButton": "Čeština",
+  "appUnlockPinCheckError": "Nelze načíst nastavení zabezpečení. Restartujte prosím aplikaci.",
+  "appUnlockPinVerifyError": "Nelze ověřit váš PIN. Zkuste to prosím znovu.",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "pinCodeManageTitle": "Správa zabezpečení PIN",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "appUnlockAttemptSingular": "neúspěšný pokus",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "appUnlockAttemptPlural": "neúspěšné pokusy",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "appUnlockIncorrectPinError": "Nesprávné PIN. Prosím, zkuste to znovu. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockEnterPinMessage": "Zadejte kód pinu odemknout",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "backupSettingsStartBackup": "Start Backup",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "appUnlockScreenTitle": "Ověření",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "pinCodeSaveError": "PIN nelze uložit. Zkuste to prosím znovu.",
+  "pinCodeDeleteError": "PIN nelze smazat. Zkuste to prosím znovu.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "Zadejte {min} až {max} číslic"
+}

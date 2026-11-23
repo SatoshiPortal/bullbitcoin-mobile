@@ -25,6 +25,18 @@ class BullAmount extends StatefulWidget {
     this.textAlign,
   });
 
+  /// Displays a signed number of satoshis without losing its magnitude.
+  BullAmount.signedSats(
+    int sats, {
+    super.key,
+    this.interactive = true,
+    this.overrideHideAmounts = false,
+    this.style,
+    this.color,
+    this.textAlign,
+  }) : magnitude = Sats(BigInt.from(sats).abs()),
+       isNegative = sats.isNegative;
+
   final Sats magnitude;
   final bool isNegative;
   final bool interactive;

@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 
 import '../../domain/recoverbull_server_url.dart';
 
@@ -81,6 +78,26 @@ class RecoverbullAlerts extends Table {
   ];
 }
 
+@DataClassName('WalletBackupUsageRow')
+class RecoverbullWalletBackups extends Table {
+  TextColumn get walletId => text()();
+  TextColumn get secretFingerprint => text().nullable()();
+  BoolColumn get encryptedVaultTested => boolean()();
+  BoolColumn get physicalBackupTested => boolean()();
+  IntColumn get latestEncryptedBackup => integer().nullable()();
+  IntColumn get latestPhysicalBackup => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {walletId};
+}
+
+class LegacyImportReceipts extends Table {
+  TextColumn get id => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     RecoverbullState,
@@ -88,43 +105,46 @@ class RecoverbullAlerts extends Table {
     RecoverbullMonitoredVaults,
     RecoverbullOwnOperations,
     RecoverbullAlerts,
+    RecoverbullWalletBackups,
+    LegacyImportReceipts,
   ],
 )
 final class RecoverBullDatabase extends _$RecoverBullDatabase {
-  static const schema = 1;
+  static const schema = 2;
 
+  RecoverBullDatabase(super.executor);
   RecoverBullDatabase.forTesting(super.executor);
-
-  factory RecoverBullDatabase.open(String path) =>
-      RecoverBullDatabase.forTesting(
-        NativeDatabase.createInBackground(
-          File(path),
-          setup: (database) {
-            final version =
-                database.select('PRAGMA user_version').single['user_version']
-                    as int;
-            if (version > schema) {
-              throw const RecoverBullUnsupportedSchemaException();
-            }
-            database.execute('PRAGMA busy_timeout = 2000');
-            database.execute('PRAGMA journal_mode = WAL');
-            database.execute('PRAGMA synchronous = FULL');
-            database.execute('PRAGMA secure_delete = ON');
-          },
-        ),
-      );
 
   @override
   int get schemaVersion => schema;
 
-  /// This unpublished feature keeps one v1 baseline. Creation is atomic so a
-  /// killed first launch cannot leave partially created tables behind.
+  /// Creation is atomic and may be replayed if `user_version` was not written.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (migrator) => transaction(migrator.createAll),
-    onUpgrade: (_, _, _) async =>
-        throw const RecoverBullUnsupportedSchemaException(),
+    onCreate: (migrator) => transaction(() async {
+      if (!await _hasTable('recoverbull_state')) await migrator.createAll();
+    }),
+    onUpgrade: (migrator, from, to) async {
+      if (from != 1 || to != 2) {
+        throw const RecoverBullUnsupportedSchemaException();
+      }
+      await transaction(() async {
+        if (!await _hasTable('recoverbull_wallet_backups')) {
+          await migrator.createTable(recoverbullWalletBackups);
+        }
+        if (!await _hasTable('legacy_import_receipts')) {
+          await migrator.createTable(legacyImportReceipts);
+        }
+      });
+    },
   );
+
+  Future<bool> _hasTable(String table) async =>
+      await customSelect(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        variables: [Variable(table)],
+      ).getSingleOrNull() !=
+      null;
 
   Future<void> forceOpen() async {
     final rows = await customSelect('PRAGMA integrity_check').get();

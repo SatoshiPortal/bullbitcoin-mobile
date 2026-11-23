@@ -1,9 +1,10 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork, NetworkEnv;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
+import 'package:sync/sync.dart' as btc_utils show BitcoinTx;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
+import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
@@ -247,7 +248,14 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
     super.initState();
     context.read<TransactionReviewCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
-      network: context.read<BroadcastSignedTxCubit>().capturedNetwork,
+      network: context.read<BroadcastSignedTxCubit>().capturedNetwork.then(
+        (network) => switch (network.environment) {
+          NetworkEnv.mainnet when network.isBitcoin => BitcoinNetwork.mainnet,
+          NetworkEnv.testnet when network.isBitcoin => BitcoinNetwork.testnet,
+          NetworkEnv.regtest when network.isBitcoin => BitcoinNetwork.regtest,
+          _ => null,
+        },
+      ),
     );
   }
 

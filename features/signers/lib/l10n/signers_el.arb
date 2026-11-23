@@ -1,0 +1,1021 @@
+{
+  "bitboxErrorMultipleDevicesFound": "Πολλαπλές συσκευές BitBox βρέθηκαν. Παρακαλούμε βεβαιωθείτε ότι μόνο μία συσκευή είναι συνδεδεμένη.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "Χρειάζεστε βοήθεια?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Jade. Βάλτε το.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "Κάντε κλικ",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "Συνδεθείτε στη συσκευή διαβατηρίου σας",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "Κάντε κλικ στο PSBT",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "Βεβαιωθείτε ότι το τηλέφωνό σας έχει ενεργοποιήσει δικαιώματα USB.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "Ο Jade θα σας δείξει τον δικό του κωδικό QR.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "Paiing Device",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "ledgerButtonNeedHelp": "Χρειάζεστε βοήθεια?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerImportButton": "Ξεκινήστε την εισαγωγή",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxActionPairDeviceButton": "Ξεκινήστε Paiing",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πιο κοντά ή πιο μακριά",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "ledgerActionFailedMessage": "{action} Failed",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο SeedSigner. Βάλτε το.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "Δημιουργία ασφαλούς σύνδεσης...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   Κρατήστε τον κωδικό QR σταθερό και επικεντρωμένο",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "ledgerHelpStep3": "Βεβαιωθείτε ότι το Ledger σας έχει μετατραπεί Bluetooth.",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "Το πορτοφόλι σας BitBox έχει εισαχθεί με επιτυχία.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "psbtFlowPartProgress": "Μέρος {current} του {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyTitle": "Verify Address on Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "seedsignerStep1": "Μετατρέψτε τη συσκευή SeedSigner",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerProcessingSign": "Υπογραφή συναλλαγής",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "jadeStep6": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "ledgerVerifyButton": "Verify Address",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "kruxStep14": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Krux. Βάλτε το.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο διαβατήριο. Βάλτε το.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Παρακαλούμε εισάγετε τον κωδικό πρόσβασής σας στη συσκευή BitBox για να συνεχίσετε.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "passportStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "ledgerSuccessVerifyTitle": "Καθορίζοντας τη διεύθυνση στο Ledger...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "Ίδρυμα Passport Οδηγίες",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "Το Wallet παρουσίασε με επιτυχία",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "bitboxErrorOperationCancelled": "Η επιχείρηση ακυρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "Blockstream Jade PSBT Οδηγίες Οδηγίες Οδηγίες",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "bitboxActionSignTransactionProcessing": "Υπογραφή συναλλαγής",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "ledgerErrorDeviceLocked": "Η συσκευή Ledger είναι κλειδωμένη. Παρακαλώ ξεκλειδώστε τη συσκευή σας και δοκιμάστε ξανά.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerHelpStep4": "Βεβαιωθείτε ότι έχετε εγκαταστήσει την τελευταία έκδοση της εφαρμογής Bitcoin από το Ledger Live.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerSuccessSignDescription": "Η συναλλαγή σας έχει υπογραφεί με επιτυχία.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerHelpStep1": "Restart τη συσκευή Ledger σας.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerConnectingSubtext": "Δημιουργία ασφαλούς σύνδεσης...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "Συσκευή που δεν συνδυάζονται. Παρακαλούμε να ολοκληρώσετε πρώτα τη διαδικασία ζευγαρώματος.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "Δημιουργήστε το πορτοφόλι σας μόνο ρολόι...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "bitboxActionImportWalletTitle": "Εισαγωγή BitBox Wallet",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "Οδηγίες",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "Βεβαιωθείτε ότι έχετε το τελευταίο firmware εγκατεστημένο στο BitBox σας.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "Συγκρίνετε αυτή τη διεύθυνση με την οθόνη BitBox02",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "ledgerVerifyAddressLabel": "Διεύθυνση επαλήθευσης:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "jadeStep1": "Συνδεθείτε στη συσκευή Jade",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "seedsignerInstructionsTitle": "Δείτε τις οδηγίες SeedSigner",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Ελέγξτε τον κώδικα ζευγαρώματος στη συσκευή BitBox σας...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "Click Sign",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "Επιθυμήθηκε να συνδεθεί με τη συσκευή BitBox. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "Δημιουργήστε το πορτοφόλι σας μόνο ρολόι...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "Έχω κάνει",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "ledgerWalletTypeSegwitDescription": "Native SegWit - Προτεινόμενη",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "bitboxActionImportWalletProcessing": "Εισαγωγή του Wallet",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "Αν έχετε πρόβλημα σάρωση:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "ledgerHelpTitle": "Ledger Troubleshooting",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "keystoneStep2": "Κάντε κλικ",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerWalletTypeLabel": "Wallet Type:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "keystoneStep6": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "ledgerInstructionsIos": "Βεβαιωθείτε ότι το Ledger σας είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που ανοίγεται και το Bluetooth επιτρέπει.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "passportStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "ledgerSuccessAddressVerified": "Η διεύθυνση επαληθεύεται με επιτυχία!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "kruxStep10": "Μόλις η συναλλαγή εισαχθεί στο Krux, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "Απέτυχε να δημιουργήσει ασφαλή σύνδεση. Παρακαλώ δοκιμάστε ξανά.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "Μόλις η συναλλαγή εισαχθεί στο Keystone, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "Οδηγίες",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "Η συσκευή BitBox δεν βρέθηκε.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "ledgerScanningMessage": "Κοιτάζοντας για συσκευές Ledger κοντά...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "ledgerHelpStep2": "Βεβαιωθείτε ότι το τηλέφωνό σας έχει μετατραπεί Bluetooth και επιτρέπεται.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "keystoneStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Krux σας.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Παρακαλώ ανοίξτε την εφαρμογή Bitcoin στη συσκευή Ledger σας και δοκιμάστε ξανά.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Παλαιότερη μορφή",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "seedsignerStep9": "Ελέγξτε τη διεύθυνση προορισμού και το ποσό, και επιβεβαιώστε την εγγραφή στο SeedSigner σας.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "Κάντε κλικ στην εγγραφή QR Code",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Keystone σας.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "Verify Address on BitBox",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "Το Wallet παρουσίασε με επιτυχία",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "Ξεκινήστε εγγραφή",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep14": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "ledgerSuccessVerifyDescription": "Η διεύθυνση έχει επαληθευτεί στη συσκευή Ledger σας.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "psbtFlowSignTransaction": "Sign συναλλαγής",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "ledgerConnectingMessage": "Συνδέοντας το {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveQRCode": "QR Code",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Jade σας.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "Το άγνωστο λάθος συνέβη",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "kruxStep4": "Κάντε κλικ Φόρτρα από κάμερα",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "Παρακαλούμε επαληθεύστε αυτή τη διεύθυνση στη συσκευή BitBox σας",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "ledgerConnectTitle": "Συνδέστε τη Συσκευή Ledger σας",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "bitboxScreenConnecting": "Συνδέοντας με το BitBox",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Παρακαλούμε εισάγετε τον κωδικό πρόσβασής σας στη συσκευή BitBox...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "Η διεύθυνση έχει επαληθευτεί στη συσκευή BitBox σας.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - Μετακινήστε το κόκκινο λέιζερ πάνω από τον κωδικό QR",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "ledgerHelpStep5": "Βεβαιωθείτε σας Η συσκευή Ledger χρησιμοποιεί το τελευταίο firmware, μπορείτε να ενημερώσετε το firmware χρησιμοποιώντας την εφαρμογή επιτραπέζιου υπολογιστή Ledger Live.",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Παρακαλούμε επιβεβαιώστε τη διεύθυνση στη συσκευή BitBox σας.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "Keystone Οδηγίες",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "Παρουσιάζοντας διεύθυνση στο BitBox...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "Η συναλλαγή που υπογράφηκε με επιτυχία",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerSuccessImportDescription": "Το πορτοφόλι σας Ledger έχει εισαχθεί με επιτυχία.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionUnlockDeviceButton": "Unlock Device",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "ledgerInstructionsAndroidUsb": "Βεβαιωθείτε σας Το Ledger είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που άνοιξε και την συνδέει μέσω USB.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "bitboxScreenTryAgainButton": "Δοκιμάστε ξανά",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Συσκευή Unlocked Με επιτυχία",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "Μετατρέψτε τη συσκευή σας {device}",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "Κάντε κλικ",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "keystoneStep7": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "Αν έχετε πρόβλημα σάρωση:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "Επαναφέρετε τη συσκευή BitBox02 από το unplugging και την επανασύνδεση.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Keystone. Βάλτε το.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "ledgerErrorRejectedByUser": "Η συναλλαγή απορρίφθηκε από τον χρήστη στη συσκευή Ledger.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "passportStep10": "Το διαβατήριο θα σας δείξει τον δικό του κωδικό QR.",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "Παρακαλούμε επιβεβαιώστε τη συναλλαγή στη συσκευή Ledger σας...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "seedsignerStep10": "Ο SeedSigner θα σας δείξει τον δικό του κωδικό QR.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "Μόλις η συναλλαγή εισαχθεί στο SeedSigner, θα πρέπει να επιλέξετε τον σπόρο με τον οποίο επιθυμείτε να εγγραφείτε.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "ledgerButtonManagePermissions": "Διαχείριση των εκπομπών",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Προτεινόμενη",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "Περιμένοντας την επιβεβαίωση στο BitBox02...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "Device Paied με επιτυχία",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές BitBox. Βεβαιωθείτε ότι η συσκευή σας τροφοδοτείται και συνδέεται μέσω USB.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "kruxStep6": "Αν έχετε πρόβλημα σάρωση:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "ledgerProcessingVerify": "Παρουσιάζοντας διεύθυνση στο Ledger...",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "jadeStep2": "Προσθέστε ένα παθητικό εάν έχετε ένα (προαιρετικό)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "Συνδεθείτε στη συσκευή Keystone",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "Υπογραφή συναλλαγής",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "Επιλέξτε \"Scan QR\" επιλογή",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "ledgerWalletTypeSelectTitle": "Επιλέξτε Wallet Τύπος τύπου Type Type",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerImportTitle": "Import Ledger Wallet",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "bitboxScreenScanning": "Scanning for Devices",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "ledgerHelpSubtitle": "Πρώτον, βεβαιωθείτε ότι η συσκευή Ledger σας ξεκλειδώνεται και η εφαρμογή Bitcoin είναι ανοιχτή. Εάν η συσκευή σας εξακολουθεί να μην συνδεθεί με την εφαρμογή, δοκιμάστε τα εξής:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "bitboxActionImportWalletButton": "Ξεκινήστε την εισαγωγή",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "jadeStep4": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "Το PSBT απαιτείται για την υπογραφή",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "kruxInstructionsTitle": "Οδηγίες Krux",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "ledgerErrorDeviceBusy": "Ένα άλλο πρόγραμμα χρησιμοποιεί το Ledger σας. Παρακαλώ κλείστε το (για παράδειγμα το Ledger Live) και δοκιμάστε ξανά.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "No Ledger σύνδεση διαθέσιμη",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "bitboxScreenActionFailed": "{action} Failed",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "Αν έχετε πρόβλημα σάρωση:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "Verify Address",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "Πρώτον, βεβαιωθείτε ότι η συσκευή BitBox02 συνδέεται με το κινητό σας USB. Εάν η συσκευή σας εξακολουθεί να μην συνδεθεί με την εφαρμογή, δοκιμάστε τα εξής:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "Διεύθυνση επαλήθευσης:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "Τα δικαιώματα USB απαιτούνται για τη σύνδεση με συσκευές BitBox.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Παρακαλούμε επιβεβαιώστε τη συναλλαγή στη συσκευή BitBox σας...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "Η συσκευή BitBox σας είναι τώρα συνδυασμένη και έτοιμη να χρησιμοποιήσει.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "Κοιτάζοντας τη συσκευή BitBox σας...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Ο τύπος σύνδεσης που δεν έχει οριστικοποιηθεί.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerErrorPermissionDenied": "Απαιτούνται άδειες Bluetooth για τη σύνδεση με συσκευές Ledger.",
+  "ledgerErrorNoDevicesFound": "Δεν βρέθηκαν συσκευές Ledger. Βεβαιωθείτε ότι η συσκευή σας είναι ενεργοποιημένη και το Bluetooth ενεργό.",
+  "ledgerErrorMultipleDevicesFound": "Βρέθηκαν πολλές συσκευές Ledger. Βεβαιωθείτε ότι υπάρχει μόνο μία συσκευή κοντά.",
+  "ledgerErrorDeviceNotFound": "Η συσκευή Ledger δεν βρέθηκε.",
+  "ledgerErrorDeviceMismatch": "Εντοπίστηκε ασυμφωνία συσκευής.",
+  "ledgerErrorInvalidPsbt": "Εντοπίστηκε μη έγκυρη μορφή PSBT.",
+  "ledgerErrorMissingDerivationPath": "Απαιτείται διαδρομή παραγώγησης",
+  "ledgerErrorMissingScriptType": "Απαιτείται τύπος σεναρίου",
+  "ledgerProcessingVerifySubtext": "Παρακαλούμε επιβεβαιώστε τη διεύθυνση στη συσκευή Ledger σας.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerInstructionsAndroidDual": "Βεβαιωθείτε ότι το Ledger σας είναι ξεκλειδωμένο με την εφαρμογή Bitcoin που ανοίγεται και το Bluetooth επιτρέπει.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "jadeStep9": "Μόλις η συναλλαγή εισάγεται στο Jade, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "Η συναλλαγή σας έχει υπογραφεί με επιτυχία.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "Βεβαιωθείτε ότι το BitBox02 σας ξεκλειδώνεται και συνδέεται μέσω USB.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "Ακυρωμένη απάντηση από τη συσκευή BitBox. Παρακαλώ δοκιμάστε ξανά.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "Wallet Type:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "Μόλις η συναλλαγή εισαχθεί στο διαβατήριό σας, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "Ξεκινήστε εγγραφή",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο διαβατήριό σας.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "Το Krux θα σας δείξει τον δικό του κωδικό QR.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "ledgerScanningTitle": "Scanning for Devices",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "Η συσκευή BitBox σας είναι τώρα απελευθερωμένη και έτοιμη να χρησιμοποιήσει.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "Εισάγετε το Password Password",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "Το Keystone θα σας δείξει τον δικό του κωδικό QR.",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "ledgerSuccessSignTitle": "Η συναλλαγή που υπογράφηκε με επιτυχία",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   - Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "Η επαλήθευση αυτού του κώδικα ταιριάζει με την οθόνη BitBox02, στη συνέχεια επιβεβαιώνει στη συσκευή.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "Συνδεθείτε στη συσκευή Krux σας",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "Απευθυνόμενη με επιτυχία",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "Επιλέξτε Wallet Τύπος τύπου Type Type",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "Διαχείριση των εκπομπών",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "bitboxScreenPairingCode": "Paiing Code",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "ledgerProcessingImport": "Εισαγωγή του Wallet",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerErrorMissingAddress": "Η διεύθυνση απαιτείται για επαλήθευση",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Unlocking Device",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "Αν έχετε πρόβλημα σάρωση:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "ledgerButtonTryAgain": "Δοκιμάστε ξανά",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "Verify Address",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "Συνδέστε τη Συσκευή BitBox σας",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "ledgerSignTitle": "Υπογραφή συναλλαγής",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "psbtFlowScanDeviceQr": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο {device}. Βάλτε το.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowReviewTransaction": "Μόλις η συναλλαγή εισάγεται στο {device}, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "Αυξήστε τη φωτεινότητα οθόνης στη συσκευή σας",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "psbtFlowTroubleScanningTitle": "Αν έχετε πρόβλημα σάρωση:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "psbtFlowMoveBack": "Προσπαθήστε να μετακινήσετε τη συσκευή σας πίσω λίγο",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "psbtFlowSelectSeed": "Μόλις η συναλλαγή εισαχθεί στο {device}, θα πρέπει να επιλέξετε τον σπόρο με τον οποίο επιθυμείτε να εγγραφείτε.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowTransactionImported": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "psbtFlowScanQrShown": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "psbtFlowClickDone": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "psbtFlowSignTransactionOnDevice": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "psbtFlowMoveLaser": "Μετακινήστε το κόκκινο λέιζερ πάνω και κάτω από τον κωδικό QR",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "Το {device} θα σας δείξει τον δικό του κωδικό QR.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowSignViaNfc": "Υπογραφή μέσω NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Πλησιάστε το {deviceName} σας για να στείλετε το PSBT μέσω NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Οδηγίες Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Οδηγίες Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Συνδεθείτε στη συσκευή Coldcard Q",
+  "psbtFlowColdcardQStep2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "psbtFlowColdcardQStep3": "Επιλέξτε την προτιμώμενη μέθοδο υπογραφής:",
+  "psbtFlowColdcardQStep4": "Για κωδικό QR:",
+  "psbtFlowColdcardQStep5": "   - Επιλέξτε «Scan any QR code» στο Coldcard Q σας",
+  "psbtFlowColdcardQStep6": "   - Σαρώστε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
+  "psbtFlowColdcardQStep7": "   - Αν αντιμετωπίζετε πρόβλημα με τη σάρωση:",
+  "psbtFlowColdcardQStep8": "     - Αυξήστε τη φωτεινότητα της οθόνης της συσκευής σας",
+  "psbtFlowColdcardQStep9": "     - Μετακινήστε το κόκκινο λέιζερ πάνω-κάτω πάνω από τον κωδικό QR",
+  "psbtFlowColdcardQStep10": "     - Δοκιμάστε να απομακρύνετε λίγο τη συσκευή σας",
+  "psbtFlowColdcardQStep11": "Για NFC:",
+  "psbtFlowColdcardQStep12": "   - Επιλέξτε «Ready to Sign» στο Coldcard Q σας και μετά πατήστε το κουμπί NFC",
+  "psbtFlowColdcardQStep13": "   - Πλησιάστε το τηλέφωνό σας στο Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Περιμένετε να μεταφερθεί το PSBT",
+  "psbtFlowColdcardQStep15": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Q σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
+  "psbtFlowColdcardQStep16": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Q σας.",
+  "psbtFlowColdcardQStep17": "Το Coldcard Q θα εμφανίσει τότε έναν κωδικό QR της υπογεγραμμένης συναλλαγής ή θα προετοιμάσει τη μεταφορά μέσω NFC.",
+  "psbtFlowColdcardQStep18": "Αν υπογράψατε με QR, πατήστε «I'm done» στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "Το πορτοφόλι Bull Bitcoin θα σας ζητήσει να σαρώσετε τον κωδικό QR της υπογεγραμμένης συναλλαγής ή να χρησιμοποιήσετε NFC για να τη λάβετε.",
+  "psbtFlowColdcardQStep20": "   - Για QR: σαρώστε τον κωδικό QR στο Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Για NFC: πλησιάστε το τηλέφωνό σας στο Coldcard Q",
+  "psbtFlowColdcardQStep22": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Συνδεθείτε στη συσκευή Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Προσθέστε μια φράση πρόσβασης αν έχετε (προαιρετικό)",
+  "psbtFlowColdcardMk4Step3": "Επιλέξτε «Ready to Sign» στο Coldcard Mk4 σας και μετά πατήστε το κουμπί με τον αριθμό 3",
+  "psbtFlowColdcardMk4Step4": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Περιμένετε να μεταφερθεί το PSBT",
+  "psbtFlowColdcardMk4Step6": "Μόλις η συναλλαγή εισαχθεί στο Coldcard Mk4 σας, ελέγξτε τη διεύθυνση προορισμού και το ποσό.",
+  "psbtFlowColdcardMk4Step7": "Πατήστε τα κουμπιά για να υπογράψετε τη συναλλαγή στο Coldcard Mk4 σας.",
+  "psbtFlowColdcardMk4Step8": "Το Coldcard Mk4 θα προετοιμάσει τότε την υπογεγραμμένη συναλλαγή για μεταφορά μέσω NFC.",
+  "psbtFlowColdcardMk4Step9": "Στο πορτοφόλι Bull Bitcoin, πατήστε NFC στην οθόνη μετάδοσης.",
+  "psbtFlowColdcardMk4Step10": "Πλησιάστε το τηλέφωνό σας στο Coldcard Mk4 για να λάβετε την υπογεγραμμένη συναλλαγή.",
+  "psbtFlowColdcardMk4Step11": "Η υπογεγραμμένη συναλλαγή θα εισαχθεί στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Ελέγξτε τις λεπτομέρειες της συναλλαγής στο πορτοφόλι Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Είναι πλέον έτοιμη για μετάδοση. Μόλις πατήσετε μετάδοση, η συναλλαγή θα δημοσιευτεί στο δίκτυο Bitcoin.",
+  "bitboxErrorBluetoothPermissionDenied": "Απαιτείται άδεια Bluetooth για τη σύνδεση με το BitBox02 Nova σας.",
+  "bitboxErrorBluetoothUnavailable": "Το Bluetooth δεν είναι διαθέσιμο. Ενεργοποιήστε το Bluetooth και δοκιμάστε ξανά.",
+  "bitboxErrorNoBleDevicesFound": "Δεν βρέθηκε κοντινό BitBox02 Nova. Ελέγξτε το Bluetooth και δοκιμάστε ξανά.",
+  "bitboxErrorMultipleBleDevicesFound": "Βρέθηκαν πολλαπλές συσκευές BitBox02 Nova. Κρατήστε μόνο μία κοντά και δοκιμάστε ξανά.",
+  "bitboxErrorOperationFailed": "Η λειτουργία BitBox απέτυχε. Δοκιμάστε ξανά.",
+  "bitboxScreenConnectSubtextBluetooth": "Βεβαιωθείτε ότι το BitBox02 Nova σας είναι ξεκλείδωτο και ότι το Bluetooth είναι ενεργοποιημένο.",
+  "bitboxScreenScanningSubtextBluetooth": "Αναζήτηση του BitBox02 Nova σας σε κοντινή απόσταση...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Αντιμετώπιση προβλημάτων BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Αν η συσκευή σας εξακολουθεί να μη συνδέεται με την εφαρμογή, δοκιμάστε τα εξής:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο και επιτρέπεται για αυτή την εφαρμογή.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο στο BitBox02 Nova σας.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Επανεκκινήστε το BitBox02 Nova σας και δοκιμάστε να συνδεθείτε ξανά.",
+  "psbtFlowInvalidPsbtError": "Αυτή η συναλλαγή δεν μπόρεσε να διαβαστεί. Επιστρέψτε και δημιουργήστε την ξανά.",
+  "psbtFlowQrEncodingError": "Αυτή η συναλλαγή δεν μπόρεσε να μετατραπεί σε κωδικό QR."
+}

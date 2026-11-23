@@ -1,12 +1,14 @@
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repository.dart';
 import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
-import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show Err, Fingerprint, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/write.dart' show WalletNativeLifecycle;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show
@@ -15,23 +17,20 @@ import 'package:sync/sync.dart'
         SyncInvalidCatalogFailure,
         isLiquidStatusConflict;
 
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:sync/sync.dart' as native_sync;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
@@ -41,8 +40,10 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final BdkWalletDatasource _bdkWallet;
-  final LwkWalletDatasource _lwkWallet;
+  final Future<Result<native_sync.Wallet, native_sync.SyncFailure>> Function(
+    native_sync.WalletKey,
+  )
+  _wallet;
   final SyncWalletValuesDatasource _values;
   final Future<void> Function(
     WalletMetadataModel, {
@@ -59,8 +60,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   WalletRepository({
     this._native,
     required this._walletMetadataDatasource,
-    required BdkWalletDatasource bdkWalletDatasource,
-    required LwkWalletDatasource lwkWalletDatasource,
+    required this._wallet,
     required SyncWalletValuesDatasource walletValuesDatasource,
     required Future<void> Function(
       WalletMetadataModel, {
@@ -73,9 +73,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     required Stream<String> syncStarted,
     required Stream<String> syncFinished,
     required this.electrumSyncResultStream,
-  }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource,
-       _values = walletValuesDatasource,
+  }) : _values = walletValuesDatasource,
        _syncWallet = synchronize,
        _walletSyncStartedStream = syncStarted,
        _walletSyncFinishedStream = syncFinished {
@@ -388,7 +386,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     );
   }
 
-  Future<BalanceModel?> _readBalance(
+  Future<native_sync.Balances?> _readBalance(
     WalletMetadataModel metadata, {
     required bool sync,
   }) async {
@@ -411,7 +409,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
 
   Wallet _walletFromMetadata(
     WalletMetadataModel metadata,
-    BalanceModel? balance,
+    native_sync.Balances? balance,
   ) {
     final encrypted = metadata.latestEncryptedBackup;
     final physical = metadata.latestPhysicalBackup;
@@ -468,6 +466,15 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       return Err(_classify(e, 'getWallets'));
     }
   }
+
+  @override
+  @useResult
+  Future<Result<List<Wallet>, WalletFailure>>
+  getDefaultMainnetBitcoinWallets() => getWallets(
+    environment: Environment.mainnet,
+    onlyDefaults: true,
+    onlyBitcoin: true,
+  );
 
   /// Exhaustive custody references, independent of origin and native reads.
   /// A partial result must never authorize destruction of a secret.
@@ -616,20 +623,14 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     );
   }
 
-  Future<WalletBalances> getWalletBalances({required String walletId}) async {
+  Future<native_sync.Balances> getWalletBalances({
+    required String walletId,
+  }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
       throw WalletError.notFound(walletId);
     }
-    final balance = await _getBalance(metadata);
-    return WalletBalances(
-      immatureSat: balance.immatureSat.toInt(),
-      trustedPendingSat: balance.trustedPendingSat.toInt(),
-      untrustedPendingSat: balance.untrustedPendingSat.toInt(),
-      confirmedSat: balance.confirmedSat.toInt(),
-      spendableSat: balance.spendableSat.toInt(),
-      totalSat: balance.totalSat.toInt(),
-    );
+    return _getBalance(metadata);
   }
 
   @useResult
@@ -644,10 +645,16 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
 
       final native = _native;
       if (native == null) throw StateError('Native writer is not configured');
-      await native.delete(metadata);
+      WalletCatalogPortImpl.value(
+        await native.delete(WalletCatalogPortImpl.keyFromMetadata(metadata)),
+      );
 
       await _walletMetadataDatasource.delete(walletId);
-      await native.catalogDeleted(metadata);
+      WalletCatalogPortImpl.value(
+        await native.catalogDeleted(
+          WalletCatalogPortImpl.keyFromMetadata(metadata),
+        ),
+      );
       log.fine('Wallet deleted outcome=ok');
       return const Ok(null);
     } catch (e, st) {
@@ -678,7 +685,14 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     if (await _walletMetadataDatasource.fetch(metadata.id) != null) {
       throw WalletAlreadyExistsException(metadata.id);
     }
-    await _native?.prepareCreate(metadata);
+    final native = _native;
+    if (native != null) {
+      WalletCatalogPortImpl.value(
+        await native.prepareCreate(
+          WalletCatalogPortImpl.keyFromMetadata(metadata),
+        ),
+      );
+    }
     // The writer resolves descriptors from this row. Claim it exclusively,
     // without holding an app database transaction across native work.
     await _walletMetadataDatasource.insert(metadata);
@@ -696,42 +710,23 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   Future<void> _createNative(WalletMetadataModel metadata) async {
     final native = _native;
     if (native == null) throw StateError('Native writer is not configured');
-    await native.create(metadata);
+    WalletCatalogPortImpl.value(
+      await native.create(WalletCatalogPortImpl.keyFromMetadata(metadata)),
+    );
   }
 
-  Future<BalanceModel> _getBalance(
+  Future<native_sync.Balances> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
   }) async {
-    BalanceModel balance;
-    if (metadata.isLiquid) {
-      final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
-        network: metadata.network,
-        id: metadata.id,
-      );
-
-      if (sync) {
-        await _syncWallet(metadata);
-      }
-
-      balance = await _values.getBalance(wallet: wallet);
-    } else {
-      final wallet = WalletModel.publicBdk(
-        externalDescriptor: metadata.externalPublicDescriptor,
-        internalDescriptor: metadata.internalPublicDescriptor,
-        network: metadata.network,
-        id: metadata.id,
-      );
-
-      if (sync) {
-        await _syncWallet(metadata);
-      }
-
-      balance = await _values.getBalance(wallet: wallet);
+    final key = native_sync.WalletKey(
+      id: metadata.id,
+      network: metadata.network.shared,
+    );
+    if (sync) {
+      await _syncWallet(metadata);
     }
-
-    return balance;
+    return _values.getBalance(key: key);
   }
 
   Future<void> sync(
@@ -761,18 +756,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     );
   }
 
-  Future<bool> isTorRequired() async {
-    final defaultWallets = await _readWallets(
-      onlyDefaults: true,
-      onlyBitcoin: true,
-      environment: Environment.mainnet,
-    );
-
-    if (defaultWallets.isEmpty) return false;
-
-    return defaultWallets.first.latestEncryptedBackup != null;
-  }
-
   Future<int> getAmountSentToAddress({
     required String psbtOrPset,
     required String address,
@@ -784,23 +767,32 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
 
     if (metadata.isLiquid) {
-      final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
-        network: metadata.network,
+      final key = native_sync.WalletKey(
         id: metadata.id,
+        network: metadata.network.shared,
       );
-      return await _lwkWallet.getAmountSentToAddress(
+      final wallet = switch (await _wallet(key)) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw WalletSnapshotException(failure),
+      };
+      return switch (await wallet.tx.liquidAmountToAddress(
         psbtOrPset,
         address,
-        wallet: wallet,
-      );
-    } else {
-      return await _bdkWallet.getAmountSentToAddress(
-        psbtOrPset,
-        address,
-        network: metadata.network,
-      );
+      )) {
+        Ok(:final value) => value.toInt(),
+        Err(:final failure) => throw WalletSnapshotException(failure),
+      };
     }
+    return switch (await native_sync.bitcoinRecipientAmounts(
+      psbt: psbtOrPset,
+      network: metadata.network.bitcoin,
+      recipients: [(address: address, amountSat: null)],
+    )) {
+      Ok(:final value) => value.single,
+      Err(failure: native_sync.SyncInvalidTransactionFailure()) =>
+        throw const FormatException('Not a PSBT'),
+      Err(:final failure) => throw WalletSnapshotException(failure),
+    };
   }
 }
 

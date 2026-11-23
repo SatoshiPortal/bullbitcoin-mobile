@@ -1,25 +1,35 @@
+import '../../domain/receive_live_amount.dart';
+import '../../domain/receive_advanced_options.dart';
+import '../../domain/receive_lightning_limits.dart';
+import '../../domain/usecases/get_receive_swap_limits_usecase.dart';
 import '../../domain/receive_amount_conversion.dart';
 import '../../domain/usecases/get_receive_amount_quotes_usecase.dart';
 
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, NetworkCapabilities, NetworkCapability, Ok, Result;
+    show
+        BitcoinUnit,
+        Err,
+        NetworkCapabilities,
+        NetworkCapability,
+        Ok,
+        Result,
+        Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
 
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:primitives/primitives.dart' show StringFormatting;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:clock/clock.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -75,10 +85,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._setReceivePayjoinEnabledUsecase,
     this._wallet,
     this._getReceiveAmountQuotesUsecase,
+    this._getReceiveSwapLimitsUsecase,
   }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
+    on<ReceiveAddressRetried>(_onAddressRetried);
     on<ReceiveAmountInputChanged>(_onAmountInputChanged);
     on<ReceiveAmountEntryChanged>(_onAmountEntryChanged);
     on<ReceiveAmountQuotesRequested>(
@@ -149,6 +161,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
   final GetReceiveAmountQuotesUsecase? _getReceiveAmountQuotesUsecase;
   Timer? _amountQuoteTimer;
+  final GetReceiveSwapLimitsUsecase? _getReceiveSwapLimitsUsecase;
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
@@ -186,6 +199,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   Timer? _payjoinSenderWaitTimer;
   Wallet? _pendingNewAddressWallet;
   bool _newAddressInFlight = false;
+  bool _noteEdited = false;
 
   @override
   Future<void> close() async {
@@ -253,14 +267,60 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       (wallet.balanceSat?.isNegative == false &&
           wallet.balanceSat != BigInt.zero);
 
+  Future<void> _onAddressRetried(
+    ReceiveAddressRetried event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    if (state.qrData.isNotEmpty || state.failure == null) return;
+
+    // An address lookup failure does not revoke the existing wallet's
+    // admission. Keep accepting live edits while checking that same wallet.
+    final wallet = state.wallet;
+    final retryWallet =
+        wallet != null &&
+            state.walletAdmitted &&
+            state.admissionFailure == null &&
+            state.failure is ReceiveAddressUnavailableFailure
+        ? (wallet.id, wallet.network)
+        : null;
+    switch (state.type) {
+      case ReceiveType.bitcoin:
+        await _startBitcoin(wallet, emit, retryWallet: retryWallet);
+      case ReceiveType.liquid:
+        await _startLiquid(emit, retryWallet: retryWallet);
+      case ReceiveType.lightning:
+      case null:
+        break;
+    }
+  }
+
+  ReceiveState _clearOnChainDraft(ReceiveState current) {
+    _noteEdited = false;
+    return current.copyWith(
+      inputAmount: '',
+      amountConversion: null,
+      confirmedConversion: null,
+      amountEntryValid: true,
+      confirmedAmountSat: null,
+      note: '',
+      confirmedNote: '',
+    );
+  }
+
   Future<void> _onBitcoinStarted(
     ReceiveBitcoinStarted event,
     Emitter<ReceiveState> emit,
-  ) async {
+  ) => _startBitcoin(event.wallet, emit);
+
+  Future<void> _startBitcoin(
+    Wallet? requestedWallet,
+    Emitter<ReceiveState> emit, {
+    (String, Network)? retryWallet,
+  }) async {
     final pending = _pendingNewAddressWallet;
     if (pending != null &&
         pending.isBitcoin &&
-        (event.wallet == null || event.wallet?.id == pending.id)) {
+        (requestedWallet == null || requestedWallet.id == pending.id)) {
       await _onNewAddressGenerated(const ReceiveNewAddressGenerated(), emit);
       return;
     }
@@ -270,13 +330,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx: null,
         creatingSwap: false,
         revealedAddressGeneration: null,
-        walletAdmitted: false,
+        walletAdmitted: retryWallet != null,
         admissionFailure: null,
       ),
     );
     _pendingNewAddressWallet = null;
     final isWalletChange =
-        event.wallet != null && state.wallet?.id != event.wallet!.id;
+        requestedWallet != null && state.wallet?.id != requestedWallet.id;
     if (isWalletChange) {
       // Clear the previous wallet's payjoin receiver and stop watching it
       // so the URI does not embed a payjoin link from the old wallet.
@@ -285,8 +345,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(_withoutPayjoin().copyWith(payjoinAttemptSettled: false));
     }
 
-    final eventWallet = event.wallet != null && event.wallet!.isBitcoin
-        ? event.wallet
+    final eventWallet = requestedWallet != null && requestedWallet.isBitcoin
+        ? requestedWallet
         : null;
     if (state.wallet != null && !state.wallet!.isBitcoin) {
       emit(state.copyWith(wallet: null, bitcoinAddress: null));
@@ -294,19 +354,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(state.copyWith(wallet: eventWallet, bitcoinAddress: null));
     }
 
-    // Emit a state with the Bitcoin type so the UI can update allready before
-    // the async data is loaded. Remove values that should
-    // not be shared between the different receive types. Currently only the
-    // amount and note shouldn't be shared.
+    // Start presenting Bitcoin while the address is loading. Only an
+    // address retry for the admitted wallet keeps the draft.
     emit(
-      state.copyWith(
+      (retryWallet == null ? _clearOnChainDraft(state) : state).copyWith(
         type: ReceiveType.bitcoin,
-        inputAmount: '',
-        amountConversion: null,
-        confirmedConversion: null,
-        amountEntryValid: true,
-        confirmedAmountSat: null,
-        note: '',
         failure: null,
         // The eligibility decision for this address starts here and is only
         // settled after the block below. Until then the QR must wait.
@@ -314,46 +366,39 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
 
-    // If no bitcoin wallet is passed through the constructor, get the
-    // default bitcoin wallet. The network check on _wallet matters: the
-    // preselected wallet survives tab switches (the shell's bloc is
-    // created once), so entering receive from a liquid wallet and
-    // switching to the Bitcoin tab must not resurrect the liquid wallet
-    // here — its balance would drive the payjoin gates (hasUtxos,
-    // _isPayjoinEligible) and its id the generated address.
-    final presetWallet = _wallet != null && _wallet.isBitcoin ? _wallet : null;
-    Wallet? wallet = presetWallet ?? state.wallet;
-    if (wallet == null) {
-      final walletsResult = await _getReceiveWalletsUsecase.execute(
-        onlyBitcoin: true,
-      );
-      if (generation != _receiveGeneration || emit.isDone) return;
-      switch (walletsResult) {
-        case Ok(:final value):
-          // firstWhere's orElse and .first both throw on an empty list, and
-          //  there is no try/catch above this any more. An empty list is a
-          //  legitimate Ok from the use-case, so it is checked here.
-          if (value.isEmpty) {
-            log.warning('No bitcoin wallet available to receive into');
-            emit(
-              state.copyWith(
-                failure: const ReceiveAddressUnavailableFailure(),
-                payjoinAttemptSettled: true,
+    final walletsResult = await _getReceiveWalletsUsecase.execute(
+      onlyBitcoin: true,
+    );
+    if (generation != _receiveGeneration || emit.isDone) return;
+    final Wallet wallet;
+    switch (GetReceiveWalletsUsecase.selectBitcoin(
+      catalog: walletsResult,
+      explicitWallet: eventWallet,
+      entryWallet: _wallet,
+      currentWallet: state.wallet,
+    )) {
+      case Ok(:final value):
+        wallet = value.wallet;
+        emit(
+          (retryWallet != null && (wallet.id, wallet.network) != retryWallet
+                  ? _clearOnChainDraft(state)
+                  : state)
+              .copyWith(
+                wallet: wallet,
+                wallets: value.choices,
+                walletAdmitted: true,
               ),
-            );
-            return;
-          }
-          emit(state.copyWith(wallets: value));
-          wallet = value.firstWhere(
-            (w) => w.isDefault,
-            orElse: () => value.first,
-          );
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
-          return;
-      }
+        );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            failure: failure,
+            payjoinAttemptSettled: true,
+            walletAdmitted: false,
+          ),
+        );
+        return;
     }
-    emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     if (state.bitcoinUnit == null) {
       // If the bitcoin unit is not set yet, we need to get it from the settings
@@ -412,7 +457,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           final note = await _loadAddressLabel(bitcoinAddress.address);
           if (generation != _receiveGeneration || emit.isDone) return;
-          emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
+          if (!_noteEdited) emit(state.copyWith(note: note));
         case Err(:final failure):
           emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
           return;
@@ -550,6 +595,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(
         type: ReceiveType.lightning,
+        swapRoute: null,
+        swapLimits: null,
         lightningSwap: null,
         orderSwap: null,
         inputAmount: '',
@@ -558,6 +605,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         amountEntryValid: true,
         confirmedAmountSat: null,
         note: '',
+        confirmedNote: '',
         failure: null,
       ),
     );
@@ -635,6 +683,21 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
+    final route = await _getReceiveSwapRouteUsecase.execute();
+    if (generation != _receiveGeneration || emit.isDone) return;
+    emit(state.copyWith(wallet: wallet, swapRoute: route, swapLimits: null));
+    final getLimits = _getReceiveSwapLimitsUsecase;
+    if (state.lightningLimits.requiresBounds && getLimits != null) {
+      switch (await getLimits.execute(isLiquid: wallet.isLiquid)) {
+        case Ok(:final value):
+          if (generation != _receiveGeneration || emit.isDone) return;
+          emit(state.copyWith(swapLimits: value));
+        case Err(:final failure):
+          if (generation != _receiveGeneration || emit.isDone) return;
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
     emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     if (state.exchangeRate == null) {
@@ -657,7 +720,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   Future<void> _onLiquidStarted(
     ReceiveLiquidStarted event,
     Emitter<ReceiveState> emit,
-  ) async {
+  ) => _startLiquid(emit);
+
+  Future<void> _startLiquid(
+    Emitter<ReceiveState> emit, {
+    (String, Network)? retryWallet,
+  }) async {
     final pending = _pendingNewAddressWallet;
     if (pending != null && pending.isLiquid) {
       await _onNewAddressGenerated(const ReceiveNewAddressGenerated(), emit);
@@ -669,24 +737,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx: null,
         creatingSwap: false,
         revealedAddressGeneration: null,
-        walletAdmitted: false,
+        walletAdmitted: retryWallet != null,
         admissionFailure: null,
       ),
     );
     _pendingNewAddressWallet = null;
-    // Emit a state with the Liquid type so the UI can update with the Liquid
-    // receive UI already before the async data is loaded. Remove values that should
-    // not be shared between the different receive types. Currently only the
-    // amount and note shouldn't be shared.
     emit(
-      state.copyWith(
+      (retryWallet == null ? _clearOnChainDraft(state) : state).copyWith(
         type: ReceiveType.liquid,
-        inputAmount: '',
-        amountConversion: null,
-        confirmedConversion: null,
-        amountEntryValid: true,
-        confirmedAmountSat: null,
-        note: '',
         failure: null,
       ),
     );
@@ -709,7 +767,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             ),
           );
         case Err(:final failure):
-          emit(state.copyWith(admissionFailure: failure, failure: failure));
+          emit(
+            state.copyWith(
+              admissionFailure: failure,
+              failure: failure,
+              walletAdmitted: false,
+            ),
+          );
           return;
       }
     }
@@ -722,7 +786,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         case Ok(:final value):
           emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
         case Err(:final failure):
-          emit(state.copyWith(failure: failure));
+          emit(state.copyWith(failure: failure, walletAdmitted: false));
           return;
       }
     }
@@ -748,20 +812,36 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           if (value.isEmpty) {
             log.warning('No liquid wallet available to receive into');
             emit(
-              state.copyWith(failure: const ReceiveAddressUnavailableFailure()),
+              state.copyWith(
+                failure: const ReceiveAddressUnavailableFailure(),
+                walletAdmitted: false,
+              ),
             );
             return;
           }
           wallet = value.first;
         case Err(:final failure):
-          emit(state.copyWith(failure: failure));
+          emit(state.copyWith(failure: failure, walletAdmitted: false));
           return;
       }
     }
-    emit(state.copyWith(wallet: wallet, walletAdmitted: true));
+    emit(
+      (retryWallet != null && (wallet.id, wallet.network) != retryWallet
+              ? _clearOnChainDraft(state)
+              : state)
+          .copyWith(
+            wallet: wallet,
+            walletAdmitted: true,
+            liquidAddress:
+                state.liquidAddress?.walletId == wallet.id &&
+                    state.wallet?.network == wallet.network
+                ? state.liquidAddress
+                : null,
+          ),
+    );
 
     var liquidAddress = state.liquidAddress;
-    if (liquidAddress == null || liquidAddress.walletId != wallet.id) {
+    if (liquidAddress == null) {
       // If the liquid address is not set yet, we need to get it from the wallet
       final addressResult = await _prepareReceiveAddressUsecase.execute(
         walletId: wallet.id,
@@ -778,7 +858,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           final note = await _loadAddressLabel(liquidAddress.address);
           if (generation != _receiveGeneration || emit.isDone) return;
-          emit(state.copyWith(liquidAddress: liquidAddress, note: note));
+          if (!_noteEdited) emit(state.copyWith(note: note));
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -836,9 +916,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         state.admissionFailure != null) {
       return;
     }
+    // The address failure keeps Retry visible while this draft is edited.
+    final addressFailure = state.failure is ReceiveAddressUnavailableFailure
+        ? state.failure
+        : null;
     final amountFailure = ReceiveAmountConversion.validateQuantity(event.sats);
     if (amountFailure != null) {
-      emit(state.copyWith(amountEntryValid: false, failure: amountFailure));
+      emit(
+        state.copyWith(
+          amountEntryValid: false,
+          failure: addressFailure ?? amountFailure,
+        ),
+      );
       return;
     }
     final conversion = event.isEdit
@@ -860,7 +949,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         inputAmount: event.isEdit
             ? event.sats?.toString() ?? ''
             : state.inputAmount,
-        failure: event.isEdit ? null : state.failure,
+        failure: event.isEdit ? addressFailure : state.failure,
       ),
     );
   }
@@ -1037,6 +1126,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
     final confirmedAmountSat = state.inputAmountSat;
     final conversion = state.amountConversion;
+    final note = state.note;
 
     if (state.type != ReceiveType.lightning) {
       // No further checks on the amount are needed for normal
@@ -1051,6 +1141,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       );
       return;
     }
+    if (state.lightningLimits.requiresBounds && !state.canCreateInvoice) return;
     emit(
       state.copyWith(
         creatingSwap: true,
@@ -1064,6 +1155,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       wallet: wallet,
       amountSat: confirmedAmountSat,
       conversion: conversion,
+      note: note,
       generation: generation,
       emit: emit,
     )) {
@@ -1072,7 +1164,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     final result = await _createReceiveOrderSwapUsecase.execute(
       wallet: wallet,
       amountSat: confirmedAmountSat,
-      note: state.note,
+      note: note,
     );
     if (generation != _receiveGeneration || emit.isDone) return;
     switch (result) {
@@ -1086,6 +1178,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             confirmedAmountSat: confirmedAmountSat,
             confirmedConversion: conversion,
+            confirmedNote: note,
             orderSwap: value,
             creatingSwap: false,
           ),
@@ -1099,16 +1192,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    // No validation here. The only dispatcher is the note bottom sheet
-    //  (receive_amount_screen), which refuses to pop while NoteValidator
-    //  rejects the text — so an invalid note cannot reach this handler, and
-    //  the branch that used to exist put NoteValidator's hardcoded English
-    //  message straight into state.
-    //
-    //  Re-implementing the rules here instead would duplicate them and let
-    //  receive drift the day one is added. NoteValidator returns a typed
-    //  NoteViolation that the sheet maps and translates, so the rules live in
-    //  one place.
+    // The Advanced settings field dispatches only values accepted by the shared
+    // NoteValidator. The UI translates its typed violations; the bloc preserves
+    // the last valid draft and the existing trim-on-save behavior.
+    // An explicit clear is also a draft edit and must beat label hydration.
+    _noteEdited = true;
     emit(state.copyWith(note: event.note.trim()));
   }
 
@@ -1572,13 +1660,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required Wallet wallet,
     required int amountSat,
     required ReceiveAmountConversion? conversion,
+    required String note,
     required int generation,
     required Emitter<ReceiveState> emit,
   }) async {
     final route = await _getReceiveSwapRouteUsecase.execute();
     if (generation != _receiveGeneration || emit.isDone) return true;
     if (!route.startsWithBoltz) return false;
-    final note = state.note;
     final created = await _createBoltzReceiveSwapUsecase.execute(
       wallet: wallet,
       amountSat: amountSat,
@@ -1606,6 +1694,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             confirmedAmountSat: amountSat,
             confirmedConversion: conversion,
+            confirmedNote: note,
             lightningSwap: value,
             creatingSwap: false,
           ),

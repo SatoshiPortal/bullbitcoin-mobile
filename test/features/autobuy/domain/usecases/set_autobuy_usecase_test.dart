@@ -1,16 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../../core/exchange/fake_exchange_users.dart';
 
 class MockGetExchangeUserSummaryUsecase extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -19,9 +18,9 @@ class MockGetDefaultWalletsUsecase extends Mock
     implements GetDefaultWalletsUsecase {}
 
 class MockExchangeUserRepository extends Mock
-    implements ExchangeUserRepository {}
+    implements ExchangeUserOperations {}
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 UserSummary _summaryWithGroups(List<String> groups) => UserSummary(
   userNumber: 1,
@@ -84,27 +83,30 @@ void main() {
     testnetUsers = MockExchangeUserRepository();
     settings = MockSettingsRepository();
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     usecase = SetAutoBuyUsecase(
       getUserSummary,
       getDefaultWallets,
       settings,
-      savePreferences,
-      testnetUsers,
+      fakeExchangeUsers(savePreferences, testnetUsers),
     );
   });
 
   test('regtest refuses AutoBuy before account or wallet access', () async {
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
@@ -267,7 +269,7 @@ void main() {
         autoBuyEnabled: any(named: 'autoBuyEnabled'),
         emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
       ),
-    ).thenAnswer((_) async => const Err(ExchangeUserPreferencesSaveFailure()));
+    ).thenAnswer((_) async => const Err(ExchangePreferencesSaveFailure()));
 
     final result = await usecase.execute(enabled: false);
 

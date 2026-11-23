@@ -1,30 +1,29 @@
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sync/sync.dart'
     show InputReservation, InputReservationPort, SyncFailure;
 
-class _Database extends Mock implements SqliteDatabase {}
-
-class _Settings extends Mock implements GetSettingsUsecase {}
+class _Settings extends Mock implements Preferences {}
 
 void _registerSettings(GetIt locator) {
   final settings = _Settings();
-  when(settings.execute).thenAnswer(
-    (_) async => const SettingsEntity(
-      environment: Environment.mainnet,
-      bitcoinUnit: BitcoinUnit.sats,
-      currencyCode: 'CAD',
+  when(settings.fetch).thenAnswer(
+    (_) async => Ok(
+      const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
     ),
   );
-  locator.registerSingleton<GetSettingsUsecase>(settings);
+  locator.registerSingleton<Preferences>(settings);
 }
 
 void main() {
@@ -35,18 +34,12 @@ void main() {
         final locator = GetIt.asNewInstance();
         _registerSettings(locator);
         addTearDown(locator.reset);
-        final database = _Database();
         var openAttempts = 0;
-        locator.registerLazySingleton<Secrets>(() {
+        locator.registerLazySingleton<RuntimeAdmission>(() {
           openAttempts++;
           throw StateError('storage unavailable');
         });
-        PayjoinSetup.setup(
-          locator,
-          database,
-          'unused.sqlite',
-          startRecovery: startRecovery,
-        );
+        PayjoinSetup.setup(locator, startRecovery: startRecovery);
         expect(openAttempts, 0);
         final payjoin = locator<Payjoin>();
         expect(locator<PayjoinSender>(), same(payjoin.sender));
@@ -56,9 +49,7 @@ void main() {
         expect(locator<PayjoinDiagnostics>(), same(payjoin.diagnostics));
         await Future<void>.delayed(Duration.zero);
         expect(openAttempts, startRecovery ? 1 : 0);
-        verifyZeroInteractions(database);
         await locator<PayjoinLifecycle>().dispose();
-        verifyZeroInteractions(database);
       },
     );
   }
@@ -70,12 +61,7 @@ void main() {
     locator.registerLazySingleton<Secrets>(
       () => throw StateError('storage unavailable'),
     );
-    PayjoinSetup.setup(
-      locator,
-      _Database(),
-      'unused.sqlite',
-      startRecovery: false,
-    );
+    PayjoinSetup.setup(locator, startRecovery: false);
 
     final result = await locator<InputReservationPort>().reservations();
 

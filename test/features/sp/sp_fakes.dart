@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecas
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
@@ -443,47 +442,9 @@ class FakeSpBackendProbe implements SpBackendProbePort {
   }
 }
 
-/// In-memory [KeyValueStorageDatasource], shared by the SP repository tests.
-class InMemoryKeyValueStorage implements KeyValueStorageDatasource<String> {
-  final Map<String, String> _store = {};
-
-  @override
-  Future<void> saveValue({required String key, required String value}) async =>
-      _store[key] = value;
-
-  @override
-  Future<Map<String, String>> getAll() async => Map.of(_store);
-
-  @override
-  Future<String?> getValue(String key) async => _store[key];
-
-  @override
-  Future<bool> hasValue(String key) async => _store.containsKey(key);
-
-  @override
-  Future<void> deleteValue(String key) async => _store.remove(key);
-}
-
-/// Stands in for a locked keystore: every storage call throws.
-class ThrowingKeyValueStorage implements KeyValueStorageDatasource<String> {
-  @override
-  Future<void> saveValue({required String key, required String value}) async =>
-      throw Exception('keystore locked');
-
-  @override
-  Future<Map<String, String>> getAll() async =>
-      throw Exception('keystore locked');
-
-  @override
-  Future<String?> getValue(String key) async =>
-      throw Exception('keystore locked');
-
-  @override
-  Future<bool> hasValue(String key) async => throw Exception('keystore locked');
-
-  @override
-  Future<void> deleteValue(String key) async =>
-      throw Exception('keystore locked');
+SilentPaymentKeychain spKeychain(FakeSecureStoragePlatform platform) {
+  platform.install();
+  return Secrets(scratchDirectory: () async => '/tmp').silentPaymentKeychain;
 }
 
 /// In-memory fake of [SpAutoScanRepository]; the choice is not persisted in

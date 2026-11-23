@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show LiquidWalletRepository;
 import 'package:bb_mobile/features/consolidation/domain/consolidation_config.dart';
 
 /// Result of building (but not yet broadcasting) a consolidation: the unsigned
@@ -40,7 +41,7 @@ class ConsolidateLiquidWalletUsecase {
 
   // Liquid network minrelayfee default (0.1 sat/vByte = 25 sat/kwu); the
   // consolidation self-transfer doesn't need to be fast.
-  static const RelativeFee _feeRate = RelativeFee(25);
+  static const RelativeFee _feeRate = NetworkFeeRelayPolicy.minRelay;
 
   ConsolidateLiquidWalletUsecase({
     required LiquidWalletRepository liquidWalletRepository,

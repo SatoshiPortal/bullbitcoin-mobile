@@ -1,20 +1,27 @@
+import 'package:preferences/testing.dart';
+
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/data/amount_input_preference_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart'
+    show recoverBullDefaultServerUrl;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:legacy_storage/coordination.dart';
+import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:preferences/migration.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show Secrets;
+import 'package:secrets/testing.dart';
 
 import '../../../migrations_test/bull_database/generated/schema_v15.dart'
     as v15;
 
-class _Datasource extends Mock implements SettingsDatasource {}
+class _Datasource extends Mock implements PreferencesDao {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -34,37 +41,85 @@ void main() {
           );
           await old.close();
         }
-        var database = SqliteDatabase(NativeDatabase(file));
-        var datasource = SettingsDatasource(sqlite: database);
-        var reader = SettingsRepository(settingsDatasource: datasource);
-        expect((await reader.fetch()).startAmountsInFiat, isFalse);
-        final original = await reader.fetch();
-        var setter = SetAmountInputModeUsecase(
-          AmountInputPreferenceRepositoryImpl(datasource),
+        FakeSecureStoragePlatform().install();
+        final keys = Secrets(scratchDirectory: () async => dir.path)
+            .databaseKeys(module: 'preferences');
+        final source = LegacySourceStore(
+          source: LegacySource(file, SqliteDatabase.currentSchemaVersion),
+          create: SqliteDatabase.new,
         );
+        final ownerFile = File('${dir.path}/owner.sqlite');
+        final cutover = StorageCutover(
+          directory: Directory('${dir.path}/coordination'),
+          legacy: source,
+          expectedOwners: splitV1Owners,
+          participants: [
+            PreferencesImport(
+              file: ownerFile,
+              defaultRecoverBullServerUrl: recoverBullDefaultServerUrl,
+              testingKeys: keys,
+            ),
+          ],
+        );
+        Future<Preferences> open(RuntimeAdmission admission) async {
+          addTearDown(admission.close);
+          final result = await PreferencesTesting.open(
+            file: ownerFile,
+            admission: admission,
+            legacyDatabase: await source.open(admission),
+            keys: keys,
+          );
+          final reader = (result as Ok<Preferences, PreferencesFailure>).value;
+          addTearDown(reader.close);
+          return reader;
+        }
+
+        final initial =
+            (await cutover.prepare()
+                    as Ok<RuntimeAdmission, LegacyImportFailure>)
+                .value;
+        var reader = await open(initial);
+        expect(
+          ((await reader.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).startAmountsInFiat,
+          isFalse,
+        );
+        final original = (await reader.fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        );
+        var setter = SetAmountInputModeUsecase(reader);
         expect(
           await setter.execute(fiat: true),
           isA<Ok<void, SettingsFailure>>(),
         );
         await reader.close();
-        await database.close();
-        database = SqliteDatabase(NativeDatabase(file));
-        addTearDown(database.close);
-        datasource = SettingsDatasource(sqlite: database);
-        reader = SettingsRepository(settingsDatasource: datasource);
-        addTearDown(reader.close);
-        final saved = await reader.fetch();
+        await initial.close();
+        reader = await open(
+          (await cutover.admit() as Ok<RuntimeAdmission, LegacyImportFailure>)
+              .value,
+        );
+        final saved = (await reader.fetch()).fold(
+          (value) => value,
+          (failure) => throw Exception('Preferences read failed'),
+        );
         expect(saved.startAmountsInFiat, isTrue);
         expect(saved.bitcoinUnit, original.bitcoinUnit);
         expect(saved.currencyCode, original.currencyCode);
-        setter = SetAmountInputModeUsecase(
-          AmountInputPreferenceRepositoryImpl(datasource),
-        );
+        setter = SetAmountInputModeUsecase(reader);
         expect(
           await setter.execute(fiat: false),
           isA<Ok<void, SettingsFailure>>(),
         );
-        expect((await reader.fetch()).startAmountsInFiat, isFalse);
+        expect(
+          ((await reader.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).startAmountsInFiat,
+          isFalse,
+        );
         expect(SqliteDatabase.currentSchemaVersion, 16);
       },
     );
@@ -75,7 +130,7 @@ void main() {
     () async {
       final datasource = _Datasource();
       final setter = SetAmountInputModeUsecase(
-        AmountInputPreferenceRepositoryImpl(datasource),
+        PreferencesTesting.fromDao(datasource),
       );
       when(() => datasource.setStartAmountsInFiat(true))
           .thenThrow(Exception('private database reason'));

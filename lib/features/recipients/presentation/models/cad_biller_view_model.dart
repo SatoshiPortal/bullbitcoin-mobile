@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/recipients/application/dtos/cad_biller_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/cad_biller_summary.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'cad_biller_view_model.freezed.dart';
@@ -10,10 +10,10 @@ sealed class CadBillerViewModel with _$CadBillerViewModel {
     required String payeeCode,
   }) = _CadBillerViewModel;
 
-  factory CadBillerViewModel.fromDto(CadBillerDto dto) {
+  factory CadBillerViewModel.fromSummary(CadBillerSummary summary) {
     return CadBillerViewModel(
-      payeeName: dto.payeeName,
-      payeeCode: dto.payeeCode,
+      payeeName: summary.payeeName,
+      payeeCode: summary.payeeCode,
     );
   }
 }

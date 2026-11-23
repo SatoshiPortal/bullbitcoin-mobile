@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -17,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
@@ -69,7 +68,8 @@ void main() {
       getTransactionOrderSwapsUsecase: getTransactionOrderSwapsUsecase,
     );
 
-    when(() => settingsRepository.fetch()).thenAnswer((_) async => _settings());
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => Ok(_settings()));
     when(
       () => walletTransactionRepository.getWalletTransactions(
         txId: any(named: 'txId'),
@@ -86,10 +86,12 @@ void main() {
     'regtest tx lookup never queries public network feature histories',
     () async {
       when(settingsRepository.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(

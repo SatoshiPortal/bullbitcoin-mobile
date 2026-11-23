@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';

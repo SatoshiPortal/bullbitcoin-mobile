@@ -1,12 +1,11 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:sync/sync.dart' show Keychain;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:label_editor/label_editor.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullCheckbox, BullShapesX, BullSpacing, BullText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
@@ -44,7 +43,7 @@ class CoinSelectTile extends StatelessWidget {
           );
 
     final address = utxo.address;
-    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
+    final addressType = utxo.addressKeyChain == Keychain.external
         ? context.loc.sendReceive
         : context.loc.sendChange;
     final label = utxo.labels.join(', ');

@@ -1,10 +1,12 @@
+import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart'
+    show Preferences, PreferencesFailure;
+
 export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
 
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
@@ -19,7 +21,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/write.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:electrum/electrum.dart';
+import 'package:electrum/setup.dart';
 
 const paymentNotificationChannelId = PaymentNotifications.channelId;
 const _queueFilename = 'wallet_transaction_sync_queue.sqlite';
@@ -53,19 +56,39 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   BackgroundTaskResources resources,
   Directory documents,
   Stopwatch clock, {
+  required File preferencesFile,
   required BackgroundSyncIntervalRepository intervals,
 }) async {
+  final admission = resources.storageAdmission;
+  if (admission == null) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     log.fine('Background wallet task deferred: schema not current');
-    return () async => const BackgroundTaskExecutionResult.success();
+    return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = SqliteDatabase();
-  resources.onClose(sqlite.close);
-  final settings = SettingsRepository(
-    settingsDatasource: SettingsDatasource(sqlite: sqlite),
+  final sqlite = await LegacySourceStore(
+    source: LegacySource(
+      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
+      SqliteDatabase.currentSchemaVersion,
+    ),
+    create: SqliteDatabase.new,
+  ).open(admission);
+  final openedPreferences = await Preferences.open(
+    file: preferencesFile,
+    admission: admission,
+    legacyDatabase: sqlite,
   );
+  if (openedPreferences case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final settings =
+      (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
   resources.onClose(settings.close);
-  final preferences = await settings.fetch();
+  final preferences = (await settings.fetch()).fold(
+    (value) => value,
+    (failure) => throw Exception('Preferences read failed'),
+  );
   final torLocator = GetIt.asNewInstance();
   resources.onClose(torLocator.reset);
   await TorLocator.registerDatasources(torLocator);
@@ -77,7 +100,18 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   TorLocator.registerUsecases(torLocator);
   final tor = torLocator<Tor>();
   resources.onClose(tor.dispose);
-  final connections = createBackgroundWalletConnections(sqlite, settings, tor);
+  final support = await getApplicationSupportDirectory();
+  final opened = await Electrum.open(
+    file: File(p.join(support.path, 'databases', 'electrum.sqlite')),
+    admission: admission,
+    readPreferences: settings.readConnectionPreferences,
+    tor: () => tor,
+  );
+  if (opened case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final connections =
+      (opened as Ok<Electrum, ElectrumFailure>).value.walletConnections;
   final catalog = WalletCatalogPortImpl(
     WalletMetadataDatasource(sqlite: sqlite),
   );

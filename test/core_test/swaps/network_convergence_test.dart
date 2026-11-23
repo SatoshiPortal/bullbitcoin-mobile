@@ -1,37 +1,34 @@
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:preferences/testing.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv, Ok;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:swaps/swaps.dart';
 
 import 'support/real_swap_backends.dart';
+import '../../support/preferences_database.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   for (final rapid in [false, true]) {
     test(
       'R1 real settings and engine agree after ${rapid ? 'rapid round trip' : 'single switch control'}',
       () async {
-        final appDb = SqliteDatabase(NativeDatabase.memory());
+        final appDb = await createPreferencesDatabase();
         await appDb.customStatement(
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 '
           'WHERE id = 1',
         );
-        final preferences = SettingsRepository(
-          settingsDatasource: SettingsDatasource(sqlite: appDb),
-        );
+        final preferences = PreferencesTesting.fromDao(PreferencesDao(appDb));
         final swapDb = BoltzSwapsDatabase(NativeDatabase.memory());
         final storage = SwapStorage(
           rows: DriftSwapRowStore(swapDb),
-          secrets: ReproKeychainBackend(),
+          secrets: ReproKeychainBackend().capability,
         );
         SwapEngineParts parts(NetworkEnv environment) => (
           store: SwapStoreImpl(storage: storage, environment: environment),
@@ -88,10 +85,16 @@ void main() {
         });
         switcher.start();
 
-        await preferences.setEnvironment(settings.Environment.testnet);
+        expect(
+          await preferences.setEnvironment(settings.Environment.testnet),
+          isA<Ok>(),
+        );
         await buildEntered.future.timeout(const Duration(seconds: 3));
         if (rapid) {
-          await preferences.setEnvironment(settings.Environment.mainnet);
+          expect(
+            await preferences.setEnvironment(settings.Environment.mainnet),
+            isA<Ok>(),
+          );
           await pumpEventQueue();
         }
         buildRelease.complete();
@@ -99,7 +102,10 @@ void main() {
         await pumpEventQueue();
 
         expect(
-          (await preferences.fetch()).environment,
+          ((await preferences.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).environment,
           rapid ? settings.Environment.mainnet : settings.Environment.testnet,
         );
         expect(

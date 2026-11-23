@@ -1,13 +1,11 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_order_failure_message.dart';
 import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +32,7 @@ class BuyConfirmScreen extends StatelessWidget {
         ? null
         : FormatAmount.fiat(buyOrder.payinAmount, buyOrder.payinCurrency);
     final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
+      (BuyBloc bloc) => bloc.state.displayBitcoinUnit,
     );
     final formattedPayOutAmount = buyOrder == null || isLoading
         ? null

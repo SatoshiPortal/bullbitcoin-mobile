@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:primitives/primitives.dart' show Ok;
 
 import 'dart:io';
 
@@ -7,36 +7,33 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/coins/data/wallet_utxo_repository_impl.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
 
-import '../../../wallet/data/freezes_only_sync.dart';
+import 'package:sync/testing.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockBlockchain extends Mock implements BitcoinBlockchainRepository {}
 
-class _MockSettings extends Mock implements SettingsRepository {}
+class _MockSettings extends Mock implements Preferences {}
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
-
-class _MockValues extends Mock implements SyncWalletValuesDatasource {}
+class _MockLabels extends Mock implements Labels {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -70,8 +67,8 @@ void main() {
         walletUtxoRepository ??
         WalletUtxoRepositoryImpl(
           walletMetadataDatasource: _MockWalletMetadataDatasource(),
-          labelsFacade: _MockLabelsFacade(),
-          walletValuesDatasource: _MockValues(),
+          labelsFacade: _MockLabels(),
+          loadWallet: (_) async => throw StateError('Unexpected coin read'),
           freezesDatasource: SyncFreezesDatasource(sync: () async => sync),
         ),
   );
@@ -87,10 +84,12 @@ void main() {
     blockchain = _MockBlockchain();
     settings = _MockSettings();
     when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     when(() => blockchain.broadcastPsbt(any(), network: Network.bitcoinMainnet))

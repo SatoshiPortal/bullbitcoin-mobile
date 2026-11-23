@@ -1,5 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:secrets/secrets.dart';
+import 'package:legacy_storage/coordination.dart';
+
+import '../data/database/recoverbull_cutover.dart';
+
 import 'package:bull_tor/tor.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +11,7 @@ import '../../generated/l10n/recoverbull_localizations.dart';
 import '../domain/entities/encrypted_vault.dart' as domain;
 import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
-import '../domain/recoverbull_legacy_settings_port.dart';
+import '../domain/recoverbull_permission_port.dart';
 import '../domain/recoverbull_route_port.dart';
 import '../ui/recoverbull_flow_navigator.dart';
 import '../ui/widgets/backup_alarm_overlay.dart';
@@ -34,22 +38,26 @@ final class RecoverBullFeature {
   ];
 
   static Future<RecoverBullFeature> mount({
-    required String databasePath,
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
-    required RecoverBullLegacySettingsPort legacy,
+    required Uri server,
+    required RecoverBullPermissionPort permission,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
+    required RecoverBullCutover cutover,
+    required RuntimeAdmission admission,
   }) async {
     final runtime = await RecoverBullRuntime.open(
-      databasePath: databasePath,
       secrets: secrets,
       wallets: wallets,
       environment: environment,
-      legacy: legacy,
+      server: server,
+      permission: permission,
       routes: routes,
       clients: clients,
+      cutover: cutover,
+      admission: admission,
     );
     final vaults = SecretsVaultRepository(secrets);
     return RecoverBullFeature._(
@@ -63,6 +71,7 @@ final class RecoverBullFeature {
         runtime.parseVault,
         runtime.settings,
         runtime.recoverServerVault,
+        runtime.backupProjection,
       ),
       runtime,
     );

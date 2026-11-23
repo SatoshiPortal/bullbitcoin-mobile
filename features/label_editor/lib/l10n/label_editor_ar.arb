@@ -1,0 +1,94 @@
+{
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} labels imported",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelExchangeBuy": "اشتري",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "bip329LabelsImportSuccessSingular": "بطاقة واحدة مستوردة",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "systemLabelExchangeSell": "Sell",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "غير قادر على حذف \"{label}\". أرجوك حاول مرة أخرى.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "ادخل هنا.",
+  "@receiveEnterHere": {
+    "description": "Placeholder text for input fields in receive"
+  },
+  "bip329LabelsImportButton": "علامات استيراد",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "bip329LabelsExportSuccess": "Labels exported successfully",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "receiveSave": "أنقذ",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "bip329LabelsTitle": "BIP329 Labels",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Labels Import/Export",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "oopsSomethingWentWrong": "! شيء ما حدث",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsExportButton": "علامات التصدير",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "systemLabelSelfSpend": "خلاصة",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "bip329LabelsDescription": "(ب) بطاقات محفظة الاستيراد أو التصدير باستخدام النموذج المعياري BIP329.",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "noteVisibleToSenderNotice": "ستكون هذه الملاحظة مرئية لمستلم رمز QR أو الفاتورة الخاصة بك.",
+  "labelsErrorNoteTooLong": "يجب ألا تزيد الملاحظة عن {max} حرفًا",
+  "labelsErrorNoteForbiddenCharacter": "لا يمكن أن تحتوي الملاحظة على الحرف {character}",
+  "labelsErrorFileTooLarge": "هذا الملف كبير جدًا. يجب أن تكون ملفات التسميات أصغر من {max}.",
+  "labelsErrorFileUnreadable": "لا يبدو أن هذا ملف تسميات BIP-329. تأكد من اختيارك الملف الصحيح.",
+  "labelsErrorFileEmpty": "لا يحتوي هذا الملف على تسميات لاستيرادها.",
+  "labelsErrorExportFailed": "تعذّر حفظ تسمياتك. حاول مرة أخرى.",
+  "labelsErrorFileReservedName": "يستخدم هذا الملف اسم تسمية محجوزًا للتطبيق. غيّر الاسم في الملف وحاول مرة أخرى.",
+  "labelsErrorNoteForbiddenWhitespace": "لا يمكن أن تحتوي الملاحظة على أسطر جديدة أو علامات جدولة",
+  "labelsErrorFileInvalidEntry": "تعذّرت قراءة بعض الإدخالات في هذا الملف. تحقق من الملف وحاول مرة أخرى."
+}

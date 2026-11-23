@@ -37,12 +37,12 @@ test('the bindings packages may not reach package:secrets, in Dart or in their p
   assert.deepEqual(rules(reviewFiles([file('packages/sync/lib/x.dart', [line])])), []);
 });
 
-test('a new importer of flutter_secure_storage is flagged, the package and the app store are not', () => {
+test('a new importer of flutter_secure_storage is flagged, only the secrets package is exempt', () => {
   const line = "+import 'package:flutter_secure_storage/flutter_secure_storage.dart';";
   assert.deepEqual(rules(reviewFiles([file('lib/features/swap/data/store.dart', [line])])), ['fss-import']);
   assert.deepEqual(rules(reviewFiles([file('packages/bull_tor/lib/x.dart', [line])])), ['fss-import']);
   assert.deepEqual(rules(reviewFiles([file('packages/secrets/lib/src/data/fss_datasource.dart', [line])])), []);
-  assert.deepEqual(rules(reviewFiles([file('lib/core/storage/storage_locator.dart', [line])])), []);
+  assert.deepEqual(rules(reviewFiles([file('lib/core/storage/storage_locator.dart', [line])])), ['fss-import']);
 });
 
 test('a federated or platform-interface import of the plugin is flagged', () => {
@@ -64,6 +64,7 @@ test('an import of package:secrets internals is flagged outside the package', ()
 });
 
 test('a keystore dependency in another pubspec is flagged', () => {
+  assert.deepEqual(rules(reviewFiles([file('pubspec.yaml', ['+  flutter_secure_storage: ^10.3.3'])])), ['fss-dependency']);
   const result = reviewFiles([file('packages/bull_ui/pubspec.yaml', ['+  flutter_secure_storage: ^10.3.3'])]);
   assert.deepEqual(rules(result), ['fss-dependency']);
   assert.deepEqual(rules(reviewFiles([file('packages/secrets/pubspec.yaml', ['+  flutter_secure_storage: ^10.3.4'])])), []);
@@ -114,7 +115,7 @@ test('the unchanged Dio factory rename from PR #3028 needs no custody comment', 
 });
 
 test('an unchanged rename across a custody policy boundary stays uninspected', () => {
-  for (const previous_filename of ['packages/secrets/lib/store.dart', 'lib/core/storage/storage_locator.dart']) {
+  for (const previous_filename of ['packages/secrets/lib/store.dart']) {
     const renamed = { ...unchangedRename, previous_filename };
     assert.deepEqual(reviewFiles([renamed]), { findings: [], uninspected: [renamed.filename] });
   }

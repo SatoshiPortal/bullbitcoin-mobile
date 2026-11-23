@@ -1,21 +1,21 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, ScriptType;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -35,7 +35,7 @@ class _MockDropPendingLockup extends Mock
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
@@ -45,7 +45,7 @@ class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 class _MockBroadcastLiquid extends Mock
     implements BroadcastLiquidTransactionUsecase {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 Wallet _wallet({required bool liquid}) => Wallet(
   origin: liquid ? 'liquid-wallet' : 'bitcoin-wallet',
@@ -71,11 +71,11 @@ void main() {
   late _MockRecordPendingLockup recordPendingLockup;
   late _MockDropPendingLockup dropPendingLockup;
   late _MockWalletRepository walletRepository;
-  late _MockSettingsRepository settingsRepository;
+  late _MockPreferences settingsRepository;
   late _MockLiquidWalletRepository liquidWalletRepository;
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockBroadcastLiquid broadcastLiquid;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late BoltzAutoswapProvider provider;
 
   const settings = AutoSwap(
@@ -125,11 +125,11 @@ void main() {
     when(() => dropPendingLockup.execute(any()))
         .thenAnswer((_) async => const Ok(null));
     walletRepository = _MockWalletRepository();
-    settingsRepository = _MockSettingsRepository();
+    settingsRepository = _MockPreferences();
     liquidWalletRepository = _MockLiquidWalletRepository();
     getReceiveAddress = _MockGetReceiveAddress();
     broadcastLiquid = _MockBroadcastLiquid();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     provider = BoltzAutoswapProvider(
       getLimitsAndFees,
       createLiquidToBitcoinSwap,
@@ -145,10 +145,12 @@ void main() {
     );
 
     when(() => settingsRepository.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => walletRepository.getWallets(environment: Environment.testnet))

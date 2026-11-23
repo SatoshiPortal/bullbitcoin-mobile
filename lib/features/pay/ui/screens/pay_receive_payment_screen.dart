@@ -1,15 +1,11 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, ConvertAmount, FormatAmount;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
-import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_qr_bottom_sheet.dart';
@@ -19,8 +15,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullInvoiceViewer,
         BullButton,
         BullCountdown,
+        BullCopyField,
+        BullPaymentPreparationView,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -67,7 +66,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
           : null,
     );
     if (preparation != null) {
-      return PaymentPreparationView(
+      return BullPaymentPreparationView(
         title: context.loc.payPleasePayInvoice,
         detailLabels: [
           context.loc.payDepositAddress,
@@ -143,7 +142,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 ),
               ),
               const Gap(32),
-              CopyInput(
+              BullCopyField(
+                copyLabel: context.loc.copyDialogButton,
+                copiedMessage: context.loc.copiedToClipboard,
                 text: bitcoinUnit == BitcoinUnit.btc
                     ? FormatAmount.btc(order.payinAmount)
                     : FormatAmount.sats(
@@ -349,7 +350,12 @@ class PayReceivePaymentScreen extends StatelessWidget {
     };
 
     return order.payinMethod == OrderPaymentMethod.lnInvoice
-        ? InvoiceViewer(fullText)
+        ? BullInvoiceViewer(
+            fullText,
+            title: context.loc.invoiceViewerTitle,
+            copyLabel: context.loc.viewerTapToCopy,
+            copiedMessage: context.loc.copiedToClipboard,
+          )
         : AddressViewer(fullText);
   }
 

@@ -1,9 +1,9 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -22,7 +22,7 @@ final class CreateWithdrawOrderResult {
 class CreateWithdrawOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   CreateWithdrawOrderUsecase({
     required this._mainnetExchangeOrderRepository,
@@ -53,7 +53,10 @@ class CreateWithdrawOrderUsecase {
     }
 
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,

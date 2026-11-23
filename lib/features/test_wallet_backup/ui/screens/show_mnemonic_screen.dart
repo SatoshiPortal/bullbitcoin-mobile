@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wal
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:access/access.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,10 +26,12 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
-  final AppUnlockFacade appUnlockFacade;
+  final Access access;
+  final void Function(BuildContext) onTestSucceeded;
   const ShowMnemonicScreen({
     super.key,
-    this.appUnlockFacade = const AppUnlockFacade(),
+    required this.onTestSucceeded,
+    this.access = const Access(),
   });
 
   @override
@@ -75,9 +77,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
-                      child: _MnemonicDisplay(
-                        appUnlockFacade: widget.appUnlockFacade,
-                      ),
+                      child: _MnemonicDisplay(access: widget.access),
                     ),
                   ),
                   Padding(
@@ -89,8 +89,9 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const VerifyMnemonicScreen(),
+                                builder: (context) => VerifyMnemonicScreen(
+                                  onTestSucceeded: widget.onTestSucceeded,
+                                ),
                               ),
                             );
                           },
@@ -113,8 +114,8 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 /// calls back only to style one word at a time. Nothing here — and nothing in
 /// the bloc — ever holds the phrase.
 class _MnemonicDisplay extends StatefulWidget {
-  final AppUnlockFacade appUnlockFacade;
-  const _MnemonicDisplay({required this.appUnlockFacade});
+  final Access access;
+  const _MnemonicDisplay({required this.access});
 
   @override
   State<_MnemonicDisplay> createState() => _MnemonicDisplayState();
@@ -174,11 +175,10 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
     final fingerprint = _fingerprint;
     final accepted = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (gateContext) =>
-            widget.appUnlockFacade.buildReauthenticationGate(
-              canPop: true,
-              onSuccess: (_) => Navigator.of(gateContext).pop(true),
-            ),
+        builder: (gateContext) => widget.access.buildReauthenticationGate(
+          canPop: true,
+          onSuccess: (_) => Navigator.of(gateContext).pop(true),
+        ),
       ),
     );
     if (!mounted ||

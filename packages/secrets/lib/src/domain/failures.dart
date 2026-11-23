@@ -25,6 +25,16 @@ final class FetchSecretFailure extends SecretFailure {
   const FetchSecretFailure([super.logMessage]);
 }
 
+/// No wallet with this ID is visible to the current session.
+final class WalletRegistrationNotFoundFailure extends SecretFailure {
+  const WalletRegistrationNotFoundFailure() : super('wallet not found');
+}
+
+/// The visible wallet data could not be interpreted, but storage responded.
+final class UnreadableWalletFailure extends SecretFailure {
+  const UnreadableWalletFailure() : super('wallet data unreadable');
+}
+
 final class StoreSecretFailure extends SecretFailure {
   const StoreSecretFailure([super.logMessage]);
 }
@@ -50,10 +60,8 @@ final class MnemonicRequiredFailure extends SecretFailure {
   const MnemonicRequiredFailure([super.logMessage]);
 }
 
-/// The requested network exists in `primitives` but the underlying
-/// library cannot express it. No network is in that case since lwk-dart
-/// expresses Liquid regtest; kept so a library that cannot express a
-/// network refuses it rather than substituting another chain.
+/// The requested network exists in `primitives` but the operation cannot
+/// represent it. An operation refuses it rather than substituting another chain.
 final class UnsupportedNetworkFailure extends SecretFailure {
   const UnsupportedNetworkFailure([super.logMessage]);
 }

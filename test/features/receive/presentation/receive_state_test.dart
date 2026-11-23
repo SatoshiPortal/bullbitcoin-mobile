@@ -16,6 +16,17 @@ void main() {
     expect(state.transaction.orderSwap?.localId, 'local-1');
   });
 
+  test('the invoice summary uses accepted Exchange amounts, not the quote or decoder', () {
+    final state = ReceiveState(
+      type: ReceiveType.lightning,
+      confirmedAmountSat: 100050,
+      orderSwap: _record(OrderSwapLocalStatus.awaitingUserConfirmation),
+    );
+    expect(state.lightningAmountSat, 100000);
+    expect(state.lightningReceivedSat, 99000);
+    expect(state.lightningFeeSat, 1000);
+  });
+
   test('maps Exchange payout progress to the receive progress screen', () {
     final state = ReceiveState(
       type: ReceiveType.lightning,

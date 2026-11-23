@@ -1,203 +1,107 @@
-import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/http/authenticated_bullbitcoin_dio_factory.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:preferences/preferences.dart';
+import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/features/exchange/data/bbx_api_order_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:dio/dio.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
+import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:primitives/primitives.dart';
 import 'package:get_it/get_it.dart';
 
+import 'domain/repositories/exchange_access_repository.dart';
+
 class ExchangeLocator {
-  /// Authentication is attached to each existing client configuration.
-  /// Resolve the repository only when a request starts: registration precedes
-  /// repository registration, and no transport owns the credential repository.
-  static Dio _authenticatedClient(
+  /// Resolves the credential only when a request starts. The app retains key
+  /// custody; the package receives only this read capability.
+  static Future<Result<String?, bbx.BbxFailure>> _readActiveApiKey(
     GetIt locator, {
     required bool isTestnet,
-    Duration? timeout,
-  }) {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: isTestnet
-            ? ApiServiceConstants.bbApiTestUrl
-            : ApiServiceConstants.bbApiUrl,
-        connectTimeout: timeout,
-        receiveTimeout: timeout,
-        sendTimeout: timeout,
-      ),
+  }) async {
+    final result = await locator<ExchangeApiKeyRepository>().readActiveApiKey(
+      isTestnet: isTestnet,
     );
-    addExchangeAuthentication(
-      dio,
-      () => locator<ExchangeApiKeyRepository>().readActiveApiKey(
-        isTestnet: isTestnet,
-      ),
-    );
-    return dio;
+    return switch (result) {
+      Ok(:final value) => Ok(value),
+      Err() => const Err(bbx.BbxCredentialUnavailableFailure()),
+    };
   }
 
   static void registerDatasources(GetIt locator) {
-    for (final isTestnet in [false, true]) {
-      final environment = isTestnet ? 'testnet' : 'mainnet';
-      locator.registerLazySingleton<BullbitcoinApiDatasource>(
-        () => BullbitcoinApiDatasource(
-          bullbitcoinApiHttpClient: _authenticatedClient(
-            locator,
-            isTestnet: isTestnet,
-            timeout: const Duration(seconds: 30),
-          ),
+    locator.registerLazySingleton<Exchange>(
+      () => Exchange.open(
+        mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
+        testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
+        paymentReturnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
+        readSession: () => readLegacyExchangeSession(
+          preferences: locator<Preferences>(),
+          readEpoch: () => locator<ExchangeAccessRepository>().epoch,
+          readKey: locator<ExchangeApiKeyRepository>().readActiveApiKey,
         ),
-        instanceName: '${environment}ExchangeApiDatasource',
-      );
-      locator.registerLazySingleton<ExchangeSupportChatDatasource>(
-        () => ExchangeSupportChatDatasource(
-          bullbitcoinApiHttpClient: _authenticatedClient(
-            locator,
-            isTestnet: isTestnet,
-          ),
-        ),
-        instanceName: '${environment}ExchangeSupportChatDatasource',
-      );
-      locator.registerLazySingleton<ExchangeNotificationDatasource>(
-        () => ExchangeNotificationDatasource(
-          baseUrl: isTestnet
-              ? ApiServiceConstants.bbApiTestUrl
-              : ApiServiceConstants.bbApiUrl,
-          readApiKey: () => locator<ExchangeApiKeyRepository>()
+        notifications: (
+          readEnvironment: () =>
+              readLegacyExchangeEnvironment(locator<Preferences>()),
+          readKey: ({required isTestnet}) => locator<ExchangeApiKeyRepository>()
               .readActiveApiKey(isTestnet: isTestnet),
         ),
-        instanceName: '${environment}ExchangeNotificationDatasource',
+      ),
+      dispose: (exchange) => exchange.close(),
+    );
+    for (final isTestnet in [false, true]) {
+      final environment = isTestnet ? 'testnet' : 'mainnet';
+      locator.registerLazySingleton<bbx.Bbx>(
+        () => bbx.Bbx.open(
+          endpoint: isTestnet
+              ? ApiServiceConstants.bbApiTestUrl
+              : ApiServiceConstants.bbApiUrl,
+          readActiveApiKey: () =>
+              _readActiveApiKey(locator, isTestnet: isTestnet),
+          timeouts: bbx.BbxTimeouts.standard,
+        ),
+        instanceName: '${environment}BbxApiClient',
+      );
+      locator.registerLazySingleton<bbx.Bbx>(
+        () => bbx.Bbx.open(
+          endpoint: isTestnet
+              ? ApiServiceConstants.bbApiTestUrl
+              : ApiServiceConstants.bbApiUrl,
+          readActiveApiKey: () =>
+              _readActiveApiKey(locator, isTestnet: isTestnet),
+        ),
+        instanceName: '${environment}BbxApiClientWithoutTimeout',
       );
     }
-    locator.registerLazySingleton<Dio>(
-      () => AuthenticatedBullBitcoinDioFactory.create(
-        isTestnet: false,
-        readApiKey: () => locator<ExchangeApiKeyRepository>().readActiveApiKey(
-          isTestnet: false,
-        ),
-      ),
-      instanceName: 'authenticatedBullBitcoinApiClient',
-    );
-    locator.registerLazySingleton<Dio>(
-      () => AuthenticatedBullBitcoinDioFactory.create(
-        isTestnet: true,
-        readApiKey: () => locator<ExchangeApiKeyRepository>().readActiveApiKey(
-          isTestnet: true,
-        ),
-      ),
-      instanceName: 'authenticatedBullBitcoinApiTestClient',
-    );
   }
 
   static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<ExchangeNotificationRepository>(
-      () => ExchangeNotificationRepositoryImpl(
-        exchangeNotificationService: locator<ExchangeNotificationService>(),
-      ),
-    );
-
     locator.registerLazySingleton<ExchangeApiKeyRepository>(
       () => ExchangeApiKeyRepositoryImpl(
-        secureStorage: locator<KeyValueStorageDatasource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-        ),
+        secureStorage: locator<Secrets>().exchangeKeychain,
       ),
     );
 
-    locator.registerLazySingleton<ExchangeUserRepository>(
-      () => ExchangeUserRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+    for (final isTestnet in [false, true]) {
+      final environment = isTestnet ? 'testnet' : 'mainnet';
+      locator.registerLazySingleton<ExchangeOrderRepository>(
+        () => BbxApiOrderRepository(
+          api: locator<bbx.Bbx>(instanceName: '${environment}BbxApiClient'),
+          isTestnet: isTestnet,
         ),
-      ),
-      instanceName: 'mainnetExchangeUserRepository',
-    );
-    locator.registerLazySingleton<ExchangeUserRepository>(
-      () => ExchangeUserRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'testnetExchangeUserRepository',
-    );
-
-    locator.registerLazySingleton<ExchangeOrderRepository>(
-      () => ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
-        ),
-
-        isTestnet: false,
-      ),
-      instanceName: 'mainnetExchangeOrderRepository',
-    );
-    locator.registerLazySingleton<ExchangeOrderRepository>(
-      () => ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-
-        isTestnet: true,
-      ),
-      instanceName: 'testnetExchangeOrderRepository',
-    );
-
-    locator.registerLazySingleton<ExchangeSupportChatRepository>(
-      () => ExchangeSupportChatRepositoryImpl(
-        datasource: locator<ExchangeSupportChatDatasource>(
-          instanceName: 'mainnetExchangeSupportChatDatasource',
-        ),
-
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'mainnetExchangeSupportChatRepository',
-    );
-
-    locator.registerLazySingleton<ExchangeSupportChatRepository>(
-      () => ExchangeSupportChatRepositoryImpl(
-        datasource: locator<ExchangeSupportChatDatasource>(
-          instanceName: 'testnetExchangeSupportChatDatasource',
-        ),
-
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
-        ),
-      ),
-      instanceName: 'testnetExchangeSupportChatRepository',
-    );
+        instanceName: '${environment}ExchangeOrderRepository',
+      );
+    }
   }
 
   static void registerUseCases(GetIt locator) {
     locator.registerFactory<GetExchangeUserSummaryUsecase>(
       () => GetExchangeUserSummaryUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
+        exchange: locator<Exchange>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -209,7 +113,7 @@ class ExchangeLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
@@ -221,62 +125,7 @@ class ExchangeLocator {
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<GetSupportChatMessagesUsecase>(
-      () => GetSupportChatMessagesUsecase(
-        mainnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'mainnetExchangeSupportChatRepository',
-        ),
-        testnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'testnetExchangeSupportChatRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<SendSupportChatMessageUsecase>(
-      () => SendSupportChatMessageUsecase(
-        mainnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'mainnetExchangeSupportChatRepository',
-        ),
-        testnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'testnetExchangeSupportChatRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<GetSupportChatMessageAttachmentUsecase>(
-      () => GetSupportChatMessageAttachmentUsecase(
-        mainnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'mainnetExchangeSupportChatRepository',
-        ),
-        testnetRepository: locator<ExchangeSupportChatRepository>(
-          instanceName: 'testnetExchangeSupportChatRepository',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-
-    locator.registerFactory<CreateLogAttachmentUsecase>(
-      () => CreateLogAttachmentUsecase(),
-    );
-  }
-
-  static void registerServices(GetIt locator) {
-    // WebSocket Notification Service (primary/driving adapter)
-    locator.registerLazySingleton<ExchangeNotificationService>(
-      () => ExchangeNotificationService(
-        mainnetDatasource: locator<ExchangeNotificationDatasource>(
-          instanceName: 'mainnetExchangeNotificationDatasource',
-        ),
-        testnetDatasource: locator<ExchangeNotificationDatasource>(
-          instanceName: 'testnetExchangeNotificationDatasource',
-        ),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
   }

@@ -1,0 +1,44 @@
+{
+  "bip329LabelsImportSuccessSingular": "1 rótulo importado",
+  "bip329LabelsImportSuccessPlural": "{count} rótulos importados",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelSwaps": "Swaps",
+  "systemLabelExchangeBuy": "Comprar",
+  "systemLabelExchangeSell": "Venda",
+  "labelDeleteFailed": "Incapaz de excluir \"{label}\". Por favor, tente novamente.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveEnterHere": "Entre aqui...",
+  "bip329LabelsImportButton": "Etiquetas de importação",
+  "systemLabelPayjoin": "Payjoin",
+  "bip329LabelsExportSuccess": "Rótulos exportados com sucesso",
+  "receiveSave": "Salvar",
+  "bip329LabelsTitle": "BIP329 Labels",
+  "bip329LabelsHeading": "BIP329 Etiquetas Importação/Exportação",
+  "oopsSomethingWentWrong": "Oops! Algo correu mal",
+  "bip329LabelsExportButton": "Etiquetas de exportação",
+  "systemLabelSelfSpend": "Auto Spend",
+  "bip329LabelsDescription": "Importar ou exportar etiquetas de carteira usando o formato padrão BIP329.",
+  "noteVisibleToSenderNotice": "Esta nota ficará visível para o destinatário do teu código QR ou fatura.",
+  "labelsErrorNoteTooLong": "A nota não pode ter mais de {max} caracteres",
+  "labelsErrorNoteForbiddenCharacter": "A nota não pode conter o caractere {character}",
+  "labelsErrorFileTooLarge": "Esse ficheiro é demasiado grande. Os ficheiros de etiquetas devem ter menos de {max}.",
+  "labelsErrorFileUnreadable": "Isto não parece ser um ficheiro de etiquetas BIP-329. Verifique se escolheu o ficheiro certo.",
+  "labelsErrorFileEmpty": "Esse ficheiro não contém etiquetas para importar.",
+  "labelsErrorExportFailed": "Não foi possível guardar as suas etiquetas. Tente novamente.",
+  "labelsErrorFileReservedName": "Esse ficheiro usa um nome de etiqueta reservado pela aplicação. Mude-o no ficheiro e tente novamente.",
+  "labelsErrorNoteForbiddenWhitespace": "A nota não pode conter quebras de linha nem tabulações",
+  "labelsErrorFileInvalidEntry": "Não foi possível ler algumas entradas desse ficheiro. Verifique o ficheiro e tente novamente."
+}

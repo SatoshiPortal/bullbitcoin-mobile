@@ -1,0 +1,45 @@
+{
+  "@@locale": "fr",
+  "receiveSave": "Enregistrer",
+  "receiveEnterHere": "Entrez ici...",
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "bip329LabelsTitle": "Étiquettes BIP329",
+  "bip329LabelsHeading": "Import/Export d'étiquettes BIP329",
+  "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",
+  "bip329LabelsImportButton": "Importer les étiquettes",
+  "bip329LabelsExportButton": "Exporter les étiquettes",
+  "bip329LabelsExportSuccess": "Étiquettes exportées avec succès",
+  "bip329LabelsImportSuccessSingular": "1 étiquette importée",
+  "bip329LabelsImportSuccessPlural": "{count} étiquettes importées",
+  "@bip329LabelsImportSuccessPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelSwaps": "Swaps",
+  "systemLabelAutoSwap": "Auto Swap",
+  "systemLabelPayjoin": "Payjoin",
+  "systemLabelSelfSpend": "Auto transfert",
+  "systemLabelExchangeBuy": "Achat",
+  "systemLabelExchangeSell": "Vente",
+  "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
+  "@labelDeleteFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noteVisibleToSenderNotice": "Cette note sera visible par le destinataire de votre code QR ou de votre facture.",
+  "labelsErrorNoteTooLong": "La note ne doit pas dépasser {max} caractères",
+  "labelsErrorNoteForbiddenCharacter": "La note ne peut pas contenir le caractère {character}",
+  "labelsErrorFileTooLarge": "Ce fichier est trop volumineux. Les fichiers d’étiquettes doivent faire moins de {max}.",
+  "labelsErrorFileUnreadable": "Ce fichier ne semble pas être un fichier d’étiquettes BIP-329. Vérifiez que vous avez choisi le bon fichier.",
+  "labelsErrorFileEmpty": "Ce fichier ne contient aucune étiquette à importer.",
+  "labelsErrorExportFailed": "Vos étiquettes n’ont pas pu être enregistrées. Veuillez réessayer.",
+  "labelsErrorFileReservedName": "Ce fichier utilise un nom d’étiquette réservé par l’application. Renommez-le dans le fichier et réessayez.",
+  "labelsErrorNoteForbiddenWhitespace": "La note ne peut pas contenir de sauts de ligne ni de tabulations",
+  "labelsErrorFileInvalidEntry": "Certaines entrées de ce fichier n’ont pas pu être lues. Vérifiez le fichier et réessayez."
+}

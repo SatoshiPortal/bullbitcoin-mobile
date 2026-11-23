@@ -31,6 +31,7 @@ analyzer:
     - lib/generated/**
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
+    - "**/*.drift.dart"
     - pubspec.yaml
     - build/**
     - android/**

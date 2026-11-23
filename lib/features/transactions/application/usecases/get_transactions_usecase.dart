@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
@@ -17,7 +16,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
 class GetTransactionsUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
@@ -43,7 +42,10 @@ class GetTransactionsUsecase {
     bool sync = false,
   }) async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final environment = settings.environment;
       if (environment.networkEnv == NetworkEnv.regtest) {
         final transactions = await _walletTransactionRepository

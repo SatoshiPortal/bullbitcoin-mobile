@@ -1,11 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSegmented, BullShimmerBox, Gap, BullTypographyX;
+    show
+        BullCopyField,
+        BullInfoCard,
+        BullQrCode,
+        BullButton,
+        BullSegmented,
+        BullShimmerBox,
+        BullTypographyX,
+        Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -93,7 +98,7 @@ class _SpReusableAddressTab extends StatelessWidget {
             const Gap(16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: InfoCard(
+              child: BullInfoCard(
                 title: context.loc.spReceiveManualScanRequired,
                 description: context.loc.spReceiveReusableInfo,
                 tagColor: context.appColors.tertiary,
@@ -193,19 +198,22 @@ class _AddressDisplay extends StatelessWidget {
         Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 42),
-            child: QrDisplayWidget(data: address),
+            child: BullQrCode(
+              data: address,
+              size: 300,
+              semanticsLabel: context.loc.receiveQRCode,
+            ),
           ),
         ),
         const Gap(16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: CopyInput(
+          child: BullCopyField.withView(
             text: address,
-            clipboardText: address,
-            overflow: TextOverflow.ellipsis,
-            canShowValueModal: true,
-            modalTitle: context.loc.spAddressLabel,
-            modalContent: address,
+            viewTitle: context.loc.spAddressLabel,
+            viewLabel: context.loc.receiveViewDetails,
+            copyLabel: context.loc.copyDialogButton,
+            copiedMessage: context.loc.copiedToClipboard,
           ),
         ),
       ],

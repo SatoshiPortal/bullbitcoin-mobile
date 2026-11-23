@@ -81,7 +81,7 @@ final class CompleteVaultUsecase {
         case Ok(:final value):
           if (!value.permissionGranted ||
               value.server != capturedSettings.server ||
-              value.generation != capturedSettings.generation) {
+              !value.sameGeneration(capturedSettings)) {
             return const Err(VaultContextChangedFailure());
           }
       }

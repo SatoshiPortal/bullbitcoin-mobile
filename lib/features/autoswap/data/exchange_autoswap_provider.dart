@@ -1,14 +1,15 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show LiquidWalletRepository;
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
@@ -24,12 +25,12 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   static const _maxCreateRetryDelay = Duration(seconds: 30);
 
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final GetReceiveAddressUsecase _getReceiveAddress;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransaction;
   final SwapFacade _swapFacade;
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
   final Future<void> Function(Duration) _delay;
 
   ExchangeAutoswapProvider(
@@ -46,7 +47,10 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   @override
   Future<Result<String, AutoswapFailure>> execute(AutoSwap settings) async {
     try {
-      final environment = (await _settingsRepository.fetch()).environment;
+      final environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(environment: environment)) {
         case Ok(:final value):
@@ -237,7 +241,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       walletId: wallet.id,
       address: order.payinAddress,
       amountSat: order.payinAmountSat.toInt(),
-      feeRate: const RelativeFee(25),
+      feeRate: NetworkFeeRelayPolicy.minRelay,
     );
     final String pset;
     switch (preparation) {
@@ -341,7 +345,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       walletId: wallet.id,
       address: address,
       amountSat: provisionalAmount,
-      feeRate: const RelativeFee(25),
+      feeRate: NetworkFeeRelayPolicy.minRelay,
     );
     final String pset;
     switch (preparation) {

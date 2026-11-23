@@ -1,16 +1,17 @@
+import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/bip85_bindings.dart';
+
 import 'initialization_result.dart';
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
-import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_datasource.dart';
+import 'package:bb_mobile/features/bip85_entropy/data/bip85_repository.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
@@ -28,7 +29,6 @@ Future<void> main({bool isInitialized = false}) async {
 
   final sqlite = locator<SqliteDatabase>();
   final secrets = locator<Secrets>();
-  final walletRepository = locator<WalletRepository>();
   final bip85Datasource = locator<Bip85Datasource>();
   final bip85Repository = locator<Bip85Repository>();
   final createDefaultWalletsUsecase = locator<CreateDefaultWalletsUsecase>();
@@ -52,9 +52,11 @@ Future<void> main({bool isInitialized = false}) async {
 
   final usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
     bip85Repository: bip85Repository,
-    walletRepository: walletRepository,
     secrets: secrets,
-    settingsRepository: locator<SettingsRepository>(),
+  );
+
+  final withDefault = WithDefaultBip85WalletUsecase(
+    WalletBip85Bindings.reader(locator),
   );
 
   setUpAll(() async {
@@ -96,7 +98,13 @@ Future<void> main({bool isInitialized = false}) async {
         const index = 0;
 
         // Execute the usecase
-        final result = await usecase.execute(length: length, alias: 'test');
+        final result = await withDefault.execute(
+          (fingerprint) => usecase.execute(
+            fingerprint: fingerprint,
+            length: length,
+            alias: 'test',
+          ),
+        );
         expect(result, isA<Ok>());
         final (:derivation, mnemonic: resultMnemonic) = (result as Ok).value;
 
@@ -134,17 +142,23 @@ Future<void> main({bool isInitialized = false}) async {
 
       test('Two derivations with index bump and different lengths', () async {
         // Execute the usecase first time
-        final aResult = await usecase.execute(
-          length: bip39.MnemonicLength.words12,
-          alias: 'First derivation',
+        final aResult = await withDefault.execute(
+          (fingerprint) => usecase.execute(
+            fingerprint: fingerprint,
+            length: bip39.MnemonicLength.words12,
+            alias: 'First derivation',
+          ),
         );
         expect(aResult, isA<Ok>());
         final (:derivation, mnemonic: aMnemonic) = (aResult as Ok).value;
 
         // Execute the usecase second time
-        final bResult = await usecase.execute(
-          length: bip39.MnemonicLength.words24,
-          alias: 'Second derivation',
+        final bResult = await withDefault.execute(
+          (fingerprint) => usecase.execute(
+            fingerprint: fingerprint,
+            length: bip39.MnemonicLength.words24,
+            alias: 'Second derivation',
+          ),
         );
         expect(bResult, isA<Ok>());
         final (derivation: _, mnemonic: bMnemonic) = (bResult as Ok).value;

@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'wallet_model.dart';
+
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart' as p;
@@ -6,7 +7,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
 
-import '../../../features/wallet/data/freezes_only_sync.dart'
+import 'package:sync/testing.dart'
     show NoConnections, NoInputReservations, NoReservedAddresses;
 
 /// A foreground [Sync] over [documentsDirectory] holding one real BDK store

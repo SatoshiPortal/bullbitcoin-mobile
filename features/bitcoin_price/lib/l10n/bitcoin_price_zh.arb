@@ -1,0 +1,12 @@
+{
+  "currencySettingsDefaultFiatCurrencyLabel": "2. 违约货币",
+  "fiatCurrencySettingsLabel": "货币",
+  "priceChartFetchingHistory": "Fetching Price History...",
+  "oopsSomethingWentWrong": "Oops! 某些错误",
+  "retry": "学历",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "汇率不可用。请稍后重试。",
+  "priceChartLoadFailed": "价格图表数据无法加载。请重试。"
+}

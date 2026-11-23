@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
@@ -10,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Receive-owned boundary for the shared settings use-case, which still
 /// throws.
 class GetReceiveSettingsUsecase {
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
 
   const GetReceiveSettingsUsecase(this._getSettingsUsecase);
 
@@ -20,7 +19,10 @@ class GetReceiveSettingsUsecase {
     primitives.Network? selectedNetwork,
   }) async {
     try {
-      final settings = await _getSettingsUsecase.execute();
+      final settings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final network =
           selectedNetwork ??
           primitives.BitcoinNetwork.values.firstWhere(

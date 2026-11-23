@@ -1,12 +1,12 @@
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.drift.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Fingerprint, ScriptType;
 
 part 'wallet_metadata_model.freezed.dart';
 

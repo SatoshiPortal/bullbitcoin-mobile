@@ -1,19 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
-import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
-import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/application/usecases/open_funding_payment_link_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_confidential_sepa_funding_availability_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/external_link_port.dart';
+import 'package:exchange/exchange.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_fund_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/get_funding_details_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/list_funding_institutions_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/open_funding_payment_link_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -23,22 +19,22 @@ const _link = 'https://pay.example.com/abc';
 class _MockGetUserSummary extends Mock
     implements GetFundExchangeUserSummaryUsecase {}
 
-class _UnusedGateway implements FundingGatewayPort {
-  const _UnusedGateway();
+class _UnusedRepository implements ExchangeFunding {
+  const _UnusedRepository();
 
   @override
-  Future<Result<FundingDetails, FundExchangeFailure>> getFundingDetails({
+  Future<Result<FundingDetails, ExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
   }) async => throw UnimplementedError();
 
   @override
-  Future<Result<List<FundingInstitution>, FundExchangeFailure>>
-  listInstitutions({required FundingJurisdiction jurisdiction}) async =>
-      throw UnimplementedError();
+  Future<Result<List<FundingInstitution>, ExchangeFailure>> listInstitutions({
+    required FundingJurisdiction jurisdiction,
+  }) async => throw UnimplementedError();
 
   @override
-  Future<Result<void, FundExchangeFailure>>
-  registerResponsibilityConsent() async => throw UnimplementedError();
+  Future<Result<void, ExchangeFailure>> registerResponsibilityConsent() async =>
+      throw UnimplementedError();
 }
 
 /// Holds each launch open until the test releases it, so a second request can
@@ -57,17 +53,17 @@ class _BlockingExternalLink implements ExternalLinkPort {
 }
 
 FundExchangeBloc _blocWith(ExternalLinkPort link) {
-  const gateway = _UnusedGateway();
+  const repository = _UnusedRepository();
   return FundExchangeBloc(
     getFundExchangeUserSummaryUsecase: _MockGetUserSummary(),
     getFundingDetailsUsecase: const GetFundingDetailsUsecase(
-      fundingGateway: gateway,
+      funding: repository,
     ),
     listFundingInstitutionsUsecase: const ListFundingInstitutionsUsecase(
-      fundingGateway: gateway,
+      funding: repository,
     ),
     registerResponsibilityConsentUsecase:
-        const RegisterResponsibilityConsentUsecase(fundingGateway: gateway),
+        const RegisterResponsibilityConsentUsecase(funding: repository),
     openFundingPaymentLinkUsecase: OpenFundingPaymentLinkUsecase(
       externalLink: link,
     ),

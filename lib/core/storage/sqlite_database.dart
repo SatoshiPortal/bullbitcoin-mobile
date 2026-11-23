@@ -1,27 +1,26 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:legacy_storage/coordination.dart'
+    show splitV1SourceSchemaVersion;
+
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
-import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart';
-import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
-import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
-import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.dart';
-import 'package:bb_mobile/core/storage/tables/labels_table.dart';
-import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
-import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
-import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
+import 'package:preferences/dismissed_announcements_table.dart';
+import 'package:electrum/storage.dart';
+import 'package:labels/frozen_utxos_table.dart';
+import 'package:labels/labels_table.dart';
+import 'package:bb_mobile/features/swap/data/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
-import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
-import 'package:bb_mobile/features/settings/data/settings_table.dart';
+import 'package:preferences/recoverbull_table.dart';
+import 'package:preferences/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
-import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:mempool/storage.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
@@ -32,13 +31,13 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
-part 'sqlite_database.g.dart';
+import 'sqlite_database.drift.dart';
 
 @DriftDatabase(
   tables: [
     Transactions,
     WalletMetadatas,
-    Labels,
+    LabelsTable,
     Settings,
     PayjoinSenders,
     PayjoinReceivers,
@@ -55,7 +54,7 @@ part 'sqlite_database.g.dart';
     OrderSwaps,
   ],
 )
-class SqliteDatabase extends _$SqliteDatabase {
+class SqliteDatabase extends $SqliteDatabase {
   static const name = 'bullbitcoin_sqlite';
 
   /// The file `driftDatabase(name: name)` opens in the foreground.
@@ -129,7 +128,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 16;
+  static const int currentSchemaVersion = splitV1SourceSchemaVersion;
 
   @override
   int get schemaVersion => currentSchemaVersion;

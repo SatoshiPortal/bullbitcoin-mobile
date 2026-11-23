@@ -1,14 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,50 +12,30 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
 
-class _FakeExchangeNotificationRepository
-    implements ExchangeNotificationRepository {
-  final StreamController<NotificationMessage> controller =
-      StreamController<NotificationMessage>.broadcast();
-
-  @override
-  Stream<NotificationMessage> get messages => controller.stream;
-
-  @override
-  Future<Result<void, ExchangeNotificationFailure>> connect() async =>
-      const Ok(null);
-
-  @override
-  Future<Result<void, ExchangeNotificationFailure>> reconnect() async =>
-      const Ok(null);
-
-  @override
-  void disconnect() {}
-}
-
-class _FakeVirtualIbanRepository implements VirtualIbanRepository {
-  final List<Result<VirtualIban?, RecipientsFailure>> findResults;
-  final Result<VirtualIban, RecipientsFailure> createResult;
+class _FakeVirtualIbanRepository implements ExchangeVirtualIbans {
+  final List<Result<VirtualIban?, ExchangeFailure>> findResults;
+  final Result<VirtualIban, ExchangeFailure> createResult;
   int finds = 0;
   int creates = 0;
   bool? lastIsTestnet;
 
   _FakeVirtualIbanRepository({
     required this.findResults,
-    this.createResult = const Err(RecipientsUnexpectedFailure()),
+    this.createResult = const Err(ExchangeUnexpectedFailure()),
   });
 
   @override
-  Future<Result<VirtualIban?, RecipientsFailure>> find({
-    required bool isTestnet,
-  }) async {
-    lastIsTestnet = isTestnet;
+  Future<Result<VirtualIban?, ExchangeFailure>> find(
+    ExchangeEnvironment environment,
+  ) async {
+    lastIsTestnet = environment == ExchangeEnvironment.testnet;
     return findResults[finds++];
   }
 
   @override
-  Future<Result<VirtualIban, RecipientsFailure>> create({
-    required bool isTestnet,
-  }) async {
+  Future<Result<VirtualIban, ExchangeFailure>> create(
+    ExchangeEnvironment environment,
+  ) async {
     creates++;
     return createResult;
   }
@@ -74,24 +50,24 @@ const _pending = PendingVirtualIban();
 
 void main() {
   late _MockGetRecipientsEnvironmentUsecase environment;
-  late _FakeExchangeNotificationRepository notifications;
+  late StreamController<NotificationMessage> notifications;
 
   setUp(() {
     environment = _MockGetRecipientsEnvironmentUsecase();
-    notifications = _FakeExchangeNotificationRepository();
+    notifications = StreamController<NotificationMessage>.broadcast();
     when(() => environment.execute())
         .thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
-  tearDown(() => notifications.controller.close());
+  tearDown(() => notifications.close());
 
   WatchVirtualIbanUsecase usecase(
     _FakeVirtualIbanRepository repository, {
     Duration pollInterval = Duration.zero,
   }) => WatchVirtualIbanUsecase(
-    virtualIbanRepository: repository,
+    virtualIbans: repository,
     getRecipientsEnvironmentUsecase: environment,
-    exchangeNotificationRepository: notifications,
+    notifications: notifications.stream,
     pollInterval: pollInterval,
   );
 
@@ -137,7 +113,7 @@ void main() {
   test('a failed creation is the last event', () async {
     final repository = _FakeVirtualIbanRepository(
       findResults: [const Ok(null)],
-      createResult: const Err(RecipientsEuResidencyRequiredFailure()),
+      createResult: const Err(ExchangeEuResidencyRequiredFailure()),
     );
 
     final events = await usecase(repository)
@@ -153,7 +129,7 @@ void main() {
 
   test('a failed refresh stops the polling', () async {
     final repository = _FakeVirtualIbanRepository(
-      findResults: [const Ok(_pending), const Err(RecipientsNetworkFailure())],
+      findResults: [const Ok(_pending), const Err(ExchangeNetworkFailure())],
     );
 
     final events = await usecase(repository)
@@ -183,14 +159,10 @@ void main() {
 
       // Let the first find() (pending) emit, then push the activation event.
       await Future<void>.delayed(const Duration(milliseconds: 20));
-      notifications.controller.add(
+      notifications.add(
         NotificationMessage(
           kind: NotificationMessageKind.recipient,
           event: 'VIRTUAL_IBAN_ACTIVATED',
-          rawData: const {
-            'type': 'recipient',
-            'event': 'VIRTUAL_IBAN_ACTIVATED',
-          },
         ),
       );
 

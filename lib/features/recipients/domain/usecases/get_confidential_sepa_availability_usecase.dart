@@ -1,23 +1,24 @@
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/confidential_sepa_availability.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+
+import '../map_virtual_iban_failure.dart';
 
 /// Confidential SEPA is for fully verified individual accounts in the
 /// European Union, and needs an active virtual IBAN.
 class GetConfidentialSepaAvailabilityUsecase {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final VirtualIbanRepository _virtualIbanRepository;
+  final ExchangeVirtualIbans _virtualIbans;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   const GetConfidentialSepaAvailabilityUsecase({
     required this._getExchangeUserSummaryUsecase,
-    required this._virtualIbanRepository,
+    required this._virtualIbans,
     required this._getRecipientsEnvironmentUsecase,
   });
 
@@ -41,18 +42,22 @@ class GetConfidentialSepaAvailabilityUsecase {
     }
     if (!isEligible) return const Ok(ConfidentialSepaAvailability.unavailable);
 
-    final bool isTestnet;
+    final ExchangeEnvironment environment;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.requireHistoricalTestnet();
+        environment = value.requireHistoricalTestnet()
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet;
       case Err(:final failure):
         return Err(failure);
     }
 
-    return (await _virtualIbanRepository.find(isTestnet: isTestnet)).map(
-      (virtualIban) => virtualIban is ActiveVirtualIban
-          ? ConfidentialSepaAvailability.ready
-          : ConfidentialSepaAvailability.needsVirtualIban,
-    );
+    return (await _virtualIbans.find(environment))
+        .mapErr(mapVirtualIbanFailure)
+        .map(
+          (virtualIban) => virtualIban is ActiveVirtualIban
+              ? ConfidentialSepaAvailability.ready
+              : ConfidentialSepaAvailability.needsVirtualIban,
+        );
   }
 }

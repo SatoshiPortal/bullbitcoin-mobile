@@ -52,7 +52,6 @@ void main() {
       final source = [
         'lib/background_bootstrap.dart',
         'lib/features/wallet/background_setup.dart',
-        'lib/features/electrum_settings/background_setup.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
       expect(source, contains('await getApplicationDocumentsDirectory()'));
       expect(source, contains('openExisting(documents.path)'));
@@ -82,34 +81,59 @@ void main() {
       expect(source, isNot(contains('AppLocator.setup(')));
       expect(source, isNot(contains('payjoinDatabaseFilename')));
       expect(source, isNot(contains('package:secrets/')));
+      final admission = source.indexOf(
+        'final admitted = await cutover.admit()',
+      );
+      expect(admission, greaterThanOrEqualTo(0));
+      expect(
+        source.indexOf('BackgroundTaskRunner.forTask(', admission),
+        greaterThan(admission),
+      );
       final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
       expect(schemaGate, greaterThanOrEqualTo(0));
       expect(
-        source.indexOf('final sqlite = SqliteDatabase();'),
+        source.indexOf('final sqlite = await LegacySourceStore(', schemaGate),
         greaterThan(schemaGate),
       );
+      expect(source, contains(').open(admission)'));
+      expect(source, isNot(contains('cutover.prepare()')));
+      expect(source, isNot(contains('SqliteDatabase();')));
     });
 
     for (final (role, path) in [('foreground', 'lib/init.dart')]) {
-      test('$role Payjoin storage uses the Documents directory', () {
-        final source = File(path).readAsStringSync();
-        expect(
-          source,
-          matches(
-            RegExp(
-              r'final\s+bullDirectory\s*=\s*await\s+getApplicationDocumentsDirectory\(\)',
+      test(
+        '$role Payjoin retains the Documents source and opens its owner',
+        () {
+          final source = File(path).readAsStringSync();
+          expect(
+            source,
+            matches(
+              RegExp(
+                r'final\s+bullDirectory\s*=\s*await\s+getApplicationDocumentsDirectory\(\)',
+              ),
             ),
-          ),
-        );
-        expect(
-          source,
-          matches(
-            RegExp(
-              r'p\.join\(\s*bullDirectory\.path,\s*payjoinDatabaseFilename,?\s*\)',
+          );
+          expect(
+            source,
+            matches(
+              RegExp(
+                r'File standalone\(String name\) => File\(p\.join\(bullDirectory\.path, name\)\);',
+              ),
             ),
-          ),
-        );
-      });
+          );
+          expect(
+            source,
+            allOf(
+              contains("p.join(support.path, 'databases',"),
+              matches(
+                RegExp(
+                  r'PayjoinCutover\(\s*file: destination\(owner\),\s*standalone: standalone\(',
+                ),
+              ),
+            ),
+          );
+        },
+      );
     }
   });
 }

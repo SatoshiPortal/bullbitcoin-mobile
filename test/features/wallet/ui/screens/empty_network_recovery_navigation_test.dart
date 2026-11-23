@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
@@ -21,10 +20,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:secrets/secrets.dart';
 
-class _Settings extends Mock implements SettingsRepository {}
+class _Settings extends Mock implements Preferences {}
 
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
@@ -32,9 +30,6 @@ class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
 
 class _WalletBloc extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
-
-class _PriceBloc extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
-    implements BitcoinPriceBloc {}
 
 class _MemoryQuickActionsStorage implements QuickActionsStorage {
   String? value;
@@ -59,14 +54,12 @@ void main() {
       );
       addTearDown(() => temporary.deleteSync(recursive: true));
       final settings = _Settings();
-      when(settings.fetch).thenAnswer(
-        (_) async => SettingsEntity(
+      when(settings.readDeveloperEnvironment).thenAnswer(
+        (_) async => Ok((
           environment: environment,
           isSuperuser: true,
           isDevModeEnabled: true,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-        ),
+        )),
       );
       final references = _References();
       final defaults = _Defaults();
@@ -85,12 +78,7 @@ void main() {
         const Stream<WalletState>.empty(),
         initialState: const WalletState(failure: NoWalletsFoundFailure()),
       );
-      final price = _PriceBloc();
-      whenListen(
-        price,
-        const Stream<BitcoinPriceState>.empty(),
-        initialState: const BitcoinPriceState(loadingPrice: true),
-      );
+
       final quickActions = createQuickActionsCubit(
         storage: _MemoryQuickActionsStorage(),
         warning: (_) {},
@@ -115,6 +103,7 @@ void main() {
                   offered: const Stream.empty(),
                 ),
                 onActivateExchange: (_) {},
+                announcements: () => const SizedBox.shrink(),
                 createSetupCubit: createSetupCubit,
               ),
             ],
@@ -148,7 +137,7 @@ void main() {
         MultiBlocProvider(
           providers: [
             BlocProvider<WalletBloc>.value(value: wallets),
-            BlocProvider<BitcoinPriceBloc>.value(value: price),
+            BitcoinPriceFixture.prices(loadingPrice: true),
           ],
           child: MaterialApp.router(
             theme: AppTheme.themeData(AppThemeType.light),
@@ -188,7 +177,6 @@ void main() {
       verifyZeroInteractions(references);
       await tester.pumpWidget(const SizedBox.shrink());
       await wallets.close();
-      await price.close();
     });
   }
 }

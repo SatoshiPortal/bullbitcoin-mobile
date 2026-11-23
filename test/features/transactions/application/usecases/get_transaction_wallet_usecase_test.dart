@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:primitives/primitives.dart' show Err, Failure, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show Err, Failure, Ok, Result, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';

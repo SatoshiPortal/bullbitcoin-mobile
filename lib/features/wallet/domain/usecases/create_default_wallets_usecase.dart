@@ -1,19 +1,19 @@
 import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:secrets/secrets.dart';
 import 'package:meta/meta.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart'
-    show Err, Fingerprint, NetworkEnv, Ok, Result;
+    show Err, Fingerprint, NetworkEnv, Ok, Result, ScriptType;
 
 /// Creates the default Bitcoin and Liquid wallets from one secret: generated, imported from words, or restored by the secrets package.
 class CreateDefaultWalletsUsecase {
   final Future<void> Function()? _resumeProvisioning;
   final Secrets _secrets;
-  final SettingsRepository _settingsRepository;
+  final ActiveEnvironmentReader _settingsRepository;
   final WalletRepository _wallet;
 
   CreateDefaultWalletsUsecase({
@@ -45,8 +45,11 @@ class CreateDefaultWalletsUsecase {
       return const Err(DefaultWalletMnemonicRequiredFailure());
     }
     try {
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
+      final environment = (await _settingsRepository.readActiveEnvironment())
+          .fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          );
 
       if (expectedNetwork != null &&
           environment.networkEnv != expectedNetwork) {

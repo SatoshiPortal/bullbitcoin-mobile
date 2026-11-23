@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 
 class LoadWalletsForNetworkUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   LoadWalletsForNetworkUsecase({
     required this._walletRepository,
@@ -24,7 +24,10 @@ class LoadWalletsForNetworkUsecase {
   @useResult
   Future<Result<List<Wallet>, TestWalletBackupFailure>> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(
         onlyDefaults: false,

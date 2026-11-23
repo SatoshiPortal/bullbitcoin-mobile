@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 
-export '../domain/wallet_spend_failure.dart';
+export '../ui/widgets/wallet_detail_balance_card.dart'
+    show WalletDetailBalanceCard;
 
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
     show SeedReferences;
@@ -11,14 +12,15 @@ export '../domain/network_x.dart' show NetworkX;
 
 import 'package:sync/sync.dart';
 
-import '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show BroadcastSpend;
 
 import 'package:primitives/primitives.dart' as primitives show Network;
-import 'package:primitives/primitives.dart' show Result, Err;
+import 'package:primitives/primitives.dart' show NetworkEnv, Result, Err;
 
 import '../domain/wallet_discovery_failure.dart';
 
-export 'package:primitives/primitives.dart' show Result;
+export 'package:primitives/primitives.dart' show NetworkEnv, Result;
 
 export '../domain/wallet_discovery_failure.dart';
 
@@ -39,7 +41,6 @@ export 'package:sync/sync.dart'
         WalletLifecycle;
 
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
-export '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
 export '../background_setup.dart'
     show
         setupBackgroundWalletTask,
@@ -78,6 +79,10 @@ final class WalletFacade {
   final Stream<void> _syncFinished;
   final Stream<bool> _syncPassActivity;
   final bool Function()? _isSyncPassActive;
+  final Future<Result<NetworkEnv?, WalletFailure>> Function()?
+  _readDefaultWalletNetwork;
+  final Future<Result<bool, WalletFailure>> Function()? _readTorRequirement;
+
   const WalletFacade(
     this._revisions, {
     this._nextReceiveAddress,
@@ -90,7 +95,19 @@ final class WalletFacade {
     this._syncFinished = const Stream.empty(),
     this._syncPassActivity = const Stream.empty(),
     this._isSyncPassActive,
+    this._readDefaultWalletNetwork,
+    this._readTorRequirement,
   });
+
+  /// The default wallet's environment, or null before a default wallet exists.
+  Future<Result<NetworkEnv?, WalletFailure>> defaultWalletNetwork() async =>
+      _readDefaultWalletNetwork?.call() ??
+      const Err(WalletStorageFailure('wallet network capability unavailable'));
+
+  /// Whether the default mainnet Bitcoin wallet requires Tor for its backup.
+  Future<Result<bool, WalletFailure>> isTorRequired() async =>
+      _readTorRequirement?.call() ??
+      const Err(WalletStorageFailure('Tor requirement capability unavailable'));
 
   Future<Result<String, WalletDiscoveryFailure>> receiveAddress(
     String walletId,

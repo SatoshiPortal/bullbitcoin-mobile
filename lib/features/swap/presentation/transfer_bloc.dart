@@ -1,3 +1,10 @@
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart'
+    show
+        SendConsolidationRequiredFailure,
+        SendInsufficientBalanceFailure,
+        SendInsufficientFundsForFeesFailure;
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import '../domain/swap_amount_conversion.dart';
@@ -5,16 +12,13 @@ import '../domain/usecases/get_swap_amount_quotes_usecase.dart';
 
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/features/swap/domain/boltz_lockup_estimate_address.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart'
-    show
-        SendConsolidationRequiredFailure,
-        SendInsufficientBalanceFailure,
-        SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
     show
         BitcoinTransactionRecipient,
         BitcoinUnit,
+        ConvertAmount,
         Err,
+        FormatAmount,
         NetworkEnv,
         Ok,
         Result,
@@ -24,35 +28,32 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
+import 'package:fees_feature/fee_ui.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show
+        CalculateBitcoinAbsoluteFeesUsecase,
+        PrepareBitcoinSendUsecase,
+        PreparedBitcoinSend,
+        ValidateBitcoinSelectionException,
+        ValidateBitcoinSelectionUsecase;
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -73,8 +74,6 @@ import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletSpendBlockedException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -86,12 +85,12 @@ part 'transfer_state.dart';
 part 'transfer_bloc.freezed.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState>
-    implements FeeModalActions, FeeModalViewState {
+    implements FeeModalActionsPort, FeeModalStatePort {
   TransferBloc({
-    required this._getSettingsUsecase,
+    required this._loadPreferencesUsecase,
     this._getSwapAmountQuotesUsecase,
     required this._getWalletsUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._loadNetworkFeesUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
     required this._prepareLiquidSendUsecase,
@@ -169,9 +168,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetSwapAmountQuotesUsecase? _getSwapAmountQuotesUsecase;
   Timer? _amountQuoteTimer;
   int? _preparingAmountGeneration;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final LoadTransferPreferencesUsecase _loadPreferencesUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final LoadTransferNetworkFeesUsecase _loadNetworkFeesUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
@@ -238,26 +237,35 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   ) async {
     emit(state.copyWith(isStarting: true));
     try {
-      final settings = await _getSettingsUsecase.execute();
+      final TransferPreferences settings;
+      switch (await _loadPreferencesUsecase.execute()) {
+        case Ok(:final value):
+          settings = value;
+        case Err(:final failure):
+          emit(state.copyWith(startError: failure));
+          return;
+      }
       if (_getSwapAmountQuotesUsecase != null) {
         add(const TransferAmountQuotesRequested());
         _amountQuoteTimer ??= Timer.periodic(const Duration(minutes: 1), (_) {
           if (!isClosed) add(const TransferAmountQuotesRequested());
         });
       }
-      final (
-        walletsResult,
-        liquidNetworkFees,
-        bitcoinNetworkFees,
-        exchangeRateResult,
-      ) = await (
+      final (walletsResult, feesResult, exchangeRateResult) = await (
         _getWalletsUsecase.execute(),
-        _getNetworkFeesUsecase.execute(isLiquid: true),
-        _getNetworkFeesUsecase.execute(isLiquid: false),
+        _loadNetworkFeesUsecase.execute(settings.activeNetwork),
         _getSwapExchangeRateUsecase.execute(
           currencyCode: settings.currencyCode,
         ),
       ).wait;
+      final TransferNetworkFees fees;
+      switch (feesResult) {
+        case Ok(:final value):
+          fees = value;
+        case Err(:final failure):
+          emit(state.copyWith(startError: failure));
+          return;
+      }
       final double? exchangeRate;
       switch (exchangeRateResult) {
         case Ok(:final value):
@@ -266,13 +274,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         case Err(failure: SwapPriceUnavailableFailure()):
           exchangeRate = null;
         case Err(:final failure):
-          emit(
-            state.copyWith(
-              startError: Exception(
-                'price read failed: ${failure.runtimeType}',
-              ),
-            ),
-          );
+          emit(state.copyWith(startError: failure));
           return;
       }
       final List<Wallet> wallets;
@@ -284,8 +286,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         case Err(:final failure):
           emit(
             state.copyWith(
-              startError: Exception(
-                'wallets read failed: ${failure.runtimeType}',
+              startError: SwapUnexpectedFailure(
+                'wallets: ${failure.runtimeType}',
               ),
             ),
           );
@@ -311,11 +313,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           : null;
       final pendingResult = await _getPendingOrderSwapsUsecase.execute();
       if (pendingResult case Ok(:final value)) {
+        final activeNetwork = settings.activeNetwork;
         final pendingTransfer = value
             .where(
               (order) =>
                   order.purpose == OrderSwapPurpose.transfer &&
-                  switch (settings.activeNetwork) {
+                  switch (activeNetwork) {
                     NetworkEnv.mainnet =>
                       order.environment == OrderSwapEnvironment.mainnet,
                     NetworkEnv.testnet =>
@@ -344,8 +347,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           wallets: wallets,
           fromWallet: fromWallet,
           toWallet: toWallet,
-          bitcoinNetworkFees: bitcoinNetworkFees,
-          liquidNetworkFees: liquidNetworkFees,
+          bitcoinNetworkFees: fees.bitcoin,
+          liquidNetworkFees: fees.liquid,
           fiatCurrencyCode: settings.currencyCode,
           exchangeRate: exchangeRate,
         ),
@@ -359,7 +362,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       await _loadSwapRoute(emit);
       await _resumePendingTransfer(emit);
     } catch (e) {
-      emit(state.copyWith(startError: Exception(e.toString())));
+      emit(state.copyWith(startError: SwapUnexpectedFailure(e.toString())));
     } finally {
       emit(state.copyWith(isStarting: false));
     }
@@ -2853,7 +2856,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         .listen((result) => add(TransferEvent.orderSwapUpdated(result)));
   }
 
-  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // ────── FeeModalStatePort + FeeModalActionsPort adoption ──────
   // Mirrors SendCubit's adoption. The shared modal sees an identical
   // [FeeModalSnapshot] / action surface regardless of whether it's
   // mounted by send or swap; differences in state-field naming and

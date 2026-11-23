@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
+import 'package:bb_mobile/features/sell/domain/sell_payin_source.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,16 +16,10 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const SellExternalWalletNetworkSelectionScreen({super.key});
 
   void _selectNetwork(BuildContext context, OrderBitcoinNetwork network) {
-    if (context.read<SellBloc>().state.fiatCurrency == FiatCurrency.eur) {
-      context.pushNamed(
-        SellRoute.sellPayoutV2.name,
-        extra: SellPayinSourceV2.external(network),
-      );
-    } else {
-      context.read<SellBloc>().add(
-        SellEvent.externalWalletNetworkSelected(network: network),
-      );
-    }
+    context.pushNamed(
+      SellRoute.sellPayout.name,
+      extra: SellPayinSource.external(network),
+    );
   }
 
   @override

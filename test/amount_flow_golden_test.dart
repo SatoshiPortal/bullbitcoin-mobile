@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
@@ -26,7 +26,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Sats;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Sats, ScriptType;
 
 class _Send extends Mock implements SendCubit {}
 
@@ -79,6 +79,7 @@ void main() {
       'receive-qr',
       'swap',
       'multi',
+      'multi-list',
     ]) {
       testWidgets('$name ${theme.name}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
@@ -94,7 +95,7 @@ void main() {
         final settings = _Settings();
         final fiat = name.contains('fiat') || name == 'send-no-price';
         final confirmation = name.contains('confirm');
-        final multi = name == 'multi';
+        final multi = name == 'multi' || name == 'multi-list';
         final max = name == 'send-max';
         final conversion = SendAmountConversion(
           enteredText: '31.25',
@@ -263,6 +264,28 @@ void main() {
           await tester.tap(find.byTooltip('Currency: Bitcoin'));
           await tester.pumpAndSettle();
         }
+        if (name == 'multi-list') {
+          await tester.tap(find.byTooltip('Currency'));
+          await tester.pumpAndSettle();
+        }
+        final images = <ImageProvider<Object>>{
+          ...tester
+              .widgetList<Image>(find.byType(Image))
+              .map((widget) => widget.image),
+          ...tester
+              .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+              .map((widget) => widget.decoration)
+              .whereType<BoxDecoration>()
+              .map((decoration) => decoration.image?.image)
+              .whereType<ImageProvider<Object>>(),
+        };
+        final context = tester.element(find.byType(Scaffold).first);
+        await tester.runAsync(() async {
+          await Future.wait(
+            images.map((image) => precacheImage(image, context)),
+          );
+        });
+        await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         await expectLater(
           find.byKey(const ValueKey('golden')),

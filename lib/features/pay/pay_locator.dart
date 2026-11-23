@@ -3,12 +3,12 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
@@ -29,11 +29,13 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_setup.dart'
+    show
+        BitcoinWalletRepository,
+        CalculateBitcoinAbsoluteFeesUsecase,
+        LiquidWalletRepository,
+        PrepareBitcoinSendUsecase;
 
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -128,7 +130,8 @@ class PayLocator {
     );
     locator.registerFactory<LoadPayNetworkFeesUsecase>(
       () => LoadPayNetworkFeesUsecase(
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        fees: locator<Fees>(),
+        preferences: locator<Preferences>(),
       ),
     );
     locator.registerFactory<GetPayPayinAddressUsecase>(
@@ -145,7 +148,7 @@ class PayLocator {
     );
     locator.registerFactory<GetPayExchangeRateUsecase>(
       () => GetPayExchangeRateUsecase(
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getSettingsUsecase: locator<Preferences>(),
         getIndexPrice: Pricer.getIndexPrice,
       ),
     );

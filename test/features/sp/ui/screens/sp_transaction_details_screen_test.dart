@@ -1,14 +1,10 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
-import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
-import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:mempool/mempool.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTransactionViewer;
 import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:material_ui/material_ui.dart';
@@ -19,7 +15,7 @@ import 'package:bb_mobile/localizations.dart';
 
 import '../../sp_cubit_harness.dart';
 
-class _ActiveExplorer extends Mock implements GetActiveMempoolServerUsecase {}
+class _Links extends Mock implements MempoolLinks {}
 
 SpPayment _payment({
   BitcoinNetwork? network = BitcoinNetwork.mainnet,
@@ -169,7 +165,7 @@ void main() {
   testWidgets('shows the txid in a transaction viewer', (tester) async {
     await tester.pumpWidget(_buildPage(cubit, incomingPayment));
 
-    expect(find.byType(TransactionViewer), findsOneWidget);
+    expect(find.byType(BullTransactionViewer), findsOneWidget);
   });
   for (final network in [null, BitcoinNetwork.regtest, BitcoinNetwork.signet]) {
     testWidgets('unknown or unsupported $network has no explorer', (
@@ -183,7 +179,7 @@ void main() {
         amountSat: Sats.fromInt(5),
       );
       await tester.pumpWidget(_buildPage(cubit, payment));
-      expect(find.byType(TransactionViewer), findsNothing);
+      expect(find.byType(BullTransactionViewer), findsNothing);
       expect(find.byType(SelectableText), findsOneWidget);
     });
   }
@@ -207,25 +203,7 @@ void main() {
           null,
         ),
       );
-      final active = _ActiveExplorer();
-      for (final testnet in [false, true]) {
-        when(() => active.execute(isTestnet: testnet, isLiquid: false))
-            .thenAnswer(
-              (_) async => Ok(
-                MempoolServer.existing(
-                  url: testnet ? 'testnet.example' : 'mainnet.example',
-                  network: testnet
-                      ? MempoolServerNetwork.bitcoinTestnet
-                      : MempoolServerNetwork.bitcoinMainnet,
-                  isCustom: true,
-                ),
-              ),
-            );
-      }
-      locator.registerSingleton<MempoolUrlBuilder>(
-        MempoolUrlBuilder(getActiveMempoolServerUsecase: active),
-      );
-      addTearDown(() => locator.unregister<MempoolUrlBuilder>());
+      final links = _Links();
       final txid = 'abcd' * 16;
       final payment = _payment(
         network: network,
@@ -234,10 +212,23 @@ void main() {
         status: SpPaymentStatus.verified,
         amountSat: Sats.fromInt(3),
       );
-      await tester.pumpWidget(_buildPage(cubit, payment));
-      await tester.tap(find.byType(TransactionViewer));
+      final url = Uri.https(
+        network == BitcoinNetwork.mainnet
+            ? 'mainnet.example'
+            : 'testnet.example',
+        '/tx/$txid',
+      );
+      when(() => links.transaction(txid, network: network))
+          .thenAnswer((_) async => Ok(url));
+      await tester.pumpWidget(
+        RepositoryProvider<MempoolLinks>.value(
+          value: links,
+          child: _buildPage(cubit, payment),
+        ),
+      );
+      await tester.tap(find.byType(BullTransactionViewer));
       await tester.pumpAndSettle();
-      final context = tester.element(find.byType(TransactionViewer));
+      final context = tester.element(find.byType(BullTransactionViewer));
       await tester.tap(find.text(context.loc.viewerCopyLink));
       await tester.pumpAndSettle();
       // Let the copy-confirmation snack bar's auto-dismiss timer expire.
@@ -246,12 +237,7 @@ void main() {
         copied,
         'https://${network == BitcoinNetwork.mainnet ? 'mainnet' : 'testnet'}.example/tx/$txid',
       );
-      verify(
-        () => active.execute(
-          isTestnet: network == BitcoinNetwork.testnet,
-          isLiquid: false,
-        ),
-      ).called(1);
+      verify(() => links.transaction(txid, network: network)).called(1);
     });
   }
 }

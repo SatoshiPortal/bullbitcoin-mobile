@@ -1,4 +1,4 @@
-import 'package:satoshifier/satoshifier.dart';
+import 'package:primitives/primitives.dart' show XpubType;
 
 enum Derivation {
   bip44("Legacy", "P2PKH", "44h", "m/44h/0h/0h"),

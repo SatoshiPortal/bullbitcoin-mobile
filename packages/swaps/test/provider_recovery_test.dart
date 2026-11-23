@@ -10,6 +10,7 @@ import 'package:test/test.dart';
 import 'support/real_swap_backends.dart';
 
 void main() {
+  SwapNetworkTestBinding();
   for (final holdResponse in [false, true]) {
     test('R4 ${holdResponse ? 'hung provider' : 'responsive provider control'} '
         'does not starve a locally known pending lockup', () async {
@@ -41,7 +42,7 @@ void main() {
       final db = BoltzSwapsDatabase(NativeDatabase.memory());
       final storage = SwapStorage(
         rows: DriftSwapRowStore(db),
-        secrets: ReproKeychainBackend(),
+        secrets: ReproKeychainBackend().capability,
       );
       final chain = ReproChainBackend();
       final provider = BoltzSwapRepository.connect(

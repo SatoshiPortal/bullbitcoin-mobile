@@ -2,23 +2,17 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-class _Storage extends Fake implements KeyValueStorageDatasource<String> {
-  String? value;
-
-  @override
-  Future<String?> getValue(String key) async => value;
-}
 
 class _Logger extends Mock implements Logger {}
 
 void main() {
   setUpAll(() => registerFallbackValue(StackTrace.empty));
-  late _Storage storage;
+  late FakeSecureStoragePlatform storage;
   late _Logger logger;
   late Logger previousLogger;
   late ExchangeApiKeyRepositoryImpl repository;
@@ -32,21 +26,27 @@ void main() {
       };
 
   setUp(() {
-    storage = _Storage();
+    storage = FakeSecureStoragePlatform().install();
     logger = _Logger();
     previousLogger = log;
     log = logger;
-    repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+    repository = ExchangeApiKeyRepositoryImpl(
+      secureStorage: Secrets(scratchDirectory: () async => '/tmp')
+          .exchangeKeychain,
+    );
   });
   tearDown(() => log = previousLogger);
 
   test('authentication does not require unused account metadata', () async {
-    storage.value = jsonEncode({'key': 'synthetic-key', 'isActive': true});
+    storage.entries['exchange_api_key_testnet'] = jsonEncode({
+      'key': 'synthetic-key',
+      'isActive': true,
+    });
     expect(await readKey(), 'synthetic-key');
   });
 
   test('inactive credentials are an expected unauthenticated state', () async {
-    storage.value = jsonEncode({
+    storage.entries['exchange_api_key_testnet'] = jsonEncode({
       'id': 'id',
       'key': 'synthetic-key',
       'name': 'name',

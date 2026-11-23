@@ -1,17 +1,12 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
-import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
-import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
-import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
-import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletDetailBalanceCard;
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_tx_list_item.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/sp/domain/sp_scan_policy.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
@@ -21,9 +16,13 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullButtonSize,
         BullButton,
         BullPullableBody,
+        BullReceiveSendButtons,
+        BullTransactionListItem,
+        BullTransactionsByDayList,
         BullShapesX,
         Gap,
         bullTimeAgo,
@@ -36,12 +35,15 @@ class SpWalletDetailScreen extends StatelessWidget {
   const SpWalletDetailScreen({
     super.key,
     required this.exitRedirectPath,
+    required this.fiatBalanceBuilder,
     this.onSend,
   });
 
   /// Where the back button leaves SP for; supplied by the composition root so
   /// this screen never imports another feature's router.
   final String exitRedirectPath;
+
+  final Widget Function(int balanceSat) fiatBalanceBuilder;
 
   final VoidCallback? onSend;
 
@@ -76,19 +78,17 @@ class SpWalletDetailScreen extends StatelessWidget {
           onRefresh: cubit.pullToRefresh,
           slivers: [
             SliverToBoxAdapter(
-              child: WalletDetailBalanceCard(
-                isLiquid: false,
-                signer: SignerEntity.local,
-                balanceText: CurrencyText(
+              child: WalletDetailBalanceCard.localBitcoin(
+                balanceText: BullAmount.signedSats(
                   state.totalBalance.value.toInt(),
                   style: context.bullType.headline.copyWith(
                     color: context.appColors.onPrimary,
                   ),
-                  showFiat: false,
+                  interactive: false,
                 ),
                 eyeToggle: const EyeToggle(),
-                fiatBalance: HomeFiatBalance(
-                  balanceSat: state.totalBalance.value.toInt(),
+                fiatBalance: fiatBalanceBuilder(
+                  state.totalBalance.value.toInt(),
                 ),
               ),
             ),
@@ -140,7 +140,7 @@ class SpWalletDetailScreen extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
-          child: ReceiveSendButtons(
+          child: BullReceiveSendButtons(
             receiveLabel: context.loc.spReceive,
             sendLabel: context.loc.spSend,
             onReceive: () => context.pushNamed(SpRoute.spReceive.name),
@@ -436,16 +436,19 @@ class _SpActivitySection extends StatelessWidget {
       );
     }
 
-    return TransactionsByDayList<SpPayment>(
+    return BullTransactionsByDayList<SpPayment>(
       sliver: true,
       itemsByDay: state.history.isEmpty ? null : state.historyByDay,
       dayLabel: (context, dayKey) =>
           dayKey == spVerifyingGroupKey ? context.loc.spVerifying : null,
-      itemBuilder: (context, payment) => TxListItem(
+      itemBuilder: (context, payment) => BullTransactionListItem(
         spPaymentListItemData(context, payment),
         key: ValueKey(payment.txid),
       ),
       loadingMessage: context.loc.transactionListLoadingTransactions,
+      pendingLabel: context.loc.transactionListPending,
+      todayLabel: context.loc.transactionListToday,
+      yesterdayLabel: context.loc.transactionListYesterday,
       emptyMessage: context.loc.spActivityEmpty,
     );
   }

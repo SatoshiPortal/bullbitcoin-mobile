@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart' hide Language;
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
@@ -16,7 +16,7 @@ class ImportWalletUsecase {
 
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
   final Secrets _secrets;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final WalletRepository _wallet;
   final ParentCustodyAdmissionPort _admission;
 
@@ -67,7 +67,10 @@ class ImportWalletUsecase {
     }
 
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final bitcoinNetwork = Network.fromEnvironment(
         environment: settings.environment.networkEnv,
         isLiquid: false,

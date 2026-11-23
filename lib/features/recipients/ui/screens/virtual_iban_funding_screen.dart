@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';

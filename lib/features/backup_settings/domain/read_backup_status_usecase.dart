@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:primitives/primitives.dart';
 
@@ -27,7 +27,7 @@ final class BackupStatusSummary {
 
 final class ReadBackupStatusUsecase {
   final GetWalletsUsecase _wallets;
-  final SettingsRepository _settings;
+  final Preferences _settings;
   final Future<Result<rb.BackupStatus, rb.RecoverBullFailure>> Function(
     rb.VaultContext,
   )
@@ -41,7 +41,10 @@ final class ReadBackupStatusUsecase {
 
   Future<Result<BackupStatusSummary, BackupSettingsFailure>> execute() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final List<Wallet> wallets;
       switch (await _wallets.execute(onlyDefaults: true)) {
         case Err(failure: NoWalletsFoundFailure()):

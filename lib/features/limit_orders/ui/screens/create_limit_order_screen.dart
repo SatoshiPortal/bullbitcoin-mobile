@@ -1,15 +1,14 @@
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
@@ -94,7 +93,8 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
                   : null,
             ),
             Expanded(
-              child: BBKeyboardActions(
+              child: BullKeyboardActions(
+                doneText: context.loc.doneButton,
                 disableScroll: true,
                 nextFocus: false,
                 child: _body(context, state),

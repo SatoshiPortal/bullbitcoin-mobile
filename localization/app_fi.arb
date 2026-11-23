@@ -25,30 +25,12 @@
   "settingsScreenTitle": "Asetukset",
   "testnetModeSettingsLabel": "Testnet-tila",
   "satsBitcoinUnitSettingsLabel": "Aseta määräyksikkö sat",
-  "pinCodeSettingsLabel": "PIN-koodi",
   "languageSettingsLabel": "Kieli",
   "backupSettingsLabel": "Lompakon varmuuskopio",
   "fiatCurrencySettingsLabel": "Fiat-valuutta",
   "languageSettingsScreenTitle": "Kieli",
   "settingsExchangeSettingsTitle": "Pörssin asetukset",
   "settingsSecurityPinTitle": "Turva-PIN",
-  "pinCodeAuthentication": "Tunnistautuminen",
-  "pinCodeCreateTitle": "Luo uusi PIN",
-  "pinCodeCreateDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistettavana.",
-  "pinCodeConfirmTitle": "Vahvista uusi PIN",
-  "pinCodeMismatchError": "PIN-koodit eivät täsmää",
-  "pinCodeSecurityPinTitle": "PIN",
-  "pinCodeManageTitle": "PIN-koodi",
-  "pinCodeChangeButton": "Vaihda PIN",
-  "pinCodeCreateButton": "Luo PIN",
-  "pinCodeRemoveButton": "Poista PIN",
-  "pinCodeContinue": "Jatka",
-  "pinCodeConfirm": "Vahvista",
-  "pinCodeLoading": "Ladataan",
-  "pinCodeCheckingStatus": "Tarkistetaan PIN-tilaa",
-  "pinCodeProcessing": "Käsitellään",
-  "pinCodeSettingUp": "PIN-koodin käyttöönotto",
-  "pinCodeBackupRequiredWarning": "Suorita lompakkosi varmuuskopiointi ennen PIN-koodin asettamista",
   "settingsCurrencyTitle": "Valuutta",
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
@@ -73,22 +55,14 @@
   "walletDetailsSignerLabel": "Allekirjoittaja",
   "walletDetailsSignerDeviceLabel": "Allekirjoituslaite",
   "walletDetailsSignerDeviceNotSupported": "Ei tuettu",
-  "mempoolSettingsTitle": "Mempool Server",
   "mempoolSettingsDescription": "Määritä mukautettuja mempool-palvelimia eri verkoille. Jokainen verkko voi käyttää omaa palvelintaan lohkoselainta ja maksuarviointia varten.",
-  "mempoolSettingsDefaultServer": "Default Server",
-  "mempoolSettingsCustomServer": "Mukautettu palvelin",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
-  "mempoolCustomServerAdd": "Add Custom Server",
   "mempoolCustomServerDelete": "Delete",
-  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
-  "mempoolCustomServerDeleteMessage": "Haluatko varmasti poistaa tämän mukautetun mempool-palvelimen? Sen sijaan käytetään oletuspalvelinta.",
   "mempoolCustomServerUrl": "Server URL",
-  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
   "mempoolCustomServerSaveSuccess": "Mukautettu palvelin tallennettu onnistuneesti",
-  "mempoolCustomServerBottomSheetDescription": "Anna mukautetun mempool-palvelimesi URL-osoite. Palvelin vahvistetaan ennen tallennusta.",
   "walletSettingsImportWalletTitle": "Tuo lompakko",
   "bitcoinSettingsBroadcastTransactionTitle": "Lähetä transaktio",
   "bitcoinSettingsTestnetModeTitle": "Testnet-tila",
@@ -118,17 +92,10 @@
   "exchangeReferralsApplyToJoinMessage": "Liity ohjelmaan täällä",
   "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
   "exchangeRecipientsTitle": "Vastaanottajat",
-  "exchangeRecipientsComingSoon": "Vastaanottajat - Tulossa pian",
-  "exchangeLogoutComingSoon": "Kirjaudu ulos - Tulossa pian",
-  "exchangeLegacyTransactionsTitle": "Vanhat tapahtumat",
-  "exchangeLegacyTransactionsComingSoon": "Vanhat tapahtumat - Tulossa pian",
   "exchangeFileUploadTitle": "Tiedostojen turvallinen lataus",
   "exchangeFileUploadDocumentTitle": "Lähetä dokumentti",
   "exchangeFileUploadInstructions": "Jos sinun täytyy lähettää muita asiakirjoja, lähetä ne täällä.",
   "exchangeFileUploadButton": "Lähetä",
-  "exchangeAccountTitle": "Pörssitili",
-  "exchangeAccountSettingsTitle": "Pörssitilin asetukset",
-  "exchangeAccountComingSoon": "Tämä ominaisuus on tulossa pian.",
   "exchangeBitcoinWalletsTitle": "Oletus Bitcoin-lompakot",
   "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin-osoite",
   "exchangeBitcoinWalletsLightningAddressLabel": "Lightning-osoite (LN)",
@@ -195,16 +162,11 @@
   "sendScanBitcoinQRCode": "Lähetä Bitcoin- tai Lightning-varoja scannaamalla QR-koodi.",
   "sendOpenTheCamera": "Avaa kamera",
   "sendCustomFee": "Mukautettu kulutaso",
-  "sendAbsoluteFees": "Kulut tarkalleen",
-  "sendRelativeFees": "Kulut suhteellisena",
   "sendSats": "sat",
   "sendSatsPerVB": "sat/vB",
   "sendConfirmCustomFee": "Hyväksy mukautettu kulutaso",
-  "sendEstimatedDelivery10Minutes": "10 minuuttia",
   "sendEstimatedDelivery10to30Minutes": "10-30 minuuttia",
   "sendEstimatedDeliveryFewHours": "muutama tunti",
-  "sendEstimatedDeliveryHoursToDays": "tunneista vuorokausiin",
-  "sendEstimatedDelivery": "Arvioitu viive ~ ",
   "sendAddress": "Osoite: ",
   "sendType": "Tyyppi: ",
   "sendReceive": "Vastaanotto",
@@ -253,7 +215,6 @@
   "receiveContinue": "Jatka",
   "receiveCopyAddressOnly": "Kopioi tai skannaa vain osoite",
   "receiveFeeExplanation": "Tämä kulu vähennetään lähetetystä summasta",
-  "receiveReceiveAmount": "Vastaanotettava määrä",
   "receiveSendNetworkFee": "Lähetyksen verkkokulu",
   "receiveServerNetworkFees": "Palvelimen swap-kulut",
   "receiveSwapId": "Swapin tunnus",
@@ -1182,7 +1143,6 @@
   "pinButtonCreate": "Luo PIN-koodi",
   "pinButtonRemove": "Poista PIN-koodi käytöstä",
   "pinAuthenticationTitle": "Tunnistautuminen",
-  "appUnlockScreenTitle": "Tunnistautuminen",
   "pinCreateHeadline": "Luo uusi PIN-koodi",
   "pinValidationError": "PIN-koodin vähimmäispituus on {minLength} numeroa",
   "@pinValidationError": {
@@ -1196,23 +1156,6 @@
   "pinConfirmHeadline": "Vahvista uusi PIN-koodi",
   "pinConfirmMismatchError": "PIN-koodit eivät täsmää",
   "pinButtonConfirm": "Vahvista",
-  "appUnlockEnterPinMessage": "Avaaminen vaatii PIN-koodin",
-  "appUnlockIncorrectPinError": "Väärä PIN-koodi. Yritä uudelleen. ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
-  "appUnlockAttemptSingular": "epäonnistunut yritys",
-  "appUnlockAttemptPlural": "epäonnistunutta yritystä",
-  "appUnlockButton": "Avaa",
-  "appUnlockPinCheckError": "Suojausasetusten lataaminen epäonnistui. Käynnistä sovellus uudelleen.",
-  "appUnlockPinVerifyError": "PIN-koodisi tarkistaminen epäonnistui. Yritä uudelleen.",
   "pinStatusLoading": "Ladataan",
   "pinStatusCheckingDescription": "Tarkistetaan PIN-koodia",
   "pinStatusProcessing": "Käsitellään",
@@ -1261,85 +1204,6 @@
     }
   },
   "autoswapTriggerBalanceError": "Maksimi-saldo on oltava vähintään kaksi kertaa tavoitesaldo.",
-  "bitboxErrorPermissionDenied": "USB-oikeudet vaaditaan BitBox-laitteiden yhdistämiseen.",
-  "bitboxErrorNoDevicesFound": "BitBox-laitteita ei löytynyt. Varmista, että laitteesi on päällä ja liitetty USB:llä.",
-  "bitboxErrorMultipleDevicesFound": "Useita BitBox-laitteita löydetty. Varmista, että vain yksi laite on kytketty.",
-  "bitboxErrorDeviceNotFound": "BitBox-laitetta ei löydy.",
-  "bitboxErrorConnectionTypeNotInitialized": "Yhteystyyppiä ei ole alustettu.",
-  "bitboxErrorDeviceNotPaired": "Laite ei ole paritettu. Suorita paritusprosessi ensin.",
-  "bitboxErrorHandshakeFailed": "Turvallisen yhteyden muodostaminen epäonnistui. Yritä uudelleen.",
-  "bitboxErrorOperationTimeout": "Toiminto aikakatkaistiin. Yritä uudelleen.",
-  "bitboxErrorConnectionFailed": "Yhteyden muodostaminen BitBox-laitteeseen epäonnistui. Tarkista yhteytesi.",
-  "bitboxErrorInvalidResponse": "Virheellinen vastaus BitBox-laitteelta. Yritä uudelleen.",
-  "bitboxErrorOperationCancelled": "Toiminto peruutettiin. Yritä uudelleen.",
-  "bitboxActionUnlockDeviceTitle": "Avaa BitBox-laite",
-  "bitboxActionPairDeviceTitle": "Parita BitBox-laite",
-  "bitboxActionImportWalletTitle": "Tuo BitBox-lompakko",
-  "bitboxActionSignTransactionTitle": "Allekirjoita transaktio",
-  "bitboxActionVerifyAddressTitle": "Vahvista osoite BitBoxissa",
-  "bitboxActionUnlockDeviceButton": "Avaa laite",
-  "bitboxActionPairDeviceButton": "Aloita paritus",
-  "bitboxActionImportWalletButton": "Aloita tuonti",
-  "bitboxActionSignTransactionButton": "Aloita allekirjoitus",
-  "bitboxActionVerifyAddressButton": "Vahvista osoite",
-  "bitboxActionUnlockDeviceProcessing": "Avaetaan laitetta",
-  "bitboxActionPairDeviceProcessing": "Paritetaan laitetta",
-  "bitboxActionImportWalletProcessing": "Tuodaan lompakkoa",
-  "bitboxActionSignTransactionProcessing": "Allekirjoitetaan transaktiota",
-  "bitboxActionVerifyAddressProcessing": "Näytetään osoitetta BitBoxissa...",
-  "bitboxActionUnlockDeviceSuccess": "Laite avattu onnistuneesti",
-  "bitboxActionPairDeviceSuccess": "Laite paritettu onnistuneesti",
-  "bitboxActionImportWalletSuccess": "Lompakko tuotu onnistuneesti",
-  "bitboxActionSignTransactionSuccess": "Transaktio allekirjoitettu onnistuneesti",
-  "bitboxActionVerifyAddressSuccess": "Osoite vahvistettu onnistuneesti",
-  "bitboxActionUnlockDeviceSuccessSubtext": "BitBox-laitteesi on nyt avattu ja käyttövalmis.",
-  "bitboxActionPairDeviceSuccessSubtext": "BitBox-laitteesi on nyt paritettu ja käyttövalmis.",
-  "bitboxActionImportWalletSuccessSubtext": "BitBox-lompakkosi on tuotu onnistuneesti.",
-  "bitboxActionSignTransactionSuccessSubtext": "Transaktiosi on allekirjoitettu onnistuneesti.",
-  "bitboxActionVerifyAddressSuccessSubtext": "Osoite on vahvistettu BitBox-laitteellasi.",
-  "bitboxActionUnlockDeviceProcessingSubtext": "Syötä salasanasi BitBox-laitteella...",
-  "bitboxActionPairDeviceProcessingSubtext": "Vahvista parituskoodi BitBox-laitteellasi...",
-  "bitboxActionImportWalletProcessingSubtext": "Määritetään vain katseltavaa lompakkoa...",
-  "bitboxActionSignTransactionProcessingSubtext": "Vahvista transaktio BitBox-laitteellasi...",
-  "bitboxActionVerifyAddressProcessingSubtext": "Vahvista osoite BitBox-laitteellasi.",
-  "bitboxScreenConnectDevice": "Yhdistä BitBox-laitteesi",
-  "bitboxScreenScanning": "Etsitään laitteita",
-  "bitboxScreenConnecting": "Yhdistetään BitBoxiin",
-  "bitboxScreenPairingCode": "Parituskoodi",
-  "bitboxScreenEnterPassword": "Syötä salasana",
-  "bitboxScreenVerifyAddress": "Vahvista osoite",
-  "bitboxScreenActionFailed": "{action} epäonnistui",
-  "@bitboxScreenActionFailed": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "bitboxScreenConnectSubtext": "Varmista, että BitBox02 on avattu ja liitetty USB:llä.",
-  "bitboxScreenScanningSubtext": "Etsitään BitBox-laitettasi...",
-  "bitboxScreenConnectingSubtext": "Luodaan suojattu yhteys...",
-  "bitboxScreenPairingCodeSubtext": "Varmista, että tämä koodi vastaa BitBox02:n näyttöä, ja vahvista laitteella.",
-  "bitboxScreenEnterPasswordSubtext": "Syötä salasanasi BitBox-laitteelle jatkaaksesi.",
-  "bitboxScreenVerifyAddressSubtext": "Vertaa tätä osoitetta BitBox02:n näyttöön",
-  "bitboxScreenUnknownError": "Tapahtui tuntematon virhe",
-  "bitboxScreenWaitingConfirmation": "Odotetaan vahvistusta BitBox02:lta...",
-  "bitboxScreenAddressToVerify": "Vahvistettava osoite:",
-  "bitboxScreenVerifyOnDevice": "Vahvista tämä osoite BitBox-laitteellasi",
-  "bitboxScreenWalletTypeLabel": "Lompakon tyyppi:",
-  "bitboxScreenSelectWalletType": "Valitse lompakon tyyppi",
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "bitboxScreenSegwitBip84Subtitle": "Natiivinen SegWit - suositeltu",
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH upotettuna P2SH:ään",
-  "bitboxScreenTroubleshootingTitle": "BitBox02 -vianmääritys",
-  "bitboxScreenTroubleshootingSubtitle": "Ensin varmista, että BitBox02 on kytketty puhelimesi USB-porttiin. Jos laite ei silti yhdisty sovellukseen, kokeile seuraavia:",
-  "bitboxScreenTroubleshootingStep1": "Varmista, että BitBoxillasi on uusin laiteohjelmisto asennettuna.",
-  "bitboxScreenTroubleshootingStep2": "Varmista, että puhelimessasi on USB-oikeudet käytössä.",
-  "bitboxScreenTroubleshootingStep3": "Käynnistä BitBox02 uudelleen irrottamalla ja kytkemällä se takaisin.",
-  "bitboxScreenTryAgainButton": "Yritä uudelleen",
-  "bitboxScreenManagePermissionsButton": "Hallitse sovelluksen oikeuksia",
-  "bitboxScreenNeedHelpButton": "Tarvitsetko apua?",
   "bitboxScreenDefaultWalletLabel": "BitBox-lompakko",
   "advancedOptionsTitle": "Lisäasetukset",
   "replaceByFeeActivatedLabel": "Replace-by-fee aktivoitu",
@@ -1734,8 +1598,6 @@
       }
     }
   },
-  "sendEnterAbsoluteFee": "Anna absoluuttinen kulu satoshissa",
-  "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
   "sendErrorHardwareWalletCannotSwap": "Laitelompakoita ei voi käyttää vaihtoihin.",
   "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
@@ -2141,79 +2003,7 @@
   "psbtSignTransaction": "Allekirjoita transaktio",
   "psbtInstructions": "Ohjeet",
   "psbtImDone": "Valmis",
-  "psbtFlowSignTransaction": "Allekirjoita transaktio",
-  "psbtFlowInstructions": "Ohjeet",
-  "psbtFlowDone": "Valmis",
-  "psbtFlowPartProgress": "Osa {current}/{total}",
-  "@psbtFlowPartProgress": {
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSpecterTitle": "Specter-ohjeet",
   "psbtFlowColdcardTitle": "Coldcard Q -ohjeet",
-  "psbtFlowTurnOnDevice": "Käynnistä {device}-laitteesi",
-  "@psbtFlowTurnOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickScan": "Valitse Skannaa",
-  "psbtFlowScanQrShown": "Skannaa Bull-lompakossa näytetty QR-koodi",
-  "psbtFlowTroubleScanningTitle": "Jos sinulla on ongelmia skannauksen kanssa:",
-  "psbtFlowIncreaseBrightness": "Lisää laitteen näytön kirkkautta",
-  "psbtFlowMoveLaser": "Siirrä punaista lasersädettä QR-koodin yli ylös ja alas",
-  "psbtFlowMoveBack": "Kokeile siirtää laitetta hieman taaksepäin",
-  "psbtFlowReviewTransaction": "Kun transaktio on tuotu {device}-laitteeseesi, tarkista vastaanottajan osoite ja määrä.",
-  "@psbtFlowReviewTransaction": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSelectSeed": "Kun transaktio on tuotu {device}-laitteeseesi, valitse siemen, jolla haluat allekirjoittaa.",
-  "@psbtFlowSelectSeed": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowSignTransactionOnDevice": "Paina painikkeita allekirjoittaaksesi transaktion {device}-laitteellasi.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowDeviceShowsQr": "{device} näyttää sitten oman QR-koodinsa.",
-  "@psbtFlowDeviceShowsQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowClickDone": "Valitse \"Valmis\" Bull Bitcoin -lompakossa.",
-  "psbtFlowScanDeviceQr": "Bull Bitcoin -lompakko pyytää sinua skannaamaan {device}-laitteen QR-koodin. Skannaa se.",
-  "@psbtFlowScanDeviceQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowTransactionImported": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "psbtFlowReadyToBroadcast": "Se on nyt valmis lähetettäväksi! Kun valitset Lähetä, transaktio julkaistaan Bitcoin-verkossa ja varat lähetetään.",
   "hwConnectTitle": "Yhdistä laitteistolompakko",
   "hwChooseDevice": "Valitse laitteistolompakko, johon haluat yhdistää",
   "hwColdcardQ": "Coldcard Q",
@@ -2223,68 +2013,6 @@
   "hwKrux": "Krux",
   "hwPassport": "Foundation Passport",
   "hwSeedSigner": "SeedSigner",
-  "kruxInstructionsTitle": "Krux-ohjeet",
-  "kruxStep1": "Kirjaudu Krux-laitteeseesi",
-  "kruxStep2": "Valitse Allekirjoita",
-  "kruxStep3": "Valitse PSBT",
-  "kruxStep4": "Valitse Lataa kamerasta",
-  "kruxStep5": "Skannaa Bull-lompakossa näytetty QR-koodi",
-  "kruxStep6": "Jos sinulla on ongelmia skannauksen kanssa:",
-  "kruxStep7": "   - Lisää laitteen näytön kirkkautta",
-  "kruxStep8": "   - Siirrä punaista lasersädettä QR-koodin yli",
-  "kruxStep9": "   - Kokeile siirtää laitetta hieman taaksepäin",
-  "kruxStep10": "Kun transaktio on tuotu Kruxiin, tarkista vastaanottajan osoite ja määrä.",
-  "kruxStep11": "Paina painikkeita allekirjoittaaksesi transaktion Kruxilla.",
-  "kruxStep12": "Krux näyttää sitten oman QR-koodinsa.",
-  "kruxStep13": "Valitse \"Valmis\" Bull Bitcoin -lompakossa.",
-  "kruxStep14": "Bull Bitcoin -lompakko pyytää sinua skannaamaan Kruxin QR-koodin. Skannaa se.",
-  "kruxStep15": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "kruxStep16": "Se on nyt valmis lähetettäväksi! Kun valitset Lähetä, transaktio julkaistaan Bitcoin-verkossa ja varat lähetetään.",
-  "keystoneInstructionsTitle": "Keystone-ohjeet",
-  "keystoneStep1": "Kirjaudu Keystone-laitteeseesi",
-  "keystoneStep2": "Valitse Skannaa",
-  "keystoneStep3": "Skannaa Bull-lompakossa näytetty QR-koodi",
-  "keystoneStep4": "Jos sinulla on ongelmia skannauksen kanssa:",
-  "keystoneStep5": "   - Lisää laitteen näytön kirkkautta",
-  "keystoneStep6": "   - Siirrä punaista lasersädettä QR-koodin yli",
-  "keystoneStep7": "   - Kokeile siirtää laitetta hieman taaksepäin",
-  "keystoneStep8": "Kun transaktio on tuotu Keystonelle, tarkista vastaanottajan osoite ja määrä.",
-  "keystoneStep9": "Paina painikkeita allekirjoittaaksesi transaktion Keystone-laitteellasi.",
-  "keystoneStep10": "Keystone näyttää sitten oman QR-koodinsa.",
-  "keystoneStep11": "Valitse \"Valmis\" Bull Bitcoin -lompakossa.",
-  "keystoneStep12": "Bull Bitcoin -lompakko pyytää sinua skannaamaan Keystone-laitteen QR-koodin. Skannaa se.",
-  "keystoneStep13": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "keystoneStep14": "Se on nyt valmis lähetettäväksi! Kun valitset Lähetä, transaktio julkaistaan Bitcoin-verkossa ja varat lähetetään.",
-  "passportInstructionsTitle": "Foundation Passport -ohjeet",
-  "passportStep1": "Kirjaudu Passport-laitteeseesi",
-  "passportStep2": "Valitse Sign with QR Code",
-  "passportStep3": "Skannaa Bull-lompakossa näkyvä QR-koodi",
-  "passportStep4": "Jos sinulla on ongelmia skannauksessa:",
-  "passportStep5": "   - Lisää laitteesi näytön kirkkautta",
-  "passportStep6": "   - Liikuta punaista laseria ylös ja alas QR-koodin päällä",
-  "passportStep7": "   - Kokeile siirtää laitettasi hieman kauemmas",
-  "passportStep8": "Kun transaktio on tuotu Passportiin, tarkista vastaanottava osoite ja määrä.",
-  "passportStep9": "Paina painikkeita allekirjoittaaksesi transaktion Passport-laitteella.",
-  "passportStep10": "Passport näyttää tämän jälkeen oman QR-koodinsa.",
-  "passportStep11": "Napsauta ”Valmis” Bull Bitcoin -lompakossa.",
-  "passportStep12": "Bull-lompakko pyytää sinua skannaamaan Passportin QR-koodin. Skannaa se.",
-  "passportStep13": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "passportStep14": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
-  "seedsignerInstructionsTitle": "SeedSigner-ohjeet",
-  "seedsignerStep1": "Kytke SeedSigner-laite päälle",
-  "seedsignerStep2": "Valitse Scan",
-  "seedsignerStep3": "Skannaa Bull-lompakossa näkyvä QR-koodi",
-  "seedsignerStep4": "Jos sinulla on ongelmia skannauksessa:",
-  "seedsignerStep5": "   - Lisää laitteesi näytön kirkkautta",
-  "seedsignerStep6": "   - Liikuta punaista laseria ylös ja alas QR-koodin päällä",
-  "seedsignerStep7": "   - Kokeile siirtää laitettasi hieman kauemmas",
-  "seedsignerStep8": "Kun transaktio on tuotu SeedSigneriin, valitse siemen, jolla haluat allekirjoittaa.",
-  "seedsignerStep9": "Tarkista vastaanottava osoite ja määrä, ja vahvista allekirjoitus SeedSignerilla.",
-  "seedsignerStep10": "SeedSigner näyttää tämän jälkeen oman QR-koodinsa.",
-  "seedsignerStep11": "Napsauta ”Valmis” Bull Bitcoin -lompakossa.",
-  "seedsignerStep12": "Bull-lompakko pyytää sinua skannaamaan SeedSignerissa näkyvän QR-koodin. Skannaa se.",
-  "seedsignerStep13": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "seedsignerStep14": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
   "connectHardwareWalletTitle": "Yhdistä laitteistolompakko",
   "connectHardwareWalletDescription": "Valitse laitteistolompakko, jonka haluat yhdistää",
   "connectHardwareWalletColdcardQ": "Coldcard Q",
@@ -2310,22 +2038,6 @@
   "coldcardStep13": "Bull-lompakko pyytää sinua skannaamaan Coldcardissa näkyvän QR-koodin. Skannaa se.",
   "coldcardStep14": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "coldcardStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
-  "jadeInstructionsTitle": "Blockstream Jade -ohjeet",
-  "jadeStep1": "Kirjaudu Jade-laitteeseesi",
-  "jadeStep2": "Lisää salasana, jos käytät sellaista (valinnainen)",
-  "jadeStep3": "Valitse \"Scan QR\"",
-  "jadeStep4": "Skannaa Bull-lompakossa näkyvä QR-koodi",
-  "jadeStep5": "Jos sinulla on ongelmia skannauksessa:",
-  "jadeStep6": "   - Lisää laitteesi näytön kirkkautta",
-  "jadeStep7": "   - Pidä QR-koodi vakaana ja keskitettynä",
-  "jadeStep8": "   - Kokeile siirtää laitetta lähemmäs tai kauemmas",
-  "jadeStep9": "Kun transaktio on tuotu Jadeen, tarkista vastaanottava osoite ja määrä.",
-  "jadeStep10": "Paina painikkeita allekirjoittaaksesi transaktion Jadella.",
-  "jadeStep11": "Jade näyttää tämän jälkeen oman QR-koodinsa.",
-  "jadeStep12": "Napsauta ”Valmis” Bull Bitcoin -lompakossa.",
-  "jadeStep13": "Bull-lompakko pyytää sinua skannaamaan Jadessa näkyvän QR-koodin. Skannaa se.",
-  "jadeStep14": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "jadeStep15": "Se on nyt valmis lähetettäväksi! Kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon ja varat lähetetään.",
   "importWalletTitle": "Lisää uusi lompakko",
   "importWalletConnectHardware": "Yhdistä laitteistolompakko",
   "importWalletImportMnemonic": "Tuo siemenlause",
@@ -2436,21 +2148,6 @@
   "exportTransactionsInvalidDateRange": "Alkamispäivän on oltava ennen päättymispäivää",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
-  },
-  "bip329LabelsTitle": "BIP329-tunnisteet",
-  "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
-  "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",
-  "bip329LabelsImportButton": "Tuo tunnisteet",
-  "bip329LabelsExportButton": "Vie tunnisteet",
-  "bip329LabelsExportSuccess": "Tunnisteet viety onnistuneesti",
-  "bip329LabelsImportSuccessSingular": "1 tunniste tuotu",
-  "bip329LabelsImportSuccessPlural": "{count} tunnistetta tuotu",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "broadcastSignedTxTitle": "Lähetä transaktio",
   "broadcastSignedTxScanQR": "Skannaa laitteistolompakon QR-koodi",
@@ -2737,238 +2434,14 @@
   "autoswapRecipientWalletInfo": "Valitse, mihin Bitcoin-lompakkoon siirretyt varat vastaanotetaan (pakollinen)",
   "autoswapDefaultWalletLabel": "Bitcoin-lompakko",
   "autoswapSave": "Tallenna",
-  "electrumTitle": "Electrum-palvelinasetukset",
-  "electrumNetworkBitcoin": "Bitcoin",
-  "electrumNetworkLiquid": "Liquid",
-  "electrumAdvancedOptions": "Lisäasetukset",
-  "electrumAddCustomServer": "Lisää oma palvelin",
-  "electrumCloseTooltip": "Sulje",
-  "electrumServerUrlHint": "{network} {environment} -palvelimen URL",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
-  "electrumEmptyFieldError": "Tämä kenttä ei voi olla tyhjä",
-  "electrumLiquidSslInfo": "Protokollaa ei tule määrittää, SSL otetaan käyttöön automaattisesti.",
-  "electrumAddServer": "Lisää palvelin",
-  "electrumEnableSsl": "Ota SSL käyttöön",
-  "electrumProtocolError": "Älä sisällytä protokollaa (ssl:// tai tcp://).",
-  "electrumFormatError": "Käytä muotoa host:port (esim. example.com:50001)",
-  "electrumBitcoinServerInfo": "Anna palvelinosoite muodossa host:port (esim. example.com:50001)",
-  "electrumStopGap": "Stop Gap",
-  "electrumTimeout": "Aikakatkaisu (sekuntia)",
-  "electrumRetryCount": "Uusintayritysten määrä",
-  "electrumValidateDomain": "Tarkista verkkotunnus",
-  "electrumStopGapEmptyError": "Stop Gap ei voi olla tyhjä",
-  "electrumInvalidNumberError": "Anna kelvollinen numero",
-  "electrumStopGapNegativeError": "Stop Gap ei voi olla negatiivinen",
-  "electrumStopGapTooHighError": "Stop Gap vaikuttaa liian suurelta. (Enintään {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutEmptyError": "Aikakatkaisu ei voi olla tyhjä",
-  "electrumTimeoutPositiveError": "Aikakatkaisun on oltava positiivinen",
-  "electrumTimeoutTooHighError": "Aikakatkaisu vaikuttaa liian suurelta. (Enintään {maxTimeout} sekuntia)",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumRetryCountEmptyError": "Uusintayritysten määrä ei voi olla tyhjä",
-  "electrumRetryCountNegativeError": "Uusintayritysten määrä ei voi olla negatiivinen",
-  "electrumTimeoutWarning": "Aikakatkaisusi ({timeoutValue} sekuntia) on alempi kuin suositus ({recommended} sekuntia) tälle Stop Gap -arvolle.",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidStopGapError": "Virheellinen Stop Gap -arvo: {value}",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidTimeoutError": "Virheellinen aikakatkaisu: {value}",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumInvalidRetryError": "Virheellinen uusintayritysten määrä: {value}",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSaveFailedError": "Lisäasetusten tallennus epäonnistui",
-  "electrumUnknownError": "Tapahtui virhe",
-  "electrumReset": "Palauta oletukset",
-  "electrumConfirm": "Vahvista",
-  "electrumDeleteServerTitle": "Poista oma palvelin",
-  "electrumDeletePrivacyNotice": "Tietosuoja-ilmoitus:\n\nOman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi. Poistamalla viimeisen oman palvelimesi muodostat yhteyden BullBitcoin-palvelimeen.\n",
-  "electrumDeleteConfirmation": "Haluatko varmasti poistaa tämän palvelimen?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumCancel": "Peruuta",
-  "electrumDelete": "Poista",
-  "electrumDefaultServers": "Oletuspalvelimet",
-  "electrumDefaultServersInfo": "Yksityisyytesi suojaamiseksi oletuspalvelimia ei käytetä, kun omia palvelimia on määritetty.",
-  "electrumCustomServers": "Omat palvelimet",
-  "electrumDragToReorder": "(Pitkä painallus, raahaa ja muuta prioriteettia)",
-  "electrumLoadFailedError": "Palvelinten lataus epäonnistui",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumServerAlreadyExists": "Tämä palvelin on jo olemassa",
-  "electrumServerUnreachable": "Palvelimeen ei saada yhteyttä. Tarkista osoite ja yritä uudelleen.",
-  "electrumPrivacyNoticeTitle": "Tietosuoja-ilmoitus",
-  "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi.",
-  "electrumPrivacyNoticeContent2": "Jos kuitenkin tarkastelet transaktioita mempoolin kautta napsauttamalla transaktio-ID tai vastaanottajan tietoja, tämä tieto tulee BullBitcoinin tietoon.",
-  "electrumPrivacyNoticeCancel": "Peruuta",
-  "electrumPrivacyNoticeSave": "Tallenna",
-  "electrumServerNotUsed": "Ei käytössä",
-  "electrumServerOnline": "Käytössä",
-  "electrumServerOffline": "Poissa käytöstä",
   "addressViewNoAddressesFound": "Osoitteita ei löytynyt",
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "appStartupErrorTitle": "Käynnistysvirhe",
   "appStartupErrorMessage": "Sovelluksen käynnistys epäonnistui. Yritä sulkea sovellus kokonaan ja käynnistää se uudelleen. Jos ongelma jatkuu, ota yhteyttä tukeen ja jaa lokisi.",
   "appStartupContactSupportButton": "Ota yhteyttä tukeen",
-  "ledgerImportTitle": "Tuo Ledger-lompakko",
-  "ledgerSignTitle": "Transaktion allekirjoitus",
-  "ledgerVerifyTitle": "Vahvista osoite Ledgerissä",
-  "ledgerImportButton": "Aloita tuonti",
-  "ledgerSignButton": "Aloita allekirjoitus",
-  "ledgerVerifyButton": "Vahvista osoite",
-  "ledgerProcessingImport": "Tuodaan lompakkoa",
-  "ledgerProcessingSign": "Transaktiota allekirjoitetaan",
-  "ledgerProcessingVerify": "Näytetään osoite Ledgerissä...",
-  "ledgerSuccessImportTitle": "Lompakko tuotu onnistuneesti",
-  "ledgerSuccessSignTitle": "Transaktio allekirjoitetiin",
-  "ledgerSuccessVerifyTitle": "Vahvistetaan osoitetta Ledgerissä...",
-  "ledgerSuccessImportDescription": "Ledger-lompakkosi on tuotu onnistuneesti.",
-  "ledgerSuccessSignDescription": "Transaktio on allekirjoitettu onnistuneesti.",
-  "ledgerSuccessVerifyDescription": "Osoite on vahvistettu Ledger-laitteellasi.",
-  "ledgerProcessingImportSubtext": "Määritetään watch-only-lompakkoasi...",
-  "ledgerProcessingSignSubtext": "Vahvista transaktio Ledger-laitteellasi...",
-  "ledgerProcessingVerifySubtext": "Vahvista osoite Ledger-laitteellasi.",
-  "ledgerConnectTitle": "Yhdistä Ledger-laitteesi",
-  "ledgerScanningTitle": "Etsitään laitteita",
-  "ledgerConnectingMessage": "Yhdistetään laitteeseen {deviceName}",
-  "@ledgerConnectingMessage": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerActionFailedMessage": "{action} epäonnistui",
-  "@ledgerActionFailedMessage": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "ledgerInstructionsIos": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä.",
-  "ledgerInstructionsAndroidUsb": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja liitä laite USB-kaapelilla.",
-  "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä tai liitä laite USB-kaapelilla.",
-  "ledgerScanningMessage": "Etsitään lähellä olevia Ledger-laitteita...",
-  "ledgerConnectingSubtext": "Muodostetaan suojattua yhteyttä...",
-  "ledgerErrorPermissionDenied": "Ledger-laitteisiin yhdistäminen vaatii Bluetooth-käyttöoikeudet.",
-  "ledgerErrorNoDevicesFound": "Ledger-laitteita ei löytynyt. Varmista, että laitteesi on päällä ja Bluetooth on käytössä.",
-  "ledgerErrorMultipleDevicesFound": "Löytyi useita Ledger-laitteita. Varmista, että lähellä on vain yksi laite.",
-  "ledgerErrorDeviceNotFound": "Ledger-laitetta ei löytynyt.",
-  "ledgerErrorDeviceMismatch": "Havaittiin laitteiden yhteensopimattomuus.",
-  "ledgerErrorInvalidPsbt": "Havaittiin virheellinen PSBT-muoto.",
-  "ledgerErrorMissingDerivationPath": "Johtamispolku vaaditaan",
-  "ledgerErrorMissingScriptType": "Skriptityyppi vaaditaan",
-  "ledgerErrorDeviceBusy": "Toinen ohjelma käyttää Ledger-laitettasi. Sulje se (esimerkiksi Ledger Live) ja yritä uudelleen.",
-  "ledgerErrorNoConnection": "Ledger-yhteyttä ei ole saatavilla",
-  "ledgerErrorRejectedByUser": "Käyttäjä hylkäsi transaktion Ledger-laitteella.",
-  "ledgerErrorDeviceLocked": "Ledger-laite on lukittu. Avaa laite ja yritä uudelleen.",
-  "ledgerErrorBitcoinAppNotOpen": "Avaa Bitcoin-sovellus Ledger-laitteellasi ja yritä uudelleen.",
-  "ledgerErrorMissingPsbt": "PSBT vaaditaan allekirjoitusta varten",
-  "ledgerErrorMissingAddress": "Osoite vaaditaan vahvistusta varten",
-  "ledgerButtonTryAgain": "Yritä uudelleen",
-  "ledgerButtonManagePermissions": "Hallinnoi sovellusoikeuksia",
-  "ledgerButtonNeedHelp": "Tarvitsetko apua?",
-  "ledgerVerifyAddressLabel": "Vahvistettava osoite:",
-  "ledgerWalletTypeLabel": "Lompakkotyyppi:",
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "ledgerWalletTypeSegwitDescription": "Native SegWit – suositeltu",
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "ledgerWalletTypeLegacyDescription": "P2PKH - vanhempi formaatti",
-  "ledgerWalletTypeSelectTitle": "Valitse lompakkotyyppi",
-  "ledgerSuccessAddressVerified": "Osoite vahvistettu onnistuneesti!",
-  "ledgerHelpTitle": "Ledger-vianmääritys",
-  "ledgerHelpSubtitle": "Varmista ensin, että Ledger-laitteesi on avattu ja Bitcoin-sovellus on käynnissä. Jos laitteesi ei edelleenkään yhdistä sovellukseen, kokeile seuraavaa:",
-  "ledgerHelpStep1": "Käynnistä Ledger-laitteesi uudelleen.",
-  "ledgerHelpStep2": "Varmista, että puhelimesi Bluetooth on päällä ja sallittu.",
-  "ledgerHelpStep3": "Varmista, että Ledger-laitteessasi on Bluetooth päällä.",
-  "ledgerHelpStep4": "Varmista, että olet asentanut Bitcoin-sovelluksen uusimman version Ledger Livestä.",
-  "ledgerHelpStep5": "Varmista, että Ledger-laitteessasi on uusin laiteohjelmisto. Voit päivittää laiteohjelmiston Ledger Live -työpöytäsovelluksella.",
   "ledgerDefaultWalletLabel": "Ledger-lompakko",
   "exchangeBrandName": "BULL BITCOIN",
   "exchangeLandingConnectAccount": "Yhdistä Bull Bitcoin -pörssitiliisi",
@@ -2979,7 +2452,6 @@
   "exchangeFeatureBankTransfers": "• Lähetä pankkisiirtoja ja maksa laskuja",
   "exchangeFeatureCustomerSupport": "• Keskustele asiakastuen kanssa",
   "exchangeFeatureUnifiedHistory": "• Yhdistetty tapahtumahistoria",
-  "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
   "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
@@ -3119,43 +2591,8 @@
   "allSeedViewPassphraseLabel": "Salafraasi:",
   "cancel": "Peruuta",
   "delete": "Poista",
-  "statusCheckTitle": "Palvelun tila",
-  "statusCheckLastChecked": "Viimeksi tarkistettu: {time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "statusCheckOnline": "Käytössä",
-  "statusCheckOffline": "Poissa käytöstä",
-  "statusCheckUnknown": "Tuntematon",
   "torSettingsTitle": "Tor-asetukset",
   "torSettingsEnableProxy": "Ota Tor-välityspalvelin käyttöön",
-  "torSettingsProxyPort": "Tor-välityspalvelimen portti",
-  "torSettingsPortDisplay": "Portti: {port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
-  "torSettingsPortNumber": "Porttinumero",
-  "torSettingsPortHint": "9050",
-  "torSettingsPortValidationEmpty": "Anna porttinumero",
-  "torSettingsPortValidationInvalid": "Anna kelvollinen numero",
-  "torSettingsPortValidationRange": "Portin on oltava välillä 1 ja 65535",
-  "torSettingsSaveButton": "Tallenna",
-  "torSettingsConnectionStatus": "Yhteyden tila",
-  "torSettingsStatusConnected": "Valmis",
-  "torSettingsStatusConnecting": "Yhdistetään...",
-  "torSettingsStatusDisconnected": "Ei yhteyttä",
-  "torSettingsStatusUnknown": "Tila tuntematon",
-  "torSettingsDescConnected": "Tor-välityspalvelin on käynnissä ja valmiina",
-  "torSettingsDescConnecting": "Muodostetaan Tor-yhteyttä",
-  "torSettingsDescDisconnected": "Tor-välityspalvelin ei ole käynnissä",
   "withdrawSuccessTitle": "Nosto aloitettu",
   "withdrawSuccessOrderDetails": "Tilaustiedot",
   "withdrawConfirmBankAccount": "Pankkitili",
@@ -3192,20 +2629,6 @@
   "coreScreensReceiveAmountLabel": "Vastaanotettava määrä",
   "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkokulut",
   "coreScreensConfirmButton": "Vahvista",
-  "systemLabelSwaps": "Swapit",
-  "systemLabelAutoSwap": "Automaattinen swap",
-  "systemLabelPayjoin": "Payjoin",
-  "systemLabelSelfSpend": "Oma siirto",
-  "systemLabelExchangeBuy": "Osta",
-  "systemLabelExchangeSell": "Myy",
-  "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsStatusPending": "Odottaa",
   "coreSwapsStatusInProgress": "Käynnissä",
   "coreSwapsStatusCompleted": "Valmis",
@@ -3467,31 +2890,10 @@
       }
     }
   },
-  "mempoolServerStatusOnline": "Verkossa",
-  "mempoolServerStatusOffline": "Ei verkossa",
-  "mempoolServerStatusChecking": "Tarkistetaan...",
   "mempoolServerStatusUnknown": "Tuntematon",
-  "mempoolCustomServerSaveFailed": "Palvelimen tallennus epäonnistui",
-  "mempoolCustomServerInfoDescription": "Mempool-palvelimia käytetään maksuarviointiin ja lohkoselaimen avaamiseen transaktiotietoja tarkasteltaessa.",
-  "mempoolCustomServerUseSsl": "Käytä SSL:ää",
-  "mempoolCustomServerSslAutoDetected": "(Tunnistettu automaattisesti)",
-  "mempoolCustomServerSslHelpText": "Paikallisille (.local, yksityiset IP:t) ja Tor (.onion) -palvelimille SSL on yleensä pois käytöstä. Julkiset IP:t ja verkkotunnukset tulisi käyttää SSL:ää.",
-  "mempoolErrorSameAsDefault": "Tämä URL on sama kuin oletuspalvelin. Käytä eri URL-osoitetta.",
-  "mempoolErrorConnectionTimeout": "Yhteys aikakatkaistiin. Palvelin voi olla hidas tai tavoittamattomissa.",
-  "mempoolErrorHostNotFound": "Palvelinta ei löydy. Tarkista URL ja yritä uudelleen.",
-  "mempoolErrorConnectionFailed": "Palvelimeen ei voi yhdistää. Tarkista verkkoyhteys ja yritä uudelleen.",
-  "mempoolErrorNotMempoolServer": "Tämä URL ei vaikuta olevan mempool-palvelin. Tarkista osoite.",
-  "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
-  "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
-  "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
-  "mempoolErrorInvalidUrl": "Virheellinen palvelimen URL-osoite. Anna kelvollinen verkkotunnus tai IP-osoite.",
-  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui",
-  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui",
-  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui",
   "deleteLogsTitle": "Poista lokit",
   "logsDeletedMessage": "Lokit poistettu",
   "sendSelfTransfer": "Siirto itselle",
-  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
   "priceFailedToLoad": "Kurssin lataus epäonnistui",
   "statusScreenTryAgain": "Yritä uudelleen",
   "statusScreenContinue": "Jatka",
@@ -3654,7 +3056,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Korkeat stop gap -arvot kasvattavat merkittävästi synkronointiaikaa. Pidä sovellus avoinna edustalla, kunnes synkronointi on valmis — sovelluksen siirtäminen taustalle voi keskeyttää sen.",
   "wizardSkipButton": "Ohita",
   "wizardPageIndicator": "SIVU {current} / {total}",
   "wizardNextButton": "Seuraava",
@@ -3851,11 +3252,7 @@
   "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
   "appStartupContactSupportMessage": "Ota yhteyttä tukeen osoitteessa app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox on tuettu vain Androidissa",
-  "pinCodeSaveError": "PIN-koodia ei voitu tallentaa. Yritä uudelleen.",
-  "pinCodeDeleteError": "PIN-koodia ei voitu poistaa. Yritä uudelleen.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
-  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen.",
   "allSeedViewErrorFetch": "Siementen lataaminen epäonnistui. Yritä uudelleen.",
   "@allSeedViewErrorFetch": {
     "description": "Error shown when seeds cannot be loaded"
@@ -4150,7 +3547,6 @@
   "swapRescueButton": "Palauta",
   "swapRescueSuccess": "Swap palautettu — se jatkuu nyt",
   "receivePayjoinNoUtxos": "Vastaanota ensin varoja ottaaksesi tämän käyttöön.\nPayjoinin käyttö vaatii UTXO:ita.",
-  "receiveLiquidRiskDisclosureLabel": "Maksut muunnetaan Liquid L-BTC:ksi (ei BTC:ksi). Lue lisää.",
   "payViewReceipt": "Näytä kuitti",
   "paySinpeReceipt": "SINPE-kuitti",
   "transactionFilterWithdraw": "Nosto",
@@ -4160,6 +3556,7 @@
   "transactionFilterRefund": "Hyvitys",
   "transactionListLoadingFailed": "Tapahtumia ei voitu ladata.",
   "transactionLabelNetworkFees": "Verkkokulut",
+  "receiveLiquidRiskDisclosureLabel": "Maksut muunnetaan Liquid L-BTC:ksi (ei BTC:ksi). Lue lisää.",
   "walletLiquidRiskDisclosureLabel": "Nämä varat ovat Liquid L-BTC:tä (ei BTC:tä). Lue lisää.",
   "liquidRiskDisclosureSemanticLabel": "Avaa Liquid Bitcoinin riskiselvitys",
   "liquidRiskDisclosureTitle": "Pikamaksulompakon Liquid Bitcoin -riskiselvitys",
@@ -4173,46 +3570,6 @@
   "nfcError": "NFC-virhe: {error}",
   "sendCoordinatingPayjoinTransaction": "Koordinoidaan Payjoin-transaktiota.",
   "sendErrorInvoiceExpired": "Tämä lasku on vanhentunut. Pyydä vastaanottajalta uusi lasku.",
-  "psbtFlowSignViaNfc": "Allekirjoita NFC:llä",
-  "psbtFlowSignViaNfcSheetTitle": "Napauta {deviceName}-laitettasi lähettääksesi PSBT:n NFC:llä",
-  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q -ohjeet",
-  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 -ohjeet",
-  "psbtFlowColdcardQStep1": "Kirjaudu Coldcard Q -laitteeseesi",
-  "psbtFlowColdcardQStep2": "Lisää salasana, jos käytät sellaista (valinnainen)",
-  "psbtFlowColdcardQStep3": "Valitse haluamasi allekirjoitustapa:",
-  "psbtFlowColdcardQStep4": "QR-koodille:",
-  "psbtFlowColdcardQStep5": "   - Valitse \"Scan any QR code\" Coldcard Q -laitteellasi",
-  "psbtFlowColdcardQStep6": "   - Skannaa Bull-lompakossa näkyvä QR-koodi",
-  "psbtFlowColdcardQStep7": "   - Jos sinulla on ongelmia skannauksessa:",
-  "psbtFlowColdcardQStep8": "     - Lisää laitteesi näytön kirkkautta",
-  "psbtFlowColdcardQStep9": "     - Liikuta punaista laseria ylös ja alas QR-koodin päällä",
-  "psbtFlowColdcardQStep10": "     - Kokeile siirtää laitettasi hieman kauemmas",
-  "psbtFlowColdcardQStep11": "NFC:lle:",
-  "psbtFlowColdcardQStep12": "   - Valitse \"Ready to Sign\" Coldcard Q -laitteellasi ja napauta sitten NFC-painiketta",
-  "psbtFlowColdcardQStep13": "   - Napauta puhelimellasi Coldcard Q -laitetta",
-  "psbtFlowColdcardQStep14": "   - Odota, että PSBT siirtyy",
-  "psbtFlowColdcardQStep15": "Kun transaktio on tuotu Coldcard Q -laitteeseesi, tarkista vastaanottava osoite ja määrä.",
-  "psbtFlowColdcardQStep16": "Paina painikkeita allekirjoittaaksesi transaktion Coldcard Q -laitteellasi.",
-  "psbtFlowColdcardQStep17": "Coldcard Q näyttää tämän jälkeen allekirjoitetun transaktion QR-koodin tai valmistelee NFC-siirron.",
-  "psbtFlowColdcardQStep18": "Jos allekirjoitit QR-koodilla, napsauta \"Valmis\" Bull Bitcoin -lompakossa.",
-  "psbtFlowColdcardQStep19": "Bull Bitcoin -lompakko pyytää sinua skannaamaan allekirjoitetun transaktion QR-koodin tai käyttämään NFC:tä sen vastaanottamiseen.",
-  "psbtFlowColdcardQStep20": "   - QR-koodille: skannaa Coldcard Q -laitteessa näkyvä QR-koodi",
-  "psbtFlowColdcardQStep21": "   - NFC:lle: napauta puhelimellasi Coldcard Q -laitetta",
-  "psbtFlowColdcardQStep22": "Allekirjoitettu transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "psbtFlowColdcardQStep23": "Se on nyt valmis lähetettäväksi. Heti kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon.",
-  "psbtFlowColdcardMk4Step1": "Kirjaudu Coldcard Mk4 -laitteeseesi",
-  "psbtFlowColdcardMk4Step2": "Lisää salasana, jos käytät sellaista (valinnainen)",
-  "psbtFlowColdcardMk4Step3": "Valitse \"Ready to Sign\" Coldcard Mk4 -laitteellasi ja napauta sitten numeropainiketta 3",
-  "psbtFlowColdcardMk4Step4": "Napauta puhelimellasi Coldcard Mk4 -laitetta",
-  "psbtFlowColdcardMk4Step5": "Odota, että PSBT siirtyy",
-  "psbtFlowColdcardMk4Step6": "Kun transaktio on tuotu Coldcard Mk4 -laitteeseesi, tarkista vastaanottava osoite ja määrä.",
-  "psbtFlowColdcardMk4Step7": "Paina painikkeita allekirjoittaaksesi transaktion Coldcard Mk4 -laitteellasi.",
-  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 valmistelee tämän jälkeen allekirjoitetun transaktion NFC-siirtoa varten.",
-  "psbtFlowColdcardMk4Step9": "Napauta Bull Bitcoin -lompakon lähetysnäytöllä NFC:tä.",
-  "psbtFlowColdcardMk4Step10": "Napauta puhelimellasi Coldcard Mk4 -laitetta vastaanottaaksesi allekirjoitetun transaktion.",
-  "psbtFlowColdcardMk4Step11": "Allekirjoitettu transaktio tuodaan Bull Bitcoin -lompakkoon.",
-  "psbtFlowColdcardMk4Step12": "Tarkista transaktion tiedot Bull Bitcoin -lompakossa.",
-  "psbtFlowColdcardMk4Step13": "Se on nyt valmis lähetettäväksi. Heti kun napsautat Lähetä, transaktio julkaistaan Bitcoin-verkkoon.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "Napauta Coldcard-laitettasi vastaanottaaksesi allekirjoitetun transaktion NFC:llä",
@@ -4257,25 +3614,10 @@
   "fundExchangeCopGeneratePaymentLink": "Luo maksulinkki",
   "fundExchangeCopRedirectMessage": "Sinut ohjataan ulkoiselle sivulle maksun suorittamista varten.",
   "fundExchangeCopOpenPaymentLink": "Avaa maksulinkki",
-  "noteVisibleToSenderNotice": "Tämä kuvaus näkyy QR-koodisi tai laskusi vastaanottajalle.",
   "viewerAddressTab": "Osoite",
   "viewerPaymentUriTab": "Maksu-URI",
   "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
   "importWatchOnlyXpubLabel": "XPUB",
-  "sendSubSatVbyteWarning": "Alle 1 sat/vB -transaktioiden vahvistuminen voi kestää kauemmin, eivätkä ne välttämättä leviä kaikkiin solmuihin.",
-  "sendBelowMinFeeRateError": "Kulutason on oltava vähintään 0.1 sat/vB.",
-  "bitboxErrorBluetoothPermissionDenied": "Bluetooth-käyttöoikeus vaaditaan yhteyden muodostamiseksi BitBox02 Novaan.",
-  "bitboxErrorBluetoothUnavailable": "Bluetooth ei ole käytettävissä. Ota Bluetooth käyttöön ja yritä uudelleen.",
-  "bitboxErrorNoBleDevicesFound": "BitBox02 Novaa ei löytynyt läheltä. Tarkista Bluetooth ja yritä uudelleen.",
-  "bitboxErrorMultipleBleDevicesFound": "Useita BitBox02 Nova -laitteita löytyi. Pidä vain yksi lähellä ja yritä uudelleen.",
-  "bitboxErrorOperationFailed": "BitBox-toiminto epäonnistui. Yritä uudelleen.",
-  "bitboxScreenConnectSubtextBluetooth": "Varmista, että BitBox02 Nova on lukitsematon ja Bluetooth on käytössä.",
-  "bitboxScreenScanningSubtextBluetooth": "Etsitään BitBox02 Novaa läheltä...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Novan vianmääritys",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "Jos laitteesi ei vieläkään muodosta yhteyttä sovellukseen, kokeile seuraavia:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "Varmista, että Bluetooth on päällä ja sallittu tälle sovellukselle.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "Varmista, että Bluetooth on käytössä BitBox02 Novassasi.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "Käynnistä BitBox02 Nova uudelleen ja yritä yhdistää uudelleen.",
   "sendErrorInsufficientBalanceFrozenHint": "Käytettävissä oleva saldo ei riitä — {amount} on jäädytetty. Vapauta kolikot kohdassa Hallinnoi kolikoita käyttääksesi niitä.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -4304,12 +3646,7 @@
   "settingsPayjoinDisclaimerTitle": "Payjoin-huomautus",
   "settingsPayjoinDisclaimerRowLabel": "Payjoin-huomautus",
   "settingsPayjoinAdvancedTitle": "Payjoinin lisäasetukset",
-  "receiveAdditionalInformation": "Lisätiedot",
-  "receiveAdditionalInformationPlaceholder": "Lisää summa tai viesti lähettäjälle",
-  "receiveMessageForSender": "Viesti lähettäjälle",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "Payjoin on käytössä, mutta tässä lompakossa ei vielä ole osallistumiseen tarvittavaa saldoa. Se aktivoituu, kun vastaanotat varoja.",
-  "announcementAutoswapDescription": "Liquid-varasi vaihdetaan automaattisesti Bitcoiniin.",
   "addressViewErrorWalletNotFound": "Tätä lompakkoa ei löytynyt.",
   "addressViewErrorLoadFailed": "Osoitteidesi lataaminen ei onnistunut. Yritä uudelleen.",
   "coreSwapsStatusNotStarted": "Ei aloitettu",
@@ -4324,19 +3661,6 @@
   "coreSwapsStatusUnknown": "Tuntematon",
   "sendSwapExpiredTitle": "Tilaus vanheni",
   "sendSwapExpiredMessage": "Tämä tilaus vanheni ennen kuin varoja lähetettiin. Lompakostasi ei lähetetty mitään.",
-  "torSettingsStatusCensored": "Yhteys vaikuttaa suodatetulta",
-  "torSettingsDescCensored": "Tor ei saanut yhteyttä verkkoon. Tämä tarkoittaa usein, että yhteyttä suodatetaan.",
-  "torSettingsBootstrapProgress": "Yhdistetään… {percent} %",
-  "torSettingsEmbeddedTitle": "Sisäänrakennettu Tor",
-  "torSettingsEmbeddedDescription": "Sisäänrakennettua Toria käyttävät RecoverBull ja Bitcoin Electrumin .onion-palvelimet. Sovelluksen muu liikenne pysyy suorana.",
-  "torSettingsTransportMode": "Yhteystapa",
-  "torSettingsModeAutomatic": "Automaattinen",
-  "torSettingsModeDirect": "Suora",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "Kokeilee ensin suoraa Tor-yhteyttä ja käyttää Snowflakea, jos verkko näyttää estävän Torin.",
-  "torSettingsModeDirectDescription": "Yhdistää suoraan Tor-verkkoon ilman liitettävää siirtotapaa.",
-  "torSettingsModeSnowflakeDescription": "Käyttää vapaaehtoisten Snowflake-välityspalvelimia Torin tavoittamiseen suodatetusta verkosta.",
-  "torSettingsActiveTransport": "Aktiivinen siirtotapa: {transport}",
   "settingsScreenPrivacyTitle": "Näytön yksityisyys",
   "settingsScreenPrivacyDisabledMessage": "Kuvakaappaukset ovat nyt sallittuja arkaluonteisilla näytöillä",
   "settingsSearchHint": "Hae asetuksista",
@@ -4371,11 +3695,7 @@
   "exchangeSupportChatLoadMessagesError": "Viestien lataaminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatSendMessageError": "Viestin lähettäminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen.",
-  "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
-  "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita",
   "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen.",
-  "psbtFlowInvalidPsbtError": "Tätä tapahtumaa ei voitu lukea. Palaa takaisin ja luo se uudelleen.",
-  "psbtFlowQrEncodingError": "Tätä tapahtumaa ei voitu muuntaa QR-koodiksi.",
   "sendErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
   "sendErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
@@ -4407,15 +3727,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "Tätä tiedostotyyppiä ei hyväksytä. Valitse toinen.",
   "exchangeSettingsErrorDocumentUnreadable": "Tiedostoa ei voitu lukea. Valitse toinen.",
   "exchangeSettingsErrorUploadingDocument": "Asiakirjaa ei voitu ladata. Yritä uudelleen.",
-  "labelsErrorNoteTooLong": "Muistiinpano voi olla enintään {max} merkkiä",
-  "labelsErrorNoteForbiddenCharacter": "Muistiinpano ei voi sisältää merkkiä {character}",
-  "labelsErrorFileTooLarge": "Tiedosto on liian suuri. Tunnistetiedostojen on oltava alle {max}.",
-  "labelsErrorFileUnreadable": "Tämä ei näytä BIP-329-tunnistetiedostolta. Tarkista, että valitsit oikean tiedoston.",
-  "labelsErrorFileEmpty": "Tiedostossa ei ole tuotavia tunnisteita.",
-  "labelsErrorExportFailed": "Tunnisteitasi ei voitu tallentaa. Yritä uudelleen.",
-  "labelsErrorFileReservedName": "Tiedosto käyttää sovelluksen varaamaa tunnisteen nimeä. Nimeä se uudelleen tiedostossa ja yritä uudelleen.",
-  "labelsErrorNoteForbiddenWhitespace": "Muistiinpano ei voi sisältää rivinvaihtoja tai sarkaimia",
-  "labelsErrorFileInvalidEntry": "Joitakin tiedoston merkintöjä ei voitu lukea. Tarkista tiedosto ja yritä uudelleen.",
   "recipientsErrorLoadFailed": "Vastaanottajiasi ei voitu ladata. Yritä uudelleen.",
   "recipientsErrorSaveFailed": "Tätä vastaanottajaa ei voitu tallentaa. Tarkista tiedot ja yritä uudelleen.",
   "recipientsErrorSinpeLookupFailed": "Emme voineet vahvistaa tätä puhelinnumeroa. Tarkista se ja yritä uudelleen.",
@@ -4593,11 +3904,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa.",
   "settingsDarkModeTitle": "Tumma tila",
   "settingsSourceCodeTitle": "Lähdekoodi",
-  "torSettingsStatusNoInternetOrBlocked": "Ei internetiä tai sensuroitu verkko",
-  "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin.",
   "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen.",
-  "serverEncrypted": "Salattu",
-  "serverUnencrypted": "Salaamaton",
   "backgroundTasksTitle": "Taustatehtävät",
   "blockedInSystemSettings": "Estetty järjestelmäasetuksissa",
   "notificationsBlockedMessage": "Ilmoitukset on estetty järjestelmäasetuksissa.",
@@ -4606,6 +3913,5 @@
   "permissionsTitle": "Käyttöoikeudet",
   "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
   "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
-  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu.",
-  "pinCodeLengthHint": "Syötä {min}–{max} numeroa"
+  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu."
 }

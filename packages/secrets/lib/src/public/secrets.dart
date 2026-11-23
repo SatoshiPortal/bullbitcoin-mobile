@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
+
+import 'package:secrets/src/public/keychains.dart';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     show Language, MnemonicLength;
 import 'package:bull_logger/bull_logger.dart';
+import 'package:drift/drift.dart' show QueryExecutor;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart';
@@ -51,17 +55,18 @@ final class Secrets {
 
   Secrets._(this._databaseKeys, this._scratchDirectory);
 
-  /// Every keystore key prefix this package owns.
-  ///
-  /// The app shares one OS keystore with this package, so its own store
-  /// must refuse these — a shared store that could read `seed_…` would
-  /// hand seed material to code that only meant to read a preference.
-  /// Published so the refusal is written against the package's own
-  /// strings and cannot drift from them.
+  /// Seed and database-key namespaces, kept for callers auditing legacy data.
+  /// Owner-scoped keychains use a separate closed set of historical keys.
   static const reservedKeyPrefixes = {
     FlutterSecureStorageDatasource.secretNamespace,
     FlutterSecureStorageDatasource.keyNamespace,
   };
+
+  /// Closed owner-scoped capabilities over unchanged legacy keychain entries.
+  AccessKeychain get accessKeychain => AccessKeychain();
+  ExchangeKeychain get exchangeKeychain => ExchangeKeychain();
+  SilentPaymentKeychain get silentPaymentKeychain => SilentPaymentKeychain();
+  SwapKeychain get swapKeychain => SwapKeychain();
 
   // ---------------------------------------------------------------- creation
 
@@ -268,8 +273,34 @@ final class Secrets {
   ///
   /// The module name is fixed in the handle; each operation names only a database within that module. Changing this API does not change the persisted key namespace.
   DatabaseKeys databaseKeys({required String module}) {
-    _requireKeySegment(module, 'module');
+    _requireDatabaseModule(module);
     return DatabaseKeys._(_databaseKeys, module);
+  }
+
+  /// Captures the Flutter keystore bridge on the root isolate and returns a
+  /// factory of worker-only openers. Only scoped names and the file path are
+  /// sent to the worker, never the Secrets instance, a key, or a connection.
+  /// A worker opening an existing owner still needs to verify its readiness.
+  static Future<Result<QueryExecutor, F>> Function() Function(bool existing)
+  databaseOpener<F extends Failure>({
+    required String module,
+    required String name,
+    required File file,
+    required int schema,
+    required F deferred,
+    required F unavailable,
+  }) {
+    _requireDatabaseModule(module);
+    _requireKeySegment(name, 'name');
+    if (schema < 1) throw ArgumentError.value(schema, 'schema');
+    return captureDatabaseWorkerOpener(
+      module: module,
+      name: name,
+      path: file.path,
+      schema: schema,
+      deferred: deferred,
+      unavailable: unavailable,
+    );
   }
 
   Secret _handle(SecretInfo info) => Secret(
@@ -366,6 +397,31 @@ final class DatabaseKeys {
 
   DatabaseKeys._(this._repository, this._module);
 
+  /// Keys one native connection and transfers its ownership to Drift.
+  ///
+  /// Supplying [existingSchemaVersion] makes the open background-only:
+  /// the database must exist at that version and Drift migrations are disabled.
+  /// The owner must still check its import receipt before exposing the connection.
+  /// Foreground creation and resets require exclusive owner coordination.
+  @useResult
+  Future<Result<QueryExecutor, DatabaseOpenFailure>> open({
+    required String name,
+    required File file,
+    int? existingSchemaVersion,
+  }) {
+    _requireKeySegment(name, 'name');
+    if (existingSchemaVersion != null && existingSchemaVersion < 1) {
+      throw ArgumentError.value(existingSchemaVersion, 'existingSchemaVersion');
+    }
+    return openEncryptedDatabase(
+      _repository,
+      module: _module,
+      name: name,
+      file: file,
+      existingSchemaVersion: existingSchemaVersion,
+    );
+  }
+
   /// Gets an existing key or atomically creates one. A corrupt stored key is refused, never overwritten.
   @useResult
   Future<Result<DatabaseKey, SecretFailure>> getOrCreate({
@@ -387,6 +443,13 @@ final class DatabaseKeys {
   Future<Result<void, SecretFailure>> reset({required String name}) async {
     _requireKeySegment(name, 'name');
     return _repository.reset(module: _module, name: name);
+  }
+}
+
+void _requireDatabaseModule(String module) {
+  _requireKeySegment(module, 'module');
+  if (module == inventoryModule) {
+    throw ArgumentError('The wallet inventory does not export database keys');
   }
 }
 

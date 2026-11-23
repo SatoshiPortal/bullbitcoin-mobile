@@ -6,17 +6,9 @@
   "backupWarningLoseReasonKeystore": "يقوم جهازك بإبطال مخزن المفاتيح (keystore) عند تغيير طريقة قفل الشاشة أو مصادقة الجهاز",
   "backupWarningLoseReasonCloudRestore": "استعادة جهازك من نسخة احتياطية على السحابة",
   "backupWarningNoRecovery": "لا توجد طريقة لاستعادة محفظتك بدون نسخة احتياطية.",
-  "ledgerHelpTitle": "Ledger Troubleshooting",
-  "@ledgerHelpTitle": {
-    "description": "Title for Ledger troubleshooting help modal"
-  },
   "exchangeSettingsSecuritySettingsTitle": "إعدادات الأمان",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
-  },
-  "bitboxErrorMultipleDevicesFound": "عدة أجهزة (بيتبوكس) وجدت يرجى ضمان وجود جهاز واحد فقط متصل.",
-  "@bitboxErrorMultipleDevicesFound": {
-    "description": "Error when multiple BitBox devices are connected"
   },
   "payTransactionBroadcast": "بث المعاملات",
   "@payTransactionBroadcast": {
@@ -58,18 +50,6 @@
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
   },
-  "torSettingsPortHint": "9050",
-  "@torSettingsPortHint": {
-    "description": "Hint text for port input showing default value"
-  },
-  "electrumTimeoutPositiveError": "التوقيت يجب أن يكون إيجابيا",
-  "@electrumTimeoutPositiveError": {
-    "description": "Validation error for non-positive Timeout value"
-  },
-  "bitboxScreenNeedHelpButton": "تحتاج مساعدة؟?",
-  "@bitboxScreenNeedHelpButton": {
-    "description": "Button to show help instructions"
-  },
   "sellSendPaymentAboveMax": "أنت تحاول بيع أعلى من المبلغ الأقصى الذي يمكن بيعه بهذه المحفظة.",
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
@@ -81,10 +61,6 @@
   "transactionDetailLabelTransactionFee": "رسوم المعاملات",
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
-  },
-  "jadeStep13": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (جايد) افحصه.",
-  "@jadeStep13": {
-    "description": "Jade instruction for scanning signed PSBT"
   },
   "payInstitutionNumber": "عدد المؤسسات",
   "@payInstitutionNumber": {
@@ -110,17 +86,9 @@
   "@exchangeDcaUnableToGetConfig": {
     "description": "Error message when DCA configuration cannot be retrieved"
   },
-  "psbtFlowClickScan": "Click Scan",
-  "@psbtFlowClickScan": {
-    "description": "Instruction to click scan button on device"
-  },
   "sellInstitutionNumber": "عدد المؤسسات",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
-  },
-  "mempoolSettingsCustomServer": "خادم مخصص",
-  "@mempoolSettingsCustomServer": {
-    "description": "Label for custom mempool server section"
   },
   "fundExchangeMethodRegularSepa": "SEPA",
   "@fundExchangeMethodRegularSepa": {
@@ -138,10 +106,6 @@
   "@importQrDeviceKruxStep3": {
     "description": "Krux instruction step 3"
   },
-  "passportStep1": "اسحبوا جهاز تصاريحكم",
-  "@passportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "sellAdvancedOptions": "الخيارات المتقدمة",
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -149,10 +113,6 @@
   "exchangeFileUploadSuccess": "تم تحميل الملف بنجاح",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "electrumPrivacyNoticeSave": "أنقذ",
-  "@electrumPrivacyNoticeSave": {
-    "description": "Save button in privacy notice dialog"
   },
   "withdrawOwnershipOtherAccount": "هذا حساب شخص آخر",
   "@withdrawOwnershipOtherAccount": {
@@ -165,10 +125,6 @@
   "receiveGenerateAddress": "New Address",
   "@receiveGenerateAddress": {
     "description": "Button to create new on-chain address"
-  },
-  "kruxStep3": "Click PSBT",
-  "@kruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "hwColdcardQ": "Coldcard Q",
   "@hwColdcardQ": {
@@ -200,11 +156,6 @@
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
-  "electrumServerAlreadyExists": "هذا الخادم موجود بالفعل",
-  "electrumServerUnreachable": "تعذّر الوصول إلى الخادم. تحقّق من العنوان وحاول مرة أخرى.",
-  "@electrumServerAlreadyExists": {
-    "description": "Error message when trying to add a duplicate server"
-  },
   "sellPaymentMethod": "طريقة الدفع",
   "@sellPaymentMethod": {
     "description": "Section for selecting how to receive fiat"
@@ -232,10 +183,6 @@
   "sellSendPaymentExchangeRate": "سعر الصرف",
   "@sellSendPaymentExchangeRate": {
     "description": "Field label for exchange rate"
-  },
-  "systemLabelAutoSwap": "Auto Swap",
-  "@systemLabelAutoSwap": {
-    "description": "System label for automatic swap transactions"
   },
   "fundExchangeSinpeTitle": "SINPE Transfer",
   "@fundExchangeSinpeTitle": {
@@ -274,10 +221,6 @@
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
   },
-  "bitboxScreenTroubleshootingStep2": "تأكّد من أنّ هاتفك مُمكّن من الحصول على إذن.",
-  "@bitboxScreenTroubleshootingStep2": {
-    "description": "Troubleshooting step 2"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "يرجى اختيار معدل الرسوم",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -298,10 +241,6 @@
   "@receiveInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "kruxStep7": "   - زيادة السطوع على جهازك",
-  "@kruxStep7": {
-    "description": "Krux troubleshooting tip 1"
-  },
   "exchangeStatisticsBuySellRatio": "نسبة الشراء/البيع",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
@@ -310,17 +249,9 @@
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "jadeStep11": "الجايد سوف يريك رمزها الخاص.",
-  "@jadeStep11": {
-    "description": "Jade instruction about signed PSBT QR"
-  },
   "buyConfirmExternalWallet": "محفظة بيتكوين الخارجية",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "bitboxActionPairDeviceProcessing": "جهاز الطير",
-  "@bitboxActionPairDeviceProcessing": {
-    "description": "Processing text for pair device"
   },
   "exchangeCurrencyDropdownTitle": "العملة المختارة",
   "@exchangeCurrencyDropdownTitle": {
@@ -353,10 +284,6 @@
   "dcaLightningAddressInvalidError": "من فضلك أدخل عنوان البرق الصحيح",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
-  },
-  "ledgerButtonNeedHelp": "تحتاج مساعدة؟?",
-  "@ledgerButtonNeedHelp": {
-    "description": "Button label to show help/troubleshooting instructions"
   },
   "backupInstruction4": "لا تصنع نسخ رقمية من دعمك أكتبها على قطعة من الورق أو محشورة بالمعدن.",
   "@backupInstruction4": {
@@ -398,10 +325,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "electrumTitle": "Electrum Server Settings",
-  "@electrumTitle": {
-    "description": "AppBar title for Electrum settings screen"
-  },
   "importQrDeviceJadeStep7": "إذا لزم الأمر، اختيار \"خيارات\" لتغيير نوع العنوان",
   "@importQrDeviceJadeStep7": {
     "description": "Jade instruction step 7"
@@ -427,14 +350,6 @@
   "swapInsufficientFunds": "أموال غير كافية",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "ledgerImportButton": "البداية",
-  "@ledgerImportButton": {
-    "description": "Button label to start importing Ledger wallet"
-  },
-  "bitboxActionPairDeviceButton": "ابدأ بالطير",
-  "@bitboxActionPairDeviceButton": {
-    "description": "Button text for pair device"
   },
   "importQrDeviceSpecterName": "Specter",
   "@importQrDeviceSpecterName": {
@@ -476,12 +391,6 @@
   "@fundExchangeCrIbanCrcTitle": {
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
-  "appUnlockButton": "إفتح",
-  "appUnlockPinCheckError": "تعذّر تحميل إعدادات الأمان. يرجى إعادة تشغيل التطبيق.",
-  "appUnlockPinVerifyError": "تعذّر التحقق من رمز PIN. يرجى المحاولة مرة أخرى.",
-  "@appUnlockButton": {
-    "description": "Button label to unlock the app"
-  },
   "payServiceFee": "رسوم الخدمة",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -522,10 +431,6 @@
   "@testBackupWriteDownPhrase": {
     "description": "Main instruction header for physical backup screen"
   },
-  "jadeStep8": "   - حاول أن تحرك جهازك أقرب أو أبعد",
-  "@jadeStep8": {
-    "description": "Jade troubleshooting tip 3"
-  },
   "payNotLoggedIn": "لا يوجد",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
@@ -546,22 +451,9 @@
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
   },
-  "sendEstimatedDeliveryHoursToDays": "ساعات إلى أيام",
-  "@sendEstimatedDeliveryHoursToDays": {
-    "description": "Estimated delivery time ranging from hours to days"
-  },
   "coreWalletTransactionStatusPending": "معلقة",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
-  },
-  "ledgerActionFailedMessage": "{action} Failed",
-  "@ledgerActionFailedMessage": {
-    "description": "Error message when a Ledger action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeLabelBankAccountCountry": "بلد الحساب المصرفي",
   "@fundExchangeLabelBankAccountCountry": {
@@ -649,25 +541,9 @@
     "description": "Message prompting user to login to access support chat"
   },
   "exchangeSupportLoginChatRequired": "للحصول على دعم بشري، يجب عليك أولاً تسجيل الدخول إلى حساب Bull Bitcoin الخاص بك. الخدمة مجانية 100% ولا يتطلب الأمر أي KYC، فقط عنوان بريد إلكتروني.",
-  "seedsignerStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (بريد سيغنر) افحصه.",
-  "@seedsignerStep12": {
-    "description": "SeedSigner instruction for scanning signed PSBT"
-  },
   "buyAboveMaxAmountError": "أنت تحاول شراء أعلى من المبلغ الأقصى.",
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
-  },
-  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
-  "@electrumTimeoutWarning": {
-    "description": "Warning message when timeout is too low for the configured Stop Gap",
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
   },
   "sendShowPsbt": "Show PSBT",
   "@sendShowPsbt": {
@@ -684,10 +560,6 @@
   "hwJade": "Blockstream Jade",
   "@hwJade": {
     "description": "Name of Blockstream Jade hardware wallet"
-  },
-  "keystoneStep14": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
-  "@keystoneStep14": {
-    "description": "Keystone final instruction about broadcasting"
   },
   "exchangeStatisticsTitle": "الإحصاءات",
   "@exchangeStatisticsTitle": {
@@ -746,14 +618,6 @@
   "@payNetworkFees": {
     "description": "Label for network fees amount"
   },
-  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
-  "@bitboxScreenSegwitBip84": {
-    "description": "Script type display name for BIP84"
-  },
-  "bitboxScreenConnectingSubtext": "إقامة إتصال آمن...",
-  "@bitboxScreenConnectingSubtext": {
-    "description": "Subtext when connecting"
-  },
   "receiveShareAddress": "Share Address",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
@@ -761,10 +625,6 @@
   "payAboveMaxAmountError": "الحد الأقصى الذي يمكنك دفعه بهذه المحفظة هو {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
-  },
-  "jadeStep7": "   -اثبتوا وركزوا",
-  "@jadeStep7": {
-    "description": "Jade troubleshooting tip 2"
   },
   "sendCouldNotBuildTransaction": "لا يمكن بناء المعاملات",
   "@sendCouldNotBuildTransaction": {
@@ -794,10 +654,6 @@
   "@sellKYCRejected": {
     "description": "Error when verification fails"
   },
-  "electrumNetworkLiquid": "سائل",
-  "@electrumNetworkLiquid": {
-    "description": "Liquid network tab label"
-  },
   "buyBelowMinAmountError": "أنت تحاول شراء أقل من المبلغ الأدنى.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -809,18 +665,6 @@
   "transactionStatusPaymentRefunded": "المبالغ المستردة",
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
-  },
-  "pinCodeSecurityPinTitle": "Security PIN",
-  "@pinCodeSecurityPinTitle": {
-    "description": "AppBar title for PIN settings screen"
-  },
-  "bitboxActionImportWalletSuccessSubtext": "محفظة بيتبوكس الخاصة بك تم استيرادها بنجاح.",
-  "@bitboxActionImportWalletSuccessSubtext": {
-    "description": "Success subtext for import wallet"
-  },
-  "electrumEmptyFieldError": "هذا الحقل لا يمكن أن يكون فارغا",
-  "@electrumEmptyFieldError": {
-    "description": "Validation error for empty field"
   },
   "transactionStatusPaymentInProgress": "الدفع في التقدم",
   "@transactionStatusPaymentInProgress": {
@@ -838,10 +682,6 @@
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
   },
-  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
-  "@ledgerWalletTypeSegwit": {
-    "description": "Display name for Segwit wallet type (BIP84)"
-  },
   "bip85Mnemonic": "Mnemonic",
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
@@ -857,18 +697,6 @@
   "fundExchangeBankTransferWireTitle": "تحويلات مصرفية (الأسعار)",
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
-  },
-  "psbtFlowPartProgress": "الجزء {current} من {total}",
-  "@psbtFlowPartProgress": {
-    "description": "Progress indicator for animated QR code parts",
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
   },
   "receiveShareInvoice": "فاتورة الحصة",
   "@receiveShareInvoice": {
@@ -890,17 +718,9 @@
   "@importWatchOnlyYpub": {
     "description": "Label for ypub import method"
   },
-  "ledgerVerifyTitle": "Verify Address on Ledger",
-  "@ledgerVerifyTitle": {
-    "description": "Title for verifying an address on Ledger device"
-  },
   "exchangeDcaNetworkBitcoin": "شبكة بيتكوين",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
-  },
-  "seedsignerStep1": "شغل جهازك",
-  "@seedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
   },
   "backupWalletHowToDecideBackupLosePhysical": "واحدة من أكثر الطرق شيوعاً التي يخسر بها الناس بيتكوين هو أنهم يفقدون الدعم المادي أي شخص يجد دعمك الفيزيائي سيكون قادراً على أخذ (بيتكوين) إذا كنت واثقاً جداً أنك تستطيع إخفاءه جيداً ولا تفقده أبداً فهو خيار جيد.",
   "@backupWalletHowToDecideBackupLosePhysical": {
@@ -945,18 +765,6 @@
   "payPaymentInProgress": "الدفع في التقدم!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "ledgerProcessingSign": "التوقيع على المعاملات",
-  "@ledgerProcessingSign": {
-    "description": "Status message shown while signing transaction with Ledger"
-  },
-  "jadeStep6": "   - زيادة السطوع على جهازك",
-  "@jadeStep6": {
-    "description": "Jade troubleshooting tip 1"
-  },
-  "pinCodeCreateButton": "Create PIN",
-  "@pinCodeCreateButton": {
-    "description": "Button label to create a new PIN"
   },
   "bitcoinSettingsTestnetModeTitle": "نموذج الاختبار",
   "@bitcoinSettingsTestnetModeTitle": {
@@ -1010,10 +818,6 @@
   "payPayoutMethod": "طريقة الدفع",
   "@payPayoutMethod": {
     "description": "Label for payout method section"
-  },
-  "ledgerVerifyButton": "تصحيح العنوان",
-  "@ledgerVerifyButton": {
-    "description": "Button label to start address verification on Ledger"
   },
   "sendErrorSwapFeesNotLoaded": "رسوم التبديل غير المحملة",
   "@sendErrorSwapFeesNotLoaded": {
@@ -1082,10 +886,6 @@
   "@replaceByFeeCustomFeeTitle": {
     "description": "Title for custom fee input section"
   },
-  "kruxStep14": "محفظة (بول بيتكوين) ستطلب منك فحص شفرة (كيو آر) على (كرو) افحصه.",
-  "@kruxStep14": {
-    "description": "Krux instruction for scanning signed PSBT"
-  },
   "payAvailableBalance": "Available: {amount}",
   "@payAvailableBalance": {
     "description": "Label showing available wallet balance",
@@ -1127,10 +927,6 @@
   "@buyYouPay": {
     "description": "Label for amount user pays"
   },
-  "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
-  "@passportStep12": {
-    "description": "Passport instruction for scanning signed PSBT"
-  },
   "paySelectRecipient": "مستفيد مختار",
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
@@ -1151,29 +947,13 @@
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
   },
-  "bitboxScreenEnterPasswordSubtext": "الرجاء إدخال كلمة السر الخاصة بك على جهاز بيتبوكس للاستمرار.",
-  "@bitboxScreenEnterPasswordSubtext": {
-    "description": "Subtext when waiting for password"
-  },
-  "systemLabelSwaps": "Swaps",
-  "@systemLabelSwaps": {
-    "description": "System label for swap transactions"
-  },
   "sendOpenTheCamera": "افتح الكاميرا",
   "@sendOpenTheCamera": {
     "description": "Button label for opening the camera to scan QR codes"
   },
-  "passportStep11": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
-  "@passportStep11": {
-    "description": "Passport instruction to return to app"
-  },
   "sendSwapId": "بطاقة الهوية",
   "@sendSwapId": {
     "description": "Label for swap identifier in transaction details"
-  },
-  "electrumServerOnline": "على الإنترنت",
-  "@electrumServerOnline": {
-    "description": "Status text for online servers"
   },
   "fundExchangeAccountTitle": "صندوق حسابك",
   "@fundExchangeAccountTitle": {
@@ -1199,15 +979,6 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "psbtFlowScanDeviceQr": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على {device}. افحصه.",
-  "@psbtFlowScanDeviceQr": {
-    "description": "Instruction to scan QR code from hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailedMessage": "وقع خطأ، من فضلك حاول الدخول مرة أخرى.",
   "@exchangeAuthLoginFailedMessage": {
     "description": "Message shown when exchange login fails"
@@ -1215,10 +986,6 @@
   "okButton": "حسنا",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "passportStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
-  "@passportStep13": {
-    "description": "Passport instruction about import completion"
   },
   "exchangeAmountInputValidationInvalid": "المبلغ غير المسدد",
   "@exchangeAmountInputValidationInvalid": {
@@ -1252,10 +1019,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "جاهز",
-  "@torSettingsStatusConnected": {
-    "description": "Status title when Tor is connected"
-  },
   "receiveNote": "ملاحظة",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
@@ -1263,10 +1026,6 @@
   "payLightningNetwork": "شبكة البرق",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "ledgerSuccessVerifyTitle": "عنوان التحقق على ليدجر...",
-  "@ledgerSuccessVerifyTitle": {
-    "description": "Success message title for address verification on Ledger"
   },
   "payCorporateNameHint": "اسم الشركة",
   "@payCorporateNameHint": {
@@ -1284,17 +1043,9 @@
   "@sellAccountName": {
     "description": "Label for bank account holder name"
   },
-  "statusCheckUnknown": "غير معروف",
-  "@statusCheckUnknown": {
-    "description": "Status text when service status is unknown"
-  },
   "logSettingsLogsTitle": "اللوز",
   "@logSettingsLogsTitle": {
     "description": "Title for the logs section in settings"
-  },
-  "psbtFlowReadyToBroadcast": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
-  "@psbtFlowReadyToBroadcast": {
-    "description": "Final message that transaction is ready to broadcast"
   },
   "sendErrorLiquidWalletRequired": "محفظة سائلة يجب أن تستخدم لسائل لمبادل البرق",
   "@sendErrorLiquidWalletRequired": {
@@ -1316,10 +1067,6 @@
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep5": "   - زيادة السطوع على جهازك",
-  "@seedsignerStep5": {
-    "description": "SeedSigner troubleshooting tip 1"
-  },
   "sellKYCApproved": "تمت الموافقة على",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
@@ -1327,14 +1074,6 @@
   "buyKYCLevel": "KYC الرتبة",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
-  },
-  "passportInstructionsTitle": "مؤسسة تعليمات جوازات السفر",
-  "@passportInstructionsTitle": {
-    "description": "Title for Passport signing instructions modal"
-  },
-  "ledgerSuccessImportTitle": "الجدارة المستوردة بنجاح",
-  "@ledgerSuccessImportTitle": {
-    "description": "Success message title after importing Ledger wallet"
   },
   "physicalBackupTitle": "الدعم المادي",
   "@physicalBackupTitle": {
@@ -1363,10 +1102,6 @@
   "totalFeeLabel": "المجموع",
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
-  },
-  "mempoolCustomServerBottomSheetDescription": "إدخلْ URL خادمَكَ المنصّفِ العادمِ. الخادم سيتحقق قبل الادخار.",
-  "@mempoolCustomServerBottomSheetDescription": {
-    "description": "Description in bottom sheet for adding/editing custom server"
   },
   "sellBelowMinAmountError": "أنت تحاول بيع أقل من المبلغ الأدنى الذي يمكن بيعه بهذه المحفظة.",
   "@sellBelowMinAmountError": {
@@ -1432,15 +1167,6 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "bip329LabelsImportSuccessPlural": "{count} labels imported",
-  "@bip329LabelsImportSuccessPlural": {
-    "description": "Success message after importing multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendFrom": "من",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
@@ -1448,10 +1174,6 @@
   "sendTransactionBuilt": "تجهيز المعاملات",
   "@sendTransactionBuilt": {
     "description": "Success after transaction constructed"
-  },
-  "bitboxErrorOperationCancelled": "وألغيت العملية. أرجوك حاول مرة أخرى.",
-  "@bitboxErrorOperationCancelled": {
-    "description": "Error when BitBox operation is cancelled"
   },
   "withdrawConfirmCard": "Card",
   "@withdrawConfirmCard": {
@@ -1518,10 +1240,6 @@
   "@sellEurBalance": {
     "description": "Display text for EUR balance payout method"
   },
-  "jadeInstructionsTitle": "Blockstream Jade PSBT التعليمات",
-  "@jadeInstructionsTitle": {
-    "description": "Title for Jade signing instructions modal"
-  },
   "scanNfcButton": "Scan NFC",
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
@@ -1539,10 +1257,6 @@
       }
     }
   },
-  "systemLabelExchangeBuy": "اشتري",
-  "@systemLabelExchangeBuy": {
-    "description": "System label for exchange buy transactions"
-  },
   "sendRecipientAddress": "عنوان المتلقي",
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
@@ -1550,15 +1264,6 @@
   "exchangeAmountInputValidationInsufficient": "الرصيد غير الكافي",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
-  },
-  "psbtFlowReviewTransaction": "عندما تستورد الصفقة في {device}، يستعرض عنوان المقصد والمبلغ.",
-  "@psbtFlowReviewTransaction": {
-    "description": "Instruction to review transaction details on device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "broadcastSignedTxCameraButton": "آلة تصوير",
   "@broadcastSignedTxCameraButton": {
@@ -1592,17 +1297,9 @@
   "@coldcardStep13": {
     "description": "Coldcard instruction for scanning signed PSBT"
   },
-  "psbtFlowIncreaseBrightness": "زيادة السطوع على جهازك",
-  "@psbtFlowIncreaseBrightness": {
-    "description": "Troubleshooting tip to increase brightness"
-  },
   "payCoinjoinCompleted": "أنجز العملة",
   "@payCoinjoinCompleted": {
     "description": "Success message after CoinJoin"
-  },
-  "electrumAddCustomServer": "مضافا إليه",
-  "@electrumAddCustomServer": {
-    "description": "Add custom server bottom sheet title"
   },
   "rbfSatsPerVbyte": "الجلستان/المكتب",
   "@rbfSatsPerVbyte": {
@@ -1646,17 +1343,9 @@
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
   },
-  "mempoolSettingsTitle": "Mempool Server",
-  "@mempoolSettingsTitle": {
-    "description": "Title for mempool settings screen"
-  },
   "sellSendPaymentFeePriority": "الأولوية",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
-  },
-  "bitboxActionSignTransactionProcessing": "التوقيع على المعاملات",
-  "@bitboxActionSignTransactionProcessing": {
-    "description": "Processing text for sign transaction"
   },
   "sellWalletBalance": "الرصيد: {amount}",
   "@sellWalletBalance": {
@@ -1723,10 +1412,6 @@
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
   },
-  "ledgerErrorDeviceLocked": "جهاز ليدجر مغلق الرجاء فتح جهازك ومحاولة مرة أخرى.",
-  "@ledgerErrorDeviceLocked": {
-    "description": "Error message when Ledger device is locked (error code 5515)"
-  },
   "importQrDeviceSeedsignerStep5": "اختر \"سينغل سيغ\" ثم إختيار نوعك المفضل من الكتاب المقدس.",
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
@@ -1787,10 +1472,6 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "bip329LabelsImportSuccessSingular": "بطاقة واحدة مستوردة",
-  "@bip329LabelsImportSuccessSingular": {
-    "description": "Success message after importing exactly 1 label"
-  },
   "payBillerName": "اسم بيلر",
   "@payBillerName": {
     "description": "Label for biller name field"
@@ -1802,10 +1483,6 @@
   "sendErrorBitcoinWalletRequired": "محفظة بيتكوين يجب أن تُستخدم من أجل التبديل",
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
-  },
-  "pinCodeManageTitle": "إدارة جهاز الأمن الخاص بك",
-  "@pinCodeManageTitle": {
-    "description": "Header title for PIN management section"
   },
   "buyConfirmBitcoinPrice": "سعر الصرف",
   "@buyConfirmBitcoinPrice": {
@@ -1861,10 +1538,6 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
-  "torSettingsConnectionStatus": "الحالة",
-  "@torSettingsConnectionStatus": {
-    "description": "Title for connection status card"
-  },
   "backupInstruction1": "إذا فقدت الـ 12 كلمة احتياطية، لن تتمكن من استعادة الوصول إلى وولت بيتكوين.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1885,10 +1558,6 @@
   "exchangeStatisticsAveragePrice": "متوسط السعر",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
-  },
-  "ledgerSuccessSignDescription": "صفقتك تم توقيعها بنجاح.",
-  "@ledgerSuccessSignDescription": {
-    "description": "Success message description after signing transaction with Ledger"
   },
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
@@ -1967,10 +1636,6 @@
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
   },
-  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
-  "@ledgerWalletTypeLegacy": {
-    "description": "Display name for Legacy wallet type (BIP44)"
-  },
   "transactionDetailTransferProgress": "تقدّم المبادلة",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
@@ -1998,10 +1663,6 @@
   "connectHardwareWalletDescription": "اختر محفظة المعدات التي ترغب في ربطها",
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
-  },
-  "sendEstimatedDelivery10Minutes": "10 دقائق",
-  "@sendEstimatedDelivery10Minutes": {
-    "description": "Estimated delivery time of approximately 10 minutes"
   },
   "enterPinToContinueMessage": "أدخلي {pinOrPassword}",
   "@enterPinToContinueMessage": {
@@ -2034,10 +1695,6 @@
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
-  "torSettingsPortValidationEmpty": "من فضلك أدخل رقم الميناء",
-  "@torSettingsPortValidationEmpty": {
-    "description": "Validation error when port is empty"
-  },
   "swapAvailableBalance": "الرصيد المتاح",
   "@swapAvailableBalance": {
     "description": "Available balance label"
@@ -2045,14 +1702,6 @@
   "fundExchangeCrIbanCrcLabelPaymentDescription": "الوصف",
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
-  },
-  "ledgerConnectingSubtext": "إقامة إتصال آمن...",
-  "@ledgerConnectingSubtext": {
-    "description": "Subtext shown while connecting to Ledger"
-  },
-  "electrumPrivacyNoticeCancel": "إلغاء",
-  "@electrumPrivacyNoticeCancel": {
-    "description": "Cancel button in privacy notice dialog"
   },
   "coreSwapsLnSendPending": "لم يتم بعد البدء في التبديل.",
   "@coreSwapsLnSendPending": {
@@ -2082,10 +1731,6 @@
   "receiveGenerateInvoice": "الفواتير الجينية",
   "@receiveGenerateInvoice": {
     "description": "Button to create Lightning invoice"
-  },
-  "kruxStep8": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
-  "@kruxStep8": {
-    "description": "Krux troubleshooting tip 2"
   },
   "coreScreensFeeDeductionExplanation": "هذا هو مجموع الرسوم المخصومة من المبلغ المرسل",
   "@coreScreensFeeDeductionExplanation": {
@@ -2144,10 +1789,6 @@
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
-  "statusCheckOffline": "Offline",
-  "@statusCheckOffline": {
-    "description": "Status text when a service is offline"
-  },
   "fundExchangeCrIbanCrcDescriptionEnd": ". ستضاف الأموال إلى رصيد حسابك.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
@@ -2184,10 +1825,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "معاملات الإرث",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "sellInsufficientBalance": "عدم كفاية رصيد المحفظة",
   "@sellInsufficientBalance": {
     "description": "Error when wallet lacks funds"
@@ -2195,10 +1832,6 @@
   "recoverWalletButton": "Recover Wallet",
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
-  },
-  "mempoolCustomServerDeleteMessage": "هل أنت متأكد من أنك تريد حذف هذا الخادم المعلق؟ الخادم الافتراضي سيستخدم بدلاً من ذلك.",
-  "@mempoolCustomServerDeleteMessage": {
-    "description": "Message for delete custom server confirmation dialog"
   },
   "coldcardStep6": "   - زيادة السطوع على جهازك",
   "@coldcardStep6": {
@@ -2256,17 +1889,9 @@
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
-  "kruxStep15": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
-  "@kruxStep15": {
-    "description": "Krux instruction about import completion"
-  },
   "exchangeStatisticsVolume": "Volume",
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
-  },
-  "jadeStep15": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
-  "@jadeStep15": {
-    "description": "Jade final instruction about broadcasting"
   },
   "confirmButton": "Confirm",
   "@confirmButton": {
@@ -2279,10 +1904,6 @@
   "payActualFee": "الرسوم الفعلية",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "electrumValidateDomain": "Validate Domain",
-  "@electrumValidateDomain": {
-    "description": "Validate Domain switch label in advanced options"
   },
   "importQrDeviceJadeFirmwareWarning": "تأكد من تحديث جهازك إلى آخر شركة",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2304,10 +1925,6 @@
   "@sendSigningFailed": {
     "description": "Error during hardware wallet signing"
   },
-  "bitboxErrorDeviceNotPaired": "النّساء لَيسَ أزواجَ. من فضلك أكمل عملية الأزواج أولاً.",
-  "@bitboxErrorDeviceNotPaired": {
-    "description": "Error when BitBox device is not paired"
-  },
   "transferIdLabel": "هوية النقل",
   "@transferIdLabel": {
     "description": "Label for swap transfer ID"
@@ -2323,10 +1940,6 @@
   "transcribeLabel": "Transcribe",
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
-  },
-  "pinCodeProcessing": "المعالجة",
-  "@pinCodeProcessing": {
-    "description": "Status screen title while processing PIN changes"
   },
   "transactionDetailLabelRefunded": "مستردة",
   "@transactionDetailLabelRefunded": {
@@ -2400,10 +2013,6 @@
   "@testBackupAllWordsSelected": {
     "description": "Message shown when user has selected all 12 words"
   },
-  "ledgerProcessingImportSubtext": "وضع محفظتك فقط.",
-  "@ledgerProcessingImportSubtext": {
-    "description": "Processing subtext shown while importing Ledger wallet"
-  },
   "digitalCopyLabel": "نسخة رقمية",
   "@digitalCopyLabel": {
     "description": "Label for digital copy (with X mark)"
@@ -2427,10 +2036,6 @@
   "paySecurityAnswerHint": "جواب أمني",
   "@paySecurityAnswerHint": {
     "description": "Hint for security answer input"
-  },
-  "bitboxActionImportWalletTitle": "Import BitBox Wallet",
-  "@bitboxActionImportWalletTitle": {
-    "description": "Title for import wallet action"
   },
   "backupSettingsError": "الرعب",
   "@backupSettingsError": {
@@ -2456,10 +2061,6 @@
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "pinCodeCreateTitle": "إنشاء دبوس جديد",
-  "@pinCodeCreateTitle": {
-    "description": "Title for creating a new PIN code"
-  },
   "exchangeBitcoinWalletsDescription": "وضع عناوين المحفظة الافتراضية لسحبات (بيتكوين) التلقائية.",
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
@@ -2471,15 +2072,6 @@
   "swapYouReceive": "تستلم",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "electrumInvalidRetryError": "Invalid Retry القيمة الكونية: {value}",
-  "@electrumInvalidRetryError": {
-    "description": "Error message for invalid Retry Count value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "paySelectNetwork": "شبكة مختارة",
   "@paySelectNetwork": {
@@ -2497,10 +2089,6 @@
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
   },
-  "torSettingsPortNumber": "الميناء",
-  "@torSettingsPortNumber": {
-    "description": "Label for port number input field"
-  },
   "payNameHint": "اسم المستفيدين",
   "@payNameHint": {
     "description": "Hint for name input"
@@ -2508,10 +2096,6 @@
   "backupWalletPhysicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
-  },
-  "electrumReset": "إعادة التوطين",
-  "@electrumReset": {
-    "description": "Reset button label in advanced options"
   },
   "payInsufficientBalanceError": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
   "@payInsufficientBalanceError": {
@@ -2521,21 +2105,9 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "psbtFlowInstructions": "التعليمات",
-  "@psbtFlowInstructions": {
-    "description": "Instructions section header in psbt flow"
-  },
-  "systemLabelExchangeSell": "Sell",
-  "@systemLabelExchangeSell": {
-    "description": "System label for exchange sell transactions"
-  },
   "sendHighFeeWarning": "إنذار برسوم عالية",
   "@sendHighFeeWarning": {
     "description": "Warning title for high transaction fees"
-  },
-  "electrumStopGapNegativeError": "توقف عن القفز لا يمكن أن يكون سلبيا",
-  "@electrumStopGapNegativeError": {
-    "description": "Validation error for negative Stop Gap value"
   },
   "walletButtonSend": "إرسال",
   "@walletButtonSend": {
@@ -2545,17 +2117,9 @@
   "@importColdcardInstructionsStep9": {
     "description": "ImportColdcardQ: Ninth instruction step"
   },
-  "bitboxScreenTroubleshootingStep1": "تأكدي من أن لديكِ آخر برمجة على (بيتبوكس).",
-  "@bitboxScreenTroubleshootingStep1": {
-    "description": "Troubleshooting step 1"
-  },
   "backupSettingsExportVault": "قبو التصدير",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
-  },
-  "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
-  "@bitboxActionUnlockDeviceTitle": {
-    "description": "Title for unlock device action"
   },
   "autoswapRecipientRequired": "♪",
   "@autoswapRecipientRequired": {
@@ -2577,19 +2141,6 @@
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
   },
-  "labelDeleteFailed": "غير قادر على حذف \"{label}\". أرجوك حاول مرة أخرى.",
-  "@labelDeleteFailed": {
-    "description": "Error message when label deletion fails",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "kruxStep16": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
-  "@kruxStep16": {
-    "description": "Krux final instruction about broadcasting"
-  },
   "buyVerifyIdentity": "التحقق من الهوية",
   "@buyVerifyIdentity": {
     "description": "Button to start KYC process"
@@ -2597,18 +2148,6 @@
   "exchangeDcaCancelDialogConfirmButton": "نعم، إبطال مفعوله",
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
-  },
-  "electrumServerUrlHint": "{network} {environment} Server URL",
-  "@electrumServerUrlHint": {
-    "description": "Hint text for server URL input",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
   },
   "payEmailHint": "عنوان البريد الإلكتروني",
   "@payEmailHint": {
@@ -2621,10 +2160,6 @@
   "backupWalletGoogleDrivePermissionWarning": "(جوجل) سيطلب منك أن تتشارك معلومات شخصية بهذا التطبيق.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "bitboxScreenVerifyAddressSubtext": "قارن هذا العنوان بشاشة بيت بوكس 02",
-  "@bitboxScreenVerifyAddressSubtext": {
-    "description": "Subtext when showing address verification"
   },
   "importQrDeviceSeedsignerStep9": "أدخل بطاقة لمحفظة البذور وإستيراد",
   "@importQrDeviceSeedsignerStep9": {
@@ -2692,14 +2227,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "electrumLoadFailedError": "Failed to load servers",
-  "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails"
-  },
-  "ledgerVerifyAddressLabel": "عنوان التحقق:",
-  "@ledgerVerifyAddressLabel": {
-    "description": "Label for the address being verified on Ledger"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "الإخطارات بالبريد الإلكتروني",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2716,10 +2243,6 @@
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
   },
-  "jadeStep1": "اسحبوا جهازكم",
-  "@jadeStep1": {
-    "description": "Jade instruction step 1"
-  },
   "exchangeAuthOk": "حسنا",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -2727,10 +2250,6 @@
   "settingsSecurityPinTitle": "الأمن",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "psbtFlowTroubleScanningTitle": "إذا كان لديك مشكلة في المسح",
-  "@psbtFlowTroubleScanningTitle": {
-    "description": "Header for troubleshooting scanning issues"
   },
   "importQrDeviceJadeStep9": "قم بمسح شفرة (كيو آر) التي تراها على جهازك.",
   "@importQrDeviceJadeStep9": {
@@ -2748,17 +2267,9 @@
   "@exchangeKycLight": {
     "description": "Light KYC level label"
   },
-  "seedsignerInstructionsTitle": "تعليمات البذور",
-  "@seedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner signing instructions modal"
-  },
   "exchangeAmountInputValidationEmpty": "رجاءً إدخلْ كميةَ",
   "@exchangeAmountInputValidationEmpty": {
     "description": "Validation message when amount field is empty"
-  },
-  "bitboxActionPairDeviceProcessingSubtext": "من فضلك تحقق من شفرة الأزواج على جهازك البثوري.",
-  "@bitboxActionPairDeviceProcessingSubtext": {
-    "description": "Processing subtext for pair device"
   },
   "backupInstruction3": "أي شخص لديه القدرة على الوصول إلى الـ 12 كلمة احتياطية يمكن أن يسرق كعكاتك اخفيه جيداً.",
   "@backupInstruction3": {
@@ -2780,10 +2291,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "electrumAdvancedOptions": "الخيارات المتقدمة",
-  "@electrumAdvancedOptions": {
-    "description": "Advanced options button label"
-  },
   "transactionLabelSendAmount": "إرسال",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -2804,10 +2311,6 @@
   "@payFilterPayments": {
     "description": "Button to filter payment list"
   },
-  "electrumCancel": "إلغاء",
-  "@electrumCancel": {
-    "description": "Cancel button label in delete dialog"
-  },
   "exchangeFileUploadButton": "تحميل",
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
@@ -2820,10 +2323,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "bitboxScreenTroubleshootingTitle": "BitBox02 Troubleshooting",
-  "@bitboxScreenTroubleshootingTitle": {
-    "description": "Title for troubleshooting instructions"
-  },
   "broadcastSignedTxPushTxButton": "PushTx",
   "@broadcastSignedTxPushTxButton": {
     "description": "Button to use PushTx NFC device"
@@ -2835,10 +2334,6 @@
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Colones using SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
-  },
-  "kruxStep2": "الإشارة",
-  "@kruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "fundExchangeArsBankTransferDescription": "أرسل تحويلاً مصرفياً من حسابك المصرفي باستخدام التفاصيل المصرفية الأرجنتينية.",
   "@fundExchangeArsBankTransferDescription": {
@@ -2867,10 +2362,6 @@
   "pinProtectionDescription": "محفظتك تحمي الدخول إلى محفظتك و أماكنك أبقه مريم.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
-  },
-  "kruxStep5": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
-  "@kruxStep5": {
-    "description": "Krux instruction step 5"
   },
   "backupSettingsLabelsButton": "Labels",
   "@backupSettingsLabelsButton": {
@@ -2907,10 +2398,6 @@
   "receiveLightningInvoice": "فاتورة البرق",
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
-  },
-  "pinCodeContinue": "استمر",
-  "@pinCodeContinue": {
-    "description": "Button label to continue with PIN entry"
   },
   "payInvoiceTitle": "فاتورة الأجور",
   "@payInvoiceTitle": {
@@ -2972,10 +2459,6 @@
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
   },
-  "seedsignerStep11": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
-  "@seedsignerStep11": {
-    "description": "SeedSigner instruction to return to app"
-  },
   "transactionDetailLabelPayjoinStatus": "منح الجنسية",
   "@transactionDetailLabelPayjoinStatus": {
     "description": "Label for payjoin status"
@@ -3020,10 +2503,6 @@
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "bitboxErrorConnectionFailed": "فشل في التواصل مع جهاز (بيتبوكس) من فضلك تحقق من اتصالك.",
-  "@bitboxErrorConnectionFailed": {
-    "description": "Error when connection to BitBox device fails"
-  },
   "exchangeFileUploadDocumentTitle": "تحميل أي وثيقة",
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
@@ -3060,14 +2539,6 @@
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
   },
-  "bitboxActionImportWalletProcessingSubtext": "وضع محفظتك فقط.",
-  "@bitboxActionImportWalletProcessingSubtext": {
-    "description": "Processing subtext for import wallet"
-  },
-  "psbtFlowDone": "لقد انتهيت",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "exchangeHomeDepositButton": "الإيداع",
   "@exchangeHomeDepositButton": {
     "description": "Button label for depositing funds to the exchange"
@@ -3075,10 +2546,6 @@
   "testBackupRecoverWallet": "Recover Wallet",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "sendEstimatedDelivery": "تقديرات الإنجاز ",
-  "@sendEstimatedDelivery": {
-    "description": "Label prefix for estimated delivery time"
   },
   "fundExchangeMethodOnlineBillPayment": "دفع مشروع القانون على الإنترنت",
   "@fundExchangeMethodOnlineBillPayment": {
@@ -3141,10 +2608,6 @@
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
   },
-  "mempoolCustomServerDeleteTitle": "تُحذفُ خادمَ العهود؟?",
-  "@mempoolCustomServerDeleteTitle": {
-    "description": "Title for delete custom server confirmation dialog"
-  },
   "confirmSendTitle": "إرسال",
   "@confirmSendTitle": {
     "description": "Title for send confirmation screen when sending bitcoin"
@@ -3196,17 +2659,9 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "appUnlockAttemptSingular": "محاولة فاشلة",
-  "@appUnlockAttemptSingular": {
-    "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
   "buyShouldBuyAtLeast": "يجب أن تشتري على الأقل",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
-  },
-  "pinCodeCreateDescription": "محفظتك تحمي الدخول إلى محفظتك و أماكنك أبقه مريم.",
-  "@pinCodeCreateDescription": {
-    "description": "Description explaining the purpose of the PIN code"
   },
   "payCorporate": "الشركة",
   "@payCorporate": {
@@ -3260,10 +2715,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "تسويات حساب الصرف",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "تحميل حتى {maxFiles} الملفات. الصيغ المسموح بها: PDF, JPG, PNG, GIF, HEIC. الحد الأقصى للملف: 10MB لكل ملف.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3276,10 +2727,6 @@
   "broadcastSignedTxTitle": "المعاملات الإذاعية",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
-  },
-  "ledgerWalletTypeSegwitDescription": "Native SegWit - Recommended",
-  "@ledgerWalletTypeSegwitDescription": {
-    "description": "Description for Segwit wallet type"
   },
   "exchangeAccountInfoFirstNameLabel": "الاسم الأول",
   "@exchangeAccountInfoFirstNameLabel": {
@@ -3317,17 +2764,9 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "electrumStopGap": "توقف عن الثرثرة",
-  "@electrumStopGap": {
-    "description": "Stop Gap field label and hint in advanced options"
-  },
   "payBroadcastingTransaction": "عملية بث.",
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
-  },
-  "bip329LabelsImportButton": "علامات استيراد",
-  "@bip329LabelsImportButton": {
-    "description": "Button text to import labels"
   },
   "exchangeFileUploadAllSuccess": "جميع الملفات المحملة بنجاح",
   "@exchangeFileUploadAllSuccess": {
@@ -3352,10 +2791,6 @@
   "copyDialogButton": "نسخ",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
-  },
-  "bitboxActionImportWalletProcessing": "الجدار الاستيراد",
-  "@bitboxActionImportWalletProcessing": {
-    "description": "Processing text for import wallet"
   },
   "swapConfirmTransferTitle": "تأكيد المبادلة",
   "@swapConfirmTransferTitle": {
@@ -3384,10 +2819,6 @@
   "transactionDetailLabelExchangeRate": "سعر الصرف",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
-  },
-  "electrumServerOffline": "Offline",
-  "@electrumServerOffline": {
-    "description": "Status text for offline servers"
   },
   "sendTransferFee": "رسوم المبادلة",
   "@sendTransferFee": {
@@ -3425,10 +2856,6 @@
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
-  "seedsignerStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
-  "@seedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "sellErrorLoadUtxos": "لم يحمّل أجهزة التكسس: {error}",
   "@sellErrorLoadUtxos": {
     "description": "Error message when loading UTXOs fails",
@@ -3447,31 +2874,9 @@
   "@importColdcardInstructionsStep5": {
     "description": "ImportColdcardQ: Fifth instruction step"
   },
-  "electrumStopGapTooHighError": "توقف (غاب) يبدو عالياً (ماكس. {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "description": "Validation error for Stop Gap exceeding maximum",
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
-  "electrumTimeoutTooHighError": "الوقت يبدو مرتفع جداً (Max. {maxTimeout} seconds)",
-  "@electrumTimeoutTooHighError": {
-    "description": "Validation error for Timeout exceeding maximum",
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "المدفوعات الثابتة",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
-  },
-  "priceChartFetchingHistory": "أخذ تاريخ الأسعار...",
-  "@priceChartFetchingHistory": {
-    "description": "Message shown while fetching price history when no local data is available"
   },
   "sellDone": "تم",
   "@sellDone": {
@@ -3497,10 +2902,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "passportStep6": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
-  "@passportStep6": {
-    "description": "Passport troubleshooting tip 2"
-  },
   "importQrDeviceSpecterStep8": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
   "@importQrDeviceSpecterStep8": {
     "description": "Specter instruction step 8"
@@ -3512,14 +2913,6 @@
   "coreSwapsStatusPending": "معلقة",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
-  },
-  "electrumDragToReorder": "(Long press to drag and change priority)",
-  "@electrumDragToReorder": {
-    "description": "Instruction text for reordering servers"
-  },
-  "keystoneStep4": "إذا كان لديك مشكلة في المسح",
-  "@keystoneStep4": {
-    "description": "Keystone troubleshooting header"
   },
   "exchangeLandingDisclaimerNotAvailable": "ولا تتوافر خدمات تبادل العملات في تطبيقات بول بيتكوين المتنقلة.",
   "@exchangeLandingDisclaimerNotAvailable": {
@@ -3573,10 +2966,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "psbtFlowMoveBack": "حاول أن تعيد جهازك قليلاً",
-  "@psbtFlowMoveBack": {
-    "description": "Troubleshooting tip to adjust scanning distance"
-  },
   "exchangeReferralsContactSupportMessage": "دعم الاتصال للتعلم عن برنامج الإحالة",
   "@exchangeReferralsContactSupportMessage": {
     "description": "Message prompting users to contact support about the referral program"
@@ -3585,17 +2974,9 @@
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
   },
-  "exchangeAccountTitle": "حساب الصرف",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
   "swapProgressCompleted": "اكتملت المبادلة",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
-  },
-  "keystoneStep2": "Click Scan",
-  "@keystoneStep2": {
-    "description": "Keystone instruction step 2"
   },
   "sendContinue": "استمر",
   "@sendContinue": {
@@ -3641,14 +3022,6 @@
   "sellBitcoinOnChain": "بيتكوين على شاين",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "exchangeRecipientsComingSoon": "المستفيدون - قادمون قريبا",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
-  "ledgerWalletTypeLabel": "نوع الجدار:",
-  "@ledgerWalletTypeLabel": {
-    "description": "Label for wallet type/script type selection"
   },
   "bip85ExperimentalWarning": "التجارب\nدعم مسارات التنشيط يدوياً",
   "@bip85ExperimentalWarning": {
@@ -3698,15 +3071,6 @@
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
   },
-  "electrumInvalidStopGapError": "توقف غير مستقر القيمة السوقية: {value}",
-  "@electrumInvalidStopGapError": {
-    "description": "Error message for invalid Stop Gap value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
@@ -3755,10 +3119,6 @@
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"
   },
-  "keystoneStep6": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
-  "@keystoneStep6": {
-    "description": "Keystone troubleshooting tip 2"
-  },
   "walletDeletionErrorGeneric": "فشل في حذف المحفظة، من فضلك حاول مرة أخرى.",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
@@ -3770,10 +3130,6 @@
   "sellNoInvoiceData": "لا توجد بيانات فواتير متاحة",
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "ledgerInstructionsIos": "تأكد من أن (ليدجر) الخاص بك مُفَتح مع برنامج (بيتكوين) المُفَتَتح و (بلوتوث) مُمكّن.",
-  "@ledgerInstructionsIos": {
-    "description": "Connection instructions for iOS devices (Bluetooth only)"
   },
   "replaceByFeeScreenTitle": "يستعاض عنه بالرسوم",
   "@replaceByFeeScreenTitle": {
@@ -3819,10 +3175,6 @@
   "@payUseCoinjoin": {
     "description": "Option to use CoinJoin for privacy"
   },
-  "passportStep14": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
-  "@passportStep14": {
-    "description": "Passport final instruction about broadcasting"
-  },
   "settingsCurrencyTitle": "العملة",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -3834,15 +3186,6 @@
   "onboardingPhysicalBackupDescription": "إسترجع محفظتك عبر 12 كلمة.",
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
-  },
-  "psbtFlowSelectSeed": "عندما يتم استيراد الصفقة في {device}، يجب أن تختار البذور التي ترغب في التوقيع معها.",
-  "@psbtFlowSelectSeed": {
-    "description": "Instruction to select seed on device for signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "pinStatusLoading": "Loading",
   "@pinStatusLoading": {
@@ -3871,15 +3214,6 @@
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
-  "electrumInvalidTimeoutError": "القيمة غير المستقرة للتوقيت: {value}",
-  "@electrumInvalidTimeoutError": {
-    "description": "Error message for invalid Timeout value from backend",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeKycLevelLimited": "Limited",
   "@exchangeKycLevelLimited": {
     "description": "KYC verification level: Limited"
@@ -3907,14 +3241,6 @@
   "receivePaymentNormally": "السداد عادة",
   "@receivePaymentNormally": {
     "description": "Option to receive payment without payjoin if it fails"
-  },
-  "kruxStep10": "بمجرد أن تستورد الصفقة في كروك، يستعرض عنوان المقصد والمبلغ.",
-  "@kruxStep10": {
-    "description": "Krux instruction for reviewing transaction"
-  },
-  "bitboxErrorHandshakeFailed": "فشل في إقامة اتصال آمن. أرجوك حاول مرة أخرى.",
-  "@bitboxErrorHandshakeFailed": {
-    "description": "Error when handshake with BitBox device fails"
   },
   "sellKYCRequired": "يلزم التحقق من صحة الشركة",
   "@sellKYCRequired": {
@@ -4004,17 +3330,9 @@
   "@payAllTypes": {
     "description": "Option for all types filter"
   },
-  "systemLabelPayjoin": "Payjoin",
-  "@systemLabelPayjoin": {
-    "description": "System label for payjoin transactions"
-  },
   "onboardingScreenTitle": "مرحباً",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
-  },
-  "pinCodeConfirmTitle": "دبوس جديد",
-  "@pinCodeConfirmTitle": {
-    "description": "Title for confirming the new PIN code"
   },
   "keyServerLabel": "موظف رئيسي ",
   "@keyServerLabel": {
@@ -4052,14 +3370,6 @@
   "@sellGoHome": {
     "description": "Button to go to home screen"
   },
-  "keystoneStep8": "بمجرد أن يتم استيراد الصفقة في الحجر الخاص بك، استعراض عنوان الوجهة والمبلغ.",
-  "@keystoneStep8": {
-    "description": "Keystone instruction for reviewing transaction"
-  },
-  "psbtFlowSpecterTitle": "التعليمات الخاصة بالحشرات",
-  "@psbtFlowSpecterTitle": {
-    "description": "Title for Specter device signing instructions"
-  },
   "importMnemonicChecking": "التحقق...",
   "@importMnemonicChecking": {
     "description": "Status while checking wallet type"
@@ -4079,14 +3389,6 @@
   "connectingToKeyServer": "(تواصل مع (كي سيرفر على (تور\nهذا يمكن أن يستغرق حتى دقيقة.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
-  },
-  "bitboxErrorDeviceNotFound": "جهاز (بيتبوكس) لم يعثر عليه.",
-  "@bitboxErrorDeviceNotFound": {
-    "description": "Error when BitBox device cannot be found"
-  },
-  "ledgerScanningMessage": "أبحث عن أجهزة ليدجر قريبة...",
-  "@ledgerScanningMessage": {
-    "description": "Message shown while scanning for Ledger devices"
   },
   "sellInsufficientBalanceError": "عدم كفاية التوازن في المحفظة المختارة لإكمال أمر البيع هذا.",
   "@sellInsufficientBalanceError": {
@@ -4116,10 +3418,6 @@
   "@importWalletTitle": {
     "description": "AppBar title for wallet import selection screen"
   },
-  "mempoolSettingsDefaultServer": "خادم",
-  "@mempoolSettingsDefaultServer": {
-    "description": "Label for default mempool server section"
-  },
   "sendPasteAddressOrInvoice": "تقديم عنوان دفع أو فاتورة",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
@@ -4143,10 +3441,6 @@
   "exchangeKycLevelLight": "الضوء",
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
-  },
-  "bip329LabelsExportSuccess": "Labels exported successfully",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels"
   },
   "fundExchangeMethodOnlineBillPaymentSubtitle": "أبطأ خيار، ولكن يمكن القيام به عن طريق المصارف الإلكترونية (3-4 أيام عمل)",
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
@@ -4196,10 +3490,6 @@
   "@sellSelectWallet": {
     "description": "Dropdown to choose source wallet"
   },
-  "mempoolCustomServerAdd": "مضافا إليه",
-  "@mempoolCustomServerAdd": {
-    "description": "Button text to add custom mempool server"
-  },
   "sendHighFeeWarningDescription": "مجموع الرسوم هو {feePercent}٪ من المبلغ الذي ترسله",
   "@sendHighFeeWarningDescription": {
     "description": "Warning message showing fee as percentage of send amount",
@@ -4228,10 +3518,6 @@
   "importWatchOnlyUnknown": "غير معروف",
   "@importWatchOnlyUnknown": {
     "description": "Default value when signing device is unknown"
-  },
-  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
-  "@bitboxScreenNestedSegwitBip49": {
-    "description": "Script type display name for BIP49"
   },
   "payContinue": "استمر",
   "@payContinue": {
@@ -4324,10 +3610,6 @@
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
   },
-  "statusCheckOnline": "على الإنترنت",
-  "@statusCheckOnline": {
-    "description": "Status text when a service is online"
-  },
   "buyPayoutMethod": "طريقة الدفع",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
@@ -4335,10 +3617,6 @@
   "exchangeAmountInputTitle": "المبلغ",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "electrumCloseTooltip": "اقترب",
-  "@electrumCloseTooltip": {
-    "description": "Close button tooltip"
   },
   "payIbanHint": "Enter IBAN",
   "@payIbanHint": {
@@ -4402,10 +3680,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "keystoneStep5": "   - زيادة السطوع على جهازك",
-  "@keystoneStep5": {
-    "description": "Keystone troubleshooting tip 1"
-  },
   "sendSelectCoinsManually": "بيع العملات اليدوية",
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
@@ -4413,10 +3687,6 @@
   "importMnemonicEmpty": "فارغ",
   "@importMnemonicEmpty": {
     "description": "Status for wallet type with no transactions"
-  },
-  "electrumBitcoinServerInfo": "عنوان حاسوب خدمة الدخول في الشكل: الجهة المضيفة (مثلاً:com:50001)",
-  "@electrumBitcoinServerInfo": {
-    "description": "Info text for Bitcoin server URL format"
   },
   "sendErrorInsufficientBalanceForSwap": "ليس هناك رصيد كافي لدفع هذا التبديل عن طريق السائل وليس ضمن حدود التبديل للدفع عبر بيتكوين.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -4438,10 +3708,6 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "الرسوم النسبية",
-  "@sendRelativeFees": {
-    "description": "Label for relative fee display mode (sats per vByte)"
-  },
   "payToAddress": "العنوان",
   "@payToAddress": {
     "description": "Label showing destination address"
@@ -4457,10 +3723,6 @@
   "coreScreensNetworkFeesLabel": "رسوم الشبكة",
   "@coreScreensNetworkFeesLabel": {
     "description": "Label for network fees field"
-  },
-  "kruxStep9": "   -حاول أن تعيد جهازك قليلاً",
-  "@kruxStep9": {
-    "description": "Krux troubleshooting tip 3"
   },
   "sendReceiveNetworkFee": "شبكة الاستقبال",
   "@sendReceiveNetworkFee": {
@@ -4486,10 +3748,6 @@
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
-  "electrumServerNotUsed": "غير مستخدمة",
-  "@electrumServerNotUsed": {
-    "description": "Status text for disabled servers"
-  },
   "backupWalletHowToDecideBackupPhysicalRecommendation": "الدعم المادي: ",
   "@backupWalletHowToDecideBackupPhysicalRecommendation": {
     "description": "Bold label for physical backup recommendation"
@@ -4502,10 +3760,6 @@
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
   },
-  "kruxStep11": "اضغط على الأزرار لتوقيع الصفقة على كروز.",
-  "@kruxStep11": {
-    "description": "Krux instruction for signing"
-  },
   "exchangeSupportChatEmptyState": "لا رسائل بعد ابدأ المحادثة!",
   "@exchangeSupportChatEmptyState": {
     "description": "Message shown when there are no chat messages"
@@ -4513,14 +3767,6 @@
   "payExternalWalletDescription": "دفع محفظة بيتكوين أخرى",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
-  },
-  "electrumRetryCountEmptyError": "لا يمكن أن يكون الكونت فارغا",
-  "@electrumRetryCountEmptyError": {
-    "description": "Validation error for empty Retry Count field"
-  },
-  "ledgerErrorBitcoinAppNotOpen": "من فضلك افتح تطبيق \"بيتكوين\" على جهاز \"ليدجر\" وحاول مرة أخرى.",
-  "@ledgerErrorBitcoinAppNotOpen": {
-    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
   },
   "physicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@physicalBackupTag": {
@@ -4538,10 +3784,6 @@
   "@swapExternalAddressHint": {
     "description": "Hint text for external address input"
   },
-  "torSettingsDescConnecting": "Establishing الاتصال بالهاتف",
-  "@torSettingsDescConnecting": {
-    "description": "Description when Tor is connecting"
-  },
   "exchangeAccountInfoVerificationNotVerified": "لم يتم التحقق منها",
   "@exchangeAccountInfoVerificationNotVerified": {
     "description": "Status label for not verified verification level"
@@ -4557,10 +3799,6 @@
   "payDebitCardNumberHint": "رقم بطاقة الدخول",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
-  },
-  "seedsignerStep9": "راجع عنوان المقصد والمبلغ، وتأكد من التوقيع على ستيد سيغنر.",
-  "@seedsignerStep9": {
-    "description": "SeedSigner instruction for reviewing and signing"
   },
   "logoutButton": "Logout",
   "@logoutButton": {
@@ -4602,10 +3840,6 @@
         "type": "String"
       }
     }
-  },
-  "torSettingsPortValidationInvalid": "يرجى الدخول إلى رقم صحيح",
-  "@torSettingsPortValidationInvalid": {
-    "description": "Validation error when port is not a valid number"
   },
   "sellBankTransfer": "التحويل المصرفي",
   "@sellBankTransfer": {
@@ -4650,10 +3884,6 @@
   "transactionSwapProgressFundsClaimed": "الصناديق\nالمطالبات",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
-  },
-  "keystoneStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
-  "@keystoneStep13": {
-    "description": "Keystone instruction about import completion"
   },
   "receiveGenerationFailed": "فشل في توليد {type}",
   "@receiveGenerationFailed": {
@@ -4725,14 +3955,6 @@
       }
     }
   },
-  "passportStep2": "اشارة لرمز QR",
-  "@passportStep2": {
-    "description": "Passport instruction step 2"
-  },
-  "pinCodeRemoveButton": "Remove Security PIN",
-  "@pinCodeRemoveButton": {
-    "description": "Button label to remove the security PIN"
-  },
   "withdrawOwnershipMyAccount": "هذا حسابي",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -4760,10 +3982,6 @@
   "coreSwapsLnSendFailed": "تفرقوا.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "keystoneStep9": "اضغط على الأزرار لتوقيع الصفقة على حجرك.",
-  "@keystoneStep9": {
-    "description": "Keystone instruction for signing"
   },
   "totalFeesLabel": "مجموع الرسوم",
   "@totalFeesLabel": {
@@ -4839,10 +4057,6 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "sendEnterRelativeFee": "رسوم نسبية للدخول في الجلسات/التدبير",
-  "@sendEnterRelativeFee": {
-    "description": "Placeholder for relative fee rate input field"
-  },
   "fundExchangeBankTransferWireDescription": "أرسل تحويلاً سلكياً من حسابك المصرفي باستخدام تفاصيل مصرف (بول بيتكين) أدناه بنكك قد يتطلب فقط بعض التفاصيل.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -4854,10 +4068,6 @@
   "coldcardStep14": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
-  },
-  "pinCodeSettingsLabel": "رمز PIN",
-  "@pinCodeSettingsLabel": {
-    "description": "The label for the button to access the PIN code settings"
   },
   "exchangeStatisticsTradeCount": "الكونت التجاري",
   "@exchangeStatisticsTradeCount": {
@@ -4907,10 +4117,6 @@
   "@payPaymentDetails": {
     "description": "Section header for payment information"
   },
-  "bitboxActionVerifyAddressTitle": "تصحيح العنوان المتعلق بثنائي بوكس",
-  "@bitboxActionVerifyAddressTitle": {
-    "description": "Title for verify address action"
-  },
   "psbtSignTransaction": "معاملات التوقيع",
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
@@ -4924,17 +4130,9 @@
       }
     }
   },
-  "bitboxActionImportWalletSuccess": "الجدارة المستوردة بنجاح",
-  "@bitboxActionImportWalletSuccess": {
-    "description": "Success text for import wallet"
-  },
   "nextButton": "التالي",
   "@nextButton": {
     "description": "Button label to go to next step"
-  },
-  "ledgerSignButton": "بدء التوقيع",
-  "@ledgerSignButton": {
-    "description": "Button label to start signing transaction with Ledger"
   },
   "payFromAnotherWallet": "دفع محفظة بيتكوين أخرى",
   "@payFromAnotherWallet": {
@@ -4952,10 +4150,6 @@
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
   },
-  "jadeStep14": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
-  "@jadeStep14": {
-    "description": "Jade instruction about import completion"
-  },
   "payCorporateName": "اسم الشركة",
   "@payCorporateName": {
     "description": "Label for corporate name field"
@@ -4971,10 +4165,6 @@
   "payOwnerNameHint": "اسم مالك الشركة",
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
-  },
-  "kruxStep13": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
-  "@kruxStep13": {
-    "description": "Krux instruction to return to app"
   },
   "transactionSwapInfoRefundableTransfer": "سيتم استرداد هذه المبادلة تلقائياً خلال ثوانٍ قليلة. وإن لم يحدث ذلك، يمكنك محاولة الاسترداد يدوياً بالضغط على زر \"إعادة محاولة استرداد المبادلة\".",
   "@transactionSwapInfoRefundableTransfer": {
@@ -5001,10 +4191,6 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Failed to delete custom server",
-  "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -5016,10 +4202,6 @@
   "payRBFEnabled": "RBF enabled",
   "@payRBFEnabled": {
     "description": "Status when RBF is enabled"
-  },
-  "ledgerSuccessVerifyDescription": "تم التحقق من العنوان على جهاز ليدجر الخاص بك.",
-  "@ledgerSuccessVerifyDescription": {
-    "description": "Success message description after verifying address on Ledger"
   },
   "bip85Title": "BIP85 Deterministic Entropies",
   "@bip85Title": {
@@ -5040,10 +4222,6 @@
   "sendSwapInProgressBitcoin": "المبادلة جارية صفقات (بيتكوين) قد تستغرق وقتاً لتأكيدها يمكنك العودة للمنزل والانتظار.",
   "@sendSwapInProgressBitcoin": {
     "description": "Message for Bitcoin swap in progress"
-  },
-  "electrumDeleteServerTitle": "يحذف الرمز",
-  "@electrumDeleteServerTitle": {
-    "description": "Delete server dialog title"
   },
   "buySelfie": "ذاتي مع الهوية",
   "@buySelfie": {
@@ -5113,10 +4291,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "psbtFlowSignTransaction": "معاملات التوقيع",
-  "@psbtFlowSignTransaction": {
-    "description": "Title for psbt flow signing screen"
-  },
   "payAllPayments": "جميع المدفوعات",
   "@payAllPayments": {
     "description": "Filter option to show all"
@@ -5170,15 +4344,6 @@
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
   },
-  "ledgerConnectingMessage": "التواصل مع {deviceName}",
-  "@ledgerConnectingMessage": {
-    "description": "Message shown while connecting to a specific Ledger device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeFileUploadUploading": "تحميل...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
@@ -5186,10 +4351,6 @@
   "buyConfirmAwaitingConfirmation": "في انتظار تأكيد ",
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
-  },
-  "torSettingsSaveButton": "أنقذ",
-  "@torSettingsSaveButton": {
-    "description": "Save button label for Tor port settings"
   },
   "allSeedViewShowSeedsButton": "بذور العرض",
   "@allSeedViewShowSeedsButton": {
@@ -5245,10 +4406,6 @@
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
   },
-  "sendAbsoluteFees": "رسوم مطلقة",
-  "@sendAbsoluteFees": {
-    "description": "Label for absolute fee display mode (total sats)"
-  },
   "rbfErrorFeeTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
@@ -5256,18 +4413,6 @@
   "backupWalletTitle": "دعم محفظتك",
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "jadeStep10": "اضغط على الأزرار لتوقيع الصفقة على جايدك.",
-  "@jadeStep10": {
-    "description": "Jade instruction for signing"
-  },
-  "bitboxScreenUnknownError": "خطأ غير معروف",
-  "@bitboxScreenUnknownError": {
-    "description": "Fallback error message"
-  },
-  "electrumPrivacyNoticeTitle": "الإشعار بالخصوصية",
-  "@electrumPrivacyNoticeTitle": {
-    "description": "Title for privacy notice bottom sheet"
   },
   "receiveLiquid": "سائل",
   "@receiveLiquid": {
@@ -5289,10 +4434,6 @@
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
   },
-  "psbtFlowTransactionImported": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
-  "@psbtFlowTransactionImported": {
-    "description": "Confirmation that transaction was imported successfully"
-  },
   "translationWarningDismissButton": "حصلت عليه",
   "@translationWarningDismissButton": {
     "description": "Button to dismiss the translation warning"
@@ -5308,10 +4449,6 @@
   "payTimeoutError": "وقت الدفع يرجى التحقق من الحالة",
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
-  },
-  "kruxStep4": "كليك لود من الكاميرا",
-  "@kruxStep4": {
-    "description": "Krux instruction step 4"
   },
   "sellErrorRecalculateFees": "عدم إعادة حساب الرسوم: {error}",
   "@sellErrorRecalculateFees": {
@@ -5421,14 +4558,6 @@
   "@onboardingCreateWalletButtonLabel": {
     "description": "The label for the button to create a wallet from the onboarding screen"
   },
-  "bitboxScreenVerifyOnDevice": "الرجاء التحقق من هذا العنوان على جهاز بثور الخاص بك",
-  "@bitboxScreenVerifyOnDevice": {
-    "description": "Instruction to verify address on device"
-  },
-  "ledgerConnectTitle": "إربط جهازك",
-  "@ledgerConnectTitle": {
-    "description": "Title for initial Ledger connection screen"
-  },
   "withdrawAmountTitle": "ازدراء",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
@@ -5514,10 +4643,6 @@
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
-  "bitboxScreenConnecting": "Connecting to BitBox",
-  "@bitboxScreenConnecting": {
-    "description": "Main text when connecting to device"
-  },
   "transactionLabelServerNetworkFees": "شبكة السيرفر",
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
@@ -5541,15 +4666,6 @@
   "fundExchangeLabelClabe": "CLABE",
   "@fundExchangeLabelClabe": {
     "description": "Label for CLABE number field (Mexico)"
-  },
-  "statusCheckLastChecked": "آخر فحص: {time}",
-  "@statusCheckLastChecked": {
-    "description": "Label showing when services were last checked",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
   },
   "sellPayoutAmount": "المبلغ المدفوع",
   "@sellPayoutAmount": {
@@ -5587,10 +4703,6 @@
   "@payInvalidAddress": {
     "description": "Error for malformed address"
   },
-  "appUnlockAttemptPlural": "محاولات فاشلة",
-  "@appUnlockAttemptPlural": {
-    "description": "Plural form of 'attempts' for failed unlock attempts"
-  },
   "exportVaultButton": "قبو التصدير",
   "@exportVaultButton": {
     "description": "Button label to export vault"
@@ -5611,10 +4723,6 @@
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
   },
-  "bitboxActionUnlockDeviceProcessingSubtext": "من فضلك أدخل كلمة سرك على جهاز (بيتبوكس).",
-  "@bitboxActionUnlockDeviceProcessingSubtext": {
-    "description": "Processing subtext for unlock device"
-  },
   "sellWhichWalletQuestion": "أي محفظة تريدين بيعها؟?",
   "@sellWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
@@ -5626,10 +4734,6 @@
   "receiveFixedAmount": "المبلغ",
   "@receiveFixedAmount": {
     "description": "Required amount field"
-  },
-  "bitboxActionVerifyAddressSuccessSubtext": "لقد تم التحقق من العنوان على جهازك.",
-  "@bitboxActionVerifyAddressSuccessSubtext": {
-    "description": "Success subtext for verify address"
   },
   "exchangeFileUploadAddMoreFiles": "إضافة المزيد من الملفات",
   "@exchangeFileUploadAddMoreFiles": {
@@ -5671,19 +4775,6 @@
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
   },
-  "seedsignerStep6": "   - حرك الليزر الأحمر فوق و أسفل على رمز QR",
-  "@seedsignerStep6": {
-    "description": "SeedSigner troubleshooting tip 2"
-  },
-  "torSettingsPortDisplay": "Port: {port}",
-  "@torSettingsPortDisplay": {
-    "description": "Display text showing current port number",
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "النقل العابر",
   "@payTransitNumber": {
     "description": "Label for transit number"
@@ -5712,10 +4803,6 @@
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
   },
-  "psbtFlowScanQrShown": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
-  "@psbtFlowScanQrShown": {
-    "description": "Instruction to scan QR code displayed in app"
-  },
   "testBackupErrorInvalidFile": "محتوى الملف غير المستوفى",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -5731,10 +4818,6 @@
   "sendSlowPaymentWarningDescription": "المبادلات ستستغرق وقتاً للتأكيد.",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
-  },
-  "bitboxActionVerifyAddressProcessingSubtext": "من فضلك تأكد من العنوان على جهاز (بيتبوكس) الخاص بك.",
-  "@bitboxActionVerifyAddressProcessingSubtext": {
-    "description": "Processing subtext for verify address"
   },
   "pinConfirmHeadline": "دبوس جديد",
   "@pinConfirmHeadline": {
@@ -5784,10 +4867,6 @@
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "torSettingsStatusDisconnected": "منفصلة",
-  "@torSettingsStatusDisconnected": {
-    "description": "Status title when Tor is disconnected"
-  },
   "exchangeDcaCancelDialogTitle": "(ألغى (بيتكوين) المُتكرر؟?",
   "@exchangeDcaCancelDialogTitle": {
     "description": "Title of the dialog confirming DCA cancellation"
@@ -5799,10 +4878,6 @@
   "fundExchangeSinpeLabelRecipientName": "الاسم المستقبِل",
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
-  },
-  "keystoneInstructionsTitle": "Keystone Instructions",
-  "@keystoneInstructionsTitle": {
-    "description": "Title for Keystone signing instructions modal"
   },
   "hwLedger": "Ledger",
   "@hwLedger": {
@@ -5828,17 +4903,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Failed to save server priority",
-  "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails"
-  },
   "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
-  },
-  "bitboxActionVerifyAddressProcessing": "عنوان عرض على بيتبوكس.",
-  "@bitboxActionVerifyAddressProcessing": {
-    "description": "Processing text for verify address"
   },
   "sendTypeSwap": "Swap",
   "@sendTypeSwap": {
@@ -5847,10 +4914,6 @@
   "sendErrorAmountExceedsMaximum": "المبلغ يتجاوز الحد الأقصى لمبلغ التبديل",
   "@sendErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum allowed for swap"
-  },
-  "bitboxActionSignTransactionSuccess": "Transaction  signed Successfully",
-  "@bitboxActionSignTransactionSuccess": {
-    "description": "Success text for sign transaction"
   },
   "exchangeStatisticsBuyStats": "إحصاءات الشراء",
   "@exchangeStatisticsBuyStats": {
@@ -5881,10 +4944,6 @@
   "importColdcardTitle": "Connect Coldcard Q",
   "@importColdcardTitle": {
     "description": "AppBar title for Coldcard Q import"
-  },
-  "ledgerSuccessImportDescription": "محفظة ليدجر الخاصة بك تم استيرادها بنجاح.",
-  "@ledgerSuccessImportDescription": {
-    "description": "Success message description after importing Ledger wallet"
   },
   "pinStatusProcessing": "المعالجة",
   "@pinStatusProcessing": {
@@ -5918,10 +4977,6 @@
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
   },
-  "bip329LabelsTitle": "BIP329 Labels",
-  "@bip329LabelsTitle": {
-    "description": "Title for BIP329 labels page"
-  },
   "autoswapSelectWalletRequired": "اختيار محفظة بيتكوين",
   "@autoswapSelectWalletRequired": {
     "description": "Placeholder for wallet dropdown when required"
@@ -5930,17 +4985,9 @@
   "@hwSeedSigner": {
     "description": "Name of SeedSigner hardware wallet"
   },
-  "bitboxActionUnlockDeviceButton": "جهاز إطفاء",
-  "@bitboxActionUnlockDeviceButton": {
-    "description": "Button text for unlock device"
-  },
   "payNetworkError": "خطأ الشبكة حاول مرة أخرى",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "electrumUnknownError": "وقع خطأ",
-  "@electrumUnknownError": {
-    "description": "Generic error message for unknown errors"
   },
   "payWhichWallet": "أي محفظة تريد أن تدفعها؟?",
   "@payWhichWallet": {
@@ -5984,10 +5031,6 @@
   "@payCancelPayment": {
     "description": "Button text to cancel payment flow"
   },
-  "ledgerInstructionsAndroidUsb": "تأكد من (ليدجر) مُفْتح مع تطبيق (بيتكوين) الذي فُتح وربطه عن طريق (يو إس بي).",
-  "@ledgerInstructionsAndroidUsb": {
-    "description": "Connection instructions for Android devices (USB only)"
-  },
   "onboardingOwnYourMoney": "مالك",
   "@onboardingOwnYourMoney": {
     "description": "Tagline displayed in onboarding splash screen"
@@ -6020,10 +5063,6 @@
   "submitButton": "Submit",
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
-  },
-  "bitboxScreenTryAgainButton": "حاول مرة أخرى",
-  "@bitboxScreenTryAgainButton": {
-    "description": "Button to retry failed action"
   },
   "exchangeStatisticsNoData": "لا توجد إحصاءات متاحة",
   "@exchangeStatisticsNoData": {
@@ -6062,17 +5101,9 @@
       }
     }
   },
-  "psbtFlowClickDone": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
-  "@psbtFlowClickDone": {
-    "description": "Instruction to click done button in app"
-  },
   "addressCardUnusedLabel": "غير مستخدم",
   "@addressCardUnusedLabel": {
     "description": "Label indicating an address has not been used"
-  },
-  "bitboxActionUnlockDeviceSuccess": "جهاز غير مقفل ناجح",
-  "@bitboxActionUnlockDeviceSuccess": {
-    "description": "Success text for unlock device"
   },
   "receivePayjoinInProgress": "بيجوين قيد التنفيذ",
   "@receivePayjoinInProgress": {
@@ -6107,10 +5138,6 @@
   "@coldcardInstructionsTitle": {
     "description": "Title for Coldcard Q signing instructions modal"
   },
-  "electrumDefaultServers": "الخادمات",
-  "@electrumDefaultServers": {
-    "description": "Section header for default servers list"
-  },
   "onboardingRecoverWallet": "Recover Wallet",
   "@onboardingRecoverWallet": {
     "description": "Title for the recover wallet screen in onboarding"
@@ -6140,10 +5167,6 @@
   "@screenshotLabel": {
     "description": "Label for screenshot (with X mark)"
   },
-  "bitboxErrorOperationTimeout": "العملية انتهت أرجوك حاول مرة أخرى.",
-  "@bitboxErrorOperationTimeout": {
-    "description": "Error when BitBox operation times out"
-  },
   "receiveLightning": "البرق",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
@@ -6151,10 +5174,6 @@
   "sendRecipientAddressOrInvoice": "عنوان المستقبل أو فاتورة",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "mempoolCustomServerUrlEmpty": "من فضلك أدخل الخادم",
-  "@mempoolCustomServerUrlEmpty": {
-    "description": "Error message when server URL is empty"
   },
   "importQrDeviceKeystoneName": "Keystone",
   "@importQrDeviceKeystoneName": {
@@ -6188,15 +5207,6 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "شغل جهاز {device} الخاص بك",
-  "@psbtFlowTurnOnDevice": {
-    "description": "Instruction to power on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsKeyServer": "موظف رئيسي ",
   "@backupSettingsKeyServer": {
     "description": "Label for key server connection status indicator"
@@ -6205,10 +5215,6 @@
   "@connectHardwareWalletColdcardQ": {
     "description": "Coldcard Q hardware wallet option"
   },
-  "seedsignerStep2": "Click Scan",
-  "@seedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "addressCardIndexLabel": "الرقم القياسي: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
@@ -6216,10 +5222,6 @@
   "dcaSetupContinue": "استمر",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
-  },
-  "electrumFormatError": "Use host:port format (e.g.,com:50001)",
-  "@electrumFormatError": {
-    "description": "Validation error for incorrect server URL format"
   },
   "transactionFeesDeductedFrom": "وستخصم هذه الرسوم من المبلغ المرسل",
   "@transactionFeesDeductedFrom": {
@@ -6244,15 +5246,6 @@
   "testBackupCreatedAt": "أنشئت في:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "psbtFlowSignTransactionOnDevice": "اضغط على الأزرار لتوقيع الصفقة على {device} الخاص بك.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "description": "Instruction to sign transaction on hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "transactionStatusPending": "معلقة",
   "@transactionStatusPending": {
@@ -6327,10 +5320,6 @@
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
   },
-  "keystoneStep7": "   -حاول أن تعيد جهازك قليلاً",
-  "@keystoneStep7": {
-    "description": "Keystone troubleshooting tip 3"
-  },
   "coreSwapsChainExpired": "انتهت صلاحية المبادلة",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
@@ -6376,10 +5365,6 @@
   "@sendPaymentProcessing": {
     "description": "Message while payment processes"
   },
-  "electrumDefaultServersInfo": "لحماية خصوصيتك، الخواديم الغير مقصودة لا تُستخدم عندما يتم تشكيل الخواديم.",
-  "@electrumDefaultServersInfo": {
-    "description": "Info message explaining default servers behavior"
-  },
   "transactionDetailLabelPayoutMethod": "طريقة الدفع",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
@@ -6387,18 +5372,6 @@
   "payPriceRefreshIn": "ستنعش الأسعار ",
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
-  },
-  "passportStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
-  "@passportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "jadeStep5": "إذا كان لديك مشكلة في المسح",
-  "@jadeStep5": {
-    "description": "Jade troubleshooting header"
-  },
-  "electrumProtocolError": "لا تشمل البروتوكول (sl:// or tcp://).",
-  "@electrumProtocolError": {
-    "description": "Validation error when protocol is included in server URL"
   },
   "receivePayjoinFailQuestion": "لا وقت للانتظار أو لم يفشل الراتب في جانب المرسل؟?",
   "@receivePayjoinFailQuestion": {
@@ -6439,14 +5412,6 @@
   "testBackupEncryptedVaultTag": "سهلة وبسيطة (دقيقة واحدة)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "bitboxScreenTroubleshootingStep3": "إعادة تشغيل جهاز بيت بوكس02 الخاص بك عن طريق تطهير وإعادة ربطه.",
-  "@bitboxScreenTroubleshootingStep3": {
-    "description": "Troubleshooting step 3"
-  },
-  "torSettingsProxyPort": "Tor Proxy Port",
-  "@torSettingsProxyPort": {
-    "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "ولا يمكن تحميل تفاصيل الدفع في هذه اللحظة. الرجاء العودة ومحاولة مرة أخرى، اختيار طريقة أخرى للدفع أو العودة في وقت لاحق.",
   "fundExchangeErrorTitleOrdPo404": "خيار الدفع غير متاح",
@@ -6492,10 +5457,6 @@
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
     "description": "Warning that including Bitcoin or Crypto in description will block payment"
   },
-  "electrumAddServer": "مضافا إليه",
-  "@electrumAddServer": {
-    "description": "Add server button label"
-  },
   "addressViewCopyAddress": "العنوان",
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
@@ -6539,10 +5500,6 @@
         "type": "int"
       }
     }
-  },
-  "exchangeLegacyTransactionsComingSoon": "معاملات الإرث -قادم قريباً",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
   },
   "buyProofOfAddress": "إثبات العنوان",
   "@buyProofOfAddress": {
@@ -6600,14 +5557,6 @@
   "@transactionListToday": {
     "description": "Date label for today's transactions"
   },
-  "keystoneStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (كيستون) افحصه.",
-  "@keystoneStep12": {
-    "description": "Keystone instruction for scanning signed PSBT"
-  },
-  "ledgerErrorRejectedByUser": "ورفض المستعمل الصفقة على جهاز ليدجر.",
-  "@ledgerErrorRejectedByUser": {
-    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
-  },
   "payFeeRate": "معدل الرسوم",
   "@payFeeRate": {
     "description": "Label for fee rate (sat/vB)"
@@ -6615,10 +5564,6 @@
   "fundExchangeSinpeAddedToBalance": "بمجرد أن يتم الدفع سيضاف إلى رصيد حسابك.",
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
-  },
-  "pinCodeMismatchError": "PINS لا تطابق",
-  "@pinCodeMismatchError": {
-    "description": "Error message when PIN confirmation doesn't match"
   },
   "sellUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
   "@sellUnauthenticatedError": {
@@ -6632,17 +5577,9 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "passportStep10": "الجوّار سيُظهر لك رمزها الخاص بـ (كيو آر).",
-  "@passportStep10": {
-    "description": "Passport instruction about signed PSBT QR"
-  },
   "transactionDetailLabelAmountSent": "المبلغ المرسل",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "electrumStopGapEmptyError": "لا يمكن أن تكون فارغة",
-  "@electrumStopGapEmptyError": {
-    "description": "Validation error for empty Stop Gap field"
   },
   "typeLabel": "النوع: ",
   "@typeLabel": {
@@ -6651,10 +5588,6 @@
   "buyInputInsufficientBalance": "الرصيد غير الكافي",
   "@buyInputInsufficientBalance": {
     "description": "Insufficient balance info card title"
-  },
-  "ledgerProcessingSignSubtext": "من فضلك تأكد الصفقة على جهاز ليدجر الخاص بك...",
-  "@ledgerProcessingSignSubtext": {
-    "description": "Processing subtext shown while signing transaction"
   },
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
@@ -6671,10 +5604,6 @@
   "payScanQRCode": "Scan QR المدونة",
   "@payScanQRCode": {
     "description": "Button text to open QR code scanner for payment"
-  },
-  "seedsignerStep10": "البذور ستريك رمزها الخاص.",
-  "@seedsignerStep10": {
-    "description": "SeedSigner instruction about signed PSBT QR"
   },
   "psbtInstructions": "التعليمات",
   "@psbtInstructions": {
@@ -6751,10 +5680,6 @@
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
-  "seedsignerStep7": "   -حاول أن تعيد جهازك قليلاً",
-  "@seedsignerStep7": {
-    "description": "SeedSigner troubleshooting tip 3"
-  },
   "sendAmount": "المبلغ",
   "@sendAmount": {
     "description": "Label for the transaction amount"
@@ -6770,10 +5695,6 @@
   "dcaConfirmAmount": "المبلغ",
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
-  },
-  "seedsignerStep8": "بمجرد أن تستورد الصفقة في بذورك يجب أن تختار البذور التي ترغب في التوقيع عليها.",
-  "@seedsignerStep8": {
-    "description": "SeedSigner instruction for seed selection"
   },
   "sellSendPaymentPriceRefresh": "ستنعش الأسعار ",
   "@sellSendPaymentPriceRefresh": {
@@ -6799,10 +5720,6 @@
   "@receiveInvoiceExpired": {
     "description": "Status when invoice is no longer valid"
   },
-  "ledgerButtonManagePermissions": "الموافقة",
-  "@ledgerButtonManagePermissions": {
-    "description": "Button label to open app permissions settings"
-  },
   "buyKycPendingTitle": "قيد التحقق",
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
@@ -6827,10 +5744,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommended",
-  "@bitboxScreenSegwitBip84Subtitle": {
-    "description": "Subtitle for BIP84 option"
-  },
   "fundExchangeSpeiSubtitle": "تحويل الأموال باستخدام الـ \" سي بي \"",
   "@fundExchangeSpeiSubtitle": {
     "description": "SPEI transfer subtitle"
@@ -6846,10 +5759,6 @@
   "appStartupContactSupportButton": "دعم الاتصال",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
-  },
-  "bitboxScreenWaitingConfirmation": "في انتظار تأكيد (بيتبوكس).",
-  "@bitboxScreenWaitingConfirmation": {
-    "description": "Message shown while waiting for device confirmation"
   },
   "receiveFeeExplanation": "وسيخصم هذا الرسم من المبلغ المرسل",
   "@receiveFeeExplanation": {
@@ -6876,17 +5785,9 @@
   "@sendSwapRefundCompleted": {
     "description": "Title when refund has completed"
   },
-  "torSettingsStatusUnknown": "الوضع غير معروف",
-  "@torSettingsStatusUnknown": {
-    "description": "Status title when Tor status is unknown"
-  },
   "sendConfirmSwap": "Confirm Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "ارحل - قريباً -",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
@@ -6940,10 +5841,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "electrumAddFailedError": "Failed to add custom server",
-  "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails"
-  },
   "transactionDetailLabelTransferFees": "رسوم المبادلة",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
@@ -6960,18 +5857,6 @@
   "@errorGenericTitle": {
     "description": "Generic error title when hasError is true"
   },
-  "bitboxActionPairDeviceSuccess": "Device Paired Successfully",
-  "@bitboxActionPairDeviceSuccess": {
-    "description": "Success text for pair device"
-  },
-  "bitboxErrorNoDevicesFound": "لا توجد أجهزة (بيتبوكس) تأكد من أن جهازك مزود بالكهرباء و متصل عبر \"يو إس بي\".",
-  "@bitboxErrorNoDevicesFound": {
-    "description": "Error when no BitBox devices are detected"
-  },
-  "torSettingsStatusConnecting": "التواصل...",
-  "@torSettingsStatusConnecting": {
-    "description": "Status title when Tor is connecting"
-  },
   "receiveSwapID": "بطاقة الهوية",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
@@ -6983,10 +5868,6 @@
   "backupSettingsLabel": "دعم الجدار",
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
-  },
-  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
-  "@ledgerWalletTypeNestedSegwit": {
-    "description": "Display name for Nested Segwit wallet type (BIP49)"
   },
   "fundExchangeJurisdictionMexico": "المكسيك",
   "@fundExchangeJurisdictionMexico": {
@@ -7000,10 +5881,6 @@
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
   },
-  "kruxStep6": "إذا كان لديك مشكلة في المسح",
-  "@kruxStep6": {
-    "description": "Krux troubleshooting header"
-  },
   "swapValidationEnterAmount": "رجاءً إدخلْ كميةَ",
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
@@ -7016,10 +5893,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "ledgerProcessingVerify": "عنوان عرض على ليدجر.",
-  "@ledgerProcessingVerify": {
-    "description": "Status message shown while verifying address on Ledger"
-  },
   "coreScreensFeePriorityLabel": "الأولوية",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
@@ -7031,14 +5904,6 @@
   "testBackupErrorWalletMismatch": "الدعم لا يطابق المحفظة الموجودة",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "bip329LabelsHeading": "BIP329 Labels Import/Export",
-  "@bip329LabelsHeading": {
-    "description": "Main heading on BIP329 labels page"
-  },
-  "jadeStep2": "أضف مرارة إذا كان لديك واحدة (اختيارية)",
-  "@jadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "coldcardStep4": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
   "@coldcardStep4": {
@@ -7135,14 +6000,6 @@
       }
     }
   },
-  "keystoneStep1": "إتجهوا إلى جهازك",
-  "@keystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "keystoneStep3": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
-  "@keystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "backupKeyWarningMessage": "تحذير: كن حذراً أين تنقذ مفتاح الدعم.",
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
@@ -7150,10 +6007,6 @@
   "exchangeAuthErrorMessage": "وقع خطأ، من فضلك حاول الدخول مرة أخرى.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
-  },
-  "bitboxActionSignTransactionTitle": "المعاملات",
-  "@bitboxActionSignTransactionTitle": {
-    "description": "Title for sign transaction action"
   },
   "testBackupGoogleDrivePrivacyPart3": "اترك هاتفك ",
   "@testBackupGoogleDrivePrivacyPart3": {
@@ -7179,10 +6032,6 @@
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
   },
-  "electrumDeletePrivacyNotice": "الإشعار الخاص:\n\nاستخدام عقدك الخاص يضمن أنه لا يمكن لأي طرف ثالث أن يربط عنوان IP الخاص بك مع معاملاتك. عن طريق حذف آخر خادم خاص بك، سوف تكون على اتصال مع خادم بولبيتكوين.\n.\n",
-  "@electrumDeletePrivacyNotice": {
-    "description": "Privacy notice shown when deleting last custom server"
-  },
   "dcaConfirmFrequencyWeekly": "كل أسبوع",
   "@dcaConfirmFrequencyWeekly": {
     "description": "Weekly frequency label"
@@ -7202,10 +6051,6 @@
   "exchangeSupportChatYesterday": "أمس",
   "@exchangeSupportChatYesterday": {
     "description": "Label for yesterday in date formatting"
-  },
-  "jadeStep3": "اختيار خيار \"إسكان QR\"",
-  "@jadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "dcaSetupFundAccount": "صندوق حسابك",
   "@dcaSetupFundAccount": {
@@ -7283,10 +6128,6 @@
   "@exchangeFileUploadSelectFiles": {
     "description": "Button label to select files"
   },
-  "electrumDelete": "تحذف",
-  "@electrumDelete": {
-    "description": "Delete button label in delete dialog"
-  },
   "testBackupGoogleDrivePrivacyPart4": "أبداً ",
   "@testBackupGoogleDrivePrivacyPart4": {
     "description": "Fourth part (emphasized) of privacy message"
@@ -7307,10 +6148,6 @@
   "@payProcessingPayment": {
     "description": "Loading message while payment is being processed"
   },
-  "ledgerImportTitle": "Import Ledger Wallet",
-  "@ledgerImportTitle": {
-    "description": "Title for importing a Ledger hardware wallet"
-  },
   "exchangeDcaFrequencyMonth": "الشهر",
   "@exchangeDcaFrequencyMonth": {
     "description": "DCA frequency unit: month"
@@ -7323,21 +6160,9 @@
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
   },
-  "bitboxScreenScanning": "مسح للأدوات",
-  "@bitboxScreenScanning": {
-    "description": "Main text when scanning for devices"
-  },
   "howToDecideBackupTitle": "كيفية تقرير",
   "@howToDecideBackupTitle": {
     "description": "Title for how to decide backup method modal"
-  },
-  "statusCheckTitle": "الخدمة",
-  "@statusCheckTitle": {
-    "description": "Title for the service status screen"
-  },
-  "bitboxActionImportWalletButton": "البداية",
-  "@bitboxActionImportWalletButton": {
-    "description": "Button text for import wallet"
   },
   "fundExchangeLabelSwiftCode": "SWIFT code",
   "@fundExchangeLabelSwiftCode": {
@@ -7414,14 +6239,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "bip329LabelsExportButton": "علامات التصدير",
-  "@bip329LabelsExportButton": {
-    "description": "Button text to export labels"
-  },
-  "jadeStep4": "افحصوا شفرة (كيو آر) الموضحة في محفظة (بول)",
-  "@jadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "payBillerNameValue": "Selected Biller Name",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -7450,17 +6267,9 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "Change PIN",
-  "@pinCodeChangeButton": {
-    "description": "Button label to change existing PIN"
-  },
   "paySecurityQuestionHint": "السؤال الأمني (10-40 شخص)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
-  },
-  "ledgerErrorMissingPsbt": "PSBT مطلوب للتوقيع",
-  "@ledgerErrorMissingPsbt": {
-    "description": "Error message when PSBT parameter is missing for signing"
   },
   "importWatchOnlyPasteHint": "Paste xpub, ypub, zpub or descriptor",
   "@importWatchOnlyPasteHint": {
@@ -7506,10 +6315,6 @@
   "dcaConfirmAutoMessage": "وستوضع أوامر الشراء تلقائياً في هذه الأماكن. يمكنك تعطيلها في أي وقت.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "pinCodeCheckingStatus": "التحقق من مركز PIN",
-  "@pinCodeCheckingStatus": {
-    "description": "Status screen description while checking PIN status"
   },
   "usePasswordInsteadButton": "{pinOrPassword} instead >>",
   "@usePasswordInsteadButton": {
@@ -7561,10 +6366,6 @@
   "@testBackupDoNotShare": {
     "description": "Warning header about keeping recovery phrase secret"
   },
-  "kruxInstructionsTitle": "التعليمات الكيروية",
-  "@kruxInstructionsTitle": {
-    "description": "Title for Krux signing instructions modal"
-  },
   "paySinpeNumeroComprobante": "رقم المرجع",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -7572,14 +6373,6 @@
   "backupSettingsViewVaultKey": "View Vault المفتاح",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
-  },
-  "ledgerErrorDeviceBusy": "برنامج آخر يستخدم جهاز Ledger الخاص بك. الرجاء إغلاقه (على سبيل المثال، Ledger Live) والمحاولة مرة أخرى.",
-  "@ledgerErrorDeviceBusy": {
-    "description": "Error message when another program is communicating with the Ledger device"
-  },
-  "ledgerErrorNoConnection": "No Ledger connection available",
-  "@ledgerErrorNoConnection": {
-    "description": "Error message when no Ledger connection is available"
   },
   "testBackupSuccessButton": "حصلت عليه",
   "@testBackupSuccessButton": {
@@ -7621,10 +6414,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "pinCodeAuthentication": "التوثيق",
-  "@pinCodeAuthentication": {
-    "description": "AppBar title for PIN code authentication screens"
-  },
   "payLowPriority": "منخفض",
   "@payLowPriority": {
     "description": "Low fee priority option"
@@ -7663,14 +6452,6 @@
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
   },
-  "pinCodeSettingUp": "وضع رمز PIN الخاص بك",
-  "@pinCodeSettingUp": {
-    "description": "Status screen description while setting up PIN"
-  },
-  "pinCodeBackupRequiredWarning": "يرجى إكمال نسخة احتياطية للمحفظة قبل تعيين رمز PIN",
-  "@pinCodeBackupRequiredWarning": {
-    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
-  },
   "replaceByFeeErrorFeeRateTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -7695,15 +6476,6 @@
   "@allSeedViewNoSeedsFound": {
     "description": "Message shown when no seeds are found"
   },
-  "bitboxScreenActionFailed": "{action} Failed",
-  "@bitboxScreenActionFailed": {
-    "description": "Main text when action fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupScheduleMessage": "وستوضع عمليات شراء البتروجين تلقائياً وفقاً لهذا الجدول الزمني.",
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
@@ -7716,17 +6488,9 @@
   "@payFee": {
     "description": "Label for fee"
   },
-  "systemLabelSelfSpend": "خلاصة",
-  "@systemLabelSelfSpend": {
-    "description": "System label for self-spend transactions"
-  },
   "swapProgressRefundMessage": "حدث خطأ في المبادلة. عملية الاسترداد قيد التنفيذ.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
-  },
-  "passportStep4": "إذا كان لديك مشكلة في المسح",
-  "@passportStep4": {
-    "description": "Passport troubleshooting header"
   },
   "dcaConfirmContinue": "استمر",
   "@dcaConfirmContinue": {
@@ -7735,10 +6499,6 @@
   "decryptVaultButton": "الخزنة المشفرة",
   "@decryptVaultButton": {
     "description": "Button label to decrypt vault"
-  },
-  "electrumNetworkBitcoin": "Bitcoin",
-  "@electrumNetworkBitcoin": {
-    "description": "Bitcoin network tab label"
   },
   "paySecureBitcoinWallet": "محفظة بيتكين آمنة",
   "@paySecureBitcoinWallet": {
@@ -7756,10 +6516,6 @@
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
-  "bitboxActionVerifyAddressButton": "تصحيح العنوان",
-  "@bitboxActionVerifyAddressButton": {
-    "description": "Button text for verify address"
-  },
   "importColdcardInstructionsStep7": "على جهازك المحمول، اضغطي \"كاميرا مفتوحة\"",
   "@importColdcardInstructionsStep7": {
     "description": "ImportColdcardQ: Seventh instruction step"
@@ -7771,10 +6527,6 @@
   "enterBackupKeyLabel": "مفتاح الدعم",
   "@enterBackupKeyLabel": {
     "description": "Label for backup key input field"
-  },
-  "bitboxScreenTroubleshootingSubtitle": "أولاً، تأكد من أن جهازك (بيتبوكس02) متصل بميناء (يو إس بي) إذا كان جهازك لا يزال لا يتواصل مع التطبيق، حاول ما يلي:",
-  "@bitboxScreenTroubleshootingSubtitle": {
-    "description": "Subtitle for troubleshooting instructions"
   },
   "securityWarningTitle": "تحذير أمني",
   "@securityWarningTitle": {
@@ -7805,25 +6557,13 @@
   "@torSettingsEnableProxy": {
     "description": "Label for the toggle to enable/disable Tor proxy"
   },
-  "bitboxScreenAddressToVerify": "عنوان التحقق:",
-  "@bitboxScreenAddressToVerify": {
-    "description": "Label for address verification"
-  },
   "payConfirmPayment": "التعويض",
   "@payConfirmPayment": {
     "description": "Button text to confirm and execute payment"
   },
-  "bitboxErrorPermissionDenied": "ويشترط الحصول على إذن من شركة USB للربط بأجهزة بيث بوكس.",
-  "@bitboxErrorPermissionDenied": {
-    "description": "Error when USB permissions are not granted for BitBox"
-  },
   "recoveryPhraseTitle": "اكتبي عبارة استردادك\nفي الأمر الصحيح",
   "@recoveryPhraseTitle": {
     "description": "Title instructing user to write down recovery phrase"
-  },
-  "bitboxActionSignTransactionProcessingSubtext": "من فضلك تأكدي من الصفقة على جهازك.",
-  "@bitboxActionSignTransactionProcessingSubtext": {
-    "description": "Processing subtext for sign transaction"
   },
   "sellConfirmPayment": "دفع تأكيد",
   "@sellConfirmPayment": {
@@ -7894,18 +6634,10 @@
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
   },
-  "electrumConfirm": "Confirm",
-  "@electrumConfirm": {
-    "description": "Confirm button label in advanced options"
-  },
   "transactionDetailLabelOrderNumber": "العدد",
   "transactionDetailLabelPaymentDescription": "وصف الدفعة",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
-  },
-  "bitboxActionPairDeviceSuccessSubtext": "جهازك (بيتبوكس) أصبح الآن مُقترناً ومستعداً لاستخدامه.",
-  "@bitboxActionPairDeviceSuccessSubtext": {
-    "description": "Success subtext for pair device"
   },
   "pickPasswordInsteadButton": "كلمة المرور بدلاً من ذلك",
   "@pickPasswordInsteadButton": {
@@ -7914,10 +6646,6 @@
   "coreScreensSendNetworkFeeLabel": "إرسال شبكة Fee",
   "@coreScreensSendNetworkFeeLabel": {
     "description": "Label for send network fee field"
-  },
-  "bitboxScreenScanningSubtext": "أبحث عن جهازك الـ(بيتبوكس)...",
-  "@bitboxScreenScanningSubtext": {
-    "description": "Subtext when scanning"
   },
   "sellOrderFailed": "فشل في وضع أمر بيع",
   "@sellOrderFailed": {
@@ -7950,10 +6678,6 @@
   "dcaConfirmNetworkBitcoin": "Bitcoin",
   "@dcaConfirmNetworkBitcoin": {
     "description": "Bitcoin network label"
-  },
-  "seedsignerStep14": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
-  "@seedsignerStep14": {
-    "description": "SeedSigner final instruction about broadcasting"
   },
   "fundExchangeCostaRicaMethodIbanCrcTitle": "إيبان كوستاريكا",
   "@fundExchangeCostaRicaMethodIbanCrcTitle": {
@@ -7996,25 +6720,9 @@
   "@pickPinInsteadButton": {
     "description": "Button label to switch to PIN input"
   },
-  "bitboxErrorConnectionTypeNotInitialized": "نوع الإتصال غير مبدئي.",
-  "@bitboxErrorConnectionTypeNotInitialized": {
-    "description": "Error when connection type is not initialized"
-  },
   "transactionListOngoingTransfersDescription": "هذه المبادلات قيد التنفيذ حالياً. أموالك آمنة وستكون متاحة عند اكتمال المبادلة.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
-  },
-  "ledgerErrorPermissionDenied": "أذونات البلوتوث مطلوبة للاتصال بأجهزة Ledger.",
-  "ledgerErrorNoDevicesFound": "لم يتم العثور على أجهزة Ledger. تأكد من أن جهازك قيد التشغيل وأن البلوتوث مُفعّل.",
-  "ledgerErrorMultipleDevicesFound": "تم العثور على عدة أجهزة Ledger. يرجى التأكد من وجود جهاز واحد فقط بالقرب منك.",
-  "ledgerErrorDeviceNotFound": "لم يتم العثور على جهاز Ledger.",
-  "ledgerErrorDeviceMismatch": "تم اكتشاف عدم تطابق الجهاز.",
-  "ledgerErrorInvalidPsbt": "تم اكتشاف تنسيق PSBT غير صالح.",
-  "ledgerErrorMissingDerivationPath": "مسار الاشتقاق مطلوب",
-  "ledgerErrorMissingScriptType": "نوع البرنامج النصي مطلوب",
-  "ledgerProcessingVerifySubtext": "يرجى تأكيد العنوان على جهاز ليدجر الخاص بك.",
-  "@ledgerProcessingVerifySubtext": {
-    "description": "Processing subtext shown while verifying address"
   },
   "transactionOrderLabelOriginCedula": "Origin Cedula",
   "@transactionOrderLabelOriginCedula": {
@@ -8036,10 +6744,6 @@
         "type": "String"
       }
     }
-  },
-  "appUnlockScreenTitle": "التوثيق",
-  "@appUnlockScreenTitle": {
-    "description": "Title of the app unlock screen"
   },
   "importQrDeviceWalletName": "اسم الجدار",
   "@importQrDeviceWalletName": {
@@ -8073,25 +6777,13 @@
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
-  "ledgerInstructionsAndroidDual": "تأكد من أن (ليدجر) الخاص بك مُفَتح مع برنامج (بيتكوين) المُفَتَتح و (بلوتوث) مُمكّن.",
-  "@ledgerInstructionsAndroidDual": {
-    "description": "Connection instructions for Android devices (Bluetooth or USB)"
-  },
   "defaultWalletsLabel": "الجدار الافتراضي",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
   },
-  "jadeStep9": "بمجرد أن يتم استيراد الصفقة في الجايد الخاص بك، استعراض عنوان الوجهة والمبلغ.",
-  "@jadeStep9": {
-    "description": "Jade instruction for reviewing transaction"
-  },
   "receiveAddLabel": "Add Label",
   "@receiveAddLabel": {
     "description": "Button label for adding a label to a receive address"
-  },
-  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested in-P2SH",
-  "@ledgerWalletTypeNestedSegwitDescription": {
-    "description": "Technical description for Nested Segwit wallet type"
   },
   "dcaConfirmFrequencyHourly": "كل ساعة",
   "@dcaConfirmFrequencyHourly": {
@@ -8113,10 +6805,6 @@
   "testBackupGoogleDrivePrivacyPart5": "(تشارك مع (بول بيتكين.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "bitboxActionSignTransactionSuccessSubtext": "صفقتك تم توقيعها بنجاح.",
-  "@bitboxActionSignTransactionSuccessSubtext": {
-    "description": "Success subtext for sign transaction"
   },
   "transactionStatusTransferExpired": "انتهت صلاحية المبادلة",
   "@transactionStatusTransferExpired": {
@@ -8196,14 +6884,6 @@
   "@recoverButton": {
     "description": "Button label to recover wallet"
   },
-  "passportStep5": "   - زيادة السطوع على جهازك",
-  "@passportStep5": {
-    "description": "Passport troubleshooting tip 1"
-  },
-  "bitboxScreenConnectSubtext": "تأكد من أن (بيتبوكس) الخاص بك غير مقفل و متصل عبر (يو إس بي).",
-  "@bitboxScreenConnectSubtext": {
-    "description": "Subtext for initial state"
-  },
   "payOwnerName": "اسم المالك",
   "@payOwnerName": {
     "description": "Label for owner name field"
@@ -8224,10 +6904,6 @@
         "type": "String"
       }
     }
-  },
-  "bitboxErrorInvalidResponse": "رد غير سليم من جهاز (بيتبوكس) أرجوك حاول مرة أخرى.",
-  "@bitboxErrorInvalidResponse": {
-    "description": "Error when BitBox returns an invalid response"
   },
   "payAdvancedOptions": "الخيارات المتقدمة",
   "@payAdvancedOptions": {
@@ -8269,10 +6945,6 @@
   "@coldcardStep2": {
     "description": "Coldcard instruction step 2"
   },
-  "electrumInvalidNumberError": "أدخل رقماً صالحاً",
-  "@electrumInvalidNumberError": {
-    "description": "Validation error for non-numeric input"
-  },
   "coreWalletTransactionStatusConfirmed": "تم تأكيدها",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
@@ -8287,10 +6959,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "electrumRetryCount": "الكونت",
-  "@electrumRetryCount": {
-    "description": "Retry Count field label and hint in advanced options"
-  },
   "walletDetailsDescriptorLabel": "الوصف",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
@@ -8299,10 +6967,6 @@
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
   },
-  "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
-  "@jadeStep12": {
-    "description": "Jade instruction to return to app"
-  },
   "payFilterByType": "الأفلام حسب النوع",
   "@payFilterByType": {
     "description": "Label for type filter dropdown"
@@ -8310,10 +6974,6 @@
   "importMnemonicImporting": "استيراد...",
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
-  },
-  "bip329LabelsDescription": "(ب) بطاقات محفظة الاستيراد أو التصدير باستخدام النموذج المعياري BIP329.",
-  "@bip329LabelsDescription": {
-    "description": "Description of BIP329 labels functionality"
   },
   "backupWalletImportanceWarning": "بدون دعم، ستخسر في النهاية الوصول إلى مالك من المهم للغاية أن نقدم الدعم.",
   "@backupWalletImportanceWarning": {
@@ -8338,10 +6998,6 @@
   "importWatchOnlyScriptType": "نوع الشر",
   "@importWatchOnlyScriptType": {
     "description": "Label for script type field"
-  },
-  "electrumCustomServers": "الخوادم العرفية",
-  "@electrumCustomServers": {
-    "description": "Section header for custom servers list"
   },
   "transactionStatusSwapFailed": "Swap Failed",
   "@transactionStatusSwapFailed": {
@@ -8416,21 +7072,9 @@
   "@testBackupSuccessMessage": {
     "description": "Success screen message confirming recovery capability"
   },
-  "electrumTimeout": "التوقيت (الثانيات)",
-  "@electrumTimeout": {
-    "description": "Timeout field label and hint in advanced options"
-  },
   "transactionDetailLabelOrderStatus": "النظام",
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
-  },
-  "electrumSaveFailedError": "فشل في إنقاذ الخيارات المتقدمة",
-  "@electrumSaveFailedError": {
-    "description": "Error message when saving advanced options fails"
-  },
-  "bitboxScreenWalletTypeLabel": "نوع الجدار:",
-  "@bitboxScreenWalletTypeLabel": {
-    "description": "Label for wallet type selector"
   },
   "importQrDeviceKruxStep6": "هذا هو!",
   "@importQrDeviceKruxStep6": {
@@ -8464,18 +7108,6 @@
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
   },
-  "appUnlockIncorrectPinError": "PIN غير صحيح. أرجوك حاول مرة أخرى ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "description": "Error message shown when user enters incorrect PIN",
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
   "buyBitcoinSent": "(بيتكوين) أرسل!",
   "@buyBitcoinSent": {
     "description": "Success message for accelerated transaction"
@@ -8483,10 +7115,6 @@
   "coreScreensPageNotFound": "الصفحة",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "passportStep8": "بمجرد أن يتم استيراد الصفقة في جواز سفرك، استعراض عنوان المقصد والمبلغ.",
-  "@passportStep8": {
-    "description": "Passport instruction for reviewing transaction"
   },
   "importQrDeviceTitle": "Connect {deviceName}",
   "@importQrDeviceTitle": {
@@ -8546,10 +7174,6 @@
       }
     }
   },
-  "electrumLiquidSslInfo": "No protocol should be specified, SSL will be used automatically.",
-  "@electrumLiquidSslInfo": {
-    "description": "Info text for Liquid server protocol"
-  },
   "sendDeviceConnected": "جهاز متصل",
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
@@ -8575,10 +7199,6 @@
   "@swapTotalFees": {
     "description": "Total fees label"
   },
-  "keystoneStep11": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
-  "@keystoneStep11": {
-    "description": "Keystone instruction to return to app"
-  },
   "scanningCompletedMessage": "اكتمل المسح",
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
@@ -8595,14 +7215,6 @@
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
   },
-  "bitboxActionSignTransactionButton": "بدء التوقيع",
-  "@bitboxActionSignTransactionButton": {
-    "description": "Button text for sign transaction"
-  },
-  "sendEnterAbsoluteFee": "إدخال رسوم مطلقة في الجلسات",
-  "@sendEnterAbsoluteFee": {
-    "description": "Placeholder for absolute fee input field"
-  },
   "importWatchOnlyDisclaimerTitle": "الإنذار بالمرحلة",
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
@@ -8614,10 +7226,6 @@
   "payPayee": "Payee",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "هذه المميزة قادمة قريباً.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "بيع في التقدم...",
   "@sellInProgress": {
@@ -8635,10 +7243,6 @@
   "sendSwapInProgressInvoice": "المبادلة جارية الفاتورة ستدفع خلال ثواني.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
-  },
-  "electrumRetryCountNegativeError": "لا يمكن أن تكون النتيجة سلبية",
-  "@electrumRetryCountNegativeError": {
-    "description": "Validation error for negative Retry Count value"
   },
   "importQrDeviceJadeStep4": "اختيار \"خيار\" من القائمة الرئيسية",
   "@importQrDeviceJadeStep4": {
@@ -8700,19 +7304,6 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "passportStep9": "اضغط على الأزرار لتوقيع الصفقة على جواز سفرك.",
-  "@passportStep9": {
-    "description": "Passport instruction for signing"
-  },
-  "electrumDeleteConfirmation": "هل أنت متأكد أنك تريد حذف هذا الخادم؟\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "description": "Confirmation message for server deletion",
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicSelectType": "اختيار نوع المحفظة للاستيراد",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -8762,17 +7353,9 @@
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
   },
-  "kruxStep12": "(الكرو) سيظهر لك رمز (كيو آر) الخاص به.",
-  "@kruxStep12": {
-    "description": "Krux instruction about signed PSBT QR"
-  },
   "buyInputMinAmountError": "يجب أن تشتري على الأقل",
   "@buyInputMinAmountError": {
     "description": "Minimum amount error message"
-  },
-  "ledgerScanningTitle": "مسح للأدوات",
-  "@ledgerScanningTitle": {
-    "description": "Title shown while scanning for Ledger devices"
   },
   "payInstitutionCode": "قانون المؤسسات",
   "@payInstitutionCode": {
@@ -8782,10 +7365,6 @@
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
   },
-  "bitboxActionUnlockDeviceSuccessSubtext": "جهازك (بيتبوكس) مفتوح الآن ومستعد لاستخدامه.",
-  "@bitboxActionUnlockDeviceSuccessSubtext": {
-    "description": "Success subtext for unlock device"
-  },
   "payShareInvoice": "فاتورة الحصة",
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
@@ -8793,22 +7372,6 @@
   "walletDetailsSignerDeviceLabel": "جهاز تسجيل",
   "@walletDetailsSignerDeviceLabel": {
     "description": "Label for the signer device field in wallet details"
-  },
-  "bitboxScreenEnterPassword": "كلمة المرور",
-  "@bitboxScreenEnterPassword": {
-    "description": "Main text when waiting for password"
-  },
-  "keystoneStep10": "ستريك \"كي ستون\" رمزها الخاص \"كيو آر\".",
-  "@keystoneStep10": {
-    "description": "Keystone instruction about signed PSBT QR"
-  },
-  "ledgerSuccessSignTitle": "Transaction  signed Successfully",
-  "@ledgerSuccessSignTitle": {
-    "description": "Success message title after signing transaction with Ledger"
-  },
-  "electrumPrivacyNoticeContent1": "إشعار الخصوصية: استخدام رمزك الخاص يضمن أنه لا يمكن لأي طرف ثالث أن يربط عنوان IP الخاص بك، مع معاملاتك.",
-  "@electrumPrivacyNoticeContent1": {
-    "description": "First paragraph of privacy notice"
   },
   "testBackupEnterKeyManually": "أدخل مفتاح الدعم يدوياً",
   "@testBackupEnterKeyManually": {
@@ -8825,10 +7388,6 @@
   "allWordsSelectedMessage": "لقد اخترت كل الكلمات",
   "@allWordsSelectedMessage": {
     "description": "Message shown when all words are selected"
-  },
-  "bitboxActionPairDeviceTitle": "Pair BitBox Device",
-  "@bitboxActionPairDeviceTitle": {
-    "description": "Title for pair device action"
   },
   "buyKYCLevel2": "المستوى 2 - المعزز",
   "@buyKYCLevel2": {
@@ -8854,10 +7413,6 @@
   "toLabel": "إلى",
   "@toLabel": {
     "description": "Label for destination address in transaction details"
-  },
-  "passportStep7": "   -حاول أن تعيد جهازك قليلاً",
-  "@passportStep7": {
-    "description": "Passport troubleshooting tip 3"
   },
   "sendConfirm": "Confirm",
   "@sendConfirm": {
@@ -8894,10 +7449,6 @@
   "sellInteracTransfer": "تحويل مالي عبر البريد الإلكتروني",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
-  },
-  "bitboxScreenPairingCodeSubtext": "التحقق من هذا الرمز يطابق شاشة بيت بوكس02 الخاص بك، ثم تأكيد على الجهاز.",
-  "@bitboxScreenPairingCodeSubtext": {
-    "description": "Subtext when showing pairing code"
   },
   "createdAtLabel": "أنشئت في:",
   "@createdAtLabel": {
@@ -8963,10 +7514,6 @@
   "@withdrawConfirmBankAccount": {
     "description": "Default label for bank account in confirmation screen"
   },
-  "kruxStep1": "إتجه إلى جهازك",
-  "@kruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "dcaUseDefaultLightningAddress": "استخدم عنوان البرق.",
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
@@ -9026,21 +7573,9 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "bitboxActionVerifyAddressSuccess": "العنوان الناجح",
-  "@bitboxActionVerifyAddressSuccess": {
-    "description": "Success text for verify address"
-  },
   "psbtImDone": "لقد انتهيت",
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
-  },
-  "bitboxScreenSelectWalletType": "Select Wallet النوع",
-  "@bitboxScreenSelectWalletType": {
-    "description": "Title for wallet type selection modal"
-  },
-  "appUnlockEnterPinMessage": "أدخل رمز الدبابيس الخاص بك لفتح",
-  "@appUnlockEnterPinMessage": {
-    "description": "Message prompting user to enter their PIN code to unlock the app"
   },
   "torSettingsTitle": "تنظيمات التعذيب",
   "@torSettingsTitle": {
@@ -9066,10 +7601,6 @@
   "@payCompleted": {
     "description": "Title for payment completed screen"
   },
-  "bitboxScreenManagePermissionsButton": "الموافقة",
-  "@bitboxScreenManagePermissionsButton": {
-    "description": "Button to open app permissions settings"
-  },
   "sellKYCPending": "التحقق من صحة الشركة",
   "@sellKYCPending": {
     "description": "Message when verification in progress"
@@ -9077,10 +7608,6 @@
   "buyGetConfirmedFaster": "تأكد بسرعة",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "electrumEnableSsl": "Enable SSL",
-  "@electrumEnableSsl": {
-    "description": "SSL toggle label in add custom server sheet"
   },
   "payCustomFee": "الرسوم الجمركية",
   "@payCustomFee": {
@@ -9105,10 +7632,6 @@
   "payUnsupportedInvoiceType": "نوع الفواتير غير المدعومة",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
-  },
-  "seedsignerStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
-  "@seedsignerStep13": {
-    "description": "SeedSigner instruction about import completion"
   },
   "swapProgressPendingMessage": "المبادلة قيد التنفيذ. قد تستغرق معاملات Bitcoin بعض الوقت للتأكيد. يمكنك العودة إلى الصفحة الرئيسية والانتظار.",
   "@swapProgressPendingMessage": {
@@ -9137,22 +7660,9 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
-  "psbtFlowMoveLaser": "حرك الليزر الأحمر فوق و أسفل على شفرة QR",
-  "@psbtFlowMoveLaser": {
-    "description": "Troubleshooting tip for devices with laser scanners"
-  },
   "dcaConfirmOrderTypeValue": "الشراء المتكرر",
   "@dcaConfirmOrderTypeValue": {
     "description": "Order type value"
-  },
-  "psbtFlowDeviceShowsQr": "The {device} will then show you its own QR code.",
-  "@psbtFlowDeviceShowsQr": {
-    "description": "Information that device will display QR code after signing",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "testBackupEncryptedVaultTitle": "الخزنة المشفرة",
   "@testBackupEncryptedVaultTitle": {
@@ -9199,18 +7709,6 @@
       }
     }
   },
-  "torSettingsPortValidationRange": "يجب أن يكون الميناء بين 1 و 65535",
-  "@torSettingsPortValidationRange": {
-    "description": "Validation error when port is out of valid range"
-  },
-  "electrumTimeoutEmptyError": "الوقت لا يمكن أن يكون فارغا",
-  "@electrumTimeoutEmptyError": {
-    "description": "Validation error for empty Timeout field"
-  },
-  "electrumPrivacyNoticeContent2": "ومع ذلك، إذا رأيتم المعاملات عبر المنصّة عن طريق فتح صفحة تعريف المعاملات الخاصة بكم أو صفحة التحصيل، هذه المعلومات ستكون معروفة لـ(بولبيتكوين).",
-  "@electrumPrivacyNoticeContent2": {
-    "description": "Second paragraph of privacy notice"
-  },
   "exchangeAccountInfoVerificationIdentityVerified": "التحقق من الهوية",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
@@ -9218,10 +7716,6 @@
   "importColdcardScanPrompt": "امسح شفرة الرباعي من بطاقة الذكاء",
   "@importColdcardScanPrompt": {
     "description": "Instruction to scan Coldcard QR"
-  },
-  "torSettingsDescConnected": "(تور بروسي) يركض ويستعد",
-  "@torSettingsDescConnected": {
-    "description": "Description when Tor is connected"
   },
   "backupSettingsEncryptedVault": "الخزنة المشفرة",
   "@backupSettingsEncryptedVault": {
@@ -9235,10 +7729,6 @@
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
   },
-  "bitboxScreenPairingCode": "قانون الجو",
-  "@bitboxScreenPairingCode": {
-    "description": "Main text when showing pairing code"
-  },
   "testBackupPhysicalBackupTitle": "الدعم المادي",
   "@testBackupPhysicalBackupTitle": {
     "description": "Title for physical backup option card"
@@ -9247,10 +7737,6 @@
   "@fundExchangeSpeiDescription": {
     "description": "Description for SPEI transfer method"
   },
-  "ledgerProcessingImport": "الجدار الاستيراد",
-  "@ledgerProcessingImport": {
-    "description": "Status message shown while importing Ledger wallet"
-  },
   "coldcardStep15": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
   "@coldcardStep15": {
     "description": "Coldcard final instruction about broadcasting"
@@ -9258,10 +7744,6 @@
   "comingSoonDefaultMessage": "ويجري حاليا تطوير هذه السمة وستتاح قريبا.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "ledgerErrorMissingAddress": "يلزم الحصول على عنوان للتحقق",
-  "@ledgerErrorMissingAddress": {
-    "description": "Error message when address is missing for verification"
   },
   "enterBackupKeyManuallyTitle": "إدخال مفتاح الدعم يدويا",
   "@enterBackupKeyManuallyTitle": {
@@ -9287,10 +7769,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "receiveReceiveAmount": "المبلغ المستلم",
-  "@receiveReceiveAmount": {
-    "description": "Label for the amount that will be received after fees"
-  },
   "exchangeReferralsApplyToJoinMessage": "تطبيق للانضمام إلى البرنامج هنا",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
@@ -9307,18 +7785,6 @@
   "@pinManageDescription": {
     "description": "Headline text on PIN settings screen"
   },
-  "pinCodeConfirm": "Confirm",
-  "@pinCodeConfirm": {
-    "description": "Button label to confirm PIN entry"
-  },
-  "bitboxActionUnlockDeviceProcessing": "جهاز إطفاء",
-  "@bitboxActionUnlockDeviceProcessing": {
-    "description": "Processing text for unlock device"
-  },
-  "seedsignerStep4": "إذا كان لديك مشكلة في المسح",
-  "@seedsignerStep4": {
-    "description": "SeedSigner troubleshooting header"
-  },
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
@@ -9326,18 +7792,6 @@
   "payBitcoinOnChain": "بيتكوين على شاين",
   "@payBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "torSettingsDescDisconnected": "(تور بروسي) لا يهرب",
-  "@torSettingsDescDisconnected": {
-    "description": "Description when Tor is disconnected"
-  },
-  "ledgerButtonTryAgain": "حاول مرة أخرى",
-  "@ledgerButtonTryAgain": {
-    "description": "Button label to retry a failed Ledger operation"
-  },
-  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested in-P2SH",
-  "@bitboxScreenNestedSegwitBip49Subtitle": {
-    "description": "Subtitle for BIP49 option"
   },
   "buyInstantPaymentWallet": "محفظة الدفع الثابتة",
   "@buyInstantPaymentWallet": {
@@ -9383,14 +7837,6 @@
   "@receiveDescription": {
     "description": "Optional memo field"
   },
-  "bitboxScreenVerifyAddress": "تصحيح العنوان",
-  "@bitboxScreenVerifyAddress": {
-    "description": "Main text when showing address verification"
-  },
-  "bitboxScreenConnectDevice": "إربط جهازك",
-  "@bitboxScreenConnectDevice": {
-    "description": "Main text when in initial state"
-  },
   "amountRequestedLabel": "المبلغ المطلوب: {amount}",
   "@amountRequestedLabel": {
     "description": "Shows the requested amount to send",
@@ -9416,17 +7862,9 @@
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
   },
-  "pinCodeLoading": "Loading",
-  "@pinCodeLoading": {
-    "description": "Status screen title while loading PIN settings"
-  },
   "fundExchangeCrIbanUsdLabelRecipientName": "الاسم المستقبِل",
   "@fundExchangeCrIbanUsdLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN USD transfer"
-  },
-  "ledgerSignTitle": "المعاملات",
-  "@ledgerSignTitle": {
-    "description": "Title for signing a transaction with Ledger"
   },
   "importWatchOnlyCancel": "إلغاء",
   "@importWatchOnlyCancel": {
@@ -9481,10 +7919,6 @@
   "sharedWithBullBitcoin": "(تشارك مع (بول بيتكين.",
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
-  },
-  "ledgerHelpStep3": "تأكد من أن (ليدجر) قد انقلب على (بلوتوث).",
-  "@ledgerHelpStep3": {
-    "description": "Third troubleshooting step for Ledger connection issues"
   },
   "transactionSwapDescChainFailed": "حدثت مشكلة في مبادلتك. يرجى التواصل مع الدعم إذا لم تُعَد الأموال خلال 24 ساعة.",
   "@transactionSwapDescChainFailed": {
@@ -9576,10 +8010,6 @@
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
   },
-  "ledgerHelpStep4": "تأكّدْ بأنّك رَكّبتَ آخر نسخة من تطبيقِ بيتكوين مِنْ ليدجر لايف.",
-  "@ledgerHelpStep4": {
-    "description": "Fourth troubleshooting step for Ledger connection issues"
-  },
   "lastKnownEncryptedVault": "آخر معروف الخزنة: {date}",
   "@lastKnownEncryptedVault": {
     "description": "Label showing last known encrypted vault date",
@@ -9589,10 +8019,6 @@
         "example": "2025-01-20 15:30:45"
       }
     }
-  },
-  "ledgerHelpStep1": "أعد تشغيل جهاز ليدجر.",
-  "@ledgerHelpStep1": {
-    "description": "First troubleshooting step for Ledger connection issues"
   },
   "autoswapWarningDontShowAgain": "لا تظهر هذا التحذير مرة أخرى.",
   "@autoswapWarningDontShowAgain": {
@@ -9702,10 +8128,6 @@
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
-  "ledgerSuccessAddressVerified": "تم التحقق من العنوان بنجاح!",
-  "@ledgerSuccessAddressVerified": {
-    "description": "Success snackbar message after address verification"
-  },
   "transactionSwapDescChainRefundable": "سيتم استرداد المبادلة. ستُعاد أموالك إلى محفظتك تلقائياً.",
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
@@ -9744,10 +8166,6 @@
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
-  "ledgerHelpStep2": "تأكدي من أن هاتفكِ قد انقلب على (بلوتوث) وسمح له.",
-  "@ledgerHelpStep2": {
-    "description": "Second troubleshooting step for Ledger connection issues"
-  },
   "autoswapAlwaysBlockInfoEnabled": "عند التفعيل، سيتم دائماً حظر المبادلات التلقائية التي تتجاوز رسومها الحد المحدد",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
@@ -9771,10 +8189,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "زيارة لإستعادة المعلومات.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "ledgerWalletTypeLegacyDescription": "P2PKH - Older format",
-  "@ledgerWalletTypeLegacyDescription": {
-    "description": "Description for Legacy wallet type"
   },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
@@ -9888,10 +8302,6 @@
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
-  "ledgerHelpStep5": "تأكد من جهاز (ليدجر) يستخدم آخر برمجيات الشركة يمكنك تحديث البرمجيات باستخدام برنامج (ليدجر لايف).",
-  "@ledgerHelpStep5": {
-    "description": "Fifth troubleshooting step for Ledger connection issues"
-  },
   "recoverWalletScreenTitle": "Recover Wallet",
   "@recoverWalletScreenTitle": {
     "description": "Title for recover wallet screen"
@@ -9995,14 +8405,6 @@
   "autoswapWarningSettingsLink": "خُذْني إلى أماكنِ التبديل الآليِ",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
-  },
-  "ledgerWalletTypeSelectTitle": "Select Wallet النوع",
-  "@ledgerWalletTypeSelectTitle": {
-    "description": "Title for wallet type selection modal"
-  },
-  "ledgerHelpSubtitle": "أولاً، تأكد من أن جهاز \"ليدجر\" الخاص بك مُفْتَتَجَح، و تطبيق \"بيتكوين\" مفتوح. إذا كان جهازك لا يزال لا يتواصل مع التطبيق، حاول ما يلي:",
-  "@ledgerHelpSubtitle": {
-    "description": "Subtitle/introduction for Ledger troubleshooting help"
   },
   "savingToDevice": "ننقذ جهازك.",
   "@savingToDevice": {
@@ -10259,7 +8661,6 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "تؤدي قيم Stop Gap العالية إلى زيادة وقت المزامنة بشكل كبير. أبقِ التطبيق مفتوحًا في المقدمة حتى تكتمل المزامنة — قد يؤدي تشغيل التطبيق في الخلفية إلى مقاطعتها.",
   "wizardSkipButton": "تخطي",
   "wizardPageIndicator": "صفحة {current} / {total}",
   "wizardNextButton": "التالي",
@@ -10341,12 +8742,7 @@
   "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
-  "pinCodeSaveError": "تعذر حفظ رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
-  "pinCodeDeleteError": "تعذر حذف رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
-  "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
-  "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
-  "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا.",
   "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
@@ -10633,26 +9029,7 @@
   "swapRescueWalletHint": "اختر محفظة",
   "swapRescueButton": "استعادة",
   "swapRescueSuccess": "تمت استعادة المبادلة — ستُستأنف الآن",
-  "mempoolServerStatusOnline": "متصل",
-  "mempoolServerStatusOffline": "غير متصل",
-  "mempoolServerStatusChecking": "جارٍ التحقق...",
   "mempoolServerStatusUnknown": "غير معروف",
-  "mempoolCustomServerSaveFailed": "فشل حفظ الخادم",
-  "mempoolCustomServerInfoDescription": "تُستخدم خوادم Mempool لتقدير الرسوم ولفتح مستكشف الكتل عند عرض تفاصيل المعاملات.",
-  "mempoolCustomServerUseSsl": "استخدام SSL",
-  "mempoolCustomServerSslAutoDetected": "(تم الاكتشاف تلقائيًا)",
-  "mempoolCustomServerSslHelpText": "بالنسبة للخوادم المحلية (.local، عناوين IP الخاصة) وخوادم Tor (.onion)، عادةً ما يكون SSL معطّلاً. يجب استخدام SSL مع عناوين IP والنطاقات العامة.",
-  "mempoolErrorSameAsDefault": "هذا الرابط مطابق للخادم الافتراضي. يرجى استخدام رابط مختلف.",
-  "mempoolErrorConnectionTimeout": "انتهت مهلة الاتصال. قد يكون الخادم بطيئًا أو غير متاح.",
-  "mempoolErrorHostNotFound": "تعذّر العثور على هذا الخادم. يرجى التحقق من الرابط والمحاولة مجددًا.",
-  "mempoolErrorConnectionFailed": "تعذّر الاتصال بالخادم. تحقق من اتصال الشبكة وحاول مجددًا.",
-  "mempoolErrorNotMempoolServer": "لا يبدو أن هذا الرابط خادم Mempool. يرجى التحقق من العنوان.",
-  "mempoolErrorServerUnavailable": "الخادم غير متاح حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
-  "mempoolErrorServerError": "واجه الخادم خطأً. يرجى المحاولة مرة أخرى لاحقًا.",
-  "mempoolErrorInvalidResponse": "أرسل الخادم استجابة غير صالحة.",
-  "mempoolErrorSaveServerFailed": "فشل حفظ الخادم",
-  "mempoolErrorLoadFailed": "فشل تحميل بيانات خادم Mempool",
-  "mempoolErrorDeleteFailed": "فشل حذف الخادم المخصص",
   "exchangeStatisticsBuySellRatioDesc": "نسبة إجمالي الحجم بين الشراء والبيع",
   "exchangeStatisticsBuyVolumeDesc": "المبلغ الإجمالي المُنفَق في شراء البيتكوين",
   "exchangeStatisticsSellVolumeDesc": "المبلغ الإجمالي المُستلَم من بيع البيتكوين",
@@ -10662,7 +9039,6 @@
   "exchangeStatisticsSellAvgPriceDesc": "متوسط السعر المستلَم لكل بيتكوين عند البيع",
   "exchangeStatisticsTotalVolumeDesc": "مجموع أحجام الشراء والبيع بالعملات التقليدية",
   "receivePayjoinNoUtxos": "استلم الأموال أولاً لتفعيله.\nيتطلب استخدام Payjoin وجود مخرجات معاملات غير منفقة (UTXOs).",
-  "receiveLiquidRiskDisclosureLabel": "ستُحوَّل المدفوعات إلى L-BTC على شبكة السائل (وليس BTC). اطّلع على المزيد.",
   "payViewReceipt": "عرض الإيصال",
   "paySinpeReceipt": "إيصال SINPE",
   "transactionFilterWithdraw": "سحب",
@@ -10672,6 +9048,7 @@
   "transactionFilterRefund": "استرداد",
   "transactionListLoadingFailed": "تعذّر تحميل المعاملات.",
   "transactionLabelNetworkFees": "رسوم الشبكة",
+  "receiveLiquidRiskDisclosureLabel": "ستُحوَّل المدفوعات إلى L-BTC على شبكة السائل (وليس BTC). اطّلع على المزيد.",
   "walletLiquidRiskDisclosureLabel": "هذه الأموال هي L-BTC على شبكة السائل (وليست BTC). اطّلع على المزيد.",
   "liquidRiskDisclosureSemanticLabel": "فتح بيان مخاطر بيتكوين السائل",
   "liquidRiskDisclosureTitle": "بيان مخاطر بيتكوين السائل لمحفظة المدفوعات الفورية",
@@ -10693,46 +9070,6 @@
   "sendCoordinatingPayjoinTransaction": "جارٍ تنسيق معاملة Payjoin.",
   "sendErrorInvoiceExpired": "انتهت صلاحية هذه الفاتورة. اطلب من المستلم فاتورة جديدة.",
   "sendErrorAmountBelowSwapLimitsBitcoin": "فكّر في تمويل محفظة المدفوعات الفورية لإجراء مدفوعات أصغر.",
-  "psbtFlowSignViaNfc": "توقيع عبر NFC",
-  "psbtFlowSignViaNfcSheetTitle": "قرّب جهاز {deviceName} لإرسال PSBT عبر NFC",
-  "psbtFlowColdcardQInstructionsTitle": "تعليمات Coldcard Q",
-  "psbtFlowColdcardMk4InstructionsTitle": "تعليمات Coldcard Mk4",
-  "psbtFlowColdcardQStep1": "سجّل الدخول إلى جهاز Coldcard Q الخاص بك",
-  "psbtFlowColdcardQStep2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
-  "psbtFlowColdcardQStep3": "اختر طريقة التوقيع المفضّلة لديك:",
-  "psbtFlowColdcardQStep4": "بالنسبة لرمز QR:",
-  "psbtFlowColdcardQStep5": "   - اختر \"مسح أي رمز QR\" على جهاز Coldcard Q",
-  "psbtFlowColdcardQStep6": "   - امسح رمز QR الظاهر في محفظة Bull",
-  "psbtFlowColdcardQStep7": "   - إذا واجهت صعوبة في المسح:",
-  "psbtFlowColdcardQStep8": "     - زِد سطوع شاشة جهازك",
-  "psbtFlowColdcardQStep9": "     - حرّك الليزر الأحمر لأعلى ولأسفل فوق رمز QR",
-  "psbtFlowColdcardQStep10": "     - حاول إبعاد جهازك قليلاً للخلف",
-  "psbtFlowColdcardQStep11": "بالنسبة لـ NFC:",
-  "psbtFlowColdcardQStep12": "   - اختر \"جاهز للتوقيع\" على جهاز Coldcard Q، ثم اضغط زر NFC",
-  "psbtFlowColdcardQStep13": "   - قرّب هاتفك من جهاز Coldcard Q",
-  "psbtFlowColdcardQStep14": "   - انتظر حتى يتم نقل PSBT",
-  "psbtFlowColdcardQStep15": "بمجرد استيراد المعاملة في جهاز Coldcard Q، راجع عنوان الوجهة والمبلغ.",
-  "psbtFlowColdcardQStep16": "اضغط الأزرار لتوقيع المعاملة على جهاز Coldcard Q.",
-  "psbtFlowColdcardQStep17": "سيعرض جهاز Coldcard Q بعد ذلك رمز QR للمعاملة الموقّعة أو يُجهّز نقلها عبر NFC.",
-  "psbtFlowColdcardQStep18": "إذا وقّعت باستخدام رمز QR، اضغط \"انتهيت\" في محفظة بول بيتكوين.",
-  "psbtFlowColdcardQStep19": "ستطلب منك محفظة بول بيتكوين مسح رمز QR للمعاملة الموقّعة أو استخدام NFC لاستلامها.",
-  "psbtFlowColdcardQStep20": "   - بالنسبة لرمز QR: امسح الرمز الظاهر على جهاز Coldcard Q",
-  "psbtFlowColdcardQStep21": "   - بالنسبة لـ NFC: قرّب هاتفك من جهاز Coldcard Q",
-  "psbtFlowColdcardQStep22": "سيتم استيراد المعاملة الموقّعة في محفظة بول بيتكوين.",
-  "psbtFlowColdcardQStep23": "أصبحت الآن جاهزة للبث. بمجرد الضغط على بث، ستُنشر المعاملة على شبكة بيتكوين.",
-  "psbtFlowColdcardMk4Step1": "سجّل الدخول إلى جهاز Coldcard Mk4 الخاص بك",
-  "psbtFlowColdcardMk4Step2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
-  "psbtFlowColdcardMk4Step3": "اختر \"جاهز للتوقيع\" على جهاز Coldcard Mk4، ثم اضغط الزر رقم 3",
-  "psbtFlowColdcardMk4Step4": "قرّب هاتفك من جهاز Coldcard Mk4",
-  "psbtFlowColdcardMk4Step5": "انتظر حتى يتم نقل PSBT",
-  "psbtFlowColdcardMk4Step6": "بمجرد استيراد المعاملة في جهاز Coldcard Mk4، راجع عنوان الوجهة والمبلغ.",
-  "psbtFlowColdcardMk4Step7": "اضغط الأزرار لتوقيع المعاملة على جهاز Coldcard Mk4.",
-  "psbtFlowColdcardMk4Step8": "سيُجهّز جهاز Coldcard Mk4 بعد ذلك المعاملة الموقّعة لنقلها عبر NFC.",
-  "psbtFlowColdcardMk4Step9": "في محفظة بول بيتكوين، اضغط NFC في شاشة البث.",
-  "psbtFlowColdcardMk4Step10": "قرّب هاتفك من جهاز Coldcard Mk4 لاستلام المعاملة الموقّعة.",
-  "psbtFlowColdcardMk4Step11": "سيتم استيراد المعاملة الموقّعة في محفظة بول بيتكوين.",
-  "psbtFlowColdcardMk4Step12": "راجع تفاصيل المعاملة في محفظة بول بيتكوين.",
-  "psbtFlowColdcardMk4Step13": "أصبحت الآن جاهزة للبث. بمجرد الضغط على بث، ستُنشر المعاملة على شبكة بيتكوين.",
   "importWalletColdcardMk4": "Coldcard Mk4",
   "broadcastSignedTxNfcButton": "NFC",
   "broadcastSignedTxColdcardNfcSheetTitle": "قرّب جهاز Coldcard لاستلام المعاملة الموقّعة عبر NFC",
@@ -10777,11 +9114,9 @@
   "fundExchangeCopGeneratePaymentLink": "إنشاء رابط الدفع",
   "fundExchangeCopRedirectMessage": "سيتم تحويلك إلى صفحة خارجية لإجراء الدفع.",
   "fundExchangeCopOpenPaymentLink": "فتح رابط الدفع",
-  "priceChartFailedToLoad": "فشل تحميل سجل الأسعار",
   "priceFailedToLoad": "فشل تحميل السعر",
   "statusScreenTryAgain": "حاول مرة أخرى",
   "statusScreenContinue": "متابعة",
-  "noteVisibleToSenderNotice": "ستكون هذه الملاحظة مرئية لمستلم رمز QR أو الفاتورة الخاصة بك.",
   "viewerAddressTab": "العنوان",
   "viewerPaymentUriTab": "رابط الدفع (URI)",
   "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
@@ -10908,20 +9243,6 @@
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
-  "sendSubSatVbyteWarning": "قد تستغرق المعاملات بمعدل أقل من 1 ساتوشي/بايت افتراضي وقتًا أطول للتأكيد وقد لا تنتشر إلى جميع العُقد.",
-  "sendBelowMinFeeRateError": "يجب ألا يقل معدل الرسوم عن 0.1 ساتوشي/بايت افتراضي.",
-  "bitboxErrorBluetoothPermissionDenied": "يلزم إذن البلوتوث للاتصال بجهاز BitBox02 Nova الخاص بك.",
-  "bitboxErrorBluetoothUnavailable": "البلوتوث غير متاح. فعّل البلوتوث وحاول مرة أخرى.",
-  "bitboxErrorNoBleDevicesFound": "لم يُعثر على جهاز BitBox02 Nova قريب. تحقق من البلوتوث وحاول مرة أخرى.",
-  "bitboxErrorMultipleBleDevicesFound": "تم العثور على عدة أجهزة BitBox02 Nova. أبقِ جهازًا واحدًا فقط قريبًا وحاول مرة أخرى.",
-  "bitboxErrorOperationFailed": "فشلت عملية BitBox. يرجى المحاولة مرة أخرى.",
-  "bitboxScreenConnectSubtextBluetooth": "تأكد من أن جهاز BitBox02 Nova غير مُقفل وأن البلوتوث مفعّل.",
-  "bitboxScreenScanningSubtextBluetooth": "جارٍ البحث عن جهاز BitBox02 Nova القريب...",
-  "bitboxScreenTroubleshootingBluetoothTitle": "استكشاف أخطاء BitBox02 Nova وإصلاحها",
-  "bitboxScreenTroubleshootingBluetoothSubtitle": "إذا لم يتصل جهازك بالتطبيق، جرّب ما يلي:",
-  "bitboxScreenTroubleshootingBluetoothStep1": "تأكد من تفعيل البلوتوث والسماح به لهذا التطبيق.",
-  "bitboxScreenTroubleshootingBluetoothStep2": "تأكد من تفعيل البلوتوث على جهاز BitBox02 Nova الخاص بك.",
-  "bitboxScreenTroubleshootingBluetoothStep3": "أعِد تشغيل جهاز BitBox02 Nova وحاول الاتصال مرة أخرى.",
   "sendErrorInsufficientBalanceFrozenHint": "الرصيد القابل للإنفاق غير كافٍ — {amount} مجمّد. أزِل التجميد عن العملات من إدارة العملات لاستخدامها.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -10950,12 +9271,7 @@
   "settingsPayjoinDisclaimerTitle": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
-  "receiveAdditionalInformation": "معلومات إضافية",
-  "receiveAdditionalInformationPlaceholder": "أضف مبلغًا أو رسالة للمرسل",
-  "receiveMessageForSender": "رسالة إلى المرسل",
   "sendPayjoinLabel": "Payjoin",
-  "receivePayjoinAwaitingFunds": "تم تفعيل Payjoin، لكن هذه المحفظة لا تحتوي بعد على رصيد للمساهمة. سيتم تفعيله بمجرد استلام أموال.",
-  "announcementAutoswapDescription": "يتم تحويل رصيد Liquid الخاص بك تلقائيًا إلى Bitcoin.",
   "addressViewErrorWalletNotFound": "لم يتم العثور على هذه المحفظة.",
   "addressViewErrorLoadFailed": "تعذر تحميل عناوينك. يرجى المحاولة مرة أخرى.",
   "coreSwapsStatusNotStarted": "لم يبدأ",
@@ -10970,19 +9286,6 @@
   "coreSwapsStatusUnknown": "غير معروف",
   "sendSwapExpiredTitle": "انتهت صلاحية الطلب",
   "sendSwapExpiredMessage": "انتهت صلاحية هذا الطلب قبل إرسال أي أموال. لم يتم إرسال أي شيء من محفظتك.",
-  "torSettingsStatusCensored": "يبدو أن الاتصال مُرشَّح",
-  "torSettingsDescCensored": "تعذّر على Tor الوصول إلى الشبكة. غالبًا ما يعني هذا أن الاتصال يخضع للترشيح.",
-  "torSettingsBootstrapProgress": "جارٍ الاتصال… {percent}%",
-  "torSettingsEmbeddedTitle": "Tor المدمج",
-  "torSettingsEmbeddedDescription": "يُستخدم Tor المدمج من قِبل RecoverBull وخوادم Bitcoin Electrum التي تنتهي بـ .onion. تبقى بقية حركة التطبيق مباشرة.",
-  "torSettingsTransportMode": "طريقة الاتصال",
-  "torSettingsModeAutomatic": "تلقائي",
-  "torSettingsModeDirect": "مباشر",
-  "torSettingsModeSnowflake": "Snowflake",
-  "torSettingsModeAutomaticDescription": "يجرّب اتصالًا مباشرًا بـ Tor أولًا، ويستخدم Snowflake إذا بدا أن الشبكة تحجب Tor.",
-  "torSettingsModeDirectDescription": "يتصل بشبكة Tor مباشرة، دون وسيلة نقل قابلة للتوصيل.",
-  "torSettingsModeSnowflakeDescription": "يستخدم وكلاء Snowflake التطوعيين للوصول إلى Tor من شبكة مُرشَّحة.",
-  "torSettingsActiveTransport": "وسيلة النقل النشطة: {transport}",
   "settingsScreenPrivacyTitle": "خصوصية الشاشة",
   "settingsScreenPrivacyDisabledMessage": "أصبحت لقطات الشاشة مسموحة الآن على الشاشات الحساسة",
   "settingsSearchHint": "البحث في الإعدادات",
@@ -11017,11 +9320,7 @@
   "exchangeSupportChatLoadMessagesError": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
   "exchangeSupportChatSendMessageError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
   "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
-  "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
-  "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة",
   "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
-  "psbtFlowInvalidPsbtError": "لا يمكن قراءة هذه المعاملة. ارجع وأنشئها مرة أخرى.",
-  "psbtFlowQrEncodingError": "لا يمكن تحويل هذه المعاملة إلى رمز QR.",
   "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
@@ -11053,15 +9352,6 @@
   "exchangeSettingsErrorDocumentTypeNotAllowed": "نوع الملف هذا غير مقبول. اختر ملفًا آخر.",
   "exchangeSettingsErrorDocumentUnreadable": "تعذرت قراءة هذا الملف. اختر ملفًا آخر.",
   "exchangeSettingsErrorUploadingDocument": "تعذر رفع المستند. يرجى المحاولة مرة أخرى.",
-  "labelsErrorNoteTooLong": "يجب ألا تزيد الملاحظة عن {max} حرفًا",
-  "labelsErrorNoteForbiddenCharacter": "لا يمكن أن تحتوي الملاحظة على الحرف {character}",
-  "labelsErrorFileTooLarge": "هذا الملف كبير جدًا. يجب أن تكون ملفات التسميات أصغر من {max}.",
-  "labelsErrorFileUnreadable": "لا يبدو أن هذا ملف تسميات BIP-329. تأكد من اختيارك الملف الصحيح.",
-  "labelsErrorFileEmpty": "لا يحتوي هذا الملف على تسميات لاستيرادها.",
-  "labelsErrorExportFailed": "تعذّر حفظ تسمياتك. حاول مرة أخرى.",
-  "labelsErrorFileReservedName": "يستخدم هذا الملف اسم تسمية محجوزًا للتطبيق. غيّر الاسم في الملف وحاول مرة أخرى.",
-  "labelsErrorNoteForbiddenWhitespace": "لا يمكن أن تحتوي الملاحظة على أسطر جديدة أو علامات جدولة",
-  "labelsErrorFileInvalidEntry": "تعذّرت قراءة بعض الإدخالات في هذا الملف. تحقق من الملف وحاول مرة أخرى.",
   "recipientsErrorLoadFailed": "تعذّر تحميل المستفيدين لديك. حاول مرة أخرى.",
   "recipientsErrorSaveFailed": "تعذّر حفظ هذا المستفيد. تحقق من البيانات وحاول مرة أخرى.",
   "recipientsErrorSinpeLookupFailed": "لم نتمكن من التحقق من رقم الهاتف هذا. تحقق منه وحاول مرة أخرى.",
@@ -11239,11 +9529,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
   "settingsDarkModeTitle": "الوضع الداكن",
   "settingsSourceCodeTitle": "الشيفرة المصدرية",
-  "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
-  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
-  "serverEncrypted": "مشفّر",
-  "serverUnencrypted": "غير مشفّر",
   "backgroundTasksTitle": "المهام في الخلفية",
   "blockedInSystemSettings": "محظور في إعدادات النظام",
   "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",
@@ -11252,6 +9538,5 @@
   "permissionsTitle": "الأذونات",
   "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
   "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
-  "wizardNotificationsDescription": "اعرف عند وصول دفعة.",
-  "pinCodeLengthHint": "أدخل من {min} إلى {max} أرقام"
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
 }

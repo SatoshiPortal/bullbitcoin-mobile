@@ -1,0 +1,13 @@
+{
+  "@@locale": "fi",
+  "fiatCurrencySettingsLabel": "Fiat-valuutta",
+  "currencySettingsDefaultFiatCurrencyLabel": "Oletus fiat-valuutta",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "Valuuttakurssi ei ole saatavilla. Yritä uudelleen myöhemmin.",
+  "priceChartLoadFailed": "Hintakaavion tietoja ei voitu ladata. Yritä uudelleen."
+}

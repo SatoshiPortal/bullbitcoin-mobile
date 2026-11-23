@@ -1,6 +1,7 @@
 import 'package:convert/convert.dart' show hex;
 import 'package:crypto/crypto.dart' show sha256;
 import 'package:drift/drift.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/entities/backup_settings.dart';
@@ -8,6 +9,7 @@ import '../domain/entities/backup_status.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/vault_context.dart';
 import '../domain/recoverbull_failure.dart';
+import '../domain/recoverbull_permission_port.dart';
 import '../domain/recoverbull_server_url.dart';
 import '../domain/repositories/backup_metadata_repository.dart';
 import 'database/recoverbull_database.dart';
@@ -17,12 +19,23 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   final RecoverBullDatabase _database;
   final bool durable;
   final DateTime Function() _now;
+  final ({Uri server, RecoverBullPermissionPort permission})? _configuration;
 
+  @visibleForTesting
   BackupMetadataRepositoryImpl(
     this._database, {
     this.durable = true,
     DateTime Function()? clock,
-  }) : _now = clock ?? DateTime.now;
+  }) : _now = clock ?? DateTime.now,
+       _configuration = null;
+
+  BackupMetadataRepositoryImpl.configured(
+    this._database, {
+    required Uri server,
+    required RecoverBullPermissionPort permission,
+  }) : durable = true,
+       _now = DateTime.now,
+       _configuration = (server: server, permission: permission);
 
   Future<RecoverbullStateData> _state() =>
       _database.select(_database.recoverbullState).getSingle();
@@ -31,6 +44,19 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   Future<Result<BackupSettings, RecoverBullFailure>> settings() =>
       _guard(() async {
         final state = await _state();
+        final configuration = _configuration;
+        if (configuration != null) {
+          return (await configuration.permission.readPermission()).map(
+            (permission) => BackupSettings(
+              server: configuration.server,
+              permissionGranted: permission.granted,
+              monitoringEnabled: state.monitoringEnabled,
+              generation: state.generation,
+              permissionRevision: permission.revision,
+              serverEditable: false,
+            ),
+          );
+        }
         final server = Uri.tryParse(state.server);
         if (server == null || !isValidRecoverBullServerUrl(server)) {
           return const Err(VaultStorageFailure());
@@ -50,7 +76,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     LegacyBackupSettings settings,
   ) => _guard(
     () => _database.transaction(() async {
-      if (!durable) return const Ok(null);
+      if (!durable || _configuration != null) return const Ok(null);
       final state = await _state();
       if (state.legacyImportComplete) return const Ok(null);
       await _database
@@ -70,6 +96,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   @override
   Future<Result<void, RecoverBullFailure>> changeServer(Uri server) => _guard(
     () => _database.transaction(() async {
+      if (_configuration != null) return const Err(VaultInvalidFailure());
       if (!isValidRecoverBullServerUrl(server)) {
         return const Err(VaultInvalidFailure());
       }
@@ -91,8 +118,15 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
 
   @override
   Future<Result<void, RecoverBullFailure>> acceptServer(Uri displayedServer) =>
-      _guard(
-        () => _database.transaction(() async {
+      _guard(() {
+        final configuration = _configuration;
+        if (configuration != null) {
+          if (displayedServer != configuration.server) {
+            return Future.value(const Err(VaultContextChangedFailure()));
+          }
+          return configuration.permission.savePermission(true);
+        }
+        return _database.transaction(() async {
           final state = await _state();
           if (state.server != displayedServer.toString()) {
             return const Err(VaultContextChangedFailure());
@@ -107,8 +141,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
                 ),
               );
           return const Ok(null);
-        }),
-      );
+        });
+      });
 
   @override
   Future<Result<void, RecoverBullFailure>> setMonitoring(bool enabled) =>
@@ -121,7 +155,9 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
               .write(
                 RecoverbullStateCompanion(
                   monitoringEnabled: Value(enabled),
-                  legacyImportComplete: const Value(true),
+                  legacyImportComplete: _configuration == null
+                      ? const Value(true)
+                      : const Value.absent(),
                   generation: Value(state.generation + 1),
                 ),
               );

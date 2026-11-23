@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bull_logger/bull_logger.dart';

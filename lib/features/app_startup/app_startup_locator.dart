@@ -1,7 +1,7 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/app_startup/data/wallet_startup_adapter.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
@@ -10,8 +10,8 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_us
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:access/access.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_startup_pin_status_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
@@ -27,13 +27,14 @@ class AppStartupLocator {
 
     // Use cases
     locator.registerFactory<ResetAppDataUsecase>(
-      () =>
-          ResetAppDataUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+      () => ResetAppDataUsecase(
+        accessKeychain: locator<Secrets>().accessKeychain,
+      ),
     );
     locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
       () => CheckForExistingDefaultWalletsUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         secrets: locator<Secrets>(),
       ),
     );
@@ -47,7 +48,7 @@ class AppStartupLocator {
       () => InitializeRequiredTorUsecase(
         locator<AppStartupWalletPort>(),
         locator<EnsureTorReadyUsecase>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
         locator<Tor>(),
       ),
     );
@@ -62,7 +63,7 @@ class AppStartupLocator {
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(
         resetAppDataUsecase: locator<ResetAppDataUsecase>(),
-        checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
+        getStartupPinStatusUsecase: const GetStartupPinStatusUsecase(Access()),
         checkForExistingDefaultWalletsUsecase:
             locator<CheckForExistingDefaultWalletsUsecase>(),
         initializeRequiredTorUsecase: locator<InitializeRequiredTorUsecase>(),

@@ -3,32 +3,39 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _Storage extends Fake implements KeyValueStorageDatasource<String> {
+class _Storage extends FakeSecureStoragePlatform {
   final started = Completer<void>();
   final finish = Completer<void>();
-  final values = <String, String>{};
   final operations = <String>[];
   bool failWrite = false;
 
   @override
-  Future<void> saveValue({required String key, required String value}) async {
+  Future<void> write({
+    required String key,
+    required String value,
+    required Map<String, String> options,
+  }) async {
     started.complete();
     await finish.future;
     if (failWrite) {
       operations.add('failed-write');
       throw Exception('Simulated refusal');
     }
-    values[key] = value;
+    entries[key] = value;
     operations.add('write');
   }
 
   @override
-  Future<void> deleteValue(String key) async {
-    values.remove(key);
+  Future<void> delete({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    entries.remove(key);
     operations.add('delete');
   }
 }
@@ -51,8 +58,13 @@ void main() {
     test(
       'logout wins over a pending ${failWrite ? 'failed' : 'successful'} credential write',
       () async {
-        final storage = _Storage()..failWrite = failWrite;
-        final repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
+        final storage = _Storage()
+          ..install()
+          ..failWrite = failWrite;
+        final repository = ExchangeApiKeyRepositoryImpl(
+          secureStorage: Secrets(scratchDirectory: () async => '/tmp')
+              .exchangeKeychain,
+        );
         final write = repository.saveApiKey(_credential(), isTestnet: true);
         await storage.started.future;
         final deletion = repository.deleteApiKey(isTestnet: true);
@@ -71,7 +83,7 @@ void main() {
           'delete',
         ]);
         expect(
-          storage.values,
+          storage.entries,
           isEmpty,
           reason: 'a late save must not restore a session after logout',
         );

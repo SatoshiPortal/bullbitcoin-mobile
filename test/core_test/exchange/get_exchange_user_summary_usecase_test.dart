@@ -1,12 +1,10 @@
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockUserRepository extends Mock implements ExchangeUserRepository {}
-
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 void main() {
   // Legacy contract: autobuy and limit_orders catch this exception type
@@ -15,8 +13,7 @@ void main() {
     final settings = _MockSettingsRepository();
     when(settings.fetch).thenThrow(Exception('database is locked'));
     final usecase = GetExchangeUserSummaryUsecase(
-      mainnetExchangeUserRepository: _MockUserRepository(),
-      testnetExchangeUserRepository: _MockUserRepository(),
+      exchange: exchangeForTesting(),
       settingsRepository: settings,
     );
 

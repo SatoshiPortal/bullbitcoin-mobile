@@ -4,7 +4,7 @@
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/urqr/urqr.dart';
+import 'package:signers/signers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -76,3 +76,9 @@ class WalletRevisionChanged extends WalletEvent {
 
   const WalletRevisionChanged(this.walletId);
 }
+
+final class _WalletAmountDisplayChanged extends WalletEvent {
+  final AmountDisplayPreferences? preferences;
+
+  const _WalletAmountDisplayChanged(this.preferences);
+}

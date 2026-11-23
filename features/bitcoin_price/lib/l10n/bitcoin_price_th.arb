@@ -1,0 +1,24 @@
+{
+  "currencySettingsDefaultFiatCurrencyLabel": "เปลี่ยนสกุลเงิน",
+  "@currencySettingsDefaultFiatCurrencyLabel": {
+    "description": "Label for the default fiat currency setting"
+  },
+  "fiatCurrencySettingsLabel": "สกุลเงิน",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "priceChartFetchingHistory": "นามสกุล:.",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
+  "retry": "ปรึกษา",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! สิ่งที่ไม่ผิด",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
+  "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง"
+}

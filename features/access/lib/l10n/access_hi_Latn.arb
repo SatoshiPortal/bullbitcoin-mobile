@@ -1,0 +1,117 @@
+{
+  "@@locale": "hi_Latn",
+  "pinCodeAuthentication": "Authentication",
+  "@pinCodeAuthentication": {
+    "description": "AppBar title for PIN code authentication screens"
+  },
+  "pinCodeCreateTitle": "Naya PIN banao",
+  "@pinCodeCreateTitle": {
+    "description": "Title for creating a new PIN code"
+  },
+  "pinCodeCreateDescription": "Aapka PIN aapke wallet aur settings ko surakshit rakhta hai. Ise yaad rakhna aasaan banana.",
+  "@pinCodeCreateDescription": {
+    "description": "Description explaining the purpose of the PIN code"
+  },
+  "pinCodeConfirmTitle": "Naya PIN confirm karo",
+  "@pinCodeConfirmTitle": {
+    "description": "Title for confirming the new PIN code"
+  },
+  "pinCodeMismatchError": "PIN match nahi karte",
+  "@pinCodeMismatchError": {
+    "description": "Error message when PIN confirmation doesn't match"
+  },
+  "pinCodeSecurityPinTitle": "Security PIN",
+  "@pinCodeSecurityPinTitle": {
+    "description": "AppBar title for PIN settings screen"
+  },
+  "pinCodeManageTitle": "Apna security PIN manage karo",
+  "@pinCodeManageTitle": {
+    "description": "Header title for PIN management section"
+  },
+  "pinCodeChangeButton": "PIN badlo",
+  "@pinCodeChangeButton": {
+    "description": "Button label to change existing PIN"
+  },
+  "pinCodeCreateButton": "PIN banao",
+  "@pinCodeCreateButton": {
+    "description": "Button label to create a new PIN"
+  },
+  "pinCodeRemoveButton": "Security PIN hatao",
+  "@pinCodeRemoveButton": {
+    "description": "Button label to remove the security PIN"
+  },
+  "pinCodeContinue": "Aage Badho",
+  "@pinCodeContinue": {
+    "description": "Button label to continue with PIN entry"
+  },
+  "pinCodeConfirm": "Confirm Karo",
+  "@pinCodeConfirm": {
+    "description": "Button label to confirm PIN entry"
+  },
+  "pinCodeLoading": "Load ho raha hai",
+  "@pinCodeLoading": {
+    "description": "Status screen title while loading PIN settings"
+  },
+  "pinCodeCheckingStatus": "PIN status check ho raha hai",
+  "@pinCodeCheckingStatus": {
+    "description": "Status screen description while checking PIN status"
+  },
+  "pinCodeProcessing": "Process ho raha hai",
+  "@pinCodeProcessing": {
+    "description": "Status screen title while processing PIN changes"
+  },
+  "pinCodeSettingUp": "Aapka PIN code set ho raha hai",
+  "@pinCodeSettingUp": {
+    "description": "Status screen description while setting up PIN"
+  },
+  "oopsSomethingWentWrong": "Oops! Kuch galat ho gaya",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "appUnlockScreenTitle": "Authentication",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockEnterPinMessage": "Unlock karne ke liye PIN daalo",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "appUnlockIncorrectPinError": "PIN galat hai. Phir try karo. ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockAttemptSingular": "galat koshish",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "appUnlockAttemptPlural": "galat koshishein",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "appUnlockButton": "Unlock Karo",
+  "appUnlockPinCheckError": "Security settings load nahi ho sake. Kripaya app restart karein.",
+  "appUnlockPinVerifyError": "Aapka PIN verify nahi ho saka. Kripaya dobara try karein.",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "backupSettingsStartBackup": "Backup Shuru Karo",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeBackupRequiredWarning": "PIN set karne se pehle kripya wallet backup poora karein",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "pinCodeSaveError": "Aapka PIN save nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeDeleteError": "Aapka PIN delete nahi ho saka. Kripya dobara koshish karein.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "{min} se {max} ank daalein"
+}

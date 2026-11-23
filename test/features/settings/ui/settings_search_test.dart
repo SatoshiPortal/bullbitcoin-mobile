@@ -18,6 +18,27 @@ void main() {
       expect(results.first.id, SettingsItemId.mempool);
     });
 
+    test('finds the localized fee source on supported Bitcoin networks', () {
+      for (final environment in [NetworkEnv.mainnet, NetworkEnv.testnet]) {
+        final items = buildSettingsItems(
+          environment: environment,
+          localization: AppLocalizationsFr(),
+        );
+        final results = searchSettings(items, 'source des frais bitcoin');
+        expect(results.first.id, SettingsItemId.feeSource);
+        expect(results.first.section, SettingsItemSection.wallet);
+      }
+
+      final regtest = buildSettingsItems(
+        environment: NetworkEnv.regtest,
+        localization: AppLocalizationsFr(),
+      );
+      expect(
+        regtest.any((item) => item.id == SettingsItemId.feeSource),
+        isFalse,
+      );
+    });
+
     test('matches a dedicated English keyword', () {
       final results = searchSettings(_englishItems(), 'block explorer');
 
@@ -118,6 +139,7 @@ void main() {
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,
+        SettingsItemId.feeSource,
         SettingsItemId.broadcastTransaction,
       ]);
     });

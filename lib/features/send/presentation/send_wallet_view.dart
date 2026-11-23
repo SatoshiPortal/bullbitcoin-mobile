@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:primitives/primitives.dart' show ScriptType;
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/widgets.dart';
 
@@ -16,7 +17,7 @@ sealed class SendWalletView {
   Network get network;
   BigInt? get balanceSat;
   ScriptType? get scriptType;
-  SignerDeviceEntity? get signerDevice;
+  SignerDevice? get signerDevice;
   String? get derivationPath;
   bool get signsLocally;
   bool get signsRemotely;
@@ -49,7 +50,7 @@ final class SendWalletBitcoin extends SendWalletView {
   @override
   ScriptType? get scriptType => wallet.scriptType;
   @override
-  SignerDeviceEntity? get signerDevice => wallet.signerDevice;
+  SignerDevice? get signerDevice => wallet.signerDevice;
   @override
   String? get derivationPath => wallet.derivationPath;
   @override
@@ -94,7 +95,7 @@ final class SendWalletSp extends SendWalletView {
   @override
   ScriptType? get scriptType => null;
   @override
-  SignerDeviceEntity? get signerDevice => null;
+  SignerDevice? get signerDevice => null;
   @override
   String? get derivationPath => null;
   @override

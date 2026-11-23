@@ -1,10 +1,10 @@
 import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
@@ -19,7 +19,7 @@ typedef AutoswapSettingsData = ({
 
 class LoadAutoswapSettingsUsecase {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
+  final Preferences _getSettingsUsecase;
   final WalletRepository _walletRepository;
 
   const LoadAutoswapSettingsUsecase({
@@ -31,7 +31,10 @@ class LoadAutoswapSettingsUsecase {
   @useResult
   Future<Result<AutoswapSettingsData, AutoswapFailure>> execute() async {
     try {
-      final appSettings = await _getSettingsUsecase.execute();
+      final appSettings = (await _getSettingsUsecase.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
 
       final List<Wallet> wallets;

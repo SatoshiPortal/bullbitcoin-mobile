@@ -1,13 +1,11 @@
+import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bb_mobile/features/status_check/presentation/state.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_service_health_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
@@ -27,24 +25,13 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, ScriptType;
 import 'package:novlang/novlang.dart' show NovlangPolicy;
 
 class _Wallet extends MockBloc<WalletEvent, WalletState>
     implements WalletBloc {}
 
 class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
-
-class _Price extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
-    implements BitcoinPriceBloc {}
-
-class _Chart extends MockCubit<PriceChartState> implements PriceChartCubit {}
-
-class _Announcements extends MockCubit<AnnouncementsState>
-    implements AnnouncementsCubit {}
-
-class _ServiceStatus extends MockCubit<ServiceStatusState>
-    implements ServiceStatusCubit {}
 
 class _ExchangeAccess extends Mock implements ExchangeFacade {}
 
@@ -76,10 +63,7 @@ class _MemoryQuickActionsStorage implements QuickActionsStorage {
 class ArkShellVisualFixtures {
   final _wallet = _Wallet();
   final _settings = _Settings();
-  final _price = _Price();
-  final _chart = _Chart();
-  final _announcements = _Announcements();
-  final _serviceStatus = _ServiceStatus();
+
   final _exchange = _ExchangeAccess();
   final _hostDependencies = GetIt.asNewInstance();
   final _settingsNavigator = GlobalKey<NavigatorState>();
@@ -126,7 +110,10 @@ class ArkShellVisualFixtures {
         GoRoute(
           name: SettingsRoute.settings.name,
           path: SettingsRoute.settings.path,
-          builder: (_, _) => const AllSettingsScreen(),
+          builder: (_, _) => AllSettingsScreen(
+            watchServiceHealth: () =>
+                Stream.value(SettingsServiceHealth.unhealthy),
+          ),
         ),
       ],
     );
@@ -148,6 +135,7 @@ class ArkShellVisualFixtures {
               name: WalletRoute.walletHome.name,
               path: WalletRoute.walletHome.path,
               builder: (_, _) => WalletHomeScreen(
+                announcements: const SizedBox.shrink(),
                 arkHost: fixture._host,
                 // A loaded, nonempty WalletState cannot enter setup. Fail if
                 // a future lifecycle change tries to do so in this fixture.
@@ -186,7 +174,7 @@ class ArkShellVisualFixtures {
       isDefault: true,
       masterFingerprint: '00000000',
       xpubFingerprint: '00000000',
-      scriptType: wallet_model.ScriptType.bip84,
+      scriptType: ScriptType.bip84,
       xpub: publicKey,
       externalPublicDescriptor: 'wpkh($publicKey)',
       internalPublicDescriptor: 'wpkh($publicKey)',
@@ -196,10 +184,16 @@ class ArkShellVisualFixtures {
       confirmedBalanceSat: BigInt.from(1234),
       isPhysicalBackupTested: true,
     );
+    const amountDisplay = (
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'CAD',
+      hideAmounts: false,
+    );
     whenListen(
       _wallet,
       const Stream<WalletState>.empty(),
       initialState: WalletState(
+        amountDisplay: amountDisplay,
         status: WalletStatus.success,
         wallets: [bitcoin],
         backupNeeded: false,
@@ -219,40 +213,13 @@ class ArkShellVisualFixtures {
         ),
       ),
     );
-    whenListen(
-      _price,
-      const Stream<BitcoinPriceState>.empty(),
-      initialState: const BitcoinPriceState(
-        currency: 'CAD',
-        bitcoinPrice: 100000,
-      ),
-    );
-    whenListen(
-      _chart,
-      const Stream<PriceChartState>.empty(),
-      initialState: const PriceChartState(),
-    );
-    whenListen(
-      _announcements,
-      const Stream<AnnouncementsState>.empty(),
-      initialState: const AnnouncementsState(),
-    );
-    whenListen(
-      _serviceStatus,
-      const Stream<ServiceStatusState>.empty(),
-      initialState: const ServiceStatusState(),
-    );
-    when(() => _serviceStatus.checkStatus()).thenAnswer((_) async {});
+
     when(() => _exchange.currentAccess)
         .thenReturn(const ExchangeAccessDisabled());
     when(_exchange.watchAccess)
         .thenAnswer((_) => const Stream<ExchangeAccess>.empty());
     when(_wallet.close).thenAnswer((_) async {});
     when(_settings.close).thenAnswer((_) async {});
-    when(_price.close).thenAnswer((_) async {});
-    when(_chart.close).thenAnswer((_) async {});
-    when(_announcements.close).thenAnswer((_) async {});
-    when(_serviceStatus.close).thenAnswer((_) async {});
   }
 
   Widget settings() => _wrap(
@@ -274,10 +241,16 @@ class ArkShellVisualFixtures {
       providers: [
         BlocProvider<WalletBloc>.value(value: _wallet),
         BlocProvider<SettingsCubit>.value(value: _settings),
-        BlocProvider<BitcoinPriceBloc>.value(value: _price),
-        BlocProvider<PriceChartCubit>.value(value: _chart),
-        BlocProvider<AnnouncementsCubit>.value(value: _announcements),
-        BlocProvider<ServiceStatusCubit>.value(value: _serviceStatus),
+        BitcoinPriceFixture.prices(
+          amountDisplay: (
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            hideAmounts: false,
+          ),
+          currency: 'CAD',
+          bitcoinPrice: 100000,
+        ),
+        BitcoinPriceFixture.chart(),
       ],
       child: Builder(
         builder: (context) => Localizations.override(
@@ -309,13 +282,6 @@ class ArkShellVisualFixtures {
     await _host.close();
     await locator.popScope();
     await _hostDependencies.reset();
-    await Future.wait([
-      _wallet.close(),
-      _settings.close(),
-      _price.close(),
-      _chart.close(),
-      _announcements.close(),
-      _serviceStatus.close(),
-    ]);
+    await Future.wait([_wallet.close(), _settings.close()]);
   }
 }

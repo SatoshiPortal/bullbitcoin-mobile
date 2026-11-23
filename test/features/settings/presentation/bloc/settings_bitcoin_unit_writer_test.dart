@@ -1,9 +1,9 @@
+import 'package:bb_mobile/features/settings/domain/usecases/load_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -29,7 +29,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockGetSettingsUsecase extends Mock implements Preferences {}
 
 class _MockSetEnvironmentUsecase extends Mock
     implements SetEnvironmentUsecase {}
@@ -85,7 +85,7 @@ class _SetAmountMode extends Mock implements SetAmountInputModeUsecase {}
 
 class _TestSettingsCubit extends SettingsCubit {
   _TestSettingsCubit({
-    required super.getSettingsUsecase,
+    required super.loadPreferencesUsecase,
     required super.setEnvironmentUsecase,
     required super.setBitcoinUnitUsecase,
     required super.setAmountInputModeUsecase,
@@ -129,7 +129,7 @@ void main() {
     final watchChanges = _MockWatchPayjoinPolicyUsecase();
     when(() => watchChanges.execute()).thenAnswer((_) => changes.stream);
     cubit = _TestSettingsCubit(
-      getSettingsUsecase: _MockGetSettingsUsecase(),
+      loadPreferencesUsecase: LoadSettingsUsecase(_MockGetSettingsUsecase()),
       setEnvironmentUsecase: _MockSetEnvironmentUsecase(),
       setAmountInputModeUsecase: _SetAmountMode(),
       setBitcoinUnitUsecase: setBitcoinUnit,

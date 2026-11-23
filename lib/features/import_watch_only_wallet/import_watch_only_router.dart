@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/scan_watch_only_screen.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -28,7 +28,7 @@ class ImportWatchOnlyRouter {
         name: ImportWatchOnlyWalletRoutes.scan.name,
         path: ImportWatchOnlyWalletRoutes.scan.path,
         builder: (context, state) {
-          final signerDevice = state.extra as SignerDeviceEntity?;
+          final signerDevice = state.extra as SignerDevice?;
           return ScanWatchOnlyScreen(signerDevice: signerDevice);
         },
       ),

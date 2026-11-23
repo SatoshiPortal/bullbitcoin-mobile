@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
+import 'package:bb_mobile/features/recipients/domain/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';
+
+import '../map_virtual_iban_failure.dart';
 
 /// Emits the user's virtual IBAN, `null` when there is none, and keeps
 /// emitting until a pending one becomes active. With [createIfAbsent] it
@@ -16,15 +15,15 @@ import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_r
 /// notification (so activation is reflected as soon as the server pushes it),
 /// and falls back to a poll in case the best-effort socket is unavailable.
 class WatchVirtualIbanUsecase {
-  final VirtualIbanRepository _virtualIbanRepository;
+  final ExchangeVirtualIbans _virtualIbans;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
-  final ExchangeNotificationRepository _exchangeNotificationRepository;
+  final Stream<NotificationMessage> _notifications;
   final Duration _pollInterval;
 
   const WatchVirtualIbanUsecase({
-    required this._virtualIbanRepository,
+    required this._virtualIbans,
     required this._getRecipientsEnvironmentUsecase,
-    required this._exchangeNotificationRepository,
+    required this._notifications,
     this._pollInterval = const Duration(seconds: 5),
   });
 
@@ -33,30 +32,32 @@ class WatchVirtualIbanUsecase {
   Stream<Result<VirtualIban?, RecipientsFailure>> execute({
     required bool createIfAbsent,
   }) async* {
-    final bool isTestnet;
+    final ExchangeEnvironment environment;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.requireHistoricalTestnet();
+        environment = value.requireHistoricalTestnet()
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet;
       case Err(:final failure):
         yield Err(failure);
         return;
     }
 
     VirtualIban? virtualIban;
-    switch (await _virtualIbanRepository.find(isTestnet: isTestnet)) {
+    switch (await _virtualIbans.find(environment)) {
       case Ok(:final value):
         virtualIban = value;
       case Err(:final failure):
-        yield Err(failure);
+        yield Err(mapVirtualIbanFailure(failure));
         return;
     }
 
     if (virtualIban == null && createIfAbsent) {
-      switch (await _virtualIbanRepository.create(isTestnet: isTestnet)) {
+      switch (await _virtualIbans.create(environment)) {
         case Ok(:final value):
           virtualIban = value;
         case Err(:final failure):
-          yield Err(failure);
+          yield Err(mapVirtualIbanFailure(failure));
           return;
       }
     }
@@ -64,7 +65,7 @@ class WatchVirtualIbanUsecase {
     yield Ok(virtualIban);
 
     Completer<void>? pendingWake;
-    final activation = _exchangeNotificationRepository.messages
+    final activation = _notifications
         .where(
           (message) =>
               message.kind == NotificationMessageKind.recipient &&
@@ -82,7 +83,7 @@ class WatchVirtualIbanUsecase {
           Future<void>.delayed(_pollInterval),
           wake.future,
         ]);
-        switch (await _virtualIbanRepository.find(isTestnet: isTestnet)) {
+        switch (await _virtualIbans.find(environment)) {
           case Ok(value: final VirtualIban value):
             virtualIban = value;
             yield Ok(value);
@@ -94,7 +95,7 @@ class WatchVirtualIbanUsecase {
             );
             return;
           case Err(:final failure):
-            yield Err(failure);
+            yield Err(mapVirtualIbanFailure(failure));
             return;
         }
       }

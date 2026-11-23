@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -10,7 +10,7 @@ import 'package:bull_logger/bull_logger.dart';
 class InitializeRequiredTorUsecase {
   final AppStartupWalletPort _walletPort;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final Tor _tor;
 
   const InitializeRequiredTorUsecase(
@@ -34,7 +34,10 @@ class InitializeRequiredTorUsecase {
         );
         return null;
     }
-    final settings = await _settingsRepository.fetch();
+    final settings = (await _settingsRepository.fetch()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     if (settings.useTorProxy) {
       final TorProxyEndpoint endpoint;
       try {

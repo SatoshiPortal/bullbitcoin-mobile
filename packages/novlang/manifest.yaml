@@ -41,6 +41,15 @@ catalogues:
   quick_actions:
     path: features/quick_actions
     description: the quick actions feature catalogue (features/quick_actions/localization/app_<lang>.arb)
+  label_editor:
+    path: features/label_editor
+    description: the label editor catalogue (features/label_editor/lib/l10n/label_editor_<lang>.arb)
+  announcements:
+    path: features/announcements
+    description: the wallet home announcements catalogue
+  bitcoin_price:
+    path: features/bitcoin_price
+    description: fiat display and price charts
 entries:
   - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
@@ -79,8 +88,6 @@ entries:
   - {catalogue: app, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: exchangeTestnetBasicAuthDescription, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeAccountTitle, store: apple, word: exchange, euphemism: account}
-  - {catalogue: app, key: exchangeAccountSettingsTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: sendSlowPaymentWarningDescription, store: apple, word: swap, euphemism: transfer}
@@ -249,20 +256,19 @@ entries:
   - {catalogue: app, key: coreScreensConfirmTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreScreensTransferIdLabel, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: coreScreensTransferFeeLabel, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: label_editor, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: label_editor, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: logoutConfirmationDescription, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: wizardJourneyTip5, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: wizardJourneyTip6, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: transactionSwapOpenWithin24h, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: homeActionTransfer, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
-  - {catalogue: app, key: announcementAutoswapTitle, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: announcementAutoswapDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: bitcoin_price, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
   - {catalogue: app, key: swapUnderReviewTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapUnderReviewSupportMessage, store: apple, word: swap, euphemism: transfer}
-  - {catalogue: app, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: announcements, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: settingsExchangeTitle, store: apple, word: exchange, euphemism: account}
   - {catalogue: app, key: bitcoinSettingsAutoTransferTitle, store: apple, word: swap, euphemism: transfer}

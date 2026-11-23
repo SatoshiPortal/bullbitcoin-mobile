@@ -1,7 +1,7 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
@@ -18,7 +18,7 @@ class TestWalletBackupLocator {
     locator.registerLazySingleton<LoadWalletsForNetworkUsecase>(
       () => LoadWalletsForNetworkUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerLazySingleton<GetSecretFromFingerprintUsecase>(
@@ -32,7 +32,7 @@ class TestWalletBackupLocator {
     locator.registerFactory<CheckBackupUsecase>(
       () => CheckBackupUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         backupStatus: locator<RecoverBullFacade>().status,
       ),
     );

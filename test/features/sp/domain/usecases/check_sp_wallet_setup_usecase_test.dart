@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
@@ -14,7 +13,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../sp_fakes.dart';
 
-class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockSettingsRepository extends Mock implements Preferences {}
 
 class MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
@@ -159,7 +158,8 @@ void main() {
       // which honours the sentinel veto. Mirror that here: with the sentinel
       // present, ensure returns null.
       final settingsRepo = MockSettingsRepository();
-      when(() => settingsRepo.fetch()).thenAnswer((_) async => _makeSettings());
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => Ok(_makeSettings()));
       final ensureSpSession = MockEnsureSpSessionUsecase();
       when(() => ensureSpSession.execute())
           .thenAnswer((_) async => const Ok(null));

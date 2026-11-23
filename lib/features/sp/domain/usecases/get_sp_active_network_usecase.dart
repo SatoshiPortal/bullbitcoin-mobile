@@ -1,16 +1,19 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:primitives/primitives.dart';
 
 /// Captures setup's network without exposing settings storage to presentation.
 class GetSpActiveNetworkUsecase {
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   GetSpActiveNetworkUsecase({required this._settingsRepository});
 
   Future<Result<BitcoinNetwork, SpFailure>> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
+      final settings = (await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       final network = BitcoinNetwork.values.firstWhere(
         (network) => network.env == settings.environment.networkEnv,
       );

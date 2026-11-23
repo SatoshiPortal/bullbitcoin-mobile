@@ -1,0 +1,477 @@
+{
+  "torSettingsPortHint": "9050 Kč",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "electrumTimeoutPositiveError": "Časová doba musí být pozitivní",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "mempoolSettingsCustomServer": "Vlastní server",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "electrumPrivacyNoticeSave": "Čeština",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerAlreadyExists": "Tento server již existuje",
+  "electrumServerUnreachable": "Server je nedostupný. Zkontrolujte adresu a zkuste to znovu.",
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumTitle": "Nastavení serveru Electrum",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "save": "Čeština",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "electrumTimeoutWarning": "Váš časout ({timeoutValue} sekundy) je nižší než doporučená hodnota ({recommended} sekundy) pro tento Stop Gap.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumNetworkLiquid": "Čeština",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumEmptyFieldError": "Toto pole nelze vyprázdnit",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumServerOnline": "Přihlášení",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "torSettingsStatusConnected": "Připraveno",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "statusCheckUnknown": "Čeština",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Zadejte adresu URL vašeho vlastního serveru mempool. Server bude validován před uložením.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "electrumAddCustomServer": "Přidat vlastní server",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "torSettingsConnectionStatus": "Stav připojení",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsPortValidationEmpty": "Zadejte číslo portu",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "electrumPrivacyNoticeCancel": "Hledat",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "statusCheckOffline": "Čeština",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "mempoolCustomServerDeleteMessage": "Přejete si skutečně odstranit tento vlastní server mempool? Výchozí server bude používán místo.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "electrumValidateDomain": "Registrace domény",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumInvalidRetryError": "Neplatný Retry Počet hodnot: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Číslo portu",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "electrumReset": "Čeština",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumStopGapNegativeError": "Stop Gap nemůže být negativní",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumServerUrlHint": "{network} {environment} URL serveru",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumLoadFailedError": "Vypnuto načíst servery",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails"
+  },
+  "electrumAdvancedOptions": "Pokročilé možnosti",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumCancel": "Hledat",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "mempoolCustomServerDeleteTitle": "Odstranit vlastní server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "electrumStopGap": "Stop Gap",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumServerOffline": "Čeština",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
+  "electrumStopGapTooHighError": "Stop Gap se zdá být příliš vysoká. (Max. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "Časová délka se zdá být příliš vysoká. (Max. {maxTimeout} sekundy)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumDragToReorder": "(Dlouhý stisk přetažení a změny priority)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumInvalidStopGapError": "Neplatný stop Hodnota Gap: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Neplatný časout hodnota: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Čeština",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "mempoolSettingsDefaultServer": "Výchozí server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "electrumTestnet": "Čeština",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "mempoolCustomServerAdd": "Přidat vlastní server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "statusCheckOnline": "Přihlášení",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "electrumBitcoinServerInfo": "Zadejte adresu serveru ve formátu: hostitel:port (např.:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumServerNotUsed": "Není používáno",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumRetryCountEmptyError": "Retry Počet nemůže být prázdný",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "torSettingsDescConnecting": "Vytváření Tor připojení",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsPortValidationInvalid": "Zadejte platný číslo",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "electrumDeleteFailedError": "Vymazat vlastní server",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails"
+  },
+  "electrumDeleteServerTitle": "Odstranit vlastní server",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "torSettingsSaveButton": "Čeština",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "electrumPrivacyNoticeTitle": "Ochrana osobních údajů",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumMainnet": "Čeština",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "statusCheckLastChecked": "Poslední kontrola: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsPortDisplay": "Port: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsStatusDisconnected": "Odpojení",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "electrumSavePriorityFailedError": "Neúspěšné uložení priority serveru",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails"
+  },
+  "electrumUnknownError": "Došlo k chybě",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumDefaultServers": "Výchozí servery",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "mempoolCustomServerUrlEmpty": "Zadejte adresu URL serveru",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "electrumFormatError": "Použijte hostitel:port formát (např.:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "cancel": "Hledat",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "electrumDefaultServersInfo": "Chcete-li chránit vaše soukromí, výchozí servery se nepoužívají při konfiguraci vlastních serverů.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumProtocolError": "Nezahrnuje protokol (ssl:// nebo tcp://).",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "torSettingsProxyPort": "Tor Proxy Port",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "electrumAddServer": "Přidat server",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "electrumStopGapEmptyError": "Stop Gap nemůže být prázdný",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "torSettingsStatusUnknown": "Stav Neznámý",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "electrumAddFailedError": "Přešel přidat vlastní server",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails"
+  },
+  "torSettingsStatusConnecting": "Připojení...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "electrumDeletePrivacyNotice": "Ochrana osobních údajů:\n\nPomocí vlastního uzlu zajistí, že třetí strana může propojit vaši IP adresu s vašimi transakcemi. Smazáním posledního vlastního serveru se připojíte k serveru BullBitcoin.\n.\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDelete": "Čeština",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "statusCheckTitle": "Stav služby",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "Čeština",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "electrumNetworkBitcoin": "Čeština",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumInvalidNumberError": "Zadejte platný číslo",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumRetryCount": "Retry Počet",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumCustomServers": "Vlastní servery",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumTimeout": "Čas (sekundy)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumSaveFailedError": "Vypnuto uložit pokročilé možnosti",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumLiquidSslInfo": "Žádný protokol by měl být zadán, SSL bude použit automaticky.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumRetryCountNegativeError": "Retry Počet nemůže být negativní",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumDeleteConfirmation": "Přejete-li si tento server odstranit?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumPrivacyNoticeContent1": "Oznámení o ochraně osobních údajů: Používání vlastního uzlu zajišťuje, že žádná třetí strana může odkazovat na vaši IP adresu s vašimi transakcemi.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "electrumEnableSsl": "Povolit SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "torSettingsPortValidationRange": "Port musí být mezi 1 a 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "electrumTimeoutEmptyError": "Časout nelze vyprázdnit",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumPrivacyNoticeContent2": "Nicméně, Pokud si otevřete transakce prostřednictvím mempoolu kliknutím na stránku Transakčního ID nebo příjemce, budou tyto informace známy BullBitcoin.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "torSettingsDescConnected": "Tor proxy je spuštěn a připraven",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescDisconnected": "Tor proxy není spuštěn",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "electrumCloseTooltip": "Zavřít",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumConfirm": "Potvrdit",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "torSettingsTitle": "Nastavení Toru",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "electrumStopGapHighWarning": "Vysoké hodnoty stop gap výrazně prodlužují dobu synchronizace. Nechte aplikaci otevřenou v popředí, dokud se synchronizace nedokončí — přesun aplikace do pozadí ji může přerušit.",
+  "mempoolErrorInvalidUrl": "Neplatná adresa serveru. Zadejte platnou doménu nebo IP adresu.",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Kontrola...",
+  "mempoolServerStatusUnknown": "Neznámý",
+  "mempoolCustomServerSaveFailed": "Nepodařilo se uložit server",
+  "mempoolCustomServerInfoDescription": "Mempool servery se používají k odhadu poplatků a k otevření prohlížeče bloků při zobrazení podrobností transakce.",
+  "mempoolCustomServerUseSsl": "Použít SSL",
+  "mempoolCustomServerSslAutoDetected": "(Automaticky zjištěno)",
+  "mempoolCustomServerSslHelpText": "U lokálních serverů (.local, privátní IP adresy) a Tor serverů (.onion) bývá SSL obvykle vypnuté. U veřejných IP adres a domén byste měli SSL používat.",
+  "mempoolErrorSameAsDefault": "Tato adresa URL je stejná jako výchozí server. Použijte prosím jinou adresu URL.",
+  "mempoolErrorConnectionTimeout": "Časový limit připojení vypršel. Server může být pomalý nebo nedostupný.",
+  "mempoolErrorHostNotFound": "Tento server se nepodařilo najít. Zkontrolujte adresu URL a zkuste to znovu.",
+  "mempoolErrorConnectionFailed": "Nelze se připojit k serveru. Zkontrolujte své síťové připojení a zkuste to znovu.",
+  "mempoolErrorNotMempoolServer": "Tato adresa URL nevypadá jako mempool server. Ověřte prosím adresu.",
+  "mempoolErrorServerUnavailable": "Server je nedostupný. Zkuste to prosím později.",
+  "mempoolErrorServerError": "Na serveru došlo k chybě. Zkuste to prosím později.",
+  "mempoolErrorInvalidResponse": "Server vrátil neplatnou odpověď.",
+  "mempoolErrorSaveServerFailed": "Nepodařilo se uložit server",
+  "mempoolErrorLoadFailed": "Nepodařilo se načíst data mempool serveru",
+  "mempoolErrorDeleteFailed": "Nepodařilo se odstranit vlastní server",
+  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
+  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
+  "torSettingsBootstrapProgress": "Připojování… {percent} %",
+  "torSettingsEmbeddedTitle": "Vestavěný Tor",
+  "torSettingsEmbeddedDescription": "Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion. Ostatní provoz aplikace zůstává přímý.",
+  "torSettingsTransportMode": "Způsob připojení",
+  "torSettingsModeAutomatic": "Automaticky",
+  "torSettingsModeDirect": "Přímé",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
+  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
+  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
+  "torSettingsActiveTransport": "Aktivní transport: {transport}",
+  "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
+  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé",
+  "torSettingsStatusNoInternetOrBlocked": "Bez internetu nebo cenzurovaná síť",
+  "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
+  "serverEncrypted": "Šifrováno",
+  "serverUnencrypted": "Nešifrováno"
+}

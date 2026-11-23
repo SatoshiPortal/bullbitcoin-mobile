@@ -1,23 +1,17 @@
+import 'package:intl/intl.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_advanced_settings.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullBorderedTile, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatefulWidget {
   const ReceiveAmountScreen({super.key, this.onContinueNavigation});
-
   final Function? onContinueNavigation;
 
   @override
@@ -35,136 +29,101 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<ReceiveBloc>().state;
+    final limits = state.swapLimits;
+    final numbers = NumberFormat.decimalPattern(context.loc.localeName);
+    final showLimits = state.lightningLimits.requiresBounds && limits != null;
+    final outsideLimits =
+        state.isInputAmountBelowLimit || state.isInputAmountAboveLimit;
+    final failure =
+        state.admissionFailure ??
+        (state.hasAmountInputFailure ? null : state.failure);
     return BlocListener<ReceiveBloc, ReceiveState>(
       listenWhen: (previous, current) =>
-          // Metadata can change at the same rounded satoshi amount.
-          (previous.confirmedAmountSat != current.confirmedAmountSat ||
-              previous.confirmedConversion != current.confirmedConversion) &&
-          // Only listen when the entered amount is valid
+          previous.type == current.type &&
           current.canConfirmAmount &&
-          !current.hasAmountInputFailure &&
-          // Prevent using the amount from a previous receive type
-          previous.type == current.type,
+          ((previous.creatingSwap &&
+                  !current.creatingSwap &&
+                  current.getSwap != null &&
+                  current.failure == null) ||
+              (current.type != ReceiveType.lightning &&
+                  (previous.confirmedAmountSat != current.confirmedAmountSat ||
+                      previous.confirmedConversion !=
+                          current.confirmedConversion))),
       listener: (context, state) {
         widget.onContinueNavigation?.call() ?? context.pop();
       },
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: .translucent,
-        child: BBKeyboardActions(
-          disableScroll: true,
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: [
-              // Amount and message grouped together in the upper half, the
-              // button pinned to the bottom — spaceEvenly scattered the
-              // three elements across the full height with large voids.
-              const Spacer(),
-              ReceiveAmountInput(focusNode: _amountNode),
-              const Gap(24),
-              const _MessageForSenderTile(),
-              const _ReceiveFailureMessage(),
-              const Spacer(flex: 2),
-              ReceiveAmountContinueButton(
-                onContinueNavigation: widget.onContinueNavigation,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// The counterparty-visible message: goes into the BIP21 `message=` (and the
-/// lightning swap description).
-class _MessageForSenderTile extends StatelessWidget {
-  const _MessageForSenderTile();
-
-  @override
-  Widget build(BuildContext context) {
-    final note = context.select((ReceiveBloc bloc) => bloc.state.note);
-    // On lightning the value is the invoice description, not a BIP21
-    // message= — "Note" reads better there.
-    final isLightning = context.select(
-      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
-    );
-    final title = isLightning
-        ? context.loc.receiveNote
-        : context.loc.receiveMessageForSender;
-    final hPad = Device.screen.width * 0.04;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: hPad),
-      child: BullBorderedTile(
-        onTap: () async {
-          final bloc = context.read<ReceiveBloc>();
-          final saved = await LabelEntryBottomSheet.note(
-            context,
-            title: title,
-            initialValue: note.isEmpty ? null : note,
-            hint: context.loc.transactionNoteHint,
-            suggestionsFuture: bloc.fetchDistinctLabels(),
-          );
-          if (saved == null) return;
-          bloc.add(ReceiveNoteChanged(saved));
-          // Persist as an address label too (same as the QR screen's note
-          // flow) — without this, notes set from this page ended up in the
-          // BIP21 string but never in the labels store.
-          bloc.add(const ReceiveNoteSaved());
-        },
-        child: Row(
-          children: [
-            Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  BBText(
-                    title,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                  Text(context.loc.amountLabel, style: context.bullType.body),
+                  const Gap(6),
+                  ReceiveAmountInput(focusNode: _amountNode, inCard: true),
+                  const Gap(12),
+                  if (showLimits)
+                    Text(
+                      context.loc.receiveLimits(
+                        numbers.format(limits.min),
+                        numbers.format(limits.max),
+                      ),
+                      style: context.bullType.label.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
                     ),
-                    color: context.appColors.secondary,
-                  ),
-                  const Gap(4),
-                  BBText(
-                    note.isEmpty ? context.loc.receiveEnterHere : note,
-                    style: context.bullType.body,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  if (showLimits &&
+                      state.amountEntryValid &&
+                      !state.hasAmountInputFailure &&
+                      state.inputAmount.isNotEmpty &&
+                      outsideLimits)
+                    Text(
+                      state.isInputAmountBelowLimit
+                          ? context.loc.receiveBelowMinimum(
+                              numbers.format(limits.min),
+                            )
+                          : context.loc.receiveAboveMaximum(
+                              numbers.format(limits.max),
+                            ),
+                      style: context.bullType.label.copyWith(
+                        color: context.appColors.error,
+                      ),
+                    ),
+                  if (state.wallet?.isLiquid == true) ...[
+                    const Gap(12),
+                    Text(
+                      context.loc.receiveArrivesAsLiquid,
+                      style: context.bullType.label.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                    ),
+                  ],
+                  if (failure != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text(
+                        failure.toTranslated(context),
+                        style: context.bullType.body.copyWith(
+                          color: context.appColors.error,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
-            Icon(Icons.edit, size: 20, color: context.appColors.secondary),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ReceiveFailureMessage extends StatelessWidget {
-  const _ReceiveFailureMessage();
-
-  @override
-  Widget build(BuildContext context) {
-    // An invalid amount is already reported inline under the amount field
-    // (see ReceiveAmountInput), so it must not be repeated here.
-    final failure = context.select<ReceiveBloc, ReceiveFailure?>(
-      (bloc) =>
-          bloc.state.admissionFailure ??
-          (bloc.state.hasAmountInputFailure ? null : bloc.state.failure),
-    );
-    if (failure == null) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBText(
-        failure.toTranslated(context),
-        style: context.bullType.body,
-        color: context.appColors.error,
-        textAlign: TextAlign.center,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: ReceiveAdvancedSettingsLink(),
+          ),
+          ReceiveAmountContinueButton(
+            onContinueNavigation: widget.onContinueNavigation,
+          ),
+        ],
       ),
     );
   }
@@ -172,46 +131,43 @@ class _ReceiveFailureMessage extends StatelessWidget {
 
 class ReceiveAmountContinueButton extends StatelessWidget {
   const ReceiveAmountContinueButton({super.key, this.onContinueNavigation});
-
   final Function? onContinueNavigation;
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ReceiveBloc>().state;
-    final creatingSwap = state.creatingSwap;
-    final hasAmountInputFailure = context
-        .watch<ReceiveBloc>()
-        .state
-        .hasAmountInputFailure;
-
-    return Padding(
-      // padding (not viewPadding): it is viewPadding minus the keyboard
-      // inset, so it keeps the button off the home indicator when the
-      // keyboard is closed and collapses to zero when the Scaffold has
-      // already resized around the open keyboard — viewPadding would add a
-      // second gap on top of the keyboard there.
-      padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        16 + MediaQuery.of(context).padding.bottom,
-      ),
-      child: BullButton.primary(
-        label: context.loc.receiveContinue,
-        onPressed:
-            (!state.canConfirmAmount || creatingSwap || hasAmountInputFailure)
-            ? null
-            : () {
-                final bloc = context.read<ReceiveBloc>();
-                if (!bloc.state.canConfirmAmount) return;
-                if (canReuseConfirmedReceiveDetails(bloc.state)) {
-                  // If an amount was already confirmed previously and the user didn't
-                  // change it, we don't need to confirm it again.
-                  onContinueNavigation?.call() ?? context.pop();
-                } else {
-                  bloc.add(const ReceiveAmountConfirmed());
-                }
-              },
+    final valid = state.isLightning
+        ? state.canCreateInvoice
+        : state.canConfirmAmount;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (state.creatingSwap)
+              const BullFadingLinearProgress(trigger: true),
+            BullButton.primary(
+              label: state.creatingSwap
+                  ? context.loc.receiveCreatingInvoice
+                  : state.isLightning
+                  ? context.loc.receiveCreateInvoice
+                  : context.loc.receiveContinue,
+              onPressed:
+                  !valid || state.creatingSwap || state.hasAmountInputFailure
+                  ? null
+                  : () {
+                      final bloc = context.read<ReceiveBloc>();
+                      if (canReuseConfirmedReceiveDetails(bloc.state)) {
+                        onContinueNavigation?.call() ?? context.pop();
+                      } else {
+                        bloc.add(const ReceiveAmountConfirmed());
+                      }
+                    },
+            ),
+          ],
+        ),
       ),
     );
   }

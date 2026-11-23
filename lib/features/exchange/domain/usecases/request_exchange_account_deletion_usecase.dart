@@ -1,23 +1,20 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 
 /// Asks support to delete the account.
 ///
-/// The support-chat use-case is already migrated and returns a `Result`, so
-/// there is nothing to catch — its failure is lifted into this feature's
-/// family so no other feature's type reaches the cubit.
+/// Uses the Exchange support capability and reports a contextual failure.
 class RequestExchangeAccountDeletionUsecase {
   static const _message = 'I want to delete my account';
 
-  final SettingsRepository _settingsRepository;
-  final SendSupportChatMessageUsecase _sendSupportChatMessageUsecase;
+  final Preferences _settingsRepository;
+  final Exchange _exchange;
 
   const RequestExchangeAccountDeletionUsecase({
-    required this._sendSupportChatMessageUsecase,
+    required this._exchange,
     required this._settingsRepository,
   });
 
@@ -28,7 +25,7 @@ class RequestExchangeAccountDeletionUsecase {
       ExchangeAccountDeletionRequestFailure.new,
     );
     if (allowed case Err(:final failure)) return Err(failure);
-    final result = await _sendSupportChatMessageUsecase.execute(text: _message);
+    final result = await _exchange.sendSupportMessage(text: _message);
 
     return result.mapErr(
       (failure) => ExchangeAccountDeletionRequestFailure(

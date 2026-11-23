@@ -1,0 +1,66 @@
+{
+  "@@locale": "as",
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
+  "pinCodeAuthentication": "প্ৰমাণীকৰণ",
+  "pinCodeCreateTitle": "নতুন PIN তৈয়াৰ কৰক",
+  "pinCodeCreateDescription": "আপোনাৰ PIN আপোনাৰ wallet আৰু ছেটিংছলৈ প্ৰৱেশ সুৰক্ষিত কৰে। ইয়াক মনত ৰখাব পৰাকৈ ছেট কৰক।",
+  "pinCodeConfirmTitle": "নতুন PIN নিশ্চিত কৰক",
+  "pinCodeMismatchError": "PIN মিলা নাই",
+  "pinCodeSecurityPinTitle": "নিৰাপত্তা PIN",
+  "pinCodeManageTitle": "আপোনাৰ নিৰাপত্তা PIN পৰিচালনা কৰক",
+  "pinCodeChangeButton": "PIN সলনি কৰক",
+  "pinCodeCreateButton": "PIN তৈয়াৰ কৰক",
+  "pinCodeRemoveButton": "নিৰাপত্তা PIN আঁতৰাওক",
+  "pinCodeContinue": "অব্যাহত ৰাখক",
+  "pinCodeConfirm": "নিশ্চিত কৰক",
+  "pinCodeLoading": "লোড হৈ আছে",
+  "pinCodeCheckingStatus": "PIN স্থিতি পৰীক্ষা কৰা হৈছে",
+  "pinCodeProcessing": "প্ৰক্ৰিয়া কৰা হৈছে",
+  "pinCodeSettingUp": "আপোনাৰ PIN কোড ছেট কৰা হৈছে",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "appUnlockScreenTitle": "প্ৰমাণীকৰণ",
+  "@appUnlockScreenTitle": {
+    "description": "Title of the app unlock screen"
+  },
+  "appUnlockEnterPinMessage": "আনলক কৰিবলৈ আপোনাৰ PIN কোড দিয়ক",
+  "@appUnlockEnterPinMessage": {
+    "description": "Message prompting user to enter their PIN code to unlock the app"
+  },
+  "appUnlockIncorrectPinError": "ভুল PIN। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক। ({failedAttempts} {attemptsWord})",
+  "@appUnlockIncorrectPinError": {
+    "description": "Error message shown when user enters incorrect PIN",
+    "placeholders": {
+      "failedAttempts": {
+        "type": "int"
+      },
+      "attemptsWord": {
+        "type": "String"
+      }
+    }
+  },
+  "appUnlockAttemptSingular": "বিফল প্ৰচেষ্টা",
+  "@appUnlockAttemptSingular": {
+    "description": "Singular form of 'attempt' for failed unlock attempts"
+  },
+  "appUnlockAttemptPlural": "বিফল প্ৰচেষ্টাসমূহ",
+  "@appUnlockAttemptPlural": {
+    "description": "Plural form of 'attempts' for failed unlock attempts"
+  },
+  "appUnlockButton": "আনলক কৰক",
+  "appUnlockPinCheckError": "সুৰক্ষা ছেটিংছ লোড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি এপ্‌টো পুনৰাৰম্ভ কৰক।",
+  "appUnlockPinVerifyError": "আপোনাৰ PIN যাচাই কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@appUnlockButton": {
+    "description": "Button label to unlock the app"
+  },
+  "backupSettingsStartBackup": "বেকআপ আৰম্ভ কৰক",
+  "@backupSettingsStartBackup": {
+    "description": "Button text to start new backup process"
+  },
+  "pinCodeSaveError": "আপোনাৰ PIN সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "pinCodeDeleteError": "আপোনাৰ PIN মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "pinCodeLengthHint": "{min}ৰ পৰা {max}টা অংক লিখক"
+}

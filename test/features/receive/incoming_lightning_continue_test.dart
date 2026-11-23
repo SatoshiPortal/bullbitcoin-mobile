@@ -3,15 +3,14 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:preferences/preferences.dart';
 
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
@@ -48,7 +47,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart' as swaps;
 
-class _MockSettings extends Mock implements GetSettingsUsecase {}
+class _MockSettings extends Mock implements Preferences {}
 
 class _UnsupportedReceiveSettings extends GetReceiveSettingsUsecase {
   const _UnsupportedReceiveSettings(super.settings);
@@ -123,11 +122,13 @@ void main() {
       'incoming Lightning URL blocks Continue when ${unsupported ? 'unsupported' : 'wallet is missing'}',
       (tester) async {
         final settings = _MockSettings();
-        when(() => settings.execute()).thenAnswer(
-          (_) async => SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
+        when(() => settings.fetch()).thenAnswer(
+          (_) async => Ok(
+            SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
           ),
         );
         final enabled = _MockWatchReceivePayjoinEnabledUsecase();
@@ -242,7 +243,7 @@ void main() {
           );
         }
         // BullButton uses IgnorePointer when disabled; still attempt the real tap.
-        await tester.tap(find.text('Continue'), warnIfMissed: false);
+        await tester.tap(find.text('Create invoice'), warnIfMissed: false);
         await tester.pump();
         expect(errors, isEmpty);
         final button = find.descendant(
@@ -259,7 +260,7 @@ void main() {
           expect(bloc.state.failure, refusal);
           expect(tester.widget<BullButton>(button).disabled, isTrue);
           // BullButton uses IgnorePointer when disabled; still attempt the real tap.
-          await tester.tap(find.text('Continue'), warnIfMissed: false);
+          await tester.tap(find.text('Create invoice'), warnIfMissed: false);
           await tester.pump();
         }
         // Also guard callers that dispatch confirmation without the button.

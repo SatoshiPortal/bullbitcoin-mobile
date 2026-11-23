@@ -1,0 +1,88 @@
+{
+  "receiveSave": "সংৰক্ষণ কৰক",
+  "receiveEnterHere": "ইয়াত দিয়ক...",
+  "oopsSomethingWentWrong": "উফ্! কিবা এটা ভুল হৈছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "bip329LabelsTitle": "BIP329 Labels",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 Labels আমদানি/ৰপ্তানি",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "BIP329 মানক বিন্যাস ব্যৱহাৰ কৰি wallet লেবেল আমদানি বা ৰপ্তানি কৰক।",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "লেবেল আমদানি কৰক",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "লেবেল ৰপ্তানি কৰক",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "লেবেলবোৰ সফলভাৱে ৰপ্তানি কৰা হৈছে",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "bip329LabelsImportSuccessSingular": "১টা লেবেল আমদানি কৰা হৈছে",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count}টা লেবেল আমদানি কৰা হৈছে",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "systemLabelSwaps": "Swap",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "স্বয়ংক্ৰিয় Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "নিজৰ খৰচ",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "ক্ৰয়",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "বিক্ৰয়",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelDeleteFailed": "\"{label}\" মচিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noteVisibleToSenderNotice": "এই টোকা আপোনাৰ QR বা invoice ৰ প্ৰাপকক দেখা যাব।",
+  "labelsErrorNoteTooLong": "টোকা {max} আখৰতকৈ বেছি হ'ব নোৱাৰে",
+  "labelsErrorNoteForbiddenCharacter": "টোকাত {character} আখৰটো থাকিব নোৱাৰে",
+  "labelsErrorFileTooLarge": "এই ফাইলটো অতি ডাঙৰ। লেবেল ফাইল {max} তকৈ সৰু হ'ব লাগিব।",
+  "labelsErrorFileUnreadable": "এইটো BIP-329 লেবেল ফাইল যেন নালাগে। আপুনি শুদ্ধ ফাইল বাছিছে নে চাওক।",
+  "labelsErrorFileEmpty": "এই ফাইলত আমদানি কৰিবলৈ কোনো লেবেল নাই।",
+  "labelsErrorExportFailed": "আপোনাৰ লেবেলবোৰ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorFileReservedName": "এই ফাইলে এপ্পে সংৰক্ষিত কৰা লেবেল নাম ব্যৱহাৰ কৰে। ফাইলত নাম সলনি কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorNoteForbiddenWhitespace": "টোকাত লাইন ব্ৰেক বা টেব থাকিব নোৱাৰে",
+  "labelsErrorFileInvalidEntry": "সেই ফাইলৰ কিছুমান প্ৰবিষ্টি পঢ়িব পৰা নগ'ল। ফাইলটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+}

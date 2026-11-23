@@ -1,19 +1,16 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
-
-class _MockSettings extends Mock implements SettingsEntity {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -56,9 +53,8 @@ void main() {
       settingsRepository: settingsRepository,
       backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
     );
-    final settings = _MockSettings();
-    when(() => settings.environment).thenReturn(Environment.mainnet);
-    when(settingsRepository.fetch).thenAnswer((_) async => settings);
+    when(settingsRepository.readActiveEnvironment)
+        .thenAnswer((_) async => Ok(Environment.mainnet));
   });
 
   test('a wallet with neither backup tested needs a backup', () async {
@@ -105,7 +101,7 @@ void main() {
   });
 
   test('sanitizes a throwing settings read', () async {
-    when(settingsRepository.fetch)
+    when(settingsRepository.readActiveEnvironment)
         .thenThrow(Exception('SqliteException(13): disk image is malformed'));
 
     final result = await usecase.execute();

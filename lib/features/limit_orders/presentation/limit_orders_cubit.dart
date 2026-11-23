@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
@@ -13,7 +12,7 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
   final ListActiveLimitOrdersUsecase _listActive;
   final CancelAllLimitOrdersUsecase _cancelAll;
   final CanCreateLimitOrderUsecase _canCreate;
-  final ExchangeNotificationService _notifications;
+  final Stream<NotificationMessage> _notifications;
 
   StreamSubscription<NotificationMessage>? _subscription;
   StreamSubscription<void>? _refreshSubscription;
@@ -25,7 +24,7 @@ final class LimitOrdersCubit extends Cubit<LimitOrdersState> {
     this._notifications, {
     Stream<void>? refreshRequests,
   }) : super(const LimitOrdersState()) {
-    _subscription = _notifications.messageStream
+    _subscription = _notifications
         .where((message) => message.kind == NotificationMessageKind.limitOrder)
         .listen((_) => load());
     _refreshSubscription = refreshRequests?.listen((_) => load());

@@ -36,6 +36,7 @@ op/builds
 lib/generated
 *.freezed.dart
 *.g.dart
+*.drift.dart
 
 # l10n internationalization related
 localization*.dart
@@ -124,3 +125,8 @@ integration_test/all_test.dart
 
 # Generated swap debug log export (written during test runs)
 bull_logs.tsv
+
+# Generated network feature localizations
+/features/network/lib/generated/l10n/
+/features/fees/lib/generated/l10n/
+/features/fees/untranslated-messages.txt

@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
+import 'package:network/network.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_card.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -42,12 +40,14 @@ class HomeWarnings extends StatelessWidget {
               description: homeWarningDescription(context, warning),
               tagColor: context.appColors.error,
               bgColor: context.appColors.errorContainer,
-              onTap: () => context.pushNamed(switch (warning.action) {
-                WalletWarningAction.electrumSettings =>
-                  locator<ElectrumSettingsFacade>().settingsRouteName,
-                WalletWarningAction.torSettings =>
-                  const TorSettingsFacade().settingsRouteName,
-              }),
+              onTap: () => NetworkNavigation.open(
+                context,
+                section: switch (warning.action) {
+                  WalletWarningAction.electrumSettings =>
+                    NetworkSection.electrum,
+                  WalletWarningAction.torSettings => NetworkSection.tor,
+                },
+              ),
             ),
           // A failed load used to be silent: the skeleton simply vanished
           // and the home screen showed 0 sats and no wallets, which reads

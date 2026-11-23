@@ -1,0 +1,1021 @@
+{
+  "bitboxErrorMultipleDevicesFound": "Nalezeno více zařízení BitBox. Ujistěte se, že je připojeno pouze jedno zařízení.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxScreenNeedHelpButton": "Potřebujete pomoc?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "jadeStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na Jade. Skenovat.",
+  "@jadeStep13": {
+    "description": "Jade instruction for scanning signed PSBT"
+  },
+  "psbtFlowClickScan": "Klikněte na Skenování",
+  "@psbtFlowClickScan": {
+    "description": "Instruction to click scan button on device"
+  },
+  "passportStep1": "Přihlášení do zařízení pasu",
+  "@passportStep1": {
+    "description": "Passport instruction step 1"
+  },
+  "kruxStep3": "Klikněte na PSBT",
+  "@kruxStep3": {
+    "description": "Krux instruction step 3"
+  },
+  "bitboxScreenTroubleshootingStep2": "Ujistěte se, že telefon má povoleno oprávnění USB.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "kruxStep7": "   - Zvýšení jasu obrazovky ve vašem zařízení",
+  "@kruxStep7": {
+    "description": "Krux troubleshooting tip 1"
+  },
+  "jadeStep11": "Jade vám ukáže vlastní QR kód.",
+  "@jadeStep11": {
+    "description": "Jade instruction about signed PSBT QR"
+  },
+  "bitboxActionPairDeviceProcessing": "Párování zařízení",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "ledgerButtonNeedHelp": "Potřebujete pomoc?",
+  "@ledgerButtonNeedHelp": {
+    "description": "Button label to show help/troubleshooting instructions"
+  },
+  "ledgerImportButton": "Start Import",
+  "@ledgerImportButton": {
+    "description": "Button label to start importing Ledger wallet"
+  },
+  "bitboxActionPairDeviceButton": "Start Párování",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "jadeStep8": "   - Zkuste přesunout zařízení blíže nebo dál",
+  "@jadeStep8": {
+    "description": "Jade troubleshooting tip 3"
+  },
+  "ledgerActionFailedMessage": "{action} Failed",
+  "@ledgerActionFailedMessage": {
+    "description": "Error message when a Ledger action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na SeedSigner. Skenovat.",
+  "@seedsignerStep12": {
+    "description": "SeedSigner instruction for scanning signed PSBT"
+  },
+  "keystoneStep14": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
+  "@keystoneStep14": {
+    "description": "Keystone final instruction about broadcasting"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenConnectingSubtext": "Nastavení zabezpečeného připojení...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "jadeStep7": "   - Držte QR kód stabilní a vystředěné",
+  "@jadeStep7": {
+    "description": "Jade troubleshooting tip 2"
+  },
+  "ledgerHelpStep3": "Ujistěte se, že váš Ledger má Bluetooth zapnutý.",
+  "@ledgerHelpStep3": {
+    "description": "Third troubleshooting step for Ledger connection issues"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "Peněženka BitBox byla úspěšně dovážena.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "ledgerWalletTypeSegwit": "Segwit (BIP84)",
+  "@ledgerWalletTypeSegwit": {
+    "description": "Display name for Segwit wallet type (BIP84)"
+  },
+  "psbtFlowPartProgress": "Část {current} {total}",
+  "@psbtFlowPartProgress": {
+    "description": "Progress indicator for animated QR code parts",
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerVerifyTitle": "Ověřit adresu na Ledger",
+  "@ledgerVerifyTitle": {
+    "description": "Title for verifying an address on Ledger device"
+  },
+  "seedsignerStep1": "Zapněte zařízení SeedSigner",
+  "@seedsignerStep1": {
+    "description": "SeedSigner instruction step 1"
+  },
+  "ledgerProcessingSign": "Přihlášení Transakce",
+  "@ledgerProcessingSign": {
+    "description": "Status message shown while signing transaction with Ledger"
+  },
+  "jadeStep6": "   - Zvýšení jasu obrazovky ve vašem zařízení",
+  "@jadeStep6": {
+    "description": "Jade troubleshooting tip 1"
+  },
+  "ledgerVerifyButton": "Ověřit adresu",
+  "@ledgerVerifyButton": {
+    "description": "Button label to start address verification on Ledger"
+  },
+  "kruxStep14": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na Krux. Skenovat.",
+  "@kruxStep14": {
+    "description": "Krux instruction for scanning signed PSBT"
+  },
+  "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
+  "@passportStep12": {
+    "description": "Passport instruction for scanning signed PSBT"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Zadejte své heslo na zařízení BitBox a pokračujte.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "passportStep11": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  "@passportStep11": {
+    "description": "Passport instruction to return to app"
+  },
+  "psbtFlowScanDeviceQr": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na {device}. Skenovat.",
+  "@psbtFlowScanDeviceQr": {
+    "description": "Instruction to scan QR code from hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep13": "Transakce bude dovážena v peněžence Bull Bitcoin.",
+  "@passportStep13": {
+    "description": "Passport instruction about import completion"
+  },
+  "ledgerSuccessVerifyTitle": "Ověřit adresu na Ledger ...",
+  "@ledgerSuccessVerifyTitle": {
+    "description": "Success message title for address verification on Ledger"
+  },
+  "psbtFlowReadyToBroadcast": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
+  "@psbtFlowReadyToBroadcast": {
+    "description": "Final message that transaction is ready to broadcast"
+  },
+  "seedsignerStep5": "   - Zvýšení jasu obrazovky ve vašem zařízení",
+  "@seedsignerStep5": {
+    "description": "SeedSigner troubleshooting tip 1"
+  },
+  "passportInstructionsTitle": "Pokyny pro cestovní pas",
+  "@passportInstructionsTitle": {
+    "description": "Title for Passport signing instructions modal"
+  },
+  "ledgerSuccessImportTitle": "Peněženka Importováno úspěšně",
+  "@ledgerSuccessImportTitle": {
+    "description": "Success message title after importing Ledger wallet"
+  },
+  "bitboxErrorOperationCancelled": "Provoz byl zrušen. Prosím, zkuste to znovu.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "jadeInstructionsTitle": "Blokstream Jade PSBT Čeština",
+  "@jadeInstructionsTitle": {
+    "description": "Title for Jade signing instructions modal"
+  },
+  "psbtFlowReviewTransaction": "Jakmile je transakce importována ve vašem {device}, zkontrolujte cílovou adresu a částku.",
+  "@psbtFlowReviewTransaction": {
+    "description": "Instruction to review transaction details on device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowIncreaseBrightness": "Zvýšení jasu obrazovky ve vašem zařízení",
+  "@psbtFlowIncreaseBrightness": {
+    "description": "Troubleshooting tip to increase brightness"
+  },
+  "bitboxActionSignTransactionProcessing": "Přihlášení Transakce",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "ledgerErrorDeviceLocked": "Zařízení Ledger je zamčeno. Odemkněte zařízení a zkuste to znovu.",
+  "@ledgerErrorDeviceLocked": {
+    "description": "Error message when Ledger device is locked (error code 5515)"
+  },
+  "ledgerHelpStep4": "Ujistěte se, že jste nainstalovali nejnovější verzi aplikace Bitcoin z aplikace Ledger Live.",
+  "@ledgerHelpStep4": {
+    "description": "Fourth troubleshooting step for Ledger connection issues"
+  },
+  "ledgerSuccessSignDescription": "Vaše transakce byla úspěšně podepsána.",
+  "@ledgerSuccessSignDescription": {
+    "description": "Success message description after signing transaction with Ledger"
+  },
+  "ledgerWalletTypeLegacy": "Legacy (BIP44)",
+  "@ledgerWalletTypeLegacy": {
+    "description": "Display name for Legacy wallet type (BIP44)"
+  },
+  "ledgerHelpStep1": "Restartujte zařízení Ledger.",
+  "@ledgerHelpStep1": {
+    "description": "First troubleshooting step for Ledger connection issues"
+  },
+  "ledgerConnectingSubtext": "Nastavení zabezpečeného připojení...",
+  "@ledgerConnectingSubtext": {
+    "description": "Subtext shown while connecting to Ledger"
+  },
+  "kruxStep8": "   - Přesunout červený laser nahoru a dolů přes QR kód",
+  "@kruxStep8": {
+    "description": "Krux troubleshooting tip 2"
+  },
+  "kruxStep15": "Transakce bude dovážena v peněžence Bull Bitcoin.",
+  "@kruxStep15": {
+    "description": "Krux instruction about import completion"
+  },
+  "jadeStep15": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
+  "@jadeStep15": {
+    "description": "Jade final instruction about broadcasting"
+  },
+  "bitboxErrorDeviceNotPaired": "Zařízení není spárováno. Nejdříve vyplňte proces párování.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "ledgerProcessingImportSubtext": "Nastavení pouze peněženky...",
+  "@ledgerProcessingImportSubtext": {
+    "description": "Processing subtext shown while importing Ledger wallet"
+  },
+  "bitboxActionImportWalletTitle": "Import BitBox Peněženka",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "psbtFlowInstructions": "Čeština",
+  "@psbtFlowInstructions": {
+    "description": "Instructions section header in psbt flow"
+  },
+  "bitboxScreenTroubleshootingStep1": "Ujistěte se, že máte nejnovější firmware nainstalovaný na BitBoxu.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxActionUnlockDeviceTitle": "Odemknout BitBox zařízení",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "kruxStep16": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
+  "@kruxStep16": {
+    "description": "Krux final instruction about broadcasting"
+  },
+  "bitboxScreenVerifyAddressSubtext": "Porovnejte tuto adresu s obrazovkou BitBox02",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "ledgerVerifyAddressLabel": "Adresa pro ověření:",
+  "@ledgerVerifyAddressLabel": {
+    "description": "Label for the address being verified on Ledger"
+  },
+  "jadeStep1": "Přihlášení do zařízení Jade",
+  "@jadeStep1": {
+    "description": "Jade instruction step 1"
+  },
+  "psbtFlowTroubleScanningTitle": "Máte-li potíže skenování:",
+  "@psbtFlowTroubleScanningTitle": {
+    "description": "Header for troubleshooting scanning issues"
+  },
+  "seedsignerInstructionsTitle": "SeedSigner pokyny",
+  "@seedsignerInstructionsTitle": {
+    "description": "Title for SeedSigner signing instructions modal"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Ověřte spárovací kód na zařízení BitBox...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxScreenTroubleshootingTitle": "BitBox02 Odstraňování problémů",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "kruxStep2": "Klikněte na Přihlásit se",
+  "@kruxStep2": {
+    "description": "Krux instruction step 2"
+  },
+  "kruxStep5": "Skenovat QR kód zobrazený v peněžence Bull",
+  "@kruxStep5": {
+    "description": "Krux instruction step 5"
+  },
+  "seedsignerStep11": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  "@seedsignerStep11": {
+    "description": "SeedSigner instruction to return to app"
+  },
+  "bitboxErrorConnectionFailed": "Připojil se k zařízení BitBox. Prosím zkontrolujte, zda je vaše připojení.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "Nastavení pouze peněženky...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "psbtFlowDone": "Já jsem udělal",
+  "@psbtFlowDone": {
+    "description": "Button to complete psbt flow signing process"
+  },
+  "ledgerWalletTypeSegwitDescription": "Nativní SegWit - Doporučené",
+  "@ledgerWalletTypeSegwitDescription": {
+    "description": "Description for Segwit wallet type"
+  },
+  "bitboxActionImportWalletProcessing": "Importovat peněženku",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "seedsignerStep3": "Skenovat QR kód zobrazený v peněžence Bull",
+  "@seedsignerStep3": {
+    "description": "SeedSigner instruction step 3"
+  },
+  "passportStep6": "   - Přesunout červený laser nahoru a dolů přes QR kód",
+  "@passportStep6": {
+    "description": "Passport troubleshooting tip 2"
+  },
+  "keystoneStep4": "Máte-li potíže skenování:",
+  "@keystoneStep4": {
+    "description": "Keystone troubleshooting header"
+  },
+  "ledgerHelpTitle": "Ledger řešení problémů",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "psbtFlowMoveBack": "Vyzkoušejte pohyb zařízení zpět trochu",
+  "@psbtFlowMoveBack": {
+    "description": "Troubleshooting tip to adjust scanning distance"
+  },
+  "keystoneStep2": "Klikněte na Skenování",
+  "@keystoneStep2": {
+    "description": "Keystone instruction step 2"
+  },
+  "ledgerWalletTypeLabel": "Typ peněženky:",
+  "@ledgerWalletTypeLabel": {
+    "description": "Label for wallet type/script type selection"
+  },
+  "keystoneStep6": "   - Přesunout červený laser nahoru a dolů přes QR kód",
+  "@keystoneStep6": {
+    "description": "Keystone troubleshooting tip 2"
+  },
+  "ledgerInstructionsIos": "Ujistěte se, že vaše Ledger je odemčen pomocí aplikace Bitcoin a Bluetooth povoleno.",
+  "@ledgerInstructionsIos": {
+    "description": "Connection instructions for iOS devices (Bluetooth only)"
+  },
+  "passportStep14": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
+  "@passportStep14": {
+    "description": "Passport final instruction about broadcasting"
+  },
+  "psbtFlowSelectSeed": "Jakmile je transakce importována ve vašem {device}, měli byste zvolit semeno, kterou chcete podepsat.",
+  "@psbtFlowSelectSeed": {
+    "description": "Instruction to select seed on device for signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerSuccessAddressVerified": "O nás!",
+  "@ledgerSuccessAddressVerified": {
+    "description": "Success snackbar message after address verification"
+  },
+  "kruxStep10": "Jakmile je transakce importována ve vašem Kruxu, zkontrolujte cílovou adresu a částku.",
+  "@kruxStep10": {
+    "description": "Krux instruction for reviewing transaction"
+  },
+  "bitboxErrorHandshakeFailed": "Vypnuto k vytvoření zabezpečeného připojení. Prosím, zkuste to znovu.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "keystoneStep8": "Jakmile je transakce importována ve vašem Keystone, zkontrolujte cílovou adresu a částku.",
+  "@keystoneStep8": {
+    "description": "Keystone instruction for reviewing transaction"
+  },
+  "psbtFlowSpecterTitle": "Ruční pokyny",
+  "@psbtFlowSpecterTitle": {
+    "description": "Title for Specter device signing instructions"
+  },
+  "bitboxErrorDeviceNotFound": "Zařízení BitBox není nalezeno.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "ledgerScanningMessage": "Hledáte zařízení Ledger v okolí...",
+  "@ledgerScanningMessage": {
+    "description": "Message shown while scanning for Ledger devices"
+  },
+  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "ledgerHelpStep2": "Ujistěte se, že váš telefon má Bluetooth zapnutý a povolený.",
+  "@ledgerHelpStep2": {
+    "description": "Second troubleshooting step for Ledger connection issues"
+  },
+  "keystoneStep5": "   - Zvýšení jasu obrazovky ve vašem zařízení",
+  "@keystoneStep5": {
+    "description": "Keystone troubleshooting tip 1"
+  },
+  "kruxStep9": "   - Zkuste přesunout zařízení zpět trochu trochu",
+  "@kruxStep9": {
+    "description": "Krux troubleshooting tip 3"
+  },
+  "kruxStep11": "Kliknutím na tlačítko pro přihlášení do Vaší Kruxu.",
+  "@kruxStep11": {
+    "description": "Krux instruction for signing"
+  },
+  "ledgerErrorBitcoinAppNotOpen": "Otevřete aplikaci Bitcoin v zařízení Ledger a zkuste to znovu.",
+  "@ledgerErrorBitcoinAppNotOpen": {
+    "description": "Error message when Bitcoin app is not open on Ledger (error codes 6e01, 6a87, 6d02, 6511, 6e00)"
+  },
+  "ledgerWalletTypeLegacyDescription": "P2PKH - Starší formát",
+  "@ledgerWalletTypeLegacyDescription": {
+    "description": "Description for Legacy wallet type"
+  },
+  "seedsignerStep9": "Zkontrolovat cílovou adresu a částku, a potvrdit podpis na SeedSigner.",
+  "@seedsignerStep9": {
+    "description": "SeedSigner instruction for reviewing and signing"
+  },
+  "keystoneStep13": "Transakce bude dovážena v peněžence Bull Bitcoin.",
+  "@keystoneStep13": {
+    "description": "Keystone instruction about import completion"
+  },
+  "passportStep2": "Klikněte na Přihlásit se QR kódem",
+  "@passportStep2": {
+    "description": "Passport instruction step 2"
+  },
+  "keystoneStep9": "Kliknutím na tlačítko pro přihlášení do klíče.",
+  "@keystoneStep9": {
+    "description": "Keystone instruction for signing"
+  },
+  "bitboxActionVerifyAddressTitle": "Ověřit adresu na BitBoxu",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionImportWalletSuccess": "Peněženka Importováno úspěšně",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "ledgerSignButton": "Start Registrace",
+  "@ledgerSignButton": {
+    "description": "Button label to start signing transaction with Ledger"
+  },
+  "jadeStep14": "Transakce bude dovážena v peněžence Bull Bitcoin.",
+  "@jadeStep14": {
+    "description": "Jade instruction about import completion"
+  },
+  "kruxStep13": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  "@kruxStep13": {
+    "description": "Krux instruction to return to app"
+  },
+  "ledgerSuccessVerifyDescription": "Adresa byla ověřena na vašem zařízení Ledger.",
+  "@ledgerSuccessVerifyDescription": {
+    "description": "Success message description after verifying address on Ledger"
+  },
+  "psbtFlowSignTransaction": "Přihlášení",
+  "@psbtFlowSignTransaction": {
+    "description": "Title for psbt flow signing screen"
+  },
+  "ledgerConnectingMessage": "Připojení k {deviceName}",
+  "@ledgerConnectingMessage": {
+    "description": "Message shown while connecting to a specific Ledger device",
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveQRCode": "QR kód",
+  "@receiveQRCode": {
+    "description": "Section header for QR code display"
+  },
+  "jadeStep10": "Klikněte na tlačítka pro přihlášení do Vaší Jade.",
+  "@jadeStep10": {
+    "description": "Jade instruction for signing"
+  },
+  "bitboxScreenUnknownError": "Neznámá chyba nastala",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "psbtFlowTransactionImported": "Transakce bude dovážena v peněžence Bull Bitcoin.",
+  "@psbtFlowTransactionImported": {
+    "description": "Confirmation that transaction was imported successfully"
+  },
+  "kruxStep4": "Klikněte na Vložte z kamery",
+  "@kruxStep4": {
+    "description": "Krux instruction step 4"
+  },
+  "bitboxScreenVerifyOnDevice": "Ověřte prosím tuto adresu na zařízení BitBox",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "ledgerConnectTitle": "Připojte zařízení Ledger",
+  "@ledgerConnectTitle": {
+    "description": "Title for initial Ledger connection screen"
+  },
+  "bitboxScreenConnecting": "Připojení k BitBoxu",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Zadejte své heslo na zařízení BitBox...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "Adresa byla ověřena na zařízení BitBox.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "seedsignerStep6": "   - Přesunout červený laser nahoru a dolů přes QR kód",
+  "@seedsignerStep6": {
+    "description": "SeedSigner troubleshooting tip 2"
+  },
+  "ledgerHelpStep5": "Ujistěte se, že váš Ledger zařízení používá nejnovější firmware, můžete aktualizovat firmware pomocí aplikace Ledger Live desktop.",
+  "@ledgerHelpStep5": {
+    "description": "Fifth troubleshooting step for Ledger connection issues"
+  },
+  "psbtFlowScanQrShown": "Skenovat QR kód zobrazený v peněžence Bull",
+  "@psbtFlowScanQrShown": {
+    "description": "Instruction to scan QR code displayed in app"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Prosíme, potvrďte adresu na zařízení BitBox.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "keystoneInstructionsTitle": "Keystone Pokyny",
+  "@keystoneInstructionsTitle": {
+    "description": "Title for Keystone signing instructions modal"
+  },
+  "bitboxActionVerifyAddressProcessing": "Zobrazení adresy na BitBoxu...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionSignTransactionSuccess": "Transakce zaregistrovaná úspěšně",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "ledgerSuccessImportDescription": "Vaše peněženka Ledger úspěšně doveze.",
+  "@ledgerSuccessImportDescription": {
+    "description": "Success message description after importing Ledger wallet"
+  },
+  "bitboxActionUnlockDeviceButton": "Odemknout zařízení",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "ledgerInstructionsAndroidUsb": "Ujistěte se, že váš Ledger je odemčen pomocí aplikace Bitcoin a připojte jej přes USB.",
+  "@ledgerInstructionsAndroidUsb": {
+    "description": "Connection instructions for Android devices (USB only)"
+  },
+  "bitboxScreenTryAgainButton": "Vyzkoušejte znovu",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "psbtFlowClickDone": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  "@psbtFlowClickDone": {
+    "description": "Instruction to click done button in app"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Odemčené zařízení Úspěšně",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxErrorOperationTimeout": "Provozní doba. Prosím, zkuste to znovu.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "psbtFlowTurnOnDevice": "Zapněte zařízení {device}",
+  "@psbtFlowTurnOnDevice": {
+    "description": "Instruction to power on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "seedsignerStep2": "Klikněte na Skenování",
+  "@seedsignerStep2": {
+    "description": "SeedSigner instruction step 2"
+  },
+  "psbtFlowSignTransactionOnDevice": "Kliknutím na tlačítko pro přihlášení do transakce na {device}.",
+  "@psbtFlowSignTransactionOnDevice": {
+    "description": "Instruction to sign transaction on hardware device",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "keystoneStep7": "   - Zkuste přesunout zařízení zpět trochu trochu",
+  "@keystoneStep7": {
+    "description": "Keystone troubleshooting tip 3"
+  },
+  "passportStep3": "Skenovat QR kód zobrazený v peněžence Bull",
+  "@passportStep3": {
+    "description": "Passport instruction step 3"
+  },
+  "jadeStep5": "Máte-li potíže skenování:",
+  "@jadeStep5": {
+    "description": "Jade troubleshooting header"
+  },
+  "bitboxScreenTroubleshootingStep3": "Restartujte zařízení BitBox02 pomocí odpojení a opětovného připojení.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "keystoneStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na Keystone. Skenovat.",
+  "@keystoneStep12": {
+    "description": "Keystone instruction for scanning signed PSBT"
+  },
+  "ledgerErrorRejectedByUser": "Transakce byla odmítnuta uživatelem na zařízení Ledger.",
+  "@ledgerErrorRejectedByUser": {
+    "description": "Error message when user rejects transaction on Ledger (error code 6985)"
+  },
+  "passportStep10": "Cestovní pas vám ukáže vlastní QR kód.",
+  "@passportStep10": {
+    "description": "Passport instruction about signed PSBT QR"
+  },
+  "ledgerProcessingSignSubtext": "Prosíme o potvrzení transakce na vašem zařízení Ledger...",
+  "@ledgerProcessingSignSubtext": {
+    "description": "Processing subtext shown while signing transaction"
+  },
+  "seedsignerStep10": "SeedSigner vám ukáže vlastní QR kód.",
+  "@seedsignerStep10": {
+    "description": "SeedSigner instruction about signed PSBT QR"
+  },
+  "seedsignerStep7": "   - Zkuste přesunout zařízení zpět trochu trochu",
+  "@seedsignerStep7": {
+    "description": "SeedSigner troubleshooting tip 3"
+  },
+  "seedsignerStep8": "Jakmile je transakce importována ve vašem SeedSigneru, měli byste zvolit semeno, kterou chcete podepsat.",
+  "@seedsignerStep8": {
+    "description": "SeedSigner instruction for seed selection"
+  },
+  "ledgerButtonManagePermissions": "Správa oprávnění aplikací",
+  "@ledgerButtonManagePermissions": {
+    "description": "Button label to open app permissions settings"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Nativní SegWit - Doporučené",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenWaitingConfirmation": "Čekání na potvrzení o BitBox02 ...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxActionPairDeviceSuccess": "Zařízení spárované úspěšně",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxErrorNoDevicesFound": "Nalezeno žádné BitBox zařízení. Ujistěte se, že vaše zařízení je napájen a připojen přes USB.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "ledgerWalletTypeNestedSegwit": "Nested Segwit (BIP49)",
+  "@ledgerWalletTypeNestedSegwit": {
+    "description": "Display name for Nested Segwit wallet type (BIP49)"
+  },
+  "kruxStep6": "Máte-li potíže skenování:",
+  "@kruxStep6": {
+    "description": "Krux troubleshooting header"
+  },
+  "ledgerProcessingVerify": "Zobrazit adresu na Ledger ...",
+  "@ledgerProcessingVerify": {
+    "description": "Status message shown while verifying address on Ledger"
+  },
+  "jadeStep2": "Přidejte pasfrase, pokud máte jeden (volitelně)",
+  "@jadeStep2": {
+    "description": "Jade instruction step 2"
+  },
+  "keystoneStep1": "Přihlášení do zařízení Keystone",
+  "@keystoneStep1": {
+    "description": "Keystone instruction step 1"
+  },
+  "keystoneStep3": "Skenovat QR kód zobrazený v peněžence Bull",
+  "@keystoneStep3": {
+    "description": "Keystone instruction step 3"
+  },
+  "bitboxActionSignTransactionTitle": "Registrace Transakce",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "jadeStep3": "Zvolte možnost \"Scan QR\"",
+  "@jadeStep3": {
+    "description": "Jade instruction step 3"
+  },
+  "ledgerWalletTypeSelectTitle": "Vybrat Peněženka Typ",
+  "@ledgerWalletTypeSelectTitle": {
+    "description": "Title for wallet type selection modal"
+  },
+  "ledgerImportTitle": "Import Ledger Peněženka",
+  "@ledgerImportTitle": {
+    "description": "Title for importing a Ledger hardware wallet"
+  },
+  "bitboxScreenScanning": "Skenování zařízení",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "ledgerHelpSubtitle": "Za prvé, ujistěte se, že vaše zařízení Ledger je odemčen a aplikace Bitcoin je otevřena. Pokud se vaše zařízení stále nepřipojí s aplikací, zkuste následující:",
+  "@ledgerHelpSubtitle": {
+    "description": "Subtitle/introduction for Ledger troubleshooting help"
+  },
+  "bitboxActionImportWalletButton": "Start Import",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "jadeStep4": "Skenovat QR kód zobrazený v peněžence Bull",
+  "@jadeStep4": {
+    "description": "Jade instruction step 4"
+  },
+  "ledgerErrorMissingPsbt": "PSBT je nutné pro přihlášení",
+  "@ledgerErrorMissingPsbt": {
+    "description": "Error message when PSBT parameter is missing for signing"
+  },
+  "kruxInstructionsTitle": "Krux instrukce",
+  "@kruxInstructionsTitle": {
+    "description": "Title for Krux signing instructions modal"
+  },
+  "ledgerErrorDeviceBusy": "Váš Ledger používá jiný program. Zavřete jej (například Ledger Live) a zkuste to znovu.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
+  "ledgerErrorNoConnection": "Nejsou k dispozici žádné připojení Ledger",
+  "@ledgerErrorNoConnection": {
+    "description": "Error message when no Ledger connection is available"
+  },
+  "bitboxScreenActionFailed": "{action} Failed",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStep4": "Máte-li potíže skenování:",
+  "@passportStep4": {
+    "description": "Passport troubleshooting header"
+  },
+  "bitboxActionVerifyAddressButton": "Ověřit adresu",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "Za prvé, ujistěte se, že vaše zařízení BitBox02 je připojen k telefonu USB portu. Pokud se vaše zařízení stále nepřipojí s aplikací, zkuste následující:",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenAddressToVerify": "Adresa pro ověření:",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxErrorPermissionDenied": "Pro připojení zařízení BitBoxu je zapotřebí USB oprávnění.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Prosím, potvrďte transakci na zařízení BitBox...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "Vaše zařízení BitBox je nyní spárován a připraven k použití.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxScreenScanningSubtext": "Hledáte zařízení BitBox...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "seedsignerStep14": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
+  "@seedsignerStep14": {
+    "description": "SeedSigner final instruction about broadcasting"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Typ připojení není iniciován.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "ledgerErrorPermissionDenied": "Pro připojení k zařízením Ledger jsou vyžadována oprávnění Bluetooth.",
+  "ledgerErrorNoDevicesFound": "Nebyla nalezena žádná zařízení Ledger. Ujistěte se, že je vaše zařízení zapnuté a má povolené Bluetooth.",
+  "ledgerErrorMultipleDevicesFound": "Bylo nalezeno více zařízení Ledger. Ujistěte se, že je v blízkosti pouze jedno zařízení.",
+  "ledgerErrorDeviceNotFound": "Zařízení Ledger nebylo nalezeno.",
+  "ledgerErrorDeviceMismatch": "Byla zjištěna neshoda zařízení.",
+  "ledgerErrorInvalidPsbt": "Byl zjištěn neplatný formát PSBT.",
+  "ledgerErrorMissingDerivationPath": "Je vyžadována odvozovací cesta",
+  "ledgerErrorMissingScriptType": "Je vyžadován typ skriptu",
+  "ledgerProcessingVerifySubtext": "Prosíme o potvrzení adresy ve vašem zařízení Ledger.",
+  "@ledgerProcessingVerifySubtext": {
+    "description": "Processing subtext shown while verifying address"
+  },
+  "ledgerInstructionsAndroidDual": "Ujistěte se, že vaše Ledger je odemčen pomocí aplikace Bitcoin a Bluetooth povoleno.",
+  "@ledgerInstructionsAndroidDual": {
+    "description": "Connection instructions for Android devices (Bluetooth or USB)"
+  },
+  "jadeStep9": "Jakmile je transakce importována ve vašem Jadeu, zkontrolujte cílovou adresu a částku.",
+  "@jadeStep9": {
+    "description": "Jade instruction for reviewing transaction"
+  },
+  "ledgerWalletTypeNestedSegwitDescription": "P2WPKH-nested-in-P2SH",
+  "@ledgerWalletTypeNestedSegwitDescription": {
+    "description": "Technical description for Nested Segwit wallet type"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "Vaše transakce byla úspěšně podepsána.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "passportStep5": "   - Zvýšení jasu obrazovky ve vašem zařízení",
+  "@passportStep5": {
+    "description": "Passport troubleshooting tip 1"
+  },
+  "bitboxScreenConnectSubtext": "Ujistěte se, že BitBox02 je odemčen a připojen přes USB.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxErrorInvalidResponse": "Neplatný od BitBox zařízení. Prosím, zkuste to znovu.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  "@jadeStep12": {
+    "description": "Jade instruction to return to app"
+  },
+  "bitboxScreenWalletTypeLabel": "Typ peněženky:",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "passportStep8": "Jakmile je transakce importována do vašeho pasu, zkontrolujte cílovou adresu a částku.",
+  "@passportStep8": {
+    "description": "Passport instruction for reviewing transaction"
+  },
+  "keystoneStep11": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
+  "@keystoneStep11": {
+    "description": "Keystone instruction to return to app"
+  },
+  "bitboxActionSignTransactionButton": "Start Registrace",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "passportStep9": "Kliknutím na tlačítko pro přihlášení do pasu.",
+  "@passportStep9": {
+    "description": "Passport instruction for signing"
+  },
+  "kruxStep12": "Krux vám ukáže vlastní QR kód.",
+  "@kruxStep12": {
+    "description": "Krux instruction about signed PSBT QR"
+  },
+  "ledgerScanningTitle": "Skenování zařízení",
+  "@ledgerScanningTitle": {
+    "description": "Title shown while scanning for Ledger devices"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "Zařízení BitBox je nyní odemčeno a připraven k použití.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxScreenEnterPassword": "Zadejte heslo",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "keystoneStep10": "Keystone vám ukáže vlastní QR kód.",
+  "@keystoneStep10": {
+    "description": "Keystone instruction about signed PSBT QR"
+  },
+  "ledgerSuccessSignTitle": "Transakce zaregistrovaná úspěšně",
+  "@ledgerSuccessSignTitle": {
+    "description": "Success message title after signing transaction with Ledger"
+  },
+  "bitboxActionPairDeviceTitle": "Pár BitBox zařízení",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "passportStep7": "   - Zkuste přesunout zařízení zpět trochu trochu",
+  "@passportStep7": {
+    "description": "Passport troubleshooting tip 3"
+  },
+  "bitboxScreenPairingCodeSubtext": "Ověřte tento kód odpovídá obrazovce BitBox02 a poté potvrďte zařízení.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "kruxStep1": "Přihlášení do zařízení Krux",
+  "@kruxStep1": {
+    "description": "Krux instruction step 1"
+  },
+  "bitboxActionVerifyAddressSuccess": "Ověřeno úspěšně",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxScreenSelectWalletType": "Vybrat Peněženka Typ",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenManagePermissionsButton": "Správa oprávnění aplikací",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "seedsignerStep13": "Transakce bude dovážena v peněžence Bull Bitcoin.",
+  "@seedsignerStep13": {
+    "description": "SeedSigner instruction about import completion"
+  },
+  "psbtFlowMoveLaser": "Přesunout červený laser nahoru a dolů přes QR kód",
+  "@psbtFlowMoveLaser": {
+    "description": "Troubleshooting tip for devices with laser scanners"
+  },
+  "psbtFlowDeviceShowsQr": "{device} vám ukáže vlastní QR kód.",
+  "@psbtFlowDeviceShowsQr": {
+    "description": "Information that device will display QR code after signing",
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenPairingCode": "Párování Kód",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "ledgerProcessingImport": "Importovat peněženku",
+  "@ledgerProcessingImport": {
+    "description": "Status message shown while importing Ledger wallet"
+  },
+  "ledgerErrorMissingAddress": "Adresa je vyžadováno pro ověření",
+  "@ledgerErrorMissingAddress": {
+    "description": "Error message when address is missing for verification"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Odemknutí zařízení",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "seedsignerStep4": "Máte-li potíže skenování:",
+  "@seedsignerStep4": {
+    "description": "SeedSigner troubleshooting header"
+  },
+  "ledgerButtonTryAgain": "Vyzkoušejte znovu",
+  "@ledgerButtonTryAgain": {
+    "description": "Button label to retry a failed Ledger operation"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenVerifyAddress": "Ověřit adresu",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenConnectDevice": "Připojte zařízení BitBox",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "ledgerSignTitle": "Registrace Transakce",
+  "@ledgerSignTitle": {
+    "description": "Title for signing a transaction with Ledger"
+  },
+  "psbtFlowSignViaNfc": "Podepsat přes NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Přiložte {deviceName} pro odeslání PSBT přes NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Pokyny",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
+  "psbtFlowColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
+  "psbtFlowColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "psbtFlowColdcardQStep3": "Zvolte preferovaný způsob podepisování:",
+  "psbtFlowColdcardQStep4": "Pro QR kód:",
+  "psbtFlowColdcardQStep5": "   - Na Coldcard Q vyberte možnost \"Scan any QR code\"",
+  "psbtFlowColdcardQStep6": "   - Naskenujte QR kód zobrazený v peněžence Bull",
+  "psbtFlowColdcardQStep7": "   - Pokud máte problém se skenováním:",
+  "psbtFlowColdcardQStep8": "     - Zvyšte jas obrazovky na svém zařízení",
+  "psbtFlowColdcardQStep9": "     - Pohybujte červeným laserem nahoru a dolů přes QR kód",
+  "psbtFlowColdcardQStep10": "     - Zkuste zařízení trochu oddálit",
+  "psbtFlowColdcardQStep11": "Pro NFC:",
+  "psbtFlowColdcardQStep12": "   - Na Coldcard Q vyberte \"Ready to Sign\" a poté klepněte na tlačítko NFC",
+  "psbtFlowColdcardQStep13": "   - Přiložte telefon ke Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Počkejte na přenos PSBT",
+  "psbtFlowColdcardQStep15": "Jakmile je transakce importována ve vašem Coldcard Q, zkontrolujte cílovou adresu a částku.",
+  "psbtFlowColdcardQStep16": "Klepnutím na tlačítka podepište transakci na svém Coldcard Q.",
+  "psbtFlowColdcardQStep17": "Coldcard Q poté zobrazí QR kód podepsané transakce nebo připraví přenos přes NFC.",
+  "psbtFlowColdcardQStep18": "Pokud jste podepsali pomocí QR, klepněte v peněžence Bull Bitcoin na \"I'm done\".",
+  "psbtFlowColdcardQStep19": "Peněženka Bull Bitcoin vás požádá o naskenování QR kódu podepsané transakce nebo o její přijetí přes NFC.",
+  "psbtFlowColdcardQStep20": "   - Pro QR: naskenujte QR kód na Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Pro NFC: přiložte telefon ke Coldcard Q",
+  "psbtFlowColdcardQStep22": "Podepsaná transakce bude importována do peněženky Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Nyní je připravena k vysílání. Jakmile klepnete na vysílání, transakce bude zveřejněna na síti Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "psbtFlowColdcardMk4Step3": "Na Coldcard Mk4 vyberte \"Ready to Sign\" a poté stiskněte tlačítko s číslem 3",
+  "psbtFlowColdcardMk4Step4": "Přiložte telefon ke Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Počkejte na přenos PSBT",
+  "psbtFlowColdcardMk4Step6": "Jakmile je transakce importována ve vašem Coldcard Mk4, zkontrolujte cílovou adresu a částku.",
+  "psbtFlowColdcardMk4Step7": "Klepnutím na tlačítka podepište transakci na svém Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 poté připraví podepsanou transakci k přenosu přes NFC.",
+  "psbtFlowColdcardMk4Step9": "V peněžence Bull Bitcoin klepněte na NFC na obrazovce vysílání.",
+  "psbtFlowColdcardMk4Step10": "Přiložte telefon ke Coldcard Mk4, abyste přijali podepsanou transakci.",
+  "psbtFlowColdcardMk4Step11": "Podepsaná transakce bude importována do peněženky Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Zkontrolujte podrobnosti transakce v peněžence Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Nyní je připravena k vysílání. Jakmile klepnete na vysílání, transakce bude zveřejněna na síti Bitcoin.",
+  "bitboxErrorBluetoothPermissionDenied": "Pro připojení k zařízení BitBox02 Nova je zapotřebí oprávnění Bluetooth.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth není k dispozici. Zapněte Bluetooth a zkuste to znovu.",
+  "bitboxErrorNoBleDevicesFound": "V okolí nebyl nalezen žádný BitBox02 Nova. Zkontrolujte Bluetooth a zkuste to znovu.",
+  "bitboxErrorMultipleBleDevicesFound": "Bylo nalezeno více zařízení BitBox02 Nova. Ujistěte se, že je v okolí pouze jedno, a zkuste to znovu.",
+  "bitboxErrorOperationFailed": "Operace BitBox se nezdařila. Zkuste to prosím znovu.",
+  "bitboxScreenConnectSubtextBluetooth": "Ujistěte se, že BitBox02 Nova je odemčen a Bluetooth je zapnutý.",
+  "bitboxScreenScanningSubtextBluetooth": "Hledáte v okolí zařízení BitBox02 Nova...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Odstraňování problémů",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Pokud se vaše zařízení stále nepřipojí s aplikací, zkuste následující:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Ujistěte se, že je zapnutý Bluetooth a že je pro tuto aplikaci povolen.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Ujistěte se, že je Bluetooth zapnutý na vašem BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restartujte BitBox02 Nova a zkuste se připojit znovu.",
+  "psbtFlowInvalidPsbtError": "Tuto transakci nelze přečíst. Vraťte se a vytvořte ji znovu.",
+  "psbtFlowQrEncodingError": "Tuto transakci nelze převést na QR kód."
+}

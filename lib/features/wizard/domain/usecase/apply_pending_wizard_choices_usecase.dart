@@ -1,6 +1,5 @@
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
@@ -20,7 +19,7 @@ class ApplyPendingWizardChoicesUsecase {
   });
 
   final WizardRepository _wizardRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
   final BackgroundSyncIntervalRepository _intervals;
 
   /// Returns false when the choice could not be persisted and needs a retry.
@@ -32,7 +31,7 @@ class ApplyPendingWizardChoicesUsecase {
     // The repository logged the raw reason at its boundary; what matters here
     // is which choices did not land.
     final failed = <WizardField>{};
-    void note(Result<void, SettingsStoreFailure> result, WizardField field) {
+    void note(Result<void, PreferencesFailure> result, WizardField field) {
       if (result case Err(:final failure)) {
         failed.add(field);
         log.warning(

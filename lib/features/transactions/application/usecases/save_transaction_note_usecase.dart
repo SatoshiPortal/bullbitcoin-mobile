@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_label_policy.dart';
 import 'package:meta/meta.dart';
@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 /// translated into this feature's family right here: nothing above this line
 /// should know another feature's failure type.
 class SaveTransactionNoteUsecase {
-  final LabelsFacade _labelsFacade;
+  final Labels _labelsFacade;
 
   const SaveTransactionNoteUsecase(this._labelsFacade);
 

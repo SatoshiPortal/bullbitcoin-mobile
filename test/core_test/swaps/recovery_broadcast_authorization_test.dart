@@ -1,15 +1,13 @@
+import 'package:preferences/preferences.dart' show Preferences;
 import 'package:primitives/primitives.dart' show NetworkEnv;
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:preferences/testing.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
-    as settings;
+import 'package:preferences/preferences.dart' as settings;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as primitives;
@@ -17,6 +15,7 @@ import 'package:swaps/swaps.dart';
 import 'package:sync/sync.dart' as sync;
 
 import 'support/real_swap_backends.dart';
+import '../../support/preferences_database.dart';
 
 // Selects a real local Electrum endpoint and executes the actual sync call.
 // Neither the adapter nor decoding/broadcast/repository logic is replaced.
@@ -44,16 +43,31 @@ class _Connections implements sync.WalletConnectionPort {
 }
 
 // Scheduling seam around the actual SQLite-backed settings read.
-class _HeldSettings extends SettingsRepository {
+class _HeldSettings extends Fake implements Preferences {
+  final Preferences _delegate;
   bool hold = false;
   final entered = Completer<void>();
   final release = Completer<void>();
 
-  _HeldSettings({required super.settingsDatasource});
+  _HeldSettings({required PreferencesDao settingsDatasource})
+    : _delegate = PreferencesTesting.fromDao(settingsDatasource);
+  @override
+  Future<void> close() => _delegate.close();
+  @override
+  Future<primitives.Result<void, settings.PreferencesFailure>> setEnvironment(
+    settings.Environment environment,
+  ) => _delegate.setEnvironment(environment);
+  @override
+  Future<primitives.Result<void, settings.PreferencesFailure>> setIsDevMode(
+    bool enabled,
+  ) => _delegate.setIsDevMode(enabled);
 
   @override
-  Future<settings.SettingsEntity> fetch() async {
-    final value = await super.fetch();
+  Future<
+    primitives.Result<settings.SettingsEntity, settings.PreferencesFailure>
+  >
+  fetch() async {
+    final value = await _delegate.fetch();
     if (hold) {
       if (!entered.isCompleted) entered.complete();
       await release.future;
@@ -63,6 +77,7 @@ class _HeldSettings extends SettingsRepository {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   for (final (authorized, suspended) in [
     (true, false),
     (false, false),
@@ -117,12 +132,12 @@ void main() {
                 socket.write('${jsonEncode(response)}\n');
               });
         });
-        final appDb = SqliteDatabase(NativeDatabase.memory());
+        final appDb = await createPreferencesDatabase();
         await appDb.customStatement(
           'UPDATE settings SET is_superuser = 1, is_dev_mode_enabled = 1 WHERE id=1',
         );
         final preferences = _HeldSettings(
-          settingsDatasource: SettingsDatasource(sqlite: appDb),
+          settingsDatasource: PreferencesDao(appDb),
         );
         await preferences.setEnvironment(settings.Environment.testnet);
         final directory = await Directory.systemTemp.createTemp(
@@ -133,7 +148,7 @@ void main() {
         BoltzSwapsDatabase db = BoltzSwapsDatabase(NativeDatabase(file));
         SwapStorage storage = SwapStorage(
           rows: DriftSwapRowStore(db),
-          secrets: secrets,
+          secrets: secrets.capability,
         );
         final chain = AppLockupChain(
           _Connections(server.port),
@@ -185,7 +200,10 @@ void main() {
         first.dispose();
         await db.close();
         db = BoltzSwapsDatabase(NativeDatabase(file));
-        storage = SwapStorage(rows: DriftSwapRowStore(db), secrets: secrets);
+        storage = SwapStorage(
+          rows: DriftSwapRowStore(db),
+          secrets: secrets.capability,
+        );
         final reopened = repository();
         addTearDown(() async {
           reopened.dispose();
@@ -200,7 +218,13 @@ void main() {
           await directory.delete(recursive: true);
         });
         if (!authorized) await preferences.setIsDevMode(false);
-        expect((await preferences.fetch()).isDevModeEnabled, authorized);
+        expect(
+          ((await preferences.fetch()).fold(
+            (value) => value,
+            (failure) => throw Exception('Preferences read failed'),
+          )).isDevModeEnabled,
+          authorized,
+        );
         final persistedModel = await storage.fetch(id);
         if (persistedModel == null) {
           fail('Pending lockup must survive reopening');

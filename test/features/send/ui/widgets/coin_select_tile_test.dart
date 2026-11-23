@@ -3,9 +3,9 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
@@ -14,15 +14,15 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockLabelsFacade extends Mock implements LabelsFacade {}
+class MockLabels extends Mock implements Labels {}
 
 void main() {
   setUpAll(() {
     // LabelsWidget, nested in the tile, resolves the facade in its State
     // field initializer. Nothing here deletes a label, so an unstubbed mock
     // is enough to let the tile build.
-    if (!locator.isRegistered<LabelsFacade>()) {
-      locator.registerSingleton<LabelsFacade>(MockLabelsFacade());
+    if (!locator.isRegistered<Labels>()) {
+      locator.registerSingleton<Labels>(MockLabels());
     }
   });
 

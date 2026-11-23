@@ -1,9 +1,14 @@
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:preferences/preferences.dart' show Environment;
 import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_access.dart';
 import '../domain/exchange_availability.dart';
-import '../domain/exchange_failure.dart';
+
+import 'package:exchange/exchange.dart';
+
 import '../domain/usecases/get_exchange_account_usecase.dart';
 import '../domain/usecases/save_exchange_preferences_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';
@@ -15,7 +20,6 @@ import 'exchange_account.dart';
 
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
 
-export '../domain/exchange_failure.dart';
 export '../exchange_locator.dart' show ExchangeLocator;
 export '../presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;
 export '../ui/exchange_router.dart'
@@ -27,6 +31,7 @@ export '../ui/exchange_scope.dart'
         ExchangeSessionBuilder,
         ExchangeSessionListener;
 export '../ui/widgets/exchange_home_actions.dart' show ExchangeHomeAction;
+export '../ui/widgets/exchange_account_sheets.dart' show ExchangeAccountSheets;
 export '../ui/widgets/exchange_account_actions.dart'
     show ExchangeAccountActions;
 export '../ui/widgets/exchange_amount_currency_dropdown.dart'
@@ -71,6 +76,23 @@ class ExchangeFacade {
       _ => false,
     };
   }
+
+  Future<Result<ExchangeKycConfiguration, ExchangeFailure>> loadKyc() async =>
+      (await _getWebSettings.execute()).map((settings) {
+        final isTestnet = settings.environment == Environment.testnet;
+        final username = settings.exchangeTestnetBasicAuthUsername;
+        final password = settings.exchangeTestnetBasicAuthPassword;
+        return (
+          url: Uri.parse(
+            isTestnet
+                ? ApiServiceConstants.bbKycTestUrl
+                : ApiServiceConstants.bbKycUrl,
+          ),
+          basicAuth: isTestnet && username != null && password != null
+              ? (username: username, password: password)
+              : null,
+        );
+      });
 
   ExchangeAccess get currentAccess => _watch.current;
   Stream<ExchangeAccess> watchAccess() => _watch.execute();

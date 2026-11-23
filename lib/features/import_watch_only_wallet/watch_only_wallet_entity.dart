@@ -1,9 +1,9 @@
 import 'package:bip32_keys/bip32_keys.dart'
     show changeVersionBytes, Slip132Format;
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show NetworkEnv, ScriptType;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
@@ -16,7 +16,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     Network? selectedNetwork,
     @Default(SignerEntity.remote) SignerEntity signer,
     @Default('') String label,
-    @Default(null) SignerDeviceEntity? signerDevice,
+    @Default(null) SignerDevice? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({
@@ -60,7 +60,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
 
   static Future<WatchOnlyWalletEntity> parse(
     String value, {
-    SignerDeviceEntity? signerDevice,
+    SignerDevice? signerDevice,
     Network? selectedNetwork,
     NetworkEnv? environment,
   }) async {

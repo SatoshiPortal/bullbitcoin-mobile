@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/replace_by_fee/domain/replacement_target.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
-  final WalletTransaction originalTransaction;
+  final ReplacementTarget originalTransaction;
   final BumpFeeUsecase bumpFeeUsecase;
 
   ReplaceByFeeCubit({
@@ -69,7 +69,8 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
   Future<void> broadcast() async {
     emit(state.copyWith(failure: null));
 
-    if (state.newFeeRate == null) {
+    final fee = state.newFeeRate;
+    if (fee == null) {
       emit(
         state.copyWith(failure: const ReplaceByFeeNoFeeRateSelectedFailure()),
       );
@@ -87,7 +88,7 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     switch (await bumpFeeUsecase.execute(
       walletId: originalTransaction.walletId,
       txid: originalTransaction.txId,
-      newFeeRate: state.newFeeRate!.feeRate,
+      newFeeRate: fee.feeRate,
       network: originalTransaction.network,
     )) {
       case Ok(:final value):

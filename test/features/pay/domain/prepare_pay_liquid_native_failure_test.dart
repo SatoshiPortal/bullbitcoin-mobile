@@ -2,13 +2,12 @@ import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dar
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:rust_bindings/lwk.dart' as lwk;
@@ -18,7 +17,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
-import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncStorageFailure;
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
@@ -68,12 +66,8 @@ void main() {
     repository = LiquidWalletRepository(
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => Directory.systemTemp.path),
-      // Sync cannot open the wallet: the real LwkWalletDatasource must
-      // propagate its failure through the repository.
-      lwkWalletDatasource: LwkWalletDatasource(
-        wallet: (_) async =>
-            throw const WalletSnapshotException(SyncStorageFailure()),
-      ),
+      // The native wallet cannot be opened.
+      wallet: (_) async => const Err(SyncStorageFailure()),
       // No coin is read: nothing is frozen and no input is selected.
       walletValuesDatasource: SyncWalletValuesDatasource(
         load: (_) async => throw StateError('no value read expected'),

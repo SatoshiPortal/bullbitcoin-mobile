@@ -3,11 +3,10 @@ import '../../../frozen_outpoints_fixture.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:sync/sync.dart' show BitcoinTx;
 import 'package:primitives/primitives.dart';
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
@@ -54,7 +53,7 @@ final class _Connections implements WalletConnectionPort {
   }
 }
 
-class _MockSettingsRepository extends Mock implements SettingsRepository {}
+class _MockSettingsRepository extends Mock implements Preferences {}
 
 void main() {
   const psbt =
@@ -246,10 +245,12 @@ void main() {
     test('a network the settings do not enable is refused before any '
         'network call', () async {
       when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
 

@@ -1,17 +1,16 @@
-import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/load_settings_usecase.dart';
+import 'package:electrum/setup.dart';
 
 import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/settings/data/quick_actions_storage.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
@@ -41,14 +40,11 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/features/settings/data/amount_input_preference_repository_impl.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/repositories/amount_input_preference_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_amount_input_mode_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 class SettingsLocator {
@@ -60,19 +56,18 @@ class SettingsLocator {
     locator.registerFactory<GetSwapRescueWalletsUsecase>(
       () => GetSwapRescueWalletsUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
     locator.registerLazySingleton<QuickActionsCubit>(
       () => createQuickActionsCubit(
-        storage: SettingsQuickActionsStorage(),
         warning: log.warning,
         defaults: Platform.isIOS
             ? QuickActionsLayout.iosDefaults
             : QuickActionsLayout.defaults,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
           exchange: locator<ExchangeFacade>(),
-          settings: locator<SettingsRepository>(),
+          settings: locator<Preferences>(),
           isIOS: Platform.isIOS,
           platformChanges: locator<SettingsCubit>().stream
               .where((state) => state.storedSettings != null)
@@ -84,7 +79,6 @@ class SettingsLocator {
     );
     locator.registerLazySingleton<ExchangePromptCubit>(
       () => createExchangePromptCubit(
-        storage: SettingsQuickActionsStorage(),
         warning: log.warning,
         offered: _exchangeActivationOffer(locator, onlyWhileOff: true),
       ),
@@ -96,7 +90,7 @@ class SettingsLocator {
     locator.registerFactory<SetSettingsExchangeAccessUsecase>(
       () => SetSettingsExchangeAccessUsecase(
         locator<ExchangeFacade>(),
-        locator<SettingsRepository>(),
+        locator<Preferences>(),
       ),
     );
     locator.registerFactory<ExchangeAccessSettingsCubit>(
@@ -114,79 +108,57 @@ class SettingsLocator {
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        electrumSettings: locator<ElectrumSettingsFacade>(),
+        settingsRepository: locator<Preferences>(),
+        electrumSettings: locator<ElectrumDefaultsProvisioner>(),
       ),
-    );
-    locator.registerLazySingleton<AmountInputPreferenceRepository>(
-      () => AmountInputPreferenceRepositoryImpl(locator<SettingsDatasource>()),
     );
     locator.registerFactory<SetAmountInputModeUsecase>(
-      () =>
-          SetAmountInputModeUsecase(locator<AmountInputPreferenceRepository>()),
+      () => SetAmountInputModeUsecase(locator<AmountInputPreferences>()),
     );
     locator.registerFactory<SetBitcoinUnitUsecase>(
-      () => SetBitcoinUnitUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetBitcoinUnitUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SetLanguageUsecase>(
-      () =>
-          SetLanguageUsecase(settingsRepository: locator<SettingsRepository>()),
+      () => SetLanguageUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SyncExchangeCurrencyUsecase>(
       () => SyncExchangeCurrencyUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
+        settingsRepository: locator<Preferences>(),
+        exchange: locator<Exchange>(),
       ),
     );
     locator.registerFactory<SetCurrencyUsecase>(
-      () =>
-          SetCurrencyUsecase(settingsRepository: locator<SettingsRepository>()),
+      () => SetCurrencyUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SetHideAmountsUsecase>(
-      () => SetHideAmountsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetHideAmountsUsecase(settingsRepository: locator<Preferences>()),
     );
     locator.registerFactory<SetIsSuperuserUsecase>(
-      () => SetIsSuperuserUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetIsSuperuserUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetIsDevModeUsecase>(
-      () => SetIsDevModeUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetIsDevModeUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetThemeModeUsecase>(
-      () => SetThemeModeUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () => SetThemeModeUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetErrorReportingUsecase>(
-      () => SetErrorReportingUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () =>
+          SetErrorReportingUsecase(settingsRepository: locator<Preferences>()),
     );
 
     locator.registerFactory<SetScreenCaptureProtectionUsecase>(
       () => SetScreenCaptureProtectionUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
       ),
     );
 
     locator.registerFactory<SetExchangeTestnetBasicAuthUsecase>(
       () => SetExchangeTestnetBasicAuthUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        preferences: locator<ExchangeTestnetBasicAuthPreferences>(),
       ),
     );
 
@@ -245,7 +217,7 @@ class SettingsLocator {
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
         setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        loadPreferencesUsecase: LoadSettingsUsecase(locator<Preferences>()),
         setBitcoinUnitUsecase: locator<SetBitcoinUnitUsecase>(),
         setAmountInputModeUsecase: locator<SetAmountInputModeUsecase>(),
         setLanguageUsecase: locator<SetLanguageUsecase>(),

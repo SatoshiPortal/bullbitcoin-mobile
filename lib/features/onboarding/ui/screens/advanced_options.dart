@@ -1,12 +1,11 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/mempool_settings/router.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show TranslationWarningBottomSheet;
+import 'package:network/network.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -16,7 +15,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullSettingsEntryItem,
         Gap,
         BullTypographyX;
-import 'package:go_router/go_router.dart';
 
 class AdvancedOptions extends StatelessWidget {
   const AdvancedOptions({super.key});
@@ -78,27 +76,28 @@ class AdvancedOptions extends StatelessWidget {
                       BullSettingsEntryItem(
                         icon: Icons.vpn_lock,
                         title: context.loc.torSettingsTitle,
-                        onTap: () => context.pushNamed(
-                          const TorSettingsFacade().settingsRouteName,
+                        onTap: () => NetworkNavigation.open(
+                          context,
+                          section: NetworkSection.tor,
                         ),
                       ),
                       BullSettingsEntryItem(
                         icon: Icons.hub,
                         title:
                             context.loc.onboardingAdvancedOptionsCustomElectrum,
-                        onTap: () {
-                          context.pushNamed(
-                            ElectrumSettingsRoute.electrumSettings.name,
-                          );
-                        },
+                        onTap: () => NetworkNavigation.open(
+                          context,
+                          section: NetworkSection.electrum,
+                        ),
                       ),
                       BullSettingsEntryItem(
                         icon: Icons.memory,
                         title:
                             context.loc.onboardingAdvancedOptionsCustomMempool,
-                        onTap: () {
-                          context.pushNamed(MempoolSettingsRoute.name);
-                        },
+                        onTap: () => NetworkNavigation.open(
+                          context,
+                          section: NetworkSection.mempool,
+                        ),
                       ),
                       BullSettingsEntryItem(
                         icon: Icons.cloud_circle,

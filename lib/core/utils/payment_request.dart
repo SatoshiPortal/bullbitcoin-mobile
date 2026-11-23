@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:primitives/primitives.dart' show ConvertAmount;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/msats.dart';
+import 'package:primitives/primitives.dart' show msatsToSats;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:rust_bindings/boltz.dart' as boltz;

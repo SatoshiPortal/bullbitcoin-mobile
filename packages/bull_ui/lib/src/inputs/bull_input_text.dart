@@ -1,3 +1,5 @@
+import '../buttons/bull_field_action.dart';
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -20,10 +22,12 @@ class BullInputText extends StatefulWidget {
     this.hintStyle,
     this.rightIcon,
     this.onRightTap,
+    this.rightActionLabel,
     this.disabled = false,
     this.focusNode,
     this.onEnter,
     this.onDone,
+    this.onEditingComplete,
     this.maxLength,
     this.onlyPaste = false,
     this.onlyNumbers = false,
@@ -39,7 +43,7 @@ class BullInputText extends StatefulWidget {
     this.maxLines,
     this.minLines,
     this.fixedPrefix,
-  });
+  }) : assert(onRightTap == null || rightActionLabel != null);
 
   /// Key applied to the inner [TextField] (for widget tests).
   final Key? uiKey;
@@ -65,6 +69,9 @@ class BullInputText extends StatefulWidget {
   /// Tap callback for [rightIcon].
   final Function? onRightTap;
 
+  /// Required accessible name when [onRightTap] owns the trailing action.
+  final String? rightActionLabel;
+
   /// Disables input when true.
   final bool disabled;
 
@@ -76,6 +83,9 @@ class BullInputText extends StatefulWidget {
 
   /// Called on submit.
   final Function(String)? onDone;
+
+  /// Overrides the default keyboard completion behavior when supplied.
+  final VoidCallback? onEditingComplete;
 
   /// Maximum input length.
   final int? maxLength;
@@ -212,6 +222,7 @@ class _BullInputTextState extends State<BullInputText> {
           context.bullType.body.copyWith(color: colors.onSurface),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
+      onEditingComplete: widget.onEditingComplete,
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
@@ -233,17 +244,25 @@ class _BullInputTextState extends State<BullInputText> {
                 ),
               )
             : null,
-        suffixIcon: widget.rightIcon != null
-            ? IconButton(
-                padding: const EdgeInsets.all(4),
-                icon: widget.rightIcon!,
-                onPressed: () => widget.onRightTap?.call(),
-                // Claim long presses so they never reach the TextField: there
-                // they start a selection whose iOS magnifier can get stuck in
-                // the root overlay.
-                onLongPress: () {},
-              )
-            : null,
+        suffixIcon: switch ((
+          widget.rightIcon,
+          widget.onRightTap,
+          widget.rightActionLabel,
+        )) {
+          (final content?, final callback?, final label?) => Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: BullFieldAction(
+              label: label,
+              onPressed: () => callback(),
+              child: content,
+            ),
+          ),
+          (final content?, _, _) => Padding(
+            padding: const EdgeInsets.all(4),
+            child: GestureDetector(onLongPress: () {}, child: content),
+          ),
+          _ => null,
+        },
         border: _getBorder(context),
         enabledBorder: _getBorder(context),
         focusedBorder: _getBorder(context),

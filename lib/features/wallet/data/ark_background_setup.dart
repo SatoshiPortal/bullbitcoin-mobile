@@ -1,12 +1,15 @@
+import 'package:legacy_storage/coordination.dart';
+import 'package:preferences/preferences.dart'
+    show Preferences, PreferencesFailure;
+import 'package:bb_mobile/features/settings/public/language_locale.dart'
+    show LanguageExtension;
+
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
@@ -26,20 +29,49 @@ import 'sqlite_ark_funding_reservations.dart';
 Future<BackgroundTaskHandler> setupArkBackgroundTask(
   BackgroundTaskResources resources,
   Directory documents, {
+  required File preferencesFile,
+  @visibleForTesting
+  Future<Result<Preferences, PreferencesFailure>> Function(
+    File,
+    RuntimeAdmission,
+    SqliteDatabase,
+  )?
+  openPreferences,
   @visibleForTesting
   ArkClient Function(native.ArkExecutionPolicyPort, native.ArkStageBudget)?
   existingClient,
 }) async {
+  final admission = resources.storageAdmission;
+  if (admission == null) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     return () async => const BackgroundTaskExecutionResult.retry();
   }
-  final sqlite = SqliteDatabase();
-  resources.onClose(sqlite.close);
-  final settings = SettingsRepository(
-    settingsDatasource: SettingsDatasource(sqlite: sqlite),
-  );
+  final sqlite = await LegacySourceStore(
+    source: LegacySource(
+      File('${documents.path}/bullbitcoin_sqlite.sqlite'),
+      SqliteDatabase.currentSchemaVersion,
+    ),
+    create: SqliteDatabase.new,
+  ).open(admission);
+  final openedPreferences = openPreferences == null
+      ? await Preferences.open(
+          file: preferencesFile,
+          admission: admission,
+          legacyDatabase: sqlite,
+        )
+      : await openPreferences(preferencesFile, admission, sqlite);
+  if (openedPreferences case Err()) {
+    return () async => const BackgroundTaskExecutionResult.retry();
+  }
+  final settings =
+      (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
   resources.onClose(settings.close);
-  final preferences = await settings.fetch();
+  final language = (await settings.readLanguage()).fold(
+    (value) => value,
+    (failure) => throw Exception('Preferences read failed'),
+  );
   // Browsing another network does not retire captured regtest obligations.
   final directory = '${documents.path}/ark';
   final registry = switch (SqliteArkAccountRegistry.open(
@@ -50,7 +82,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     Err() => throw StateError('Ark account inventory unavailable'),
   };
   resources.onClose(registry.close);
-  final locale = preferences.language?.locale ?? const Locale('en');
+  final locale = language?.locale ?? const Locale('en');
   final copy = arkExpiryCopy(locale);
   final initialized = await initializeArkNotifications(locale);
   final notification = switch (initialized) {

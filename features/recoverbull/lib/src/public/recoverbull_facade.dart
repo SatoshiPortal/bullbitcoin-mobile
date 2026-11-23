@@ -3,6 +3,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
 
 import '../domain/entities/encrypted_vault.dart';
+import '../domain/wallet_backup_usage.dart';
 import '../domain/entities/vault_backup.dart';
 import '../domain/entities/vault_context.dart';
 import '../domain/entities/vault_recovery.dart';
@@ -30,6 +31,10 @@ final class RecoverBullFacade {
   final ParseVaultUsecase? _parse;
   final ManageBackupSettingsUsecase? _settings;
   final RecoverServerVaultUsecase? _recoverServer;
+  final Future<Result<SecretBackupProjection, RecoverBullFailure>> Function(
+    Fingerprint,
+  )?
+  _backupProjection;
 
   @internal
   const RecoverBullFacade(
@@ -42,7 +47,14 @@ final class RecoverBullFacade {
     this._parse,
     this._settings,
     this._recoverServer,
+    this._backupProjection,
   ]);
+
+  Future<Result<SecretBackupProjection, RecoverBullFailure>> backupProjection(
+    Fingerprint fingerprint,
+  ) =>
+      _backupProjection?.call(fingerprint) ??
+      Future.value(const Err(RecoverBullJournalFailure()));
 
   Future<Result<BackupStatus, RecoverBullFailure>> status(
     VaultContext context,

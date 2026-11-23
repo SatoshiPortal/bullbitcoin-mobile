@@ -2,7 +2,7 @@
 // expire even after their screen closes. Entropy derivation/controller
 // lifetime is outside this clipboard mitigation.
 
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bip85_entropy/ui/bip85_derivation_widget.dart';
 import 'package:bb_mobile/localizations.dart';

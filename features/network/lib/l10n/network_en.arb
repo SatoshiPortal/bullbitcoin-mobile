@@ -1,0 +1,744 @@
+{
+  "@@locale": "en",
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "mempoolSettingsDefaultServer": "Default Server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "mempoolSettingsCustomServer": "Custom Server",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add custom mempool server"
+  },
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete custom server confirmation dialog"
+  },
+  "mempoolCustomServerDeleteMessage": "Are you sure you want to delete this custom mempool server? The default server will be used instead.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete custom server confirmation dialog"
+  },
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when server URL is empty"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description in bottom sheet for adding/editing custom server"
+  },
+  "mempoolServerStatusOnline": "Online",
+  "@mempoolServerStatusOnline": {
+    "description": "Status label when mempool server is online"
+  },
+  "mempoolServerStatusOffline": "Offline",
+  "@mempoolServerStatusOffline": {
+    "description": "Status label when mempool server is offline"
+  },
+  "mempoolServerStatusChecking": "Checking…",
+  "@mempoolServerStatusChecking": {
+    "description": "Status label when checking mempool server status"
+  },
+  "mempoolServerStatusUnknown": "Unknown",
+  "@mempoolServerStatusUnknown": {
+    "description": "Status label when mempool server status is unknown"
+  },
+  "mempoolCustomServerSaveFailed": "Failed to save server",
+  "@mempoolCustomServerSaveFailed": {
+    "description": "Error message when saving custom mempool server fails"
+  },
+  "mempoolCustomServerInfoDescription": "Mempool servers are used for fee estimation and opening the block explorer when viewing transaction details.",
+  "@mempoolCustomServerInfoDescription": {
+    "description": "Info text explaining what mempool servers are used for"
+  },
+  "mempoolCustomServerUseSsl": "Use SSL",
+  "@mempoolCustomServerUseSsl": {
+    "description": "Label for SSL toggle in custom server settings"
+  },
+  "mempoolCustomServerSslAutoDetected": "(Auto-detected)",
+  "@mempoolCustomServerSslAutoDetected": {
+    "description": "Label shown when SSL setting was auto-detected"
+  },
+  "mempoolCustomServerSslHelpText": "For local (.local, private IPs) and Tor (.onion) servers, SSL is typically disabled. Public IPs and domains should use SSL.",
+  "@mempoolCustomServerSslHelpText": {
+    "description": "Help text explaining when to use SSL for mempool servers"
+  },
+  "mempoolErrorSameAsDefault": "This URL is the same as the default server. Please use a different URL.",
+  "@mempoolErrorSameAsDefault": {
+    "description": "Error when user tries to set a custom server URL that matches the default"
+  },
+  "mempoolErrorConnectionTimeout": "Connection timed out. The server may be slow or unreachable.",
+  "@mempoolErrorConnectionTimeout": {
+    "description": "Error when connection to mempool server times out"
+  },
+  "mempoolErrorHostNotFound": "Cannot find this server. Please check the URL and try again.",
+  "@mempoolErrorHostNotFound": {
+    "description": "Error when mempool server hostname cannot be resolved"
+  },
+  "mempoolErrorConnectionFailed": "Unable to connect to server. Check your network connection and try again.",
+  "@mempoolErrorConnectionFailed": {
+    "description": "Error when connection to mempool server fails"
+  },
+  "mempoolErrorNotMempoolServer": "This URL does not appear to be a mempool server. Please verify the address.",
+  "@mempoolErrorNotMempoolServer": {
+    "description": "Error when URL is not a valid mempool server"
+  },
+  "mempoolErrorServerUnavailable": "Server is unavailable. Please try again later.",
+  "@mempoolErrorServerUnavailable": {
+    "description": "Error when mempool server is unavailable (502/503)"
+  },
+  "mempoolErrorServerError": "Server encountered an error. Please try again later.",
+  "@mempoolErrorServerError": {
+    "description": "Error when mempool server returns 500 error"
+  },
+  "mempoolErrorInvalidResponse": "Server returned an invalid response.",
+  "@mempoolErrorInvalidResponse": {
+    "description": "Error when mempool server returns an invalid response"
+  },
+  "mempoolErrorInvalidUrl": "Invalid server URL. Enter a valid domain or IP address.",
+  "@mempoolErrorInvalidUrl": {
+    "description": "Error when the custom mempool server URL is malformed"
+  },
+  "mempoolErrorSaveServerFailed": "Failed to save server",
+  "@mempoolErrorSaveServerFailed": {
+    "description": "Error when saving mempool server fails"
+  },
+  "mempoolErrorLoadFailed": "Failed to load mempool server data",
+  "@mempoolErrorLoadFailed": {
+    "description": "Error when loading mempool server data fails"
+  },
+  "mempoolErrorDeleteFailed": "Failed to delete custom server",
+  "@mempoolErrorDeleteFailed": {
+    "description": "Error when deleting custom mempool server fails"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "doneButton": "Done",
+  "@doneButton": {
+    "description": "Button to close advanced options bottom sheet"
+  },
+  "electrumTitle": "Electrum Server",
+  "@electrumTitle": {
+    "description": "AppBar title for Electrum settings screen"
+  },
+  "electrumNetworkBitcoin": "Bitcoin",
+  "@electrumNetworkBitcoin": {
+    "description": "Bitcoin network tab label"
+  },
+  "electrumNetworkLiquid": "Liquid",
+  "@electrumNetworkLiquid": {
+    "description": "Liquid network tab label"
+  },
+  "electrumAdvancedOptions": "Advanced Options",
+  "@electrumAdvancedOptions": {
+    "description": "Advanced options button label"
+  },
+  "electrumAddCustomServer": "Add Custom Server",
+  "@electrumAddCustomServer": {
+    "description": "Add custom server bottom sheet title"
+  },
+  "electrumCloseTooltip": "Close",
+  "@electrumCloseTooltip": {
+    "description": "Close button tooltip"
+  },
+  "electrumServerUrlHint": "{network} {environment} Server URL",
+  "@electrumServerUrlHint": {
+    "description": "Hint text for server URL input",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "electrumEmptyFieldError": "This field can't be empty",
+  "@electrumEmptyFieldError": {
+    "description": "Validation error for empty field"
+  },
+  "electrumLiquidSslInfo": "No protocol should be specified, SSL will be used automatically.",
+  "@electrumLiquidSslInfo": {
+    "description": "Info text for Liquid server protocol"
+  },
+  "electrumAddServer": "Add Server",
+  "@electrumAddServer": {
+    "description": "Add server button label"
+  },
+  "electrumEnableSsl": "Enable SSL",
+  "@electrumEnableSsl": {
+    "description": "SSL toggle label in add custom server sheet"
+  },
+  "electrumProtocolError": "Do not include protocol (ssl:// or tcp://).",
+  "@electrumProtocolError": {
+    "description": "Validation error when protocol is included in server URL"
+  },
+  "electrumFormatError": "Use host:port format (e.g., example.com:50001)",
+  "@electrumFormatError": {
+    "description": "Validation error for incorrect server URL format"
+  },
+  "electrumBitcoinServerInfo": "Enter server address in format: host:port (e.g., example.com:50001)",
+  "@electrumBitcoinServerInfo": {
+    "description": "Info text for Bitcoin server URL format"
+  },
+  "electrumStopGap": "Stop Gap",
+  "@electrumStopGap": {
+    "description": "Stop Gap field label and hint in advanced options"
+  },
+  "electrumTimeout": "Timeout (seconds)",
+  "@electrumTimeout": {
+    "description": "Timeout field label and hint in advanced options"
+  },
+  "electrumRetryCount": "Retry Count",
+  "@electrumRetryCount": {
+    "description": "Retry Count field label and hint in advanced options"
+  },
+  "electrumValidateDomain": "Validate Domain",
+  "@electrumValidateDomain": {
+    "description": "Validate Domain switch label in advanced options"
+  },
+  "electrumStopGapEmptyError": "Stop Gap can't be empty",
+  "@electrumStopGapEmptyError": {
+    "description": "Validation error for empty Stop Gap field"
+  },
+  "electrumInvalidNumberError": "Enter a valid number",
+  "@electrumInvalidNumberError": {
+    "description": "Validation error for non-numeric input"
+  },
+  "electrumStopGapNegativeError": "Stop Gap can't be negative",
+  "@electrumStopGapNegativeError": {
+    "description": "Validation error for negative Stop Gap value"
+  },
+  "electrumStopGapTooHighError": "Stop Gap seems too high. (Max. {maxStopGap})",
+  "@electrumStopGapTooHighError": {
+    "description": "Validation error for Stop Gap exceeding maximum",
+    "placeholders": {
+      "maxStopGap": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumStopGapHighWarning": "High stop gap values significantly increase sync time. Keep the app open in the foreground until the sync completes — backgrounding the app may interrupt it.",
+  "@electrumStopGapHighWarning": {
+    "description": "Warning shown when the user enters a Stop Gap larger than 1000"
+  },
+  "electrumTimeoutEmptyError": "Timeout can't be empty",
+  "@electrumTimeoutEmptyError": {
+    "description": "Validation error for empty Timeout field"
+  },
+  "electrumTimeoutPositiveError": "Timeout must be positive",
+  "@electrumTimeoutPositiveError": {
+    "description": "Validation error for non-positive Timeout value"
+  },
+  "electrumTimeoutTooHighError": "Timeout seems too high. (Max. {maxTimeout} seconds)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumRetryCountEmptyError": "Retry Count can't be empty",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "electrumRetryCountNegativeError": "Retry Count can't be negative",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidStopGapError": "Invalid Stop Gap value: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "Invalid Timeout value: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidRetryError": "Invalid Retry Count value: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSaveFailedError": "Failed to save advanced options",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumUnknownError": "An error occurred",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumReset": "Reset",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumConfirm": "Confirm",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumDeleteServerTitle": "Delete Custom Server",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "electrumDeletePrivacyNotice": "Privacy Notice:\n\nUsing your own node ensures that no third party can link your IP address with your transactions. By deleting your last custom server, you will be connecting to a BullBitcoin server.\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDeleteConfirmation": "Are you sure you want to delete this server?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumCancel": "Cancel",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "electrumDelete": "Delete",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "electrumDefaultServers": "Default Servers",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "electrumDefaultServersInfo": "To protect your privacy, default servers are not used when custom servers are configured.",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumCustomServers": "Custom Servers",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumDragToReorder": "(Long press to drag and change priority)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "electrumLoadFailedError": "Failed to load servers",
+  "@electrumLoadFailedError": {
+    "description": "Error message when loading servers fails"
+  },
+  "electrumSavePriorityFailedError": "Failed to save server priority",
+  "@electrumSavePriorityFailedError": {
+    "description": "Error message when saving server priority fails"
+  },
+  "electrumAddFailedError": "Failed to add custom server",
+  "@electrumAddFailedError": {
+    "description": "Error message when adding custom server fails"
+  },
+  "electrumDeleteFailedError": "Failed to delete custom server",
+  "@electrumDeleteFailedError": {
+    "description": "Error message when deleting custom server fails"
+  },
+  "electrumServerAlreadyExists": "This server already exists",
+  "electrumServerUnreachable": "Server is unreachable. Check the address and try again.",
+  "@electrumServerUnreachable": {
+    "description": "Error shown when a custom server cannot be reached"
+  },
+  "@electrumServerAlreadyExists": {
+    "description": "Error message when trying to add a duplicate server"
+  },
+  "electrumPrivacyNoticeTitle": "Privacy Notice",
+  "@electrumPrivacyNoticeTitle": {
+    "description": "Title for privacy notice bottom sheet"
+  },
+  "electrumPrivacyNoticeContent1": "Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions.",
+  "@electrumPrivacyNoticeContent1": {
+    "description": "First paragraph of privacy notice"
+  },
+  "electrumPrivacyNoticeContent2": "However, if you view transactions via mempool by clicking your Transaction ID or Recipient Details page, this information will be known to BullBitcoin.",
+  "@electrumPrivacyNoticeContent2": {
+    "description": "Second paragraph of privacy notice"
+  },
+  "electrumPrivacyNoticeCancel": "Cancel",
+  "@electrumPrivacyNoticeCancel": {
+    "description": "Cancel button in privacy notice dialog"
+  },
+  "electrumPrivacyNoticeSave": "Save",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "electrumServerNotUsed": "Not Used",
+  "@electrumServerNotUsed": {
+    "description": "Status text for disabled servers"
+  },
+  "electrumServerOnline": "Online",
+  "@electrumServerOnline": {
+    "description": "Status text for online servers"
+  },
+  "electrumServerOffline": "Offline",
+  "@electrumServerOffline": {
+    "description": "Status text for offline servers"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "statusCheckTitle": "Service Status",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "statusCheckLastChecked": "Last checked: {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCheckOnline": "Online",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "statusCheckOffline": "Offline",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "statusCheckUnknown": "Unknown",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "torSettingsTitle": "Tor Settings",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "torSettingsProxyPort": "Tor Proxy Port",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "torSettingsPortDisplay": "Port: {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Port Number",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "torSettingsPortValidationEmpty": "Please enter a port number",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "torSettingsPortValidationInvalid": "Please enter a valid number",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "torSettingsPortValidationRange": "Port must be between 1 and 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "torSettingsSaveButton": "Save",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "torSettingsConnectionStatus": "Connection Status",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsStatusConnected": "Ready",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "torSettingsStatusConnecting": "Connecting…",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "torSettingsStatusDisconnected": "Disconnected",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "torSettingsStatusUnknown": "Status Unknown",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "torSettingsDescConnected": "Tor proxy is running and ready",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescConnecting": "Establishing Tor connection",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsDescDisconnected": "Tor proxy is not running",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "statusCheckDisabled": "Disabled",
+  "@statusCheckDisabled": {
+    "description": "Status label on the service status page for a service the user has intentionally turned off (e.g. payjoin disabled in settings)."
+  },
+  "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
+  "@mempoolErrorNetworkMismatch": {
+    "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsBootstrapProgress": "Connecting… {percent}%",
+  "@torSettingsBootstrapProgress": {
+    "description": "Bootstrap progress percentage while Tor is connecting.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "@torSettingsEmbeddedTitle": {
+    "description": "Heading for embedded Tor settings"
+  },
+  "torSettingsEmbeddedDescription": "Bull’s built-in Tor routing protects RecoverBull and Bitcoin Electrum .onion servers. Other app traffic is not routed through Tor.",
+  "@torSettingsEmbeddedDescription": {
+    "description": "Explains which traffic uses embedded Tor"
+  },
+  "torSettingsTransportMode": "Connection method",
+  "@torSettingsTransportMode": {
+    "description": "Label for the embedded Tor transport selector"
+  },
+  "torSettingsModeAutomatic": "Automatic",
+  "@torSettingsModeAutomatic": {
+    "description": "Automatic Tor transport mode label"
+  },
+  "torSettingsModeDirect": "Direct",
+  "@torSettingsModeDirect": {
+    "description": "Direct Tor transport mode label"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsExternalProxyReachable": "Proxy reachable",
+  "@torSettingsExternalProxyReachable": {
+    "description": "Status shown after the configured external SOCKS5 proxy accepts a connection."
+  },
+  "torSettingsExternalProxyReachableDescription": "The configured SOCKS5 proxy accepted a connection.",
+  "@torSettingsExternalProxyReachableDescription": {
+    "description": "Clarifies what Bull verified for an external proxy without claiming that Tor is fully bootstrapped."
+  },
+  "torSettingsExternalProxyChecking": "Checking proxy",
+  "@torSettingsExternalProxyChecking": {
+    "description": "Status title while checking the external SOCKS5 proxy"
+  },
+  "torSettingsExternalProxyCheckingDescription": "Bull is checking the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyCheckingDescription": {
+    "description": "Status description while checking the external SOCKS5 proxy"
+  },
+  "torSettingsExternalProxyUnavailable": "SOCKS5 proxy unavailable",
+  "@torSettingsExternalProxyUnavailable": {
+    "description": "Status title when the external SOCKS5 proxy is unavailable"
+  },
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyUnavailableDescription": {
+    "description": "Status description when the external SOCKS5 proxy is unavailable"
+  },
+  "torSettingsExternalProxyNotChecked": "Proxy not checked",
+  "@torSettingsExternalProxyNotChecked": {
+    "description": "Status title before the external SOCKS5 proxy is checked"
+  },
+  "torSettingsExternalProxyNotCheckedDescription": "Bull has not checked the configured SOCKS5 proxy yet.",
+  "@torSettingsExternalProxyNotCheckedDescription": {
+    "description": "Status description before the external SOCKS5 proxy is checked"
+  },
+  "torSettingsRetry": "Retry",
+  "@torSettingsRetry": {
+    "description": "Action to retry an external SOCKS5 proxy check"
+  },
+  "torSettingsLearnAboutOrbot": "Learn about Orbot",
+  "@torSettingsLearnAboutOrbot": {
+    "description": "User action linking to the Orbot website"
+  },
+  "torSettingsOrbotLinkFailed": "Unable to open the Orbot website.",
+  "@torSettingsOrbotLinkFailed": {
+    "description": "Snackbar shown when the Orbot website cannot be opened"
+  },
+  "torSettingsLocalProxyTitle": "Local SOCKS5 proxy (advanced)",
+  "@torSettingsLocalProxyTitle": {
+    "description": "Heading for the optional user-managed local SOCKS5 proxy."
+  },
+  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "@torSettingsLocalProxyDescription": {
+    "description": "Explains how Orbot VPN mode and the configured SOCKS port route traffic through Tor."
+  },
+  "torSettingsLocalProxyPortHelper": "Common local SOCKS5 port: 9050",
+  "@torSettingsLocalProxyPortHelper": {
+    "description": "Helper text showing a common local SOCKS5 port."
+  },
+  "torSettingsEmbeddedStatusUnknownDescription": "Embedded Tor has not reported a connection status yet.",
+  "@torSettingsEmbeddedStatusUnknownDescription": {
+    "description": "Description shown before embedded Tor reports a connection status."
+  },
+  "torSettingsLocalProxyStatus": "Local SOCKS5 proxy status",
+  "@torSettingsLocalProxyStatus": {
+    "description": "Heading for the local SOCKS5 proxy status card."
+  },
+  "mempoolErrorOnionRouteUnavailable": "The onion server is unreachable. Check that your Tor route is available and try again.",
+  "@mempoolErrorOnionRouteUnavailable": {
+    "description": "Error shown when an onion mempool server cannot be reached through the selected Tor route."
+  },
+  "electrumConfiguredExternalTorUnavailable": "Your configured Tor proxy is unavailable. Open Tor settings to reconnect it.",
+  "@electrumConfiguredExternalTorUnavailable": {
+    "description": "Message shown when a configured external Tor proxy prevents adding a custom Electrum server."
+  },
+  "electrumOpenTorSettings": "Open Tor settings",
+  "@electrumOpenTorSettings": {
+    "description": "Action to open Tor settings from an Electrum error."
+  },
+  "torSettingsProxyAttemptPort": "Attempted port: {port}",
+  "@torSettingsProxyAttemptPort": {
+    "description": "Identifies the local SOCKS5 port being checked or that failed verification.",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsProxyAttemptWithActivePort": "Attempted port: {attemptedPort} · Active port: {activePort}",
+  "@torSettingsProxyAttemptWithActivePort": {
+    "description": "Distinguishes a replacement SOCKS5 port attempt from the persisted active port.",
+    "placeholders": {
+      "attemptedPort": {
+        "type": "int"
+      },
+      "activePort": {
+        "type": "int"
+      }
+    }
+  },
+  "torTitle": "Tor",
+  "@torTitle": {
+    "description": "Short title for Tor configuration entry points"
+  },
+  "electrumOnionUsesTorDescription": "This .onion server is routed through Tor.",
+  "@electrumOnionUsesTorDescription": {
+    "description": "Explains Tor routing when adding a custom onion Electrum server"
+  },
+  "statusCheckNoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@statusCheckNoDefaultWalletError": {
+    "description": "Error shown when service status cannot be checked because no default wallet is configured"
+  },
+  "statusCheckResultsMayBeOutdated": "Results may be outdated",
+  "@statusCheckResultsMayBeOutdated": {
+    "description": "Short warning shown next to the last-checked time when the most recent service status refresh failed"
+  },
+  "electrumRegtest": "Regtest",
+  "@electrumRegtest": {
+    "description": "Local regression test network for developers"
+  },
+  "torSettingsStatusNoInternetOrBlocked": "No internet or censored network",
+  "@torSettingsStatusNoInternetOrBlocked": {
+    "description": "Status title when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
+  },
+  "torSettingsDescNoInternetOrBlocked": "This network has no internet access, or it blocks Tor.",
+  "@torSettingsDescNoInternetOrBlocked": {
+    "description": "Status description when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
+  },
+  "serverEncrypted": "Encrypted",
+  "@serverEncrypted": {
+    "description": "Badge on a server row: the connection to the server is encrypted"
+  },
+  "serverUnencrypted": "Unencrypted",
+  "@serverUnencrypted": {
+    "description": "Badge on a server row: the connection to the server is not encrypted"
+  },
+  "statusCheckRefresh": "Refresh service status",
+  "networkSslAutoDetected": "(Auto-detected)",
+  "networkDismissError": "Dismiss error",
+  "networkServerUrl": "Server URL",
+  "statusCheckInternetConnection": "Internet connection",
+  "statusCheckBitcoinElectrum": "Bitcoin Electrum",
+  "statusCheckLiquidElectrum": "Liquid Electrum",
+  "statusCheckPayjoin": "Payjoin",
+  "statusCheckPricer": "Exchange rates",
+  "statusCheckMempool": "Mempool",
+  "statusCheckTor": "Tor",
+  "statusCheckRecoverBull": "RecoverBull",
+  "torCloseTooltip": "Close",
+  "networkRefreshServers": "Refresh servers"
+}

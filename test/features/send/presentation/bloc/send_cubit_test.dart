@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/send/domain/usecases/load_send_display_preferences_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_network_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/wallet_spend_failure.dart'
+    show WalletSpendBlockedException;
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 
@@ -21,28 +26,25 @@ import 'dart:typed_data';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/send/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/features/send/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -95,9 +97,12 @@ import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
 import '../../../coins/wallet_utxo_fixture.dart';
 
+import 'package:bb_mobile/features/send/domain/usecases/load_send_label_suggestions_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/store_send_transaction_label_usecase.dart';
+
 class _BroadcastReporter extends Mock implements LoggerReporter {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockSelectBestWalletUsecase extends Mock
     implements SelectBestWalletUsecase {}
@@ -105,13 +110,12 @@ class _MockSelectBestWalletUsecase extends Mock
 class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
-class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+class _MockPreferences extends Mock implements Preferences {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockFees extends Mock implements Fees {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -292,12 +296,13 @@ class _TestableSendCubit extends SendCubit {
     super.wallet,
     super.initialSweepOutpoints,
     super.initialSelectedOutpoints,
-    required super.labelsFacade,
+    required super.loadSendLabelSuggestions,
+    required super.storeSendTransactionLabel,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
-    required super.getSettingsUsecase,
+    required super.loadPreferencesUsecase,
     required super.getSendExchangeRateUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.loadNetworkFeesUsecase,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -417,7 +422,7 @@ Wallet _bitcoinHardwareWallet() => Wallet(
   externalPublicDescriptor: '',
   internalPublicDescriptor: '',
   signer: SignerEntity.remote,
-  signerDevice: SignerDeviceEntity.ledgerNanoX,
+  signerDevice: SignerDevice.ledgerNanoX,
   balanceSat: BigInt.from(1000000),
 );
 
@@ -489,12 +494,12 @@ Matcher _toAddress(String address) =>
 
 void main() {
   late _MockRetryPayjoinProposalUsecase retryPayjoinProposalUsecase;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
-  late _MockGetSettingsUsecase getSettingsUsecase;
+  late _MockPreferences getSettingsUsecase;
   late _MockGetSendExchangeRateUsecase getSendExchangeRateUsecase;
-  late _MockGetNetworkFeesUsecase getNetworkFeesUsecase;
+  late _MockFees feeEstimates;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
@@ -573,12 +578,15 @@ void main() {
     wallet: wallet,
     initialSweepOutpoints: initialSweepOutpoints,
     initialSelectedOutpoints: initialSelectedOutpoints,
-    labelsFacade: labelsFacade,
+    loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(labelsFacade),
+    storeSendTransactionLabel: StoreSendTransactionLabelUsecase(labelsFacade),
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detector ?? detectBitcoinStringUsecase,
-    getSettingsUsecase: getSettingsUsecase,
+    loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(
+      getSettingsUsecase,
+    ),
     getSendExchangeRateUsecase: getSendExchangeRateUsecase,
-    getNetworkFeesUsecase: getNetworkFeesUsecase,
+    loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: feeEstimates),
     getWalletUtxosUsecase: getWalletUtxosUsecase,
     prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
     validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
@@ -711,12 +719,12 @@ void main() {
 
   setUp(() {
     retryPayjoinProposalUsecase = _MockRetryPayjoinProposalUsecase();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
-    getSettingsUsecase = _MockGetSettingsUsecase();
+    getSettingsUsecase = _MockPreferences();
     getSendExchangeRateUsecase = _MockGetSendExchangeRateUsecase();
-    getNetworkFeesUsecase = _MockGetNetworkFeesUsecase();
+    feeEstimates = _MockFees();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
     validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
@@ -838,7 +846,7 @@ void main() {
     },
     verifyNoProgression: () {
       verifyZeroInteractions(bestWalletUsecase);
-      verifyZeroInteractions(getNetworkFeesUsecase);
+      verifyZeroInteractions(feeEstimates);
       verifyZeroInteractions(prepareBitcoinSendUsecase);
       verifyZeroInteractions(prepareLiquidSendUsecase);
     },
@@ -869,6 +877,191 @@ void main() {
     await cubit.signTransaction();
     return cubit;
   }
+
+  group('first Send fee load', () {
+    for (final selection in [
+      FeeSelection.fastest,
+      FeeSelection.slow,
+      FeeSelection.custom,
+    ]) {
+      test(
+        'preserves ${selection.name} chosen before wallet selection',
+        () async {
+          final wallet = _bitcoinLocalWallet();
+          final fees = _feeOptions();
+          const custom = RelativeFee(750);
+          when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+              .thenAnswer((_) async => const []);
+          when(
+            () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
+          ).thenAnswer((_) => const Stream<Wallet>.empty());
+          when(() => feeEstimates.estimate(any()))
+              .thenAnswer((_) async => Ok(fees));
+
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+          expect(cubit.state.selectedWallet, isNull);
+          expect(cubit.state.bitcoinFeesList, isNull);
+
+          if (selection == FeeSelection.slow) {
+            await cubit.feeOptionSelected(selection);
+          } else if (selection == FeeSelection.custom) {
+            await cubit.customFeesChanged(custom);
+          }
+          expect(cubit.state.selectedFeeOption, selection);
+
+          await cubit.updateSelectedWallet(wallet);
+          expect(cubit.state.bitcoinFeesList, isNull);
+          await cubit.loadFees();
+
+          expect(cubit.state.failure, isNull);
+          expect(cubit.state.bitcoinFeesList, fees);
+          expect(cubit.state.selectedFeeOption, selection);
+          expect(cubit.state.selectedFee, switch (selection) {
+            FeeSelection.fastest => fees.fastest,
+            FeeSelection.slow => fees.slow,
+            FeeSelection.custom => custom,
+            FeeSelection.economic => fees.economic,
+          });
+        },
+      );
+    }
+  });
+
+  test(
+    'commits a custom fee before a wallet without a build failure',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      const custom = RelativeFee(750);
+      expect(cubit.state.selectedWallet, isNull);
+
+      await cubit.customFeesChanged(custom);
+
+      expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+      expect(cubit.state.selectedFee, custom);
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.buildingTransaction, isFalse);
+      verifyZeroInteractions(getWalletUtxosUsecase);
+      verifyZeroInteractions(prepareBitcoinSendUsecase);
+    },
+  );
+
+  group('mono MAX preview', () {
+    _TestableSendCubit startMono() {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1qfixture',
+            isTestnet: false,
+          ),
+          amount: '10000',
+          inputAmountCurrencyCode: 'sats',
+          bitcoinFeesList: _feeOptions(),
+          recipientDrafts: const [
+            (
+              id: 0,
+              address: 'bc1qfixture',
+              amount: '10000',
+              receivesRemainder: false,
+              isValid: true,
+            ),
+          ],
+        ),
+      );
+      return cubit;
+    }
+
+    const slot = BitcoinFeePreviewSlot(
+      feeSat: 200,
+      txSize: 140,
+      unsignedPsbt: 'mono-max-preview',
+      recipientAmountsSat: [99800],
+    );
+    void stubPreview(Future<BitcoinFeePreviewSlot> Function() result) {
+      when(
+        () => previewBitcoinFeeUsecase.execute(
+          walletId: any(named: 'walletId'),
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          replaceByFee: any(named: 'replaceByFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: any(named: 'selectedOnly'),
+        ),
+      ).thenAnswer((_) => result());
+    }
+
+    test('reads real drain facts without applying MAX', () async {
+      final cubit = startMono();
+      final before = cubit.state;
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview?.recipientSat, 99800);
+      expect(preview?.availableSat, 100000);
+      expect(cubit.state, before);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+    test('discards a late preview after the payment changes', () async {
+      final cubit = startMono();
+      final pending = Completer<BitcoinFeePreviewSlot>();
+      stubPreview(() => pending.future);
+      final result = cubit.previewMonoMax();
+      cubit.setStateForTest(cubit.state.copyWith(amount: '20000'));
+      pending.complete(slot);
+      expect(await result, isNull);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+    test('explicit acceptance reuses the exact preview PSBT', () async {
+      final cubit = startMono();
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview, isNotNull);
+      if (preview == null) return;
+      expect(await cubit.acceptMonoMax(preview), isTrue);
+      expect(cubit.state.isMaxSend, isTrue);
+      expect(cubit.preparedMaxAmountSat, 99800);
+      expect(
+        cubit.state.feePreviewCache
+            .slotFor(cubit.state.selectedFeeOption)
+            .unsignedPsbt,
+        'mono-max-preview',
+      );
+    });
+    test(
+      'restores a real MAX preview after cancelling an edited custom fee',
+      () async {
+        final cubit = startMono();
+        stubPreview(() async => slot);
+        final preview = await cubit.previewMonoMax();
+        expect(preview, isNotNull);
+        if (preview == null) return;
+        expect(await cubit.acceptMonoMax(preview), isTrue);
+        cubit.armCustomFee(const RelativeFee(1000));
+        cubit.disarmCustomFee();
+        cubit.clearBitcoinFeePreviews();
+        expect(cubit.preparedMaxAmountSat, isNull);
+        cubit.refreshMonoPreview();
+        await Future<void>.delayed(const Duration(milliseconds: 450));
+        expect(cubit.preparedMaxAmountSat, 99800);
+      },
+    );
+    test('rejects acceptance after an RBF change', () async {
+      final cubit = startMono();
+      stubPreview(() async => slot);
+      final preview = await cubit.previewMonoMax();
+      expect(preview, isNotNull);
+      if (preview == null) return;
+      cubit.setStateForTest(
+        cubit.state.copyWith(replaceByFee: !cubit.state.replaceByFee),
+      );
+      expect(await cubit.acceptMonoMax(preview), isFalse);
+      expect(cubit.state.isMaxSend, isFalse);
+    });
+  });
 
   test(
     'a fixed primary request replaces the previous fiat conversion',
@@ -1039,11 +1232,13 @@ void main() {
   }) {
     when(() => getWalletsUsecase.execute())
         .thenAnswer((_) async => Ok([wallet]));
-    when(() => getSettingsUsecase.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettingsUsecase.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getSendPayjoinEnabledUsecase.execute())
@@ -1057,12 +1252,88 @@ void main() {
         .thenAnswer((_) async => utxos);
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) => const Stream.empty());
-    when(
-      () => getNetworkFeesUsecase.execute(
-        isLiquid: any(named: 'isLiquid'),
-        network: any(named: 'network'),
-      ),
-    ).thenAnswer((_) async => _sweepFeeOptions);
+    when(() => feeEstimates.estimate(any()))
+        .thenAnswer((_) async => Ok(_sweepFeeOptions));
+  }
+
+  for (final builtSats in [25000, 25001]) {
+    test(
+      'matches a single Bitcoin fiat quote to the confirmed $builtSats-sat output',
+      () async {
+        final wallet = _bitcoinLocalWallet();
+        stubSweepLoad(wallet: wallet, utxos: const []);
+        const address = 'bc1qfixture';
+        when(
+          () => detectBitcoinStringUsecase.execute(data: address),
+        ).thenAnswer(
+          (_) async =>
+              const PaymentRequest.bitcoin(address: address, isTestnet: false),
+        );
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: wallet.id,
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok((
+            unsignedPsbt: 'unsigned',
+            txSize: 140,
+            isToSelf: false,
+            recipientAmountsSat: [Sats.fromInt(builtSats)],
+          )),
+        );
+        when(
+          () => signBitcoinTxUsecase.execute(
+            psbt: 'unsigned',
+            walletId: wallet.id,
+          ),
+        ).thenAnswer((_) async => (signedPsbt: 'signed', txSize: 140));
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async => 140);
+
+        final cubit = buildCubit(wallet: wallet);
+        addTearDown(cubit.close);
+        await cubit.loadWalletWithRatesAndFees();
+        await cubit.onChangedText(address);
+        await cubit.continueOnAddressConfirmed();
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.usesRecipientList, isTrue);
+        expect(cubit.state.recipientDrafts, hasLength(1));
+
+        final quotedAt = DateTime.utc(2026, 11, 20, 12, 34);
+        cubit.amountEntryChanged(
+          sats: BigInt.from(25000),
+          currencyCode: 'USD',
+          text: '12.50',
+          rate: 50000,
+          quotedAt: quotedAt,
+          isValid: true,
+          isEdit: true,
+        );
+        await pumpEventQueue();
+        final conversion = cubit.state.amountConversion;
+        expect(conversion?.enteredText, '12.50');
+        expect(conversion?.quotedAt, quotedAt);
+
+        await cubit.onAmountConfirmed();
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.confirmedAmountSat, builtSats);
+        expect(cubit.state.recipientAmountsSat, [builtSats]);
+        expect(
+          cubit.state.confirmedConversion,
+          builtSats == 25000 ? conversion : null,
+        );
+      },
+    );
   }
 
   test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {
@@ -3657,12 +3928,7 @@ void main() {
         expect(cubit.state.step, SendStep.address);
         expect(cubit.state.loadingBestWallet, isFalse);
         expect(cubit.state.failure, isNull);
-        verifyNever(
-          () => getNetworkFeesUsecase.execute(
-            isLiquid: any(named: 'isLiquid'),
-            network: any(named: 'network'),
-          ),
-        );
+        verifyNever(() => feeEstimates.estimate(any()));
       },
     );
 
@@ -3758,12 +4024,8 @@ void main() {
           .thenAnswer((_) async => const []);
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _sweepFeeOptions);
+      when(() => feeEstimates.estimate(any()))
+          .thenAnswer((_) async => Ok(_sweepFeeOptions));
       final cubit = buildCubit(
         parsePaymentRequest: (_) async {
           parsedLightning = true;
@@ -3795,12 +4057,8 @@ void main() {
           walletId: selectedWallet.id,
         ),
       ).thenAnswer((_) => const Stream.empty());
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _sweepFeeOptions);
+      when(() => feeEstimates.estimate(any()))
+          .thenAnswer((_) async => Ok(_sweepFeeOptions));
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(
@@ -5043,12 +5301,8 @@ void main() {
           .thenAnswer((_) async => const []);
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _sweepFeeOptions);
+      when(() => feeEstimates.estimate(any()))
+          .thenAnswer((_) async => Ok(_sweepFeeOptions));
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(
@@ -5093,12 +5347,8 @@ void main() {
           .thenAnswer((_) async => false);
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _sweepFeeOptions);
+      when(() => feeEstimates.estimate(any()))
+          .thenAnswer((_) async => Ok(_sweepFeeOptions));
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(
@@ -6151,12 +6401,8 @@ void main() {
         .thenAnswer((_) async => const []);
     when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
         .thenAnswer((_) => const Stream.empty());
-    when(
-      () => getNetworkFeesUsecase.execute(
-        isLiquid: any(named: 'isLiquid'),
-        network: any(named: 'network'),
-      ),
-    ).thenAnswer((_) async => _sweepFeeOptions);
+    when(() => feeEstimates.estimate(any()))
+        .thenAnswer((_) async => Ok(_sweepFeeOptions));
     return wallet;
   }
 
@@ -6396,12 +6642,8 @@ void main() {
             .thenAnswer((_) async => const []);
         when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
             .thenAnswer((_) => const Stream.empty());
-        when(
-          () => getNetworkFeesUsecase.execute(
-            isLiquid: any(named: 'isLiquid'),
-            network: any(named: 'network'),
-          ),
-        ).thenAnswer((_) async => _sweepFeeOptions);
+        when(() => feeEstimates.estimate(any()))
+            .thenAnswer((_) async => Ok(_sweepFeeOptions));
         final cubit = buildCubit(parsePaymentRequest: (_) async => invoice);
         addTearDown(cubit.close);
         cubit.setStateForTest(
@@ -6599,12 +6841,8 @@ void main() {
           .thenAnswer((_) => oldUtxosLoaded.future);
       when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => false);
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _feeOptions());
+      when(() => feeEstimates.estimate(any()))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream<Wallet>.empty());
 
@@ -6632,19 +6870,14 @@ void main() {
         reason:
             'an obsolete continuation must not overwrite the current send type',
       );
-      verify(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).called(2);
+      verify(() => feeEstimates.estimate(any())).called(2);
     });
 
     test('stops an obsolete continuation resumed after fees load', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       final wallet = _bitcoinWallet(balanceSat: 100000);
-      final oldBitcoinFeesLoaded = Completer<FeeOptions>();
+      final oldBitcoinFeesLoaded = Completer<Result<FeeOptions, FeesFailure>>();
       const oldRequest = PaymentRequest.bitcoin(
         address: 'old-address',
         isTestnet: false,
@@ -6662,18 +6895,10 @@ void main() {
           .thenAnswer((_) async => const <WalletUtxo>[]);
       when(() => checkLiquidConsolidationUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) async => false);
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: false,
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) => oldBitcoinFeesLoaded.future);
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: true,
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _feeOptions());
+      when(() => feeEstimates.estimate(BitcoinNetwork.mainnet))
+          .thenAnswer((_) => oldBitcoinFeesLoaded.future);
+      when(() => feeEstimates.estimate(LiquidNetwork.mainnet))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream<Wallet>.empty());
       when(() => detectBitcoinStringUsecase.execute(data: 'new@example.com'))
@@ -6682,17 +6907,12 @@ void main() {
       when(() => detectBitcoinStringUsecase.execute(data: 'old-address'))
           .thenAnswer((_) async => oldRequest);
       final oldContinuation = cubit.onScannedPaymentRequest('old-address');
-      await untilCalled(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: false,
-          network: any(named: 'network'),
-        ),
-      );
+      await untilCalled(() => feeEstimates.estimate(BitcoinNetwork.mainnet));
 
       await cubit.onChangedText('new@example.com');
       expect(cubit.state.step, SendStep.address);
 
-      oldBitcoinFeesLoaded.complete(_feeOptions());
+      oldBitcoinFeesLoaded.complete(Ok(_feeOptions()));
       await oldContinuation;
 
       expect(cubit.state.paymentRequest, newRequest);
@@ -6811,12 +7031,8 @@ void main() {
     addTearDown(cubit.close);
     final wallet = _bitcoinWallet(balanceSat: 20000)
         .copyWith(network: Network.bitcoinRegtest);
-    when(
-      () => getNetworkFeesUsecase.execute(
-        isLiquid: false,
-        network: Network.bitcoinRegtest,
-      ),
-    ).thenThrow(GetNetworkFeesException('unavailable'));
+    when(() => feeEstimates.estimate(BitcoinNetwork.regtest))
+        .thenAnswer((_) async => const Err(FeeEstimateUnavailableFailure()));
     cubit.setStateForTest(
       SendState(
         step: SendStep.amount,
@@ -6922,7 +7138,7 @@ void main() {
                 as List<BitcoinTransactionRecipient>;
         expect(recipients.single.address, 'bcrt1qrecipient');
         expect(recipients.single.amountSat, Sats.fromInt(5000));
-        verifyZeroInteractions(getNetworkFeesUsecase);
+        verifyZeroInteractions(feeEstimates);
       },
     );
   }
@@ -7483,12 +7699,7 @@ void main() {
         verifyNever(
           () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
         );
-        verifyNever(
-          () => getNetworkFeesUsecase.execute(
-            isLiquid: any(named: 'isLiquid'),
-            network: any(named: 'network'),
-          ),
-        );
+        verifyNever(() => feeEstimates.estimate(any()));
       },
     );
 
@@ -7532,12 +7743,8 @@ void main() {
     test('SP validates input rejected by the regular address parser', () async {
       when(() => detectBitcoinStringUsecase.execute(data: 'bc1-address'))
           .thenThrow(const FormatException('unsupported'));
-      when(
-        () => getNetworkFeesUsecase.execute(
-          isLiquid: any(named: 'isLiquid'),
-          network: any(named: 'network'),
-        ),
-      ).thenAnswer((_) async => _feeOptions());
+      when(() => feeEstimates.estimate(any()))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       final cubit = spCubit();
       addTearDown(cubit.close);
       seedConfirm(cubit);
@@ -7555,12 +7762,8 @@ void main() {
       () async {
         when(() => detectBitcoinStringUsecase.execute(data: 'bc1-address'))
             .thenThrow(const FormatException('unsupported'));
-        when(
-          () => getNetworkFeesUsecase.execute(
-            isLiquid: any(named: 'isLiquid'),
-            network: any(named: 'network'),
-          ),
-        ).thenAnswer((_) async => _feeOptions());
+        when(() => feeEstimates.estimate(any()))
+            .thenAnswer((_) async => Ok(_feeOptions()));
         final cubit = spCubit();
         addTearDown(cubit.close);
         seedConfirm(cubit);

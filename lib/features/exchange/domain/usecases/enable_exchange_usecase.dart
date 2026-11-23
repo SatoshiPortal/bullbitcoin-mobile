@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:primitives/primitives.dart';
 

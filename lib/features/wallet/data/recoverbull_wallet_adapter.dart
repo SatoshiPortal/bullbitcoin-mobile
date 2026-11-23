@@ -1,15 +1,14 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart' show Secrets, KeystoreLockedFailure;
 
 final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
   final WalletRepository _wallets;
-  final SettingsRepository _settings;
+  final DeveloperEnvironmentReader _settings;
   final Secrets _secrets;
   final CreateDefaultWalletsUsecase _create;
 
@@ -23,7 +22,10 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
   @override
   Future<Result<VaultContext?, RecoverBullFailure>> currentDefault() async {
     try {
-      final settings = await _settings.fetch();
+      final settings = (await _settings.readDeveloperEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_authorized(settings)) {
         return const Err(VaultContextChangedFailure());
       }
@@ -77,7 +79,10 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
       if (requested.network == BitcoinNetwork.signet) {
         return const Err(VaultContextChangedFailure());
       }
-      final settings = await _settings.fetch();
+      final settings = (await _settings.readDeveloperEnvironment()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      );
       if (!_authorized(settings) ||
           settings.environment.networkEnv != requested.network.env) {
         return const Err(VaultContextChangedFailure());
@@ -123,12 +128,15 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
     }
   }
 
-  bool _authorized(SettingsEntity settings) =>
+  bool _authorized(DeveloperEnvironmentPreferences settings) =>
       settings.environment != Environment.regtest ||
       (settings.isSuperuser == true && settings.isDevModeEnabled == true);
 
   Future<bool> _stillSelected(Environment expected) async {
-    final settings = await _settings.fetch();
+    final settings = (await _settings.readDeveloperEnvironment()).fold(
+      (value) => value,
+      (failure) => throw Exception('Preferences read failed'),
+    );
     return settings.environment == expected && _authorized(settings);
   }
 }

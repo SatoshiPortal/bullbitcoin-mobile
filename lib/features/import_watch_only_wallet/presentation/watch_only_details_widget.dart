@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -91,11 +91,11 @@ class _DescriptorDetailsWidget extends StatelessWidget {
               ),
               SizedBox(
                 width: 220,
-                child: BullDropdown<SignerDeviceEntity?>(
+                child: BullDropdown<SignerDevice?>(
                   value: entity.signerDevice,
                   items: [
-                    for (final value in [null, ...SignerDeviceEntity.values])
-                      BullPickerItem<SignerDeviceEntity?>(
+                    for (final value in [null, ...SignerDevice.values])
+                      BullPickerItem<SignerDevice?>(
                         value: value,
                         label:
                             value?.displayName ??

@@ -1,16 +1,17 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart';
-import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:meta/meta.dart';
 
-class GetLimitOrderRateUsecase {
-  final LimitOrderRepository _repository;
+import '../map_limit_order_failure.dart';
 
-  const GetLimitOrderRateUsecase(this._repository);
+class GetLimitOrderRateUsecase {
+  final ExchangeLimitOrders _orders;
+
+  const GetLimitOrderRateUsecase(this._orders);
 
   @useResult
   Future<Result<LimitOrderRate, LimitOrdersFailure>> execute(
     String currencyCode,
-  ) => _repository.getRate(currencyCode);
+  ) async => (await _orders.getRate(currencyCode)).mapErr(mapLimitOrderFailure);
 }

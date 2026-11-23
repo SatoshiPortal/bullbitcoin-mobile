@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTopBar, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullTopBar;
 import 'package:go_router/go_router.dart';
 
 class ReceiveScaffold extends StatelessWidget {
@@ -59,7 +59,7 @@ class ReceiveScaffold extends StatelessWidget {
       },
       behavior: .translucent,
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
@@ -77,7 +77,6 @@ class ReceiveScaffold extends StatelessWidget {
         body: Column(
           crossAxisAlignment: .stretch,
           children: [
-            const Gap(10),
             ReceiveNetworkSelection(
               wallet: selectionWallet,
               network: selectedWallet?.network.shared,

@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/widgets.dart' show MergeSemantics;
-
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';

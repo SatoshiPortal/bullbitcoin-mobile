@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -17,7 +17,7 @@ import 'package:bull_ui/bull_ui.dart'
     show BullBottomSheet, BullButton, BullSnackBar, BullTypographyX;
 
 class ScanWatchOnlyScreen extends StatefulWidget {
-  final SignerDeviceEntity? signerDevice;
+  final SignerDevice? signerDevice;
 
   const ScanWatchOnlyScreen({super.key, this.signerDevice});
 
@@ -47,10 +47,10 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               setState(() => _scanned = data);
               try {
                 String signerData = data;
-                if (widget.signerDevice == SignerDeviceEntity.krux) {
+                if (widget.signerDevice == SignerDevice.krux) {
                   signerData = Descriptor.parse(data).external;
-                } else if (widget.signerDevice == SignerDeviceEntity.passport ||
-                    widget.signerDevice == SignerDeviceEntity.keystone) {
+                } else if (widget.signerDevice == SignerDevice.passport ||
+                    widget.signerDevice == SignerDevice.keystone) {
                   final selectedDescriptor = await _chooseDerivation(
                     context,
                     data,

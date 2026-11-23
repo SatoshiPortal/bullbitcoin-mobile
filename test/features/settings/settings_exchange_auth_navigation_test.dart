@@ -1,5 +1,6 @@
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:bull_exchange/testing.dart';
+import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -14,7 +15,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_acce
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -161,13 +162,26 @@ void main() {
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
     final settingsRoute = SettingsRouter.route(
-      buildPriceHistory: (_) => const SizedBox.shrink(),
+      accessRoutes: const [],
+      exchangeSettingsRoutes: BullExchangeFeature.mount(
+        settings: SettingsRouter.exchangeSettingsHost,
+        networkUnavailable: () async => false,
+        showWebsiteOnly: (_) => false,
+        unavailableRedirectPath: '/home',
+        brandAssetPath: 'unused',
+        copy: (_) => fail('unexpected landing route'),
+        onSignIn: (_) {},
+        onExit: (_) {},
+      ).settingsRoutes,
+      appSettingsRoutes: const [],
+      onBackupTestSucceeded: (_) {},
+      priceRoutes: const [],
     );
     final manage = settingsRoute.routes.whereType<GoRoute>().singleWhere(
       (route) => route.name == SettingsRoute.exchangeAccess.name,
     );
     final account = settingsRoute.routes.whereType<GoRoute>().singleWhere(
-      (route) => route.name == SettingsRoute.exchangeSettings.name,
+      (route) => route.name == ExchangeSettingsRoute.home.name,
     );
     final router = GoRouter(
       initialLocation: '/manage',
@@ -179,7 +193,7 @@ void main() {
         ),
         GoRoute(
           path: '/account',
-          name: SettingsRoute.exchangeSettings.name,
+          name: ExchangeSettingsRoute.home.name,
           builder: account.builder,
         ),
         GoRoute(
@@ -189,7 +203,7 @@ void main() {
         ),
         GoRoute(
           path: '/security',
-          name: SettingsRoute.exchangeSecurity.name,
+          name: ExchangeSettingsRoute.security.name,
           builder: (_, _) => const Scaffold(body: Text('Security destination')),
         ),
       ],
@@ -204,7 +218,7 @@ void main() {
           routerConfig: router,
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -249,12 +263,15 @@ void main() {
       return cubit;
     });
     final route =
-        SettingsRouter.route(buildPriceHistory: (_) => const SizedBox.shrink())
-            .routes
-            .whereType<GoRoute>()
-            .singleWhere(
-              (route) => route.name == SettingsRoute.exchangeAccess.name,
-            );
+        SettingsRouter.route(
+          accessRoutes: const [],
+          exchangeSettingsRoutes: const [],
+          appSettingsRoutes: const [],
+          onBackupTestSucceeded: (_) {},
+          priceRoutes: const [],
+        ).routes.whereType<GoRoute>().singleWhere(
+          (route) => route.name == SettingsRoute.exchangeAccess.name,
+        );
     final routeBuilder = route.builder;
     expect(routeBuilder, isNotNull);
     if (routeBuilder == null) throw StateError('Manage access needs a builder');

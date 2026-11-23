@@ -1,6 +1,6 @@
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -20,7 +20,7 @@ class ExchangeFailureBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return BullInfoCard(
       description: failure.toTranslated(context),
       tagColor: context.appColors.error,
       bgColor: context.appColors.errorContainer,

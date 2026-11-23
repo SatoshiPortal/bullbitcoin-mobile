@@ -1,13 +1,12 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:preferences/preferences.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:bb_mobile/features/send/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
@@ -23,7 +22,9 @@ class _MockGetUserSummary extends Mock
 
 class _MockGetOrder extends Mock implements GetOrderUsecase {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockPreferences extends Mock implements Preferences {}
+
+class _MockGetNetworkFees extends Mock implements Fees {}
 
 class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
 
@@ -90,16 +91,27 @@ void main() {
   group('LoadPayNetworkFeesUsecase', () {
     test('an unreachable mempool is actionable, not a generic oops', () async {
       final fees = _MockGetNetworkFees();
-      when(() => fees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenThrow(GetNetworkFeesException(_rawReason));
+      final preferences = _MockPreferences();
+      when(preferences.fetch).thenAnswer(
+        (_) async => const Ok(
+          SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        ),
+      );
+      when(() => fees.estimate(BitcoinNetwork.mainnet))
+          .thenAnswer((_) async => const Err(FeeSourceReadFailure()));
 
       final result = await LoadPayNetworkFeesUsecase(
-        getNetworkFeesUsecase: fees,
+        fees: fees,
+        preferences: preferences,
       ).execute(isLiquid: false);
 
       final failure = (result as Err<FeeOptions, PayFailure>).failure;
       expect(failure, isA<PayFeesUnavailableFailure>());
-      expect(failure.logMessage, contains(_rawReason));
+      expect(failure.logMessage, contains('FeeSourceReadFailure'));
     });
   });
 

@@ -1,6 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/coins/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 
 /// Unfreezes the given outpoints. Persisted freezes are always user freezes

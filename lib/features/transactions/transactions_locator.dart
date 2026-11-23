@@ -2,21 +2,20 @@ import 'package:bb_mobile/features/transactions/domain/usecases/watch_transactio
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:labels/labels.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
-import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_saver.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
-import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/save_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
@@ -41,6 +40,7 @@ import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:file_system/file_system.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -60,7 +60,7 @@ class TransactionsLocator {
     );
     locator.registerFactory<LabelExchangeOrdersUsecase>(
       () => LabelExchangeOrdersUsecase(
-        labelsFacade: locator<LabelsFacade>(),
+        labelsFacade: locator<Labels>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
       ),
@@ -87,13 +87,13 @@ class TransactionsLocator {
       () => GetTransactionOrderUsecase(locator<GetOrderUsecase>()),
     );
     locator.registerFactory<SaveTransactionNoteUsecase>(
-      () => SaveTransactionNoteUsecase(locator<LabelsFacade>()),
+      () => SaveTransactionNoteUsecase(locator<Labels>()),
     );
     locator.registerFactory<DeleteTransactionNoteUsecase>(
-      () => DeleteTransactionNoteUsecase(locator<LabelsFacade>()),
+      () => DeleteTransactionNoteUsecase(locator<Labels>()),
     );
     locator.registerFactory<GetTransactionNoteSuggestionsUsecase>(
-      () => GetTransactionNoteSuggestionsUsecase(locator<LabelsFacade>()),
+      () => GetTransactionNoteSuggestionsUsecase(locator<Labels>()),
     );
 
     locator.registerFactory<GetTransactionOrderSwapsUsecase>(
@@ -107,7 +107,7 @@ class TransactionsLocator {
     );
     locator.registerFactory<GetTransactionsUsecase>(
       () => GetTransactionsUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         swapStore: locator<SwapStore>(),
         payjoinSessions: locator<PayjoinSessions>(),
@@ -124,9 +124,7 @@ class TransactionsLocator {
     );
 
     locator.registerFactory<RefreshTransactionLabelsUsecase>(
-      () => RefreshTransactionLabelsUsecase(
-        labelsFacade: locator<LabelsFacade>(),
-      ),
+      () => RefreshTransactionLabelsUsecase(labelsFacade: locator<Labels>()),
     );
 
     locator.registerFactory<ExportTransactionsCsvUsecase>(
@@ -138,7 +136,7 @@ class TransactionsLocator {
 
     locator.registerFactory<GetTransactionsByTxIdUsecase>(
       () => GetTransactionsByTxIdUsecase(
-        settingsRepository: locator<SettingsRepository>(),
+        settingsRepository: locator<Preferences>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         swapStore: locator<SwapStore>(),
         payjoinSessions: locator<PayjoinSessions>(),
@@ -159,8 +157,8 @@ class TransactionsLocator {
       CsvTransactionExportFormatter.new,
     );
 
-    locator.registerLazySingleton<TransactionExportSaver>(
-      CsvTransactionExportSaver.new,
+    locator.registerLazySingleton<SaveTransactionsCsvUsecase>(
+      () => const SaveTransactionsCsvUsecase(FileSystem.open()),
     );
   }
 
@@ -188,7 +186,7 @@ class TransactionsLocator {
     locator.registerFactory<ExportTransactionsCubit>(
       () => ExportTransactionsCubit(
         exportTransactionsCsvUsecase: locator<ExportTransactionsCsvUsecase>(),
-        saver: locator<TransactionExportSaver>(),
+        saver: locator<SaveTransactionsCsvUsecase>(),
       ),
     );
     locator.registerFactory<TransactionDetailsCubit>(

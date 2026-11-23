@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/transactions/domain/entities/liquid_transaction.dart';
-import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
+import 'package:sync/transactions.dart';
 
 /// The display/review aggregate for a transaction.
 ///

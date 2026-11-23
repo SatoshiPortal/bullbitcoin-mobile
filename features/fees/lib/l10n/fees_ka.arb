@@ -1,0 +1,22 @@
+{
+  "retry": "ხელახლა ცდა",
+  "doneButton": "დასრულდა",
+  "feePrioritySlow": "Slow",
+  "sendAbsoluteFees": "აბსოლუტური საკომისიო",
+  "sendBelowMinFeeRateError": "საკომისიოს განაკვეთი უნდა იყოს მინიმუმ 0.1 sat/vB.",
+  "sendCustomFee": "მორგებული საკომისიო",
+  "sendEconomyFee": "ეკონომიური",
+  "sendEnterAbsoluteFee": "შეიყვანეთ აბსოლუტური საკომისიო sats-ში",
+  "sendEnterRelativeFee": "შეიყვანეთ ფარდობითი საკომისიო sats/vB-ში",
+  "sendEstimatedDelivery": "სავარაუდო მიწოდება ~ ",
+  "sendEstimatedDelivery10Minutes": "10 წუთი",
+  "sendEstimatedDelivery10to30Minutes": "10-30 წუთი",
+  "sendEstimatedDeliveryHours": "საათი",
+  "sendEstimatedDeliveryHoursToDays": "საათებიდან დღეებამდე",
+  "sendFastFee": "სწრაფი",
+  "sendRelativeFees": "ფარდობითი საკომისიო",
+  "sendSats": "sats",
+  "sendSatsPerVB": "sat/vB",
+  "sendSelectNetworkFee": "აირჩიეთ ქსელის საკომისიო",
+  "sendSubSatVbyteWarning": "1 sat/vB-ზე ნაკლები ტრანზაქციების დადასტურებას მეტი დრო შეიძლება დასჭირდეს და შესაძლოა ყველა კვანძამდე არ გავრცელდეს."
+}

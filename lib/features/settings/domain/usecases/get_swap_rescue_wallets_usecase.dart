@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -10,7 +9,7 @@ import 'package:primitives/primitives.dart';
 /// on, in the active environment.
 class GetSwapRescueWalletsUsecase {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
+  final Preferences _settingsRepository;
 
   const GetSwapRescueWalletsUsecase({
     required this._walletRepository,
@@ -23,7 +22,10 @@ class GetSwapRescueWalletsUsecase {
   }) async {
     final Environment environment;
     try {
-      environment = (await _settingsRepository.fetch()).environment;
+      environment = ((await _settingsRepository.fetch()).fold(
+        (value) => value,
+        (failure) => throw Exception('Preferences read failed'),
+      )).environment;
     } catch (e) {
       return Err(WalletStorageFailure('settings fetch: ${e.runtimeType}'));
     }

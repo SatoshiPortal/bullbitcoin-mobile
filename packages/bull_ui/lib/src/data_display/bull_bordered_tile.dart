@@ -4,8 +4,8 @@ import 'package:material_ui/material_ui.dart';
 
 /// Bordered surface used across receive / send / labels flows.
 ///
-/// Rounded rectangle with an [BullTheme.onSecondary] background, a
-/// [BullShapes.card] radius and a [BullTheme.secondaryFixedDim] border. When
+/// Rounded rectangle with an [BullTheme.surface] background, a
+/// [BullShapes.card] radius and a [BullTheme.border] border. When
 /// [onTap]/[onLongPress] is set the whole surface shows an ink ripple;
 /// otherwise it is purely visual and nested interactive children keep gesture
 /// ownership.
@@ -31,16 +31,16 @@ class BullBorderedTile extends StatelessWidget {
   /// Inner padding.
   final EdgeInsetsGeometry padding;
 
-  /// Override the surface fill; defaults to [BullTheme.onSecondary].
+  /// Override the surface fill; defaults to [BullTheme.surface].
   final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     final decoration = BoxDecoration(
-      color: backgroundColor ?? colors.onSecondary,
+      color: backgroundColor ?? colors.surface,
       borderRadius: BorderRadius.circular(context.bullShapes.card),
-      border: Border.all(color: colors.secondaryFixedDim),
+      border: Border.all(color: colors.border),
     );
     final body = Padding(padding: padding, child: child);
 

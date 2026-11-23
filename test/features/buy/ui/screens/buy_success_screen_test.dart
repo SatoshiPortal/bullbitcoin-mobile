@@ -1,11 +1,9 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,8 +14,6 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockBuyBloc extends Mock implements BuyBloc {}
 
-class _MockSettingsCubit extends Mock implements SettingsCubit {}
-
 class _MockBuyOrder extends Mock implements BuyOrder {}
 
 void main() {
@@ -25,22 +21,12 @@ void main() {
     tester,
   ) async {
     final buyBloc = _MockBuyBloc();
-    final settingsCubit = _MockSettingsCubit();
     final order = _MockBuyOrder();
-    when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
+    when(() => buyBloc.state).thenReturn(
+      BuyState(buyOrder: order, displayBitcoinUnit: BitcoinUnit.sats),
+    );
     when(() => buyBloc.stream)
         .thenAnswer((_) => const Stream<BuyState>.empty());
-    when(() => settingsCubit.state).thenReturn(
-      const SettingsState(
-        storedSettings: SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
-      ),
-    );
-    when(() => settingsCubit.stream)
-        .thenAnswer((_) => const Stream<SettingsState>.empty());
     when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
     when(() => order.orderId).thenReturn('order-42');
     when(() => order.payoutAmount).thenReturn(0.001);
@@ -58,10 +44,7 @@ void main() {
           path: '/buy/success',
           name: BuyRoute.buySuccess.name,
           builder: (context, state) => MultiBlocProvider(
-            providers: [
-              BlocProvider<BuyBloc>.value(value: buyBloc),
-              BlocProvider<SettingsCubit>.value(value: settingsCubit),
-            ],
+            providers: [BlocProvider<BuyBloc>.value(value: buyBloc)],
             child: const BuySuccessScreen(),
           ),
         ),
@@ -100,22 +83,12 @@ void main() {
       required Duration age,
     }) async {
       buyBloc = _MockBuyBloc();
-      final settingsCubit = _MockSettingsCubit();
       order = _MockBuyOrder();
-      when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
+      when(() => buyBloc.state).thenReturn(
+        BuyState(buyOrder: order, displayBitcoinUnit: BitcoinUnit.sats),
+      );
       when(() => buyBloc.stream)
           .thenAnswer((_) => const Stream<BuyState>.empty());
-      when(() => settingsCubit.state).thenReturn(
-        const SettingsState(
-          storedSettings: SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'USD',
-          ),
-        ),
-      );
-      when(() => settingsCubit.stream)
-          .thenAnswer((_) => const Stream<SettingsState>.empty());
       when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
       when(() => order.orderId).thenReturn('order-42');
       when(() => order.payoutAmount).thenReturn(0.0001);
@@ -134,10 +107,7 @@ void main() {
           localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MultiBlocProvider(
-            providers: [
-              BlocProvider<BuyBloc>.value(value: buyBloc),
-              BlocProvider<SettingsCubit>.value(value: settingsCubit),
-            ],
+            providers: [BlocProvider<BuyBloc>.value(value: buyBloc)],
             child: const BuySuccessScreen(),
           ),
         ),

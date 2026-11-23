@@ -1,16 +1,18 @@
-import 'package:bb_mobile/core/bip85/domain/activate_bip85_derivation_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/with_default_bip85_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/activate_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/alias_bip85_derivation_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
+import 'package:bb_mobile/features/bip85_entropy/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   bool _derivationInProgress = false;
+  final WithDefaultBip85WalletUsecase _withDefaultWallet;
   final FetchAllBip85DerivationsWithEntropyUsecase
   _fetchAllBip85DerivationsWithEntropyUsecase;
   final DeriveNextBip85MnemonicFromDefaultWalletUsecase
@@ -22,6 +24,7 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   final ActivateBip85DerivationUsecase _activateBip85DerivationUsecase;
 
   Bip85EntropyCubit({
+    required this._withDefaultWallet,
     required this._fetchAllBip85DerivationsWithEntropyUsecase,
     required this._deriveNextBip85MnemonicFromDefaultWalletUsecase,
     required this._deriveNextBip85HexFromDefaultWalletUsecase,
@@ -38,7 +41,11 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
 
   Future<void> fetchAllDerivations() async {
     emit(state.copyWith(isLoading: true));
-    switch (await _fetchAllBip85DerivationsWithEntropyUsecase.execute()) {
+    switch (await _withDefaultWallet.execute(
+      (fingerprint) => _fetchAllBip85DerivationsWithEntropyUsecase.execute(
+        fingerprint: fingerprint,
+      ),
+    )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok(:final value):
@@ -52,7 +59,11 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
     if (_derivationInProgress) return;
     _derivationInProgress = true;
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (await _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute()) {
+    switch (await _withDefaultWallet.execute(
+      (fingerprint) => _deriveNextBip85MnemonicFromDefaultWalletUsecase.execute(
+        fingerprint: fingerprint,
+      ),
+    )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
@@ -65,8 +76,11 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
     if (_derivationInProgress) return;
     _derivationInProgress = true;
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (await _deriveNextBip85HexFromDefaultWalletUsecase.execute(
-      length: 30,
+    switch (await _withDefaultWallet.execute(
+      (fingerprint) => _deriveNextBip85HexFromDefaultWalletUsecase.execute(
+        fingerprint: fingerprint,
+        length: 30,
+      ),
     )) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure, isLoading: false));

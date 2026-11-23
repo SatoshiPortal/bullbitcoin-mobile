@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_preferences_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/load_transfer_network_fees_usecase.dart';
+import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
@@ -5,10 +8,10 @@ import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import '../../../frozen_outpoints_fixture.dart';
 
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 
 import 'package:sync/sync.dart' as native;
 
@@ -19,29 +22,23 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:fees/fees.dart';
+import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
 import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/consolidation/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -79,11 +76,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+class _MockGetSettings extends Mock implements Preferences {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
+class _MockGetNetworkFees extends Mock implements Fees {}
 
 class _MockPrepareBitcoin extends Mock implements PrepareBitcoinSendUsecase {}
 
@@ -184,7 +181,7 @@ Matcher _paysTo(String address, {int? amountSat}) =>
 
 class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
 
-class _SettingsRepository extends Mock implements SettingsRepository {}
+class _Preferences extends Mock implements Preferences {}
 
 Matcher _toWallet(String walletId) =>
     isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
@@ -195,6 +192,7 @@ Matcher _toAddress(String address) =>
 void main() {
   setUpAll(() {
     registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(SwapType.bitcoinToLiquid);
     registerFallbackValue(const ToWallet(''));
     registerFallbackValue(const RelativeFee(250));
@@ -247,10 +245,12 @@ void main() {
     BroadcastBitcoinTransactionUsecase? bitcoinBroadcast,
     GetSwapAmountQuotesUsecase? amountQuotes,
   }) => TransferBloc(
-    getSettingsUsecase: getSettings,
+    loadPreferencesUsecase: LoadTransferPreferencesUsecase(getSettings),
     getSwapAmountQuotesUsecase: amountQuotes,
     getWalletsUsecase: getWallets,
-    getNetworkFeesUsecase: getNetworkFees,
+    loadNetworkFeesUsecase: LoadTransferNetworkFeesUsecase(
+      fees: getNetworkFees,
+    ),
     prepareBitcoinSendUsecase: prepareBitcoin,
     validateBitcoinSelectionUsecase: validateBitcoinSelection,
     prepareLiquidSendUsecase: prepareLiquid,
@@ -372,11 +372,13 @@ void main() {
   tearDown(() => bloc.close());
 
   test('late quotes and input notifications cannot change a confirmed direct transfer', () async {
-    when(getSettings.execute).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
+    when(getSettings.fetch).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
       ),
     );
     var reads = 0;
@@ -600,14 +602,16 @@ void main() {
       'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet facade',
       () async {
         final blockchain = _Blockchain();
-        final settings = _SettingsRepository();
+        final settings = _Preferences();
         when(settings.fetch).thenAnswer(
-          (_) async => const SettingsEntity(
-            environment: Environment.testnet,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-            isSuperuser: true,
-            isDevModeEnabled: true,
+          (_) async => Ok(
+            const SettingsEntity(
+              environment: Environment.testnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+              isSuperuser: true,
+              isDevModeEnabled: true,
+            ),
           ),
         );
         var broadcasts = 0;
@@ -2132,13 +2136,13 @@ void main() {
       bitcoinUnit: BitcoinUnit.sats,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1'))
@@ -2146,6 +2150,9 @@ void main() {
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    verify(() => getNetworkFees.estimate(BitcoinNetwork.testnet)).called(1);
+    verify(() => getNetworkFees.estimate(LiquidNetwork.testnet)).called(1);
 
     expect(bloc.state.orderSwap, prepared);
     expect(bloc.state.signedPsbt, 'signed-psbt');
@@ -2158,13 +2165,13 @@ void main() {
       bitcoinUnit: BitcoinUnit.btc,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1'))
@@ -2183,13 +2190,13 @@ void main() {
       bitcoinUnit: BitcoinUnit.btc,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Err(SwapPriceUnavailableFailure()));
     when(() => watchOrder.execute('local-1'))
@@ -2209,13 +2216,13 @@ void main() {
       bitcoinUnit: BitcoinUnit.btc,
       currencyCode: 'USD',
     );
-    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(() => getSettings.fetch()).thenAnswer((_) async => Ok(settings));
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Err(SwapUnexpectedFailure('settings')));
     when(() => watchOrder.execute('local-1'))
@@ -2229,11 +2236,13 @@ void main() {
   });
 
   test('resumes the persisted non-default wallet pair', () async {
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getPendingOrders.execute())
@@ -2246,8 +2255,8 @@ void main() {
         _destinationWallet(),
       ]),
     );
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1'))
@@ -2262,19 +2271,21 @@ void main() {
   });
 
   test('surfaces a typed failure from the order watcher', () async {
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.testnet,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getPendingOrders.execute())
         .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1')).thenAnswer(
@@ -2331,19 +2342,21 @@ void main() {
       final expired = _prepared(
         order: _order(deadline: DateTime.utc(2026, 1, 1, 0, 5)),
       );
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.testnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+      when(() => getSettings.fetch()).thenAnswer(
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(() => getPendingOrders.execute())
           .thenAnswer((_) async => Ok([expired]));
       when(() => getWallets.execute())
           .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenAnswer((_) async => _feeOptions());
+      when(() => getNetworkFees.estimate(any()))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => getExchangeRate.execute(currencyCode: 'USD'))
           .thenAnswer((_) async => const Ok(1.0));
 
@@ -3303,19 +3316,21 @@ void main() {
       final destination = _destinationWallet().copyWith(
         network: Network.bitcoinRegtest,
       );
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
+      when(() => getSettings.fetch()).thenAnswer(
+        (_) async => Ok(
+          const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
         ),
       );
       when(() => getPendingOrders.execute())
           .thenAnswer((_) async => Ok([prepared]));
       when(() => getWallets.execute())
           .thenAnswer((_) async => Ok([source, destination]));
-      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-          .thenAnswer((_) async => _feeOptions());
+      when(() => getNetworkFees.estimate(any()))
+          .thenAnswer((_) async => Ok(_feeOptions()));
       when(() => getExchangeRate.execute(currencyCode: 'USD'))
           .thenAnswer((_) async => const Ok(1.0));
       when(() => getSwapRoute.execute())
@@ -3339,11 +3354,13 @@ void main() {
     final destination = _destinationWallet().copyWith(
       network: Network.bitcoinRegtest,
     );
-    when(() => getSettings.execute()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'USD',
+    when(() => getSettings.fetch()).thenAnswer(
+      (_) async => Ok(
+        const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
       ),
     );
     when(() => getPendingOrders.execute()).thenAnswer(
@@ -3351,8 +3368,8 @@ void main() {
     );
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([source, destination]));
-    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
-        .thenAnswer((_) async => _feeOptions());
+    when(() => getNetworkFees.estimate(any()))
+        .thenAnswer((_) async => Ok(_feeOptions()));
     when(() => getExchangeRate.execute(currencyCode: 'USD'))
         .thenAnswer((_) async => const Ok(1.0));
     when(() => getSwapRoute.execute()).thenAnswer((_) async => SwapRoute.boltz);

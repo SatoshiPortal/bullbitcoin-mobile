@@ -1,35 +1,33 @@
-import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/load_sell_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/read_sell_payin_txid_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
+import 'package:exchange/exchange.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/calculate_sell_liquid_fees_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/broadcast_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/load_sell_context_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/load_sell_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/prepare_sell_bitcoin_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/read_sell_payin_txid_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/prepare_sell_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/sign_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usecase.dart';
+import 'package:fees/fees.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/broadcast_payjoin_original_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_adoptable_payjoin_sender_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_visible_payjoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
+import 'package:labels/labels.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/label_completed_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/create_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/refresh_sell_order_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/usecases/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:clock/clock.dart';
@@ -47,6 +45,7 @@ import 'package:primitives/primitives.dart'
         Ok,
         Result,
         Sats;
+import 'package:bb_mobile/features/sell/domain/usecases/store_sell_transaction_label_usecase.dart';
 
 class _MockCreateSellOrder extends Mock implements CreateSellOrderUsecase {}
 
@@ -89,7 +88,7 @@ class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 class _MockPreviewBitcoinFeePresets extends Mock
     implements PreviewBitcoinFeePresetsUsecase {}
 
-class _MockLabelsFacade extends Mock implements LabelsFacade {}
+class _MockLabels extends Mock implements Labels {}
 
 class _MockLabelCompletedSellOrderUsecase extends Mock
     implements LabelCompletedSellOrderUsecase {}
@@ -144,7 +143,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.calculateSellLiquidFeesUsecase,
     required super.loadSellWalletUtxosUsecase,
     required super.readSellPayinTxidUsecase,
-    required super.labelsFacade,
+    required super.storeSellTransactionLabel,
     required super.labelCompletedSellOrderUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -196,7 +195,7 @@ void main() {
   late _MockGetVisiblePayjoinTransaction getVisiblePayjoinTransaction;
   late _MockRetryPayjoin retryPayjoin;
   late _MockRefreshSellOrder refreshSellOrder;
-  late _MockLabelsFacade labelsFacade;
+  late _MockLabels labelsFacade;
   late _MockLabelCompletedSellOrderUsecase labelCompletedSellOrder;
   late _MockPreviewBitcoinFee previewBitcoinFee;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
@@ -292,7 +291,7 @@ void main() {
       (_) async => const Ok<PayjoinSenderSession?, SellFailure>(null),
     );
     refreshSellOrder = _MockRefreshSellOrder();
-    labelsFacade = _MockLabelsFacade();
+    labelsFacade = _MockLabels();
     labelCompletedSellOrder = _MockLabelCompletedSellOrderUsecase();
     when(() => labelCompletedSellOrder.execute(order: any(named: 'order')))
         .thenAnswer((_) async => const Ok<void, SellFailure>(null));
@@ -377,7 +376,7 @@ void main() {
       calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
       loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
       readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
-      labelsFacade: labelsFacade,
+      storeSellTransactionLabel: StoreSellTransactionLabelUsecase(labelsFacade),
       labelCompletedSellOrderUsecase: labelCompletedSellOrder,
       previewBitcoinFeeUsecase: previewBitcoinFee,
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
@@ -1521,7 +1520,9 @@ void main() {
           calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
           loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
           readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
-          labelsFacade: labelsFacade,
+          storeSellTransactionLabel: StoreSellTransactionLabelUsecase(
+            labelsFacade,
+          ),
           labelCompletedSellOrderUsecase: labelCompletedSellOrder,
           previewBitcoinFeeUsecase: previewBitcoinFee,
           previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,

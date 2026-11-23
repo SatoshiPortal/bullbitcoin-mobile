@@ -4,10 +4,10 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:secrets/secrets.dart' as custody;
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:preferences/preferences.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
