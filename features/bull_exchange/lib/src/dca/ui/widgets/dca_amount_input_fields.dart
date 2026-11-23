@@ -41,15 +41,15 @@ class DcaAmountInputFields extends StatelessWidget {
         const Gap(16.0),
         ExchangeAmountCurrencyDropdown(
           isLoading: isLoading,
-          currencies: balances
-              .map((b) => FiatCurrency.fromCode(b.currencyCode))
-              .toList(),
+          currencies: [
+            for (final balance in balances)
+              if (ExchangeCatalog.parse(balance.currencyCode)
+                  case KnownCurrency(:final currency))
+                currency,
+          ],
           initialCurrency: fiatCurrency,
-          selectedCurrency: fiatCurrency?.code,
-          onCurrencyChanged: (String currencyCode) {
-            final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
-            onFiatCurrencyChanged(newFiatCurrency);
-          },
+          selectedCurrency: fiatCurrency,
+          onCurrencyChanged: onFiatCurrencyChanged,
           balances: balances,
         ),
       ],

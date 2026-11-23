@@ -126,15 +126,12 @@ sealed class SellState with _$SellState {
   FiatCurrency get fiatCurrency => switch (this) {
     SellInitialState() => ExchangeCatalog.legacyNoMarketFallback.currency,
     SellAmountInputState(:final userSummary) =>
-      userSummary.currency != null
-          ? FiatCurrency.fromCode(userSummary.currency!)
-          : ExchangeCatalog.legacyNoMarketFallback.currency,
+      ExchangeCatalog.legacyCurrencyOrFallback(userSummary.currency),
     SellPreparingPaymentState(:final input) => input.fiatCurrency,
     SellWalletSelectionState(:final fiatCurrency) => fiatCurrency,
     SellPaymentState(:final fiatCurrency) => fiatCurrency,
-    SellSuccessState(:final sellOrder) => FiatCurrency.fromCode(
-      sellOrder.payoutCurrency,
-    ),
+    SellSuccessState(:final sellOrder) =>
+      ExchangeCatalog.legacyCurrencyOrFallback(sellOrder.payoutCurrency),
   };
 
   BitcoinUnit? get bitcoinUnit => switch (this) {

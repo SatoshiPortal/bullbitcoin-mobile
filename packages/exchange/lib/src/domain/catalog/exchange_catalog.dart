@@ -64,8 +64,26 @@ abstract final class ExchangeCatalog {
   /// rebuilds remove every caller; do not add new ones.
   static const Market legacyNoMarketFallback = cad;
 
+  /// [parse], with an absent or unknown code read as
+  /// [legacyNoMarketFallback]. Same rule: the flow rebuilds remove it.
+  static FiatCurrency legacyCurrencyOrFallback(String? raw) =>
+      switch (raw == null ? null : parse(raw)) {
+        KnownCurrency(:final currency) => currency,
+        UnknownCurrency() || null => legacyNoMarketFallback.currency,
+      };
+
   /// Every market, in the order the currency pickers show them.
   static const List<Market> markets = [usd, cad, crc, eur, mxn, ars, cop];
+
+  /// Reads a currency code from the server or storage. A code this build has
+  /// no market for is [UnknownCurrency], never an exception or a default.
+  static ParsedCurrency parse(String raw) {
+    final code = raw.trim().toUpperCase();
+    for (final market in markets) {
+      if (market.currency.code == code) return KnownCurrency(market);
+    }
+    return UnknownCurrency(raw);
+  }
 
   static Market market(FiatCurrency currency) => switch (currency) {
     FiatCurrency.usd => usd,
@@ -84,4 +102,38 @@ abstract final class ExchangeCatalog {
     for (final market in markets)
       if (market.jurisdiction == jurisdiction) market,
   ];
+}
+
+/// A currency code read at the boundary: a market of the catalog, or a code
+/// this build does not know.
+sealed class ParsedCurrency {
+  const ParsedCurrency();
+}
+
+final class KnownCurrency extends ParsedCurrency {
+  final Market market;
+
+  const KnownCurrency(this.market);
+
+  FiatCurrency get currency => market.currency;
+
+  @override
+  bool operator ==(Object other) =>
+      other is KnownCurrency && other.market == market;
+
+  @override
+  int get hashCode => market.hashCode;
+}
+
+final class UnknownCurrency extends ParsedCurrency {
+  final String raw;
+
+  const UnknownCurrency(this.raw);
+
+  @override
+  bool operator ==(Object other) =>
+      other is UnknownCurrency && other.raw == raw;
+
+  @override
+  int get hashCode => raw.hashCode;
 }

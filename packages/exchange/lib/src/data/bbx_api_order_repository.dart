@@ -2,6 +2,7 @@ import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/catalog/exchange_catalog.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
@@ -248,7 +249,10 @@ final class BbxApiOrderRepository implements ExchangeOrders {
         return Err(_mapFailure(failure));
       case Ok(value: final dca):
         final amount = double.tryParse(dca.amountStr);
-        final currency = FiatCurrency.tryFromCode(dca.currencyCode);
+        final currency = switch (ExchangeCatalog.parse(dca.currencyCode)) {
+          KnownCurrency(:final currency) => currency,
+          UnknownCurrency() => null,
+        };
         final nextPurchase = DateTime.tryParse(dca.nextRunAt);
         final frequency = switch (dca.recurringFrequency) {
           'HOURLY' => DcaBuyFrequency.hourly,

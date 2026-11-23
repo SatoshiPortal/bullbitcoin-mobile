@@ -69,20 +69,25 @@ class LoadLimitOrderCreationUsecase {
         return Err(failure);
     }
 
-    final balances = summary.balances
-        .where((balance) => balance.amount > 0)
-        .map(
-          (balance) => LimitOrderBalance(
-            currency: FiatCurrency.fromCode(balance.currencyCode),
-            amount: balance.amount,
-          ),
-        )
-        .toList();
+    // A balance in a currency this build has no market for is not offered.
+    final balances = [
+      for (final balance in summary.balances)
+        if (balance.amount > 0)
+          if (ExchangeCatalog.parse(balance.currencyCode) case KnownCurrency(
+            :final currency,
+          ))
+            LimitOrderBalance(currency: currency, amount: balance.amount),
+    ];
     if (balances.isEmpty) {
       return const Err(LimitOrdersNoFundedBalanceFailure('no funded balance'));
     }
 
-    final preferredCurrency = FiatCurrency.tryFromCode(summary.currency ?? '');
+    final preferredCurrency = switch (ExchangeCatalog.parse(
+      summary.currency ?? '',
+    )) {
+      KnownCurrency(:final currency) => currency,
+      UnknownCurrency() => null,
+    };
     final selectedCurrency = balances
         .firstWhere(
           (balance) => balance.currency == preferredCurrency,

@@ -50,11 +50,8 @@ class WithdrawAmountInputFields extends StatelessWidget {
         ExchangeAmountCurrencyDropdown(
           isLoading: isLoading,
           initialCurrency: fiatCurrency,
-          selectedCurrency: fiatCurrency?.code,
-          onCurrencyChanged: (String currencyCode) {
-            final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
-            onFiatCurrencyChanged(newFiatCurrency);
-          },
+          selectedCurrency: fiatCurrency,
+          onCurrencyChanged: onFiatCurrencyChanged,
           balances: balances,
         ),
       ],

@@ -124,18 +124,24 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     };
 
     final preferredCurrency = summary.currency ?? settings.currencyCode;
+    // A balance in a currency this build has no market for can't be bought
+    // with, so it is not offered.
     final balances = summary.balances.fold<Map<String, double>>({}, (
       map,
       balance,
     ) {
-      map[balance.currencyCode] = balance.amount;
+      if (ExchangeCatalog.parse(balance.currencyCode) is KnownCurrency) {
+        map[balance.currencyCode] = balance.amount;
+      }
       return map;
     });
     // Only keep the currencies with a balance > 0.
     balances.removeWhere((key, value) => value <= 0);
     // If no currencies have a balance > 0, keep the preferred currency
     if (balances.isEmpty) {
-      balances[preferredCurrency] = 0.0;
+      balances[ExchangeCatalog.legacyCurrencyOrFallback(preferredCurrency)
+              .code] =
+          0.0;
     }
     final currencyInput = balances[preferredCurrency] != null
         ? preferredCurrency

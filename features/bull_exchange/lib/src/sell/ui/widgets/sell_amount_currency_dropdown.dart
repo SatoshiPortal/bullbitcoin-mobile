@@ -1,3 +1,4 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/src/sell/presentation/sell_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,8 +11,8 @@ class SellAmountCurrencyDropdown extends StatelessWidget {
     required this._onCurrencyChanged,
   });
 
-  final String? _selectedCurrency;
-  final ValueChanged<String> _onCurrencyChanged;
+  final FiatCurrency? _selectedCurrency;
+  final ValueChanged<FiatCurrency> _onCurrencyChanged;
 
   @override
   Widget build(BuildContext context) {

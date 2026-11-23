@@ -185,6 +185,35 @@ void main() {
     verify(() => repository.getRate('CAD')).called(1);
   });
 
+  test('skips a balance in a currency the app has no market for', () async {
+    when(() => getUserSummary.execute()).thenAnswer(
+      (_) async => userSummary(
+        balances: const [
+          UserBalance(amount: 10, currencyCode: 'JPY'),
+          UserBalance(amount: 20, currencyCode: 'EUR'),
+        ],
+        currency: 'JPY',
+      ),
+    );
+
+    final context = valueOf(await usecase.execute());
+
+    expect(context.balances.map((b) => b.currency), [FiatCurrency.eur]);
+    expect(context.selectedCurrency, FiatCurrency.eur);
+  });
+
+  test('refuses an account funded only in unknown currencies', () async {
+    when(() => getUserSummary.execute()).thenAnswer(
+      (_) async => userSummary(
+        balances: const [UserBalance(amount: 10, currencyCode: 'JPY')],
+      ),
+    );
+
+    final result = await usecase.execute();
+
+    expect(failureOf(result), isA<LimitOrdersNoFundedBalanceFailure>());
+  });
+
   test('falls back to the first funded balance', () async {
     when(() => exchangeReads.getUserSummary(ExchangeEnvironment.mainnet))
         .thenAnswer(

@@ -30,6 +30,43 @@ void main() {
     }
   });
 
+  group('parse', () {
+    test('reads every market code, whatever the case or padding', () {
+      for (final market in ExchangeCatalog.markets) {
+        final code = market.currency.code;
+        expect(ExchangeCatalog.parse(code), KnownCurrency(market));
+        expect(
+          ExchangeCatalog.parse(' ${code.toLowerCase()} '),
+          KnownCurrency(market),
+        );
+      }
+    });
+
+    test('an unknown code is UnknownCurrency with the raw value', () {
+      expect(ExchangeCatalog.parse('JPY'), const UnknownCurrency('JPY'));
+      expect(ExchangeCatalog.parse(''), const UnknownCurrency(''));
+      expect(ExchangeCatalog.parse('BTC'), const UnknownCurrency('BTC'));
+    });
+
+    test(
+      'legacyCurrencyOrFallback reads absent and unknown as the fallback',
+      () {
+        expect(
+          ExchangeCatalog.legacyCurrencyOrFallback('EUR'),
+          FiatCurrency.eur,
+        );
+        expect(
+          ExchangeCatalog.legacyCurrencyOrFallback('JPY'),
+          ExchangeCatalog.legacyNoMarketFallback.currency,
+        );
+        expect(
+          ExchangeCatalog.legacyCurrencyOrFallback(null),
+          ExchangeCatalog.legacyNoMarketFallback.currency,
+        );
+      },
+    );
+  });
+
   test('every jurisdiction has a market', () {
     for (final jurisdiction in Jurisdiction.values) {
       expect(ExchangeCatalog.marketsIn(jurisdiction), isNotEmpty);

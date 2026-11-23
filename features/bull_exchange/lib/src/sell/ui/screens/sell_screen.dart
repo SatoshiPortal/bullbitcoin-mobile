@@ -60,10 +60,10 @@ class _SellScreenState extends State<SellScreen> {
                 ),
                 const Gap(16.0),
                 SellAmountCurrencyDropdown(
-                  selectedCurrency: _fiatCurrency?.code,
-                  onCurrencyChanged: (String currencyCode) {
+                  selectedCurrency: _fiatCurrency,
+                  onCurrencyChanged: (FiatCurrency currency) {
                     setState(() {
-                      _fiatCurrency = FiatCurrency.fromCode(currencyCode);
+                      _fiatCurrency = currency;
                     });
                   },
                 ),

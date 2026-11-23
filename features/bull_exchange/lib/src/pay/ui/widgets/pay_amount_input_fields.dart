@@ -30,11 +30,8 @@ class PayAmountInputFields extends StatelessWidget {
           const Gap(16.0),
           ExchangeAmountCurrencyDropdown(
             initialCurrency: fiatCurrency,
-            selectedCurrency: fiatCurrency.code,
-            onCurrencyChanged: (String currencyCode) {
-              final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
-              onFiatCurrencyChanged!(newFiatCurrency);
-            },
+            selectedCurrency: fiatCurrency,
+            onCurrencyChanged: onFiatCurrencyChanged!,
           ),
         ],
       ],

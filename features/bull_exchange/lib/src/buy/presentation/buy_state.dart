@@ -91,8 +91,10 @@ sealed class BuyState with _$BuyState {
     return btc == null ? null : ConvertAmount.btcToSats(btc);
   }
 
-  FiatCurrency? get currency =>
-      currencyInput.isNotEmpty ? FiatCurrency.fromCode(currencyInput) : null;
+  FiatCurrency? get currency => switch (ExchangeCatalog.parse(currencyInput)) {
+    KnownCurrency(:final currency) => currency,
+    UnknownCurrency() => null,
+  };
 
   bool get isPositiveAmount {
     return (amount ?? 0) > 0;

@@ -45,6 +45,35 @@ void main() {
   }
 
   group('StartDcaUsecase', () {
+    test('skips balances in currencies the app has no market for', () async {
+      when(() => mainnetUsers.getUserSummary()).thenAnswer(
+        (_) async => const Ok(
+          UserSummary(
+            userNumber: 1,
+            groups: [],
+            profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
+            email: 'sat@example.com',
+            balances: [
+              UserBalance(amount: 10, currencyCode: 'JPY'),
+              UserBalance(amount: 20, currencyCode: 'EUR'),
+            ],
+            currency: 'JPY',
+            dca: UserDca(isActive: false),
+            autoBuy: UserAutoBuy(
+              isActive: false,
+              addresses: UserAutoBuyAddresses(),
+            ),
+          ),
+        ),
+      );
+
+      final result = await usecase.execute();
+
+      final data = (result as Ok<DcaStartData, DcaFailure>).value;
+      expect(data.balances.map((b) => b.currencyCode), ['EUR']);
+      expect(data.currency, FiatCurrency.eur);
+    });
+
     test('regtest refuses DCA before backend IO', () async {
       when(settings.fetch).thenAnswer(
         (_) async =>

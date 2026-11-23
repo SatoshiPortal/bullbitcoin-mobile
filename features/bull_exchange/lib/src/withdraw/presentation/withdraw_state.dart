@@ -47,13 +47,13 @@ sealed class WithdrawState with _$WithdrawState {
   FiatCurrency get currency {
     return when(
       initial: (_) => ExchangeCatalog.legacyNoMarketFallback.currency,
-      amountInput: (userSummary) => userSummary.currency != null
-          ? FiatCurrency.fromCode(userSummary.currency!)
-          : ExchangeCatalog.legacyNoMarketFallback.currency,
+      amountInput: (userSummary) =>
+          ExchangeCatalog.legacyCurrencyOrFallback(userSummary.currency),
       recipientInput: (_, _, currency, _, _, _, _) => currency,
       paymentDetailsInput: (_, _, currency, _, _, _) => currency,
       confirmation: (_, _, currency, _, _, _, _, _, _, _) => currency,
-      success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
+      success: (order) =>
+          ExchangeCatalog.legacyCurrencyOrFallback(order.payoutCurrency),
     );
   }
 

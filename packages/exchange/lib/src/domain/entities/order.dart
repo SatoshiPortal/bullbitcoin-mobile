@@ -16,37 +16,6 @@ enum FiatCurrency {
   final String code;
   final int decimals;
   final String symbol;
-
-  static FiatCurrency fromCode(String code) {
-    final currency = tryFromCode(code);
-    if (currency == null) throw Exception('Unknown FiatCurrency: $code');
-    return currency;
-  }
-
-  // Nullable counterpart of [fromCode], for parsing server payloads where a
-  // currency this build doesn't support must not fail the whole response.
-  // There is deliberately no `unknown` member: [FiatCurrency.values] populates
-  // the user-facing currency pickers.
-  static FiatCurrency? tryFromCode(String code) {
-    switch (code.toUpperCase()) {
-      case 'USD':
-        return FiatCurrency.usd;
-      case 'CAD':
-        return FiatCurrency.cad;
-      case 'CRC':
-        return FiatCurrency.crc;
-      case 'EUR':
-        return FiatCurrency.eur;
-      case 'MXN':
-        return FiatCurrency.mxn;
-      case 'ARS':
-        return FiatCurrency.ars;
-      case 'COP':
-        return FiatCurrency.cop;
-      default:
-        return null;
-    }
-  }
 }
 
 enum OrderType {
@@ -843,8 +812,8 @@ sealed class Order with _$Order {
 
 extension FiatPaymentOrderDisplayX on FiatPaymentOrder {
   /// The fiat amount the recipient gets, e.g. "125.00 CAD". The currency code
-  /// is used as returned by the server, without going through
-  /// [FiatCurrency.fromCode], which throws on codes the app doesn't know yet.
+  /// is shown as returned by the server, so a code the app doesn't know yet
+  /// still displays.
   String get payoutAmountToDisplay =>
       '${payoutAmount.toStringAsFixed(2)} $payoutCurrency';
 

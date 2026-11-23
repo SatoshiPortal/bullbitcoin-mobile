@@ -55,7 +55,15 @@ class StartDcaUsecase {
         return Err(DcaAccountUnavailableFailure(failure.logMessage));
     }
 
-    final balances = userSummary.balances.where((b) => b.amount > 0).toList();
+    // A balance in a currency this build has no market for can't fund a
+    // DCA, so it is not offered.
+    final balances = userSummary.balances
+        .where(
+          (b) =>
+              b.amount > 0 &&
+              ExchangeCatalog.parse(b.currencyCode) is KnownCurrency,
+        )
+        .toList();
 
     final currencyCode = balances.isEmpty
         ? null
@@ -65,9 +73,12 @@ class StartDcaUsecase {
                 orElse: () => balances.first,
               )
               .currencyCode;
-    final currency = currencyCode == null
+    final currency = switch (currencyCode == null
         ? null
-        : FiatCurrency.fromCode(currencyCode);
+        : ExchangeCatalog.parse(currencyCode)) {
+      KnownCurrency(:final currency) => currency,
+      UnknownCurrency() || null => null,
+    };
     final defaultLightningAddress = userSummary.autoBuy.addresses.lightning;
 
     return Ok((

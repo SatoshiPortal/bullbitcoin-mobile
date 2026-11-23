@@ -19,9 +19,12 @@ class SyncExchangeCurrencyUsecase {
 
   @useResult
   Future<Result<void, SettingsFailure>> execute(String currencyCode) async {
-    final currency = FiatCurrency.tryFromCode(currencyCode);
-    if (currency == null) {
-      return const Ok(null);
+    final FiatCurrency currency;
+    switch (ExchangeCatalog.parse(currencyCode)) {
+      case KnownCurrency(currency: final known):
+        currency = known;
+      case UnknownCurrency():
+        return const Ok(null);
     }
 
     final Environment environment;

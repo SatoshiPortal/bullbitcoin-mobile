@@ -1,7 +1,7 @@
 import 'package:bbx_api/bbx_api.dart' as bbx;
 
+import '../domain/catalog/exchange_catalog.dart';
 import '../domain/entities/dca.dart';
-import '../domain/entities/order.dart' show FiatCurrency;
 import '../domain/entities/user_summary.dart';
 
 /// Maps the `bbx_api` user summary to the app entity.
@@ -55,9 +55,11 @@ UserDca _dca(bbx.UserDca dca) => UserDca(
   },
   // A DCA currency this build doesn't support must not fail the whole user
   // summary (balances, stats and preferences come with it).
-  currency: switch (dca.currencyCode) {
-    final String code => FiatCurrency.tryFromCode(code),
-    null => null,
+  currency: switch (dca.currencyCode == null
+      ? null
+      : ExchangeCatalog.parse(dca.currencyCode!)) {
+    KnownCurrency(:final currency) => currency,
+    UnknownCurrency() || null => null,
   },
   amount: dca.amount,
   network: switch (dca.recipientType) {

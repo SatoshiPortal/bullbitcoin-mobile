@@ -106,22 +106,16 @@ sealed class PayState with _$PayState {
 
   FiatCurrency get currency => switch (this) {
     PayRecipientSelectionState(:final userSummary) =>
-      userSummary?.currency != null
-          ? FiatCurrency.fromCode(userSummary!.currency!)
-          : ExchangeCatalog.legacyNoMarketFallback.currency,
-    PayAmountInputState(:final selectedRecipient) => FiatCurrency.fromCode(
-      selectedRecipient.currencyCode,
-    ),
+      ExchangeCatalog.legacyCurrencyOrFallback(userSummary?.currency),
+    PayAmountInputState(:final selectedRecipient) =>
+      ExchangeCatalog.legacyCurrencyOrFallback(selectedRecipient.currencyCode),
     PayPreparingPaymentState(:final input) => input.currency,
-    PayWalletSelectionState(:final selectedRecipient) => FiatCurrency.fromCode(
-      selectedRecipient.currencyCode,
-    ),
-    PayPaymentState(:final payOrder) => FiatCurrency.fromCode(
-      payOrder.payoutCurrency,
-    ),
-    PaySuccessState(:final payOrder) => FiatCurrency.fromCode(
-      payOrder.payoutCurrency,
-    ),
+    PayWalletSelectionState(:final selectedRecipient) =>
+      ExchangeCatalog.legacyCurrencyOrFallback(selectedRecipient.currencyCode),
+    PayPaymentState(:final payOrder) =>
+      ExchangeCatalog.legacyCurrencyOrFallback(payOrder.payoutCurrency),
+    PaySuccessState(:final payOrder) =>
+      ExchangeCatalog.legacyCurrencyOrFallback(payOrder.payoutCurrency),
   };
 
   // Backward step: drop forward state, reset transients on the destination.
