@@ -1,9 +1,10 @@
+import 'package:exchange/testing.dart';
+import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:primitives/primitives.dart' show BitcoinNetwork, BitcoinUnit;
 
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
@@ -29,7 +30,7 @@ class _Swaps extends Fake implements SwapStore {}
 
 class _Payjoins extends Fake implements PayjoinSessions {}
 
-class _Orders extends Fake implements ExchangeOrderRepository {}
+class _Orders extends Fake implements ExchangeOrders {}
 
 class _LabelOrders extends Fake implements LabelExchangeOrdersUsecase {}
 
@@ -95,8 +96,7 @@ class _Harness {
         walletTransactionRepository: history,
         swapStore: _Swaps(),
         payjoinSessions: _Payjoins(),
-        mainnetExchangeOrderRepository: _Orders(),
-        testnetExchangeOrderRepository: _Orders(),
+        exchange: exchangeForTesting(orders: (_) => _Orders()),
         labelExchangeOrdersUsecase: _LabelOrders(),
         getTransactionOrderSwapsUsecase: _OrderSwaps(),
       ),

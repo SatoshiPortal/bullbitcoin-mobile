@@ -1,10 +1,10 @@
+import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
@@ -26,7 +26,7 @@ import '../../../settings/fake_webview_platform.dart';
 
 class _Settings extends Mock implements GetExchangeWebSettingsUsecase {}
 
-class _Keys extends Mock implements ExchangeApiKeyRepository {}
+class _Keys extends Mock implements ExchangeCredentials {}
 
 class _Cubit extends Mock implements ExchangeCubit {}
 

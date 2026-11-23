@@ -1,12 +1,10 @@
+import 'package:exchange/setup.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
@@ -34,13 +32,13 @@ ExchangeAuthRepositoryImpl _repository(Future<Object> Function() response) =>
       ),
     );
 
-class _Keys extends Fake implements ExchangeApiKeyRepository {
+class _Keys extends Fake implements ExchangeCredentials {
   @override
-  Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
+  Future<Result<String?, ExchangeFailure>> readActiveApiKey({
     required bool isTestnet,
   }) async => const Ok(null);
   @override
-  Future<Result<void, ExchangeApiKeyFailure>> deleteApiKey({
+  Future<Result<void, ExchangeFailure>> deleteApiKey({
     required bool isTestnet,
   }) async {
     saved = null;
@@ -52,9 +50,9 @@ class _Keys extends Fake implements ExchangeApiKeyRepository {
   Completer<void>? writeGate;
   final writeStarted = Completer<void>();
   bool? savedEnvironment;
-  Result<void, ExchangeApiKeyFailure> result = const Ok(null);
+  Result<void, ExchangeFailure> result = const Ok(null);
   @override
-  Future<Result<void, ExchangeApiKeyFailure>> saveApiKey(
+  Future<Result<void, ExchangeFailure>> saveApiKey(
     ExchangeApiKey key, {
     required bool isTestnet,
   }) async {

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/address_view/domain/repositories/wallet_address_repository.dart';
@@ -14,8 +13,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../../../core/exchange/fake_exchange_users.dart';
 
-class MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -50,8 +48,8 @@ void main() {
     registerFallbackValue(DcaNetwork.bitcoin);
   });
 
-  late MockExchangeOrderRepository mainnetOrders;
-  late MockExchangeOrderRepository testnetOrders;
+  late MockExchangeOrders mainnetOrders;
+  late MockExchangeOrders testnetOrders;
   late MockWalletRepository wallet;
   late MockExchangeUserRepository mainnetUsers;
   late MockExchangeUserRepository testnetUsers;
@@ -90,8 +88,8 @@ void main() {
   );
 
   setUp(() {
-    mainnetOrders = MockExchangeOrderRepository();
-    testnetOrders = MockExchangeOrderRepository();
+    mainnetOrders = MockExchangeOrders();
+    testnetOrders = MockExchangeOrders();
     wallet = MockWalletRepository();
     mainnetUsers = MockExchangeUserRepository();
     testnetUsers = MockExchangeUserRepository();
@@ -99,12 +97,16 @@ void main() {
     walletAddress = MockWalletAddressRepository();
 
     usecase = SetDcaUsecase(
-      mainnetExchangeOrderRepository: mainnetOrders,
-      testnetExchangeOrderRepository: testnetOrders,
       wallet: wallet,
       settingsRepository: settings,
       walletAddressRepository: walletAddress,
-      exchange: fakeExchangeUsers(mainnetUsers, testnetUsers),
+      exchange: fakeExchangeUsers(
+        mainnetUsers,
+        testnetUsers,
+        orders: (environment) => environment == ExchangeEnvironment.testnet
+            ? testnetOrders
+            : mainnetOrders,
+      ),
     );
     when(() => settings.fetch()).thenAnswer((_) async => Ok(mainnetSettings));
   });
@@ -261,8 +263,12 @@ void main() {
           network: any(named: 'network'),
           address: any(named: 'address'),
         ),
-      ).thenThrow(
-        Exception('Failed to create DCA: HTTP 500 apiKey=$_sentinelSecret'),
+      ).thenAnswer(
+        (_) async => const Err(
+          ExchangeNetworkFailure(
+            'Failed to create DCA: HTTP 500 apiKey=$_sentinelSecret',
+          ),
+        ),
       );
 
       final result = await usecase.execute(
@@ -275,8 +281,7 @@ void main() {
 
       final failure = failureOf(result);
       expect(failure, isA<DcaOrderCreationFailure>());
-      // A foreign message can embed a credential or a response body. It is
-      // logged, never carried by the failure object.
+      // A foreign diagnostic must not reach the DCA feature failure.
       expect(failure.logMessage, isNot(contains(_sentinelSecret)));
       expect(failure.logMessage, 'createDca rejected');
     });
@@ -291,7 +296,7 @@ void main() {
           network: any(named: 'network'),
           address: any(named: 'address'),
         ),
-      ).thenAnswer((_) async => dca);
+      ).thenAnswer((_) async => Ok(dca));
       when(() => mainnetUsers.getUserSummary())
           .thenAnswer((_) async => const Ok(userSummary));
       when(
@@ -345,7 +350,7 @@ void main() {
           network: any(named: 'network'),
           address: any(named: 'address'),
         ),
-      ).thenAnswer((_) async => dca);
+      ).thenAnswer((_) async => Ok(dca));
       when(() => mainnetUsers.getUserSummary())
           .thenAnswer((_) async => const Ok(userSummary));
       when(
@@ -380,7 +385,7 @@ void main() {
           network: any(named: 'network'),
           address: any(named: 'address'),
         ),
-      ).thenAnswer((_) async => dca);
+      ).thenAnswer((_) async => Ok(dca));
       when(() => mainnetUsers.getUserSummary())
           .thenAnswer((_) async => const Ok(userSummary));
       when(

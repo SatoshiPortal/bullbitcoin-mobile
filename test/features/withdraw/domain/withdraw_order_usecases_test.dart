@@ -1,7 +1,6 @@
+import 'package:exchange/testing.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
@@ -13,8 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockExchangeOrderRepository extends Mock
-    implements ExchangeOrderRepository {}
+class _MockExchangeOrders extends Mock implements ExchangeOrders {}
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -64,13 +62,13 @@ void main() {
     log = logger;
   });
   tearDown(() => log = previousLogger);
-  late _MockExchangeOrderRepository mainnet;
-  late _MockExchangeOrderRepository testnet;
+  late _MockExchangeOrders mainnet;
+  late _MockExchangeOrders testnet;
   late _MockSettingsRepository settingsRepository;
 
   setUp(() {
-    mainnet = _MockExchangeOrderRepository();
-    testnet = _MockExchangeOrderRepository();
+    mainnet = _MockExchangeOrders();
+    testnet = _MockExchangeOrders();
     settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
@@ -79,8 +77,10 @@ void main() {
 
   group('CreateWithdrawOrderUsecase', () {
     CreateWithdrawOrderUsecase build() => CreateWithdrawOrderUsecase(
-      mainnetExchangeOrderRepository: mainnet,
-      testnetExchangeOrderRepository: testnet,
+      exchange: exchangeForTesting(
+        orders: (environment) =>
+            environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+      ),
       settingsRepository: settingsRepository,
     );
 
@@ -94,7 +94,7 @@ void main() {
           fiatAmount: 100,
           recipientId: 'recipient-1',
         ),
-      ).thenAnswer((_) async => order);
+      ).thenAnswer((_) async => Ok(order));
 
       expect(_ok(await execute()).order, order);
     });
@@ -107,7 +107,7 @@ void main() {
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
-      ).thenThrow(Exception(_rawReason));
+      ).thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       switch (await execute()) {
         case Ok():
@@ -121,7 +121,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [ApiKeyNotFoundException()]) {
+      {
         when(
           () => mainnet.placeWithdrawalOrder(
             fiatAmount: any(named: 'fiatAmount'),
@@ -129,7 +129,7 @@ void main() {
             securityQuestion: any(named: 'securityQuestion'),
             securityAnswer: any(named: 'securityAnswer'),
           ),
-        ).thenThrow(exception);
+        ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
         expect(_err(await execute()), isA<WithdrawUnauthenticatedFailure>());
         verifyNever(
@@ -150,8 +150,14 @@ void main() {
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
-      ).thenThrow(
-        BullBitcoinApiMinAmountException(minAmount: 25, currency: 'CAD'),
+      ).thenAnswer(
+        (_) async => const Err(
+          ExchangeOrderLimitFailure(
+            ExchangeOrderAmountBound.minimum,
+            25,
+            'CAD',
+          ),
+        ),
       );
 
       final belowFailure = _err(await execute());
@@ -169,8 +175,14 @@ void main() {
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
-      ).thenThrow(
-        BullBitcoinApiMaxAmountException(maxAmount: 5000, currency: 'CAD'),
+      ).thenAnswer(
+        (_) async => const Err(
+          ExchangeOrderLimitFailure(
+            ExchangeOrderAmountBound.maximum,
+            5000,
+            'CAD',
+          ),
+        ),
       );
 
       final aboveFailure = _err(await execute());
@@ -193,7 +205,7 @@ void main() {
           securityQuestion: any(named: 'securityQuestion'),
           securityAnswer: any(named: 'securityAnswer'),
         ),
-      ).thenAnswer((_) async => _MockWithdrawOrder());
+      ).thenAnswer((_) async => Ok(_MockWithdrawOrder()));
 
       expect(
         await execute(),
@@ -212,8 +224,10 @@ void main() {
 
   group('ConfirmWithdrawOrderUsecase', () {
     ConfirmWithdrawOrderUsecase build() => ConfirmWithdrawOrderUsecase(
-      mainnetExchangeOrderRepository: mainnet,
-      testnetExchangeOrderRepository: testnet,
+      exchange: exchangeForTesting(
+        orders: (environment) =>
+            environment == ExchangeEnvironment.testnet ? testnet : mainnet,
+      ),
       settingsRepository: settingsRepository,
       recipientsFacade: _MockRecipientsFacade(),
     );
@@ -221,7 +235,7 @@ void main() {
     test('returns the confirmed order', () async {
       final order = _MockWithdrawOrder();
       when(() => mainnet.confirmWithdrawOrder('order-1'))
-          .thenAnswer((_) async => order);
+          .thenAnswer((_) async => Ok(order));
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -230,7 +244,7 @@ void main() {
 
     test('sanitizes a failure, keeping the raw reason out of logs', () async {
       when(() => mainnet.confirmWithdrawOrder('order-1'))
-          .thenThrow(Exception(_rawReason));
+          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       switch (await build().execute(orderId: 'order-1')) {
         case Ok():
@@ -242,9 +256,10 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [ApiKeyNotFoundException()]) {
-        when(() => mainnet.confirmWithdrawOrder('order-1'))
-            .thenThrow(exception);
+      {
+        when(
+          () => mainnet.confirmWithdrawOrder('order-1'),
+        ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
 
         final result = await build().execute(orderId: 'order-1');
 

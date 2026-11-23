@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
+import 'package:exchange/exchange.dart';
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   const retryDelay = Duration(seconds: 5);

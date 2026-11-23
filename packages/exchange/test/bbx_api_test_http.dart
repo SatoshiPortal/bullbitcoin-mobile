@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
 import 'package:primitives/primitives.dart';
 
 class FakeBbxHttp implements HttpClientAdapter {
@@ -43,3 +45,39 @@ class FakeBbxHttp implements HttpClientAdapter {
         readActiveApiKey: readApiKey ?? () async => const Ok('synthetic-key'),
       );
 }
+
+Exchange testExchange(
+  HttpClientAdapter adapter, {
+  bool isTestnet = false,
+  Future<Result<String?, ExchangeFailure>> Function()? readApiKey,
+}) => exchangeWithTransportForTesting(
+  readSession: () async {
+    final credential =
+        await (readApiKey?.call() ??
+            Future.value(const Ok<String?, ExchangeFailure>('synthetic-key')));
+    return credential.map(
+      (apiKey) => (
+        environment: isTestnet
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet,
+        epoch: 0,
+        apiKey: apiKey,
+      ),
+    );
+  },
+  openClient: (endpoint, readKey) => bbxForTesting(
+    endpoint: endpoint.toString(),
+    adapter: adapter,
+    readActiveApiKey: readKey,
+  ),
+);
+
+ExchangeOrders testExchangeOrders(
+  HttpClientAdapter adapter, {
+  bool isTestnet = false,
+  Future<Result<String?, ExchangeFailure>> Function()? readApiKey,
+}) => testExchange(
+  adapter,
+  isTestnet: isTestnet,
+  readApiKey: readApiKey,
+).orders(isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet);

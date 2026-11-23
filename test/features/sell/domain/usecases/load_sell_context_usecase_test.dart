@@ -233,7 +233,7 @@ void main() {
     test('returns the order', () async {
       final order = _MockOrder();
       when(() => getOrder.execute(orderId: any(named: 'orderId')))
-          .thenAnswer((_) async => order);
+          .thenAnswer((_) async => Ok(order));
 
       final result = await usecase.order(orderId: 'order-1');
 
@@ -242,7 +242,7 @@ void main() {
 
     test('sanitizes a fetch failure', () async {
       when(() => getOrder.execute(orderId: any(named: 'orderId')))
-          .thenThrow(Exception(_rawReason));
+          .thenAnswer((_) async => const Err(ExchangeOrderLoadFailure()));
 
       final result = await usecase.order(orderId: 'order-1');
 

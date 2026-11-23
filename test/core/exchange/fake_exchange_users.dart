@@ -18,11 +18,15 @@ abstract interface class ExchangeUserOperations {
 
 Exchange fakeExchangeUsers(
   ExchangeUserOperations mainnet,
-  ExchangeUserOperations testnet,
-) {
+  ExchangeUserOperations testnet, {
+  ExchangeOrders Function(ExchangeEnvironment)? orders,
+  Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
+}) {
   ExchangeUserOperations select(ExchangeEnvironment? environment) =>
       environment == ExchangeEnvironment.mainnet ? mainnet : testnet;
   return exchangeForTesting(
+    orders: orders,
+    getDefaultWallets: getDefaultWallets,
     getUserSummary: (environment) => select(environment).getUserSummary(),
     listAnnouncements: (environment) => select(environment).listAnnouncements(),
     saveUserPreference:

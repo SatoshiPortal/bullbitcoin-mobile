@@ -1,11 +1,54 @@
+import 'package:exchange/exchange.dart';
+import 'package:exchange/testing.dart';
+
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bbx_api/bbx_api.dart';
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
+
+typedef ReadExchangeApiKey =
+    Future<Result<String?, ExchangeFailure>> Function();
+
+Exchange testExchange(
+  HttpClientAdapter adapter, {
+  bool isTestnet = false,
+  ReadExchangeApiKey? readApiKey,
+}) => exchangeWithTransportForTesting(
+  readSession: () async {
+    final credential =
+        await (readApiKey?.call() ??
+            Future.value(
+              const Ok<String?, ExchangeFailure>(anonymousTestApiKey),
+            ));
+    return credential.map(
+      (apiKey) => (
+        environment: isTestnet
+            ? ExchangeEnvironment.testnet
+            : ExchangeEnvironment.mainnet,
+        epoch: 0,
+        apiKey: apiKey,
+      ),
+    );
+  },
+  openClient: (endpoint, readKey) => bbxForTesting(
+    endpoint: endpoint.toString(),
+    adapter: adapter,
+    readActiveApiKey: readKey,
+  ),
+);
+
+ExchangeOrders testExchangeOrders(
+  HttpClientAdapter adapter, {
+  bool isTestnet = false,
+  ReadExchangeApiKey? readApiKey,
+}) => testExchange(
+  adapter,
+  isTestnet: isTestnet,
+  readApiKey: readApiKey,
+).orders(isTestnet ? ExchangeEnvironment.testnet : ExchangeEnvironment.mainnet);
 
 /// The endpoint a test client posts to. Its adapter answers the request, so
 /// the host is never resolved.
