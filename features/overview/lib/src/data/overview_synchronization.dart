@@ -47,7 +47,7 @@ final class OverviewSynchronization {
         getWallets: ({onlyBitcoin, onlyLiquid}) async {
           final active = await activeNetwork();
           final keys = <WalletKey>[];
-          for (final network in [
+          for (final network in <Network>[
             if (onlyLiquid != true)
               ...BitcoinNetwork.values.where(
                 (network) => network.env == active,

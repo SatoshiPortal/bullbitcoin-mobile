@@ -7,9 +7,7 @@ import 'package:bb_mobile/features/send/domain/usecases/read_send_recipient_amou
 class VerifyChainSwapAmountSendUsecase {
   final ReadSendRecipientAmountUsecase _recipientAmount;
 
-  VerifyChainSwapAmountSendUsecase({
-    required ReadSendRecipientAmountUsecase recipientAmount,
-  }) : _recipientAmount = recipientAmount;
+  VerifyChainSwapAmountSendUsecase({required this._recipientAmount});
 
   /// Checks that [psbtOrPset] pays exactly the lockup of a send-side swap
   /// ([ChainSwap] or [LnSendSwap]) to its lockup address.

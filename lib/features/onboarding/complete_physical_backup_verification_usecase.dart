@@ -8,10 +8,9 @@ class CompletePhysicalBackupVerificationUsecase {
   final RecoverBullWalletBackups _regtestBackups;
 
   const CompletePhysicalBackupVerificationUsecase({
-    required RecoverBullWalletBackups backups,
-    required RecoverBullWalletBackups regtestBackups,
-  }) : _backups = backups,
-       _regtestBackups = regtestBackups;
+    required this._backups,
+    required this._regtestBackups,
+  });
 
   Future<void> execute(List<WalletRegistration> wallets) async {
     final bitcoin = wallets

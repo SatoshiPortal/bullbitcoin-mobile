@@ -9,7 +9,6 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mempool/mempool.dart';
 import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart' show Result;
 import 'package:secrets/secrets.dart';
 
 import 'electrum_settings/create_electrum_settings_bloc.dart';

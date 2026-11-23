@@ -14,16 +14,12 @@ class DefaultWalletProvisioning {
   final Future<String> Function(Secret, Network, DateTime?) _create;
 
   const DefaultWalletProvisioning({
-    required Secrets secrets,
-    required WalletInventory inventory,
-    required Future<NetworkEnv> Function() environment,
-    required Future<void> Function() resume,
-    required Future<String> Function(Secret, Network, DateTime?) create,
-  }) : _secrets = secrets,
-       _inventory = inventory,
-       _environment = environment,
-       _resume = resume,
-       _create = create;
+    required this._secrets,
+    required this._inventory,
+    required this._environment,
+    required this._resume,
+    required this._create,
+  });
 
   @useResult
   Future<Result<List<WalletRegistration>, DefaultWalletFailure>> execute({

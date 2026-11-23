@@ -23,7 +23,7 @@ final class ReadWalletNetworkUsecase {
     final environment = await _preferences.readActiveEnvironment();
     if (environment case Ok(:final value)) {
       final active = value.networkEnv;
-      for (final network in [
+      for (final network in <Network>[
         ...BitcoinNetwork.values.where((network) => network.env == active),
         ...LiquidNetwork.values.where((network) => network.env == active),
       ]) {
