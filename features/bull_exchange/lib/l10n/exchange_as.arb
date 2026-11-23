@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "আপোনাৰ একাউণ্টত যোগ কৰা যিকোনো পৰিমাণ বৰ্তমানৰ বিনিময় হাৰত Bitcoin-লৈ ৰূপান্তৰ কৰি আপোনাৰ ৱালেটলৈ পঠিওৱা হ'ব।",
   "autoBuyAccountUnavailableError": "আপোনাৰ Bull Bitcoin একাউণ্ট উপলব্ধ নহয়। পাছত পুনৰ চেষ্টা কৰক।",
   "autoBuyWalletRequiredError": "অন্ততঃ এটা ডিফল্ট Bitcoin, Lightning বা Liquid ঠিকনা যোগ কৰক।",
-  "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।"
+  "autoBuyUpdateError": "স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।",
+  "exchangeAuthLoginFailedTitle": "লগইন বিফল হৈছে",
+  "exchangeAuthLoginFailedMessage": "এটা ত্ৰুটি ঘটিছে, অনুগ্ৰহ কৰি পুনৰ লগইন কৰক।",
+  "exchangeAuthLoginFailedOkButton": "ঠিক আছে"
 }

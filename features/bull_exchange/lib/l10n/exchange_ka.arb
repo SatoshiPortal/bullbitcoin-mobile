@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "თქვენს ანგარიშზე დამატებული ნებისმიერი თანხა მიმდინარე გაცვლითი კურსით გადაიქცევა Bitcoin-ად და გაიგზავნება თქვენს საფულეში.",
   "autoBuyAccountUnavailableError": "თქვენი Bull Bitcoin ანგარიში მიუწვდომელია. სცადეთ მოგვიანებით.",
   "autoBuyWalletRequiredError": "დაამატეთ სულ მცირე ერთი ნაგულისხმევი Bitcoin, Lightning ან Liquid მისამართი.",
-  "autoBuyUpdateError": "ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით."
+  "autoBuyUpdateError": "ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით.",
+  "exchangeAuthLoginFailedTitle": "შესვლა ვერ მოხერხდა",
+  "exchangeAuthLoginFailedMessage": "მოხდა შეცდომა, გთხოვთ, სცადოთ ხელახლა შესვლა.",
+  "exchangeAuthLoginFailedOkButton": "კარგი"
 }

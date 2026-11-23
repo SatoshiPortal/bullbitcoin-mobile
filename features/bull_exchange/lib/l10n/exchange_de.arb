@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "Jeder Betrag, den Sie Ihrem Konto hinzufügen, wird zum aktuellen Wechselkurs in Bitcoin umgewandelt und an Ihre Wallet gesendet.",
   "autoBuyAccountUnavailableError": "Ihr Bull Bitcoin-Konto ist nicht verfügbar. Versuchen Sie es später erneut.",
   "autoBuyWalletRequiredError": "Fügen Sie mindestens eine Standardadresse für Bitcoin, Lightning oder Liquid hinzu.",
-  "autoBuyUpdateError": "Der automatische Kauf konnte nicht aktualisiert werden. Versuchen Sie es später erneut."
+  "autoBuyUpdateError": "Der automatische Kauf konnte nicht aktualisiert werden. Versuchen Sie es später erneut.",
+  "exchangeAuthLoginFailedMessage": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut, sich anzumelden.",
+  "exchangeAuthLoginFailedTitle": "Anmeldung fehlgeschlagen",
+  "exchangeAuthLoginFailedOkButton": "OK"
 }

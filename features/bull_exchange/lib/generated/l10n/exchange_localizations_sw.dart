@@ -1184,4 +1184,17 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Ununuzi wa kiotomatiki haukuweza kusasishwa. Jaribu tena baadaye.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Kuingia Kumeshindwa';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Hitilafu imetokea, tafadhali jaribu kuingia tena.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'Sawa';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

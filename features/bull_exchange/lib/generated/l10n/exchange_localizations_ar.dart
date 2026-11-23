@@ -1160,4 +1160,17 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'تعذّر تحديث الشراء التلقائي. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Login Failed';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'وقع خطأ، من فضلك حاول الدخول مرة أخرى.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'حسنا';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

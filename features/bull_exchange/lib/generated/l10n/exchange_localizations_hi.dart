@@ -1180,6 +1180,19 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'लॉग इन करें';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'एक त्रुटि हुई, कृपया फिर से लॉग इन करने की कोशिश करें।।';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ठीक';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -2280,4 +2293,14 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get autoBuyUpdateError =>
       'Auto-buy update nahi ho saki. Baad mein phir koshish karein.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Login Fail Hua';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Koi error aaya, please dobara login karne ki koshish karo.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
 }

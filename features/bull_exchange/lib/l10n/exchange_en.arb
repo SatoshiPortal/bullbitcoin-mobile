@@ -1362,5 +1362,21 @@
   "autoBuyUpdateError": "Auto-buy could not be updated. Try again later.",
   "@autoBuyUpdateError": {
     "description": "Error shown when enabling or disabling AutoBuy fails"
+  },
+  "exchangeAuthLoginFailedTitle": "Login Failed",
+  "@exchangeAuthLoginFailedTitle": {
+    "description": "Title of the dialog shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedMessage": "An error occurred, please try logging in again.",
+  "@exchangeAuthLoginFailedMessage": {
+    "description": "Message shown when exchange login fails"
+  },
+  "exchangeAuthLoginFailedOkButton": "OK",
+  "@exchangeAuthLoginFailedOkButton": {
+    "description": "OK button label in the login failed dialog"
+  },
+  "exchangeTradingUnavailable": "Trading is unavailable.",
+  "@exchangeTradingUnavailable": {
+    "description": "Exchange access recovery and navigation"
   }
 }

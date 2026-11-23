@@ -332,5 +332,9 @@
   "autoBuyInfoMessage": "Cualquier cantidad añadida a tu cuenta se convertirá en Bitcoin al tipo de cambio actual y se enviará a tu monedero.",
   "autoBuyAccountUnavailableError": "Tu cuenta de Bull Bitcoin no está disponible. Inténtalo de nuevo más tarde.",
   "autoBuyWalletRequiredError": "Añade al menos una dirección predeterminada de Bitcoin, Lightning o Liquid.",
-  "autoBuyUpdateError": "No se pudo actualizar la compra automática. Inténtalo de nuevo más tarde."
+  "autoBuyUpdateError": "No se pudo actualizar la compra automática. Inténtalo de nuevo más tarde.",
+  "exchangeAuthLoginFailedTitle": "Error de inicio de sesión",
+  "exchangeAuthLoginFailedMessage": "Ocurrió un error, por favor intenta iniciar sesión nuevamente.",
+  "exchangeAuthLoginFailedOkButton": "OK",
+  "exchangeTradingUnavailable": "Las operaciones no están disponibles."
 }

@@ -1180,4 +1180,17 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Kirjautuminen epäonnistui';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Tapahtui virhe, yritä kirjautua uudelleen.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

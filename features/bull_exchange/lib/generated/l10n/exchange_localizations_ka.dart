@@ -1189,4 +1189,17 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'შესვლა ვერ მოხერხდა';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'მოხდა შეცდომა, გთხოვთ, სცადოთ ხელახლა შესვლა.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'კარგი';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

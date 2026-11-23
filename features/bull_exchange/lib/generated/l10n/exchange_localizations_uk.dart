@@ -1190,4 +1190,17 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Не вдалося оновити автоматичну купівлю. Спробуйте пізніше.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Логін';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Помилкові помилки, будь ласка, спробуйте увійти знову.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ЗАРЕЄСТРУВАТИСЯ';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

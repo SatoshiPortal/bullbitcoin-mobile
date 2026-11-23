@@ -1108,4 +1108,16 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
 
   @override
   String get autoBuyUpdateError => '자동 매수를 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => '로그인 실패';
+
+  @override
+  String get exchangeAuthLoginFailedMessage => '오류가 발생했습니다. 다시 로그인하십시오.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => '이름 *';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

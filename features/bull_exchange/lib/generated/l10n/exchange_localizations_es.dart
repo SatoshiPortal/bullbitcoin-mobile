@@ -1199,4 +1199,18 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'No se pudo actualizar la compra automática. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Error de inicio de sesión';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Ocurrió un error, por favor intenta iniciar sesión nuevamente.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable =>
+      'Las operaciones no están disponibles.';
 }

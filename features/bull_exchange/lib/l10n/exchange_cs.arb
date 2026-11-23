@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "Jakákoli částka přidaná na váš účet bude převedena na Bitcoin aktuálním směnným kurzem a odeslána do vaší peněženky.",
   "autoBuyAccountUnavailableError": "Váš účet Bull Bitcoin není dostupný. Zkuste to prosím později.",
   "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
-  "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později."
+  "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
+  "exchangeAuthLoginFailedMessage": "Chyba nastala, zkuste se znovu přihlásit.",
+  "exchangeAuthLoginFailedOkButton": "ČEŠTINA",
+  "exchangeAuthLoginFailedTitle": "Přihlášení"
 }

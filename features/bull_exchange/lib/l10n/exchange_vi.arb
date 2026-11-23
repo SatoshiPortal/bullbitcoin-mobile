@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "Mọi khoản tiền được thêm vào tài khoản của bạn sẽ được chuyển đổi sang Bitcoin theo tỷ giá hiện tại và gửi đến ví của bạn.",
   "autoBuyAccountUnavailableError": "Tài khoản Bull Bitcoin của bạn hiện không khả dụng. Vui lòng thử lại sau.",
   "autoBuyWalletRequiredError": "Hãy thêm ít nhất một địa chỉ Bitcoin, Lightning hoặc Liquid mặc định.",
-  "autoBuyUpdateError": "Không thể cập nhật mua tự động. Vui lòng thử lại sau."
+  "autoBuyUpdateError": "Không thể cập nhật mua tự động. Vui lòng thử lại sau.",
+  "exchangeAuthLoginFailedTitle": "Đăng nhập thất bại",
+  "exchangeAuthLoginFailedMessage": "Đã xảy ra lỗi, vui lòng thử đăng nhập lại.",
+  "exchangeAuthLoginFailedOkButton": "OK"
 }

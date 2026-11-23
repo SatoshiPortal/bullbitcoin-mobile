@@ -1202,4 +1202,17 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'L\'achat automatique n\'a pas pu être mis à jour. Réessayez plus tard.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Échec de la connexion';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Une erreur s\'est produite, veuillez réessayer de vous connecter.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable => 'Les opérations sont indisponibles.';
 }

@@ -1189,4 +1189,17 @@ class ExchangeLocalizationsRu extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Не удалось обновить автопокупку. Попробуйте позже.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Не удалось';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Произошла ошибка, пожалуйста, попробуйте снова войти.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ХОРОШО';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

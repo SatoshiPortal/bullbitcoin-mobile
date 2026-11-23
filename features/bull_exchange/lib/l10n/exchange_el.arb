@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "Κάθε ποσό που προστίθεται στον λογαριασμό σας θα μετατρέπεται σε Bitcoin με την τρέχουσα συναλλαγματική ισοτιμία και θα αποστέλλεται στο πορτοφόλι σας.",
   "autoBuyAccountUnavailableError": "Ο λογαριασμός σας Bull Bitcoin δεν είναι διαθέσιμος. Δοκιμάστε ξανά αργότερα.",
   "autoBuyWalletRequiredError": "Προσθέστε τουλάχιστον μία προεπιλεγμένη διεύθυνση Bitcoin, Lightning ή Liquid.",
-  "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα."
+  "autoBuyUpdateError": "Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.",
+  "exchangeAuthLoginFailedMessage": "Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.",
+  "exchangeAuthLoginFailedOkButton": "ΕΝΤΆΞΕΙ",
+  "exchangeAuthLoginFailedTitle": "Εμπορία"
 }

@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "Любая сумма, добавленная на ваш счёт, будет конвертирована в Bitcoin по текущему обменному курсу и отправлена в ваш кошелёк.",
   "autoBuyAccountUnavailableError": "Ваш счёт Bull Bitcoin недоступен. Попробуйте позже.",
   "autoBuyWalletRequiredError": "Добавьте хотя бы один адрес Bitcoin, Lightning или Liquid по умолчанию.",
-  "autoBuyUpdateError": "Не удалось обновить автопокупку. Попробуйте позже."
+  "autoBuyUpdateError": "Не удалось обновить автопокупку. Попробуйте позже.",
+  "exchangeAuthLoginFailedMessage": "Произошла ошибка, пожалуйста, попробуйте снова войти.",
+  "exchangeAuthLoginFailedOkButton": "ХОРОШО",
+  "exchangeAuthLoginFailedTitle": "Не удалось"
 }

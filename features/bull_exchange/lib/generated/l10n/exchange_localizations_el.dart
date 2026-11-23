@@ -1199,4 +1199,17 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Δεν ήταν δυνατή η ενημέρωση της αυτόματης αγοράς. Δοκιμάστε ξανά αργότερα.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Εμπορία';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Ένα λάθος συνέβη, παρακαλώ προσπαθήστε να συνδεθείτε ξανά.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ΕΝΤΆΞΕΙ';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

@@ -1194,4 +1194,17 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Автоматичната покупка не можа да бъде актуализирана. Опитайте отново по-късно.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Неуспешен вход';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Възникна грешка, моля, опитайте да влезете отново.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ОК';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

@@ -1179,4 +1179,17 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Auto-buy could not be updated. Try again later.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Login Failed';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'An error occurred, please try logging in again.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

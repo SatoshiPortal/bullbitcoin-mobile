@@ -2152,6 +2152,30 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Auto-buy could not be updated. Try again later.'**
   String get autoBuyUpdateError;
+
+  /// Title of the dialog shown when exchange login fails
+  ///
+  /// In en, this message translates to:
+  /// **'Login Failed'**
+  String get exchangeAuthLoginFailedTitle;
+
+  /// Message shown when exchange login fails
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred, please try logging in again.'**
+  String get exchangeAuthLoginFailedMessage;
+
+  /// OK button label in the login failed dialog
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get exchangeAuthLoginFailedOkButton;
+
+  /// Exchange access recovery and navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Trading is unavailable.'**
+  String get exchangeTradingUnavailable;
 }
 
 class _ExchangeLocalizationsDelegate

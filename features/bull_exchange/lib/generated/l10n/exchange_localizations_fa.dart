@@ -1169,4 +1169,17 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'ورود شکست خورده';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'یک خطا رخ داد، لطفا دوباره وارد شوید.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

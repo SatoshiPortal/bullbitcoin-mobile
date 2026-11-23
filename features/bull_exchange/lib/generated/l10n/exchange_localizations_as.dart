@@ -1186,4 +1186,17 @@ class ExchangeLocalizationsAs extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'স্বয়ংক্ৰিয় ক্ৰয় আপডেট কৰিব পৰা নগ\'ল। পাছত পুনৰ চেষ্টা কৰক।';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'লগইন বিফল হৈছে';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'এটা ত্ৰুটি ঘটিছে, অনুগ্ৰহ কৰি পুনৰ লগইন কৰক।';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ঠিক আছে';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

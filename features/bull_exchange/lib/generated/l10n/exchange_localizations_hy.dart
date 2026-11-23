@@ -1195,4 +1195,17 @@ class ExchangeLocalizationsHy extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Չհաջողվեց թարմացնել ավտոմատ գնումը։ Փորձեք ավելի ուշ։';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Մուտքը ձախողվեց';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Սխալ առաջացավ, խնդրում ենք կրկին փորձել մուտք գործել։';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'Լավ';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

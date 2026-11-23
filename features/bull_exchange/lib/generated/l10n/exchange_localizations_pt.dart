@@ -1198,6 +1198,19 @@ class ExchangeLocalizationsPt extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Não foi possível atualizar a compra automática. Tente novamente mais tarde.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Login Falhado';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Um erro ocorreu, tente fazer login novamente.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ESTÁ BEM';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2305,4 +2318,14 @@ class ExchangeLocalizationsPtBr extends ExchangeLocalizationsPt {
   @override
   String get autoBuyUpdateError =>
       'Não foi possível atualizar a compra automática. Tente novamente mais tarde.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Login Falhado';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Um erro ocorreu, tente fazer login novamente.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ESTÁ BEM';
 }

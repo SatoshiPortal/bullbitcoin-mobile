@@ -308,5 +308,8 @@
   "autoBuyInfoMessage": "Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.",
   "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
   "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
-  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein."
+  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
+  "exchangeAuthLoginFailedTitle": "Login Fail Hua",
+  "exchangeAuthLoginFailedMessage": "Koi error aaya, please dobara login karne ki koshish karo.",
+  "exchangeAuthLoginFailedOkButton": "OK"
 }

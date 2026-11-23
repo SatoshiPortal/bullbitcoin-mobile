@@ -1187,4 +1187,17 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'স্বয়ংক্রিয় ক্রয় আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'লগইন ব্যর্থ হয়েছে';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'একটি ত্রুটি ঘটেছে, অনুগ্রহ করে পুনরায় লগইন করার চেষ্টা করুন';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ঠিক আছে';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

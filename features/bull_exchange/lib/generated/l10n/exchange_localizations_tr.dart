@@ -1181,4 +1181,17 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Otomatik alım güncellenemedi. Daha sonra tekrar deneyin.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Giriş Başarısız Oldu';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Bir hata oluştu, lütfen tekrar giriş yapmaya çalışın.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'TAMAM TAMAM';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

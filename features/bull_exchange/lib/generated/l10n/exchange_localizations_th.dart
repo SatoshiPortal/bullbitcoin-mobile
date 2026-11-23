@@ -1155,4 +1155,17 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'เข้าสู่ระบบ';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'ข้อผิดพลาดเกิดขึ้นโปรดลองบล็อกในอีกครั้ง.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ตกลง';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

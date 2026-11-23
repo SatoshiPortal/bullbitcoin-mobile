@@ -1189,4 +1189,17 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Không thể cập nhật mua tự động. Vui lòng thử lại sau.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Đăng nhập thất bại';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Đã xảy ra lỗi, vui lòng thử đăng nhập lại.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

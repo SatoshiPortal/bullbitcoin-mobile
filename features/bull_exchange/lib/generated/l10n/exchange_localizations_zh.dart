@@ -1068,4 +1068,16 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get autoBuyUpdateError => '无法更新自动买入。请稍后重试。';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => '旅行';
+
+  @override
+  String get exchangeAuthLoginFailedMessage => '发生了错误,请再次尝试伐木.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'OK';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }

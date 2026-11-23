@@ -1180,4 +1180,17 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
   @override
   String get autoBuyUpdateError =>
       'Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.';
+
+  @override
+  String get exchangeAuthLoginFailedTitle => 'Přihlášení';
+
+  @override
+  String get exchangeAuthLoginFailedMessage =>
+      'Chyba nastala, zkuste se znovu přihlásit.';
+
+  @override
+  String get exchangeAuthLoginFailedOkButton => 'ČEŠTINA';
+
+  @override
+  String get exchangeTradingUnavailable => 'Trading is unavailable.';
 }
