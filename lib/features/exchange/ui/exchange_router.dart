@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
@@ -22,8 +21,7 @@ import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
   exchangeHome('/exchange'),
-  exchangeAuth('/exchange/auth'),
-  exchangeKyc('kyc');
+  exchangeAuth('/exchange/auth');
 
   final String path;
 
@@ -39,6 +37,8 @@ class ExchangeRouterConfig {
   final void Function(BuildContext) onExit;
   final void Function(BuildContext) onOpenSettings;
   final void Function(BuildContext, ExchangeHomeAction) onAction;
+  final Future<Result<ExchangeKycConfiguration, ExchangeFailure>> Function()?
+  loadKyc;
 
   const ExchangeRouterConfig({
     required this.networkUnavailable,
@@ -49,6 +49,7 @@ class ExchangeRouterConfig {
     required this.onExit,
     required this.onOpenSettings,
     required this.onAction,
+    this.loadKyc,
   });
 }
 
@@ -56,59 +57,55 @@ class ExchangeRouter {
   static List<RouteBase> routes(
     ExchangeRouterConfig config, {
     BullExchangeFeature? exchangeFeature,
-  }) => [
-    GoRoute(
-      name: ExchangeRoute.exchangeHome.name,
-      path: ExchangeRoute.exchangeHome.path,
-      redirect: (context, state) async {
-        if (await config.networkUnavailable()) return config.homePath;
-        if (!context.mounted) return null;
-        final notLoggedIn = !ExchangeScope.isLoggedIn(context);
-        if (notLoggedIn) {
-          return BullExchangeNavigation.landingPath;
-        }
-        if (Platform.isIOS && !config.isSuperuser(context)) {
-          return config.homePath;
-        }
-        return null;
-      },
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          // Redirects run only on navigation: a session that ends while Trade
-          // is open must still leave it. Sign-in is offered only while access
-          // stays enabled; sign-out turns access off and returns home.
-          child: ExchangeSessionListener(
-            listenWhen: (wasLoggedIn, isLoggedIn) => wasLoggedIn && !isLoggedIn,
-            listener: (context, _) {
-              if (ExchangeScope.isEnabled(context)) {
-                BullExchangeNavigation.goToLanding(context);
-              } else {
-                config.onExit(context);
-              }
-            },
-            child: ExchangeHomeScreen(
-              homeCards: config.buildHomeCards(),
-              onHomeRefresh: config.onHomeRefresh,
-              onOpenSettings: () => config.onOpenSettings(context),
-              onAction: (action) => config.onAction(context, action),
-              onExit: () => config.onExit(context),
+  }) {
+    final feature = exchangeFeature ?? mount(config);
+    return [
+      GoRoute(
+        name: ExchangeRoute.exchangeHome.name,
+        path: ExchangeRoute.exchangeHome.path,
+        redirect: (context, state) async {
+          if (await config.networkUnavailable()) return config.homePath;
+          if (!context.mounted) return null;
+          final notLoggedIn = !ExchangeScope.isLoggedIn(context);
+          if (notLoggedIn) {
+            return BullExchangeNavigation.landingPath;
+          }
+          if (Platform.isIOS && !config.isSuperuser(context)) {
+            return config.homePath;
+          }
+          return null;
+        },
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            // Redirects run only on navigation: a session that ends while Trade
+            // is open must still leave it. Sign-in is offered only while access
+            // stays enabled; sign-out turns access off and returns home.
+            child: ExchangeSessionListener(
+              listenWhen: (wasLoggedIn, isLoggedIn) =>
+                  wasLoggedIn && !isLoggedIn,
+              listener: (context, _) {
+                if (ExchangeScope.isEnabled(context)) {
+                  BullExchangeNavigation.goToLanding(context);
+                } else {
+                  config.onExit(context);
+                }
+              },
+              child: ExchangeHomeScreen(
+                homeCards: config.buildHomeCards(),
+                onHomeRefresh: config.onHomeRefresh,
+                onOpenSettings: () => config.onOpenSettings(context),
+                onAction: (action) => config.onAction(context, action),
+                onExit: () => config.onExit(context),
+              ),
             ),
-          ),
-        );
-      },
-      routes: [
-        GoRoute(
-          name: ExchangeRoute.exchangeKyc.name,
-          path: ExchangeRoute.exchangeKyc.path,
-          builder: (context, state) {
-            return const ExchangeKycScreen();
-          },
-        ),
-      ],
-    ),
-    ...(exchangeFeature ?? mount(config)).routes,
-  ];
+          );
+        },
+        routes: [?feature.kycRoute],
+      ),
+      ...feature.routes,
+    ];
+  }
 
   static BullExchangeFeature mount(
     ExchangeRouterConfig config, {
@@ -141,6 +138,17 @@ class ExchangeRouter {
     onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
     onExit: config.onExit,
     settings: settings,
+    kyc: switch (config.loadKyc) {
+      final load? => ExchangeKycHost(
+        loadConfiguration: load,
+        failureMessage: (context, failure) => failure.toTranslated(context),
+        onExit: (context) {
+          unawaited(context.read<ExchangeCubit>().fetchUserSummary());
+          context.pop();
+        },
+      ),
+      null => null,
+    },
     supportChat: exchange == null
         ? null
         : (

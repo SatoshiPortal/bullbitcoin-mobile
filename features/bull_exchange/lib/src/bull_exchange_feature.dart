@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import 'exchange_landing_copy.dart';
 import 'exchange_landing_navigation.dart';
+import 'kyc/exchange_kyc_host.dart';
+import 'kyc/exchange_kyc_screen.dart';
 import 'settings/ui/exchange_settings_router.dart';
 import 'support_chat/exchange_support_chat_navigation.dart';
 import 'support_chat/ui/exchange_support_chat_router.dart';
@@ -21,11 +23,13 @@ typedef ExchangeSupportChatHost = ({
 final class BullExchangeFeature {
   final List<RouteBase> routes;
   final GoRoute? supportChatRoute;
+  final GoRoute? kycRoute;
   final List<RouteBase> settingsRoutes;
 
   const BullExchangeFeature._(
     this.routes,
     this.supportChatRoute,
+    this.kycRoute,
     this.settingsRoutes,
   );
 
@@ -38,6 +42,7 @@ final class BullExchangeFeature {
     required void Function(BuildContext) onSignIn,
     required void Function(BuildContext) onExit,
     ExchangeSupportChatHost? supportChat,
+    ExchangeKycHost? kyc,
     ExchangeSettingsHost? settings,
   }) => BullExchangeFeature._(
     List.unmodifiable([
@@ -74,6 +79,13 @@ final class BullExchangeFeature {
             isLoggedIn: supportChat.isLoggedIn,
             loginScreenBuilder: supportChat.loginScreenBuilder,
             onExit: supportChat.onExit,
+          ),
+    kyc == null
+        ? null
+        : GoRoute(
+            name: BullExchangeNavigation.kycName,
+            path: 'kyc',
+            builder: (_, _) => ExchangeKycScreen(host: kyc),
           ),
     settings == null
         ? const []

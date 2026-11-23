@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_amount_input_fields.dart';
 import 'package:material_ui/material_ui.dart';
@@ -120,7 +120,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                     label: context.loc.buyInputCompleteKyc,
                     onPressed: () {
                       context.pushReplacementNamed(
-                        ExchangeRoute.exchangeKyc.name,
+                        BullExchangeNavigation.kycName,
                       );
                     },
                   ),

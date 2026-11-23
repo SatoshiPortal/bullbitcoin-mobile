@@ -87,7 +87,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
     BBX_API[BBX API Package<br/>Exchange transport and wire models]
     EXCHANGE_DOMAIN[Exchange Package<br/>Account, order inventory, KYC uploads and stats]
-    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, account settings and support chat]
+    BULL_EXCHANGE[Bull Exchange workspace feature<br/>Landing, KYC, account settings and support chat]
     EXCHANGE --> BULL_EXCHANGE
     SETTINGS -->|mount account settings routes| BULL_EXCHANGE
     BULL_EXCHANGE --> BULL_UI
@@ -95,6 +95,9 @@ graph TB
     BUY --> EXCHANGE_DOMAIN
     SELL --> EXCHANGE_DOMAIN
     PAY --> EXCHANGE_DOMAIN
+    BUY -->|KYC navigation| BULL_EXCHANGE
+    SELL -->|KYC navigation| BULL_EXCHANGE
+    PAY -->|KYC navigation| BULL_EXCHANGE
     WITHDRAW --> EXCHANGE_DOMAIN
     DCA --> EXCHANGE_DOMAIN
     AUTOBUY --> EXCHANGE_DOMAIN

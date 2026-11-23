@@ -68,6 +68,7 @@ class AppRouter {
 
   static final _exchangeConfig = ExchangeRouterConfig(
     networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
+    loadKyc: () => locator<ExchangeFacade>().loadKyc(),
     isSuperuser: (context) =>
         context.read<SettingsCubit>().state.isSuperuser ?? false,
     homePath: WalletRoute.walletHome.path,

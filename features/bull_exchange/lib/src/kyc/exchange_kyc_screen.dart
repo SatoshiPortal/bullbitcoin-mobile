@@ -1,27 +1,24 @@
-import 'package:bb_mobile/features/exchange/ui/exchange_kyc_navigation.dart';
-
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullThemeX;
 import 'package:exchange/exchange.dart';
-import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
+import 'exchange_kyc_host.dart';
+import 'exchange_kyc_navigation.dart';
+
 class ExchangeKycScreen extends StatefulWidget {
-  const ExchangeKycScreen({super.key});
+  final ExchangeKycHost host;
+
+  const ExchangeKycScreen({super.key, required this.host});
 
   @override
   State<ExchangeKycScreen> createState() => _ExchangeKycScreenState();
@@ -29,10 +26,6 @@ class ExchangeKycScreen extends StatefulWidget {
 
 class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   late final WebViewController _controller = WebViewController();
-  late final String _bbKycUrl;
-  String? _basicAuthUsername;
-  String? _basicAuthPassword;
-
   bool _isLoadingConfiguration = true;
   ExchangeFailure? _configurationFailure;
 
@@ -52,12 +45,12 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   }
 
   Future<void> _load() async {
-    final result = await locator<GetExchangeWebSettingsUsecase>().execute();
+    final result = await widget.host.loadConfiguration();
     if (!mounted) return;
-    final ExchangeWebPreferences settingsState;
+    final ExchangeKycConfiguration configuration;
     switch (result) {
       case Ok(:final value):
-        settingsState = value;
+        configuration = value;
       case Err(:final failure):
         setState(() {
           _isLoadingConfiguration = false;
@@ -65,21 +58,13 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
         });
         return;
     }
-    final isTestnet = settingsState.environment == Environment.testnet;
-    _bbKycUrl = isTestnet
-        ? ApiServiceConstants.bbKycTestUrl
-        : ApiServiceConstants.bbKycUrl;
-    if (isTestnet) {
-      _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
-      _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
-    }
-
-    final navigation = ExchangeKycNavigation(_bbKycUrl);
+    final navigation = ExchangeKycNavigation(configuration.url.toString());
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onUrlChange: (UrlChange change) {
+            if (!mounted) return;
             final url = navigation.resolve(change.url ?? '');
             if (url == null) return;
 
@@ -99,8 +84,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 // Fetch the user summary to update the exchange state before
                 // going back, since the user might have completed the KYC
                 // process and the exchange state needs to be updated accordingly.
-                context.read<ExchangeCubit>().fetchUserSummary();
-                GoRouter.of(context).pop();
+                widget.host.onExit(context);
               }
             }
           },
@@ -122,16 +106,14 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             }
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
-            final username = _basicAuthUsername;
-            final password = _basicAuthPassword;
-            if (username == null ||
-                password == null ||
+            final auth = configuration.basicAuth;
+            if (auth == null ||
                 !navigation.allowsAuthentication(request.host)) {
               request.onCancel();
               return;
             }
             request.onProceed(
-              WebViewCredential(user: username, password: password),
+              WebViewCredential(user: auth.username, password: auth.password),
             );
           },
           onPageStarted: (String url) {},
@@ -153,6 +135,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             // If it is still 0, it means that the Flutter web app has not been
             //  rendered correctly, and we should reload the WebView.
             await Future.delayed(const Duration(seconds: 10));
+            if (!mounted) return;
 
             try {
               final result = await _controller.runJavaScriptReturningResult('''
@@ -173,7 +156,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             } catch (e) {
               log.severe(
                 message: 'Error checking Flutter view readiness',
-                error: e,
+                error: e.runtimeType,
                 trace: StackTrace.current,
               );
               await _controller.reload(); // fallback in case of JS failure
@@ -185,7 +168,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
       ..setUserAgent(
         'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15.0 Safari/604.1',
       )
-      ..loadRequest(Uri.parse(_bbKycUrl));
+      ..loadRequest(configuration.url);
 
     if (Platform.isAndroid) {
       AndroidWebViewController.enableDebugging(false);
@@ -213,7 +196,12 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CloseButton(onPressed: context.pop),
-            ExchangeFailureBanner(failure: failure, onRetry: _retry),
+            BullInfoCard(
+              description: widget.host.failureMessage(context, failure),
+              tagColor: context.bull.error,
+              bgColor: context.bull.errorContainer,
+              onTap: _retry,
+            ),
           ],
         ),
       );

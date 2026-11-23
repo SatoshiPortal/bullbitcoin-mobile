@@ -1,4 +1,7 @@
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bull_exchange/bull_exchange.dart';
+import 'package:preferences/preferences.dart' show Environment;
 import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_access.dart';
@@ -73,6 +76,23 @@ class ExchangeFacade {
       _ => false,
     };
   }
+
+  Future<Result<ExchangeKycConfiguration, ExchangeFailure>> loadKyc() async =>
+      (await _getWebSettings.execute()).map((settings) {
+        final isTestnet = settings.environment == Environment.testnet;
+        final username = settings.exchangeTestnetBasicAuthUsername;
+        final password = settings.exchangeTestnetBasicAuthPassword;
+        return (
+          url: Uri.parse(
+            isTestnet
+                ? ApiServiceConstants.bbKycTestUrl
+                : ApiServiceConstants.bbKycUrl,
+          ),
+          basicAuth: isTestnet && username != null && password != null
+              ? (username: username, password: password)
+              : null,
+        );
+      });
 
   ExchangeAccess get currentAccess => _watch.current;
   Stream<ExchangeAccess> watchAccess() => _watch.execute();
