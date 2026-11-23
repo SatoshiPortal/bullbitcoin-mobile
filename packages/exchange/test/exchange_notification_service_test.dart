@@ -148,7 +148,30 @@ void main() {
     expect(messages.single.event, 'VIRTUAL_IBAN_ACTIVATED');
   });
 
-  test('drops a failure without forwarding the frame or its text', () async {
+  test('reports invalid frames and keeps accepting later messages', () async {
+    final events = <Object>[];
+    final subscription = service.messageStream.listen(events.add);
+    addTearDown(subscription.cancel);
+    await service.connect();
+    mainnetConnector.channels.single.server
+      ..add('invalid JSON')
+      ..add('{"type":"balance"}');
+    await pumpEventQueue();
+    expect(events, [
+      isA<Err<NotificationMessage, ExchangeFailure>>().having(
+        (err) => err.failure,
+        'failure',
+        isA<ExchangeNotificationsUnavailableFailure>(),
+      ),
+      isA<Ok<NotificationMessage, ExchangeFailure>>().having(
+        (ok) => ok.value.kind,
+        'kind',
+        NotificationMessageKind.balance,
+      ),
+    ]);
+  });
+
+  test('does not forward the malformed frame or its text', () async {
     final previous = log;
     final logger = _Logger();
     log = logger;
