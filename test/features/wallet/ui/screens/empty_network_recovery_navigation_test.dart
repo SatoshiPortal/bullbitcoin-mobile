@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
@@ -109,12 +108,12 @@ void main() {
             ],
           ),
           GoRoute(
-            name: OnboardingRoute.onboarding.name,
-            path: OnboardingRoute.onboarding.path,
+            name: 'onboarding',
+            path: '/onboarding',
             builder: (_, _) => const Scaffold(body: Text('Onboarding target')),
           ),
           GoRoute(
-            name: OnboardingRoute.recoverFromPhysical.name,
+            name: 'recoverFromPhysical',
             path: '/physical-target',
             builder: (_, _) => const Scaffold(body: Text('Physical target')),
           ),

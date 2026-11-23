@@ -1,6 +1,6 @@
 import 'package:wallet_import/wallet_import.dart';
-import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/scan_onboarding_wallet_usecase.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/src/domain/scan_onboarding_wallet_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

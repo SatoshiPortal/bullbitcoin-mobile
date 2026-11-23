@@ -2,13 +2,10 @@ import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
-import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/scan_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:onboarding/onboarding.dart';
+import 'package:onboarding/src/domain/scan_onboarding_wallet_usecase.dart';
+import 'package:onboarding/src/presentation/bloc/onboarding_bloc.dart';
+import 'package:onboarding/src/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 import 'package:material_ui/material_ui.dart';
@@ -18,11 +15,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _Create extends Mock implements CreateOnboardingWalletUsecase {}
+abstract interface class _Recovery {
+  Future<Result<void, OnboardingFailure>> execute({
+    required List<String> mnemonicWords,
+    required bip39.Language language,
+    required String passphrase,
+  });
+}
 
-class _Recover extends Mock implements RecoverOnboardingWalletUsecase {}
+class _Recover extends Mock implements _Recovery {}
 
 class _Scan extends Mock implements ScanOnboardingWalletUsecase {}
+
+const _delegates = [
+  OnboardingLocalizations.delegate,
+  MnemonicEntryLocalizations.delegate,
+  ...GlobalMaterialLocalizations.delegates,
+];
 
 void main() {
   setUpAll(() => registerFallbackValue(bip39.Language.english));
@@ -37,16 +46,16 @@ void main() {
           .setMockMethodCallHandler(channel, null),
     );
     final bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: _Recover(),
+      createWallet: () async => const Ok(null),
+      recoverWallet: _Recover().execute,
       scanOnboardingWalletUsecase: _Scan(),
     );
     addTearDown(bloc.close);
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: _delegates,
+        supportedLocales: OnboardingLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
           child: const OnboardingPhysicalRecovery(),
@@ -85,15 +94,15 @@ void main() {
       ),
     ).thenAnswer((_) => recovery.future);
     final bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: recover,
+      createWallet: () async => const Ok(null),
+      recoverWallet: recover.execute,
       scanOnboardingWalletUsecase: scan,
     );
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: _delegates,
+        supportedLocales: OnboardingLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
           child: const OnboardingPhysicalRecovery(),
@@ -177,15 +186,15 @@ void main() {
         ),
       ).thenAnswer((_) => pending.future);
       final bloc = OnboardingBloc(
-        createOnboardingWalletUsecase: _Create(),
-        recoverOnboardingWalletUsecase: recover,
+        createWallet: () async => const Ok(null),
+        recoverWallet: recover.execute,
         scanOnboardingWalletUsecase: scan,
       );
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: _delegates,
+          supportedLocales: OnboardingLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: bloc,
             child: const OnboardingPhysicalRecovery(),
@@ -243,15 +252,15 @@ void main() {
       ),
     ).thenAnswer((_) async => const Err(OnboardingWalletScanFailure()));
     final bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: recover,
+      createWallet: () async => const Ok(null),
+      recoverWallet: recover.execute,
       scanOnboardingWalletUsecase: scan,
     );
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: _delegates,
+        supportedLocales: OnboardingLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
           child: const OnboardingPhysicalRecovery(),
@@ -319,15 +328,15 @@ void main() {
       ),
     ).thenAnswer((_) => pending.future);
     final bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: _Recover(),
+      createWallet: () async => const Ok(null),
+      recoverWallet: _Recover().execute,
       scanOnboardingWalletUsecase: scan,
     );
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: _delegates,
+        supportedLocales: OnboardingLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
           child: const OnboardingPhysicalRecovery(),
@@ -381,15 +390,15 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(false));
     final bloc = OnboardingBloc(
-      createOnboardingWalletUsecase: _Create(),
-      recoverOnboardingWalletUsecase: recover,
+      createWallet: () async => const Ok(null),
+      recoverWallet: recover.execute,
       scanOnboardingWalletUsecase: scan,
     );
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: _delegates,
+        supportedLocales: OnboardingLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
           child: const OnboardingPhysicalRecovery(),

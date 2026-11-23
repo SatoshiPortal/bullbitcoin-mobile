@@ -28,8 +28,7 @@ import 'package:path/path.dart' as p;
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
   'all_seed_view': 'access',
-  'app_startup':
-      'access logs mnemonic_entry onboarding recoverbull settings wallet',
+  'app_startup': 'access logs mnemonic_entry recoverbull settings wallet',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'bitcoin_price coins fees',
   'coins': 'address_view bitcoin_price wallet',

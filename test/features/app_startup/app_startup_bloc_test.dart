@@ -316,6 +316,8 @@ void main() {
           ],
           builder: (_, child) => AppStartupWidget(
             app: child ?? const SizedBox.shrink(),
+            loadingSplash: (_) => const SizedBox.shrink(),
+            onMissingWallets: () => fail('Unexpected onboarding navigation'),
             onUnlocked: () {
               unlocks++;
               return walletRuntime.future;
