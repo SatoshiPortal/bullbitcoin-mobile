@@ -12,7 +12,6 @@ WalletRegistration walletRegistrationForTesting({
   network: network,
   scriptType: ScriptType.bip84,
   signer: signer,
-  masterFingerprint: null,
   secretFingerprint: null,
   masterFingerprint: null,
   derivationPath: null,
