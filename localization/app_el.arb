@@ -189,10 +189,6 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "exchangeReferralsTitle": "Αναφέρων κωδίκων",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "Ανακαλύψτε το πορτοφόλι σας",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -762,10 +758,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "Διαχείριση 2FA και κωδικού πρόσβασης",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "sendCoinAmount": "Ποσό: {amount}",
   "@sendCoinAmount": {
     "description": "Label for UTXO amount",
@@ -1039,10 +1031,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορεί να χρειαστούν λίγο χρόνο για να επιβεβαιωθούν. Μπορείτε να επιστρέψετε στην αρχική οθόνη και να περιμένετε.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1070,10 +1058,6 @@
   "payExpired": "Επεκτάθηκαν",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "Οι ρυθμίσεις πρόσβασης",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "Πληρωμή επιτυχής επιτυχής",
   "@payPaymentSuccessful": {
@@ -2772,10 +2756,6 @@
   "rbfErrorAlreadyConfirmed": "Η αρχική συναλλαγή έχει επιβεβαιωθεί",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
-  },
-  "exchangeReferralsContactSupportMessage": "Υποστήριξη επαφών για να μάθετε σχετικά με το πρόγραμμα παραπομπής μας",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
   },
   "sellSendPaymentEurBalance": "EUR EUR EUR EUR EUR EUR ισορροπία ισορροπία",
   "@sellSendPaymentEurBalance": {
@@ -7175,10 +7155,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "exchangeReferralsApplyToJoinMessage": "Εφαρμογή για να ενταχθεί στο πρόγραμμα εδώ",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "Εισάγετε μια ετικέτα για αυτόν τον παραλήπτη",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -7218,10 +7194,6 @@
   "sellAdvancedSettings": "Προχωρημένες ρυθμίσεις",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "Ελάτε στην αποστολή",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "Συνδεθείτε στο Log In",
   "@exchangeSettingsLogInTitle": {
@@ -7506,10 +7478,6 @@
   "transactionListNoTransactions": "Καμία συναλλαγή ακόμα.",
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
-  },
-  "exchangeSupportChatMessageRequired": "Ένα μήνυμα απαιτείται",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "transactionDetailLabelPayinAmount": "Ποσό Payin",
   "@transactionDetailLabelPayinAmount": {
@@ -7829,10 +7797,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Επισκεφθείτε το ανάκτησηbull.com για περισσότερες πληροφορίες.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "Δεν υπάρχουν μηνύματα ακόμα. Ξεκινήστε μια συνομιλία!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
@@ -8218,10 +8182,6 @@
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
   },
-  "exchangeSupportChatYesterday": "Χθες",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "exchangeAuthLoginFailedTitle": "Εμπορία",
   "@exchangeAuthLoginFailedTitle": {
     "description": "Title of the dialog shown when exchange login fails"
@@ -8400,10 +8360,6 @@
   "autoswapMaxFeeLabel": "Μέγιστο τέλος ανταλλαγής",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
-  },
-  "exchangeSupportChatMessageEmptyError": "Το μήνυμα δεν μπορεί να είναι άδειο",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeCanadaPostTitle": "Σε μετρητά προσώπου ή χρέωση στον Καναδά Post",
   "@fundExchangeCanadaPostTitle": {
@@ -8822,11 +8778,6 @@
   "recipientsFieldPayeeAccountNumber": "Αριθμός λογαριασμού δικαιούχου",
   "exchangeFileUploadStatusRejectedBadge": "Απορρίφθηκε",
   "exchangeFileUploadTapToReupload": "Πατήστε για να ανεβάσετε ξανά",
-  "exchangeSupportChatAttachmentImage": "Εικόνα",
-  "exchangeSupportChatAttachmentUnknownFile": "Άγνωστο αρχείο",
-  "exchangeSupportChatPickFilesFailed": "Η επιλογή αρχείων απέτυχε. Δοκιμάστε ξανά.",
-  "exchangeSupportChatAttachLogsFailed": "Η επισύναψη αρχείων καταγραφής απέτυχε. Δοκιμάστε ξανά.",
-  "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε.",
   "recipientsFieldSinpePhoneNumberHint": "8 ψηφία χωρίς κωδικό χώρας",
   "recipientsCopDocCcRecipientNumber": "Αριθμός cédula παραλήπτη",
   "recipientsCopDocCeRecipientNumber": "Αριθμός cédula de extranjería παραλήπτη",
@@ -9314,9 +9265,6 @@
   "settingsSearchErrorReportingKeywords": "αναφορές σφαλμάτων λειτουργίας|αναφορές προβλημάτων|διαγνωστικά|τηλεμετρία|αρχεία σφαλμάτων",
   "settingsSearchScreenPrivacyKeywords": "στιγμιότυπα οθόνης|εγγραφή οθόνης|προστασία καταγραφής|απόρρητο",
   "settingsSearchStartTyping": "Αρχίστε να πληκτρολογείτε για να δείτε αποτελέσματα.",
-  "exchangeSupportChatLoadMessagesError": "Δεν ήταν δυνατή η φόρτωση των μηνυμάτων. Δοκιμάστε ξανά.",
-  "exchangeSupportChatSendMessageError": "Δεν ήταν δυνατή η αποστολή του μηνύματός σας. Δοκιμάστε ξανά.",
-  "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά.",
   "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
   "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",

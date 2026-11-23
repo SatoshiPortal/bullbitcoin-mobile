@@ -114,25 +114,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "هنوز پیام نیست. یک مکالمه را شروع کنید!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "نوع یک پیام ...",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "یک پیام لازم است",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "پیام نمی تواند خالی باشد",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "دیروز",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "این چت تنها برای تبادل مسائل مربوط به صندوق / خرید / خرید / Sell / باdraw /Pay است.\nبرای مسائل مربوط به کیف پول، با کلیک کردن در اینجا به گروه تلگرام بپیوندید.",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -764,10 +748,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "کد های مرجع",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "بازیابی کیف پول",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -1289,10 +1269,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "مدیریت 2FA و رمز عبور",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "پشتیبان گیری کامل!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1562,10 +1538,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "مبادله در حال انجام است. تأیید تراکنش‌های Bitcoin می‌تواند مدتی طول بکشد. می‌توانید به صفحه اصلی برگردید و منتظر بمانید.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1597,10 +1569,6 @@
   "payExpired": "تایید شده",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "تنظیمات دسترسی",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "پرداخت موفقیت آمیز",
   "@payPaymentSuccessful": {
@@ -3279,10 +3247,6 @@
   "rbfErrorAlreadyConfirmed": "معامله اصلی تایید شده است",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
-  },
-  "exchangeReferralsContactSupportMessage": "پشتیبانی تماس برای یادگیری در مورد برنامه ارجاع ما",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
   },
   "sellSendPaymentEurBalance": "یورو یورو تعادل تعادل تعادل",
   "@sellSendPaymentEurBalance": {
@@ -7714,10 +7678,6 @@
   "@sellNetAmount": {
     "description": "Label for amount after fees"
   },
-  "exchangeReferralsApplyToJoinMessage": "درخواست برای پیوستن به برنامه در اینجا",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "یک برچسب برای این گیرنده وارد کنید",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -7753,10 +7713,6 @@
   "sellAdvancedSettings": "تنظیمات پیشرفته",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "پیوستن به ماموریت",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "ورود در",
   "@exchangeSettingsLogInTitle": {
@@ -9232,11 +9188,6 @@
   "recipientsFieldPayeeAccountNumber": "شماره حساب دریافت‌کننده",
   "exchangeFileUploadStatusRejectedBadge": "رد شده",
   "exchangeFileUploadTapToReupload": "ضربه برای دوباره آپلود",
-  "exchangeSupportChatAttachmentImage": "تصویر",
-  "exchangeSupportChatAttachmentUnknownFile": "فایل نامشخص",
-  "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
-  "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
-  "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "خطایی غیرمنتظره رخ داد",
   "mempoolErrorUpdateSettingsFailed": "به‌روزرسانی تنظیمات ممکن نشد: {error}",
@@ -9314,9 +9265,6 @@
   "settingsSearchErrorReportingKeywords": "گزارش های خرابی|گزارش خطا|اطلاعات تشخیصی|تله متری|گزارش های خطا",
   "settingsSearchScreenPrivacyKeywords": "اسکرین‌شات|ضبط صفحه|محافظت از ضبط صفحه|حریم خصوصی",
   "settingsSearchStartTyping": "برای مشاهده نتایج شروع به تایپ کنید.",
-  "exchangeSupportChatLoadMessagesError": "بارگیری پیام‌ها ممکن نشد. لطفاً دوباره تلاش کنید.",
-  "exchangeSupportChatSendMessageError": "ارسال پیام شما ممکن نشد. لطفاً دوباره تلاش کنید.",
-  "exchangeSupportChatLoadAttachmentError": "باز کردن پیوست ممکن نشد. لطفاً دوباره تلاش کنید.",
   "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
   "sendErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
   "sendErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",

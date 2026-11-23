@@ -273,13 +273,6 @@
   "exchangeSettingsTransactionsTitle": "লেনদেনসমূহ",
   "exchangeTransactionsTitle": "লেনদেনসমূহ",
   "exchangeTransactionsComingSoon": "লেনদেনসমূহ - শীঘ্ৰে আহিছে",
-  "exchangeSecurityManage2FAPasswordLabel": "2FA আৰু পাছৱৰ্ড পৰিচালনা কৰক",
-  "exchangeSecurityAccessSettingsButton": "ছেটিংছ প্ৰৱেশ কৰক",
-  "exchangeReferralsTitle": "Referral কোডসমূহ",
-  "exchangeReferralsJoinMissionTitle": "মিছনত যোগ দিয়ক",
-  "exchangeReferralsContactSupportMessage": "আমাৰ referral কাৰ্যক্ৰমৰ বিষয়ে জানিবলৈ সহায়ৰ সৈতে যোগাযোগ কৰক",
-  "exchangeReferralsApplyToJoinMessage": "কাৰ্যক্ৰমত যোগ দিবলৈ ইয়াত আবেদন কৰক",
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
   "exchangeRecipientsTitle": "প্ৰাপকসমূহ",
   "exchangeFileUploadTitle": "সুৰক্ষিত ফাইল আপলোড",
   "exchangeFileUploadDocumentTitle": "যিকোনো দস্তাবেজ আপলোড কৰক",
@@ -5647,25 +5640,9 @@
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
   },
-  "exchangeSupportChatEmptyState": "এতিয়াও কোনো বাৰ্তা নাই। কথা-বতৰা আৰম্ভ কৰক!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
-  },
   "exchangeSupportChatInputHint": "এটা বাৰ্তা লিখক...",
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
-  },
-  "exchangeSupportChatMessageRequired": "এটা বাৰ্তা আৱশ্যক",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
-  },
-  "exchangeSupportChatMessageEmptyError": "বাৰ্তা খালী হ'ব নোৱাৰে",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
-  },
-  "exchangeSupportChatYesterday": "কালি",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
   },
   "exchangeSupportChatWalletIssuesInfo": "এই চেট কেৱল Funding/Buy/Sell/Withdraw/Pay সম্পৰ্কীয় exchange সমস্যাৰ বাবে।\nWallet সম্পৰ্কীয় সমস্যাৰ বাবে, ইয়াত ক্লিক কৰি telegram গ্ৰুপত যোগ দিয়ক।",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -6728,11 +6705,6 @@
   "recipientsFieldPayeeAccountNumber": "পেয়ী একাউণ্ট নম্বৰ",
   "exchangeFileUploadStatusRejectedBadge": "প্ৰত্যাখ্যান কৰা হৈছে",
   "exchangeFileUploadTapToReupload": "পুনৰ আপলোড কৰিবলৈ টেপ কৰক",
-  "exchangeSupportChatAttachmentImage": "প্ৰতিচ্ছবি",
-  "exchangeSupportChatAttachmentUnknownFile": "অজ্ঞাত ফাইল",
-  "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "পৰ্যাপ্ত খৰচযোগ্য বেলেঞ্চ নাই — {amount} ফ্ৰীজ কৰা আছে। ইয়াক ব্যৱহাৰ কৰিবলৈ 'কইন পৰিচালনা কৰক' ত কইনবোৰ মুকলি কৰক।",
   "importWalletBitBox": "BitBox02",
@@ -6808,9 +6780,6 @@
   "settingsSearchErrorReportingKeywords": "Crash report|ত্ৰুটি প্ৰতিবেদন|Diagnostic|Telemetry|ত্ৰুটি লগ",
   "settingsSearchScreenPrivacyKeywords": "স্ক্ৰীনশ্বট|স্ক্ৰীন ৰেকৰ্ডিং|স্ক্ৰীন কেপচাৰ সুৰক্ষা|গোপনীয়তা",
   "settingsSearchStartTyping": "ফলাফল চাবলৈ টাইপ কৰা আৰম্ভ কৰক।",
-  "exchangeSupportChatLoadMessagesError": "বাৰ্তাসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatSendMessageError": "আপোনাৰ বাৰ্তা পঠিয়াব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
   "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",

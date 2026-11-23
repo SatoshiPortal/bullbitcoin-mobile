@@ -230,10 +230,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "রেফারেল কোডসমূহ",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "আপনার ওয়ালেট পুনরুদ্ধার করুন",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -848,10 +844,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA এবং পাসওয়ার্ড পরিচালনা করুন",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "ব্যাকআপ সম্পন্ন!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1185,10 +1177,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "সোয়াপ প্রক্রিয়াধীন। Bitcoin ট্রানজেকশন নিশ্চিত হতে কিছু সময় লাগতে পারে। আপনি হোমে ফিরে অপেক্ষা করতে পারেন।",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1220,10 +1208,6 @@
   "payExpired": "মেয়াদ শেষ",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "সেটিংস অ্যাক্সেস করুন",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "পেমেন্ট সফল হয়েছে",
   "@payPaymentSuccessful": {
@@ -1684,10 +1668,6 @@
   "logoutConfirmationLogout": "লগআউট",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "একটি বার্তা আবশ্যক",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "আনুমানিক ফি মূল্য",
   "@buyEstimatedFeeValue": {
@@ -3153,10 +3133,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "আমাদের রেফারেল প্রোগ্রাম সম্পর্কে জানতে সাপোর্টে যোগাযোগ করুন",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR ব্যালেন্স",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -4005,10 +3981,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "আর তথ্যের জন্য recoverbull.com-এ যান।",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "এখনও কোনো বার্তা নেই। কথোপকথন শুরু করুন!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "অন্য একটি বিটকয়েন ওয়ালেট থেকে পেমেন্ট করুন",
   "@payExternalWalletDescription": {
@@ -6449,10 +6421,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "exchangeSupportChatYesterday": "গতকাল",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "dcaSetupFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -7225,10 +7193,6 @@
   "fundExchangeLabelBeneficiaryName": "প্রাপকের নাম",
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
-  },
-  "exchangeSupportChatMessageEmptyError": "বার্তা খালি হতে পারে না",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeWarningTactic2": "তারা আপনাকে একটি ঋণ দিচ্ছে",
   "@fundExchangeWarningTactic2": {
@@ -8295,10 +8259,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "এখানে প্রোগ্রামে যোগ দিতে আবেদন করুন",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "এই প্রাপকের জন্য একটি লেবেল লিখুন",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8346,10 +8306,6 @@
   "sellAdvancedSettings": "উন্নত সেটিংস",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "মিশনে যোগ দিন",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "লগ ইন",
   "@exchangeSettingsLogInTitle": {
@@ -9417,11 +9373,6 @@
   "recipientsFieldPayeeAccountNumber": "পেয়ি অ্যাকাউন্ট নম্বর",
   "exchangeFileUploadStatusRejectedBadge": "প্রত্যাখ্যাত",
   "exchangeFileUploadTapToReupload": "পুনরায় আপলোড করতে ট্যাপ করুন",
-  "exchangeSupportChatAttachmentImage": "ছবি",
-  "exchangeSupportChatAttachmentUnknownFile": "অজানা ফাইল",
-  "exchangeSupportChatPickFilesFailed": "ফাইল বাছাই করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "exchangeSupportChatAttachLogsFailed": "লগ সংযুক্ত করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "exchangeSupportChatFetchFileDataFailed": "ফাইল ডেটা আনতে ব্যর্থ হয়েছে",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendErrorInsufficientBalanceFrozenHint": "পর্যাপ্ত ব্যয়যোগ্য ব্যালান্স নেই — {amount} ফ্রোজেন আছে। এটি ব্যবহার করতে কয়েন পরিচালনা করুন-এ গিয়ে কয়েন আনফ্রিজ করুন।",
   "importWalletBitBox": "BitBox02",
@@ -9497,9 +9448,6 @@
   "settingsSearchErrorReportingKeywords": "Crash report|ত্রুটি প্রতিবেদন|Diagnostic|Telemetry|ত্রুটি লগ",
   "settingsSearchScreenPrivacyKeywords": "স্ক্রিনশট|স্ক্রিন রেকর্ডিং|স্ক্রিন ক্যাপচার সুরক্ষা|গোপনীয়তা",
   "settingsSearchStartTyping": "ফলাফল দেখতে টাইপ করা শুরু করুন।",
-  "exchangeSupportChatLoadMessagesError": "বার্তা লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "exchangeSupportChatSendMessageError": "আপনার বার্তা পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "exchangeSupportChatLoadAttachmentError": "সংযুক্তিটি খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "sendErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
   "sendErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",

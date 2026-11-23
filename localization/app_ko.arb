@@ -229,10 +229,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "Referral 부호",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "지갑을 복구",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -856,10 +852,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "2FA 및 암호 관리",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "백업 완료!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1193,10 +1185,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/출금",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "스왑이 진행 중입니다. Bitcoin 트랜잭션은 확인되는 데 시간이 걸릴 수 있습니다. 홈으로 돌아가 기다리셔도 됩니다.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1228,10 +1216,6 @@
   "payExpired": "구매하기",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "exchangeSecurityAccessSettingsButton": "액세스 설정",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "지불 성공",
   "@payPaymentSuccessful": {
@@ -1708,10 +1692,6 @@
   "logoutConfirmationLogout": "로그아웃",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
-  },
-  "exchangeSupportChatMessageRequired": "자주 묻는 질문",
-  "@exchangeSupportChatMessageRequired": {
-    "description": "Placeholder text when attachments are present but no message text"
   },
   "buyEstimatedFeeValue": "예상 수수료 값",
   "@buyEstimatedFeeValue": {
@@ -3204,10 +3184,6 @@
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
   },
-  "exchangeReferralsContactSupportMessage": "우리의 추천 프로그램에 대해 자세히 알아보기",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
-  },
   "sellSendPaymentEurBalance": "EUR 유로 (주)",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
@@ -4072,10 +4048,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "자세한 내용은 recoverbull.com 방문.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "exchangeSupportChatEmptyState": "아직 메시지가 없습니다. 대화 시작!",
-  "@exchangeSupportChatEmptyState": {
-    "description": "Message shown when there are no chat messages"
   },
   "payExternalWalletDescription": "다른 Bitcoin 지갑에서 지불",
   "@payExternalWalletDescription": {
@@ -6567,10 +6539,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "exchangeSupportChatYesterday": "1 년 전",
-  "@exchangeSupportChatYesterday": {
-    "description": "Label for yesterday in date formatting"
-  },
   "dcaSetupFundAccount": "계정 생성",
   "@dcaSetupFundAccount": {
     "description": "Button to fund account"
@@ -7347,10 +7315,6 @@
   "fundExchangeLabelBeneficiaryName": "이름 *",
   "@fundExchangeLabelBeneficiaryName": {
     "description": "Label for beneficiary name field"
-  },
-  "exchangeSupportChatMessageEmptyError": "메시지가 비어있을 수 없습니다",
-  "@exchangeSupportChatMessageEmptyError": {
-    "description": "Error message when trying to send an empty message"
   },
   "fundExchangeWarningTactic2": "그들은 당신에게 대출을 제공",
   "@fundExchangeWarningTactic2": {
@@ -8437,10 +8401,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "여기에 프로그램에 가입",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "이 수신자에게 라벨을 입력",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -8488,10 +8448,6 @@
   "sellAdvancedSettings": "고급 설정",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "본문 바로가기",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "로그인",
   "@exchangeSettingsLogInTitle": {
@@ -9235,11 +9191,6 @@
   "recipientsFieldPayeeAccountNumber": "수취인 계좌번호",
   "exchangeFileUploadStatusRejectedBadge": "거부됨",
   "exchangeFileUploadTapToReupload": "탭하여 다시 업로드",
-  "exchangeSupportChatAttachmentImage": "이미지",
-  "exchangeSupportChatAttachmentUnknownFile": "알 수 없는 파일",
-  "exchangeSupportChatPickFilesFailed": "파일을 선택하지 못했습니다. 다시 시도해 주세요.",
-  "exchangeSupportChatAttachLogsFailed": "로그 첨부에 실패했습니다. 다시 시도해 주세요.",
-  "exchangeSupportChatFetchFileDataFailed": "파일 데이터를 가져오지 못했습니다",
   "importWatchOnlyXpubLabel": "XPUB",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
@@ -9314,9 +9265,6 @@
   "settingsSearchErrorReportingKeywords": "충돌 보고서|버그 보고서|진단|원격 측정|오류 로그",
   "settingsSearchScreenPrivacyKeywords": "스크린샷|화면 녹화|화면 캡처 보호|개인정보 보호",
   "settingsSearchStartTyping": "결과를 보려면 입력을 시작하세요.",
-  "exchangeSupportChatLoadMessagesError": "메시지를 불러오지 못했습니다. 다시 시도해 주세요.",
-  "exchangeSupportChatSendMessageError": "메시지를 보내지 못했습니다. 다시 시도해 주세요.",
-  "exchangeSupportChatLoadAttachmentError": "첨부 파일을 열지 못했습니다. 다시 시도해 주세요.",
   "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
   "sendErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
   "sendErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",

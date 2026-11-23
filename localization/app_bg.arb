@@ -361,10 +361,6 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "Реферални кодове",
-  "@exchangeReferralsTitle": {
-    "description": "Title for the referral codes section"
-  },
   "onboardingRecoverYourWallet": "Възстановете портфейла си.",
   "@onboardingRecoverYourWallet": {
     "description": "Title for the recover wallet section in onboarding"
@@ -833,10 +829,6 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "Управление на двуфакторната автентикация и паролата",
-  "@exchangeSecurityManage2FAPasswordLabel": {
-    "description": "Label for managing 2FA and password in exchange security settings"
-  },
   "backupWalletSuccessTitle": "Резервното копие е завършено!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -1115,10 +1107,6 @@
   "@physicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "exchangeReferralsMissionLink": "bullbitcoin.com/mission",
-  "@exchangeReferralsMissionLink": {
-    "description": "Link to the Bull Bitcoin mission page"
-  },
   "swapTransferPendingMessage": "Обменът е в процес. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете в началото и да изчакате.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
@@ -1146,10 +1134,6 @@
   "buyAwaitingConfirmation": "Очаква се потвърждение ",
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
-  },
-  "exchangeSecurityAccessSettingsButton": "Настройки за достъп",
-  "@exchangeSecurityAccessSettingsButton": {
-    "description": "Button label for accessing security settings in exchange"
   },
   "payPaymentSuccessful": "Плащането е успешно",
   "@payPaymentSuccessful": {
@@ -2653,10 +2637,6 @@
   "rbfErrorAlreadyConfirmed": "Оригиналната транзакция е потвърдена.",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
-  },
-  "exchangeReferralsContactSupportMessage": "Свържете се с поддръжката, за да научите за нашата реферална програма",
-  "@exchangeReferralsContactSupportMessage": {
-    "description": "Message prompting users to contact support about the referral program"
   },
   "sendContinue": "Продължи",
   "@sendContinue": {
@@ -6646,10 +6626,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "exchangeReferralsApplyToJoinMessage": "Кандидатствайте, за да се присъедините към програмата тук",
-  "@exchangeReferralsApplyToJoinMessage": {
-    "description": "Message with link to apply for the referral program"
-  },
   "payLabelHint": "Въведете етикет за този получател",
   "@payLabelHint": {
     "description": "Hint for label input"
@@ -6689,10 +6665,6 @@
   "sellAdvancedSettings": "Разширени настройки",
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
-  },
-  "exchangeReferralsJoinMissionTitle": "Присъединете се към мисията",
-  "@exchangeReferralsJoinMissionTitle": {
-    "description": "Title encouraging users to join the referral mission"
   },
   "exchangeSettingsLogInTitle": "Вход",
   "@exchangeSettingsLogInTitle": {
@@ -7013,11 +6985,6 @@
   "recipientsFieldPayeeAccountNumber": "Номер на сметката на получателя",
   "exchangeFileUploadStatusRejectedBadge": "Отхвърлено",
   "exchangeFileUploadTapToReupload": "Натиснете, за да качите отново",
-  "exchangeSupportChatAttachmentImage": "Изображение",
-  "exchangeSupportChatAttachmentUnknownFile": "Неизвестен файл",
-  "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
-  "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
-  "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
   "recipientsFieldSinpePhoneNumberHint": "8 цифри без код на държава",
   "recipientsCopDocCcRecipientNumber": "Cédula номер на получателя",
   "recipientsCopDocCeRecipientNumber": "Cédula de extranjería номер на получателя",
@@ -7720,11 +7687,7 @@
   "exchangeHomeDepositButton": "Депозит",
   "exchangeHomeWithdrawButton": "Тегли",
   "exchangeSupportChatTitle": "Чат за поддръжка",
-  "exchangeSupportChatEmptyState": "Все още няма съобщения. Започнете разговор!",
   "exchangeSupportChatInputHint": "Напишете съобщение...",
-  "exchangeSupportChatMessageRequired": "Изисква се съобщение",
-  "exchangeSupportChatMessageEmptyError": "Съобщението не може да бъде празно",
-  "exchangeSupportChatYesterday": "Вчера",
   "exchangeSupportChatWalletIssuesInfo": "Този чат е само за проблеми, свързани с борсата — Захранване/Купуване/Продаване/Теглене/Плащане.\nЗа проблеми, свързани с портфейла, се присъединете към групата в Telegram, като кликнете тук.",
   "exchangeDcaUnableToGetConfig": "Конфигурацията за DCA не можа да бъде получена",
   "exchangeDcaDeactivateTitle": "Деактивирай периодична покупка",
@@ -7918,9 +7881,6 @@
   "settingsSearchErrorReportingKeywords": "доклади за сривове|доклади за грешки|диагностика|телеметрия|логове за грешки",
   "settingsSearchScreenPrivacyKeywords": "екранни снимки|запис на екрана|защита от заснемане|поверителност",
   "settingsSearchStartTyping": "Започнете да пишете, за да видите резултати.",
-  "exchangeSupportChatLoadMessagesError": "Съобщенията не могат да бъдат заредени. Моля, опитайте отново.",
-  "exchangeSupportChatSendMessageError": "Съобщението ви не можа да бъде изпратено. Моля, опитайте отново.",
-  "exchangeSupportChatLoadAttachmentError": "Прикаченият файл не можа да бъде отворен. Моля, опитайте отново.",
   "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
   "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
   "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
