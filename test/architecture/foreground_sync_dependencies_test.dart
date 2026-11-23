@@ -48,7 +48,8 @@ const _allowedTargets = <String, String>{
   'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
+  'overview': 'bitcoin_price quick_actions',
+  'wallet': 'address_view ark backups bitcoin_price coins import_watch_only_wallet network onboarding overview quick_actions receive recoverbull scanning send settings signers silent swap transactions',
   'wallet_import': 'signers',
   'wizard': 'bull_exchange settings',
 };
