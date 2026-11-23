@@ -215,5 +215,6 @@
   "sendErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
   "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
-  "sendErrorInvoiceExpiryTooShort": "Esta fatura expira demasiado cedo. Peça ao destinatário uma nova fatura."
+  "sendErrorInvoiceExpiryTooShort": "Esta fatura expira demasiado cedo. Peça ao destinatário uma nova fatura.",
+  "closeDialogButton": "Fechar"
 }

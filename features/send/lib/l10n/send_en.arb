@@ -1141,5 +1141,9 @@
   "sendErrorInvoiceExpiryTooShort": "This invoice expires too soon. Ask the recipient for a new invoice.",
   "@sendErrorInvoiceExpiryTooShort": {
     "description": "Error shown when Boltz rejects a Lightning invoice with too little time before expiry"
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
   }
 }

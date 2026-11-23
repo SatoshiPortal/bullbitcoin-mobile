@@ -1406,6 +1406,27 @@ class SendCubit extends Cubit<SendState>
 
       var paymentRequest = await _resolvePrimaryPaymentRequest(inputGeneration);
       if (paymentRequest == null) return;
+      final walletKey = _walletKey;
+      if (walletKey != null && _wallet == null) {
+        // Navigation can reach confirmation while the inventory is loading.
+        // Keep the account chosen by the caller through that race.
+        final result = await _loadSources.read(walletKey.id);
+        if (isClosed || isStale()) return;
+        switch (result) {
+          case Ok(value: final source?) when source.key == walletKey:
+            _wallet = source;
+          case _:
+            emit(
+              state.copyWith(
+                loadingBestWallet: false,
+                failure: const SendUnexpectedFailure(
+                  'Selected wallet unavailable',
+                ),
+              ),
+            );
+            return;
+        }
+      }
       if (!state.usesSelectedInputsOnly && !state.hasMultipleRecipients) {
         await unifiedBip21Prioritization(inputGeneration: inputGeneration);
         paymentRequest = state.paymentRequest ?? paymentRequest;

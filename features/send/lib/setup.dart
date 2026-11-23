@@ -41,7 +41,7 @@ abstract final class SendFeature {
     required ImageProvider paymentArrowImage,
   }) => (
     payment: paymentRoute(
-      createCubits: (args, spWalletLabel) => createPaymentCubits(
+      createCubit: (args, spWalletLabel) => createPaymentCubit(
         dependencies: payment(),
         args: args,
         spWalletLabel: spWalletLabel,
@@ -49,6 +49,7 @@ abstract final class SendFeature {
         fees: fees,
         environment: environment,
       ),
+      createArkCubit: () => createPaymentArkCubit(payment()),
       openSignedTransactionReader: (context, prepared, network) =>
           GoRouter.of(context).pushNamed<String>(
             BroadcastSignedTxRoute.broadcastHome.name,

@@ -562,5 +562,9 @@
   "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
-  "sendErrorInvoiceExpiryTooShort": "Αυτό το invoice λήγει πολύ σύντομα. Ζητήστε ένα νέο invoice από τον παραλήπτη."
+  "sendErrorInvoiceExpiryTooShort": "Αυτό το invoice λήγει πολύ σύντομα. Ζητήστε ένα νέο invoice από τον παραλήπτη.",
+  "closeDialogButton": "Κλείστε κοντά",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show ImageProvider, Widget, BuildContext;
+import 'package:flutter/widgets.dart' show ImageProvider, Widget, BuildContext;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:send/src/send_localizations.dart';
@@ -14,8 +14,8 @@ import 'screens/send_screen.dart';
 import 'send_payment_ui.dart';
 
 GoRoute paymentRoute({
-  required (SendCubit, SendArkCubit) Function(SendRouteArgs?, String?)
-  createCubits,
+  required SendCubit Function(SendRouteArgs?, String?) createCubit,
+  required SendArkCubit Function() createArkCubit,
   required OpenSignedTransactionReader openSignedTransactionReader,
   required void Function(BuildContext) openHome,
   required void Function(BuildContext, WalletKey) openCoins,
@@ -30,16 +30,14 @@ GoRoute paymentRoute({
       final SendRouteArgs args => args,
       _ => null,
     };
-    final (send, ark) = createCubits(
-      args,
-      args?.isSpMode == true ? context.loc.walletSpTitle : null,
-    );
     return MultiBlocProvider(
       providers: [
-        BlocProvider<SendArkCubit>(lazy: false, create: (_) => ark),
+        BlocProvider<SendArkCubit>(create: (_) => createArkCubit()),
         BlocProvider<SendCubit>(
-          lazy: false,
-          create: (_) => send..loadWalletWithRatesAndFees(),
+          create: (_) => createCubit(
+            args,
+            args?.isSpMode == true ? context.loc.walletSpTitle : null,
+          )..loadWalletWithRatesAndFees(),
         ),
       ],
       child: SendPaymentUi(

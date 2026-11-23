@@ -21,10 +21,9 @@ class LoadSendSourcesUsecase {
     this._loadWallet,
     this._readDevice,
     this._environment, {
-    required Future<Result<void, SyncFailure>> Function(WalletKey) synchronize,
-    required Stream<WalletKey> finished,
-  }) : _synchronize = synchronize,
-       _finished = finished;
+    required this._synchronize,
+    required this._finished,
+  });
 
   Future<Result<List<SendSource>, SendFailure>> execute() async {
     final Environment environment;

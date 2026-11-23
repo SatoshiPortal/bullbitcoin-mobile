@@ -296,5 +296,6 @@
   "sendLeavePaymentDescription": "Le destinataire et le montant saisis seront effacés. La page des UTXO s’ouvrira pour choisir lesquels dépenser.",
   "sendOpenCoins": "Ouvrir les UTXO",
   "sendSecureWalletDescription": "Portefeuille Bitcoin sécurisé",
-  "sendErrorInvoiceExpiryTooShort": "Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire."
+  "sendErrorInvoiceExpiryTooShort": "Cette facture expire trop tôt. Demandez une nouvelle facture au destinataire.",
+  "closeDialogButton": "Fermer"
 }

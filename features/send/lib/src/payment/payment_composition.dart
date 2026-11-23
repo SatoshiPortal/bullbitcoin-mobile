@@ -56,7 +56,7 @@ import 'domain/usecases/load_send_coins_usecase.dart';
 import 'domain/usecases/load_send_sources_usecase.dart';
 import 'send_payment_dependencies.dart';
 
-(SendCubit, SendArkCubit) createPaymentCubits({
+SendCubit createPaymentCubit({
   required SendPaymentDependencies dependencies,
   required SendRouteArgs? args,
   required String? spWalletLabel,
@@ -75,128 +75,123 @@ import 'send_payment_dependencies.dart';
   );
   final recipientAmount = ReadSendRecipientAmountUsecase(d.inventory, d.native);
   final spNetwork = GetSpNetworkForSendUsecase(d.silent);
-  final ark = d.ark;
-  return (
-    SendCubit(
-      walletKey: args?.wallet,
-      mode: switch (spWalletLabel) {
-        final label? => SendModeSp(walletLabel: label),
-        null => const SendModeBitcoin(),
-      },
-      initialSweepOutpoints: switch (args) {
-        final args? when args.isSweep => args.selectedOutpoints,
-        _ => const {},
-      },
-      initialSelectedOutpoints: switch (args) {
-        final args? when !args.isSweep => args.selectedOutpoints,
-        _ => const {},
-      },
-      prepareInternalRecipientUsecase: PrepareInternalRecipientUsecase(
-        d.receive,
-      ),
-      watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
-        d.native.changes,
-      ),
-      loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(d.labels),
-      storeSendTransactionLabel: StoreSendTransactionLabelUsecase(d.labels),
-      bestWalletUsecase: SelectBestWalletUsecase(),
-      detectBitcoinStringUsecase: DetectBitcoinStringUsecase(
-        settings: d.preferences,
-      ),
-      loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(d.preferences),
-      getSendExchangeRateUsecase: GetSendExchangeRateUsecase(
-        getSettingsUsecase: d.preferences,
-        getIndexPrice: Pricer.getIndexPrice,
-      ),
-      getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
-        settings: d.preferences,
-        read: Pricer.getIndexPrices,
-      ),
-      loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: fees),
-      loadCoins: LoadSendCoinsUsecase(d.coins),
-      validateBitcoinSelectionUsecase: ValidateBitcoinSelectionUsecase(spend),
-      loadSources: sources,
-      createSendSwapUsecase: CreateSendSwapUsecase(
-        d.orders,
-        getWalletUsecase: sources,
-        getReceiveAddressUsecase: d.addresses,
-      ),
-      getSendSwapQuoteUsecase: GetSendSwapQuoteUsecase(d.orders),
-      createSendCrossChainSwapUsecase: CreateSendCrossChainSwapUsecase(
-        d.orders,
-        getWalletUsecase: sources,
-        getReceiveAddressUsecase: d.addresses,
-      ),
-      getSendCrossChainQuoteUsecase: GetSendCrossChainQuoteUsecase(d.orders),
-      resolveLightningAddressUsecase: ResolveLightningAddressUsecase(),
-      updateSendSwapPayinUsecase: UpdateSendSwapPayinUsecase(d.orders),
-      watchSendSwapUsecase: WatchSendSwapUsecase(d.orders),
-      sendWithPayjoinUsecase: SendWithPayjoinUsecase(d.payjoin.sender, spend),
-      spend: spend,
-      watchPayjoinUsecase: WatchPayjoinUsecase(d.payjoin.sessions),
-      getAdoptablePayjoinSenderUsecase: GetAdoptablePayjoinSenderUsecase(
-        d.payjoin.sessions,
-      ),
-      broadcastPayjoinOriginalUsecase: BroadcastPayjoinOriginalUsecase(
-        d.payjoin.sender,
-      ),
-      getVisiblePayjoinTransactionUsecase: GetVisiblePayjoinTransactionUsecase(
-        d.payjoin.sessions,
-      ),
-      retryPayjoinProposalUsecase: RetryPayjoinProposalUsecase(
-        d.payjoin.sender,
-      ),
-      transactions: d.transactions,
-      verifyChainSwapAmountSendUsecase: VerifyChainSwapAmountSendUsecase(
-        recipientAmount: recipientAmount,
-      ),
-      verifyExchangePayinUsecase: VerifyExchangePayinUsecase(recipientAmount),
-      consolidation: Consolidation.open(spend),
-      getSendPayjoinEnabledUsecase: GetSendPayjoinEnabledUsecase(
-        d.payjoin.policy,
-      ),
-      validateSpRecipientForSendUsecase: ValidateSpRecipientForSendUsecase(
-        d.silent,
-      ),
-      validateSpAmountForSendUsecase: ValidateSpAmountForSendUsecase(d.silent),
-      getSpNetworkForSendUsecase: spNetwork,
-      prepareSpPaymentForSendUsecase: PrepareSpPaymentForSendUsecase(d.silent),
-      sendSpPaymentForSendUsecase: SendSpPaymentForSendUsecase(d.silent),
-      refreshSpWalletForSendUsecase: RefreshSpWalletForSendUsecase(
-        d.silent,
-        spNetwork,
-      ),
-      resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(
-        d.payjoin.sessions,
-      ),
-      validateCoinControlPaymentRequestUsecase:
-          ValidateCoinControlPaymentRequestUsecase(),
-      getSendSwapRouteUsecase: GetSendSwapRouteUsecase(d.swaps),
-      createBoltzSendSwapUsecase: CreateBoltzSendSwapUsecase(
-        d.swaps.boltz,
-        d.swaps.watcher,
-      ),
-      recordSwapLockupUsecase: RecordSwapLockupUsecase(
-        d.swaps.resolver,
-        d.swaps.watcher,
-      ),
-      recordPendingSwapLockupUsecase: RecordPendingSwapLockupUsecase(
-        d.swaps.resolver,
-      ),
-      dropPendingSwapLockupUsecase: DropPendingSwapLockupUsecase(
-        d.swaps.resolver,
-      ),
-      getSwapLimitsAndFeesUsecase: GetSwapLimitsAndFeesUsecase(d.swaps.boltz),
-      createBitcoinToLiquidSwapUsecase: CreateBitcoinToLiquidSwapUsecase(
-        d.swaps.boltz,
-        d.swaps.watcher,
-      ),
-      createLiquidToBitcoinSwapUsecase: CreateLiquidToBitcoinSwapUsecase(
-        d.swaps.boltz,
-        d.swaps.watcher,
-      ),
-      watchSwapUsecase: WatchSwapUsecase(d.swaps.store),
+  return SendCubit(
+    walletKey: args?.wallet,
+    mode: switch (spWalletLabel) {
+      final label? => SendModeSp(walletLabel: label),
+      null => const SendModeBitcoin(),
+    },
+    initialSweepOutpoints: switch (args) {
+      final args? when args.isSweep => args.selectedOutpoints,
+      _ => const {},
+    },
+    initialSelectedOutpoints: switch (args) {
+      final args? when !args.isSweep => args.selectedOutpoints,
+      _ => const {},
+    },
+    prepareInternalRecipientUsecase: PrepareInternalRecipientUsecase(d.receive),
+    watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(d.native.changes),
+    loadSendLabelSuggestions: LoadSendLabelSuggestionsUsecase(d.labels),
+    storeSendTransactionLabel: StoreSendTransactionLabelUsecase(d.labels),
+    bestWalletUsecase: SelectBestWalletUsecase(),
+    detectBitcoinStringUsecase: DetectBitcoinStringUsecase(
+      settings: d.preferences,
     ),
-    SendArkCubit(ark == null ? null : RecognizeArkAddressUsecase(ark)),
+    loadPreferencesUsecase: LoadSendDisplayPreferencesUsecase(d.preferences),
+    getSendExchangeRateUsecase: GetSendExchangeRateUsecase(
+      getSettingsUsecase: d.preferences,
+      getIndexPrice: Pricer.getIndexPrice,
+    ),
+    getSendAmountQuotesUsecase: GetSendAmountQuotesUsecase(
+      settings: d.preferences,
+      read: Pricer.getIndexPrices,
+    ),
+    loadNetworkFeesUsecase: LoadSendNetworkFeesUsecase(fees: fees),
+    loadCoins: LoadSendCoinsUsecase(d.coins),
+    validateBitcoinSelectionUsecase: ValidateBitcoinSelectionUsecase(spend),
+    loadSources: sources,
+    createSendSwapUsecase: CreateSendSwapUsecase(
+      d.orders,
+      getWalletUsecase: sources,
+      getReceiveAddressUsecase: d.addresses,
+    ),
+    getSendSwapQuoteUsecase: GetSendSwapQuoteUsecase(d.orders),
+    createSendCrossChainSwapUsecase: CreateSendCrossChainSwapUsecase(
+      d.orders,
+      getWalletUsecase: sources,
+      getReceiveAddressUsecase: d.addresses,
+    ),
+    getSendCrossChainQuoteUsecase: GetSendCrossChainQuoteUsecase(d.orders),
+    resolveLightningAddressUsecase: ResolveLightningAddressUsecase(),
+    updateSendSwapPayinUsecase: UpdateSendSwapPayinUsecase(d.orders),
+    watchSendSwapUsecase: WatchSendSwapUsecase(d.orders),
+    sendWithPayjoinUsecase: SendWithPayjoinUsecase(d.payjoin.sender, spend),
+    spend: spend,
+    watchPayjoinUsecase: WatchPayjoinUsecase(d.payjoin.sessions),
+    getAdoptablePayjoinSenderUsecase: GetAdoptablePayjoinSenderUsecase(
+      d.payjoin.sessions,
+    ),
+    broadcastPayjoinOriginalUsecase: BroadcastPayjoinOriginalUsecase(
+      d.payjoin.sender,
+    ),
+    getVisiblePayjoinTransactionUsecase: GetVisiblePayjoinTransactionUsecase(
+      d.payjoin.sessions,
+    ),
+    retryPayjoinProposalUsecase: RetryPayjoinProposalUsecase(d.payjoin.sender),
+    transactions: d.transactions,
+    verifyChainSwapAmountSendUsecase: VerifyChainSwapAmountSendUsecase(
+      recipientAmount: recipientAmount,
+    ),
+    verifyExchangePayinUsecase: VerifyExchangePayinUsecase(recipientAmount),
+    consolidation: Consolidation.open(spend),
+    getSendPayjoinEnabledUsecase: GetSendPayjoinEnabledUsecase(
+      d.payjoin.policy,
+    ),
+    validateSpRecipientForSendUsecase: ValidateSpRecipientForSendUsecase(
+      d.silent,
+    ),
+    validateSpAmountForSendUsecase: ValidateSpAmountForSendUsecase(d.silent),
+    getSpNetworkForSendUsecase: spNetwork,
+    prepareSpPaymentForSendUsecase: PrepareSpPaymentForSendUsecase(d.silent),
+    sendSpPaymentForSendUsecase: SendSpPaymentForSendUsecase(d.silent),
+    refreshSpWalletForSendUsecase: RefreshSpWalletForSendUsecase(
+      d.silent,
+      spNetwork,
+    ),
+    resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(
+      d.payjoin.sessions,
+    ),
+    validateCoinControlPaymentRequestUsecase:
+        ValidateCoinControlPaymentRequestUsecase(),
+    getSendSwapRouteUsecase: GetSendSwapRouteUsecase(d.swaps),
+    createBoltzSendSwapUsecase: CreateBoltzSendSwapUsecase(
+      d.swaps.boltz,
+      d.swaps.watcher,
+    ),
+    recordSwapLockupUsecase: RecordSwapLockupUsecase(
+      d.swaps.resolver,
+      d.swaps.watcher,
+    ),
+    recordPendingSwapLockupUsecase: RecordPendingSwapLockupUsecase(
+      d.swaps.resolver,
+    ),
+    dropPendingSwapLockupUsecase: DropPendingSwapLockupUsecase(
+      d.swaps.resolver,
+    ),
+    getSwapLimitsAndFeesUsecase: GetSwapLimitsAndFeesUsecase(d.swaps.boltz),
+    createBitcoinToLiquidSwapUsecase: CreateBitcoinToLiquidSwapUsecase(
+      d.swaps.boltz,
+      d.swaps.watcher,
+    ),
+    createLiquidToBitcoinSwapUsecase: CreateLiquidToBitcoinSwapUsecase(
+      d.swaps.boltz,
+      d.swaps.watcher,
+    ),
+    watchSwapUsecase: WatchSwapUsecase(d.swaps.store),
   );
+}
+
+SendArkCubit createPaymentArkCubit(SendPaymentDependencies dependencies) {
+  final ark = dependencies.ark;
+  return SendArkCubit(ark == null ? null : RecognizeArkAddressUsecase(ark));
 }

@@ -227,5 +227,6 @@
   "sendErrorSelectedCoinsInsufficient": "Die ausgewählten Coins reichen nicht aus, um den Betrag und die Gebühren zu decken. Wählen Sie weitere Coins aus oder verringern Sie den Betrag.",
   "sendErrorAddressNetworkMismatch": "Diese Adresse gehört zu einem anderen Netzwerk als Ihre Wallet.",
   "walletSpTitle": "Silent Payments",
-  "sendErrorInvoiceExpiryTooShort": "Diese Invoice läuft zu früh ab. Bitten Sie den Empfänger um eine neue Invoice."
+  "sendErrorInvoiceExpiryTooShort": "Diese Invoice läuft zu früh ab. Bitten Sie den Empfänger um eine neue Invoice.",
+  "closeDialogButton": "Schließen"
 }

@@ -231,10 +231,8 @@ class AppRouter {
       silent: locator<Silent>(),
       ark: locator.isRegistered<ArkFacade>() ? locator<ArkFacade>() : null,
     ),
-    openCoins: (context, wallet) => context.pushReplacementNamed<void>(
-      CoinsRoute.coins.name,
-      extra: wallet,
-    ),
+    openCoins: (context, wallet) =>
+        context.pushReplacementNamed(CoinsRoute.coins.name, extra: wallet),
     orderUnderReview: (order) => OrderSwapUnderReviewCard(orderSwap: order),
     paymentArrowImage: AssetImage(Assets.icons.rightArrow.path),
   );

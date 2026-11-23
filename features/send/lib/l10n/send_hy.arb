@@ -180,5 +180,6 @@
   "sendErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
   "sendErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
-  "sendErrorInvoiceExpiryTooShort": "Այս ապրանքագրի ժամկետը շատ շուտ է լրանում։ Խնդրեք ստացողից նոր ապրանքագիր։"
+  "sendErrorInvoiceExpiryTooShort": "Այս ապրանքագրի ժամկետը շատ շուտ է լրանում։ Խնդրեք ստացողից նոր ապրանքագիր։",
+  "closeDialogButton": "Փակել"
 }

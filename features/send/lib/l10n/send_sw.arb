@@ -180,5 +180,6 @@
   "sendErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
   "sendErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
-  "sendErrorInvoiceExpiryTooShort": "Muda wa ankara hii unaisha mapema mno. Muombe mpokeaji ankara mpya."
+  "sendErrorInvoiceExpiryTooShort": "Muda wa ankara hii unaisha mapema mno. Muombe mpokeaji ankara mpya.",
+  "closeDialogButton": "Funga"
 }

@@ -575,5 +575,9 @@
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
-  "sendErrorInvoiceExpiryTooShort": "Ye invoice bahut jaldi expire ho jayegi. Praaptakarta se nayi invoice maango."
+  "sendErrorInvoiceExpiryTooShort": "Ye invoice bahut jaldi expire ho jayegi. Praaptakarta se nayi invoice maango.",
+  "closeDialogButton": "Band Karo",
+  "@closeDialogButton": {
+    "description": "Button to close the value display modal dialog"
+  }
 }

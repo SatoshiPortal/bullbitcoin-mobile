@@ -201,5 +201,6 @@
   "sendErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
   "sendErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
-  "sendErrorInvoiceExpiryTooShort": "ამ ინვოისს ვადა ძალიან მალე ეწურება. სთხოვეთ მიმღებს ახალი ინვოისი."
+  "sendErrorInvoiceExpiryTooShort": "ამ ინვოისს ვადა ძალიან მალე ეწურება. სთხოვეთ მიმღებს ახალი ინვოისი.",
+  "closeDialogButton": "დახურვა"
 }
