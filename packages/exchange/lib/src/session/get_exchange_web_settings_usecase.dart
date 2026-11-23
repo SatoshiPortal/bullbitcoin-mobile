@@ -1,8 +1,10 @@
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
-import 'package:exchange/exchange.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+
+import '../domain/exchange_failure.dart';
+import 'read_exchange_environment.dart';
 
 class GetExchangeWebSettingsUsecase {
   final ExchangeTestnetBasicAuthPreferences _preferences;
@@ -20,7 +22,7 @@ class GetExchangeWebSettingsUsecase {
           log.warning('Could not load exchange web settings: preferences');
           return const Err(ExchangeUnexpectedFailure());
       }
-      if (!Exchange.supportsEnvironment(settings.environment)) {
+      if (!exchangeNetworkAvailable(settings.environment)) {
         return const Err(ExchangeUnsupportedNetworkFailure());
       }
       return Ok(settings);

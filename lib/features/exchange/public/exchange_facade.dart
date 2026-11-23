@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:preferences/preferences.dart' show ExchangeWebPreferences;
 import 'package:primitives/primitives.dart';
 
 import 'package:exchange/exchange.dart';
@@ -17,18 +17,14 @@ export '../presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;
 export '../ui/exchange_router.dart'
     show ExchangeRoute, ExchangeRouter, ExchangeRouterConfig;
 export '../ui/exchange_scope.dart'
-    show
-        ExchangeAccessBuilder,
-        ExchangeScope,
-        ExchangeSessionBuilder,
-        ExchangeSessionListener;
+    show ExchangeAccessBuilder, ExchangeScope, ExchangeSessionBuilder;
 export 'exchange_account.dart' show ExchangeAccount;
 
 export '../ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
 
 class ExchangeFacade {
   const ExchangeFacade({
-    required GetExchangeWebSettingsUsecase getExchangeWebSettingsUsecase,
+    required this._loadWebPreferences,
     required this._loadAccount,
     required this._saveAccountPreferences,
     required ResolveExchangeAccessUsecase resolveAccess,
@@ -36,11 +32,11 @@ class ExchangeFacade {
     required this._signOut,
     required WatchExchangeAccessUsecase watchAccess,
     required this._tradingGuard,
-  }) : _getWebSettings = getExchangeWebSettingsUsecase,
-       _resolve = resolveAccess,
+  }) : _resolve = resolveAccess,
        _watch = watchAccess;
 
-  final GetExchangeWebSettingsUsecase _getWebSettings;
+  final Future<Result<ExchangeWebPreferences, ExchangeFailure>> Function()
+  _loadWebPreferences;
   final Future<Result<UserSummary, ExchangeFailure>> Function() _loadAccount;
   final Future<Result<void, ExchangeFailure>> Function({
     String? language,
@@ -55,7 +51,7 @@ class ExchangeFacade {
   final GuardExchangeTradingUsecase _tradingGuard;
 
   Future<bool> networkUnavailable() async {
-    final result = await _getWebSettings.execute();
+    final result = await _loadWebPreferences();
     return switch (result) {
       Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
       _ => false,

@@ -9,10 +9,6 @@ import 'dart:io';
 
 import 'package:preferences/preferences.dart';
 import 'package:preferences/preferences.dart' as settings_contract;
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
 import 'package:get_it/get_it.dart';
@@ -78,10 +74,9 @@ class ExchangeLocator {
         platformAllowed,
       ),
     );
-    registerUsecases(locator);
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
-        getExchangeWebSettingsUsecase: locator<GetExchangeWebSettingsUsecase>(),
+        loadWebPreferences: () => locator<Exchange>().loadWebPreferences(),
         loadAccount: () => locator<Exchange>().loadCurrentAccount(),
         saveAccountPreferences:
             ({language, currency, emailNotificationsEnabled}) =>
@@ -95,35 +90,6 @@ class ExchangeLocator {
         signOut: locator<SignOutExchangeUsecase>(),
         watchAccess: locator<WatchExchangeAccessUsecase>(),
         tradingGuard: locator<GuardExchangeTradingUsecase>(),
-      ),
-    );
-  }
-
-  /// Registers feature orchestration and view-scoped authentication dependencies.
-  static void registerUsecases(GetIt locator) {
-    locator.registerFactory<GetExchangeWebSettingsUsecase>(
-      () => GetExchangeWebSettingsUsecase(
-        preferences:
-            locator<settings_contract.ExchangeTestnetBasicAuthPreferences>(),
-      ),
-    );
-
-    // The native controller and session lifetime belong to one auth view.
-    locator.registerFactoryParam<
-      CompleteExchangeAuthenticationUsecase,
-      Future<Object> Function(String),
-      ({bool isTestnet, bool Function() isOpen})
-    >(
-      (evaluateJavaScript, session) => CompleteExchangeAuthenticationUsecase(
-        authRepository: ExchangeAuthRepositoryImpl(
-          datasource: ExchangeWebAuthDatasource(
-            isTestnet: session.isTestnet,
-            evaluateJavaScript: evaluateJavaScript,
-            isOpen: session.isOpen,
-          ),
-        ),
-        access: locator<ExchangeAccessLifecycle>(),
-        isTestnet: session.isTestnet,
       ),
     );
   }

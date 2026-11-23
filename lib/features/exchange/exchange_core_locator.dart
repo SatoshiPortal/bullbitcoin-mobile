@@ -17,6 +17,10 @@ class ExchangeLocator {
         paymentReturnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
         access: locator<ExchangeAccessLifecycle>(),
         sessionPreferences: locator<Preferences>(),
+        webAuthEndpoints: (
+          mainnet: Uri.parse(ApiServiceConstants.bbAuthUrl),
+          testnet: Uri.parse(ApiServiceConstants.bbAuthTestUrl),
+        ),
         kyc: (
           mainnetUrl: Uri.parse(ApiServiceConstants.bbKycUrl),
           testnetUrl: Uri.parse(ApiServiceConstants.bbKycTestUrl),

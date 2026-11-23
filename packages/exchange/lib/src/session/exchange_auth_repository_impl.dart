@@ -1,8 +1,10 @@
-import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
-import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
+
+import '../domain/entities/exchange_api_key.dart';
+import '../domain/exchange_failure.dart';
+import '../setup/exchange_credentials.dart';
+import 'exchange_auth_repository.dart';
+import 'exchange_web_auth_datasource.dart';
 
 final class ExchangeAuthRepositoryImpl implements ExchangeAuthRepository {
   final ExchangeWebAuthDatasource _datasource;

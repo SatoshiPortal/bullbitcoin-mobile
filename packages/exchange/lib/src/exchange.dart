@@ -38,10 +38,13 @@ import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
 import 'setup/exchange_access_lifecycle.dart';
 import 'recipients/exchange_recipients.dart';
+import 'session/complete_exchange_authentication_usecase.dart';
+import 'session/exchange_auth_repository_impl.dart';
+import 'session/exchange_web_auth_datasource.dart';
 import 'session/expire_exchange_session_usecase.dart';
 import 'session/get_exchange_account_usecase.dart';
 import 'session/get_exchange_announcements_usecase.dart';
-import 'session/read_exchange_environment.dart';
+import 'session/get_exchange_web_settings_usecase.dart';
 import 'session/save_exchange_preferences_usecase.dart';
 import 'session/watch_exchange_notifications_usecase.dart';
 
@@ -106,6 +109,8 @@ typedef ExchangeNotificationOperations = ({
   Future<void> Function() close,
 });
 
+typedef ExchangeWebAuthEndpoints = ({Uri mainnet, Uri testnet});
+
 /// Bull Bitcoin exchange capabilities.
 final class Exchange {
   final Future<Result<bool, ExchangeFailure>> Function() _hasPendingOrders;
@@ -141,6 +146,7 @@ final class Exchange {
   _getConfidentialSepaAvailability;
   final ExchangeAccessLifecycle? _access;
   final Preferences? _sessionPreferences;
+  final ExchangeWebAuthEndpoints? _webAuthEndpoints;
   final ExchangeRecipients recipients;
 
   const Exchange._(
@@ -163,6 +169,7 @@ final class Exchange {
     this._access,
     this.recipients,
     this._sessionPreferences,
+    this._webAuthEndpoints,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -178,6 +185,7 @@ final class Exchange {
     ExchangeKycSetup? kyc,
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
+    ExchangeWebAuthEndpoints? webAuthEndpoints,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
@@ -187,6 +195,7 @@ final class Exchange {
     kyc: kyc,
     access: access,
     sessionPreferences: sessionPreferences,
+    webAuthEndpoints: webAuthEndpoints,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -207,6 +216,7 @@ final class Exchange {
     ExchangeKycSetup? kyc,
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
+    ExchangeWebAuthEndpoints? webAuthEndpoints,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -535,6 +545,7 @@ final class Exchange {
         ),
       ),
       sessionPreferences,
+      webAuthEndpoints,
     );
   }
 
@@ -552,8 +563,13 @@ final class Exchange {
   Stream<ExchangeAccess> watchAccess() =>
       _access?.watch() ?? Stream.value(currentAccess);
 
-  static bool supportsEnvironment(Environment environment) =>
-      exchangeNetworkAvailable(environment);
+  @useResult
+  Future<Result<ExchangeWebPreferences, ExchangeFailure>>
+  loadWebPreferences() async {
+    final preferences = _sessionPreferences;
+    if (preferences == null) return const Err(ExchangeUnexpectedFailure());
+    return GetExchangeWebSettingsUsecase(preferences: preferences).execute();
+  }
 
   @useResult
   Future<Result<void, ExchangeFailure>> resolveAccess() async =>
@@ -565,6 +581,32 @@ final class Exchange {
   }) async =>
       await _access?.enable(forSupport: forSupport) ??
       const Err(ExchangeSessionClearFailure());
+
+  /// Completes one WebView authentication. The session owner checks the
+  /// active environment and the view lifetime before saving a credential.
+  @useResult
+  Future<Result<void, ExchangeFailure>> authenticateWebSession({
+    required bool isTestnet,
+    required bool Function() isCurrent,
+    required Future<Object> Function(String) evaluateJavaScript,
+  }) async {
+    final access = _access;
+    final endpoints = _webAuthEndpoints;
+    if (access == null || endpoints == null) {
+      return const Err(ExchangeAuthenticationFailure());
+    }
+    return CompleteExchangeAuthenticationUsecase(
+      authRepository: ExchangeAuthRepositoryImpl(
+        datasource: ExchangeWebAuthDatasource(
+          signInUrl: isTestnet ? endpoints.testnet : endpoints.mainnet,
+          evaluateJavaScript: evaluateJavaScript,
+          isOpen: isCurrent,
+        ),
+      ),
+      access: access,
+      isTestnet: isTestnet,
+    ).execute(isCurrent: isCurrent);
+  }
 
   /// Loads the foreground account and expires only a rejected current session.
   @useResult
@@ -946,6 +988,7 @@ Exchange exchangeForTesting({
         <T>(_, _) => throw StateError('Unexpected fiat recipient operation'),
       ),
   sessionPreferences,
+  null,
 );
 
 Exchange exchangeWithTransportForTesting({

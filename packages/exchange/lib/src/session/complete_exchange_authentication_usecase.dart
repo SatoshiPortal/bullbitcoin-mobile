@@ -1,9 +1,8 @@
-import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
 
-import 'package:exchange/exchange.dart';
-
-import '../repositories/exchange_auth_repository.dart';
+import '../domain/exchange_failure.dart';
+import '../setup/exchange_access_lifecycle.dart';
+import 'exchange_auth_repository.dart';
 
 /// WebView-scoped capability; the repository serializes credential changes.
 class CompleteExchangeAuthenticationUsecase {

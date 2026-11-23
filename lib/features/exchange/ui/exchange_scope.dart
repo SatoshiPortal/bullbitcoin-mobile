@@ -1,10 +1,6 @@
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-
-import 'dart:async';
 
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
@@ -13,7 +9,7 @@ import 'package:flutter/widgets.dart';
 
 abstract final class ExchangeScope {
   static final ExchangeAuthHost authHost = (
-    loadConfiguration: () => locator<GetExchangeWebSettingsUsecase>().execute(),
+    loadConfiguration: () => locator<Exchange>().loadWebPreferences(),
     authenticate:
         (
           context,
@@ -22,10 +18,11 @@ abstract final class ExchangeScope {
           required isCurrent,
         }) => ExchangeSessionScope.finishAuthentication(
           context,
-          locator<CompleteExchangeAuthenticationUsecase>(
-            param1: evaluateJavaScript,
-            param2: (isTestnet: isTestnet, isOpen: isCurrent),
-          ).execute,
+          ({required isCurrent}) => locator<Exchange>().authenticateWebSession(
+            isTestnet: isTestnet,
+            evaluateJavaScript: evaluateJavaScript,
+            isCurrent: isCurrent,
+          ),
           isCurrent: isCurrent,
         ),
     failureMessage: (context, failure) => failure.toTranslated(context),
@@ -55,10 +52,6 @@ abstract final class ExchangeScope {
       locator<ExchangeFacade>().watchAccess();
 
   static Stream<bool> signedInChanges() => accessChanges().map(_signedIn);
-
-  /// A session that ends while access stays enabled can sign in again.
-  static bool isEnabled(BuildContext context) =>
-      locator<ExchangeFacade>().currentAccess is ExchangeAccessEnabled;
 }
 
 class ExchangeSessionBuilder extends StatelessWidget {
@@ -72,59 +65,9 @@ class ExchangeSessionBuilder extends StatelessWidget {
   );
 }
 
-class ExchangeSessionListener extends StatelessWidget {
-  final Widget child;
-  final bool Function(bool wasLoggedIn, bool isLoggedIn)? listenWhen;
-  final void Function(BuildContext, bool isLoggedIn) listener;
-
-  const ExchangeSessionListener({
-    required this.child,
-    required this.listener,
-    this.listenWhen,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) => _SessionChanges(owner: this);
-}
-
 bool _signedIn(ExchangeAccess access) =>
     access is ExchangeAccessEnabled &&
     access.session == ExchangeAccessSession.signedIn;
-
-class _SessionChanges extends StatefulWidget {
-  const _SessionChanges({required this.owner});
-  final ExchangeSessionListener owner;
-  @override
-  State<_SessionChanges> createState() => _SessionChangesState();
-}
-
-class _SessionChangesState extends State<_SessionChanges> {
-  StreamSubscription<ExchangeAccess>? _subscription;
-  @override
-  void initState() {
-    super.initState();
-    final exchange = locator<ExchangeFacade>();
-    var previous = _signedIn(exchange.currentAccess);
-    _subscription = exchange.watchAccess().listen((access) {
-      final current = _signedIn(access);
-      final changed = current != previous;
-      final notify =
-          changed && (widget.owner.listenWhen?.call(previous, current) ?? true);
-      previous = current;
-      if (mounted && notify) widget.owner.listener(context, current);
-    });
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.owner.child;
-}
 
 /// Rebuilds account entry points as the access/session decision changes.
 class ExchangeAccessBuilder extends StatelessWidget {
