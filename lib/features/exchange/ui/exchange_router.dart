@@ -11,8 +11,8 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_exit_on_back.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
@@ -22,7 +22,6 @@ import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
   exchangeHome('/exchange'),
-  exchangeLanding('/exchange/landing'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -76,7 +75,7 @@ class ExchangeRouter {
         if (!context.mounted) return null;
         final notLoggedIn = !ExchangeScope.isLoggedIn(context);
         if (notLoggedIn) {
-          return ExchangeRoute.exchangeLanding.path;
+          return BullExchangeNavigation.landingPath;
         }
         if (Platform.isIOS && !config.isSuperuser(context)) {
           return config.homePath;
@@ -93,7 +92,7 @@ class ExchangeRouter {
             listenWhen: (wasLoggedIn, isLoggedIn) => wasLoggedIn && !isLoggedIn,
             listener: (context, _) {
               if (ExchangeScope.isEnabled(context)) {
-                context.goNamed(ExchangeRoute.exchangeLanding.name);
+                BullExchangeNavigation.goToLanding(context);
               } else {
                 config.onExit(context);
               }
@@ -118,28 +117,33 @@ class ExchangeRouter {
         ),
       ],
     ),
-    GoRoute(
-      name: ExchangeRoute.exchangeLanding.name,
-      path: ExchangeRoute.exchangeLanding.path,
-      redirect: (context, state) async =>
-          await config.networkUnavailable() ? config.homePath : null,
-      pageBuilder: (context, state) {
-        // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
-        void onExit() => config.onExit(context);
-        Widget landingScreen;
-        if (Platform.isIOS) {
-          if (config.isSuperuser(context)) {
-            landingScreen = ExchangeLandingScreen(onExit: onExit);
-          } else {
-            landingScreen = ExchangeLandingScreenV2(onExit: onExit);
-          }
-        } else {
-          landingScreen = ExchangeLandingScreen(onExit: onExit);
-        }
-
-        return NoTransitionPage(key: state.pageKey, child: landingScreen);
+    ...BullExchangeFeature.mount(
+      networkUnavailable: config.networkUnavailable,
+      showWebsiteOnly: (context) =>
+          Platform.isIOS && !config.isSuperuser(context),
+      unavailableRedirectPath: config.homePath,
+      brandAssetPath: Assets.logos.bbLogoSmall.path,
+      copy: (context) {
+        final loc = context.loc;
+        return ExchangeLandingCopy(
+          brandName: loc.exchangeBrandName,
+          connectAccount: loc.exchangeLandingConnectAccount,
+          recommendedExchange: loc.exchangeLandingRecommendedExchange,
+          selfCustody: loc.exchangeFeatureSelfCustody,
+          recurringOrders: loc.exchangeFeatureDcaOrders,
+          sellBitcoin: loc.exchangeFeatureSellBitcoin,
+          bankTransfers: loc.exchangeFeatureBankTransfers,
+          customerSupport: loc.exchangeFeatureCustomerSupport,
+          unifiedHistory: loc.exchangeFeatureUnifiedHistory,
+          legalDisclaimer: loc.exchangeLandingDisclaimerLegal,
+          unavailableDisclaimer: loc.exchangeLandingDisclaimerNotAvailable,
+          signIn: loc.exchangeLoginButton,
+          openWebsite: loc.exchangeGoToWebsiteButton,
+        );
       },
-    ),
+      onSignIn: (context) => context.goNamed(ExchangeRoute.exchangeAuth.name),
+      onExit: config.onExit,
+    ).routes,
   ];
 
   static GoRoute authRoute(ExchangeRouterConfig config) => GoRoute(

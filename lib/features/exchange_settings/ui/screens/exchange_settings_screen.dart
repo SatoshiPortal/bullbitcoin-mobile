@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/exchange_settings/ui/widgets/not_logged_in_bo
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/ui/exchange_settings_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -106,9 +107,8 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         BullSettingsEntryItem(
                           icon: Icons.login,
                           title: context.loc.exchangeSettingsLogInTitle,
-                          onTap: () => context.goNamed(
-                            ExchangeRoute.exchangeLanding.name,
-                          ),
+                          onTap: () =>
+                              BullExchangeNavigation.goToLanding(context),
                         ),
                     ],
                     ExchangeAccountActions(

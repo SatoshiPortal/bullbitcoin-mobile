@@ -26,6 +26,8 @@ graph TD
   style btc_map stroke:#4d7dca
   bull_ark["bull_ark"]
   style bull_ark stroke:#090577
+  bull_exchange["bull_exchange"]
+  style bull_exchange stroke:#42d01b
   bull_logger["bull_logger"]
   style bull_logger stroke:#fef49a
   bull_logs["bull_logs"]
@@ -125,6 +127,7 @@ graph TD
   bull_ark --> bull_pricer
   bull_ark --> background_tasks
   bull_ark --> notifications
+  bull_exchange --> bull_ui
   bull_logs --> bull_logger
   bull_logs --> bull_ui
   bull_logs --> primitives
@@ -236,6 +239,7 @@ graph TD
     bitcoin_price
     btc_map
     bull_ark
+    bull_exchange
     bull_logs
     bull_quick_actions
     bull_recoverbull

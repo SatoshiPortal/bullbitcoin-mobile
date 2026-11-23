@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/ui/screens/exchange_settings_screen.dart';
 import 'package:bb_mobile/features/exchange_settings/ui/screens/referrals_screen.dart';
@@ -44,8 +45,7 @@ class ExchangeSettingsRouter {
       path: ExchangeSettingsRoute.home.path,
       builder: (context, state) => ExchangeSessionListener(
         listenWhen: (wasLoggedIn, isLoggedIn) => wasLoggedIn && !isLoggedIn,
-        listener: (context, _) =>
-            context.goNamed(ExchangeRoute.exchangeLanding.name),
+        listener: (context, _) => BullExchangeNavigation.goToLanding(context),
         child: Builder(
           builder: (context) => ExchangeSettingsScreen(
             isSuperuser: config.isSuperuser(context),

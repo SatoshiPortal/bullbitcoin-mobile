@@ -1,9 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullThemeX,
         BullText,
         BullButton,
         BullShapesX,
@@ -12,10 +10,19 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../exchange_landing_copy.dart';
+
 class ExchangeLandingScreenV2 extends StatelessWidget {
+  final ExchangeLandingCopy copy;
+  final String brandAssetPath;
   final VoidCallback onExit;
 
-  const ExchangeLandingScreenV2({required this.onExit, super.key});
+  const ExchangeLandingScreenV2({
+    required this.copy,
+    required this.brandAssetPath,
+    required this.onExit,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +36,9 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
         onExit();
       },
       child: Scaffold(
-        backgroundColor: context.appColors.surface,
+        backgroundColor: context.bull.surface,
         appBar: AppBar(
-          leading: BackButton(
-            color: context.appColors.onSurface,
-            onPressed: onExit,
-          ),
+          leading: BackButton(color: context.bull.onSurface, onPressed: onExit),
         ),
         extendBodyBehindAppBar: true,
         body: SingleChildScrollView(
@@ -45,26 +49,22 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    Image.asset(
-                      Assets.logos.bbLogoSmall.path,
-                      width: 120,
-                      height: 120,
-                    ),
+                    Image.asset(brandAssetPath, width: 120, height: 120),
                     const Gap(16),
                     BullText(
-                      context.loc.exchangeBrandName,
+                      copy.brandName,
                       style: TextStyle(
                         fontFamily: BullTypography.brandFamily,
-                        color: context.appColors.primary,
+                        color: context.bull.primary,
                         fontSize: 64, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
                       ),
                     ),
                     const Gap(12),
                     BullText(
-                      context.loc.exchangeLandingRecommendedExchange,
+                      copy.recommendedExchange,
                       style: context.bullType.subtitle
                           .copyWith(fontWeight: FontWeight.w400)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                   ],
                 ),
@@ -74,55 +74,52 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: context.appColors.primary,
-                    width: 0,
-                  ),
+                  border: Border.all(color: context.bull.primary, width: 0),
                   borderRadius: BorderRadius.circular(context.bullShapes.card),
                 ),
                 child: Column(
                   crossAxisAlignment: .start,
                   children: [
                     BullText(
-                      context.loc.exchangeFeatureSelfCustody,
+                      copy.selfCustody,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                     const Gap(12),
                     BullText(
-                      context.loc.exchangeFeatureDcaOrders,
+                      copy.recurringOrders,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                     const Gap(12),
                     BullText(
-                      context.loc.exchangeFeatureSellBitcoin,
+                      copy.sellBitcoin,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                     const Gap(12),
                     BullText(
-                      context.loc.exchangeFeatureBankTransfers,
+                      copy.bankTransfers,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                     const Gap(12),
                     BullText(
-                      context.loc.exchangeFeatureCustomerSupport,
+                      copy.customerSupport,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                     const Gap(12),
                     BullText(
-                      context.loc.exchangeFeatureUnifiedHistory,
+                      copy.unifiedHistory,
                       style: context.bullType.body
                           .copyWith(fontWeight: FontWeight.w500)
-                          .copyWith(color: context.appColors.onSurface),
+                          .copyWith(color: context.bull.onSurface),
                     ),
                   ],
                 ),
@@ -132,7 +129,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: context.appColors.primary.withValues(alpha: 0.1),
+                  color: context.bull.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(context.bullShapes.card),
                 ),
                 child: Row(
@@ -140,7 +137,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.info_outline,
-                      color: context.appColors.onSurface,
+                      color: context.bull.onSurface,
                       size: 20,
                     ),
                     const Gap(8),
@@ -149,10 +146,10 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         crossAxisAlignment: .start,
                         children: [
                           BullText(
-                            context.loc.exchangeLandingDisclaimerNotAvailable,
+                            copy.unavailableDisclaimer,
                             style: context.bullType.label
                                 .copyWith(fontWeight: FontWeight.w400)
-                                .copyWith(color: context.appColors.onSurface),
+                                .copyWith(color: context.bull.onSurface),
                           ),
                         ],
                       ),
@@ -165,7 +162,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: BullButton.primary(
-                  label: context.loc.exchangeGoToWebsiteButton,
+                  label: copy.openWebsite,
                   onPressed: () async {
                     final Uri url = Uri.parse('https://app.bullbitcoin.com');
                     if (await canLaunchUrl(url)) {
