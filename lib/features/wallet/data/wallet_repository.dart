@@ -317,6 +317,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       return const Err(WalletAlreadyExistsFailure());
     } catch (error) {
       if (error is Error) rethrow;
+      log.warning('Failed to import watch-only wallet: ${error.runtimeType}');
       return const Err(ImportFailedFailure());
     }
   }
