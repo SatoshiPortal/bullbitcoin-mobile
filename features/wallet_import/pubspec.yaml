@@ -1,0 +1,38 @@
+name: wallet_import
+description: Wallet import navigation, mnemonic entry and public watch-only input.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  bip39_mnemonic: ^4.1.0
+  bull_logger:
+  bull_ui:
+  electrum:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  go_router: ^18.1.4
+  intl: any
+  material_ui: ^1.11.0
+  meta: ^1.17.0
+  preferences:
+  primitives:
+  satoshifier:
+  secrets:
+  signers:
+  sync:
+  unorm_dart: ^0.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  generate: true

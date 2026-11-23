@@ -4910,22 +4910,6 @@
       }
     }
   },
-  "submitButton": "Submit",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
-  "optionalPassphraseHint": "Optional Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
-  },
-  "requiredHint": "Required",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
-  },
-  "emptyMnemonicWordsError": "Enter all words of your mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "tryAgainButton": "Try Again",
   "@tryAgainButton": {
     "description": "Default button text for error state"
@@ -7257,10 +7241,6 @@
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
   },
-  "importWatchOnlySelectDerivation": "Select derivation",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
-  },
   "importWatchOnlyType": "Type",
   "@importWatchOnlyType": {
     "description": "Label for wallet script type field"
@@ -7470,24 +7450,6 @@
   "@addressViewShowQR": {
     "description": "Button to display address as QR code"
   },
-  "importQrDeviceTitle": "Connect {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
-  "importQrDeviceScanPrompt": "Scan the QR code from your {deviceName}",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceScanning": "Scanning…",
   "@importQrDeviceScanning": {
     "description": "Status while scanning QR code"
@@ -7520,190 +7482,6 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceButtonOpenCamera": "Open the camera",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
-  },
-  "importQrDeviceButtonInstructions": "Instructions",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
-  },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
-  },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Instructions",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
-  "importQrDeviceJadeStep1": "Turn on your Jade device",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
-  },
-  "importQrDeviceJadeStep2": "Select \"QR Mode\" from the main menu",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
-  "importQrDeviceJadeStep3": "Follow the device instructions to unlock the Jade",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
-  },
-  "importQrDeviceJadeStep4": "Select \"Options\" from the main menu",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
-  "importQrDeviceJadeStep5": "Select \"Wallet\" from the options list",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
-  },
-  "importQrDeviceJadeStep6": "Select \"Export Xpub\" from the wallet menu",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
-  "importQrDeviceJadeStep7": "If needed, select \"Options\" to change the address type",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
-  "importQrDeviceJadeStep8": "On your mobile, click \"open camera\"",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
-  "importQrDeviceJadeStep9": "Scan the QR code you see on your Jade.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
-  },
-  "importQrDeviceJadeStep10": "That's it!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
-  "importQrDeviceJadeFirmwareWarning": "Make sure your Jade is updated to the latest firmware",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
-  },
-  "importQrDeviceKruxInstructionsTitle": "Krux Instructions",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
-  "importQrDeviceKruxStep1": "Turn on your Krux device",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
-  "importQrDeviceKruxStep2": "Click Extended Public Key",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
-  },
-  "importQrDeviceKruxStep3": "Click XPUB - QR Code",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
-  },
-  "importQrDeviceKruxStep4": "On your mobile, click \"open camera\"",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
-  "importQrDeviceKruxStep5": "Scan the QR code you see on your Krux.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
-  "importQrDeviceKruxStep6": "That's it!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
-  "importQrDeviceKeystoneName": "Keystone",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone Instructions",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
-  },
-  "importQrDeviceKeystoneStep1": "Power on your Keystone",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "importQrDeviceKeystoneStep2": "Unlock it by entering your PIN",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
-  "importQrDeviceKeystoneStep3": "Tap the \"…\" (three dots) in the top-right corner",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
-  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
-  },
-  "importQrDeviceKeystoneStep5": "Select \"BULL\" from the list of wallets",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
-  "importQrDeviceKeystoneStep6": "On your mobile, click \"open camera\"",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
-  "importQrDeviceKeystoneStep7": "Scan the QR code displayed on your Keystone",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
-  },
-  "importQrDeviceKeystoneStep8": "In the BULL wallet, choose your preferred derivation type. If you are not sure, select \"Segwit (BIP84)\"",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
-  "importQrDeviceKeystoneStep9": "Enter a label for your Keystone wallet and tap \"Import\"",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
-  "importQrDeviceKeystoneStep10": "Your Keystone is now connected and ready to use with BULL Wallet.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
-  "importQrDevicePassportName": "Foundation Passport",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
-  "importQrDevicePassportInstructionsTitle": "Foundation Passport Instructions",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
-  "importQrDevicePassportStep1": "Power on your Passport device",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "importQrDevicePassportStep2": "Enter your PIN",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
-  },
-  "importQrDevicePassportStep3": "Select \"Manage Account\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "importQrDevicePassportStep4": "Select \"Connect Wallet\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
-  "importQrDevicePassportStep5": "Select \"Sparrow\" option",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
-  "importQrDevicePassportStep6": "Select \"Single-sig\"",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
-  },
-  "importQrDevicePassportStep7": "Select \"QR Code\"",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
-  },
-  "importQrDevicePassportStep8": "On your mobile, click \"open camera\"",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
-  },
-  "importQrDevicePassportStep9": "Scan the QR code displayed on your Passport",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
-  },
   "importQrDevicePassportStep10": "In the BULL wallet app, select \"Segwit (BIP84)\" as the derivation option",
   "@importQrDevicePassportStep10": {
     "description": "Passport instruction step 10"
@@ -7715,106 +7493,6 @@
   "importQrDevicePassportStep12": "Setup complete.",
   "@importQrDevicePassportStep12": {
     "description": "Passport instruction step 12"
-  },
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Instructions",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
-  },
-  "importQrDeviceSeedsignerStep1": "Power on your SeedSigner device",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
-  "importQrDeviceSeedsignerStep2": "Open the \"Seeds\" menu",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
-  "importQrDeviceSeedsignerStep3": "Scan a SeedQR or enter your 12- or 24-word seed phrase",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
-  "importQrDeviceSeedsignerStep4": "Select \"Export Xpub\"",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
-  "importQrDeviceSeedsignerStep5": "Choose \"Single Sig\", then select your preferred script type (choose Native Segwit if unsure).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
-  },
-  "importQrDeviceSeedsignerStep6": "Select \"Animated\" as the export option. On older SeedSigner firmware, select \"Sparrow\".",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
-  },
-  "importQrDeviceSeedsignerStep7": "On your mobile, click \"open camera\"",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
-  "importQrDeviceSeedsignerStep8": "Scan the QR code displayed on your SeedSigner",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
-  },
-  "importQrDeviceSeedsignerStep9": "Enter a label for your SeedSigner wallet and tap Import",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
-  },
-  "importQrDeviceSeedsignerStep10": "Setup complete",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
-  "importQrDeviceSpecterName": "Specter",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Specter Instructions",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
-  },
-  "importQrDeviceSpecterStep1": "Power on your Specter device",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
-  },
-  "importQrDeviceSpecterStep2": "Enter your PIN",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
-  "importQrDeviceSpecterStep3": "Enter your seed/key (chose which ever option suits you)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
-  "importQrDeviceSpecterStep4": "Follow the prompts according to your chosen method",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
-  },
-  "importQrDeviceSpecterStep5": "Select \"Master public keys\"",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
-  },
-  "importQrDeviceSpecterStep6": "Choose \"Single key\"",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceSpecterStep7": "Disable \"Use SLIP-132\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
-  "importQrDeviceSpecterStep8": "On your mobile, click \"open camera\"",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
-  "importQrDeviceSpecterStep9": "Scan the QR code displayed on your Specter",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
-  "importQrDeviceSpecterStep10": "Enter a label for your Specter wallet and tap Import",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
-  },
-  "importQrDeviceSpecterStep11": "Setup is complete",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "importColdcardScanPrompt": "Scan the QR code from your Coldcard Q",
   "@importColdcardScanPrompt": {
@@ -7878,114 +7556,6 @@
   "importColdcardButtonInstructions": "Instructions",
   "@importColdcardButtonInstructions": {
     "description": "ImportColdcardQ: Button to show setup instructions"
-  },
-  "importColdcardQInstructionsTitle": "Coldcard Q Instructions",
-  "@importColdcardQInstructionsTitle": {
-    "description": "Title for Coldcard Q import instructions"
-  },
-  "importColdcardQStep1": "Login to your Coldcard Q device",
-  "@importColdcardQStep1": {
-    "description": "Coldcard Q import instruction step 1"
-  },
-  "importColdcardQStep2": "Add a passphrase if you have one (optional)",
-  "@importColdcardQStep2": {
-    "description": "Coldcard Q import instruction step 2"
-  },
-  "importColdcardQStep3": "Select the \"Advanced/Tools\" menu",
-  "@importColdcardQStep3": {
-    "description": "Coldcard Q import instruction step 3"
-  },
-  "importColdcardQStep4": "Click \"Export Wallet\"",
-  "@importColdcardQStep4": {
-    "description": "Coldcard Q import instruction step 4"
-  },
-  "importColdcardQStep5": "Select \"Descriptor\" as export type",
-  "@importColdcardQStep5": {
-    "description": "Coldcard Q import instruction step 5"
-  },
-  "importColdcardQStep6": "Press \"Enter\" on first screen",
-  "@importColdcardQStep6": {
-    "description": "Coldcard Q import instruction step 6"
-  },
-  "importColdcardQStep7": "Press \"Enter\" on second screen",
-  "@importColdcardQStep7": {
-    "description": "Coldcard Q import instruction step 7"
-  },
-  "importColdcardQStep8": "Select your address type (use Segwit if unsure)",
-  "@importColdcardQStep8": {
-    "description": "Coldcard Q import instruction step 8"
-  },
-  "importColdcardQStep9": "For QR, click the QR code button on the Coldcard Q device. It will show you a QR code on the device",
-  "@importColdcardQStep9": {
-    "description": "Coldcard Q import instruction step 9"
-  },
-  "importColdcardQStep10": "For NFC, click the NFC button on the Coldcard Q",
-  "@importColdcardQStep10": {
-    "description": "Coldcard Q import instruction step 10"
-  },
-  "importColdcardQStep11": "Click the \"Open the camera\" / \"Scan NFC\" button",
-  "@importColdcardQStep11": {
-    "description": "Coldcard Q import instruction step 11"
-  },
-  "importColdcardQStep12": "Scan the QR code you see on your ColdCard Q or put the phone NFC on top of the Coldcard NFC",
-  "@importColdcardQStep12": {
-    "description": "Coldcard Q import instruction step 12"
-  },
-  "importColdcardQStep13": "That's it!",
-  "@importColdcardQStep13": {
-    "description": "Coldcard Q import instruction step 13"
-  },
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Instructions",
-  "@importColdcardMk4InstructionsTitle": {
-    "description": "Title for Coldcard Mk4 import instructions"
-  },
-  "importColdcardMk4Step1": "Login to your Coldcard Mk4 device",
-  "@importColdcardMk4Step1": {
-    "description": "Coldcard Mk4 import instruction step 1"
-  },
-  "importColdcardMk4Step2": "Add a passphrase if you have one (optional)",
-  "@importColdcardMk4Step2": {
-    "description": "Coldcard Mk4 import instruction step 2"
-  },
-  "importColdcardMk4Step3": "Select the \"Advanced/Tools\" menu",
-  "@importColdcardMk4Step3": {
-    "description": "Coldcard Mk4 import instruction step 3"
-  },
-  "importColdcardMk4Step4": "Click \"Export Wallet\"",
-  "@importColdcardMk4Step4": {
-    "description": "Coldcard Mk4 import instruction step 4"
-  },
-  "importColdcardMk4Step5": "Select \"Descriptor\" as export type",
-  "@importColdcardMk4Step5": {
-    "description": "Coldcard Mk4 import instruction step 5"
-  },
-  "importColdcardMk4Step6": "Press \"Enter\" on first screen",
-  "@importColdcardMk4Step6": {
-    "description": "Coldcard Mk4 import instruction step 6"
-  },
-  "importColdcardMk4Step7": "Press \"Enter\" on second screen",
-  "@importColdcardMk4Step7": {
-    "description": "Coldcard Mk4 import instruction step 7"
-  },
-  "importColdcardMk4Step8": "Select your address type (use Segwit if unsure)",
-  "@importColdcardMk4Step8": {
-    "description": "Coldcard Mk4 import instruction step 8"
-  },
-  "importColdcardMk4Step9": "Click the number 3 to start the Coldcard NFC",
-  "@importColdcardMk4Step9": {
-    "description": "Coldcard Mk4 import instruction step 9"
-  },
-  "importColdcardMk4Step10": "Click \"Scan NFC\" button",
-  "@importColdcardMk4Step10": {
-    "description": "Coldcard Mk4 import instruction step 10"
-  },
-  "importColdcardMk4Step11": "Put the phone NFC on top of the Coldcard NFC",
-  "@importColdcardMk4Step11": {
-    "description": "Coldcard Mk4 import instruction step 11"
-  },
-  "importColdcardMk4Step12": "That's it!",
-  "@importColdcardMk4Step12": {
-    "description": "Coldcard Mk4 import instruction step 12"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -10668,23 +10238,6 @@
   "@addressViewErrorLoadFailed": {
     "description": "Shown when loading or paginating the wallet address list fails"
   },
-  "mnemonicPossibleLastWords": "{count} possible last words",
-  "@mnemonicPossibleLastWords": {
-    "description": "Header above the suggestion chips when the user is typing the last word of a mnemonic; only the words that produce a valid checksum are listed",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "mnemonicInvalidChecksumError": "This recovery phrase is not valid. A word is either mistyped or out of order.",
-  "@mnemonicInvalidChecksumError": {
-    "description": "Shown when a fully typed mnemonic has every word in the wordlist but does not close its checksum"
-  },
-  "mnemonicUnknownWordError": "Some words are not in the recovery word list — the red numbers show which.",
-  "@mnemonicUnknownWordError": {
-    "description": "Shown when a typed mnemonic contains a word that is not in the wordlist of the selected language; the red index badges mark which fields"
-  },
   "sellDepositAddress": "Deposit address",
   "@sellDepositAddress": {
     "description": "Sell confirm screen: label of the row showing the exchange deposit address the payin is sent to"
@@ -10820,10 +10373,6 @@
   "swapErrorRouteUnavailableGeneric": "This swap is not available.",
   "@swapErrorRouteUnavailableGeneric": {
     "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
-  },
-  "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
-  "@mnemonicShuffleKeyboardHint": {
-    "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
   },
   "settingsScreenPrivacyTitle": "Screen Privacy",
   "@settingsScreenPrivacyTitle": {
@@ -12896,55 +12445,9 @@
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
   },
-  "mnemonicLanguageLabel": "Recovery phrase language",
-  "@mnemonicLanguageLabel": {
-    "description": "Label for the BIP39 wordlist picker, independent of app language."
-  },
-  "mnemonicLanguageSuggestion": "These words match {language}. Select that language to continue.",
-  "@mnemonicLanguageSuggestion": {
-    "description": "Suggestion only; never silently changes the mnemonic language.",
-    "placeholders": {
-      "language": {
-        "type": "String"
-      }
-    }
-  },
-  "mnemonicLanguageAmbiguous": "These words match more than one language. Select the language of your recovery phrase.",
-  "@mnemonicLanguageAmbiguous": {
-    "description": "Requires explicit language confirmation when wordlists overlap."
-  },
-  "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
-  "@mnemonicLanguageName": {
-    "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
-    "placeholders": {
-      "language": {
-        "type": "String"
-      }
-    }
-  },
-  "mnemonicOtherLanguageWordsError": "These words belong to the {language} word list, not {selected}, and do not form a valid recovery phrase in {language} either. Check each word and its position.",
-  "@mnemonicOtherLanguageWordsError": {
-    "description": "Complete phrase whose words belong to another BIP39 wordlist than the selected one, with an invalid checksum there too. Never names a word.",
-    "placeholders": {
-      "language": {
-        "type": "String"
-      },
-      "selected": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicScanServerUnavailable": "Couldn't reach a server to check this wallet. You can still import it.",
   "@importMnemonicScanServerUnavailable": {
     "description": "ImportMnemonic: scan of one wallet type failed because no Electrum server could be reached; the import stays possible"
-  },
-  "importMnemonicScanTimeout": "The server took too long to check this wallet. You can still import it.",
-  "@importMnemonicScanTimeout": {
-    "description": "ImportMnemonic: scan of one wallet type timed out; the import stays possible"
-  },
-  "importMnemonicScanInvalidMnemonic": "These words could not be checked for this wallet type.",
-  "@importMnemonicScanInvalidMnemonic": {
-    "description": "ImportMnemonic: the words could not be derived to scan one wallet type"
   },
   "importMnemonicScanUnavailable": "Balance check unavailable. You can still import this wallet.",
   "@importMnemonicScanUnavailable": {
@@ -13272,8 +12775,6 @@
   "@broadcastSignedTxErrorNetworkNotEnabled": {
     "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
   },
-  "passphraseOption": "I have a passphrase",
-  "@passphraseOption": {},
   "passphraseWhitespaceWarning": "Leading or trailing spaces are part of your passphrase.",
   "@passphraseWhitespaceWarning": {},
   "passphraseBackupPrompt": "Enter your passphrase to verify your backup.",
@@ -13300,14 +12801,6 @@
   "@onboardingContinueWithoutChecking": {
     "description": "Continue recovering a wallet when the history scan failed."
   },
-  "passphraseClearedNotice": "For your privacy, your passphrase was cleared. Enter it again or choose to continue without one.",
-  "@passphraseClearedNotice": {
-    "description": "Recovery notice after clearing a transient passphrase."
-  },
-  "continueWithoutPassphrase": "Continue without a passphrase",
-  "@continueWithoutPassphrase": {
-    "description": "Explicitly allow recovery without re-entering the cleared passphrase."
-  },
   "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
@@ -13323,18 +12816,6 @@
   "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
   "@parentCustodyMetadataUnavailable": {
     "description": "Refusal to import or delete a seed when durable parent custody state is missing or corrupt; never recreate it automatically."
-  },
-  "mnemonicWordCountLabel": "Words",
-  "@mnemonicWordCountLabel": {
-    "description": "Label above the control choosing how many words the recovery phrase has"
-  },
-  "passphraseOptionOffSubtitle": "Optional extra word (BIP39)",
-  "@passphraseOptionOffSubtitle": {
-    "description": "Subtitle of the passphrase switch while it is off"
-  },
-  "passphraseOptionOnSubtitle": "Entered below, never shown",
-  "@passphraseOptionOnSubtitle": {
-    "description": "Subtitle of the passphrase switch while it is on: the passphrase field below stays obscured"
   },
   "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
   "@networkWalletReuseNoRecoveryPhrase": {

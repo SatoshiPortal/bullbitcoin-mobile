@@ -50,10 +50,6 @@
   "@payInstitutionNumber": {
     "description": "Label for institution number"
   },
-  "importQrDeviceSpecterStep2": "Digite seu PIN",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "sellInstitutionNumber": "Número de Instituição",
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
@@ -73,10 +69,6 @@
   "buyPayoutWillBeSentIn": "Seu pagamento será enviado ",
   "@buyPayoutWillBeSentIn": {
     "description": "Text before countdown timer for payout"
-  },
-  "importQrDeviceKruxStep3": "Clique em XPUB - QR Code",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "receiveInvoice": "Fatura de relâmpago",
   "@receiveInvoice": {
@@ -184,10 +176,6 @@
   "exchangeFileUploadStatusInReview": "Em revisão",
   "@exchangeFileUploadStatusInReview": {
     "description": "Status badge when files are under review"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "sellSendPaymentAboveMax": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
   "@sellSendPaymentAboveMax": {
@@ -399,10 +387,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "importQrDeviceJadeStep5": "Selecione \"Wallet\" na lista de opções",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
-  },
   "dcaLightningAddressInvalidError": "Por favor, insira um endereço Lightning válido",
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
@@ -427,10 +411,6 @@
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
   },
-  "importQrDeviceJadeStep7": "Se necessário, selecione \"Opções\" para alterar o tipo de endereço",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "payServiceFee": "Taxa de serviço",
   "@payServiceFee": {
     "description": "Label for service provider fee"
@@ -442,10 +422,6 @@
   "payRoutingFailed": "Routing falhou",
   "@payRoutingFailed": {
     "description": "Error when Lightning payment routing fails"
-  },
-  "importQrDeviceSpecterName": "Espectro",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "buyConfirmYouReceive": "Você recebe",
   "@buyConfirmYouReceive": {
@@ -499,10 +475,6 @@
   "transactionFilterBuy": "Comprar",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
-  },
-  "importQrDeviceSpecterStep7": "Desativar \"Use SLIP-132\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
   },
   "sendVerifyOnDevice": "Verificar no dispositivo",
   "@sendVerifyOnDevice": {
@@ -650,10 +622,6 @@
   "sellLoadingGeneric": "A carregar...",
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
-  },
-  "importQrDeviceSeedsignerName": "Sementes",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
   },
   "transactionStatusPaymentInProgress": "Pagamento em Progresso",
   "@transactionStatusPaymentInProgress": {
@@ -876,10 +844,6 @@
   "@sendChange": {
     "description": "Label for change output in a transaction"
   },
-  "importQrDeviceKruxStep4": "Clique no botão \"Câmera aberta\"",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
   "okButton": "ESTÁ BEM",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
@@ -971,10 +935,6 @@
   "physicalBackupRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
-  },
-  "importQrDeviceKeystoneStep3": "Toque no *** (três pontos) no canto superior direito",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
   },
   "payAvailableBalance": "Disponível: {amount}",
   "@payAvailableBalance": {
@@ -1133,10 +1093,6 @@
   "@payPaymentSuccessful": {
     "description": "Success message after payment completes"
   },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
-  },
   "sendErrorAmountBelowMinimum": "Montante abaixo do limite mínimo de swap: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
@@ -1257,10 +1213,6 @@
   "mempoolCustomServerUrl": "URL do servidor",
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
-  },
-  "importQrDeviceJadeStep6": "Selecione \"Export Xpub\" no menu da carteira",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
   },
   "howToDecideVaultLocationText2": "Um local personalizado pode ser muito mais seguro, dependendo de qual local você escolher. Você também deve ter certeza de não perder o arquivo de backup ou perder o dispositivo no qual seu arquivo de backup é armazenado.",
   "@howToDecideVaultLocationText2": {
@@ -1503,10 +1455,6 @@
   "paySinpeMonto": "Montante",
   "@paySinpeMonto": {
     "description": "Label for amount in SINPE order details"
-  },
-  "importQrDeviceSeedsignerStep5": "Escolha \"Single Sig\", em seguida, selecione o seu tipo de script preferido (escolher Native Segwit se não tiver certeza).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payPaymentConfirmed": "Pagamento confirmado",
   "@payPaymentConfirmed": {
@@ -1834,10 +1782,6 @@
   "@logoutConfirmationTitle": {
     "description": "Title for logout confirmation bottom sheet"
   },
-  "importQrDeviceJadeFirmwareWarning": "Certifique-se de que seu dispositivo é atualizado para o firmware mais recente",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
   "backupInstruction1": "Se você perder seu backup de 12 palavras, você não será capaz de recuperar o acesso à carteira Bitcoin.",
   "@backupInstruction1": {
     "description": "First backup instruction warning about losing 12 word backup"
@@ -1902,10 +1846,6 @@
   "@paySinpeOrigen": {
     "description": "Label for origin in SINPE details"
   },
-  "importQrDeviceJadeStep3": "Siga as instruções do dispositivo para desbloquear o Jade",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
-  },
   "exchangeFileUploadDocumentsTitle": "Carregar documentos",
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
@@ -1933,10 +1873,6 @@
   "fundExchangeCrIbanCrcDescriptionEnd": ". Os fundos serão adicionados ao saldo da sua conta.",
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
-  },
-  "importQrDeviceSpecterStep1": "Poder no seu dispositivo Specter",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "swapValidationInsufficientBalance": "Balança insuficiente",
   "@swapValidationInsufficientBalance": {
@@ -2057,10 +1993,6 @@
   "transactionSwapInfoClaimableTransfer": "O swap será concluído automaticamente em alguns segundos. Se não for, você pode tentar uma reivindicação manual clicando no botão \"Retry Swap Claim\".",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
-  },
-  "importQrDeviceSpecterStep10": "Digite um rótulo para a sua carteira Specter e toque em Importar",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
   },
   "exchangeFileUploadNoFilesSelected": "Sem arquivos selecionados",
   "@exchangeFileUploadNoFilesSelected": {
@@ -2184,17 +2116,9 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "importQrDeviceSeedsignerStep9": "Digite um rótulo para a sua carteira SeedSigner e toque em Importar",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
-  },
   "exchangeBitcoinWalletsDescription": "Definir endereços de carteira padrão para retiradas automáticas de Bitcoin.",
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
-  },
-  "importQrDeviceJadeStep9": "Analise o código QR que você vê no seu dispositivo.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "fundExchangeJurisdictionArgentina": "Argentina",
   "@fundExchangeJurisdictionArgentina": {
@@ -2239,10 +2163,6 @@
   "exchangeAmountInputValidationEmpty": "Por favor, insira um montante",
   "@exchangeAmountInputValidationEmpty": {
     "description": "Validation message when amount field is empty"
-  },
-  "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
   },
   "sellPayFromWallet": "Pagar da carteira",
   "@sellPayFromWallet": {
@@ -2339,10 +2259,6 @@
   "backupSettingsTested": "Testado",
   "@backupSettingsTested": {
     "description": "Status text shown when backup has been tested"
-  },
-  "importQrDeviceKeystoneStep10": "Seu Keystone agora está conectado e pronto para usar com BULL Wallet.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
   },
   "exchangeDcaAddressLabelLiquid": "Endereço líquido",
   "@exchangeDcaAddressLabelLiquid": {
@@ -2448,10 +2364,6 @@
   "@buyKYCLevel1": {
     "description": "Basic verification tier"
   },
-  "importQrDeviceKeystoneStep6": "Em seu celular, clique em \"câmera aberta\"",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "payBumpFee": "Bump Fee",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
@@ -2525,10 +2437,6 @@
       }
     }
   },
-  "importQrDevicePassportStep2": "Digite seu PIN",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
-  },
   "swapTransferTo": "Swap para",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
@@ -2552,10 +2460,6 @@
   "replaceByFeeSatsVbUnit": "sats/vB",
   "@replaceByFeeSatsVbUnit": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "importQrDeviceSpecterStep3": "Digite sua semente/chave (cose que alguma vez a opção lhe convier)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
   },
   "selectCoinsManuallyLabel": "Selecione moedas manualmente",
   "@selectCoinsManuallyLabel": {
@@ -3008,10 +2912,6 @@
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"
   },
-  "importQrDeviceSpecterStep9": "Digitalize o código QR exibido no seu Specter",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "fundExchangeSpeiTitle": "Transferência SPEI",
   "@fundExchangeSpeiTitle": {
     "description": "Screen title for SPEI transfer (Mexico)"
@@ -3047,10 +2947,6 @@
   "pinCreateHeadline": "Criar novo pino",
   "@pinCreateHeadline": {
     "description": "Headline text on PIN creation screen"
-  },
-  "importQrDeviceJadeStep2": "Selecione \"Modo QR\" no menu principal",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "testnetModeSettingsLabel": "Modo de Testnet",
   "@testnetModeSettingsLabel": {
@@ -3099,10 +2995,6 @@
   "swapErrorAmountExceedsMaximum": "O montante excede o montante máximo de swap",
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
-  },
-  "importQrDeviceSpecterStep8": "No seu dispositivo móvel, toque em Abrir Câmara",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
   },
   "sellQrCode": "Código QR",
   "@sellQrCode": {
@@ -3195,10 +3087,6 @@
   "sellSendPaymentEurBalance": "EUR Balanço",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "importQrDevicePassportStep7": "Selecione \"Código QR\"",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "sellNoInvoiceData": "Não existem dados de fatura disponíveis",
   "@sellNoInvoiceData": {
@@ -3342,15 +3230,6 @@
   "@swapExternalTransferLabel": {
     "description": "Label for external transfer toggle"
   },
-  "importQrDeviceScanPrompt": "Digitalizar o código QR do seu {deviceName}",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAmountInputTitle": "Digite o valor",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
@@ -3374,10 +3253,6 @@
   "fundExchangeLabelBankAccountDetails": "Detalhes da conta bancária",
   "@fundExchangeLabelBankAccountDetails": {
     "description": "Label for bank account details field"
-  },
-  "importQrDevicePassportStep4": "Selecione \"Carteira de contato\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
   },
   "payLiquidAddress": "Endereço líquido",
   "@payLiquidAddress": {
@@ -3526,10 +3401,6 @@
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "importQrDeviceSeedsignerStep6": "Selecione \"Animated\" como opção de exportação. Em versões mais antigas do firmware do SeedSigner, selecione \"Sparrow\".",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
-  },
   "receiveRequestInboundLiquidity": "Capacidade de recebimento de pedidos",
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
@@ -3654,10 +3525,6 @@
   "@exchangeAppSettingsSaveSuccessMessage": {
     "description": "Success message displayed when exchange app settings are saved"
   },
-  "importQrDeviceKeystoneStep8": "Na carteira BULL, escolha o seu tipo de derivação preferido. Se você não tem certeza, selecione \"Segwit (BIP84)\"",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
   "fundExchangeETransferLabelBeneficiaryName": "Use isso como o nome do beneficiário E-transfer",
   "@fundExchangeETransferLabelBeneficiaryName": {
     "description": "Label for E-transfer beneficiary name"
@@ -3780,17 +3647,9 @@
   "@electrumTestnet": {
     "description": "Testnet environment label"
   },
-  "importQrDeviceSpecterStep4": "Siga as instruções de acordo com o seu método escolhido",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
-  },
   "sendFrozenCoin": "Congelado",
   "@sendFrozenCoin": {
     "description": "Status for manually frozen UTXO"
-  },
-  "importQrDeviceKruxStep1": "Ligue o seu dispositivo Krux",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
   },
   "importMnemonicEmpty": "Vazio",
   "@importMnemonicEmpty": {
@@ -3904,10 +3763,6 @@
   "receiveTotalFee": "Taxa total",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceKeystoneStep7": "Digitalize o código QR exibido em seu Keystone",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
   },
   "dcaConfirmFrequency": "Frequência",
   "@dcaConfirmFrequency": {
@@ -4130,10 +3985,6 @@
   "@receiveQRCode": {
     "description": "Section header for QR code display"
   },
-  "importQrDeviceSeedsignerStep3": "Digitalize um SeedQR ou insira sua frase de semente de 12 ou 24 palavras",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "payHighPriority": "Alto",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -4299,10 +4150,6 @@
   "@exchangeAuthLoginFailedOkButton": {
     "description": "OK button label in the login failed dialog"
   },
-  "importQrDevicePassportStep1": "Poder no seu dispositivo de passaporte",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "sellCopBalance": "COP Balanço",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
@@ -4318,10 +4165,6 @@
   "exchangeDcaFrequencyHour": "hora da hora",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
-  },
-  "importQrDeviceButtonOpenCamera": "Abra a câmera",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "payRBFDisabled": "RBF desativado",
   "@payRBFDisabled": {
@@ -4428,10 +4271,6 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "importQrDevicePassportName": "Passaporte da Fundação",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "payOwnerNameHint": "Digite o nome do proprietário",
   "@payOwnerNameHint": {
     "description": "Hint for owner name input"
@@ -4509,10 +4348,6 @@
   "@exchangeSettingsAccountInformationTitle": {
     "description": "Title for the account information section in exchange settings"
   },
-  "importQrDeviceSpecterInstructionsTitle": "Instruções de espectro",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
-  },
   "sellPayoutAmount": "Quantidade de pagamento",
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
@@ -4532,10 +4367,6 @@
   "payInProgressDescription": "O seu pagamento foi iniciado e o destinatário receberá os fundos após a sua transação receber 1 confirmação de compra.",
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
-  },
-  "importQrDeviceKeystoneStep9": "Digite um rótulo para sua carteira Keystone e toque em \"Importar\"",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
   },
   "allSeedViewDeleteWarningTitle": "ATENÇÃO!",
   "@allSeedViewDeleteWarningTitle": {
@@ -4623,17 +4454,9 @@
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
-  "importQrDeviceSpecterStep5": "Selecione \"Mestrar chaves públicas\"",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
-  },
   "transactionDetailLabelBitcoinTxId": "ID de transação de Bitcoin",
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Instruções de Keystone",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "payDecodeFailed": "Falhado para decodificar fatura",
   "@payDecodeFailed": {
@@ -4683,10 +4506,6 @@
   "fundExchangeSinpeLabelRecipientName": "Nome do destinatário",
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
-  },
-  "importQrDeviceKruxInstructionsTitle": "Instruções de Krux",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
   },
   "dcaSetupFrequencyError": "Por favor, selecione uma frequência",
   "@dcaSetupFrequencyError": {
@@ -4887,14 +4706,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "importQrDevicePassportStep9": "Digitalizar o código QR exibido no seu Passaporte",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
-  },
-  "importQrDeviceSeedsignerStep10": "Configuração completa",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "transactionOrderLabelReferenceNumber": "Número de referência",
   "@transactionOrderLabelReferenceNumber": {
     "description": "Label for reference number in order details"
@@ -4940,10 +4751,6 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "importQrDevicePassportStep6": "Selecione \"Single-sig\"",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
-  },
   "payEnterValidAmount": "Por favor insira um valor válido",
   "@payEnterValidAmount": {
     "description": "Validation error for invalid amount format"
@@ -4964,10 +4771,6 @@
         "type": "int"
       }
     }
-  },
-  "importQrDeviceKeystoneName": "Chaveiro",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "autoswapBaseBalanceInfoText": "Seu saldo imediato da carteira de pagamento retornará a este equilíbrio de destino após um auto-swap.",
   "@autoswapBaseBalanceInfoText": {
@@ -5052,10 +4855,6 @@
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Costa Rica (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
     "description": "Payment method title for IBAN USD in method list"
-  },
-  "importQrDeviceSeedsignerStep4": "Selecione \"Export Xpub\"",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
   },
   "payInvoiceCopied": "Fatura copiada para clipboard",
   "@payInvoiceCopied": {
@@ -5263,10 +5062,6 @@
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
   },
-  "importQrDeviceSeedsignerStep1": "Poder no seu dispositivo SeedSigner",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "transactionFilterSell": "Venda",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
@@ -5274,10 +5069,6 @@
   "addressViewCopyAddress": "Endereço de cópia",
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
-  },
-  "importQrDeviceJadeStep1": "Ligue o dispositivo Jade",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "sellFastest": "Mais rápido",
   "@sellFastest": {
@@ -5354,10 +5145,6 @@
   "leaveYourPhone": "deixar seu telefone e é ",
   "@leaveYourPhone": {
     "description": "Middle part of privacy assurance message"
-  },
-  "importQrDevicePassportInstructionsTitle": "Instruções do passaporte da Fundação",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
   },
   "exchangeAmountInputValidationZero": "O montante deve ser superior a zero",
   "@exchangeAmountInputValidationZero": {
@@ -5472,10 +5259,6 @@
   "backupSettingsExporting": "Exportação...",
   "@backupSettingsExporting": {
     "description": "Button text while vault export is in progress"
-  },
-  "importQrDeviceJadeStep8": "Clique no botão \"Câmera aberta\"",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
   },
   "dcaConfirmAmount": "Montante",
   "@dcaConfirmAmount": {
@@ -5848,10 +5631,6 @@
   "@sendCoinControl": {
     "description": "Feature to manually select UTXOs"
   },
-  "importQrDeviceSeedsignerStep2": "Abra o menu \"Sementes\"",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "paySuccessfulPayments": "Sucesso",
   "@paySuccessfulPayments": {
     "description": "Filter for successful payments"
@@ -5863,10 +5642,6 @@
   "transactionDetailLabelSwapStatus": "Status do balanço",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
-  },
-  "importQrDeviceSeedsignerStep8": "Digitalize o código QR exibido no SeedSigner",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
   },
   "coreScreensConfirmSend": "Enviar",
   "@coreScreensConfirmSend": {
@@ -5908,10 +5683,6 @@
   "@buyInputInsufficientBalance": {
     "description": "Insufficient balance info card title"
   },
-  "importQrDeviceKeystoneStep4": "Toque em \"Connect Software Wallet\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
-  },
   "withdrawConfirmClabe": "CLABE",
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
@@ -5931,10 +5702,6 @@
   "backupSettingsViewVaultKey": "Ver o Vault Chaveiro",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
-  },
-  "importQrDevicePassportStep8": "No seu dispositivo móvel, toque em \"câmera aberta\"",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
   },
   "exchangeBitcoinWalletsSaveSuccess": "Endereço da carteira salvo com sucesso",
   "@exchangeBitcoinWalletsSaveSuccess": {
@@ -5976,10 +5743,6 @@
         "type": "String"
       }
     }
-  },
-  "importQrDeviceSpecterStep11": "A configuração é completa",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "payRecipientName": "Nome do destinatário",
   "@payRecipientName": {
@@ -6317,10 +6080,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "importQrDevicePassportStep5": "Selecione a opção \"Sparrow\"",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
   "coreScreensFeePriorityLabel": "Prioridade de Taxas",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
@@ -6416,14 +6175,6 @@
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
   },
-  "importQrDevicePassportStep3": "Selecione \"Conta de gerenciamento\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
-  "importQrDeviceButtonInstructions": "Instruções",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
-  },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
@@ -6440,10 +6191,6 @@
   "exchangeFeatureDcaOrders": "• DCA, Limite de ordens e Auto-compra",
   "@exchangeFeatureDcaOrders": {
     "description": "Feature bullet point describing DCA and automated buying features"
-  },
-  "importQrDeviceKruxStep6": "É isso!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
   },
   "sendDeviceConnected": "Dispositivo conectado",
   "@sendDeviceConnected": {
@@ -6513,15 +6260,6 @@
   "payPayee": "Pagamento",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "importQrDeviceTitle": "Conecte {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "payInstitutionNumberHint": "Número da instituição",
   "@payInstitutionNumberHint": {
@@ -6646,14 +6384,6 @@
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
-  "importQrDeviceKeystoneStep1": "Poder no seu Keystone",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
-  },
-  "importQrDeviceJadeInstructionsTitle": "Instruções Blockstream Jade",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "coreSwapsActionRefund": "Reembolso",
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
@@ -6722,10 +6452,6 @@
   "payShareInvoice": "Compartilhar Fatura",
   "@payShareInvoice": {
     "description": "Button text to share payment invoice"
-  },
-  "importQrDeviceSpecterStep6": "Escolha \"Chave única\"",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
   },
   "testBackupEnterKeyManually": "Digite a tecla de backup manualmente >>",
   "@testBackupEnterKeyManually": {
@@ -6806,10 +6532,6 @@
   "pinConfirmMismatchError": "PINs não correspondem",
   "@pinConfirmMismatchError": {
     "description": "Error message when confirmation PIN doesn't match original"
-  },
-  "importQrDeviceJadeStep10": "É isso!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
   },
   "payAdvancedSettings": "Configurações avançadas",
   "@payAdvancedSettings": {
@@ -7428,17 +7150,9 @@
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
   },
-  "importQrDeviceKeystoneStep2": "Desbloqueie-o entrando em seu PIN",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "transactionDetailLabelTransferFee": "Taxa de swap",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
-  },
-  "importQrDeviceSeedsignerStep7": "No seu dispositivo móvel, toque em Abrir Câmara",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
   },
   "payNoRouteFound": "Nenhuma rota encontrada para este pagamento",
   "@payNoRouteFound": {
@@ -7485,10 +7199,6 @@
   "@payOwnerName": {
     "description": "Label for owner name field"
   },
-  "importQrDeviceKruxStep2": "Clique em Extended Public Key",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
-  },
   "exchangeFileUploadStatusAccepted": "Aceito",
   "@exchangeFileUploadStatusAccepted": {
     "description": "Status badge when files have been accepted"
@@ -7497,17 +7207,9 @@
   "@sendSigningTransaction": {
     "description": "Status while hardware wallet signs"
   },
-  "importQrDeviceKruxStep5": "Analise o código QR que você vê no seu dispositivo.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "sellAboveMaxAmountError": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "Instruções do SeedSigner",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "fundExchangeHelpTransferCode": "Adicione isso como a razão para a transferência",
   "@fundExchangeHelpTransferCode": {
@@ -7652,10 +7354,6 @@
   "hwKeystone": "Chaveiro",
   "@hwKeystone": {
     "description": "Name of Keystone hardware wallet"
-  },
-  "importQrDeviceJadeStep4": "Selecione \"Opções\" no menu principal",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
   },
   "fundExchangeWarningTacticsTitle": "Táticas comuns do scammer",
   "@fundExchangeWarningTacticsTitle": {
@@ -7944,10 +7642,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Digite todas as palavras de seu mnemônico",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "mempoolSettingsDescription": "Configurar servidores de mempool personalizados para diferentes redes. Cada rede pode usar seu próprio servidor para o explorador de blocos e estimativa de taxas.",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
@@ -8143,10 +7837,6 @@
   "@bip85ExperimentalWarning": {
     "description": "Warning message about experimental feature"
   },
-  "importWatchOnlySelectDerivation": "Selecione a derivação",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
-  },
   "walletDetailsSignerDeviceNotSupported": "Não suportado",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
@@ -8162,10 +7852,6 @@
   "transactionSwapProgressConfirmed": "Confirmado",
   "@transactionSwapProgressConfirmed": {
     "description": "Swap progress step: confirmed"
-  },
-  "requiredHint": "Requisitos",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "x pub",
   "@importWatchOnlyXpub": {
@@ -8291,10 +7977,6 @@
   "exportTransactionsInvalidDateRange": "A data de início deve ser anterior à data de término",
   "@exportTransactionsInvalidDateRange": {
     "description": "Message shown when start date is after end date"
-  },
-  "submitButton": "Submeter-me",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
   },
   "importWatchOnlyTitle": "Importar apenas relógio",
   "@importWatchOnlyTitle": {
@@ -8464,10 +8146,6 @@
   "continueButton": "Continue",
   "@continueButton": {
     "description": "Default button text for success state"
-  },
-  "optionalPassphraseHint": "Passphrase opcional",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
   },
   "importWatchOnlyDisclaimerDescription": "Certifique-se de que o caminho de derivação que você escolher combina com o que produziu o xpub dado verificando o primeiro endereço derivado da carteira antes do uso. Usar o caminho errado pode levar à perda de fundos",
   "@importWatchOnlyDisclaimerDescription": {
@@ -9200,33 +8878,6 @@
   "importColdcardConnectTitle": "Conecte {deviceName}",
   "importColdcardConnectDescription": "Importe o descritor da carteira do seu {deviceName}",
   "importColdcardScanNfcSheetTitle": "Aproxime seu {deviceName} para importar o descritor da carteira via NFC",
-  "importColdcardQInstructionsTitle": "Instruções do Coldcard Q",
-  "importColdcardQStep1": "Faça login no seu dispositivo Coldcard Q",
-  "importColdcardQStep2": "Adicionar uma senha se você tiver um (opcional)",
-  "importColdcardQStep3": "Selecione o menu avançado/configurações",
-  "importColdcardQStep4": "Clique em \"exportar carteira\"",
-  "importColdcardQStep5": "Selecione \"descritor\" como tipo de exportação",
-  "importColdcardQStep6": "Pressione \"Enter\" na primeira tela",
-  "importColdcardQStep7": "Pressione \"Enter\" na segunda tela",
-  "importColdcardQStep8": "Selecione o tipo de endereço (use Segwit em caso de dúvida)",
-  "importColdcardQStep9": "Para QR, clique no botão de código QR no dispositivo. Ele mostrará um código QR no dispositivo",
-  "importColdcardQStep10": "Para NFC, clique no botão NFC no dispositivo",
-  "importColdcardQStep11": "Clique no botão \"Abrir a câmera\" / \"Escanear NFC\"",
-  "importColdcardQStep12": "Escaneie o código QR que aparece no seu dispositivo ou coloque o NFC do celular sobre o NFC do Coldcard",
-  "importColdcardQStep13": "É isso!",
-  "importColdcardMk4InstructionsTitle": "Instruções do Coldcard Mk4",
-  "importColdcardMk4Step1": "Faça login no seu dispositivo Coldcard Mk4",
-  "importColdcardMk4Step2": "Adicionar uma senha se você tiver um (opcional)",
-  "importColdcardMk4Step3": "Selecione o menu avançado/configurações",
-  "importColdcardMk4Step4": "Clique em \"exportar carteira\"",
-  "importColdcardMk4Step5": "Selecione \"descritor\" como tipo de exportação",
-  "importColdcardMk4Step6": "Pressione \"Enter\" na primeira tela",
-  "importColdcardMk4Step7": "Pressione \"Enter\" na segunda tela",
-  "importColdcardMk4Step8": "Selecione o tipo de endereço (use Segwit em caso de dúvida)",
-  "importColdcardMk4Step9": "Clique no número 3 para iniciar o NFC do Coldcard",
-  "importColdcardMk4Step10": "Clique no botão \"Escanear NFC\"",
-  "importColdcardMk4Step11": "Coloque o NFC do celular sobre o NFC do Coldcard",
-  "importColdcardMk4Step12": "É isso!",
   "fundExchangeCopDailyLimitWarning": "Se você exceder o limite diário de transações, a transação falhará. Você precisará entrar em contato com o suporte ao cliente.",
   "fundExchangeCopSenderName": "Nome do remetente",
   "fundExchangeCopIssuingBank": "Banco emissor",

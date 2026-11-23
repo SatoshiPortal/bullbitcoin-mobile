@@ -199,10 +199,6 @@
   "@swapMax": {
     "description": "MAX button label"
   },
-  "importQrDeviceSpecterStep2": "Zadejte PIN kód",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "importColdcardInstructionsStep10": "Nastavení kompletní",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -282,10 +278,6 @@
   "fundExchangeSinpeLabelPhone": "Odeslat na tento telefonní číslo",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "importQrDeviceKruxStep3": "Klikněte na XPUB - QR kód",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "Pokročilé možnosti",
   "@sellAdvancedOptions": {
@@ -389,10 +381,6 @@
   "fundExchangeCanadaPostStep5": "V Platit s hotovostí nebo debetní kartou",
   "@fundExchangeCanadaPostStep5": {
     "description": "Step 5 for Canada Post payment process"
-  },
-  "importQrDeviceKruxName": "Čeština",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "addressViewNoAddressesFound": "Žádné adresy",
   "@addressViewNoAddressesFound": {
@@ -526,10 +514,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "importQrDeviceJadeStep7": "V případě potřeby vyberte možnost \"Volby\" pro změnu typu adresy",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "transactionNetworkLightning": "Blesk",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -551,10 +535,6 @@
   "swapInsufficientFunds": "Nedostatek prostředků",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "importQrDeviceSpecterName": "Čeština",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "transactionDetailLabelSwapFees": "Výměnné poplatky",
   "@transactionDetailLabelSwapFees": {
@@ -632,17 +612,9 @@
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
   },
-  "importQrDeviceSpecterStep7": "Zakázat \"Použít SLIP-132\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
   "customLocationTitle": "Vlastní poloha",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
-  },
-  "importQrDeviceJadeStep5": "Vyberte \"Wallet\" z seznamu možností",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
   },
   "transactionFilterBuy": "Koupit",
   "@transactionFilterBuy": {
@@ -889,10 +861,6 @@
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
   },
-  "importQrDeviceSeedsignerName": "Čeština",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
   "payFeeTooHigh": "Poplatek je neobvykle vysoká",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
@@ -1081,10 +1049,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "Zadejte všechny slova svého mnemonic",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1170,10 +1134,6 @@
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
   },
-  "importQrDeviceKruxStep4": "Klikněte na tlačítko \"open camera\"",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
   "payPasteInvoice": "Vložte fakturu",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -1225,10 +1185,6 @@
   "okButton": "ČEŠTINA",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "importQrDeviceKeystoneStep3": "Klepněte na *** (tři tečky) v pravém horním rohu",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
   },
   "exchangeAmountInputValidationInvalid": "Neplatné množství",
   "@exchangeAmountInputValidationInvalid": {
@@ -1386,10 +1342,6 @@
   "@importMnemonicSegwit": {
     "description": "Label for Segwit (BIP84) wallet type"
   },
-  "importQrDeviceJadeStep6": "Zvolte \"Export Xpub\" z nabídky peněženky",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
   "buyContinue": "Pokračovat",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1523,10 +1475,6 @@
   "broadcastSignedTxCameraButton": "Čeština",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
-  },
-  "importQrDeviceJadeName": "Blokstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
   },
   "importWalletImportMnemonic": "Import Mnemonic",
   "@importWalletImportMnemonic": {
@@ -1670,10 +1618,6 @@
   "walletDeletionConfirmationCancelButton": "Hledat",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "importQrDeviceSeedsignerStep5": "Zvolte \"Single Sig\", poté vyberte preferovaný typ skriptu (choose Native Segwit, pokud si nejste jisti).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payNoRecipientsFound": "Nejsou k dispozici žádné příjemci.",
   "@payNoRecipientsFound": {
@@ -2172,14 +2116,6 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "importQrDeviceJadeFirmwareWarning": "Ujistěte se, že vaše zařízení je aktualizována na nejnovější firmware",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
-  "importQrDeviceJadeStep3": "Postupujte podle pokynů zařízení k odemknutí Jade",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
-  },
   "paySecurityQuestionLengthError": "Musí být 10-40 znaků",
   "@paySecurityQuestionLengthError": {
     "description": "Error for invalid security question length"
@@ -2231,10 +2167,6 @@
   "sellOrderCompleted": "Objednávky dokončeno!",
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
-  },
-  "importQrDeviceSpecterStep10": "Zadejte štítek pro peněženky Specter a klepněte na Import",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
   },
   "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2291,10 +2223,6 @@
   "fundExchangeWarningTactic7": "Řekně, že se nemusíte obávat této varování",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
-  },
-  "importQrDeviceSpecterStep1": "Moc na zařízení Specter",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "transactionNoteAddTitle": "Přidat poznámku",
   "@transactionNoteAddTitle": {
@@ -2404,10 +2332,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "importQrDeviceKeystoneStep10": "Váš Keystone je nyní připojen a připraven k použití s BULL Peněženka.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
   "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -2447,10 +2371,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google vás požádá o sdílení osobních údajů s touto aplikací.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "importQrDeviceSeedsignerStep9": "Zadejte štítek pro peněženky SeedSigner a klepněte na Import",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
   },
   "testCompletedSuccessMessage": "Jste schopni obnovit přístup k ztracené Bitcoin peněženku",
   "@testCompletedSuccessMessage": {
@@ -2509,10 +2429,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "importQrDeviceKeystoneStep5": "Vyberte \"BULL\" ze seznamu peněženek",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Emailová upozornění",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2532,10 +2448,6 @@
   "exchangeAuthOk": "ČEŠTINA",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "importQrDeviceJadeStep9": "Skenujte QR kód, který vidíte na vašem zařízení.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "sellArsBalance": "ARS Bilance",
   "@sellArsBalance": {
@@ -2757,10 +2669,6 @@
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
-  "importQrDeviceKeystoneStep6": "Na mobilu klikněte na \"open camera\"",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "bip85Hex": "ČEŠTINA",
   "@bip85Hex": {
     "description": "Label for hex type entropy"
@@ -2869,10 +2777,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "importQrDeviceSpecterStep3": "Zadejte své semeno / klíč (s výjimkou, která vám vyhovuje)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
   "payPayeeAccountNumber": "Číslo účtu Payee",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
@@ -2944,10 +2848,6 @@
   "selectCoinsManuallyLabel": "Vyberte mince ručně",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
-  },
-  "importQrDevicePassportStep2": "Zadejte svůj PIN",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
   },
   "buyShouldBuyAtLeast": "Měli byste si koupit alespoň",
   "@buyShouldBuyAtLeast": {
@@ -3184,10 +3084,6 @@
   "@sellBankDetails": {
     "description": "Section header for bank account info"
   },
-  "importQrDeviceSpecterStep8": "Na mobilním zařízení klepněte na položku Otevřít kameru",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
   "coreSwapsStatusPending": "Čeká na zpracování",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
@@ -3235,10 +3131,6 @@
   "fundExchangeLabelRecipientName": "Název příjemce",
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
-  },
-  "importQrDeviceJadeStep2": "Zvolte režim \"QR\" z hlavního menu",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
   },
   "rbfErrorAlreadyConfirmed": "Původní transakce byla potvrzena",
   "@rbfErrorAlreadyConfirmed": {
@@ -3289,15 +3181,6 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceScanPrompt": "Skenujte QR kód z vašeho {deviceName}",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
     "description": "Payment method title for SINPE Móvil in method list"
@@ -3334,17 +3217,9 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importQrDeviceSpecterStep9": "Skenujte QR kód zobrazený na Specteru",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "buyInputKycPending": "KYC ID Ověřování",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
-  },
-  "importWatchOnlySelectDerivation": "Vyberte derivaci",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
   },
   "hwPassport": "Nadace pas",
   "@hwPassport": {
@@ -3545,10 +3420,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "Zvolte \"Connect App\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
   "payAddRecipient": "Přidat pomoc",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
@@ -3578,10 +3449,6 @@
   "sellDailyLimitReached": "Denní limit prodeje dosáhl",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "Vyžadováno",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "čeština",
   "@importWatchOnlyXpub": {
@@ -3654,10 +3521,6 @@
   "connectHardwareWalletSeedSigner": "Čeština",
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
-  },
-  "importQrDevicePassportStep7": "V aplikaci BULL wallet vyberte \"Segwit (BIP84)\" jako možnost derivace",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "delete": "Čeština",
   "@delete": {
@@ -3993,10 +3856,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "importQrDeviceKeystoneStep8": "V peněžence BULL vyberte preferovaný typ derivace. Pokud si nejste jisti, vyberte \"Segwit (BIP84)\"",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
   "fundExchangeCrIbanUsdTitle": "Bankovní převod (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -4028,10 +3887,6 @@
   "sendReceiveNetworkFee": "Obdržet Síťový poplatek",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "importQrDeviceSeedsignerStep6": "Jako možnost exportu vyberte „Animated“. U staršího firmwaru SeedSigner vyberte „Sparrow“.",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
   },
   "swapValidationMaximumAmount": "Maximální částka je {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -4166,10 +4021,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "importQrDeviceSeedsignerStep3": "Skenujte se SeedQR nebo zadejte své 12- nebo 24word seed fráze",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "replaceByFeeFastestTitle": "Čeština",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
@@ -4202,10 +4053,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "importQrDeviceKruxStep1": "Zapněte zařízení Krux",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "transactionSwapProgressFundsClaimed": "Fondy\nReklamace",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
@@ -4226,10 +4073,6 @@
   "transactionSwapProgressPaymentMade": "Platba\nČeština",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
-  },
-  "importQrDeviceSpecterStep4": "Postupujte podle pokynů podle zvolené metody",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
   },
   "coreSwapsChainPending": "Swap zatím nebyl zahájen.",
   "@coreSwapsChainPending": {
@@ -4378,17 +4221,9 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "importQrDevicePassportStep1": "Zapněte zařízení Passport",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "fundExchangeBankTransferWireDescription": "Odesílejte převod drátu z vašeho bankovního účtu pomocí bance Bull Bitcoin níže. Vaše banka může vyžadovat pouze některé části těchto údajů.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
-  },
-  "importQrDeviceKeystoneStep7": "Skenujte QR kód zobrazený na klíče",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
   },
   "coldcardStep3": "Zvolte možnost \"Scan libovolný QR kód\"",
   "@coldcardStep3": {
@@ -4427,10 +4262,6 @@
   "receiveTotalFee": "Celkový poplatek",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceButtonOpenCamera": "Otevřete kameru",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "dcaConfirmFrequency": "Čeština",
   "@dcaConfirmFrequency": {
@@ -4626,10 +4457,6 @@
   "@exchangeSettingsRecipientsTitle": {
     "description": "Title for the recipients button in exchange settings"
   },
-  "importQrDevicePassportName": "Nadace pas",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "fundExchangeMethodCanadaPostSubtitle": "Nejlepší pro ty, kteří raději platit osobně",
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
@@ -4713,10 +4540,6 @@
   "fundExchangeCrIbanCrcLabelIban": "Číslo účtu IBAN (pouze jen)",
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Ruční pokyny",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
   },
   "testBackupScreenshot": "Čeština",
   "@testBackupScreenshot": {
@@ -4829,10 +4652,6 @@
   "autoswapMaxFeeInfo": "Pokud celkový poplatek za swap překročí nastavené procento, automatický swap bude zablokován",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
-  },
-  "importQrDevicePassportStep9": "Nastavení je dokončeno.",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
   },
   "swapProgressRefundedMessage": "Swap byl úspěšně vrácen.",
   "@swapProgressRefundedMessage": {
@@ -4993,10 +4812,6 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
-  "importQrDeviceSeedsignerStep10": "Nastavení kompletní",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "sendReceive": "Čeština",
   "@sendReceive": {
     "description": "Label for receive transaction type"
@@ -5033,10 +4848,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "importQrDeviceKeystoneStep9": "Zadejte štítek pro peněženky Keystone a klepněte na \"Import\"",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
   "tapWordsInOrderTitle": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
@@ -5064,10 +4875,6 @@
   "coreSwapsChainPaid": "Čekáme na potvrzení platby od poskytovatele swapu. Dokončení může chvíli trvat.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
-  },
-  "importQrDevicePassportStep6": "Naskenujte QR kód zobrazený na zařízení Passport",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
   },
   "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
@@ -5151,17 +4958,9 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "importQrDeviceSeedsignerStep4": "Zvolte \"Export Xpub\"",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
   "payTransitNumber": "Číslo přechodu",
   "@payTransitNumber": {
     "description": "Label for transit number"
-  },
-  "importQrDeviceSpecterStep5": "Vyberte \"Master veřejné klíče\"",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
   },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN Kostarika (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
@@ -5267,17 +5066,9 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "importQrDeviceKruxInstructionsTitle": "Krux instrukce",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
   "transactionOrderLabelOriginName": "Název původu",
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone Pokyny",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "globalDefaultLiquidWalletLabel": "Okamžité platby",
   "@globalDefaultLiquidWalletLabel": {
@@ -5423,10 +5214,6 @@
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
   },
-  "importQrDevicePassportInstructionsTitle": "Pokyny pro cestovní pas",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
   "rbfFeeRate": "Cena: {rate} sat/vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
@@ -5451,10 +5238,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "submitButton": "Odeslat",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
   },
   "exchangeStatisticsNoData": "Žádné statistiky",
   "@exchangeStatisticsNoData": {
@@ -5562,10 +5345,6 @@
   "sendRecipientAddressOrInvoice": "Adresa příjemce nebo faktura",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "importQrDeviceKeystoneName": "Čeština",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "payBitcoinAddress": "Bitcoin adresa",
   "@payBitcoinAddress": {
@@ -5757,10 +5536,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "importQrDeviceSeedsignerStep1": "Moc na zařízení SeedSigner",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "exchangeRecipientsTitle": "Příjemci",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -5784,10 +5559,6 @@
   "backupWalletHowToDecideVaultModalTitle": "Jak se rozhodnout",
   "@backupWalletHowToDecideVaultModalTitle": {
     "description": "Modal title for vault location comparison help"
-  },
-  "importQrDeviceJadeStep1": "Zapněte zařízení Jade",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "payNotLoggedInDescription": "Nejste přihlášeni. Přihlaste se a pokračujte pomocí funkce pay.",
   "@payNotLoggedInDescription": {
@@ -5892,10 +5663,6 @@
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
-  },
-  "importQrDeviceSeedsignerStep2": "Otevřete nabídku \"Seeds\"",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
   },
   "exchangeAmountInputValidationZero": "Částka musí být větší než nulová",
   "@exchangeAmountInputValidationZero": {
@@ -6005,10 +5772,6 @@
   "@withdrawConfirmPayee": {
     "description": "Field label for payee (Bill Payment)"
   },
-  "importQrDeviceJadeStep8": "Klikněte na tlačítko \"open camera\"",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
   "payPhoneNumberHint": "Zadejte telefonní číslo",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
@@ -6055,10 +5818,6 @@
   "receiveDetails": "Podrobnosti",
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
-  },
-  "importQrDeviceSpecterStep11": "Nastavení je kompletní",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "sendCustomFee": "Vlastní poplatek",
   "@sendCustomFee": {
@@ -6315,10 +6074,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "Zvolte \"Bull\"",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
   "sendInvoicePaid": "Placené faktury",
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
@@ -6406,10 +6161,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "Zvolte \"Wallet\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "exchangeAuthErrorMessage": "Chyba nastala, zkuste se znovu přihlásit.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
@@ -6429,10 +6180,6 @@
   "transactionSwapStatusTransferStatus": "Stav swapu",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
-  },
-  "importQrDeviceSeedsignerStep8": "Skenujte QR kód zobrazený na vašem SeedSigneru",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
   },
   "backupKeyTitle": "Backup klíč",
   "@backupKeyTitle": {
@@ -6600,21 +6347,9 @@
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
   },
-  "importQrDeviceSpecterStep6": "Zvolte \"Jednolůžkový klíč\"",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceJadeStep10": "To je to!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
   "payPayeeAccountNumberHint": "Zadejte číslo účtu",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "importQrDevicePassportStep8": "Zadejte název pro peněženku Passport a klepněte na \"Importovat\"",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
   },
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
   "bip85NoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
@@ -6642,10 +6377,6 @@
   "fundExchangeCrIbanCrcDescription": "Odeslání bankovního převodu z vašeho bankovního účtu pomocí níže uvedených informací ",
   "@fundExchangeCrIbanCrcDescription": {
     "description": "First part of description for CR IBAN CRC transfer"
-  },
-  "importQrDeviceKeystoneStep4": "Klepněte na \"Připojit software Peněženka\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
   },
   "rbfOriginalTransaction": "Původní transakce",
   "@rbfOriginalTransaction": {
@@ -7276,10 +7007,6 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "importQrDeviceKeystoneStep2": "Odemkněte jej zadáním PINu",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin transakce bude trvat, než potvrdíte.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
@@ -7302,10 +7029,6 @@
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
   },
-  "importQrDeviceSeedsignerStep7": "Na mobilním zařízení klepněte na položku Otevřít kameru",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
   "addressViewChangeAddressesDescription": "Zobrazit peněženku Změna adresy",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
@@ -7318,17 +7041,9 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "importQrDeviceKruxStep5": "Skenujte QR kód, který vidíte na vašem zařízení.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "fundExchangeHelpTransferCode": "Přidejte to jako důvod pro přenos",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
-  },
-  "importQrDeviceKruxStep2": "Klepněte na tlačítko Rozšířený veřejný klíč",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "recoverButton": "Čeština",
   "@recoverButton": {
@@ -7408,10 +7123,6 @@
   "walletDetailsDescriptorLabel": "Čeština",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner pokyny",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "payFilterByType": "Filtr podle typu",
   "@payFilterByType": {
@@ -7526,10 +7237,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "importQrDeviceKruxStep6": "To je to!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
   "payUnauthenticatedError": "Nejste autentická. Přihlaste se a pokračujte.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -7541,10 +7248,6 @@
   "mempoolCustomServerDelete": "Čeština",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "optionalPassphraseHint": "Volitelné Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
   },
   "exchangeFileUploadClearAll": "Vše",
   "@exchangeFileUploadClearAll": {
@@ -7565,15 +7268,6 @@
   "coreScreensPageNotFound": "Stránka nebyla nalezena",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "importQrDeviceTitle": "Připojení {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFeatureDcaOrders": "• DCA, Limitní objednávky a Auto-buy",
   "@exchangeFeatureDcaOrders": {
@@ -7618,10 +7312,6 @@
   "fundExchangeBankTransfer": "Bankovní převod",
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
-  },
-  "importQrDeviceButtonInstructions": "Čeština",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
   },
   "buyLevel3Limit": "Úroveň 3 limit: {amount}",
   "@buyLevel3Limit": {
@@ -7706,10 +7396,6 @@
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
   },
-  "importQrDeviceJadeStep4": "Vyberte \"Možnosti\" z hlavní nabídky",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "backupWalletSavingToDeviceTitle": "Ukládání do zařízení.",
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
@@ -7758,10 +7444,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "importQrDeviceJadeInstructionsTitle": "Blokstream Jade instrukce",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "paySendMax": "Čeština",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
@@ -7777,10 +7459,6 @@
   "importMnemonicSelectType": "Vyberte typ peněženky pro import",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "importQrDeviceKeystoneStep1": "Moc na klíče",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 determinační entropies",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -9181,33 +8859,6 @@
   "importColdcardConnectTitle": "Připojení {deviceName}",
   "importColdcardConnectDescription": "Importujte deskriptor peněženky z vašeho {deviceName}",
   "importColdcardScanNfcSheetTitle": "Přiložte {deviceName} pro import deskriptoru peněženky přes NFC",
-  "importColdcardQInstructionsTitle": "Coldcard Q Pokyny",
-  "importColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
-  "importColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
-  "importColdcardQStep3": "Vyberte nabídku \"Advanced/Settings\"",
-  "importColdcardQStep4": "Klikněte na \"export wallet\"",
-  "importColdcardQStep5": "Jako typ exportu vyberte \"descriptor\"",
-  "importColdcardQStep6": "Na první obrazovce stiskněte \"Enter\"",
-  "importColdcardQStep7": "Na druhé obrazovce stiskněte \"Enter\"",
-  "importColdcardQStep8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
-  "importColdcardQStep9": "Pro QR klepněte na zařízení na tlačítko QR kódu. Na zařízení se poté zobrazí QR kód",
-  "importColdcardQStep10": "Pro NFC klepněte na zařízení na tlačítko NFC",
-  "importColdcardQStep11": "Klepněte na tlačítko \"Open the camera\" / \"Scan NFC\"",
-  "importColdcardQStep12": "Naskenujte QR kód zobrazený na vašem zařízení, nebo přiložte NFC telefonu na NFC Coldcard",
-  "importColdcardQStep13": "To je vše!",
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
-  "importColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
-  "importColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
-  "importColdcardMk4Step3": "Vyberte nabídku \"Advanced/Settings\"",
-  "importColdcardMk4Step4": "Klikněte na \"export wallet\"",
-  "importColdcardMk4Step5": "Jako typ exportu vyberte \"descriptor\"",
-  "importColdcardMk4Step6": "Na první obrazovce stiskněte \"Enter\"",
-  "importColdcardMk4Step7": "Na druhé obrazovce stiskněte \"Enter\"",
-  "importColdcardMk4Step8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
-  "importColdcardMk4Step9": "Klikněte na číslo 3 pro spuštění NFC na Coldcard",
-  "importColdcardMk4Step10": "Klikněte na tlačítko \"Scan NFC\"",
-  "importColdcardMk4Step11": "Přiložte NFC telefonu na NFC Coldcard",
-  "importColdcardMk4Step12": "To je vše!",
   "fundExchangeCopDailyLimitWarning": "Pokud překročíte svůj denní transakční limit, transakce selže. Budete muset kontaktovat zákaznickou podporu.",
   "fundExchangeCopSenderName": "Jméno odesílatele",
   "fundExchangeCopIssuingBank": "Vydávající banka",

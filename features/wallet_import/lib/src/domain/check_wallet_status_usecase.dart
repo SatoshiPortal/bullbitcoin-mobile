@@ -1,17 +1,13 @@
-import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-
 import 'dart:async';
 
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
-import 'package:primitives/primitives.dart' as primitives;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, NetworkEnv, Ok, ScriptType;
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:sync/sync.dart' as sync;
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 /// Scans the chain for a mnemonic that is not imported yet, for several script types.
@@ -25,7 +21,7 @@ class CheckWalletStatusUsecase {
     Future<({BigInt satoshis, int transactions})> Function({
           required String externalDescriptor,
           required String internalDescriptor,
-          required Network network,
+          required BitcoinNetwork network,
           required ElectrumConnection electrumServer,
         })
         prescan =
@@ -36,7 +32,7 @@ class CheckWalletStatusUsecase {
   final Future<({BigInt satoshis, int transactions})> Function({
     required String externalDescriptor,
     required String internalDescriptor,
-    required Network network,
+    required BitcoinNetwork network,
     required ElectrumConnection electrumServer,
   })
   _dryScan;
@@ -45,46 +41,44 @@ class CheckWalletStatusUsecase {
   /// Derives the descriptors of all [scriptTypes] in one call, then starts one scan per script type.
   ///
   /// The returned future fails with [CheckWalletStatusException] when the descriptors cannot be derived, [CheckWalletStatusInvalidMnemonicException] for words that are not a mnemonic. Each scan's own future then carries its result or failure ([ElectrumFallbackException], [TimeoutException] or [CheckWalletStatusException]), so a slow or failing scan does not hold back the others.
-  Future<Map<ScriptType, Future<({BigInt satoshis, int transactions})>>> call({
+  Future<Map<ScriptType, Future<({BigInt satoshis, int transactions})>>>
+  execute({
     required List<String> words,
     required bip39.Language language,
     required String passphrase,
     required Set<ScriptType> scriptTypes,
   }) async {
-    final Network network;
-    final Map<primitives.ScriptType, Descriptors> descriptors;
+    final BitcoinNetwork network;
+    final Map<ScriptType, Descriptors> descriptors;
     try {
       final settings = (await _settingsRepository.fetch()).fold(
         (value) => value,
         (failure) => throw Exception('Preferences read failed'),
       );
-      network = Network.fromEnvironment(
-        environment: settings.environment.networkEnv,
-        isLiquid: false,
-      );
+      network = switch (settings.environment.networkEnv) {
+        NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+        NetworkEnv.testnet => BitcoinNetwork.testnet,
+        NetworkEnv.regtest => BitcoinNetwork.regtest,
+        NetworkEnv.signet => throw const UnsupportedImportScanException(),
+      };
 
       descriptors = switch (await _secrets.preview.bitcoinDescriptors(
         words: words,
         language: language,
         passphrase: passphrase,
-        network: network.bitcoin,
-        scriptTypes: {
-          for (final scriptType in scriptTypes)
-            switch (scriptType) {
-              ScriptType.bip84 => primitives.ScriptType.bip84,
-              ScriptType.bip49 => primitives.ScriptType.bip49,
-              ScriptType.bip44 => primitives.ScriptType.bip44,
-            },
-        },
+        network: network,
+        scriptTypes: scriptTypes,
       )) {
-        primitives.Ok(:final value) => value,
+        Ok(:final value) => value,
         // Only the failure's type travels: its message may describe the words.
-        primitives.Err(failure: InvalidMnemonicFailure()) =>
+        Err(failure: InvalidMnemonicFailure()) =>
           throw CheckWalletStatusInvalidMnemonicException(),
-        primitives.Err(:final failure) => throw CheckWalletStatusException(
+        Err(:final failure) => throw CheckWalletStatusException(
           'Could not derive the descriptors to scan: ${failure.runtimeType}',
         ),
       };
+    } on UnsupportedImportScanException {
+      rethrow;
     } on CheckWalletStatusException catch (e) {
       log.warning(
         'Import scan blocked stage=derive reason=${e is CheckWalletStatusInvalidMnemonicException ? 'invalid_mnemonic' : 'derivation'}',
@@ -101,11 +95,7 @@ class CheckWalletStatusUsecase {
 
     return {
       for (final MapEntry(key: scriptType, value: pair) in descriptors.entries)
-        switch (scriptType) {
-          primitives.ScriptType.bip84 => ScriptType.bip84,
-          primitives.ScriptType.bip49 => ScriptType.bip49,
-          primitives.ScriptType.bip44 => ScriptType.bip44,
-        }: _handled(
+        scriptType: _handled(
           _scan(descriptors: pair, network: network, scriptType: scriptType),
         ),
     };
@@ -113,22 +103,20 @@ class CheckWalletStatusUsecase {
 
   Future<({BigInt satoshis, int transactions})> _scan({
     required Descriptors descriptors,
-    required Network network,
-    required primitives.ScriptType scriptType,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
   }) async {
     final timer = Stopwatch()..start();
-    final context =
-        'network=${network.bitcoin.env.name} script=${scriptType.name}';
+    final context = 'network=${network.env.name} script=${scriptType.name}';
     log.fine('Import scan started $context');
     try {
-      if (network == Network.bitcoinRegtest &&
-          scriptType != primitives.ScriptType.bip84) {
-        throw const UnsupportedNetworkException();
+      if (network == BitcoinNetwork.regtest && scriptType != ScriptType.bip84) {
+        throw const UnsupportedImportScanException();
       }
       final result = await _serversPort
           .runWithFallback<({BigInt satoshis, int transactions})>(
             network: ElectrumServerNetwork.fromNetworkEnv(
-              network.bitcoin.env,
+              network.env,
               isLiquid: false,
             ),
             operation: (connection) => _dryScan(
@@ -146,7 +134,7 @@ class CheckWalletStatusUsecase {
       final reason = switch (e) {
         TimeoutException() => 'timeout',
         ElectrumFallbackException() => 'server_unavailable',
-        UnsupportedNetworkException() => 'unsupported',
+        UnsupportedImportScanException() => 'unsupported',
         _ => 'unexpected',
       };
       log.warning(
@@ -154,7 +142,7 @@ class CheckWalletStatusUsecase {
       );
       if (e is ElectrumFallbackException ||
           e is TimeoutException ||
-          e is UnsupportedNetworkException) {
+          e is UnsupportedImportScanException) {
         rethrow;
       }
       throw CheckWalletStatusException('Scan failed: ${e.runtimeType}');
@@ -164,13 +152,13 @@ class CheckWalletStatusUsecase {
   static Future<({BigInt satoshis, int transactions})> _prescan({
     required String externalDescriptor,
     required String internalDescriptor,
-    required Network network,
+    required BitcoinNetwork network,
     required ElectrumConnection electrumServer,
   }) async {
     final scanned = await sync.prescanBitcoinWallet(
       externalDescriptor: externalDescriptor,
       internalDescriptor: internalDescriptor,
-      network: network.bitcoin,
+      network: network,
       connection: sync.WalletConnection(
         url: electrumServer.url,
         socks5: electrumServer.socks5,
@@ -181,13 +169,11 @@ class CheckWalletStatusUsecase {
       ),
     );
     return switch (scanned) {
-      primitives.Ok(:final value) => (
+      Ok(:final value) => (
         satoshis: value.confirmedSat,
         transactions: value.transactions,
       ),
-      primitives.Err(:final failure) => throw sync.WalletSnapshotException(
-        failure,
-      ),
+      Err(:final failure) => throw sync.WalletSnapshotException(failure),
     };
   }
 
@@ -198,8 +184,14 @@ class CheckWalletStatusUsecase {
   }
 }
 
-class CheckWalletStatusException extends BullException {
-  CheckWalletStatusException(super.message);
+class CheckWalletStatusException implements Exception {
+  final String message;
+
+  const CheckWalletStatusException(this.message);
+}
+
+final class UnsupportedImportScanException implements Exception {
+  const UnsupportedImportScanException();
 }
 
 /// The words are not a BIP39 mnemonic in the language given, so nothing could be scanned.

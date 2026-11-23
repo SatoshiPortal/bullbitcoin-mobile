@@ -1,18 +1,11 @@
-import 'package:bull_ui/bull_ui.dart' show BullButtonSize;
-import 'package:bull_logger/bull_logger.dart';
-
 import 'dart:math';
 
-import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/import_mnemonic/presentation/mnemonic_entry_failure_l10n.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard_layout.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullButtonSize,
         BullKeyScramble,
         BullKeyboardLanguage,
         BullLabeledTextInput,
@@ -22,17 +15,17 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullSwitch,
         BullText,
+        BullThemeX,
         BullTypographyX,
         Gap;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
-
-typedef Mnemonic = ({
-  String label,
-  String passphrase,
-  List<String> words,
-  bip39.Language language,
-});
+import 'package:wallet_import/src/domain/bip39_word_list.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
+import 'package:wallet_import/src/domain/mnemonic.dart';
+import 'package:wallet_import/src/presentation/import_l10n.dart';
+import 'package:wallet_import/src/presentation/mnemonic_entry_failure_l10n.dart';
+import 'package:wallet_import/src/ui/mnemonic_keyboard_layout.dart';
 
 /// What the suggestion chips are currently answering: the focused field and
 /// the prefix it holds.
@@ -396,7 +389,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
         BullText(
           context.loc.mnemonicWordCountLabel,
           role: .caption,
-          color: context.appColors.textMuted,
+          color: context.bull.textMuted,
         ),
         const Gap(6),
         SizedBox(
@@ -574,7 +567,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                                       style: context.bullType.label.copyWith(
                                         fontWeight: FontWeight.w400,
                                       ),
-                                      color: context.appColors.textMuted,
+                                      color: context.bull.textMuted,
                                     ),
                                   ],
                                 ),
@@ -635,7 +628,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                       key: _errorKey,
                       errorMessage,
                       style: context.bullType.body,
-                      color: context.appColors.error,
+                      color: context.bull.error,
                     ),
                   ],
 
@@ -717,8 +710,8 @@ class MnemonicWord extends StatelessWidget {
       padding: const EdgeInsets.only(left: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(context.bullShapes.input),
-        border: Border.all(color: context.appColors.border),
-        color: context.appColors.surface,
+        border: Border.all(color: context.bull.border),
+        color: context.bull.surface,
       ),
       // A floor, not a height: the field grows with the system text size.
       constraints: const BoxConstraints(minHeight: 40),
@@ -742,17 +735,17 @@ class MnemonicWord extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: word.isEmpty
-                      ? context.appColors.onSurface
+                      ? context.bull.onSurface
                       : isValid
-                      ? context.appColors.success
-                      : context.appColors.error,
+                      ? context.bull.success
+                      : context.bull.error,
                   borderRadius: BorderRadius.circular(context.bullShapes.badge),
                 ),
                 child: BullText(
                   displayIndex,
                   role: .body,
                   fontWeight: .w700,
-                  color: context.appColors.surface,
+                  color: context.bull.surface,
                 ),
               );
             },
@@ -771,22 +764,20 @@ class MnemonicWord extends StatelessWidget {
               enableSuggestions: false,
               autocorrect: false,
               controller: controller,
-              style: context.bullType.body.copyWith(
-                color: context.appColors.text,
-              ),
+              style: context.bullType.body.copyWith(color: context.bull.text),
               focusNode: focusNode,
               clipBehavior: .antiAliasWithSaveLayer,
               decoration: InputDecoration(
                 isDense: true,
                 contentPadding: const EdgeInsets.only(right: 8),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
+                  borderSide: BorderSide(color: context.bull.transparent),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
+                  borderSide: BorderSide(color: context.bull.transparent),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.appColors.transparent),
+                  borderSide: BorderSide(color: context.bull.transparent),
                 ),
               ),
             ),
@@ -797,11 +788,7 @@ class MnemonicWord extends StatelessWidget {
               if (value.text.isEmpty) return const SizedBox.shrink();
               return IconButton(
                 onPressed: controller.clear,
-                icon: Icon(
-                  Icons.close,
-                  size: 18,
-                  color: context.appColors.text,
-                ),
+                icon: Icon(Icons.close, size: 18, color: context.bull.text),
                 padding: EdgeInsets.zero,
                 // Within the field's floor, border included: Material's 48 dp
                 // tap target would push a field with a word taller than its

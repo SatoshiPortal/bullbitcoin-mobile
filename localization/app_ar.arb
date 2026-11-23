@@ -26,10 +26,6 @@
   "@swapMax": {
     "description": "MAX button label"
   },
-  "importQrDeviceSpecterStep2": "أدخل بنك",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "importColdcardInstructionsStep10": "المجموع الكلي",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -101,10 +97,6 @@
   "fundExchangeSinpeLabelPhone": "أرسل هذا الرقم",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "importQrDeviceKruxStep3": "Click XPUB - QR Code",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "الخيارات المتقدمة",
   "@sellAdvancedOptions": {
@@ -204,10 +196,6 @@
   "exchangeFileUploadStatusInReview": "قيد الاستعراض",
   "@exchangeFileUploadStatusInReview": {
     "description": "Status badge when files are under review"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "addressViewNoAddressesFound": "لا توجد عناوين",
   "@addressViewNoAddressesFound": {
@@ -325,10 +313,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "importQrDeviceJadeStep7": "إذا لزم الأمر، اختيار \"خيارات\" لتغيير نوع العنوان",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "transactionNetworkLightning": "البرق",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -350,10 +334,6 @@
   "swapInsufficientFunds": "أموال غير كافية",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "importQrDeviceSpecterName": "Specter",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "transactionDetailLabelSwapFees": "رسوم التبديل",
   "@transactionDetailLabelSwapFees": {
@@ -434,14 +414,6 @@
   "payNotLoggedIn": "لا يوجد",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
-  },
-  "importQrDeviceSpecterStep7": "\"غير قابل للضغط\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
-  "importQrDeviceJadeStep5": "اختيار \"والت\" من قائمة الخيارات",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
   },
   "transactionFilterBuy": "اشتري",
   "@transactionFilterBuy": {
@@ -686,10 +658,6 @@
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
   },
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
   "payFeeTooHigh": "الأطعمة عالية بشكل غير عادي",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
@@ -850,10 +818,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "أدخل كل كلماتك",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "تخطي كلمات الاسترداد في\nالأمر الصحيح",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -934,10 +898,6 @@
   "payNoActiveWallet": "لا توجد محفظة نشطة",
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
-  },
-  "importQrDeviceKruxStep4": "اضغط زر \"الكاميرا المفتوحة\"",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
   },
   "payPasteInvoice": "فاتورة القس",
   "@payPasteInvoice": {
@@ -1131,10 +1091,6 @@
   "@importMnemonicSegwit": {
     "description": "Label for Segwit (BIP84) wallet type"
   },
-  "importQrDeviceJadeStep6": "اختيار \"إكسبورت إكسبوب\" من قائمة المحفظة",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
   "buyContinue": "استمر",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1268,10 +1224,6 @@
   "broadcastSignedTxCameraButton": "آلة تصوير",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
-  },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
   },
   "importWalletImportMnemonic": "Import Mnemonic",
   "@importWalletImportMnemonic": {
@@ -1411,10 +1363,6 @@
   "walletDeletionConfirmationCancelButton": "إلغاء",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "importQrDeviceSeedsignerStep5": "اختر \"سينغل سيغ\" ثم إختيار نوعك المفضل من الكتاب المقدس.",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payNoRecipientsFound": "لم يعثر على متلقين يدفعون لهم.",
   "@payNoRecipientsFound": {
@@ -1905,17 +1853,9 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "importQrDeviceJadeFirmwareWarning": "تأكد من تحديث جهازك إلى آخر شركة",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
   "buyInputContinue": "استمر",
   "@buyInputContinue": {
     "description": "Continue button on buy input"
-  },
-  "importQrDeviceJadeStep3": "اتبع تعليمات الجهاز لفتح الجادى",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "paySecurityQuestionLengthError": "يجب أن يكون 1040 شخص",
   "@paySecurityQuestionLengthError": {
@@ -1969,10 +1909,6 @@
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
   },
-  "importQrDeviceSpecterStep10": "أدخل بطاقة لمحفظة سبيكتر و إستيراد",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
-  },
   "dcaWalletTypeBitcoin": "بيتكوين",
   "@dcaWalletTypeBitcoin": {
     "description": "Radio button option for Bitcoin wallet"
@@ -2024,10 +1960,6 @@
   "fundExchangeWarningTactic7": "يقولون لك لا تقلق بشأن هذا التحذير",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
-  },
-  "importQrDeviceSpecterStep1": "القوة على جهاز سبكتر",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "transactionNoteAddTitle": "إضافة",
   "@transactionNoteAddTitle": {
@@ -2161,10 +2093,6 @@
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
   },
-  "importQrDeviceSeedsignerStep9": "أدخل بطاقة لمحفظة البذور وإستيراد",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
-  },
   "testCompletedSuccessMessage": "أنت قادر على استعادة الدخول إلى محفظة بيتكوين المفقودة",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
@@ -2250,10 +2178,6 @@
   "settingsSecurityPinTitle": "الأمن",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "importQrDeviceJadeStep9": "قم بمسح شفرة (كيو آر) التي تراها على جهازك.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "transactionDetailLabelPayjoinCompleted": "مكتملة",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2583,10 +2507,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "importQrDeviceSpecterStep3": "أدخل بذورك/كيكي",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
   "payPayeeAccountNumber": "حساب الأجور",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
@@ -2902,10 +2822,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "importQrDeviceSpecterStep8": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
   "sellSendPaymentContinue": "استمر",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
@@ -2958,10 +2874,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "importQrDeviceJadeStep2": "\"اختار \"مود آر من القائمة الرئيسية",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
   "rbfErrorAlreadyConfirmed": "تم تأكيد الصفقة الأصلية",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -3006,15 +2918,6 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceScanPrompt": "امسح رمز QR من {deviceName}",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
     "description": "Payment method title for SINPE Móvil in method list"
@@ -3055,17 +2958,9 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importQrDeviceSpecterStep9": "امسح رمز QR عرض على سبيكتر",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "buyInputKycPending": "قيد التحقق",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
-  },
-  "importWatchOnlySelectDerivation": "Derivation Select",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
   },
   "hwPassport": "المؤسسة",
   "@hwPassport": {
@@ -3297,10 +3192,6 @@
   "sellDailyLimitReached": "الحد الأقصى للبيع اليومي",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "المطلوبة",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -3728,10 +3619,6 @@
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
   },
-  "importQrDeviceSeedsignerStep6": "اختر \"Animated\" كخيار التصدير. في إصدارات SeedSigner الأقدم، اختر \"Sparrow\".",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
-  },
   "swapValidationMaximumAmount": "المبلغ الأقصى هو {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "description": "Validation error when amount exceeds maximum",
@@ -3845,10 +3732,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "importQrDeviceSeedsignerStep3": "امسحوا البذور أو ادخلوا عبارة البذور الـ12 أو الـ 24",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "replaceByFeeFastestTitle": "أسرع",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
@@ -3877,10 +3760,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "importQrDeviceKruxStep1": "شغل جهازك",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "transactionSwapProgressFundsClaimed": "الصناديق\nالمطالبات",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
@@ -3905,10 +3784,6 @@
   "transactionSwapProgressPaymentMade": "المدفوعات\nمصنوعة",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
-  },
-  "importQrDeviceSpecterStep4": "اتبعي العجلات وفقاً لطريقة اختيارك",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
   },
   "coreSwapsChainPending": "لم تبدأ المبادلة بعد.",
   "@coreSwapsChainPending": {
@@ -4088,10 +3963,6 @@
   "receiveTotalFee": "المجموع",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceButtonOpenCamera": "افتح الكاميرا",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "dcaConfirmFrequency": "التردد",
   "@dcaConfirmFrequency": {
@@ -4363,10 +4234,6 @@
   "fundExchangeCrIbanCrcLabelIban": "IBAN account Number (Colones only)",
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "التعليمات الخاصة بالحشرات",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
   },
   "testBackupScreenshot": "Screenshot",
   "@testBackupScreenshot": {
@@ -4647,10 +4514,6 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
-  "importQrDeviceSeedsignerStep10": "المجموع الكلي",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "sendReceive": "الاستلام",
   "@sendReceive": {
     "description": "Label for receive transaction type"
@@ -4771,17 +4634,9 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "importQrDeviceSeedsignerStep4": "\"اختار \"إكسبورت",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
   "payTransitNumber": "النقل العابر",
   "@payTransitNumber": {
     "description": "Label for transit number"
-  },
-  "importQrDeviceSpecterStep5": "اختيار \"المفاتيح العامة الرئيسية\"",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
   },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "إيبان كوستاريكا",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
@@ -4891,17 +4746,9 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "importQrDeviceKruxInstructionsTitle": "التعليمات الكيروية",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
   "transactionOrderLabelOriginName": "الاسم الأصلي",
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone Instructions",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "globalDefaultLiquidWalletLabel": "المدفوعات الثابتة",
   "@globalDefaultLiquidWalletLabel": {
@@ -5060,10 +4907,6 @@
   "@sendFastFee": {
     "description": "Highest fee tier"
   },
-  "submitButton": "Submit",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
-  },
   "exchangeStatisticsNoData": "لا توجد إحصاءات متاحة",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
@@ -5174,10 +5017,6 @@
   "sendRecipientAddressOrInvoice": "عنوان المستقبل أو فاتورة",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "importQrDeviceKeystoneName": "Keystone",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "payBitcoinAddress": "Bitcoin Address",
   "@payBitcoinAddress": {
@@ -5377,10 +5216,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "importQrDeviceSeedsignerStep1": "القوة على جهازك",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "exchangeRecipientsTitle": "المتلقين",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -5400,10 +5235,6 @@
   "dcaSelectWalletTypeLabel": "نوع بيتكوين",
   "@dcaSelectWalletTypeLabel": {
     "description": "Label above wallet type selection radio buttons"
-  },
-  "importQrDeviceJadeStep1": "شغل جهازك",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "payNotLoggedInDescription": "أنت لا تُسجلُ في. يرجى الدخول لمواصلة استخدام سمة الأجور.",
   "@payNotLoggedInDescription": {
@@ -5517,10 +5348,6 @@
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
-  "importQrDeviceSeedsignerStep2": "إفتح قائمة \"الرعاة\"",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "exchangeAmountInputValidationZero": "يجب أن يكون المبلغ أكبر من الصفر",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
@@ -5625,10 +5452,6 @@
   "@withdrawConfirmPayee": {
     "description": "Field label for payee (Bill Payment)"
   },
-  "importQrDeviceJadeStep8": "اضغط زر \"الكاميرا المفتوحة\"",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
   "payPhoneNumberHint": "رقم الهاتف",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
@@ -5671,10 +5494,6 @@
   "receiveDetails": "التفاصيل",
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
-  },
-  "importQrDeviceSpecterStep11": "الإنشاءات كاملة",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "sendCustomFee": "الرسوم الجمركية",
   "@sendCustomFee": {
@@ -6024,10 +5843,6 @@
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
-  "importQrDeviceSeedsignerStep8": "افحصوا شفرة (كيو آر) التي ظهرت على بذوركم",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
-  },
   "backupKeyTitle": "مفتاح الدعم",
   "@backupKeyTitle": {
     "description": "Title for backup key screen"
@@ -6175,14 +5990,6 @@
   "transactionDetailLabelPayoutAmount": "المبلغ المدفوع",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
-  },
-  "importQrDeviceSpecterStep6": "اختر \"مفتاح الغناء\"",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceJadeStep10": "هذا هو!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
   },
   "payPayeeAccountNumberHint": "رقم حساب الدخول",
   "@payPayeeAccountNumberHint": {
@@ -6826,10 +6633,6 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "importQrDeviceKeystoneStep2": "فتحه عن طريق الدخول إلى",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "receiveBitcoinTransactionWillTakeTime": "ستستغرق صفقة (بيتكوين) بعض الوقت لتأكيدها.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
@@ -6848,10 +6651,6 @@
       }
     }
   },
-  "importQrDeviceSeedsignerStep7": "على جهازك المتنقل، إلتقط الكاميرا المفتوحة",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
   "addressViewChangeAddressesDescription": "محفظة التلاعب عناوين التغيير",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
@@ -6868,17 +6667,9 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "importQrDeviceKruxStep5": "قم بمسح شفرة (كيو آر) التي تراها على جهازك.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "fundExchangeHelpTransferCode": "يضاف هذا كسبب للنقل",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
-  },
-  "importQrDeviceKruxStep2": "مفتاح عمومي ممتد",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "recoverButton": "Recover",
   "@recoverButton": {
@@ -6962,10 +6753,6 @@
   "walletDetailsDescriptorLabel": "الوصف",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "تعليمات البذور",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "payFilterByType": "الأفلام حسب النوع",
   "@payFilterByType": {
@@ -7076,10 +6863,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "importQrDeviceKruxStep6": "هذا هو!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
   "payUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -7091,10 +6874,6 @@
   "mempoolCustomServerDelete": "تحذف",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "optionalPassphraseHint": "التصاريح الاختيارية",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
   },
   "exchangeFileUploadClearAll": "خالي",
   "@exchangeFileUploadClearAll": {
@@ -7115,15 +6894,6 @@
   "coreScreensPageNotFound": "الصفحة",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "importQrDeviceTitle": "Connect {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "payIban": "IBAN",
   "@payIban": {
@@ -7160,10 +6930,6 @@
   "fundExchangeBankTransfer": "التحويل المصرفي",
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
-  },
-  "importQrDeviceButtonInstructions": "التعليمات",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
   },
   "buyLevel3Limit": "الحد الأدنى للمستوى 3: {amount}",
   "@buyLevel3Limit": {
@@ -7244,10 +7010,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "importQrDeviceJadeStep4": "اختيار \"خيار\" من القائمة الرئيسية",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "backupWalletSavingToDeviceTitle": "ننقذ جهازك.",
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
@@ -7292,10 +7054,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Instructions",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "paySendMax": "ماكس",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
@@ -7307,10 +7065,6 @@
   "importMnemonicSelectType": "اختيار نوع المحفظة للاستيراد",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "importQrDeviceKeystoneStep1": "القوة على حجرك",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Deterministic Entropies",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -7960,10 +7714,6 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "importQrDeviceKeystoneStep3": "تأرجح *** (ثلاث نقاط) في الزاوية العليا",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
-  },
   "fundExchangeETransferTitle": "E-Transfer details",
   "@fundExchangeETransferTitle": {
     "description": "Screen title for E-Transfer payment details"
@@ -8048,10 +7798,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "importQrDeviceKeystoneStep10": "(كيستون) الآن متصل ومستعد لاستخدامه مع (بول واليت).",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
   "autoswapTriggerBalanceError": "يجب أن يكون الرصيد الأقصى 2x على الأقل من الرصيد المستهدف",
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when maximum balance is less than 2x the target balance"
@@ -8059,10 +7805,6 @@
   "autoswapLoadSettingsError": "فشل في تحميل مبادلات السيارات",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
-  },
-  "importQrDeviceKeystoneStep5": "اختيار \"BUL\" من قائمة المحافظ",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
   },
   "fundExchangeCanadaPostStep1": "1 الذهاب إلى أي موقع بريد كندا",
   "@fundExchangeCanadaPostStep1": {
@@ -8084,10 +7826,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "importQrDeviceKeystoneStep6": "على هاتفك النقال، نقر \"كاميرا مفتوحة\"",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "howToDecideBackupText2": "الخزنة المشفرة تمنعك من اللصوص الذين يبحثون عن سرقة دعمك كما أنه يمنعك من فقدان دعمك عن طريق الخطأ بما أنه سيخزن في سحابتك متعهدي تخزين السحاب مثل (جوجل) أو (آبل) لن يتمكنوا من الوصول إلى (بيتكوين) الخاص بك لأن كلمة سر التشفير قوية جداً هناك احتمال صغير أن خادم الشبكة الذي يخزن مفتاح التشفير الخاص بك يمكن أن يتعرض للخطر. في هذه الحالة، أمن الدعم في حسابك السحابي قد يكون في خطر.",
   "@howToDecideBackupText2": {
     "description": "Second paragraph explaining encrypted vault benefits and risks"
@@ -8099,10 +7837,6 @@
   "transactionSwapDescLnReceiveDefault": "مبادلتك جارية وهذه العملية آلية وقد تستغرق بعض الوقت لاستكمالها.",
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
-  },
-  "importQrDevicePassportStep2": "أدخل رمز PIN الخاص بك",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
   },
   "backupWalletVaultProviderTakeYourTime": "خذ وقتك",
   "@backupWalletVaultProviderTakeYourTime": {
@@ -8132,10 +7866,6 @@
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
-  "importQrDevicePassportStep4": "اختيار \"Connect App\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
   "confirmAccessPinTitle": "الحصول على تأكيد {pinOrPassword}",
   "@confirmAccessPinTitle": {
     "description": "Title for confirming access PIN or password",
@@ -8145,10 +7875,6 @@
         "example": "PIN"
       }
     }
-  },
-  "importQrDevicePassportStep7": "في تطبيق محفظة BULL، اختر \"Segwit (BIP84)\" كخيار الاشتقاق",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "autoswapInfoRemindLater": "ذكريني لاحقا",
   "@autoswapInfoRemindLater": {
@@ -8173,10 +7899,6 @@
   "fundExchangeCanadaPostStep2": "2. أطلب من الصراف أن يفحص رمز \"لوادهوب\"",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "importQrDeviceKeystoneStep8": "في محفظة BUL، اختيار نوعك المفضل المشتق. إذا كنت غير متأكد، اختيار \"Segwit (BIP84)\"",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
   },
   "fundExchangeETransferLabelBeneficiaryName": "Use this as the E-transfer beneficiary name",
   "@fundExchangeETransferLabelBeneficiaryName": {
@@ -8210,14 +7932,6 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "importQrDevicePassportStep1": "شغّل جهاز Passport الخاص بك",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
-  "importQrDeviceKeystoneStep7": "افحصوا شفرة (كيو آر) التي ظهرت على (كيستون)",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
-  },
   "passwordTooCommonError": "هذا {pinOrPassword} شائع جدا. الرجاء اختيار واحد مختلف.",
   "@passwordTooCommonError": {
     "description": "Error message for common password",
@@ -8244,10 +7958,6 @@
   "@exchangeLandingConnectAccount": {
     "description": "Subtitle text on the exchange landing screen encouraging users to connect"
   },
-  "importQrDevicePassportName": "المؤسسة",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "transactionSwapDescLnReceiveCompleted": "مبادلتك قد اكتملت بنجاح يجب أن تكون الأموال متاحة الآن في محفظتك.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
@@ -8260,10 +7970,6 @@
   "@fundExchangeOnlineBillPaymentDescription": {
     "description": "Description of how online bill payment works and timeframe"
   },
-  "importQrDevicePassportStep9": "اكتمل الإعداد.",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
-  },
   "fundExchangeETransferDescription": "أي مبلغ ترسله من بنككك عن طريق البريد الإلكتروني (E-Transfer) باستخدام المعلومات الواردة أدناه سيقيد لحساب (بول بيتكوين) خلال دقائق قليلة.",
   "@fundExchangeETransferDescription": {
     "description": "Description of how E-Transfer works and timeframe"
@@ -8271,14 +7977,6 @@
   "backupWalletVaultProviderQuickEasy": "بسرعة",
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
-  },
-  "importQrDeviceKeystoneStep9": "أدخلي بطاقة لمحفظة (كيستون) الخاص بكِ واستخدمي (إيمبورت)",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
-  "importQrDevicePassportStep6": "امسح رمز QR المعروض على جهاز Passport",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
   },
   "enterPinAgainMessage": "إدخلْ {pinOrPassword} ثانيةً للإستمرار.",
   "@enterPinAgainMessage": {
@@ -8313,10 +8011,6 @@
   "autoswapBaseBalanceInfoText": "رصيد محفظة الدفع الفوري الخاص بك سوف يعود إلى هذا التوازن الهدف بعد التبديل الآلي.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
-  },
-  "importQrDevicePassportInstructionsTitle": "مؤسسة تعليمات جوازات السفر",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
   },
   "leaveYourPhone": "اترك هاتفك ",
   "@leaveYourPhone": {
@@ -8380,14 +8074,6 @@
       }
     }
   },
-  "importQrDevicePassportStep5": "اختيار \"Bull\"",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
-  "importQrDevicePassportStep3": "اختيار \"Wallet\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "quickAndEasyTag": "بسرعة",
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
@@ -8409,14 +8095,6 @@
   "savingToDevice": "ننقذ جهازك.",
   "@savingToDevice": {
     "description": "Message shown when saving to device"
-  },
-  "importQrDevicePassportStep8": "أدخل تسمية لمحفظة Passport واضغط على \"الواردات\"",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
-  },
-  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
   },
   "exchangeFeatureBankTransfers": "• إرسال التحويلات المصرفية ودفع الفواتير",
   "@exchangeFeatureBankTransfers": {
@@ -9077,33 +8755,6 @@
   "importColdcardConnectTitle": "الاتصال بـ {deviceName}",
   "importColdcardConnectDescription": "استورد واصف المحفظة من جهاز {deviceName} الخاص بك",
   "importColdcardScanNfcSheetTitle": "قرّب جهاز {deviceName} لاستيراد واصف المحفظة عبر NFC",
-  "importColdcardQInstructionsTitle": "تعليمات Coldcard Q",
-  "importColdcardQStep1": "سجّل الدخول إلى جهاز Coldcard Q الخاص بك",
-  "importColdcardQStep2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
-  "importColdcardQStep3": "اختر قائمة الإعدادات المتقدمة",
-  "importColdcardQStep4": "اضغط \"تصدير المحفظة\"",
-  "importColdcardQStep5": "اختر \"واصف\" (descriptor) كنوع للتصدير",
-  "importColdcardQStep6": "اضغط \"Enter\" في الشاشة الأولى",
-  "importColdcardQStep7": "اضغط \"Enter\" في الشاشة الثانية",
-  "importColdcardQStep8": "اختر نوع العنوان الخاص بك (استخدم Segwit إن لم تكن متأكدًا)",
-  "importColdcardQStep9": "بالنسبة لرمز QR، اضغط زر رمز QR على الجهاز. سيعرض الجهاز رمز QR",
-  "importColdcardQStep10": "بالنسبة لـ NFC، اضغط زر NFC على الجهاز",
-  "importColdcardQStep11": "اضغط زر \"فتح الكاميرا\" / \"مسح NFC\"",
-  "importColdcardQStep12": "امسح رمز QR الظاهر على جهازك أو قرّب NFC هاتفك من NFC جهاز Coldcard",
-  "importColdcardQStep13": "هذا كل شيء!",
-  "importColdcardMk4InstructionsTitle": "تعليمات Coldcard Mk4",
-  "importColdcardMk4Step1": "سجّل الدخول إلى جهاز Coldcard Mk4 الخاص بك",
-  "importColdcardMk4Step2": "أضِف عبارة مرور إذا كانت لديك واحدة (اختياري)",
-  "importColdcardMk4Step3": "اختر قائمة الإعدادات المتقدمة",
-  "importColdcardMk4Step4": "اضغط \"تصدير المحفظة\"",
-  "importColdcardMk4Step5": "اختر \"واصف\" (descriptor) كنوع للتصدير",
-  "importColdcardMk4Step6": "اضغط \"Enter\" في الشاشة الأولى",
-  "importColdcardMk4Step7": "اضغط \"Enter\" في الشاشة الثانية",
-  "importColdcardMk4Step8": "اختر نوع العنوان الخاص بك (استخدم Segwit إن لم تكن متأكدًا)",
-  "importColdcardMk4Step9": "اضغط الرقم 3 لتشغيل NFC على Coldcard",
-  "importColdcardMk4Step10": "اضغط زر \"مسح NFC\"",
-  "importColdcardMk4Step11": "قرّب NFC هاتفك من NFC جهاز Coldcard",
-  "importColdcardMk4Step12": "هذا كل شيء!",
   "fundExchangeCopDailyLimitWarning": "إذا تجاوزت حد المعاملات اليومي، ستفشل المعاملة. سيتعيّن عليك الاتصال بدعم العملاء.",
   "fundExchangeCopSenderName": "اسم المرسل",
   "fundExchangeCopIssuingBank": "البنك المُصدِر",

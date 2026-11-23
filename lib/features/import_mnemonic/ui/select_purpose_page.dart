@@ -1,5 +1,5 @@
+import 'package:wallet_import/wallet_import.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';

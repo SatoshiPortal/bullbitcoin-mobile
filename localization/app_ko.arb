@@ -22,10 +22,6 @@
   "@swapMax": {
     "description": "MAX button label"
   },
-  "importQrDeviceSpecterStep2": "PIN 입력",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "importColdcardInstructionsStep10": "설정 완료",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -109,10 +105,6 @@
   "fundExchangeSinpeLabelPhone": "휴대폰 번호",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "importQrDeviceKruxStep3": "XPUB 클릭 - QR 코드",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "고급 옵션",
   "@sellAdvancedOptions": {
@@ -216,10 +208,6 @@
   "fundExchangeCanadaPostStep5": "5. 명세 현금 또는 직불 카드로 지불",
   "@fundExchangeCanadaPostStep5": {
     "description": "Step 5 for Canada Post payment process"
-  },
-  "importQrDeviceKruxName": "한국어",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "addressViewNoAddressesFound": "자주 묻는 질문",
   "@addressViewNoAddressesFound": {
@@ -353,10 +341,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "importQrDeviceJadeStep7": "필요한 경우, \"Options\"를 선택하여 주소 유형 변경",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "transactionNetworkLightning": "연락처",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -378,10 +362,6 @@
   "swapInsufficientFunds": "잔액 부족",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "importQrDeviceSpecterName": "관련 상품",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "transactionDetailLabelSwapFees": "Swap 수수료",
   "@transactionDetailLabelSwapFees": {
@@ -463,17 +443,9 @@
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
   },
-  "importQrDeviceSpecterStep7": "\"사용 SLIP-132\"",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
   "customLocationTitle": "주문 위치",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
-  },
-  "importQrDeviceJadeStep5": "옵션 목록에서 \"Wallet\"을 선택하십시오",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
   },
   "transactionFilterBuy": "구매하기",
   "@transactionFilterBuy": {
@@ -732,10 +704,6 @@
   "@bip85Mnemonic": {
     "description": "Label for mnemonic type entropy"
   },
-  "importQrDeviceSeedsignerName": "비밀번호",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
   "payFeeTooHigh": "요금은 비정상적으로 높은",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
@@ -924,10 +892,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "당신의 mnemonic의 모든 단어를 입력하십시오",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "복구 단어를 탭\n견적 요청",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1017,10 +981,6 @@
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
   },
-  "importQrDeviceKruxStep4": "\"오픈 카메라\"버튼을 클릭하십시오",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
   "payPasteInvoice": "페이스 북",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -1072,10 +1032,6 @@
   "okButton": "이름 *",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "importQrDeviceKeystoneStep3": "상단 오른쪽 코너에서 *** (3 점)를 탭",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
   },
   "exchangeAmountInputValidationInvalid": "잘못된 금액",
   "@exchangeAmountInputValidationInvalid": {
@@ -1245,10 +1201,6 @@
   "@importMnemonicSegwit": {
     "description": "Label for Segwit (BIP84) wallet type"
   },
-  "importQrDeviceJadeStep6": "지갑 메뉴에서 \"Export Xpub\"를 선택하십시오",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
   "buyContinue": "계속하기",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1382,10 +1334,6 @@
   "broadcastSignedTxCameraButton": "관련 기사",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
-  },
-  "importQrDeviceJadeName": "블록스트림 옥",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
   },
   "importWalletImportMnemonic": "수입 Mnemonic",
   "@importWalletImportMnemonic": {
@@ -1533,10 +1481,6 @@
   "walletDeletionConfirmationCancelButton": "이름 *",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "importQrDeviceSeedsignerStep5": "\"Single Sig\"를 선택하고 선호하는 스크립트 유형을 선택하십시오 (불확한 경우에 choose Native Segwit).",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payNoRecipientsFound": "지불 할 수 있습니다.",
   "@payNoRecipientsFound": {
@@ -2059,17 +2003,9 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "importQrDeviceJadeFirmwareWarning": "최신 펌웨어 업데이트 확인",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
   "buyInputContinue": "계속하기",
   "@buyInputContinue": {
     "description": "Continue button on buy input"
-  },
-  "importQrDeviceJadeStep3": "장치 지침을 따르십시오. Jade",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "paySecurityQuestionLengthError": "10-40 자",
   "@paySecurityQuestionLengthError": {
@@ -2122,10 +2058,6 @@
   "sellOrderCompleted": "주문 완료!",
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
-  },
-  "importQrDeviceSpecterStep10": "Specter 지갑에 대한 라벨을 입력하고 가져 오기",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
   },
   "dcaWalletTypeBitcoin": "비트 코인 (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2182,10 +2114,6 @@
   "fundExchangeWarningTactic7": "그들은이 경고에 대해 걱정하지 말",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
-  },
-  "importQrDeviceSpecterStep1": "당신의 Specter 장치에 힘",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "transactionNoteAddTitle": "더 보기",
   "@transactionNoteAddTitle": {
@@ -2295,10 +2223,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "importQrDeviceKeystoneStep10": "Keystone은 이제 연결되고 BULL Wallet과 함께 사용할 수 있습니다.",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
   "autoswapRecipientRequired": "* 이름",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -2338,10 +2262,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google은이 앱으로 개인 정보를 공유하도록 요청합니다.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "importQrDeviceSeedsignerStep9": "SeedSigner 지갑에 라벨을 입력하고 가져 오기",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
   },
   "testCompletedSuccessMessage": "Bitcoin 지갑에 액세스 할 수 있습니다",
   "@testCompletedSuccessMessage": {
@@ -2413,10 +2333,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "importQrDeviceKeystoneStep5": "지갑 목록에서 \"BULL\"을 선택하십시오",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "이메일 알림",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2440,10 +2356,6 @@
   "settingsSecurityPinTitle": "안전 Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "importQrDeviceJadeStep9": "기기에서 QR 코드를 스캔합니다.",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "transactionDetailLabelPayjoinCompleted": "지원하다",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2685,10 +2597,6 @@
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
-  "importQrDeviceKeystoneStep6": "모바일에서 \"오픈 카메라\"를 클릭하십시오",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "bip85Hex": "뚱 베어",
   "@bip85Hex": {
     "description": "Label for hex type entropy"
@@ -2801,10 +2709,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "importQrDeviceSpecterStep3": "씨앗/키를 입력하세요",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
   "payPayeeAccountNumber": "Payee 계정 번호",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
@@ -2884,10 +2788,6 @@
   "selectCoinsManuallyLabel": "동전을 수동으로",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
-  },
-  "importQrDevicePassportStep2": "PIN을 입력하세요",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
   },
   "buyShouldBuyAtLeast": "당신은 적어도 사야한다",
   "@buyShouldBuyAtLeast": {
@@ -3136,10 +3036,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "importQrDeviceSpecterStep8": "모바일 장치에서 열린 카메라 탭",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
   "sellSendPaymentContinue": "계속하기",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
@@ -3196,10 +3092,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "importQrDeviceJadeStep2": "메인 메뉴에서 \"QR 모드\"를 선택하십시오",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
   "rbfErrorAlreadyConfirmed": "원래 거래가 확인되었습니다",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -3249,15 +3141,6 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceScanPrompt": "{deviceName}에서 QR 코드를 스캔",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE 모빌",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
     "description": "Payment method title for SINPE Móvil in method list"
@@ -3298,17 +3181,9 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importQrDeviceSpecterStep9": "Specter에 표시된 QR 코드를 스캔",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "buyInputKycPending": "KYC ID 검증 완료",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
-  },
-  "importWatchOnlySelectDerivation": "옵션 선택",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
   },
   "hwPassport": "기초 여권",
   "@hwPassport": {
@@ -3521,10 +3396,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "\"Connect App\" 선택",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
   "payAddRecipient": "자주 묻는 질문",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
@@ -3566,10 +3437,6 @@
   "sellDailyLimitReached": "일일 판매 제한 도달",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "견적 요청",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "xpub 파일",
   "@importWatchOnlyXpub": {
@@ -3650,10 +3517,6 @@
   "connectHardwareWalletSeedSigner": "비밀번호",
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
-  },
-  "importQrDevicePassportStep7": "BULL 지갑 앱에서 파생 옵션으로 \"Segwit (BIP84)\"을 선택하세요",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "delete": "기타 제품",
   "@delete": {
@@ -3993,10 +3856,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "importQrDeviceKeystoneStep8": "BULL 지갑에서 선호하는 파생 유형을 선택하십시오. 확실하지 않은 경우, \"Segwit (BIP84)\"을 선택하십시오",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
   "fundExchangeCrIbanUsdTitle": "은행 송금 (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -4028,10 +3887,6 @@
   "sendReceiveNetworkFee": "네트워크 수수료",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "importQrDeviceSeedsignerStep6": "내보내기 옵션으로 \"Animated\"를 선택하세요. 이전 SeedSigner 펌웨어에서는 \"Sparrow\"를 선택하세요.",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
   },
   "swapValidationMaximumAmount": "최대 금액은 {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -4170,10 +4025,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "importQrDeviceSeedsignerStep3": "SeedQR을 스캔하거나 12 또는 24word Seed 구문을 입력하십시오",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "replaceByFeeFastestTitle": "빠른 속도",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
@@ -4206,10 +4057,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "importQrDeviceKruxStep1": "Krux 장치 켜기",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "transactionSwapProgressFundsClaimed": "펀드\n이름 *",
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
@@ -4234,10 +4081,6 @@
   "transactionSwapProgressPaymentMade": "제품 정보\n이름 *",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
-  },
-  "importQrDeviceSpecterStep4": "선택된 방법에 따라 프롬프트를 따르십시오",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
   },
   "coreSwapsChainPending": "스왑이 아직 초기화되지 않았습니다.",
   "@coreSwapsChainPending": {
@@ -4390,17 +4233,9 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "importQrDevicePassportStep1": "Passport 기기의 전원을 켜세요",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "fundExchangeBankTransferWireDescription": "아래 Bull Bitcoin의 은행 세부 정보를 사용하여 은행 계좌에서 송금하십시오. 귀하의 은행은이 세부 사항의 일부 부분을 필요로 할 수 있습니다.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
-  },
-  "importQrDeviceKeystoneStep7": "키스톤에 표시된 QR 코드를 스캔",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
   },
   "coldcardStep3": "\"Scan any QR code\" 옵션을 선택하십시오",
   "@coldcardStep3": {
@@ -4439,10 +4274,6 @@
   "receiveTotalFee": "총 비용",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceButtonOpenCamera": "카메라 열기",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "dcaConfirmFrequency": "주파수 영역",
   "@dcaConfirmFrequency": {
@@ -4646,10 +4477,6 @@
   "@exchangeSettingsRecipientsTitle": {
     "description": "Title for the recipients button in exchange settings"
   },
-  "importQrDevicePassportName": "기초 여권",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "fundExchangeMethodCanadaPostSubtitle": "사람의 지불을 선호하는 사람들을 위해",
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
@@ -4742,10 +4569,6 @@
   "fundExchangeCrIbanCrcLabelIban": "IBAN 계정 번호 (만화)",
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Specter 지시",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
   },
   "testBackupScreenshot": "스크린 샷",
   "@testBackupScreenshot": {
@@ -4866,10 +4689,6 @@
   "autoswapMaxFeeInfo": "총 스왑 수수료가 설정한 비율보다 높으면 자동 스왑이 차단됩니다",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
-  },
-  "importQrDevicePassportStep9": "설정이 완료되었습니다.",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
   },
   "swapProgressRefundedMessage": "스왑이 성공적으로 환불되었습니다.",
   "@swapProgressRefundedMessage": {
@@ -5034,10 +4853,6 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
-  "importQrDeviceSeedsignerStep10": "설정 완료",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "sendReceive": "이름 *",
   "@sendReceive": {
     "description": "Label for receive transaction type"
@@ -5074,10 +4889,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "importQrDeviceKeystoneStep9": "Keystone 지갑에 라벨을 입력하고 \"Import\"를 탭하십시오",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
   "tapWordsInOrderTitle": "복구 단어를 탭\n견적 요청",
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
@@ -5109,10 +4920,6 @@
   "coreSwapsChainPaid": "스왑 제공자의 결제가 확인되기를 기다리는 중입니다. 완료까지 시간이 걸릴 수 있습니다.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
-  },
-  "importQrDevicePassportStep6": "Passport에 표시된 QR 코드를 스캔하세요",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
   },
   "sendSatsPerVB": "통계/VB",
   "@sendSatsPerVB": {
@@ -5196,17 +5003,9 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" 선택",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
   "payTransitNumber": "교통수단",
   "@payTransitNumber": {
     "description": "Label for transit number"
-  },
-  "importQrDeviceSpecterStep5": "\"Master public key\"를 선택하십시오",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
   },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN 코스타리카 (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
@@ -5320,17 +5119,9 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "importQrDeviceKruxInstructionsTitle": "Krux 지침",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
   "transactionOrderLabelOriginName": "근원 이름",
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone 지침",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "globalDefaultLiquidWalletLabel": "즉시 결제",
   "@globalDefaultLiquidWalletLabel": {
@@ -5480,10 +5271,6 @@
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
   },
-  "importQrDevicePassportInstructionsTitle": "Foundation 여권 안내",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
   "rbfFeeRate": "수수료율: {rate} sat/vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
@@ -5508,10 +5295,6 @@
   "exchangeBrandName": "비트 코인",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "submitButton": "제출하기",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
   },
   "exchangeStatisticsNoData": "통계 없음",
   "@exchangeStatisticsNoData": {
@@ -5623,10 +5406,6 @@
   "sendRecipientAddressOrInvoice": "Recipient의 주소 또는 송장",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "importQrDeviceKeystoneName": "키스톤",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "payBitcoinAddress": "Bitcoin 주소",
   "@payBitcoinAddress": {
@@ -5834,10 +5613,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "importQrDeviceSeedsignerStep1": "당신의 SeedSigner 장치에 힘",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "exchangeRecipientsTitle": "관련 기사",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -5861,10 +5636,6 @@
   "backupWalletHowToDecideVaultModalTitle": "결정하는 방법",
   "@backupWalletHowToDecideVaultModalTitle": {
     "description": "Modal title for vault location comparison help"
-  },
-  "importQrDeviceJadeStep1": "당신의 옥 장치 켜기",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "payNotLoggedInDescription": "로그인하지 않습니다. 결제 기능을 계속하려면 로그인하십시오.",
   "@payNotLoggedInDescription": {
@@ -5978,10 +5749,6 @@
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
-  "importQrDeviceSeedsignerStep2": "\"Seeds\" 메뉴 열기",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "exchangeAmountInputValidationZero": "금액은 0 이상이어야합니다",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
@@ -6094,10 +5861,6 @@
   "@withdrawConfirmPayee": {
     "description": "Field label for payee (Bill Payment)"
   },
-  "importQrDeviceJadeStep8": "\"오픈 카메라\"버튼을 클릭하십시오",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
   "payPhoneNumberHint": "전화 번호",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
@@ -6144,10 +5907,6 @@
   "receiveDetails": "제품 정보",
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
-  },
-  "importQrDeviceSpecterStep11": "설정 완료",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "sendCustomFee": "회사 소개",
   "@sendCustomFee": {
@@ -6416,10 +6175,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "\"Bull\" 선택",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
   "sendInvoicePaid": "청구서 지급",
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
@@ -6515,10 +6270,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "\"Wallet\" 선택",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "exchangeAuthErrorMessage": "오류가 발생했습니다. 다시 로그인하십시오.",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
@@ -6538,10 +6289,6 @@
   "transactionSwapStatusTransferStatus": "스왑 상태",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
-  },
-  "importQrDeviceSeedsignerStep8": "SeedSigner에 표시된 QR 코드를 스캔",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
   },
   "backupKeyTitle": "백업 키",
   "@backupKeyTitle": {
@@ -6713,21 +6460,9 @@
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
   },
-  "importQrDeviceSpecterStep6": "\"단일 키\"를 선택하십시오",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceJadeStep10": "그것은!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
   "payPayeeAccountNumberHint": "계정 번호",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "importQrDevicePassportStep8": "Passport 지갑의 라벨을 입력하고 \"가져오기\"를 탭하세요",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
   },
   "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
   "bip85NoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
@@ -6763,10 +6498,6 @@
   "settingsDevModeWarningTitle": "Dev 모드",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "importQrDeviceKeystoneStep4": "탭 \"Connect Software Wallet\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
   },
   "rbfOriginalTransaction": "Original 거래",
   "@rbfOriginalTransaction": {
@@ -7421,10 +7152,6 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "importQrDeviceKeystoneStep2": "PIN을 입력하여 잠금 해제",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin 거래는 확인하는 동안 걸릴 것입니다.",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
@@ -7447,10 +7174,6 @@
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
   },
-  "importQrDeviceSeedsignerStep7": "모바일 장치에서 열린 카메라 탭",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
   "addressViewChangeAddressesDescription": "표시 지갑 변경사항",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
@@ -7467,17 +7190,9 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "importQrDeviceKruxStep5": "기기에서 QR 코드를 스캔합니다.",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "fundExchangeHelpTransferCode": "전송에 대한 이유로 이것을 추가",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
-  },
-  "importQrDeviceKruxStep2": "Extended Public Key를 클릭하십시오",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "recoverButton": "읽기",
   "@recoverButton": {
@@ -7569,10 +7284,6 @@
   "walletDetailsDescriptorLabel": "연구분야",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner 지침",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "payFilterByType": "필터 유형",
   "@payFilterByType": {
@@ -7695,10 +7406,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "importQrDeviceKruxStep6": "그것은!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
   "payUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -7710,10 +7417,6 @@
   "mempoolCustomServerDelete": "기타 제품",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "optionalPassphraseHint": "선택 Passphrase",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
   },
   "exchangeFileUploadClearAll": "모든 것",
   "@exchangeFileUploadClearAll": {
@@ -7734,15 +7437,6 @@
   "coreScreensPageNotFound": "사이트 맵",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "importQrDeviceTitle": "연결 {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFeatureDcaOrders": "• DCA, 제한 주문 및 자동 구매",
   "@exchangeFeatureDcaOrders": {
@@ -7787,10 +7481,6 @@
   "fundExchangeBankTransfer": "은행 송금",
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
-  },
-  "importQrDeviceButtonInstructions": "관련 기사",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
   },
   "buyLevel3Limit": "레벨 3 제한: {amount}",
   "@buyLevel3Limit": {
@@ -7875,10 +7565,6 @@
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
   },
-  "importQrDeviceJadeStep4": "메인 메뉴에서 \"Options\" 선택",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "backupWalletSavingToDeviceTitle": "당신의 장치에 저장.",
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
@@ -7927,10 +7613,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream 제이드 지침",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "paySendMax": "최대",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
@@ -7946,10 +7628,6 @@
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "importQrDeviceKeystoneStep1": "당신의 Keystone에 힘",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 신생 동물",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -9089,33 +8767,6 @@
   "importColdcardConnectTitle": "{deviceName} 연결",
   "importColdcardConnectDescription": "{deviceName} 기기에서 지갑 디스크립터를 가져옵니다.",
   "importColdcardScanNfcSheetTitle": "{deviceName} 기기를 태그하여 NFC로 지갑 디스크립터를 가져오세요",
-  "importColdcardQInstructionsTitle": "Coldcard Q 안내",
-  "importColdcardQStep1": "Coldcard Q 기기에 로그인하세요",
-  "importColdcardQStep2": "패스프레이즈가 있다면 입력하세요 (선택 사항)",
-  "importColdcardQStep3": "고급/설정 메뉴를 선택하세요",
-  "importColdcardQStep4": "\"export wallet\"을 클릭하세요",
-  "importColdcardQStep5": "내보내기 형식으로 \"descriptor\"를 선택하세요",
-  "importColdcardQStep6": "첫 번째 화면에서 \"Enter\"를 누르세요",
-  "importColdcardQStep7": "두 번째 화면에서 \"Enter\"를 누르세요",
-  "importColdcardQStep8": "주소 유형을 선택하세요 (잘 모르겠다면 Segwit을 사용하세요)",
-  "importColdcardQStep9": "QR의 경우, 기기의 QR 코드 버튼을 클릭하세요. 기기에 QR 코드가 표시됩니다",
-  "importColdcardQStep10": "NFC의 경우, 기기의 NFC 버튼을 클릭하세요",
-  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" 버튼을 클릭하세요",
-  "importColdcardQStep12": "기기에 표시된 QR 코드를 스캔하거나 휴대폰의 NFC를 Coldcard NFC 위에 올려두세요",
-  "importColdcardQStep13": "완료되었습니다!",
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 안내",
-  "importColdcardMk4Step1": "Coldcard Mk4 기기에 로그인하세요",
-  "importColdcardMk4Step2": "패스프레이즈가 있다면 입력하세요 (선택 사항)",
-  "importColdcardMk4Step3": "고급/설정 메뉴를 선택하세요",
-  "importColdcardMk4Step4": "\"export wallet\"을 클릭하세요",
-  "importColdcardMk4Step5": "내보내기 형식으로 \"descriptor\"를 선택하세요",
-  "importColdcardMk4Step6": "첫 번째 화면에서 \"Enter\"를 누르세요",
-  "importColdcardMk4Step7": "두 번째 화면에서 \"Enter\"를 누르세요",
-  "importColdcardMk4Step8": "주소 유형을 선택하세요 (잘 모르겠다면 Segwit을 사용하세요)",
-  "importColdcardMk4Step9": "숫자 3을 클릭하여 Coldcard NFC를 시작하세요",
-  "importColdcardMk4Step10": "\"Scan NFC\" 버튼을 클릭하세요",
-  "importColdcardMk4Step11": "휴대폰의 NFC를 Coldcard NFC 위에 올려두세요",
-  "importColdcardMk4Step12": "완료되었습니다!",
   "priceFailedToLoad": "가격을 불러오지 못했습니다",
   "statusScreenTryAgain": "다시 시도",
   "statusScreenContinue": "계속",

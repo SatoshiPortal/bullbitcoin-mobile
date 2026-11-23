@@ -2,18 +2,18 @@ import 'package:primitives/primitives.dart' show Err, Ok, ScriptType;
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
   final ImportWalletUsecase _importWalletUsecase;
-  final ScanMnemonicUsecase _scanMnemonicUsecase;
+  final ScanMnemonic _scanMnemonic;
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
 
   ImportMnemonicCubit({
     required this._importWalletUsecase,
-    required this._scanMnemonicUsecase,
+    required this._scanMnemonic,
     required this._checkDuplicateMnemonicUsecase,
   }) : super(const ImportMnemonicState());
 
@@ -59,24 +59,20 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
     for (final scriptType in scriptTypes) {
       _emitScan(scriptType, const ScriptTypeScan.loading());
     }
-    final scans = _scanMnemonicUsecase.execute(
+    final scans = _scanMnemonic(
       words: mnemonic.words,
       language: mnemonic.language,
       passphrase: mnemonic.passphrase,
       scriptTypes: scriptTypes,
     );
-    // Emit each as it completes, so a slow scan for one type doesn't block the others.
-    await Future.wait([
-      for (final MapEntry(key: scriptType, value: scan) in scans.entries)
-        scan.then((result) {
-          // A result for a mnemonic the user has since replaced is dropped.
-          if (isClosed || state.mnemonic != mnemonic) return;
-          _emitScan(scriptType, switch (result) {
-            Ok(:final value) => ScriptTypeScan.fromResult(value),
-            Err(:final failure) => ScriptTypeScan.failed(failure),
-          });
-        }),
-    ]);
+    await for (final (:scriptType, :result) in scans) {
+      // A result for a mnemonic the user has since replaced is dropped.
+      if (isClosed || state.mnemonic != mnemonic) return;
+      _emitScan(scriptType, switch (result) {
+        Ok(:final value) => ScriptTypeScan.fromResult(value),
+        Err(:final failure) => ScriptTypeScan.failed(failure),
+      });
+    }
   }
 
   void _emitScan(ScriptType scriptType, ScriptTypeScan scan) =>

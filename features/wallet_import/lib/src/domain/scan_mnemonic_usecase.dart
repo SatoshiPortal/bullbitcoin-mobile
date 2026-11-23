@@ -1,14 +1,24 @@
 import 'dart:async';
 
 import 'package:electrum/setup.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
-import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
+import 'package:wallet_import/src/domain/import_failure.dart';
+import 'package:wallet_import/src/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    show UnsupportedNetworkException;
 
 typedef MnemonicScan = ({BigInt satoshis, int transactions});
+
+typedef MnemonicScanUpdate = ({
+  ScriptType scriptType,
+  Result<MnemonicScan, ImportMnemonicScanFailure> result,
+});
+
+typedef ScanMnemonic = Stream<MnemonicScanUpdate> Function({
+  required List<String> words,
+  required Language language,
+  required String passphrase,
+  required Set<ScriptType> scriptTypes,
+});
 
 /// Scans the chain for a mnemonic before it is imported, one result per script type.
 ///
@@ -26,7 +36,7 @@ class ScanMnemonicUsecase {
     required String passphrase,
     required Set<ScriptType> scriptTypes,
   }) {
-    final scans = _checkWalletStatus(
+    final scans = _checkWalletStatus.execute(
       words: words,
       language: language,
       passphrase: passphrase,
@@ -60,7 +70,7 @@ class ScanMnemonicUsecase {
 
   /// Keeps the kind of [error] only: its message may name a server, a descriptor or a word.
   static ImportMnemonicScanFailure _failureOf(Object error) => switch (error) {
-    UnsupportedNetworkException() =>
+    UnsupportedImportScanException() =>
       const ImportMnemonicScanUnsupportedFailure(),
     CheckWalletStatusInvalidMnemonicException() =>
       const ImportMnemonicScanInvalidMnemonicFailure(),

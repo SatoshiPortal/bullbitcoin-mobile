@@ -1,6 +1,5 @@
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/get_ledger_watch_only_wallet_usecase.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_failure_l10n.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
@@ -12,8 +11,7 @@ import 'dart:io' show Platform;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
-import 'package:bb_mobile/features/import_qr_device/router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullTabMenuVerticalButton, BullText, Gap, BullTypographyX;
@@ -50,8 +48,7 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(16),
               BullTabMenuVerticalButton(
                 title: context.loc.importWalletImportWatchOnly,
-                onTap: () =>
-                    context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
+                onTap: () => ImportNavigation.openWatchOnly(context),
               ),
               NetworkCapabilityVisibility(
                 capability: NetworkCapability.hardwareWallet,
@@ -82,43 +79,49 @@ class ImportWalletPage extends StatelessWidget {
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletSeedSigner,
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importSeedSigner.name,
+                      onTap: () => ImportNavigation.openQrInstructions(
+                        context,
+                        QrImportDevice.seedsigner,
                       ),
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletSpecter,
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importSpecter.name,
+                      onTap: () => ImportNavigation.openQrInstructions(
+                        context,
+                        QrImportDevice.specter,
                       ),
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletKrux,
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importKrux.name,
+                      onTap: () => ImportNavigation.openQrInstructions(
+                        context,
+                        QrImportDevice.krux,
                       ),
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletJade,
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importJade.name,
+                      onTap: () => ImportNavigation.openQrInstructions(
+                        context,
+                        QrImportDevice.jade,
                       ),
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletPassport,
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importPassport.name,
+                      onTap: () => ImportNavigation.openQrInstructions(
+                        context,
+                        QrImportDevice.passport,
                       ),
                     ),
                     const Gap(16),
                     BullTabMenuVerticalButton(
                       title: context.loc.importWalletKeystone,
-                      onTap: () => context.pushNamed(
-                        ImportQrDeviceRoute.importKeystone.name,
+                      onTap: () => ImportNavigation.openQrInstructions(
+                        context,
+                        QrImportDevice.keystone,
                       ),
                     ),
                     const Gap(16),
@@ -133,23 +136,11 @@ class ImportWalletPage extends StatelessWidget {
                                     network: network,
                                   );
                               if (account == null || !context.mounted) return;
-                              final result = GetLedgerWatchOnlyWalletUsecase()
-                                  .execute(
-                                    account: account,
-                                    label: context.loc.ledgerDefaultWalletLabel,
-                                  );
-                              switch (result) {
-                                case Ok(:final value):
-                                  await context.pushNamed(
-                                    ImportWatchOnlyWalletRoutes.import.name,
-                                    extra: value,
-                                  );
-                                case Err(:final failure):
-                                  BullSnackBar.show(
-                                    context,
-                                    message: failure.toTranslated(context),
-                                  );
-                              }
+                              await _reviewAccount(
+                                context,
+                                account,
+                                context.loc.ledgerDefaultWalletLabel,
+                              );
                             },
                     ),
                     const Gap(16),
@@ -167,25 +158,11 @@ class ImportWalletPage extends StatelessWidget {
                                     requestedDeviceType: SignerDevice.bitbox02,
                                   );
                               if (account == null || !context.mounted) return;
-                              final result = GetBitBoxWatchOnlyWalletUsecase()
-                                  .execute(
-                                    account: account,
-                                    label: context
-                                        .loc
-                                        .bitboxScreenDefaultWalletLabel,
-                                  );
-                              switch (result) {
-                                case Ok(:final value):
-                                  await context.pushNamed(
-                                    ImportWatchOnlyWalletRoutes.import.name,
-                                    extra: value,
-                                  );
-                                case Err(:final failure):
-                                  BullSnackBar.show(
-                                    context,
-                                    message: failure.toTranslated(context),
-                                  );
-                              }
+                              await _reviewAccount(
+                                context,
+                                account,
+                                context.loc.bitboxScreenDefaultWalletLabel,
+                              );
                             },
                     ),
                   ],
@@ -196,5 +173,28 @@ class ImportWalletPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _reviewAccount(
+    BuildContext context,
+    SignerAccount account,
+    String label,
+  ) async {
+    switch (WatchOnlyInput.fromSignerAccount(account)) {
+      case Ok(:final value):
+        await ImportNavigation.openWatchOnly(
+          context,
+          input: value,
+          label: label,
+        );
+      case Err(:final failure):
+        final legacyFailure = failure is WatchOnlyNetworkMismatchFailure
+            ? const NetworkMismatchFailure()
+            : const InvalidFormatFailure();
+        BullSnackBar.show(
+          context,
+          message: legacyFailure.toTranslated(context),
+        );
+    }
   }
 }

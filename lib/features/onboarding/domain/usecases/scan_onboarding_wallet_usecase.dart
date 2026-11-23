@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_scan_facade.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 
 class ScanOnboardingWalletUsecase {
   const ScanOnboardingWalletUsecase(this._scan);
-  final ImportMnemonicScanFacade _scan;
+  final ImportFeature _scan;
 
   @useResult
   Future<Result<bool, OnboardingFailure>> execute({

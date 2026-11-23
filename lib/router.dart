@@ -31,7 +31,7 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/fund_exchange/public/fund_exchange_facade.dart';
 import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
-import 'package:bb_mobile/features/import_qr_device/router.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -285,7 +285,7 @@ class AppRouter {
           onCurrencyChanged: SettingsFacade.changeDisplayCurrency,
         ),
       ),
-      ...ImportQrDeviceRouter.routes,
+      ...locator<ImportFeature>().routes,
       locator<RecoverBullFeature>().route(
         copiedMessage: (context) => context.loc.copiedToClipboard,
         onRecovered: (context) {

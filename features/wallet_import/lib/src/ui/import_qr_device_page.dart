@@ -1,23 +1,21 @@
 import 'package:signers/signers.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:wallet_import/src/presentation/import_l10n.dart';
+import 'package:wallet_import/src/import_navigation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButtonSize,
         BullButton,
         BullInfoCard,
+        BullInstructionsSheet,
         BullText,
         Gap,
-        BullTypographyX;
-import 'package:go_router/go_router.dart';
+        BullTypographyX,
+        BullThemeX;
 
 class ImportQrDevicePage extends StatelessWidget {
   final SignerDevice device;
+  final ImageProvider<Object> illustration;
   final String deviceName;
   final String instructionsTitle;
   final List<String> instructions;
@@ -25,6 +23,7 @@ class ImportQrDevicePage extends StatelessWidget {
   const ImportQrDevicePage({
     super.key,
     required this.device,
+    required this.illustration,
     required this.deviceName,
     required this.instructionsTitle,
     required this.instructions,
@@ -32,10 +31,11 @@ class ImportQrDevicePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.importQrDeviceTitle(deviceName))),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
+        padding: EdgeInsets.symmetric(horizontal: screen.width * 0.05),
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
@@ -49,37 +49,33 @@ class ImportQrDevicePage extends StatelessWidget {
             ),
 
             if (device == SignerDevice.jade) ...[
-              Gap(Device.screen.height * 0.03),
+              Gap(screen.height * 0.03),
               BullInfoCard(
                 description: context.loc.importQrDeviceJadeFirmwareWarning,
-                tagColor: context.appColors.warning,
-                bgColor: context.appColors.warningContainer,
+                tagColor: context.bull.warning,
+                bgColor: context.bull.warningContainer,
               ),
             ],
 
-            Gap(Device.screen.height * 0.05),
-            Image.asset(
-              Assets.misc.qRPlaceholder.path,
-              height: 200,
-              width: 200,
-            ),
-            Gap(Device.screen.height * 0.05),
+            Gap(screen.height * 0.05),
+            Image(image: illustration, height: 200, width: 200),
+            Gap(screen.height * 0.05),
             Column(
               children: [
                 BullButton.secondary(
                   size: BullButtonSize.small,
                   label: context.loc.importQrDeviceButtonOpenCamera,
-                  onPressed: () => context.pushNamed(
-                    ImportWatchOnlyWalletRoutes.scan.name,
-                    extra: device,
+                  onPressed: () => ImportNavigation.openWatchOnlyScanner(
+                    context,
+                    device: device,
                   ),
                 ),
 
-                Gap(Device.screen.height * 0.02),
+                Gap(screen.height * 0.02),
                 BullButton.secondary(
                   size: BullButtonSize.small,
                   label: context.loc.importQrDeviceButtonInstructions,
-                  onPressed: () => DeviceInstructionsBottomSheet.show(
+                  onPressed: () => BullInstructionsSheet.show(
                     context,
                     title: instructionsTitle,
                     instructions: instructions,

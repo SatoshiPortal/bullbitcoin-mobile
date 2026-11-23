@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:wallet_import/wallet_import.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
-import 'package:go_router/go_router.dart';
 
 class ImportMethodWidget extends StatelessWidget {
   const ImportMethodWidget({super.key});
@@ -15,7 +14,7 @@ class ImportMethodWidget extends StatelessWidget {
         BullButton.secondary(
           label: context.loc.importWatchOnlyScanQR,
           onPressed: () =>
-              context.replaceNamed(ImportWatchOnlyWalletRoutes.scan.name),
+              ImportNavigation.replaceWithWatchOnlyScanner(context),
           iconData: Icons.qr_code_scanner,
         ),
         const Gap(12),

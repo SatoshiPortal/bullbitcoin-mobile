@@ -20,6 +20,7 @@ workspace:
   - features/access
   - features/ark
   - features/fees
+  - features/wallet_import
   - packages/fees
   - packages/ark
   - packages/secrets
@@ -59,6 +60,7 @@ workspace:
 
 dependencies:
   access:
+  wallet_import:
   announcements:
   bitcoin_price:
   labels:

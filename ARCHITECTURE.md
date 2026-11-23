@@ -51,7 +51,7 @@ Open a package through its published capability and mount a feature through its 
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
 
-Legacy mnemonic entry is shared through `lib/features/import_mnemonic/public/import_mnemonic_facade.dart`, which exports the entry widget used by onboarding and app-startup recovery. The import feature currently reaches into Wallets internals; replacing that import with a published capability is a scoped follow-up recorded in FEATURES.md.
+`package:wallet_import/wallet_import.dart` publishes the mnemonic entry widget used by onboarding and app-startup recovery. `ImportFeature.mount` composes the QR device instruction routes and the read-only mnemonic prescan. The app’s legacy import confirmations continue to use the Wallet repository until the storage writer cutover.
 
 ## 🎯 The architecture we tend toward
 

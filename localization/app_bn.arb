@@ -27,10 +27,6 @@
   "@swapMax": {
     "description": "MAX button label"
   },
-  "importQrDeviceSpecterStep2": "আপনার পিন প্রবেশ করান",
-  "@importQrDeviceSpecterStep2": {
-    "description": "Specter instruction step 2"
-  },
   "importColdcardInstructionsStep10": "সেটআপ সম্পন্ন",
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
@@ -114,10 +110,6 @@
   "fundExchangeSinpeLabelPhone": "এই ফোন নম্বরে পাঠান",
   "@fundExchangeSinpeLabelPhone": {
     "description": "Label for SINPE Móvil phone number field"
-  },
-  "importQrDeviceKruxStep3": "XPUB - QR কোডে ক্লিক করুন",
-  "@importQrDeviceKruxStep3": {
-    "description": "Krux instruction step 3"
   },
   "sellAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@sellAdvancedOptions": {
@@ -217,10 +209,6 @@
   "fundExchangeCanadaPostStep5": "৫. নগদ বা ডেবিট কার্ডের মাধ্যমে পেমেন্ট করুন",
   "@fundExchangeCanadaPostStep5": {
     "description": "Step 5 for Canada Post payment process"
-  },
-  "importQrDeviceKruxName": "Krux",
-  "@importQrDeviceKruxName": {
-    "description": "Name of Krux device"
   },
   "addressViewNoAddressesFound": "কোনো ঠিকানা পাওয়া যায়নি",
   "@addressViewNoAddressesFound": {
@@ -350,10 +338,6 @@
   "@fundExchangeCrIbanCrcDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN transfer instructions"
   },
-  "importQrDeviceJadeStep7": "যদি প্রয়োজন হয় ঠিকানা টাইপ পরিবর্তন করতে, 'অপশন' নির্বাচন করুন",
-  "@importQrDeviceJadeStep7": {
-    "description": "Jade instruction step 7"
-  },
   "transactionNetworkLightning": "লাইটনিং নেটওয়ার্ক",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -375,10 +359,6 @@
   "swapInsufficientFunds": "অপর্যাপ্ত তহবিল",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
-  },
-  "importQrDeviceSpecterName": "স্পেক্টার",
-  "@importQrDeviceSpecterName": {
-    "description": "Name of Specter device"
   },
   "transactionDetailLabelSwapFees": "বদল ফি",
   "@transactionDetailLabelSwapFees": {
@@ -460,17 +440,9 @@
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
   },
-  "importQrDeviceSpecterStep7": "“SLIP-132 ব্যবহার নিষ্ক্রিয় করুন”",
-  "@importQrDeviceSpecterStep7": {
-    "description": "Specter instruction step 7"
-  },
   "customLocationTitle": "নিজস্ব স্থান",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
-  },
-  "importQrDeviceJadeStep5": "বিকল্প তালিকা থেকে 'ওয়ালেট' নির্বাচন করুন",
-  "@importQrDeviceJadeStep5": {
-    "description": "Jade instruction step 5"
   },
   "transactionFilterBuy": "ক্রয়",
   "@transactionFilterBuy": {
@@ -724,10 +696,6 @@
   "@sellLoadingGeneric": {
     "description": "Generic loading message"
   },
-  "importQrDeviceSeedsignerName": "SeedSigner",
-  "@importQrDeviceSeedsignerName": {
-    "description": "Name of SeedSigner device"
-  },
   "payFeeTooHigh": "ফি অস্বাভাবিকভাবে বেশি",
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
@@ -916,10 +884,6 @@
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"
   },
-  "emptyMnemonicWordsError": "আপনার mnemonic-এর সব শব্দ লিখুন",
-  "@emptyMnemonicWordsError": {
-    "description": "Error message when not all mnemonic words are filled in"
-  },
   "testBackupTapWordsInOrder": "উদ্ধার শব্দগুলো সঠিক ক্রমে স্পর্শ করুন",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1009,10 +973,6 @@
   "@payNoActiveWallet": {
     "description": "Error when no wallet is selected"
   },
-  "importQrDeviceKruxStep4": "ক্যামেরা খোলার বোতামে ক্লিক করুন",
-  "@importQrDeviceKruxStep4": {
-    "description": "Krux instruction step 4"
-  },
   "payPasteInvoice": "চালান পেস্ট করুন",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -1064,10 +1024,6 @@
   "okButton": "ঠিক আছে",
   "@okButton": {
     "description": "Button to dismiss coming soon message"
-  },
-  "importQrDeviceKeystoneStep3": "উপরের ডান কোণায় *** (তিনটি ডট) ট্যাপ করুন",
-  "@importQrDeviceKeystoneStep3": {
-    "description": "Keystone instruction step 3"
   },
   "exchangeAmountInputValidationInvalid": "অবৈধ পরিমাণ",
   "@exchangeAmountInputValidationInvalid": {
@@ -1237,10 +1193,6 @@
   "@importMnemonicSegwit": {
     "description": "Label for Segwit (BIP84) wallet type"
   },
-  "importQrDeviceJadeStep6": "ওয়ালেট মেনু থেকে 'এক্সপোর্ট Xpub'",
-  "@importQrDeviceJadeStep6": {
-    "description": "Jade instruction step 6"
-  },
   "buyContinue": "চালিয়ে যান",
   "@buyContinue": {
     "description": "Button to continue to next step"
@@ -1370,10 +1322,6 @@
   "broadcastSignedTxCameraButton": "ক্যামেরা",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
-  },
-  "importQrDeviceJadeName": "Blockstream Jade",
-  "@importQrDeviceJadeName": {
-    "description": "Name of Blockstream Jade device"
   },
   "importWalletImportMnemonic": "Mnemonic আমদানি",
   "@importWalletImportMnemonic": {
@@ -1513,10 +1461,6 @@
   "walletDeletionConfirmationCancelButton": "বাতিল করুন",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
-  },
-  "importQrDeviceSeedsignerStep5": "\"Single Sig\" বেছে নিন, তারপর আপনার পছন্দসই স্ক্রিপ্ট টাইপ নির্বাচন করুন (যদি নিশ্চিত না থাকেন তবে Native Segwit বেছে নিন)।",
-  "@importQrDeviceSeedsignerStep5": {
-    "description": "SeedSigner instruction step 5"
   },
   "payNoRecipientsFound": "পরিশোধ করার জন্য কোনো প্রাপক পাওয়া যায়নি।",
   "@payNoRecipientsFound": {
@@ -2018,17 +1962,9 @@
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
   },
-  "importQrDeviceJadeFirmwareWarning": "আপনার ডিভাইসটি সর্বশেষ ফার্মওয়্যার আপডেট করা আছে তা নিশ্চিত করুন",
-  "@importQrDeviceJadeFirmwareWarning": {
-    "description": "Warning message to update Jade firmware"
-  },
   "buyInputContinue": "চালিয়ে যান",
   "@buyInputContinue": {
     "description": "Continue button on buy input"
-  },
-  "importQrDeviceJadeStep3": "Jade আনলক করতে ডিভাইস নির্দেশনা অনুসরণ করুন",
-  "@importQrDeviceJadeStep3": {
-    "description": "Jade instruction step 3"
   },
   "paySecurityQuestionLengthError": "অবশ্যই 10-40 অক্ষর হতে হবে",
   "@paySecurityQuestionLengthError": {
@@ -2081,10 +2017,6 @@
   "sellOrderCompleted": "অর্ডার সম্পন্ন!",
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
-  },
-  "importQrDeviceSpecterStep10": "Specter ওয়ালেটের জন্য একটি লেবেল দিন এবং ইমপোর্ট বোতামে ট্যাপ করুন",
-  "@importQrDeviceSpecterStep10": {
-    "description": "Specter instruction step 10"
   },
   "dcaWalletTypeBitcoin": "বিটকয়েন (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2141,10 +2073,6 @@
   "fundExchangeWarningTactic7": "তারা বলে এই সতর্কতা নিয়ে আপনি চিন্তা করবেন না",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
-  },
-  "importQrDeviceSpecterStep1": "আপনার Specter ডিভাইসটি চালু করুন",
-  "@importQrDeviceSpecterStep1": {
-    "description": "Specter instruction step 1"
   },
   "transactionNoteAddTitle": "নোট যোগ করুন",
   "@transactionNoteAddTitle": {
@@ -2254,10 +2182,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "importQrDeviceKeystoneStep10": "আপনার Keystone এখন সংযুক্ত এবং BULL Wallet-এ ব্যবহার করতে প্রস্তুত",
-  "@importQrDeviceKeystoneStep10": {
-    "description": "Keystone instruction step 10"
-  },
   "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -2297,10 +2221,6 @@
   "backupWalletGoogleDrivePermissionWarning": "Google আপনাকে এই অ্যাপে আপনার ব্যক্তিগত তথ্য শেয়ার করতে বলবে।",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
-  },
-  "importQrDeviceSeedsignerStep9": "SeedSigner ওয়ালেটের জন্য একটি লেবেল লিখুন এবং Import-এ ট্যাপ করুন",
-  "@importQrDeviceSeedsignerStep9": {
-    "description": "SeedSigner instruction step 9"
   },
   "testCompletedSuccessMessage": "আপনি হারিয়ে যাওয়া বিটকয়েন ওয়ালেটের অ্যাক্সেস পুনরুদ্ধার করতে সক্ষম",
   "@testCompletedSuccessMessage": {
@@ -2371,10 +2291,6 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "importQrDeviceKeystoneStep5": "ওয়ালেটগুলির তালিকা থেকে \"BULL\" নির্বাচন করুন",
-  "@importQrDeviceKeystoneStep5": {
-    "description": "Keystone instruction step 5"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "ইমেইল নোটিফিকেশন",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
@@ -2398,10 +2314,6 @@
   "settingsSecurityPinTitle": "নিরাপত্তা PIN",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
-  },
-  "importQrDeviceJadeStep9": "আপনার ডিভাইসে আপনি যে QR কোডটি দেখছেন সেটি স্ক্যান করুন",
-  "@importQrDeviceJadeStep9": {
-    "description": "Jade instruction step 9"
   },
   "transactionDetailLabelPayjoinCompleted": "সমাপ্ত",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -2643,10 +2555,6 @@
   "@sellUpdatingRate": {
     "description": "Loading message while fetching new rate"
   },
-  "importQrDeviceKeystoneStep6": "আপনার মোবাইলে \"ক্যামেরা চালু করুন\" চাপ দিন",
-  "@importQrDeviceKeystoneStep6": {
-    "description": "Keystone instruction step 6"
-  },
   "testYourWalletTitle": "আপনার ওয়ালেট পরীক্ষা করুন",
   "@testYourWalletTitle": {
     "description": "Title for test your wallet screen"
@@ -2755,10 +2663,6 @@
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
   },
-  "importQrDeviceSpecterStep3": "আপনার সিড/কি প্রবেশ করান (যে কোন বিকল্প আপনার জন্য উপযোগী তা বেছে নিন)",
-  "@importQrDeviceSpecterStep3": {
-    "description": "Specter instruction step 3"
-  },
   "payPayeeAccountNumber": "পেয়ি অ্যাকাউন্ট নম্বর",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
@@ -2834,10 +2738,6 @@
   "selectCoinsManuallyLabel": "কয়েনগুলো নিজে থেকে নির্বাচন করুন",
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
-  },
-  "importQrDevicePassportStep2": "আপনার PIN লিখুন",
-  "@importQrDevicePassportStep2": {
-    "description": "Passport instruction step 2"
   },
   "buyShouldBuyAtLeast": "আপনাকে অন্তত এটুকু কিনতে হবে",
   "@buyShouldBuyAtLeast": {
@@ -3085,10 +2985,6 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
-  "importQrDeviceSpecterStep8": "আপনার মোবাইল ডিভাইসে, Open Camera-এ ট্যাপ করুন",
-  "@importQrDeviceSpecterStep8": {
-    "description": "Specter instruction step 8"
-  },
   "sellSendPaymentContinue": "চালিয়ে যান",
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
@@ -3145,10 +3041,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "importQrDeviceJadeStep2": "মূল মেনু থেকে \"QR মোড\" নির্বাচন করুন",
-  "@importQrDeviceJadeStep2": {
-    "description": "Jade instruction step 2"
-  },
   "rbfErrorAlreadyConfirmed": "মূল ট্রান্স্যাকশনটি নিশ্চিত হয়েছে",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -3198,15 +3090,6 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceScanPrompt": "আপনার {deviceName} থেকে QR কোড স্ক্যান করুন",
-  "@importQrDeviceScanPrompt": {
-    "description": "Instruction to scan QR from device",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE মোবাইল",
   "@fundExchangeCostaRicaMethodSinpeTitle": {
     "description": "Payment method title for SINPE Móvil in method list"
@@ -3243,17 +3126,9 @@
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
   },
-  "importQrDeviceSpecterStep9": "আপনার Specter-এ প্রদর্শিত QR কোডটি স্ক্যান করুন",
-  "@importQrDeviceSpecterStep9": {
-    "description": "Specter instruction step 9"
-  },
   "buyInputKycPending": "KYC ID যাচাই প্রক্রিয়াধীন",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
-  },
-  "importWatchOnlySelectDerivation": "উৎপত্তি পথ নির্বাচন করুন",
-  "@importWatchOnlySelectDerivation": {
-    "description": "Title for bottom sheet to select wallet derivation type"
   },
   "hwPassport": "Foundation Passport",
   "@hwPassport": {
@@ -3466,10 +3341,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "নির্বাচন করুন \"Connect App\"",
-  "@importQrDevicePassportStep4": {
-    "description": "Passport instruction step 4"
-  },
   "payAddRecipient": "প্রাপক যোগ করুন",
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
@@ -3507,10 +3378,6 @@
   "sellDailyLimitReached": "দৈনিক বিক্রি সীমা পূর্ণ হয়েছে",
   "@sellDailyLimitReached": {
     "description": "Error when hitting daily maximum"
-  },
-  "requiredHint": "আবশ্যক",
-  "@requiredHint": {
-    "description": "Placeholder hint for required label field"
   },
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
@@ -3591,10 +3458,6 @@
   "connectHardwareWalletSeedSigner": "SeedSigner",
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
-  },
-  "importQrDevicePassportStep7": "BULL Wallet অ্যাপে, ডিরিভেশন অপশন হিসেবে \"Segwit (BIP84)\" নির্বাচন করুন",
-  "@importQrDevicePassportStep7": {
-    "description": "Passport instruction step 7"
   },
   "delete": "মুছে ফেলুন",
   "@delete": {
@@ -3926,10 +3789,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "importQrDeviceKeystoneStep8": "BULL ওয়ালেটে, আপনার পছন্দসই ডিরিভেশন টাইপ বেছে নিন। নিশ্চিত না থাকলে, \"Segwit (BIP84)\" নির্বাচন করুন",
-  "@importQrDeviceKeystoneStep8": {
-    "description": "Keystone instruction step 8"
-  },
   "fundExchangeCrIbanUsdTitle": "ব্যাংক ট্রান্সফার (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -3961,10 +3820,6 @@
   "sendReceiveNetworkFee": "প্রাপ্ত নেটওয়ার্ক ফি",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "importQrDeviceSeedsignerStep6": "Export বিকল্প হিসেবে \"Animated\" বেছে নিন। SeedSigner-এর পুরোনো ফার্মওয়্যারে \"Sparrow\" বেছে নিন।",
-  "@importQrDeviceSeedsignerStep6": {
-    "description": "SeedSigner instruction step 6"
   },
   "swapValidationMaximumAmount": "সর্বোচ্চ পরিমাণ হলো {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -4103,10 +3958,6 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "importQrDeviceSeedsignerStep3": "একটি SeedQR স্ক্যান করুন অথবা আপনার ১২- বা ২৪-শব্দের সিড ফ্রেজ লিখুন",
-  "@importQrDeviceSeedsignerStep3": {
-    "description": "SeedSigner instruction step 3"
-  },
   "replaceByFeeFastestTitle": "সবচেয়ে দ্রুত",
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
@@ -4139,10 +3990,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "importQrDeviceKruxStep1": "আপনার Krux ডিভাইস চালু করুন",
-  "@importQrDeviceKruxStep1": {
-    "description": "Krux instruction step 1"
-  },
   "receiveGenerationFailed": "==WEBLATE_PART==\n{type} তৈরি করতে ব্যর্থ হয়েছে",
   "@receiveGenerationFailed": {
     "description": "Error when address/invoice generation fails",
@@ -4159,10 +4006,6 @@
   "addressViewAddressesTitle": "ঠিকানাসমূহ",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
-  },
-  "importQrDeviceSpecterStep4": "আপনার নির্বাচিত পদ্ধতির অনুযায়ী নির্দেশনা অনুসরণ করুন",
-  "@importQrDeviceSpecterStep4": {
-    "description": "Specter instruction step 4"
   },
   "coreSwapsChainPending": "সোয়াপ এখনো শুরু হয়নি।",
   "@coreSwapsChainPending": {
@@ -4314,17 +4157,9 @@
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
-  "importQrDevicePassportStep1": "আপনার Passport ডিভাইস চালু করুন",
-  "@importQrDevicePassportStep1": {
-    "description": "Passport instruction step 1"
-  },
   "fundExchangeBankTransferWireDescription": "নীচে Bull Bitcoin-এর ব্যাংক বিবরণ ব্যবহার করে আপনার ব্যাংক অ্যাকাউন্ট থেকে একটি ওয়্যার ট্রান্সফার পাঠান। আপনার ব্যাংকের এই বিবরণের কেবল কয়েকটি অংশ প্রয়োজন হতে পারে।",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
-  },
-  "importQrDeviceKeystoneStep7": "Keystone-এ প্রদর্শিত QR কোড স্ক্যান করুন",
-  "@importQrDeviceKeystoneStep7": {
-    "description": "Keystone instruction step 7"
   },
   "coldcardStep3": "'Scan any QR code' অপশন নির্বাচন করুন",
   "@coldcardStep3": {
@@ -4363,10 +4198,6 @@
   "receiveTotalFee": "মোট ফি",
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
-  },
-  "importQrDeviceButtonOpenCamera": "ক্যামেরা খুলুন",
-  "@importQrDeviceButtonOpenCamera": {
-    "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
   "dcaConfirmFrequency": "আবৃত্তি",
   "@dcaConfirmFrequency": {
@@ -4566,10 +4397,6 @@
   "@exchangeSettingsRecipientsTitle": {
     "description": "Title for the recipients button in exchange settings"
   },
-  "importQrDevicePassportName": "Foundation Passport",
-  "@importQrDevicePassportName": {
-    "description": "Name of Foundation Passport device"
-  },
   "fundExchangeMethodCanadaPostSubtitle": "যারা সরাসরি পরিশোধ করতে চান তাদের জন্য সেরা",
   "@fundExchangeMethodCanadaPostSubtitle": {
     "description": "Subtitle for Canada Post payment method"
@@ -4658,10 +4485,6 @@
   "fundExchangeCrIbanCrcLabelIban": "IBAN অ্যাকাউন্ট নম্বর (শুধুমাত্র কলোনেস)",
   "@fundExchangeCrIbanCrcLabelIban": {
     "description": "Label for IBAN number field for CRC (Colones) only"
-  },
-  "importQrDeviceSpecterInstructionsTitle": "Specter নির্দেশনা",
-  "@importQrDeviceSpecterInstructionsTitle": {
-    "description": "Title for Specter setup instructions"
   },
   "testBackupScreenshot": "স্ক্রিনশট",
   "@testBackupScreenshot": {
@@ -4782,10 +4605,6 @@
   "autoswapMaxFeeInfo": "মোট সোয়াপ ফি নির্ধারিত শতাংশের বেশি হলে, অটো-সোয়াপ ব্লক হবে",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
-  },
-  "importQrDevicePassportStep9": "সেটআপ সম্পন্ন।",
-  "@importQrDevicePassportStep9": {
-    "description": "Passport instruction step 9"
   },
   "swapProgressRefundedMessage": "সোয়াপ সফলভাবে ফেরত দেওয়া হয়েছে।",
   "@swapProgressRefundedMessage": {
@@ -4949,10 +4768,6 @@
   "@transactionLabelServerNetworkFees": {
     "description": "Label for server network fees in swap details"
   },
-  "importQrDeviceSeedsignerStep10": "সেটআপ সম্পন্ন",
-  "@importQrDeviceSeedsignerStep10": {
-    "description": "SeedSigner instruction step 10"
-  },
   "sendReceive": "গ্রহণ করুন",
   "@sendReceive": {
     "description": "Label for receive transaction type"
@@ -4989,10 +4804,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "importQrDeviceKeystoneStep9": "Keystone ওয়ালেট-এর জন্য একটি লেবেল লিখুন এবং \"ইমপোর্ট\" চাপুন",
-  "@importQrDeviceKeystoneStep9": {
-    "description": "Keystone instruction step 9"
-  },
   "tapWordsInOrderTitle": "উদ্ধার শব্দগুলো সঠিক ক্রমে স্পর্শ করুন",
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
@@ -5024,10 +4835,6 @@
   "coreSwapsChainPaid": "সোয়াপ প্রদানকারীর পেমেন্ট নিশ্চিতের জন্য অপেক্ষা করা হচ্ছে। এটি সম্পন্ন হতে কিছু সময় লাগতে পারে।",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
-  },
-  "importQrDevicePassportStep6": "আপনার Passport-এ প্রদর্শিত QR কোড স্ক্যান করুন",
-  "@importQrDevicePassportStep6": {
-    "description": "Passport instruction step 6"
   },
   "sendSatsPerVB": "sat/vB",
   "@sendSatsPerVB": {
@@ -5111,17 +4918,9 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "importQrDeviceSeedsignerStep4": "\"Export Xpub\" বেছে নিন",
-  "@importQrDeviceSeedsignerStep4": {
-    "description": "SeedSigner instruction step 4"
-  },
   "payTransitNumber": "ট্রানজিট নম্বর",
   "@payTransitNumber": {
     "description": "Label for transit number"
-  },
-  "importQrDeviceSpecterStep5": "\"Master public keys\" বেছে নিন",
-  "@importQrDeviceSpecterStep5": {
-    "description": "Specter instruction step 5"
   },
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN কোস্টা রিকা (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdTitle": {
@@ -5231,17 +5030,9 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "importQrDeviceKruxInstructionsTitle": "Krux নির্দেশনা",
-  "@importQrDeviceKruxInstructionsTitle": {
-    "description": "Title for Krux setup instructions"
-  },
   "transactionOrderLabelOriginName": "উৎপত্তির নাম",
   "@transactionOrderLabelOriginName": {
     "description": "Label for origin name in fiat payment order"
-  },
-  "importQrDeviceKeystoneInstructionsTitle": "Keystone নির্দেশনা",
-  "@importQrDeviceKeystoneInstructionsTitle": {
-    "description": "Title for Keystone setup instructions"
   },
   "globalDefaultLiquidWalletLabel": "তাত্ক্ষণিক লেনদেন",
   "@globalDefaultLiquidWalletLabel": {
@@ -5375,10 +5166,6 @@
   "@connectHardwareWalletLedger": {
     "description": "Ledger hardware wallet option"
   },
-  "importQrDevicePassportInstructionsTitle": "Foundation Passport নির্দেশনা",
-  "@importQrDevicePassportInstructionsTitle": {
-    "description": "Title for Passport setup instructions"
-  },
   "rbfFeeRate": "ফি হার: {rate} sat/vbyte",
   "@rbfFeeRate": {
     "description": "Label showing fee rate",
@@ -5403,10 +5190,6 @@
   "exchangeBrandName": "BULL BITCOIN",
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
-  },
-  "submitButton": "জমা দিন",
-  "@submitButton": {
-    "description": "Default button label to submit mnemonic"
   },
   "exchangeStatisticsNoData": "কোনো পরিসংখ্যান নেই",
   "@exchangeStatisticsNoData": {
@@ -5518,10 +5301,6 @@
   "sendRecipientAddressOrInvoice": "প্রাপকের ঠিকানা বা ইনভয়েস",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
-  },
-  "importQrDeviceKeystoneName": "Keystone",
-  "@importQrDeviceKeystoneName": {
-    "description": "Name of Keystone device"
   },
   "payBitcoinAddress": "বিটকয়েন ঠিকানা",
   "@payBitcoinAddress": {
@@ -5725,10 +5504,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "importQrDeviceSeedsignerStep1": "আপনার SeedSigner ডিভাইসটি চালু করুন",
-  "@importQrDeviceSeedsignerStep1": {
-    "description": "SeedSigner instruction step 1"
-  },
   "exchangeRecipientsTitle": "প্রাপকসমূহ",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
@@ -5752,10 +5527,6 @@
   "backupWalletHowToDecideVaultModalTitle": "কীভাবে সিদ্ধান্ত নেবেন",
   "@backupWalletHowToDecideVaultModalTitle": {
     "description": "Modal title for vault location comparison help"
-  },
-  "importQrDeviceJadeStep1": "আপনার Jade ডিভাইস চালু করুন",
-  "@importQrDeviceJadeStep1": {
-    "description": "Jade instruction step 1"
   },
   "payNotLoggedInDescription": "আপনি লগ ইন করেননি। পে ফিচার ব্যবহার চালিয়ে যেতে অনুগ্রহ করে লগ ইন করুন।",
   "@payNotLoggedInDescription": {
@@ -5868,10 +5639,6 @@
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
-  "importQrDeviceSeedsignerStep2": "\"Seeds\" মেনু খুলুন",
-  "@importQrDeviceSeedsignerStep2": {
-    "description": "SeedSigner instruction step 2"
-  },
   "exchangeAmountInputValidationZero": "পরিমাণ শূন্যের বেশি হতে হবে",
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
@@ -5980,10 +5747,6 @@
   "@withdrawConfirmPayee": {
     "description": "Field label for payee (Bill Payment)"
   },
-  "importQrDeviceJadeStep8": "ক্যামেরা খোলার বোতামে ক্লিক করুন",
-  "@importQrDeviceJadeStep8": {
-    "description": "Jade instruction step 8"
-  },
   "payPhoneNumberHint": "ফোন নম্বর লিখুন",
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
@@ -6030,10 +5793,6 @@
   "receiveDetails": "বিবরণ",
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
-  },
-  "importQrDeviceSpecterStep11": "সেটআপ সম্পূর্ণ হয়েছে",
-  "@importQrDeviceSpecterStep11": {
-    "description": "Specter instruction step 11"
   },
   "sendCustomFee": "কাস্টম ফি",
   "@sendCustomFee": {
@@ -6302,10 +6061,6 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "নির্বাচন করুন \"Bull\"",
-  "@importQrDevicePassportStep5": {
-    "description": "Passport instruction step 5"
-  },
   "sendInvoicePaid": "চালান পরিশোধ হয়েছে",
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
@@ -6401,10 +6156,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "নির্বাচন করুন \"Wallet\"",
-  "@importQrDevicePassportStep3": {
-    "description": "Passport instruction step 3"
-  },
   "exchangeAuthErrorMessage": "একটি ত্রুটি ঘটেছে, অনুগ্রহ করে পুনরায় লগইন করার চেষ্টা করুন",
   "@exchangeAuthErrorMessage": {
     "description": "Login error message"
@@ -6420,10 +6171,6 @@
   "swapMaxButton": "সর্বোচ্চ",
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
-  },
-  "importQrDeviceSeedsignerStep8": "আপনার SeedSigner-এ প্রদর্শিত QR কোড স্ক্যান করুন",
-  "@importQrDeviceSeedsignerStep8": {
-    "description": "SeedSigner instruction step 8"
   },
   "backupKeyTitle": "ব্যাকআপ কী",
   "@backupKeyTitle": {
@@ -6595,21 +6342,9 @@
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
   },
-  "importQrDeviceSpecterStep6": "“Single key” বেছে নিন",
-  "@importQrDeviceSpecterStep6": {
-    "description": "Specter instruction step 6"
-  },
-  "importQrDeviceJadeStep10": "এটাই!",
-  "@importQrDeviceJadeStep10": {
-    "description": "Jade instruction step 10"
-  },
   "payPayeeAccountNumberHint": "অ্যাকাউন্ট নম্বর লিখুন",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "importQrDevicePassportStep8": "আপনার Passport ওয়ালেটের জন্য একটি লেবেল লিখুন এবং \"আমদানি করুন\" চাপুন",
-  "@importQrDevicePassportStep8": {
-    "description": "Passport instruction step 8"
   },
   "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
   "bip85NoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।",
@@ -6645,10 +6380,6 @@
   "settingsDevModeWarningTitle": "ডেভ মোড",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "importQrDeviceKeystoneStep4": "স্পর্শ করুন \"সফটওয়্যার ওয়ালেট সংযোগ করুন\"",
-  "@importQrDeviceKeystoneStep4": {
-    "description": "Keystone instruction step 4"
   },
   "rbfOriginalTransaction": "মূল ট্রান্স্যাকশন",
   "@rbfOriginalTransaction": {
@@ -7299,10 +7030,6 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "importQrDeviceKeystoneStep2": "PIN দিয়ে এটি আনলক করুন",
-  "@importQrDeviceKeystoneStep2": {
-    "description": "Keystone instruction step 2"
-  },
   "receiveBitcoinTransactionWillTakeTime": "Bitcoin লেনদেন নিশ্চিত হতে কিছুটা সময় লাগবে।",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
@@ -7325,10 +7052,6 @@
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
   },
-  "importQrDeviceSeedsignerStep7": "আপনার মোবাইল ডিভাইসে, Open Camera-এ ট্যাপ করুন",
-  "@importQrDeviceSeedsignerStep7": {
-    "description": "SeedSigner instruction step 7"
-  },
   "addressViewChangeAddressesDescription": "ওয়ালেট বদল ঠিকানাগুলো প্রদর্শন করুন",
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
@@ -7345,17 +7068,9 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "importQrDeviceKruxStep5": "আপনার ডিভাইসে আপনি যে QR কোডটি দেখছেন সেটি স্ক্যান করুন",
-  "@importQrDeviceKruxStep5": {
-    "description": "Krux instruction step 5"
-  },
   "fundExchangeHelpTransferCode": "এইটি ট্রান্সফারের কারণ হিসেবে যোগ করুন",
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
-  },
-  "importQrDeviceKruxStep2": "বিস্তৃত পাবলিক কী-এ ক্লিক করুন",
-  "@importQrDeviceKruxStep2": {
-    "description": "Krux instruction step 2"
   },
   "recoverButton": "পুনরুদ্ধার",
   "@recoverButton": {
@@ -7447,10 +7162,6 @@
   "walletDetailsDescriptorLabel": "ডেসক্রিপ্টর",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner নির্দেশনা",
-  "@importQrDeviceSeedsignerInstructionsTitle": {
-    "description": "Title for SeedSigner setup instructions"
   },
   "payFilterByType": "ধরন অনুযায়ী ফিল্টার করুন",
   "@payFilterByType": {
@@ -7573,10 +7284,6 @@
   "@transactionDetailLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "importQrDeviceKruxStep6": "এটাই!",
-  "@importQrDeviceKruxStep6": {
-    "description": "Krux instruction step 6"
-  },
   "payUnauthenticatedError": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
@@ -7588,10 +7295,6 @@
   "mempoolCustomServerDelete": "মুছুন",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "optionalPassphraseHint": "ঐচ্ছিক পাসফ্রেজ",
-  "@optionalPassphraseHint": {
-    "description": "Placeholder hint for passphrase field"
   },
   "exchangeFileUploadClearAll": "সব মুছুন",
   "@exchangeFileUploadClearAll": {
@@ -7612,15 +7315,6 @@
   "coreScreensPageNotFound": "পৃষ্ঠা পাওয়া যায়নি",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
-  },
-  "importQrDeviceTitle": "সংযোগ করুন {deviceName}",
-  "@importQrDeviceTitle": {
-    "description": "AppBar title for QR device import",
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFeatureDcaOrders": "• DCA, লিমিট অর্ডার ও অটো-বাই",
   "@exchangeFeatureDcaOrders": {
@@ -7661,10 +7355,6 @@
   "fundExchangeBankTransfer": "ব্যাংক স্থানান্তর",
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
-  },
-  "importQrDeviceButtonInstructions": "নির্দেশনা",
-  "@importQrDeviceButtonInstructions": {
-    "description": "ImportQrDevice: Button to show setup instructions"
   },
   "buyLevel3Limit": "স্তর ৩ সীমা: {amount}",
   "@buyLevel3Limit": {
@@ -7745,10 +7435,6 @@
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
     "description": "Label for account number in online bill payment"
   },
-  "importQrDeviceJadeStep4": "মূল মেনু থেকে \"বিকল্প\" নির্বাচন করুন",
-  "@importQrDeviceJadeStep4": {
-    "description": "Jade instruction step 4"
-  },
   "backupWalletSavingToDeviceTitle": "আপনার ডিভাইসে সংরক্ষণ হচ্ছে।",
   "@backupWalletSavingToDeviceTitle": {
     "description": "Loading screen title when saving to custom location"
@@ -7797,10 +7483,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "importQrDeviceJadeInstructionsTitle": "Blockstream Jade নির্দেশাবলী",
-  "@importQrDeviceJadeInstructionsTitle": {
-    "description": "Title for Jade setup instructions"
-  },
   "paySendMax": "সর্বোচ্চ",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
@@ -7816,10 +7498,6 @@
   "importMnemonicSelectType": "ইমপোর্ট করার জন্য একটি ওয়ালেট টাইপ নির্বাচন করুন",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "importQrDeviceKeystoneStep1": "Keystone ডিভাইস চালু করুন",
-  "@importQrDeviceKeystoneStep1": {
-    "description": "Keystone instruction step 1"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 ডিটারমিনিস্টিক এন্ট্রপি",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -9284,33 +8962,6 @@
   "importColdcardConnectTitle": "{deviceName} সংযোগ করুন",
   "importColdcardConnectDescription": "আপনার {deviceName} থেকে ওয়ালেট ডেসক্রিপ্টর আমদানি করুন",
   "importColdcardScanNfcSheetTitle": "NFC-এর মাধ্যমে ওয়ালেট ডেসক্রিপ্টর আমদানি করতে আপনার {deviceName}-এ ট্যাপ করুন",
-  "importColdcardQInstructionsTitle": "Coldcard Q নির্দেশনা",
-  "importColdcardQStep1": "আপনার Coldcard Q ডিভাইসে লগইন করুন",
-  "importColdcardQStep2": "যদি আপনার একটি পাসফ্রেজ থাকে তবে যোগ করুন (ঐচ্ছিক)",
-  "importColdcardQStep3": "অ্যাডভান্সড/সেটিংস মেনু নির্বাচন করুন",
-  "importColdcardQStep4": "\"export wallet\" ক্লিক করুন",
-  "importColdcardQStep5": "এক্সপোর্ট টাইপ হিসেবে \"descriptor\" নির্বাচন করুন",
-  "importColdcardQStep6": "প্রথম স্ক্রিনে \"Enter\" চাপুন",
-  "importColdcardQStep7": "দ্বিতীয় স্ক্রিনে \"Enter\" চাপুন",
-  "importColdcardQStep8": "আপনার ঠিকানার ধরন নির্বাচন করুন (নিশ্চিত না হলে Segwit ব্যবহার করুন)",
-  "importColdcardQStep9": "QR-এর জন্য, ডিভাইসে QR কোড বোতামে ক্লিক করুন। এটি ডিভাইসে একটি QR কোড দেখাবে",
-  "importColdcardQStep10": "NFC-এর জন্য, ডিভাইসে NFC বোতামে ক্লিক করুন",
-  "importColdcardQStep11": "\"Open the camera\" / \"Scan NFC\" বোতামে ক্লিক করুন",
-  "importColdcardQStep12": "আপনার ডিভাইসে দেখানো QR কোডটি স্ক্যান করুন অথবা ফোনের NFC-টি Coldcard-এর NFC-এর ওপর রাখুন",
-  "importColdcardQStep13": "এটাই!",
-  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 নির্দেশনা",
-  "importColdcardMk4Step1": "আপনার Coldcard Mk4 ডিভাইসে লগইন করুন",
-  "importColdcardMk4Step2": "যদি আপনার একটি পাসফ্রেজ থাকে তবে যোগ করুন (ঐচ্ছিক)",
-  "importColdcardMk4Step3": "অ্যাডভান্সড/সেটিংস মেনু নির্বাচন করুন",
-  "importColdcardMk4Step4": "\"export wallet\" ক্লিক করুন",
-  "importColdcardMk4Step5": "এক্সপোর্ট টাইপ হিসেবে \"descriptor\" নির্বাচন করুন",
-  "importColdcardMk4Step6": "প্রথম স্ক্রিনে \"Enter\" চাপুন",
-  "importColdcardMk4Step7": "দ্বিতীয় স্ক্রিনে \"Enter\" চাপুন",
-  "importColdcardMk4Step8": "আপনার ঠিকানার ধরন নির্বাচন করুন (নিশ্চিত না হলে Segwit ব্যবহার করুন)",
-  "importColdcardMk4Step9": "Coldcard NFC চালু করতে 3 নম্বরে ক্লিক করুন",
-  "importColdcardMk4Step10": "\"Scan NFC\" বোতামে ক্লিক করুন",
-  "importColdcardMk4Step11": "ফোনের NFC-টি Coldcard-এর NFC-এর ওপর রাখুন",
-  "importColdcardMk4Step12": "এটাই!",
   "viewerAddressTab": "ঠিকানা",
   "viewerPaymentUriTab": "পেমেন্ট URI",
   "transactionSwapOpenWithin24h": "আপনার সোয়াপ সম্পন্ন করতে ২৪ ঘণ্টার মধ্যে অ্যাপটি খুলুন।",

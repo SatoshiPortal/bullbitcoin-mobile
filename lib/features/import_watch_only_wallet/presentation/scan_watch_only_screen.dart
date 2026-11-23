@@ -1,20 +1,17 @@
-import 'dart:convert';
-
 import 'package:signers/signers.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/scanning/public/qr_scanning.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:wallet_import/wallet_import.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
-import 'package:satoshifier/satoshifier.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullSnackBar, BullTypographyX;
+    show BullButton, BullSnackBar, BullTypographyX;
 
 class ScanWatchOnlyScreen extends StatefulWidget {
   final SignerDevice? signerDevice;
@@ -46,40 +43,21 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               _handled = true;
               setState(() => _scanned = data);
               try {
-                String signerData = data;
-                if (widget.signerDevice == SignerDevice.krux) {
-                  signerData = Descriptor.parse(data).external;
-                } else if (widget.signerDevice == SignerDevice.passport ||
-                    widget.signerDevice == SignerDevice.keystone) {
-                  final selectedDescriptor = await _chooseDerivation(
-                    context,
-                    data,
-                  );
-                  if (selectedDescriptor == null) {
-                    _handled = false;
-                    return;
-                  }
-                  signerData = selectedDescriptor;
-                }
-                final watchOnly = await WatchOnlyWalletEntity.parse(
-                  signerData,
-                  signerDevice: widget.signerDevice,
+                final watchOnly = await readWatchOnlyQr(
+                  context,
+                  data,
+                  device: widget.signerDevice,
                 );
 
-                if (!context.mounted) {
+                if (!context.mounted) return;
+                if (watchOnly case Ok(value: final value?)) {
+                  ImportNavigation.replaceWithWatchOnly(context, value);
+                } else {
                   _handled = false;
-                  return;
                 }
-                context.replaceNamed(
-                  ImportWatchOnlyWalletRoutes.import.name,
-                  extra: watchOnly,
-                );
-              } catch (e, st) {
-                log.warning(
-                  'Failed to parse scanned watch-only',
-                  error: e,
-                  trace: st,
-                );
+              } catch (error) {
+                if (error is Error) rethrow;
+                log.warning('Failed to parse scanned watch-only');
                 _handled = false;
               }
             },
@@ -127,58 +105,4 @@ void showCopiedSnackBar(BuildContext context) {
     context,
     message: context.loc.importWatchOnlyCopiedToClipboard,
   );
-}
-
-Future<String?> _chooseDerivation(BuildContext context, String data) async {
-  try {
-    final parsed = json.decode(data);
-    if (parsed is! Map<String, dynamic>) return null;
-
-    final options = <Map<String, String>>[];
-
-    void addIfPresent(String key, String label) {
-      if (!parsed.containsKey(key)) return;
-      final descriptor = parsed[key];
-      if (descriptor is String) {
-        options.add({'key': key, 'label': label, 'descriptor': descriptor});
-      }
-    }
-
-    addIfPresent('bip84', 'Segwit (BIP84)');
-    addIfPresent('bip49', 'Nested Segwit (BIP49)');
-    addIfPresent('bip44', 'Legacy (BIP44)');
-
-    if (options.isEmpty) return null;
-    if (options.length == 1) return options.first['descriptor'];
-
-    if (!context.mounted) return null;
-    final choice = await BullBottomSheet.show<Map<String, String>>(
-      context: context,
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                context.loc.importWatchOnlySelectDerivation,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            for (final opt in options)
-              ListTile(
-                title: Text(opt['label'] ?? ''),
-                onTap: () => Navigator.of(context).pop(opt),
-              ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-    return choice?['descriptor'];
-  } catch (_) {
-    return null;
-  }
 }

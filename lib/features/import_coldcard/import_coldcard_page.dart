@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/scanning/public/nfc_scanning.dart';
-import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:wallet_import/wallet_import.dart';
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -16,7 +15,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullText,
         Gap,
         BullTypographyX;
-import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
   static const _supportedDevices = {
@@ -41,23 +39,15 @@ class ImportColdcardPage extends StatelessWidget {
   const ImportColdcardPage._({super.key, required this.signerDevice});
 
   Future<void> _handleNfcData(BuildContext context, String payload) async {
-    try {
-      final watchOnlyWallet = await WatchOnlyWalletEntity.parse(
-        payload,
-        signerDevice: signerDevice,
-      );
-
-      if (!context.mounted) return;
-      context.replaceNamed(
-        ImportWatchOnlyWalletRoutes.import.name,
-        extra: watchOnlyWallet,
-      );
-    } catch (e) {
-      log.warning(
-        'Failed to parse Coldcard wallet data received via NFC',
-        error: e,
-      );
-      if (!context.mounted) return;
+    final wallet = await WatchOnlyInput.parse(
+      payload,
+      signerDevice: signerDevice,
+    );
+    if (!context.mounted) return;
+    if (wallet case Ok(:final value)) {
+      ImportNavigation.replaceWithWatchOnly(context, value);
+    } else {
+      log.warning('Failed to parse Coldcard wallet data received via NFC');
       BullSnackBar.show(
         context,
         message: context.loc.importColdcardInvalidWalletData,
@@ -101,9 +91,9 @@ class ImportColdcardPage extends StatelessWidget {
                   BullButton.secondary(
                     size: BullButtonSize.small,
                     label: context.loc.importColdcardButtonOpenCamera,
-                    onPressed: () => context.pushNamed(
-                      ImportWatchOnlyWalletRoutes.scan.name,
-                      extra: signerDevice,
+                    onPressed: () => ImportNavigation.openWatchOnlyScanner(
+                      context,
+                      device: signerDevice,
                     ),
                   ),
                   Gap(Device.screen.height * 0.02),
@@ -124,13 +114,10 @@ class ImportColdcardPage extends StatelessWidget {
                 BullButton.secondary(
                   size: BullButtonSize.small,
                   label: context.loc.importColdcardButtonInstructions,
-                  onPressed: () {
-                    if (signerDevice == SignerDevice.coldcardQ) {
-                      ColdcardQInstructionsBottomSheet.show(context);
-                    } else {
-                      ColdcardMk4InstructionsBottomSheet.show(context);
-                    }
-                  },
+                  onPressed: () => ImportNavigation.showColdcardInstructions(
+                    context,
+                    signerDevice,
+                  ),
                 ),
               ],
             ),
