@@ -134,7 +134,15 @@ final class _PreparedInventory implements PreparedOwner {
 
         // Even on a fresh SQLite install, an iOS keychain can outlive the app
         // container. Preserve any existing access protection.
-        final access = await _readLegacyAccess();
+        final accessResult = await _readLegacyAccess();
+        if (accessResult case Err(:final failure)) return Err(failure);
+        final access =
+            (accessResult
+                    as Ok<
+                      ({String? pin, int failedAttempts, int? lockedUntil}),
+                      LegacyImportFailure
+                    >)
+                .value;
         if (source != null) await _copyLegacy(source);
 
         final pin = access.pin;
@@ -207,8 +215,6 @@ final class _PreparedInventory implements PreparedOwner {
       return const Err(LegacyImportVerificationFailed());
     } on _WrongSchema {
       return const Err(LegacySourceSchemaMismatch());
-    } on _LegacyAccessUnavailable catch (error) {
-      return Err(error.failure);
     } on SqliteException {
       return const Err(LegacyImportUnavailable());
     } on FileSystemException {
@@ -289,20 +295,27 @@ final class _PreparedInventory implements PreparedOwner {
     }
   }
 
-  Future<({String? pin, int failedAttempts, int? lockedUntil})>
+  Future<
+    Result<
+      ({String? pin, int failedAttempts, int? lockedUntil}),
+      LegacyImportFailure
+    >
+  >
   _readLegacyAccess() async {
     final keychain = OwnerKeychain();
-    Future<String?> read(OwnerKey key) async => switch (await keychain.read(
-      key,
-    )) {
-      Ok(:final value) => value,
-      Err(failure: KeystoreLockedFailure()) =>
-        throw const _LegacyAccessUnavailable(LegacyImportDeferred()),
-      Err() => throw const _LegacyAccessUnavailable(LegacyImportUnavailable()),
-    };
-    final pin = await read(OwnerKey.pin);
-    final rawAttempts = await read(OwnerKey.attempts);
-    final rawLock = await read(OwnerKey.lockedUntil);
+    final values = <OwnerKey, String?>{};
+    for (final key in [OwnerKey.pin, OwnerKey.attempts, OwnerKey.lockedUntil]) {
+      switch (await keychain.read(key)) {
+        case Ok(:final value):
+          values[key] = value;
+        case Err(failure: KeystoreLockedFailure()):
+          return const Err(LegacyImportDeferred());
+        case Err():
+          return const Err(LegacyImportUnavailable());
+      }
+    }
+    final rawAttempts = values[OwnerKey.attempts];
+    final rawLock = values[OwnerKey.lockedUntil];
     final attempts = rawAttempts == null ? 0 : int.tryParse(rawAttempts);
     final lock = rawLock == null ? null : int.tryParse(rawLock);
     const maxEpoch = 8640000000000000;
@@ -310,9 +323,13 @@ final class _PreparedInventory implements PreparedOwner {
         attempts < 0 ||
         (rawLock != null &&
             (lock == null || lock < -maxEpoch || lock > maxEpoch))) {
-      throw const _VerificationRejected();
+      return const Err(LegacyImportVerificationFailed());
     }
-    return (pin: pin, failedAttempts: attempts, lockedUntil: lock);
+    return Ok((
+      pin: values[OwnerKey.pin],
+      failedAttempts: attempts,
+      lockedUntil: lock,
+    ));
   }
 
   @override
@@ -336,10 +353,4 @@ final class _VerificationRejected implements Exception {
 
 final class _WrongSchema implements Exception {
   const _WrongSchema();
-}
-
-final class _LegacyAccessUnavailable implements Exception {
-  final LegacyImportFailure failure;
-
-  const _LegacyAccessUnavailable(this.failure);
 }
