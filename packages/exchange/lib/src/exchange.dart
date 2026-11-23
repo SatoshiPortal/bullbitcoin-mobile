@@ -108,15 +108,13 @@ typedef ExchangeChatOperations = ({
 });
 
 typedef ExchangeNotificationBindings = ({
-  Future<Result<ExchangeEnvironment, ExchangeFailure>> Function()
-  readEnvironment,
   Future<Result<String?, Failure>> Function({required bool isTestnet}) readKey,
 });
 
 typedef ExchangeNotificationOperations = ({
   Stream<Result<NotificationMessage, ExchangeFailure>> Function() messages,
-  Future<Result<void, ExchangeFailure>> Function() connect,
-  Future<Result<void, ExchangeFailure>> Function() reconnect,
+  Future<Result<void, ExchangeFailure>> Function(ExchangeEnvironment) connect,
+  Future<Result<void, ExchangeFailure>> Function(ExchangeEnvironment) reconnect,
   void Function() disconnect,
   Future<void> Function() close,
 });
@@ -384,9 +382,6 @@ final class Exchange {
       return notificationService ??= ExchangeNotificationService(
         mainnetDatasource: datasource(mainnetEndpoint, false),
         testnetDatasource: datasource(testnetEndpoint, true),
-        readEnvironment:
-            notifications?.readEnvironment ??
-            () async => (await readSession()).map((s) => s.environment),
       );
     }
 
@@ -523,8 +518,8 @@ final class Exchange {
       ),
       (
         messages: () => service().messageStream,
-        connect: () => service().connect(),
-        reconnect: () => service().reconnect(),
+        connect: (environment) => service().connect(environment),
+        reconnect: (environment) => service().reconnect(environment),
         disconnect: () => notificationService?.disconnect(),
         close: () async {
           if (closed) return;
@@ -789,49 +784,17 @@ final class Exchange {
     final preferences = _sessionPreferences;
     return access == null || preferences == null
         ? null
-        : WatchExchangeNotificationsUsecase(
-            exchange: this,
-            settingsRepository: preferences,
-            access: access,
-          );
+        : WatchExchangeNotificationsUsecase(exchange: this);
   }
 
   Stream<NotificationMessage> watchAccountChanges() =>
       _currentNotifications?.accountChanges() ?? const Stream.empty();
 
-  Stream<NotificationMessage> watchSupportMessages() =>
-      _currentNotifications?.supportMessages() ?? const Stream.empty();
-
-  @useResult
-  Future<Result<int, ExchangeFailure>>
-  loadCurrentUnreadSupportMessageCount() async {
-    final access = _access;
-    if (access == null) return const Err(ExchangeNotAuthenticatedFailure());
-    return GetUnreadSupportMessageCountUsecase(
-      exchange: this,
-      access: access,
-    ).execute();
-  }
-
-  @useResult
-  Future<Result<void, ExchangeFailure>> markCurrentSupportMessagesRead() async {
-    final access = _access;
-    if (access == null) return const Err(ExchangeNotAuthenticatedFailure());
-    return MarkSupportMessagesReadUsecase(
-      exchange: this,
-      access: access,
-    ).execute();
-  }
-
-  @useResult
-  Future<Result<void, ExchangeFailure>> openCurrentNotifications({
-    bool reconnect = false,
-  }) async {
-    final notifications = _currentNotifications;
-    if (notifications == null) {
-      return const Err(ExchangeNotificationsUnavailableFailure());
-    }
-    return reconnect ? notifications.reconnect() : notifications.connect();
+  /// Reopens the current session's socket after the app comes back; the
+  /// platform may have dropped it while hidden. Nothing while signed out:
+  /// the socket belongs to the signed-in state.
+  Future<void> reconnectCurrentNotifications() async {
+    await _access?.reconnectNotifications();
   }
 
   @useResult
@@ -1099,13 +1062,17 @@ final class Exchange {
   Stream<Result<NotificationMessage, ExchangeFailure>> get notifications =>
       _notifications.messages();
 
+  /// Opens the socket of [environment]. The access lifecycle calls it when
+  /// a session of that environment starts.
   @useResult
-  Future<Result<void, ExchangeFailure>> connectNotifications() =>
-      _notifications.connect();
+  Future<Result<void, ExchangeFailure>> connectNotifications(
+    ExchangeEnvironment environment,
+  ) => _notifications.connect(environment);
 
   @useResult
-  Future<Result<void, ExchangeFailure>> reconnectNotifications() =>
-      _notifications.reconnect();
+  Future<Result<void, ExchangeFailure>> reconnectNotifications(
+    ExchangeEnvironment environment,
+  ) => _notifications.reconnect(environment);
 
   void disconnectNotifications() => _notifications.disconnect();
 
@@ -1232,8 +1199,8 @@ Exchange exchangeForTesting({
   notifications ??
       (
         messages: () => const Stream.empty(),
-        connect: () => throw StateError('Unexpected notification connect'),
-        reconnect: () => throw StateError('Unexpected notification reconnect'),
+        connect: (_) => throw StateError('Unexpected notification connect'),
+        reconnect: (_) => throw StateError('Unexpected notification reconnect'),
         disconnect: () {},
         close: () async {},
       ),

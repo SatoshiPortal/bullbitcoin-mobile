@@ -16,11 +16,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required this._currentAccess,
     required Stream<ExchangeAccess> accessChanges,
     required Stream<NotificationMessage> accountChanges,
-    required Stream<NotificationMessage> supportMessages,
-    required this._getUnreadSupportMessageCount,
-    required this._markSupportMessagesRead,
-    required this._connectNotifications,
-    required this._disconnectNotifications,
+    required this._reconnectNotifications,
     Future<void> Function()? reconcileUnknownWrites,
   }) : _reconcileUnknownWrites = reconcileUnknownWrites ?? _nothing,
        super(const ExchangeState()) {
@@ -31,10 +27,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     _access = accessChanges.listen((access) {
       if (isClosed) return;
       if (access.isSignedIn) {
-        // Reconciliation disconnects before it emits signed in, and an
-        // unchanged account emits no summary transition to reopen the socket.
+        // The socket is the access lifecycle's: it opens with the session.
         unawaited(fetchUserSummary());
-        unawaited(connectWebSocket());
         // Settle writes whose outcome was unknown by re-reading them; never
         // sends them again.
         unawaited(_reconcileUnknownWrites());
@@ -50,11 +44,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   _getAnnouncements;
   final Future<Result<void, ExchangeFailure>> Function() _stopDca;
   final ExchangeAccess Function() _currentAccess;
-  final Future<Result<void, ExchangeFailure>> Function({
-    required bool reconnect,
-  })
-  _connectNotifications;
-  final void Function() _disconnectNotifications;
+  final Future<void> Function() _reconnectNotifications;
   final Future<void> Function() _reconcileUnknownWrites;
   StreamSubscription<Object?>? _notifications;
   StreamSubscription<Object?>? _supportMessages;
@@ -136,37 +126,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     );
   }
 
-  /// The badge keeps its last known count when the read fails.
-  Future<void> refreshUnreadSupportMessages() async {
-    if (isClosed) return;
-    final attempt = ++_unreadAttempt;
-    final result = await _getUnreadSupportMessageCount();
-    if (isClosed || attempt != _unreadAttempt) return;
-    if (result case Ok(:final value)) {
-      emit(state.copyWith(unreadSupportMessages: value));
-    }
-  }
-
-  /// Clears the badge at once, then confirms the count with the server.
-  Future<void> markSupportMessagesRead() async {
-    if (isClosed) return;
-    _unreadAttempt++;
-    if (state.unreadSupportMessages != 0) {
-      emit(state.copyWith(unreadSupportMessages: 0));
-    }
-    final _ = await _markSupportMessagesRead();
-    await refreshUnreadSupportMessages();
-  }
-
-  Future<void> connectWebSocket() async {
-    final _ = await _connectNotifications(reconnect: false);
-  }
-
-  Future<void> reconnectWebSocket() async {
-    final _ = await _connectNotifications(reconnect: true);
-  }
-
-  void disconnectWebSocket() => _disconnectNotifications();
+  Future<void> reconnectWebSocket() => _reconnectNotifications();
 
   static Future<void> _nothing() async {}
   @override
@@ -174,7 +134,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     await _notifications?.cancel();
     await _supportMessages?.cancel();
     await _access?.cancel();
-    _disconnectNotifications();
     return super.close();
   }
 }

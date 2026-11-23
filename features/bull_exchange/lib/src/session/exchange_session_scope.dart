@@ -92,13 +92,7 @@ class ExchangeSessionScope extends StatelessWidget {
         currentAccess: () => capability.currentAccess,
         accessChanges: capability.watchAccess(),
         accountChanges: capability.watchAccountChanges(),
-        supportMessages: capability.watchSupportMessages(),
-        getUnreadSupportMessageCount:
-            capability.loadCurrentUnreadSupportMessageCount,
-        markSupportMessagesRead: capability.markCurrentSupportMessagesRead,
-        connectNotifications: ({required reconnect}) =>
-            capability.openCurrentNotifications(reconnect: reconnect),
-        disconnectNotifications: capability.disconnectNotifications,
+        reconnectNotifications: capability.reconnectCurrentNotifications,
         reconcileUnknownWrites: () async {
           final _ = await capability.reconcileUnknownWrites();
         },

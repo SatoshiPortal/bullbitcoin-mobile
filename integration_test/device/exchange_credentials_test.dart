@@ -234,10 +234,7 @@ void main() {
           mainnetEndpoint: Uri.parse(baseUrl),
           testnetEndpoint: Uri.parse(baseUrl),
           readSession: () async => const Err(ExchangeUnexpectedFailure()),
-          notifications: (
-            readEnvironment: () async => const Ok(ExchangeEnvironment.testnet),
-            readKey: repository.readActiveApiKey,
-          ),
+          notifications: (readKey: repository.readActiveApiKey),
         );
         addTearDown(() async {
           await exchange.close();
@@ -264,7 +261,10 @@ void main() {
           jsonEncode({'key': 'socket-synthetic', 'isActive': true}),
           isTestnet: true,
         );
-        expect(await exchange.connectNotifications(), isA<Ok>());
+        expect(
+          await exchange.connectNotifications(ExchangeEnvironment.testnet),
+          isA<Ok>(),
+        );
         exchange.disconnectNotifications();
         probe.refuseReads = true;
         expect(

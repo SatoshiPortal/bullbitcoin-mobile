@@ -73,9 +73,7 @@ void main() {
         currentAccess: () => watchAccess.current,
         accessChanges: watchAccess.execute(),
         accountChanges: notifications.accountChanges(),
-        connectNotifications: ({required reconnect}) =>
-            reconnect ? notifications.reconnect() : notifications.connect(),
-        disconnectNotifications: notifications.disconnect,
+        reconnectNotifications: () async {},
       );
 
   setUp(() {
@@ -100,25 +98,24 @@ void main() {
     when(markRead.execute).thenAnswer((_) async => const Ok(null));
     when(getAccount.execute).thenAnswer((_) async => const Ok(account));
     when(announcements.execute).thenAnswer((_) async => const Ok([]));
-    when(notifications.connect).thenAnswer((_) async => const Ok(null));
     addTearDown(changes.close);
   });
 
-  test('each signed-in reconciliation reopens notifications for an unchanged account', () async {
-    final cubit = build();
-    addTearDown(cubit.close);
-    publish(const ExchangeAccessSignedIn(_testSession));
-    await Future<void>.delayed(Duration.zero);
-    expect(cubit.state.userSummary, account);
-    verify(notifications.connect).called(1);
+  test(
+    'a repeated signed-in state loads the unchanged account again',
+    () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessSignedIn(_testSession));
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.userSummary, account);
 
-    // Reconciliation disconnects and emits signed in again; the account
-    // summary is unchanged, so no summary transition can reopen the socket.
-    publish(const ExchangeAccessSignedIn(_testSession));
-    await Future<void>.delayed(Duration.zero);
-    expect(cubit.state.userSummary, account);
-    verify(notifications.connect).called(1);
-  });
+      publish(const ExchangeAccessSignedIn(_testSession));
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.userSummary, account);
+      verify(getAccount.execute).called(2);
+    },
+  );
 
   test(
     'signing in reconciles journaled writes; other access does not',

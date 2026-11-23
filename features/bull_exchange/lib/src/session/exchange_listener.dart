@@ -1,18 +1,11 @@
 import 'exchange_cubit.dart';
-import 'exchange_state.dart';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Listens to ExchangeCubit state changes and manages WebSocket connection lifecycle.
-///
-/// - Disconnects WebSocket when the account is cleared (userSummary becomes
-///   null); [ExchangeCubit] opens it on every signed-in access state
-/// - Reconnects WebSocket when the app returns from the background, as the OS
-///   may have dropped the connection while it was hidden
-///
-/// For network changes (mainnet/testnet switch), call [ExchangeCubit.reconnectWebSocket]
-/// from the settings screen or wherever the network change is triggered.
+/// Reconnects the notification socket when the app returns from the
+/// background, as the OS may have dropped the connection while it was hidden.
+/// The socket itself opens and closes with the signed-in access state.
 class ExchangeListener extends StatefulWidget {
   const ExchangeListener({super.key, required this.child});
   final Widget child;
@@ -48,13 +41,5 @@ class _ExchangeListenerState extends State<ExchangeListener> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocListener<ExchangeCubit, ExchangeState>(
-      listenWhen: (previous, current) =>
-          previous.userSummary != null && current.userSummary == null,
-      listener: (context, state) =>
-          context.read<ExchangeCubit>().disconnectWebSocket(),
-      child: widget.child,
-    );
-  }
+  Widget build(BuildContext context) => widget.child;
 }

@@ -32,6 +32,11 @@ abstract final class BullExchangeServices {
       platformAllowed: () =>
           _platformAllowed(activePlatform, preferences: preferences),
       disconnectNotifications: () async => exchange.disconnectNotifications(),
+      connectNotifications: (environment, {required reconnect}) async {
+        final _ = reconnect
+            ? await exchange.reconnectNotifications(environment)
+            : await exchange.connectNotifications(environment);
+      },
       clearCookies: () async {
         await WebViewCookieManager().clearCookies();
       },
@@ -62,7 +67,6 @@ abstract final class BullExchangeServices {
         readKey: credentials.readActiveApiKey,
       ),
       notifications: (
-        readEnvironment: () => readLegacyExchangeEnvironment(preferences),
         readKey: ({required isTestnet}) =>
             credentials.readActiveApiKey(isTestnet: isTestnet),
       ),
