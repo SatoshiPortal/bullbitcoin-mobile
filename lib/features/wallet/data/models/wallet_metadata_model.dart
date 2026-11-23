@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart' show Fingerprint, ScriptType, SignerEntity;
+import 'package:primitives/primitives.dart'
+    show Fingerprint, ScriptType, SignerEntity;
 
 part 'wallet_metadata_model.freezed.dart';
 

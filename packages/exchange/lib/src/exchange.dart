@@ -110,6 +110,7 @@ typedef ExchangeNotificationOperations = ({
 });
 
 typedef ExchangeWebAuthEndpoints = ({Uri mainnet, Uri testnet});
+
 enum _CompletionCheck { none, read, write }
 
 /// Bull Bitcoin exchange capabilities.

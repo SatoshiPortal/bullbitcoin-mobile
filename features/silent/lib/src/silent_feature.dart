@@ -50,10 +50,7 @@ final class SilentFeature {
     final services = GetIt.asNewInstance();
     services.registerSingleton(preferences);
     services.registerSingleton(secrets);
-    SilentGraph.setup(
-      services,
-      readDefaultFingerprint: readDefaultFingerprint,
-    );
+    SilentGraph.setup(services, readDefaultFingerprint: readDefaultFingerprint);
     final feature = SilentFeature._(
       services,
       walletHomePath,

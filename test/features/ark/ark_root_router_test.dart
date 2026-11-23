@@ -33,6 +33,7 @@ import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
 
 import '../../support/inventory_fixture.dart';
+
 import 'package:silent/setup.dart';
 
 class PricePreferences extends Mock
@@ -63,6 +64,7 @@ class _MockFees extends Mock implements Fees {}
 class _UnusedSwapRouting extends Mock implements SwapRouting {}
 
 class _UnusedSwapServers extends Mock implements SwapServerSettings {}
+
 class _UnusedSwaps extends Mock implements BoltzSwaps {}
 
 class _UnusedReferences extends Mock implements SeedReferencePort {}

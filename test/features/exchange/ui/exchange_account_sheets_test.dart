@@ -1,5 +1,4 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_exchange/bull_exchange.dart';

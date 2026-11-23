@@ -41,33 +41,27 @@ const _allowedTargets = <String, String>{
   'import_coldcard': 'import_watch_only_wallet scanning signers',
   'import_mnemonic': 'mnemonic_entry wallet',
   'import_qr_device': 'import_watch_only_wallet signers',
-  'import_wallet':
-      'import_coldcard import_mnemonic import_qr_device import_watch_only_wallet settings signers',
+  'import_wallet': 'import_coldcard import_mnemonic import_qr_device import_watch_only_wallet settings signers',
   'import_watch_only_wallet': 'scanning signers wallet',
   'limit_orders': 'address_view bull_exchange exchange wallet',
   'network': 'recoverbull',
   'onboarding':
       'import_mnemonic mnemonic_entry network recoverbull settings wallet',
-  'pay':
-      'address_view bitcoin_price bull_exchange coins exchange fees send transactions wallet',
+  'pay': 'address_view bitcoin_price bull_exchange coins exchange fees send transactions wallet',
   'receive':
       'address_view label_editor settings signers swap transactions wallet',
   'replace_by_fee': 'fees send wallet',
   'scanning': 'signers',
-  'sell':
-      'address_view bitcoin_price bull_exchange coins exchange fees send transactions wallet',
-  'send':
-      'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
-  'settings':
-      'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
+  'sell': 'address_view bitcoin_price bull_exchange coins exchange fees send transactions wallet',
+  'send': 'address_view ark coins consolidation fees label_editor signers silent swap transactions wallet',
+  'settings': 'access address_view all_seed_view ark autoswap backup_settings backups bip85 bitcoin_price broadcast_signed_tx bull_exchange exchange fees import_wallet label_editor logs network pay quick_actions recoverbull silent swap test_wallet_backup transactions wallet',
   'support': 'bull_exchange',
   'swap': 'address_view ark coins consolidation fees send transactions wallet',
   'test_wallet_backup':
       'access onboarding physical_backup_verification recoverbull wallet',
   'transactions':
       'ark buy exchange label_editor pay replace_by_fee swap wallet',
-  'wallet':
-      'ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
+  'wallet': 'ark backup_settings backups bitcoin_price coins consolidation import_watch_only_wallet network onboarding quick_actions receive recoverbull scanning send settings signers silent swap transactions',
   'wizard': 'bull_exchange settings',
 };
 

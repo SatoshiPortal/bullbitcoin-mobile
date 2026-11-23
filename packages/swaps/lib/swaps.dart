@@ -15,7 +15,6 @@ export 'src/domain/entities/swap_server.dart';
 export 'package:swaps/src/data/models/boltz_network.dart';
 export 'package:swaps/src/data/boltz_swap_repository.dart';
 
-
 export 'src/log.dart';
 
 export 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
