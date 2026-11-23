@@ -32,10 +32,12 @@ void main() {
     bitcoinWallet = walletRegistrationForTesting(
       id: 'bitcoin',
       network: BitcoinNetwork.mainnet,
+      signer: WalletSigner.local,
     );
     liquidWallet = walletRegistrationForTesting(
       id: 'liquid',
       network: LiquidNetwork.mainnet,
+      signer: WalletSigner.local,
     );
   });
 
@@ -53,35 +55,40 @@ void main() {
       expect(state.copyWith(isPayjoinEnabled: false).shouldUsePayjoin, isFalse);
     });
 
-    test(
-      'offers Payjoin only when both gates and a Bitcoin wallet are set',
-      () {
-        final state = BuyState(
-          userSummary: userSummary,
-          selectedWallet: bitcoinWallet,
-          payjoinGloballyEnabled: true,
-        );
+    test('offers Payjoin only with both gates and a local Bitcoin wallet', () {
+      final state = BuyState(
+        userSummary: userSummary,
+        selectedWallet: bitcoinWallet,
+        payjoinGloballyEnabled: true,
+      );
 
-        expect(state.canOfferPayjoin, isTrue);
-        expect(
-          state.copyWith(payjoinGloballyEnabled: false).canOfferPayjoin,
-          isFalse,
-        );
+      expect(state.canOfferPayjoin, isTrue);
+      expect(
+        state.copyWith(payjoinGloballyEnabled: false).canOfferPayjoin,
+        isFalse,
+      );
 
-        expect(
-          state
-              .copyWith(userSummary: _userSummary(payjoinReceiveEnabled: false))
-              .canOfferPayjoin,
-          isFalse,
-        );
+      expect(
+        state
+            .copyWith(userSummary: _userSummary(payjoinReceiveEnabled: false))
+            .canOfferPayjoin,
+        isFalse,
+      );
 
-        expect(
-          state.copyWith(selectedWallet: liquidWallet).canOfferPayjoin,
-          isFalse,
-        );
-        expect(state.copyWith(selectedWallet: null).canOfferPayjoin, isFalse);
-      },
-    );
+      expect(
+        state.copyWith(selectedWallet: liquidWallet).canOfferPayjoin,
+        isFalse,
+      );
+      final watchOnly = walletRegistrationForTesting(
+        id: 'watch-only',
+        network: BitcoinNetwork.mainnet,
+      );
+      expect(
+        state.copyWith(selectedWallet: watchOnly).canOfferPayjoin,
+        isFalse,
+      );
+      expect(state.copyWith(selectedWallet: null).canOfferPayjoin, isFalse);
+    });
 
     test('uses Payjoin only when the pre-order toggle remains enabled', () {
       final state = BuyState(
