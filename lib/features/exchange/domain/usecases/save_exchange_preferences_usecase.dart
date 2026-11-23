@@ -1,4 +1,4 @@
-import '../repositories/exchange_access_repository.dart';
+import 'package:exchange/setup.dart';
 
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 class SaveExchangePreferencesUsecase {
   final Exchange _exchange;
   final Preferences _settingsRepository;
-  final ExchangeAccessRepository _access;
+  final ExchangeAccessLifecycle _access;
 
   const SaveExchangePreferencesUsecase({
     required this._exchange,

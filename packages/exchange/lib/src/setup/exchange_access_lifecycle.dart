@@ -1,31 +1,78 @@
-import 'package:exchange/setup.dart';
-
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:exchange/exchange.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
-  ExchangeAccessRepositoryImpl({
+import '../domain/entities/exchange_api_key.dart';
+import '../domain/exchange_access.dart';
+import '../domain/exchange_failure.dart';
+import 'exchange_credentials.dart';
+
+/// Foreground session authority. Platform storage and WebView cleanup are
+/// supplied during setup; their ordering and the journal belong here.
+abstract interface class ExchangeAccessLifecycle {
+  factory ExchangeAccessLifecycle.open({
+    required ExchangeCredentials apiKeyRepository,
+    required Future<bool> Function() readEnvironment,
+    required Future<bool> Function() platformAllowed,
+    required Future<void> Function() disconnectNotifications,
+    required Future<void> Function() clearCookies,
+    required Future<Object?> Function() readPreference,
+    required Future<bool> Function(String) writePreference,
+  }) = _ExchangeAccessLifecycle;
+
+  static const preferenceKey = 'exchange_access';
+
+  ExchangeAccess get current;
+  int get epoch;
+  Stream<ExchangeAccess> watch();
+  @useResult
+  Future<Result<void, ExchangeFailure>> resolve();
+  @useResult
+  Future<Result<void, ExchangeFailure>> enable({
+    bool onlyIfUnset = false,
+    bool choice = true,
+    bool forSupport = false,
+  });
+  @useResult
+  Future<Result<void, ExchangeFailure>> signOut();
+  @useResult
+  Future<Result<void, ExchangeFailure>> runAuthenticated(
+    Future<Result<void, ExchangeFailure>> Function() operation,
+  );
+  @useResult
+  Future<Result<void, ExchangeFailure>> expireSession({
+    required int epoch,
+    required bool isTestnet,
+  });
+  @useResult
+  Future<Result<void, ExchangeFailure>> completeAuthentication({
+    required Future<Result<ExchangeApiKey, ExchangeFailure>> Function()
+    generateApiKey,
+    required bool isTestnet,
+    required bool Function() isCurrent,
+  });
+}
+
+final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
+  _ExchangeAccessLifecycle({
     required ExchangeCredentials apiKeyRepository,
     required this._readEnvironment,
     required this._platformAllowed,
     required this._disconnectNotifications,
     required this._clearCookies,
-    this._writePreference,
+    required this._readPreference,
+    required this._writePreference,
   }) : _keys = apiKeyRepository;
 
-  static const preferenceKey = 'exchange_access';
   final ExchangeCredentials _keys;
   final Future<bool> Function() _readEnvironment;
   final Future<bool> Function() _platformAllowed;
   final Future<void> Function() _disconnectNotifications;
   final Future<void> Function() _clearCookies;
-  final Future<bool> Function(String)? _writePreference;
+  final Future<Object?> Function() _readPreference;
+  final Future<bool> Function(String) _writePreference;
   final _changes = StreamController<ExchangeAccess>.broadcast(sync: true);
   Future<void> _queue = Future.value();
   ExchangeAccess _current = const ExchangeAccessResolving();
@@ -66,8 +113,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
   }
 
   Future<({bool? enabled, bool pending})> _read() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.get(preferenceKey);
+    final raw = await _readPreference();
     if (raw == null) {
       return (enabled: null, pending: false);
     }
@@ -93,12 +139,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
         'enabled': enabled,
         'signOutPending': pending,
       });
-      final writer = _writePreference;
-      if (writer != null) {
-        return await writer(encoded);
-      }
-      final prefs = await SharedPreferences.getInstance();
-      return await prefs.setString(preferenceKey, encoded);
+      return await _writePreference(encoded);
     } on Exception catch (_) {
       return false;
     }
@@ -351,7 +392,8 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
 
   @override
   Future<Result<void, ExchangeFailure>> completeAuthentication({
-    required ExchangeAuthRepository authRepository,
+    required Future<Result<ExchangeApiKey, ExchangeFailure>> Function()
+    generateApiKey,
     required bool isTestnet,
     required bool Function() isCurrent,
   }) async {
@@ -366,7 +408,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
     } on Exception {
       return const Err(ExchangeAuthenticationFailure());
     }
-    final generated = await authRepository.generateApiKey();
+    final generated = await generateApiKey();
     if (generated case Err(:final failure)) {
       return Err(failure);
     }

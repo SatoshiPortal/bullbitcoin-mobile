@@ -1,6 +1,4 @@
 import 'package:exchange/setup.dart';
-import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
@@ -26,6 +24,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:exchange/exchange.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeLocator {
@@ -45,8 +44,8 @@ class ExchangeLocator {
       );
     }
 
-    locator.registerLazySingleton<ExchangeAccessRepository>(
-      () => ExchangeAccessRepositoryImpl(
+    locator.registerLazySingleton<ExchangeAccessLifecycle>(
+      () => ExchangeAccessLifecycle.open(
         apiKeyRepository: locator<ExchangeCredentials>(),
         readEnvironment: () async =>
             ((await locator<settings_contract.Preferences>().fetch()).fold(
@@ -59,26 +58,34 @@ class ExchangeLocator {
         clearCookies: () async {
           await WebViewCookieManager().clearCookies();
         },
+        readPreference: () async => (await SharedPreferences.getInstance()).get(
+          ExchangeAccessLifecycle.preferenceKey,
+        ),
+        writePreference: (value) async =>
+            (await SharedPreferences.getInstance()).setString(
+              ExchangeAccessLifecycle.preferenceKey,
+              value,
+            ),
       ),
     );
     locator.registerFactory<ResolveExchangeAccessUsecase>(
-      () => ResolveExchangeAccessUsecase(locator<ExchangeAccessRepository>()),
+      () => ResolveExchangeAccessUsecase(locator<ExchangeAccessLifecycle>()),
     );
     locator.registerFactory<EnableExchangeUsecase>(
-      () => EnableExchangeUsecase(locator<ExchangeAccessRepository>()),
+      () => EnableExchangeUsecase(locator<ExchangeAccessLifecycle>()),
     );
     locator.registerFactory<SignOutExchangeUsecase>(
-      () => SignOutExchangeUsecase(locator<ExchangeAccessRepository>()),
+      () => SignOutExchangeUsecase(locator<ExchangeAccessLifecycle>()),
     );
     locator.registerFactory<ExpireExchangeSessionUsecase>(
-      () => ExpireExchangeSessionUsecase(locator<ExchangeAccessRepository>()),
+      () => ExpireExchangeSessionUsecase(locator<ExchangeAccessLifecycle>()),
     );
     locator.registerFactory<WatchExchangeAccessUsecase>(
-      () => WatchExchangeAccessUsecase(locator<ExchangeAccessRepository>()),
+      () => WatchExchangeAccessUsecase(locator<ExchangeAccessLifecycle>()),
     );
     locator.registerFactory<GuardExchangeTradingUsecase>(
       () => GuardExchangeTradingUsecase(
-        locator<ExchangeAccessRepository>(),
+        locator<ExchangeAccessLifecycle>(),
         platformAllowed,
       ),
     );
@@ -110,7 +117,7 @@ class ExchangeLocator {
     locator.registerFactory<GetExchangeAccountUsecase>(
       () => GetExchangeAccountUsecase(
         settingsRepository: locator<Preferences>(),
-        access: locator<ExchangeAccessRepository>(),
+        access: locator<ExchangeAccessLifecycle>(),
         expire: locator<ExpireExchangeSessionUsecase>(),
         exchange: locator<Exchange>(),
       ),
@@ -120,7 +127,7 @@ class ExchangeLocator {
       () => SaveExchangePreferencesUsecase(
         exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
-        access: locator<ExchangeAccessRepository>(),
+        access: locator<ExchangeAccessLifecycle>(),
       ),
     );
 
@@ -128,7 +135,7 @@ class ExchangeLocator {
       () => GetExchangeAnnouncementsUsecase(
         exchange: locator<Exchange>(),
         settingsRepository: locator<Preferences>(),
-        access: locator<ExchangeAccessRepository>(),
+        access: locator<ExchangeAccessLifecycle>(),
       ),
     );
 
@@ -146,7 +153,7 @@ class ExchangeLocator {
             isOpen: session.isOpen,
           ),
         ),
-        access: locator<ExchangeAccessRepository>(),
+        access: locator<ExchangeAccessLifecycle>(),
         isTestnet: session.isTestnet,
       ),
     );
@@ -162,12 +169,12 @@ class ExchangeLocator {
       () => DeleteExchangeAccountUsecase(
         locator<RequestExchangeAccountDeletionUsecase>(),
         locator<SignOutExchangeUsecase>(),
-        locator<ExchangeAccessRepository>(),
+        locator<ExchangeAccessLifecycle>(),
       ),
     );
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
-        access: locator<ExchangeAccessRepository>(),
+        access: locator<ExchangeAccessLifecycle>(),
         settingsRepository: locator<settings_contract.Preferences>(),
         exchange: locator<Exchange>(),
       ),

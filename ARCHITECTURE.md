@@ -345,7 +345,7 @@ The Exchange credential participant owns a separate encrypted schema. It uses th
 
 The startup wizard receives the platform visibility decision from bootstrap before any services are opened. `packages/exchange` owns that pure decision independently of the later exchange access state, and `bull_exchange` renders the option without opening a session. KYC configuration also belongs to `Exchange`; the feature opens the web view with configuration for the active environment only.
 
-`BullExchangeFeature.mount` also contributes the manage-access route under app settings and owns its route-scoped state. The host still supplies the legacy access lifecycle commands and app-level navigation; their platform gate and transactional session cleanup are not duplicated by the screen.
+`BullExchangeFeature.mount` also contributes the manage-access route under app settings and owns its route-scoped state. `packages/exchange` owns the foreground access queue, epoch, and sign-out journal. The host only binds the existing platform preference, cookie cleanup and app navigation; the Wizard applies its pending choice to the same authority through `Exchange.applyInitialChoice`.
 
 The same mount contributes the Funding routes at their original router level. Funding reads its account summary and Confidential SEPA availability directly from `Exchange`. Until the Recipients extraction, the app supplies the existing virtual IBAN funding view, not a forwarding repository.
 

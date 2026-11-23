@@ -1,8 +1,8 @@
+import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:exchange/exchange.dart';
 
-import '../repositories/exchange_access_repository.dart';
 import 'request_exchange_account_deletion_usecase.dart';
 import 'sign_out_exchange_usecase.dart';
 
@@ -16,7 +16,7 @@ class DeleteExchangeAccountUsecase {
   );
   final RequestExchangeAccountDeletionUsecase _request;
   final SignOutExchangeUsecase _signOut;
-  final ExchangeAccessRepository _access;
+  final ExchangeAccessLifecycle _access;
 
   Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
   execute() async {

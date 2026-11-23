@@ -1,4 +1,4 @@
-import '../repositories/exchange_access_repository.dart';
+import 'package:exchange/setup.dart';
 
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 class WatchExchangeNotificationsUsecase {
   final Preferences _settingsRepository;
   final Exchange _exchange;
-  final ExchangeAccessRepository _access;
+  final ExchangeAccessLifecycle _access;
 
   const WatchExchangeNotificationsUsecase({
     required this._exchange,

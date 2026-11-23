@@ -1,8 +1,8 @@
+import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:exchange/exchange.dart';
 
-import '../repositories/exchange_access_repository.dart';
 import '../repositories/exchange_auth_repository.dart';
 
 /// WebView-scoped capability; the repository serializes credential changes.
@@ -14,7 +14,7 @@ class CompleteExchangeAuthenticationUsecase {
   }) : _auth = authRepository;
 
   final ExchangeAuthRepository _auth;
-  final ExchangeAccessRepository _access;
+  final ExchangeAccessLifecycle _access;
   final bool _isTestnet;
   Future<Result<void, ExchangeFailure>>? _inFlight;
 
@@ -22,7 +22,7 @@ class CompleteExchangeAuthenticationUsecase {
     required bool Function() isCurrent,
   }) => _inFlight ??= _access
       .completeAuthentication(
-        authRepository: _auth,
+        generateApiKey: _auth.generateApiKey,
         isTestnet: _isTestnet,
         isCurrent: isCurrent,
       )

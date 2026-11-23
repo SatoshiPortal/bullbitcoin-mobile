@@ -33,6 +33,7 @@ import 'domain/exchange_kyc_configuration.dart';
 import 'domain/exchange_limit_orders.dart';
 import 'domain/exchange_orders.dart';
 import 'domain/exchange_virtual_ibans.dart';
+import 'setup/exchange_access_lifecycle.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -128,6 +129,7 @@ final class Exchange {
   final ExchangeKycConfigurationRepository? _kyc;
   final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
   _getConfidentialSepaAvailability;
+  final ExchangeAccessLifecycle? _access;
 
   const Exchange._(
     this._hasPendingOrders,
@@ -146,6 +148,7 @@ final class Exchange {
     this.virtualIbans,
     this._kyc,
     this._getConfidentialSepaAvailability,
+    this._access,
   );
 
   /// Opens the capability without doing I/O. [readSession] must return an
@@ -159,6 +162,7 @@ final class Exchange {
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
     ExchangeKycSetup? kyc,
+    ExchangeAccessLifecycle? access,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
     testnetEndpoint: testnetEndpoint,
@@ -166,6 +170,7 @@ final class Exchange {
     notifications: notifications,
     paymentReturnUrl: paymentReturnUrl,
     kyc: kyc,
+    access: access,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
       readActiveApiKey: readKey,
@@ -184,6 +189,7 @@ final class Exchange {
     ExchangeNotificationBindings? notifications,
     Uri? paymentReturnUrl,
     ExchangeKycSetup? kyc,
+    ExchangeAccessLifecycle? access,
   }) {
     Future<Result<InventorySession, ExchangeFailure>> sessionSnapshot() async =>
         (await readSession()).map(
@@ -502,8 +508,17 @@ final class Exchange {
               : ConfidentialSepaAvailability.needsVirtualIban,
         );
       }, checkCompletion: true),
+      access,
     );
   }
+
+  /// Applies onboarding's choice only if access has not already been set.
+  @useResult
+  Future<Result<void, ExchangeFailure>> applyInitialChoice(
+    bool enabled,
+  ) async =>
+      await _access?.enable(onlyIfUnset: true, choice: enabled) ??
+      const Err(ExchangeSessionClearFailure());
 
   /// Returns false only after scanning a complete, stable session inventory.
   /// A signed-out account cannot establish absence.
@@ -754,6 +769,7 @@ Exchange exchangeForTesting({
   null,
   getConfidentialSepaAvailability ??
       () => throw StateError('Unexpected Confidential SEPA availability check'),
+  null,
 );
 
 Exchange exchangeWithTransportForTesting({

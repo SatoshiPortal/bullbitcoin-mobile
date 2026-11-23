@@ -10,8 +10,6 @@ import 'package:exchange/setup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:get_it/get_it.dart';
 
-import 'domain/repositories/exchange_access_repository.dart';
-
 class ExchangeLocator {
   /// Supplies point-of-use credentials to legacy recipient clients. The
   /// Exchange package owns the credential record; Secrets owns the keychain.
@@ -34,6 +32,7 @@ class ExchangeLocator {
         mainnetEndpoint: Uri.parse(ApiServiceConstants.bbApiUrl),
         testnetEndpoint: Uri.parse(ApiServiceConstants.bbApiTestUrl),
         paymentReturnUrl: Uri.parse(ApiServiceConstants.bbAppUrl),
+        access: locator<ExchangeAccessLifecycle>(),
         kyc: (
           mainnetUrl: Uri.parse(ApiServiceConstants.bbKycUrl),
           testnetUrl: Uri.parse(ApiServiceConstants.bbKycTestUrl),
@@ -41,7 +40,7 @@ class ExchangeLocator {
         ),
         readSession: () => readLegacyExchangeSession(
           preferences: locator<Preferences>(),
-          readEpoch: () => locator<ExchangeAccessRepository>().epoch,
+          readEpoch: () => locator<ExchangeAccessLifecycle>().epoch,
           readKey: locator<ExchangeCredentials>().readActiveApiKey,
         ),
         notifications: (
