@@ -1848,4 +1848,103 @@ class ExchangeLocalizationsHy extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Հանումները ցուցադրվում են որպես փոխանցում ինքներդ ձեզ՝ ձեր հաշվի անունով';
+
+  @override
+  String get withdrawAmountTitle => 'Հանել ֆիատ';
+
+  @override
+  String get withdrawAmountContinue => 'Շարունակել';
+
+  @override
+  String get withdrawConfirmTitle => 'Հաստատել հանումը';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Ստացողի անուն';
+
+  @override
+  String get withdrawConfirmAmount => 'Գումար';
+
+  @override
+  String get withdrawConfirmEmail => 'Էլ. փոստ';
+
+  @override
+  String get withdrawConfirmPayee => 'Ստացող';
+
+  @override
+  String get withdrawConfirmAccount => 'Հաշիվ';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Հեռախոս';
+
+  @override
+  String get withdrawConfirmCard => 'Քարտ';
+
+  @override
+  String get withdrawConfirmButton => 'Հաստատել հանումը';
+
+  @override
+  String get withdrawSuccessTitle => 'Հանումը սկսվել է';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Պատվերի մանրամասներ';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Բանկային հաշիվ';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Ո՞ւմն է այս հաշիվը';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Սա իմ հաշիվն է';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Սա ուրիշի հաշիվն է';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Դուք նույնականացված չեք։ Խնդրում ենք մուտք գործել՝ շարունակելու համար։';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Նվազագույն գումարը $amount $currency է';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Առավելագույն գումարը $amount $currency է';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Փոխանցման անվտանգության տվյալներ';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Պահպանել այս տվյալները որպես կանխադրված';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Անվտանգության հարցը պետք է պարունակի 3–40 նիշ';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Անվտանգության պատասխանը պետք է պարունակի 3–40 նիշ';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Օգտագործեք տառեր, թվեր կամ գծիկներ՝ առանց բացատների';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Ձեր հանումը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Խնդրում ենք ակտիվացնել գաղտնի վճարման տարբերակը այս SEPA ստացողի համար։';
 }

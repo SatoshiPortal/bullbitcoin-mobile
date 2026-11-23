@@ -1869,4 +1869,104 @@ class ExchangeLocalizationsFr extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Les retraits apparaissent comme un virement à vous-même au nom de votre compte';
+
+  @override
+  String get withdrawAmountTitle => 'Retirer des fonds fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Continuer';
+
+  @override
+  String get withdrawConfirmTitle => 'Confirmer le retrait';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Nom du destinataire';
+
+  @override
+  String get withdrawConfirmAmount => 'Montant';
+
+  @override
+  String get withdrawConfirmEmail => 'Courriel';
+
+  @override
+  String get withdrawConfirmPayee => 'Bénéficiaire';
+
+  @override
+  String get withdrawConfirmAccount => 'Compte';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Téléphone';
+
+  @override
+  String get withdrawConfirmCard => 'Carte';
+
+  @override
+  String get withdrawConfirmButton => 'Confirmer le retrait';
+
+  @override
+  String get withdrawSuccessTitle => 'Retrait initié';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Détails de la commande';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Compte bancaire';
+
+  @override
+  String get withdrawOwnershipQuestion => 'À qui appartient ce compte ?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'C\'est mon compte';
+
+  @override
+  String get withdrawOwnershipOtherAccount =>
+      'C\'est le compte de quelqu\'un d\'autre';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Vous n\'êtes pas authentifié. Veuillez vous connecter pour continuer.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Le montant minimum est $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Le montant maximum est $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Détails de sécurité du virement';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Enregistrer ces renseignements par défaut';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'La question de sécurité doit contenir de 3 à 40 caractères';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'La réponse de sécurité doit contenir de 3 à 40 caractères';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Utilisez des lettres, des chiffres ou des traits d’union sans espaces';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Votre retrait n\'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Veuillez activer l\'option de paiement confidentiel pour ce destinataire SEPA.';
 }

@@ -1826,6 +1826,104 @@ class ExchangeLocalizationsHi extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'निकासी आपके खाते के नाम से खुद को किए गए ट्रांसफ़र के रूप में दिखाई देती है';
+
+  @override
+  String get withdrawAmountTitle => 'वापसी';
+
+  @override
+  String get withdrawAmountContinue => 'जारी';
+
+  @override
+  String get withdrawConfirmTitle => 'वापसी की पुष्टि करें';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Recipient name';
+
+  @override
+  String get withdrawConfirmAmount => 'राशि';
+
+  @override
+  String get withdrawConfirmEmail => 'ईमेल';
+
+  @override
+  String get withdrawConfirmPayee => 'वेतन';
+
+  @override
+  String get withdrawConfirmAccount => 'लेखा';
+
+  @override
+  String get withdrawConfirmIban => 'इब्न';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'फ़ोन';
+
+  @override
+  String get withdrawConfirmCard => 'कार्ड';
+
+  @override
+  String get withdrawConfirmButton => 'वापसी की पुष्टि करें';
+
+  @override
+  String get withdrawSuccessTitle => 'निकासी शुरू';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'ऑर्डर विवरण';
+
+  @override
+  String get withdrawConfirmBankAccount => 'बैंक खाता';
+
+  @override
+  String get withdrawOwnershipQuestion => 'यह कौन है?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'यह मेरा खाता है';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'यह किसी और का खाता है';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।।';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'न्यूनतम राशि है $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'अधिकतम राशि है $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'ट्रांसफर सुरक्षा विवरण';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'इन विवरणों को डिफ़ॉल्ट के रूप में सहेजें';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'सुरक्षा प्रश्न 3–40 अक्षरों का होना चाहिए';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'सुरक्षा उत्तर 3–40 अक्षरों का होना चाहिए';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'बिना स्पेस के अक्षर, अंक या हाइफ़न का उपयोग करें';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'कृपया इस SEPA प्राप्तकर्ता के लिए गोपनीय भुगतान विकल्प सक्रिय करें।';
 }
 
 /// The translations for Hindi, using the Latin script (`hi_Latn`).
@@ -3575,4 +3673,102 @@ class ExchangeLocalizationsHiLatn extends ExchangeLocalizationsHi {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Withdrawals aapke account ke naam se khud ko kiye gaye transfer ke roop mein dikhte hain';
+
+  @override
+  String get withdrawAmountTitle => 'Fiat Withdraw Karo';
+
+  @override
+  String get withdrawAmountContinue => 'Continue';
+
+  @override
+  String get withdrawConfirmTitle => 'Withdrawal Confirm Karo';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Recipient ka naam';
+
+  @override
+  String get withdrawConfirmAmount => 'Amount';
+
+  @override
+  String get withdrawConfirmEmail => 'Email';
+
+  @override
+  String get withdrawConfirmPayee => 'Payee';
+
+  @override
+  String get withdrawConfirmAccount => 'Account';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Phone';
+
+  @override
+  String get withdrawConfirmCard => 'Card';
+
+  @override
+  String get withdrawConfirmButton => 'Withdrawal confirm karo';
+
+  @override
+  String get withdrawSuccessTitle => 'Withdrawal Shuru Hua';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Order details';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Bank account';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Ye account kiska hai?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Ye mera account hai';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Ye kisi aur ka account hai';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Aap authenticated nahi hain. Continue karne ke liye login karo.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Minimum amount hai $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Maximum amount $amount $currency hai';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'Transfer security details';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'In details ko default ke roop mein save karein';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Security question 3-40 characters ka hona chahiye';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Security answer 3-40 characters ka hona chahiye';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Spaces ke bina letters, numbers ya hyphens use karein';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Kripya is SEPA recipient ke liye confidential payment option activate karein.';
 }

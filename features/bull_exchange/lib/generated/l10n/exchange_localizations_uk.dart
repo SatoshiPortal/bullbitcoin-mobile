@@ -1850,4 +1850,101 @@ class ExchangeLocalizationsUk extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Зняття коштів відображаються як переказ самому собі з іменем вашого рахунку';
+
+  @override
+  String get withdrawAmountTitle => 'Зняття фіат';
+
+  @override
+  String get withdrawAmountContinue => 'Продовжити';
+
+  @override
+  String get withdrawConfirmTitle => 'Підтвердження виведення';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Ім\'я одержувача';
+
+  @override
+  String get withdrawConfirmAmount => 'Сума';
+
+  @override
+  String get withdrawConfirmEmail => 'Веб-сайт';
+
+  @override
+  String get withdrawConfirmPayee => 'Оплатити';
+
+  @override
+  String get withdrawConfirmAccount => 'Облік';
+
+  @override
+  String get withdrawConfirmIban => 'ІБАН';
+
+  @override
+  String get withdrawConfirmClabe => 'КЛАБ';
+
+  @override
+  String get withdrawConfirmPhone => 'Зареєструватися';
+
+  @override
+  String get withdrawConfirmCard => 'Карта сайту';
+
+  @override
+  String get withdrawConfirmButton => 'Підтвердження виведення';
+
+  @override
+  String get withdrawSuccessTitle => 'Зняття ініціації';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Деталі замовлення';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Банківський рахунок';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Хто такий обліковий запис належить?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Це мій обліковий запис';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Це чужий рахунок';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Мінімальна сума $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Максимальна сума $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'Дані безпеки переказу';
+
+  @override
+  String get withdrawInteracSaveAsDefault => 'Зберегти ці дані як типові';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Контрольне запитання має містити від 3 до 40 символів';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Контрольна відповідь має містити від 3 до 40 символів';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Використовуйте літери, цифри або дефіси без пробілів';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Ваше виведення коштів наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Будь ласка, активуйте опцію конфіденційного платежу для цього одержувача SEPA.';
 }

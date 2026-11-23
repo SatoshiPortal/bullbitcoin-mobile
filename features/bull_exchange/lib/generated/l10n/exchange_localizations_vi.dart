@@ -1839,4 +1839,103 @@ class ExchangeLocalizationsVi extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Các khoản rút tiền hiển thị như giao dịch chuyển cho chính bạn với tên tài khoản của bạn';
+
+  @override
+  String get withdrawAmountTitle => 'Rút tiền pháp định';
+
+  @override
+  String get withdrawAmountContinue => 'Tiếp tục';
+
+  @override
+  String get withdrawConfirmTitle => 'Xác nhận rút tiền';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Tên người nhận';
+
+  @override
+  String get withdrawConfirmAmount => 'Số tiền';
+
+  @override
+  String get withdrawConfirmEmail => 'Email';
+
+  @override
+  String get withdrawConfirmPayee => 'Người nhận thanh toán';
+
+  @override
+  String get withdrawConfirmAccount => 'Tài khoản';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Điện thoại';
+
+  @override
+  String get withdrawConfirmCard => 'Thẻ';
+
+  @override
+  String get withdrawConfirmButton => 'Xác nhận rút tiền';
+
+  @override
+  String get withdrawSuccessTitle => 'Đã khởi tạo rút tiền';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Chi tiết đơn hàng';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Tài khoản ngân hàng';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Tài khoản này thuộc về ai?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Đây là tài khoản của tôi';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Đây là tài khoản của người khác';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Bạn chưa được xác thực. Vui lòng đăng nhập để tiếp tục.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Số tiền tối thiểu là $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Số tiền tối đa là $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Thông tin bảo mật chuyển khoản';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Lưu các thông tin này làm mặc định';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Câu hỏi bảo mật phải có từ 3 đến 40 ký tự';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Câu trả lời bảo mật phải có từ 3 đến 40 ký tự';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Dùng chữ cái, số hoặc dấu gạch nối và không có khoảng trắng';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Lệnh rút tiền của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Vui lòng kích hoạt tùy chọn thanh toán bảo mật cho người nhận SEPA này.';
 }

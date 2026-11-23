@@ -1849,4 +1849,104 @@ class ExchangeLocalizationsDe extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Auszahlungen erscheinen als Überweisung an Sie selbst mit Ihrem Kontonamen.';
+
+  @override
+  String get withdrawAmountTitle => 'Fiat abheben';
+
+  @override
+  String get withdrawAmountContinue => 'Fortfahren';
+
+  @override
+  String get withdrawConfirmTitle => 'Auszahlung bestätigen';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Empfängername';
+
+  @override
+  String get withdrawConfirmAmount => 'Betrag';
+
+  @override
+  String get withdrawConfirmEmail => 'E-Mail';
+
+  @override
+  String get withdrawConfirmPayee => 'Zahlungsempfänger';
+
+  @override
+  String get withdrawConfirmAccount => 'Konto';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Telefon';
+
+  @override
+  String get withdrawConfirmCard => 'Karte';
+
+  @override
+  String get withdrawConfirmButton => 'Auszahlung bestätigen';
+
+  @override
+  String get withdrawSuccessTitle => 'Abhebung eingeleitet';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Bestelldetails';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Bankkonto';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Wem gehört dieses Konto?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Dies ist mein Konto';
+
+  @override
+  String get withdrawOwnershipOtherAccount =>
+      'Dies ist das Konto einer anderen Person';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Sie sind nicht authentifiziert. Bitte melden Sie sich an, um fortzufahren.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Mindestbetrag ist $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Maximaler Betrag ist $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Sicherheitsdaten für den Transfer';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Diese Angaben als Standard speichern';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Die Sicherheitsfrage muss 3–40 Zeichen lang sein';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Die Sicherheitsantwort muss 3–40 Zeichen lang sein';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Verwenden Sie Buchstaben, Zahlen oder Bindestriche ohne Leerzeichen.';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Bitte aktivieren Sie die vertrauliche Zahlungsoption für diesen SEPA-Empfänger.';
 }

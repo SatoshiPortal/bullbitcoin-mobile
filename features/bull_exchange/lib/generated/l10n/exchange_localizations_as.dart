@@ -1830,4 +1830,102 @@ class ExchangeLocalizationsAs extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'উত্তোলনসমূহ আপোনাৰ একাউণ্টৰ নামত নিজৰ একাউণ্টলৈ কৰা স্থানান্তৰ হিচাপে দেখা যায়';
+
+  @override
+  String get withdrawAmountTitle => 'Fiat উঠাওক';
+
+  @override
+  String get withdrawAmountContinue => 'অব্যাহত ৰাখক';
+
+  @override
+  String get withdrawConfirmTitle => 'উঠোৱা নিশ্চিত কৰক';
+
+  @override
+  String get withdrawConfirmRecipientName => 'প্ৰাপকৰ নাম';
+
+  @override
+  String get withdrawConfirmAmount => 'পৰিমাণ';
+
+  @override
+  String get withdrawConfirmEmail => 'ইমেইল';
+
+  @override
+  String get withdrawConfirmPayee => 'পাওনাদাৰ';
+
+  @override
+  String get withdrawConfirmAccount => 'একাউণ্ট';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'ফোন';
+
+  @override
+  String get withdrawConfirmCard => 'কাৰ্ড';
+
+  @override
+  String get withdrawConfirmButton => 'উঠোৱা নিশ্চিত কৰক';
+
+  @override
+  String get withdrawSuccessTitle => 'উত্তোলন আৰম্ভ হৈছে';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'অৰ্ডাৰৰ বিৱৰণ';
+
+  @override
+  String get withdrawConfirmBankAccount => 'বেংক একাউণ্ট';
+
+  @override
+  String get withdrawOwnershipQuestion => 'এই একাউণ্ট কাৰ?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'এইটো মোৰ একাউণ্ট';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'এইটো আন কাৰোবাৰ একাউণ্ট';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'ন্যূনতম পৰিমাণ হ\'ল $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'সৰ্বোচ্চ পৰিমাণ হ\'ল $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'ট্ৰান্সফাৰৰ সুৰক্ষা বিৱৰণ';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'এই বিৱৰণসমূহ ডিফল্ট হিচাপে সংৰক্ষণ কৰক';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'সুৰক্ষা প্ৰশ্ন 3-40টা আখৰৰ হ’ব লাগিব';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'সুৰক্ষা উত্তৰ 3-40টা আখৰৰ হ’ব লাগিব';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'খালী ঠাই নিদিয়াকৈ আখৰ, সংখ্যা বা হাইফেন ব্যৱহাৰ কৰক';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ\'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'অনুগ্ৰহ কৰি এই SEPA প্ৰাপকৰ বাবে গোপনীয় পেমেণ্ট বিকল্পটো সক্ৰিয় কৰক।';
 }

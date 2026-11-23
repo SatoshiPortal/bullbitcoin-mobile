@@ -1869,4 +1869,103 @@ class ExchangeLocalizationsEs extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Los retiros aparecen como una transferencia a ti mismo con el nombre de tu cuenta';
+
+  @override
+  String get withdrawAmountTitle => 'Retirar fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Continuar';
+
+  @override
+  String get withdrawConfirmTitle => 'Confirmar retiro';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Nombre del destinatario';
+
+  @override
+  String get withdrawConfirmAmount => 'Monto';
+
+  @override
+  String get withdrawConfirmEmail => 'Correo electrónico';
+
+  @override
+  String get withdrawConfirmPayee => 'Beneficiario';
+
+  @override
+  String get withdrawConfirmAccount => 'Cuenta';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Teléfono';
+
+  @override
+  String get withdrawConfirmCard => 'Tarjeta';
+
+  @override
+  String get withdrawConfirmButton => 'Confirmar retiro';
+
+  @override
+  String get withdrawSuccessTitle => 'Retiro iniciado';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Detalles del pedido';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Cuenta bancaria';
+
+  @override
+  String get withdrawOwnershipQuestion => '¿A quién pertenece esta cuenta?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Es mi cuenta';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Es la cuenta de otra persona';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'No está autenticado. Por favor, inicie sesión para continuar.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'La cantidad mínima es $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'La cantidad máxima es $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Detalles de seguridad de la transferencia';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Guardar estos datos como predeterminados';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'La pregunta de seguridad debe tener entre 3 y 40 caracteres';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'La respuesta de seguridad debe tener entre 3 y 40 caracteres';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Usa letras, números o guiones sin espacios';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Su retiro no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Activa la opción de pago confidencial para este destinatario SEPA.';
 }

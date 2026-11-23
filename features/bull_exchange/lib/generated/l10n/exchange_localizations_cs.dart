@@ -1823,4 +1823,102 @@ class ExchangeLocalizationsCs extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu';
+
+  @override
+  String get withdrawAmountTitle => 'Sdraw fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Pokračovat';
+
+  @override
+  String get withdrawConfirmTitle => 'Potvrzení výběru';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Název příjemce';
+
+  @override
+  String get withdrawConfirmAmount => 'Množství';
+
+  @override
+  String get withdrawConfirmEmail => 'E-mail';
+
+  @override
+  String get withdrawConfirmPayee => 'Čeština';
+
+  @override
+  String get withdrawConfirmAccount => 'Heslo';
+
+  @override
+  String get withdrawConfirmIban => 'ČEŠTINA';
+
+  @override
+  String get withdrawConfirmClabe => 'ČEŠTINA';
+
+  @override
+  String get withdrawConfirmPhone => 'Čeština';
+
+  @override
+  String get withdrawConfirmCard => 'Čeština';
+
+  @override
+  String get withdrawConfirmButton => 'Potvrzení výběru';
+
+  @override
+  String get withdrawSuccessTitle => 'Odstoupení Initiated';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Detaily objednávky';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Bankovní účet';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Kdo má tento účet?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Můj účet';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'To je někdo jiný účet';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Nejste autentická. Přihlaste se a pokračujte.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Minimální částka je $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Maximální částka je $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Bezpečnostní údaje převodu';
+
+  @override
+  String get withdrawInteracSaveAsDefault => 'Uložit tyto údaje jako výchozí';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Bezpečnostní otázka musí mít 3–40 znaků';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Bezpečnostní odpověď musí mít 3–40 znaků';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Použijte písmena, číslice nebo spojovníky bez mezer';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Aktivujte prosím možnost důvěrné platby pro tohoto příjemce SEPA.';
 }

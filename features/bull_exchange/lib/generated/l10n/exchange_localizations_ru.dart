@@ -1845,4 +1845,103 @@ class ExchangeLocalizationsRu extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Выводы средств отображаются как перевод самому себе с именем вашего счёта';
+
+  @override
+  String get withdrawAmountTitle => 'Цикл:';
+
+  @override
+  String get withdrawAmountContinue => 'Продолжить';
+
+  @override
+  String get withdrawConfirmTitle => 'Подтвердить вывод';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Имя получателя';
+
+  @override
+  String get withdrawConfirmAmount => 'Сумма';
+
+  @override
+  String get withdrawConfirmEmail => 'Email';
+
+  @override
+  String get withdrawConfirmPayee => 'Payee';
+
+  @override
+  String get withdrawConfirmAccount => 'Счет';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Телефон';
+
+  @override
+  String get withdrawConfirmCard => 'Карта';
+
+  @override
+  String get withdrawConfirmButton => 'Подтвердить вывод';
+
+  @override
+  String get withdrawSuccessTitle => 'Вывод';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Детали заказа';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Банковский счет';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Кому принадлежит этот счет?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Это мой счет';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Это чей-то счет';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Вы не проверены. Пожалуйста, зайдите, чтобы продолжить.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Минимальная сумма $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Максимальная сумма $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Данные безопасности перевода';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Сохранить эти данные по умолчанию';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Контрольный вопрос должен содержать от 3 до 40 символов';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Контрольный ответ должен содержать от 3 до 40 символов';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Используйте буквы, цифры или дефисы без пробелов';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Пожалуйста, активируйте опцию конфиденциального платежа для этого получателя SEPA.';
 }

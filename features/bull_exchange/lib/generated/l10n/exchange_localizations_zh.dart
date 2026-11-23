@@ -1679,4 +1679,96 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       '提现将显示为使用您账户名称的本人账户间转账';
+
+  @override
+  String get withdrawAmountTitle => '2. 草签';
+
+  @override
+  String get withdrawAmountContinue => '继续';
+
+  @override
+  String get withdrawConfirmTitle => '2. 肯定撤回';
+
+  @override
+  String get withdrawConfirmRecipientName => '客户名称';
+
+  @override
+  String get withdrawConfirmAmount => '数额';
+
+  @override
+  String get withdrawConfirmEmail => '电子邮件';
+
+  @override
+  String get withdrawConfirmPayee => '收款人';
+
+  @override
+  String get withdrawConfirmAccount => '账户';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => '电话';
+
+  @override
+  String get withdrawConfirmCard => '文件';
+
+  @override
+  String get withdrawConfirmButton => '2. 肯定撤回';
+
+  @override
+  String get withdrawSuccessTitle => '撤回';
+
+  @override
+  String get withdrawSuccessOrderDetails => '命令细节';
+
+  @override
+  String get withdrawConfirmBankAccount => '银行帐户';
+
+  @override
+  String get withdrawOwnershipQuestion => '这一账户属于谁?';
+
+  @override
+  String get withdrawOwnershipMyAccount => '这是我的说法';
+
+  @override
+  String get withdrawOwnershipOtherAccount => '这是他人的陈述';
+
+  @override
+  String get withdrawUnauthenticatedError => '你没有认证。 请继续发言.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return '最低数额为$amount$currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return '最高限额为$amount$currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => '转账安全信息';
+
+  @override
+  String get withdrawInteracSaveAsDefault => '将这些信息保存为默认值';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError => '安全问题必须为 3–40 个字符';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError => '安全答案必须为 3–40 个字符';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError => '请使用字母、数字或连字符，不能包含空格';
+
+  @override
+  String get withdrawUnexpectedError => '您的提现当前无法完成。请重试或联系客服。';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      '请为此 SEPA 收件人激活保密付款选项。';
 }

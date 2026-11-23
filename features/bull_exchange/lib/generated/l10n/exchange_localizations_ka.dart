@@ -1850,4 +1850,103 @@ class ExchangeLocalizationsKa extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'გატანილი თანხები გამოჩნდება როგორც საკუთარ ანგარიშზე გადარიცხვა თქვენი ანგარიშის სახელით';
+
+  @override
+  String get withdrawAmountTitle => 'ფიატის გატანა';
+
+  @override
+  String get withdrawAmountContinue => 'გაგრძელება';
+
+  @override
+  String get withdrawConfirmTitle => 'გატანის დადასტურება';
+
+  @override
+  String get withdrawConfirmRecipientName => 'მიმღების სახელი';
+
+  @override
+  String get withdrawConfirmAmount => 'თანხა';
+
+  @override
+  String get withdrawConfirmEmail => 'ელფოსტა';
+
+  @override
+  String get withdrawConfirmPayee => 'გადამხდელი';
+
+  @override
+  String get withdrawConfirmAccount => 'ანგარიში';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'ტელეფონი';
+
+  @override
+  String get withdrawConfirmCard => 'ბარათი';
+
+  @override
+  String get withdrawConfirmButton => 'გატანის დადასტურება';
+
+  @override
+  String get withdrawSuccessTitle => 'გატანა დაწყებულია';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'შეკვეთის დეტალები';
+
+  @override
+  String get withdrawConfirmBankAccount => 'საბანკო ანგარიში';
+
+  @override
+  String get withdrawOwnershipQuestion => 'ვის ეკუთვნის ეს ანგარიში?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'ეს ჩემი ანგარიშია';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'ეს სხვის ანგარიშია';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'თქვენ არ ხართ ავტორიზებული. გასაგრძელებლად გთხოვთ, შეხვიდეთ სისტემაში.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'მინიმალური თანხაა $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'მაქსიმალური თანხაა $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'გადარიცხვის უსაფრთხოების დეტალები';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'შეინახეთ ეს დეტალები ნაგულისხმევად';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'უსაფრთხოების კითხვა უნდა შეიცავდეს 3–40 სიმბოლოს';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'უსაფრთხოების პასუხი უნდა შეიცავდეს 3–40 სიმბოლოს';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'გამოიყენეთ ასოები, ციფრები ან დეფისები გამოტოვებების გარეშე';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'გთხოვთ, გაააქტიუროთ კონფიდენციალური გადახდის ვარიანტი ამ SEPA მიმღებისთვის.';
 }

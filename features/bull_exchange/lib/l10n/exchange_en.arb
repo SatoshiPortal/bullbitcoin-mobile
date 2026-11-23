@@ -2169,5 +2169,137 @@
   "recipientsTypeConfidentialSepaDescription": "Withdrawals appear as a self-transfer with your account name",
   "@recipientsTypeConfidentialSepaDescription": {
     "description": "Explanation of Confidential SEPA in the payout method selector"
+  },
+  "withdrawAmountTitle": "Withdraw fiat",
+  "@withdrawAmountTitle": {
+    "description": "AppBar title for withdraw amount screen"
+  },
+  "withdrawAmountContinue": "Continue",
+  "@withdrawAmountContinue": {
+    "description": "Continue button on amount screen"
+  },
+  "withdrawConfirmTitle": "Confirm withdrawal",
+  "@withdrawConfirmTitle": {
+    "description": "Title on confirmation screen"
+  },
+  "withdrawConfirmRecipientName": "Recipient name",
+  "@withdrawConfirmRecipientName": {
+    "description": "Field label for recipient name"
+  },
+  "withdrawConfirmAmount": "Amount",
+  "@withdrawConfirmAmount": {
+    "description": "Field label for withdrawal amount"
+  },
+  "withdrawConfirmEmail": "Email",
+  "@withdrawConfirmEmail": {
+    "description": "Field label for email (Interac)"
+  },
+  "withdrawConfirmPayee": "Payee",
+  "@withdrawConfirmPayee": {
+    "description": "Field label for payee (Bill Payment)"
+  },
+  "withdrawConfirmAccount": "Account",
+  "@withdrawConfirmAccount": {
+    "description": "Field label for bank account"
+  },
+  "withdrawConfirmIban": "IBAN",
+  "@withdrawConfirmIban": {
+    "description": "Field label for IBAN"
+  },
+  "withdrawConfirmClabe": "CLABE",
+  "@withdrawConfirmClabe": {
+    "description": "Field label for CLABE (Mexico)"
+  },
+  "withdrawConfirmPhone": "Phone",
+  "@withdrawConfirmPhone": {
+    "description": "Field label for phone number"
+  },
+  "withdrawConfirmCard": "Card",
+  "@withdrawConfirmCard": {
+    "description": "Field label for debit card"
+  },
+  "withdrawConfirmButton": "Confirm withdrawal",
+  "@withdrawConfirmButton": {
+    "description": "Button to confirm withdrawal"
+  },
+  "withdrawSuccessTitle": "Withdrawal Initiated",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "withdrawSuccessOrderDetails": "Order details",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawConfirmBankAccount": "Bank account",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "withdrawOwnershipQuestion": "Who does this account belong to?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "withdrawOwnershipMyAccount": "This is my account",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "withdrawOwnershipOtherAccount": "This is someone else's account",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
+  },
+  "withdrawUnauthenticatedError": "You are not authenticated. Please log in to continue.",
+  "@withdrawUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during withdraw"
+  },
+  "withdrawBelowMinAmountError": "Minimum amount is {amount} {currency}",
+  "@withdrawBelowMinAmountError": {
+    "description": "Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "withdrawAboveMaxAmountError": "Maximum amount is {amount} {currency}",
+  "@withdrawAboveMaxAmountError": {
+    "description": "Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "withdrawInteracSecurityDetailsTitle": "Transfer security details",
+  "@withdrawInteracSecurityDetailsTitle": {
+    "description": "Title for the email money transfer security question and answer screen."
+  },
+  "withdrawInteracSaveAsDefault": "Save these details as default",
+  "@withdrawInteracSaveAsDefault": {
+    "description": "Checkbox label for saving Interac security details on the recipient."
+  },
+  "withdrawInteracSecurityQuestionLengthError": "Security question must be 3-40 characters",
+  "@withdrawInteracSecurityQuestionLengthError": {
+    "description": "Validation error for an Interac security question outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerLengthError": "Security answer must be 3-40 characters",
+  "@withdrawInteracSecurityAnswerLengthError": {
+    "description": "Validation error for an Interac security answer outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerFormatError": "Use letters, numbers, or hyphens without spaces",
+  "@withdrawInteracSecurityAnswerFormatError": {
+    "description": "Validation error for unsupported Interac security answer characters."
+  },
+  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
+  "@withdrawUnexpectedError": {
+    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
+  },
+  "withdrawConfidentialSepaNotActivatedError": "Please activate the confidential payment option for this SEPA recipient.",
+  "@withdrawConfidentialSepaNotActivatedError": {
+    "description": "Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered"
   }
 }

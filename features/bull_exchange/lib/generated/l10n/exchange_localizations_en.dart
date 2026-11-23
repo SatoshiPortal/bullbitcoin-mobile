@@ -1823,4 +1823,101 @@ class ExchangeLocalizationsEn extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Withdrawals appear as a self-transfer with your account name';
+
+  @override
+  String get withdrawAmountTitle => 'Withdraw fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Continue';
+
+  @override
+  String get withdrawConfirmTitle => 'Confirm withdrawal';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Recipient name';
+
+  @override
+  String get withdrawConfirmAmount => 'Amount';
+
+  @override
+  String get withdrawConfirmEmail => 'Email';
+
+  @override
+  String get withdrawConfirmPayee => 'Payee';
+
+  @override
+  String get withdrawConfirmAccount => 'Account';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Phone';
+
+  @override
+  String get withdrawConfirmCard => 'Card';
+
+  @override
+  String get withdrawConfirmButton => 'Confirm withdrawal';
+
+  @override
+  String get withdrawSuccessTitle => 'Withdrawal Initiated';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Order details';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Bank account';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Who does this account belong to?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'This is my account';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'This is someone else\'s account';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'You are not authenticated. Please log in to continue.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Minimum amount is $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Maximum amount is $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'Transfer security details';
+
+  @override
+  String get withdrawInteracSaveAsDefault => 'Save these details as default';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Security question must be 3-40 characters';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Security answer must be 3-40 characters';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Use letters, numbers, or hyphens without spaces';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Your withdrawal could not be completed right now. Please try again or contact support.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Please activate the confidential payment option for this SEPA recipient.';
 }

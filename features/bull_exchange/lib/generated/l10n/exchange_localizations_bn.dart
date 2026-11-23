@@ -1835,4 +1835,103 @@ class ExchangeLocalizationsBn extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'উত্তোলনগুলি আপনার অ্যাকাউন্টের নামে নিজের অ্যাকাউন্টে স্থানান্তর হিসেবে দেখা যায়';
+
+  @override
+  String get withdrawAmountTitle => 'ফিয়াট উত্তোলন';
+
+  @override
+  String get withdrawAmountContinue => 'চালিয়ে যান';
+
+  @override
+  String get withdrawConfirmTitle => 'উত্তোলন নিশ্চিত করুন';
+
+  @override
+  String get withdrawConfirmRecipientName => 'প্রাপক নাম';
+
+  @override
+  String get withdrawConfirmAmount => 'পরিমাণ';
+
+  @override
+  String get withdrawConfirmEmail => 'ইমেইল';
+
+  @override
+  String get withdrawConfirmPayee => 'প্রাপক';
+
+  @override
+  String get withdrawConfirmAccount => 'হিসাব';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'ফোন';
+
+  @override
+  String get withdrawConfirmCard => 'কার্ড';
+
+  @override
+  String get withdrawConfirmButton => 'উত্তোলন নিশ্চিত করুন';
+
+  @override
+  String get withdrawSuccessTitle => 'উত্তোলন শুরু হয়েছে';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'অর্ডারের বিবরণ';
+
+  @override
+  String get withdrawConfirmBankAccount => 'ব্যাংক অ্যাকাউন্ট';
+
+  @override
+  String get withdrawOwnershipQuestion => 'এই অ্যাকাউন্টটি কার?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'এটি আমার অ্যাকাউন্ট';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'এটি অন্য কারও অ্যাকাউন্ট';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'ন্যূনতম পরিমাণ হলো $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'সর্বোচ্চ পরিমাণ হলো $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'ট্রান্সফারের নিরাপত্তার বিবরণ';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'এই বিবরণগুলো ডিফল্ট হিসেবে সংরক্ষণ করুন';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'নিরাপত্তা প্রশ্ন 3-40 অক্ষরের হতে হবে';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'নিরাপত্তা উত্তর 3-40 অক্ষরের হতে হবে';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'স্পেস ছাড়া অক্ষর, সংখ্যা বা হাইফেন ব্যবহার করুন';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'অনুগ্রহ করে এই SEPA প্রাপকের জন্য গোপনীয় পেমেন্ট বিকল্পটি সক্রিয় করুন।';
 }

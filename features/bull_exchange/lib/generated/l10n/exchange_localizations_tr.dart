@@ -1830,4 +1830,103 @@ class ExchangeLocalizationsTr extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür';
+
+  @override
+  String get withdrawAmountTitle => 'Withdraw fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Devam etmeye devam et';
+
+  @override
+  String get withdrawConfirmTitle => 'Onay';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Recipient name';
+
+  @override
+  String get withdrawConfirmAmount => '\$';
+
+  @override
+  String get withdrawConfirmEmail => 'E-posta e-posta e-posta';
+
+  @override
+  String get withdrawConfirmPayee => 'Paye';
+
+  @override
+  String get withdrawConfirmAccount => 'Hesap Hesabı';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Telefon';
+
+  @override
+  String get withdrawConfirmCard => 'Kart Kartı';
+
+  @override
+  String get withdrawConfirmButton => 'Onay';
+
+  @override
+  String get withdrawSuccessTitle => 'Withdrawal Initiated';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Sipariş detayları';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Banka hesabı';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Bu hesap kime ait?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Bu benim hesabım';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Bu başka birinin hesabı';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Minimum miktar $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'En fazla miktarı $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Transfer güvenlik bilgileri';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Bu bilgileri varsayılan olarak kaydet';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Güvenlik sorusu 3–40 karakter olmalıdır';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Güvenlik cevabı 3–40 karakter olmalıdır';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Boşluk kullanmadan harf, rakam veya kısa çizgi kullanın';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Lütfen bu SEPA alıcısı için gizli ödeme seçeneğini etkinleştirin.';
 }

@@ -1829,4 +1829,101 @@ class ExchangeLocalizationsFi extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Nostot näkyvät siirtoina itsellesi tilisi nimellä';
+
+  @override
+  String get withdrawAmountTitle => 'Nosta varoja tililtäsi';
+
+  @override
+  String get withdrawAmountContinue => 'Jatka';
+
+  @override
+  String get withdrawConfirmTitle => 'Vahvista nosto';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Vastaanottajan nimi';
+
+  @override
+  String get withdrawConfirmAmount => 'Määrä';
+
+  @override
+  String get withdrawConfirmEmail => 'Sähköposti';
+
+  @override
+  String get withdrawConfirmPayee => 'Saaja';
+
+  @override
+  String get withdrawConfirmAccount => 'Tili';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Puhelin';
+
+  @override
+  String get withdrawConfirmCard => 'Kortti';
+
+  @override
+  String get withdrawConfirmButton => 'Vahvista nosto';
+
+  @override
+  String get withdrawSuccessTitle => 'Nosto aloitettu';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Tilaustiedot';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Pankkitili';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Kenen tili tämä on?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Tämä on minun tilini';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Tämä on jonkun toisen tili';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Minimimäärä on $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Maksimimäärä on $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'Siirron turvatiedot';
+
+  @override
+  String get withdrawInteracSaveAsDefault => 'Tallenna nämä tiedot oletukseksi';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Turvakysymyksen pituuden on oltava 3–40 merkkiä';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Turvavastauksen pituuden on oltava 3–40 merkkiä';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Käytä kirjaimia, numeroita tai yhdysmerkkejä ilman välilyöntejä';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Aktivoi luottamuksellinen maksuvaihtoehto tälle SEPA-vastaanottajalle.';
 }

@@ -1728,4 +1728,98 @@ class ExchangeLocalizationsKo extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       '출금 내역은 본인 계좌명으로 자신에게 이체한 것으로 표시됩니다';
+
+  @override
+  String get withdrawAmountTitle => '인출 fiat';
+
+  @override
+  String get withdrawAmountContinue => '계속하기';
+
+  @override
+  String get withdrawConfirmTitle => '자주 묻는 질문';
+
+  @override
+  String get withdrawConfirmRecipientName => '이름 *';
+
+  @override
+  String get withdrawConfirmAmount => '계정 정보';
+
+  @override
+  String get withdrawConfirmEmail => '이름 *';
+
+  @override
+  String get withdrawConfirmPayee => '결제하기';
+
+  @override
+  String get withdrawConfirmAccount => '계좌정보';
+
+  @override
+  String get withdrawConfirmIban => '아이반';
+
+  @override
+  String get withdrawConfirmClabe => '사이트맵';
+
+  @override
+  String get withdrawConfirmPhone => '이름 *';
+
+  @override
+  String get withdrawConfirmCard => '(주)';
+
+  @override
+  String get withdrawConfirmButton => '자주 묻는 질문';
+
+  @override
+  String get withdrawSuccessTitle => '출금 개시';
+
+  @override
+  String get withdrawSuccessOrderDetails => '자주 묻는 질문';
+
+  @override
+  String get withdrawConfirmBankAccount => '은행 계좌';
+
+  @override
+  String get withdrawOwnershipQuestion => '이 계정은 누구에게 속합니까?';
+
+  @override
+  String get withdrawOwnershipMyAccount => '내 계정';
+
+  @override
+  String get withdrawOwnershipOtherAccount => '이것은 다른 사람의 계정입니다';
+
+  @override
+  String get withdrawUnauthenticatedError => '인증되지 않습니다. 자주 묻는 질문.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return '최소 금액은 $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return '최대 금액은 $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => '송금 보안 정보';
+
+  @override
+  String get withdrawInteracSaveAsDefault => '이 정보를 기본값으로 저장';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError => '보안 질문은 3~40자여야 합니다';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError => '보안 답변은 3~40자여야 합니다';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      '공백 없이 문자, 숫자 또는 하이픈을 사용하세요';
+
+  @override
+  String get withdrawUnexpectedError =>
+      '출금을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      '이 SEPA 수신자에 대해 기밀 결제 옵션을 활성화해 주세요.';
 }

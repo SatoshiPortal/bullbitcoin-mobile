@@ -1855,4 +1855,103 @@ class ExchangeLocalizationsBg extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Тегленията се показват като превод към вас самите с името на вашата сметка';
+
+  @override
+  String get withdrawAmountTitle => 'Тегли фиат';
+
+  @override
+  String get withdrawAmountContinue => 'Продължи';
+
+  @override
+  String get withdrawConfirmTitle => 'Потвърди тегленето';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Име на получателя';
+
+  @override
+  String get withdrawConfirmAmount => 'Сума';
+
+  @override
+  String get withdrawConfirmEmail => 'Имейл';
+
+  @override
+  String get withdrawConfirmPayee => 'Получател на плащане';
+
+  @override
+  String get withdrawConfirmAccount => 'Сметка';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Телефон';
+
+  @override
+  String get withdrawConfirmCard => 'Карта';
+
+  @override
+  String get withdrawConfirmButton => 'Потвърди тегленето';
+
+  @override
+  String get withdrawSuccessTitle => 'Тегленето е инициирано';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Детайли за поръчката';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Банкова сметка';
+
+  @override
+  String get withdrawOwnershipQuestion => 'На кого принадлежи тази сметка?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Това е моята сметка';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Това е сметка на друго лице';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Не сте удостоверени. Моля, влезте, за да продължите.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Минимална сума е $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Максимална сума е $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Данни за сигурност на превода';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Запази тези данни по подразбиране';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Контролният въпрос трябва да е между 3 и 40 знака';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Контролният отговор трябва да е между 3 и 40 знака';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Използвайте букви, цифри или тирета без интервали';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Моля, активирайте опцията за поверително плащане за този получател по SEPA.';
 }

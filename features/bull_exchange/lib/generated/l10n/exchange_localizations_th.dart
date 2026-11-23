@@ -1794,4 +1794,102 @@ class ExchangeLocalizationsTh extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'รายการถอนเงินจะแสดงเป็นการโอนให้ตัวเองโดยใช้ชื่อบัญชีของคุณ';
+
+  @override
+  String get withdrawAmountTitle => 'ถอน';
+
+  @override
+  String get withdrawAmountContinue => 'อ่านต่อ';
+
+  @override
+  String get withdrawConfirmTitle => 'การถอนเงิน';
+
+  @override
+  String get withdrawConfirmRecipientName => 'ชื่อ';
+
+  @override
+  String get withdrawConfirmAmount => 'จํานวน';
+
+  @override
+  String get withdrawConfirmEmail => 'อีเมล';
+
+  @override
+  String get withdrawConfirmPayee => 'ชําระเงิน';
+
+  @override
+  String get withdrawConfirmAccount => 'บัญชี';
+
+  @override
+  String get withdrawConfirmIban => 'ฉัน';
+
+  @override
+  String get withdrawConfirmClabe => 'ชั้น';
+
+  @override
+  String get withdrawConfirmPhone => 'โทรศัพท์';
+
+  @override
+  String get withdrawConfirmCard => 'บัตรบัตร';
+
+  @override
+  String get withdrawConfirmButton => 'การถอนเงิน';
+
+  @override
+  String get withdrawSuccessTitle => 'การถอนเงิน';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'รายละเอียด';
+
+  @override
+  String get withdrawConfirmBankAccount => 'บัญชีธนาคาร';
+
+  @override
+  String get withdrawOwnershipQuestion => 'ใครเป็นบัญชีนี้?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'นี่คือบัญชีของฉัน';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'นี่คือบัญชีอื่น ๆ';
+
+  @override
+  String get withdrawUnauthenticatedError => 'คุณไม่ได้ กรุณาเข้าสู่ระบบ.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'จำนวนขั้นต่ำคือ $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'จำนวนสูงสุดคือ $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'รายละเอียดความปลอดภัยของการโอน';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'บันทึกรายละเอียดเหล่านี้เป็นค่าเริ่มต้น';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'คำถามความปลอดภัยต้องมี 3–40 อักขระ';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'คำตอบความปลอดภัยต้องมี 3–40 อักขระ';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'ใช้ตัวอักษร ตัวเลข หรือยัติภังค์โดยไม่เว้นวรรค';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'โปรดเปิดใช้งานตัวเลือกการชำระเงินแบบเป็นความลับสำหรับผู้รับเงิน SEPA รายนี้';
 }

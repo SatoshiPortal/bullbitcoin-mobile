@@ -1810,4 +1810,102 @@ class ExchangeLocalizationsFa extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند';
+
+  @override
+  String get withdrawAmountTitle => 'با استفاده از فیات';
+
+  @override
+  String get withdrawAmountContinue => 'ادامه';
+
+  @override
+  String get withdrawConfirmTitle => 'تایید خروج';
+
+  @override
+  String get withdrawConfirmRecipientName => 'نام اضطراری';
+
+  @override
+  String get withdrawConfirmAmount => 'مبلغ';
+
+  @override
+  String get withdrawConfirmEmail => 'ایمیل';
+
+  @override
+  String get withdrawConfirmPayee => 'پرداخت';
+
+  @override
+  String get withdrawConfirmAccount => 'حساب';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'تلفن همراه';
+
+  @override
+  String get withdrawConfirmCard => 'کارت';
+
+  @override
+  String get withdrawConfirmButton => 'تایید خروج';
+
+  @override
+  String get withdrawSuccessTitle => 'خروج اجباری';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'جزئیات سفارش';
+
+  @override
+  String get withdrawConfirmBankAccount => 'حساب بانکی';
+
+  @override
+  String get withdrawOwnershipQuestion => 'این حساب به چه کسی تعلق دارد؟?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'این حساب من است';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'این حساب شخص دیگری است';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'شما معتبر نیستید. لطفا برای ادامه وارد شوید.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'حداقل مقدار $amount $currency است';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'حداکثر مقدار $amount $currency است';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'جزئیات امنیتی انتقال';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'ذخیره این جزئیات به‌عنوان پیش‌فرض';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'پرسش امنیتی باید ۳ تا ۴۰ نویسه باشد';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'پاسخ امنیتی باید ۳ تا ۴۰ نویسه باشد';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'از حروف، اعداد یا خط تیره بدون فاصله استفاده کنید';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'لطفاً گزینه پرداخت محرمانه را برای این گیرنده SEPA فعال کنید.';
 }

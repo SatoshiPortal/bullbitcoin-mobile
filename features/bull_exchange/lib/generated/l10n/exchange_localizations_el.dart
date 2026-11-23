@@ -1868,4 +1868,105 @@ class ExchangeLocalizationsEl extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας';
+
+  @override
+  String get withdrawAmountTitle => 'Mdraw fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Συνεχίστε να συνεχίζετε';
+
+  @override
+  String get withdrawConfirmTitle => 'Επιβεβαίωση απόσυρσης';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Μαθητές όνομα';
+
+  @override
+  String get withdrawConfirmAmount => 'Ποσο Ποσό Ποσο';
+
+  @override
+  String get withdrawConfirmEmail => 'E-mail email';
+
+  @override
+  String get withdrawConfirmPayee => 'Payee';
+
+  @override
+  String get withdrawConfirmAccount => 'Λογαριασμός';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Phone';
+
+  @override
+  String get withdrawConfirmCard => 'Card';
+
+  @override
+  String get withdrawConfirmButton => 'Επιβεβαίωση απόσυρσης';
+
+  @override
+  String get withdrawSuccessTitle => 'Απόσυρση';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Διατάξει λεπτομέρειες';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Τραπεζικό λογαριασμό';
+
+  @override
+  String get withdrawOwnershipQuestion =>
+      'Ποιος ανήκει σε αυτόν τον λογαριασμό?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Αυτός είναι ο λογαριασμός μου';
+
+  @override
+  String get withdrawOwnershipOtherAccount =>
+      'Αυτός είναι ο λογαριασμός κάποιου άλλου';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Ελάχιστη ποσότητα είναι $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Μέγιστη ποσότητα είναι $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Στοιχεία ασφαλείας μεταφοράς';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Αποθήκευση αυτών των στοιχείων ως προεπιλογή';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Η ερώτηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Η απάντηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Χρησιμοποιήστε γράμματα, αριθμούς ή παύλες χωρίς κενά';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Ενεργοποιήστε την επιλογή εμπιστευτικής πληρωμής για αυτόν τον παραλήπτη SEPA.';
 }

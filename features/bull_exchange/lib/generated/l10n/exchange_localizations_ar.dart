@@ -1797,4 +1797,101 @@ class ExchangeLocalizationsAr extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك';
+
+  @override
+  String get withdrawAmountTitle => 'ازدراء';
+
+  @override
+  String get withdrawAmountContinue => 'استمر';
+
+  @override
+  String get withdrawConfirmTitle => 'الانسحاب القسري';
+
+  @override
+  String get withdrawConfirmRecipientName => 'الاسم المستقبِل';
+
+  @override
+  String get withdrawConfirmAmount => 'المبلغ';
+
+  @override
+  String get withdrawConfirmEmail => 'Email';
+
+  @override
+  String get withdrawConfirmPayee => 'Payee';
+
+  @override
+  String get withdrawConfirmAccount => 'الحساب';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Phone';
+
+  @override
+  String get withdrawConfirmCard => 'Card';
+
+  @override
+  String get withdrawConfirmButton => 'الانسحاب القسري';
+
+  @override
+  String get withdrawSuccessTitle => 'بدء الانسحاب';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'تفاصيل النظام';
+
+  @override
+  String get withdrawConfirmBankAccount => 'حساب مصرفي';
+
+  @override
+  String get withdrawOwnershipQuestion => 'لمن هذا الحساب؟?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'هذا حسابي';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'هذا حساب شخص آخر';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'أنت غير موثق. يرجى تسجيل في لمواصلة.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'الحد الأدنى للمبلغ $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'المبلغ الأقصى هو $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle => 'تفاصيل أمان التحويل';
+
+  @override
+  String get withdrawInteracSaveAsDefault => 'حفظ هذه التفاصيل كإعداد افتراضي';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'يجب أن يتكون سؤال الأمان من 3 إلى 40 حرفًا';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'يجب أن تتكون إجابة الأمان من 3 إلى 40 حرفًا';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'استخدم أحرفًا أو أرقامًا أو شرطات من دون مسافات';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'يرجى تفعيل خيار الدفع السري لهذا المستلم عبر SEPA.';
 }

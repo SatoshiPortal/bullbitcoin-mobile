@@ -3326,6 +3326,180 @@ abstract class ExchangeLocalizations {
   /// In en, this message translates to:
   /// **'Withdrawals appear as a self-transfer with your account name'**
   String get recipientsTypeConfidentialSepaDescription;
+
+  /// AppBar title for withdraw amount screen
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw fiat'**
+  String get withdrawAmountTitle;
+
+  /// Continue button on amount screen
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get withdrawAmountContinue;
+
+  /// Title on confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm withdrawal'**
+  String get withdrawConfirmTitle;
+
+  /// Field label for recipient name
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient name'**
+  String get withdrawConfirmRecipientName;
+
+  /// Field label for withdrawal amount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get withdrawConfirmAmount;
+
+  /// Field label for email (Interac)
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get withdrawConfirmEmail;
+
+  /// Field label for payee (Bill Payment)
+  ///
+  /// In en, this message translates to:
+  /// **'Payee'**
+  String get withdrawConfirmPayee;
+
+  /// Field label for bank account
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get withdrawConfirmAccount;
+
+  /// Field label for IBAN
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN'**
+  String get withdrawConfirmIban;
+
+  /// Field label for CLABE (Mexico)
+  ///
+  /// In en, this message translates to:
+  /// **'CLABE'**
+  String get withdrawConfirmClabe;
+
+  /// Field label for phone number
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get withdrawConfirmPhone;
+
+  /// Field label for debit card
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get withdrawConfirmCard;
+
+  /// Button to confirm withdrawal
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm withdrawal'**
+  String get withdrawConfirmButton;
+
+  /// Title shown when withdrawal is successfully initiated
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Initiated'**
+  String get withdrawSuccessTitle;
+
+  /// Button label to view order details after withdrawal
+  ///
+  /// In en, this message translates to:
+  /// **'Order details'**
+  String get withdrawSuccessOrderDetails;
+
+  /// Default label for bank account in confirmation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account'**
+  String get withdrawConfirmBankAccount;
+
+  /// Question asking about account ownership
+  ///
+  /// In en, this message translates to:
+  /// **'Who does this account belong to?'**
+  String get withdrawOwnershipQuestion;
+
+  /// Option indicating the account belongs to the user
+  ///
+  /// In en, this message translates to:
+  /// **'This is my account'**
+  String get withdrawOwnershipMyAccount;
+
+  /// Option indicating the account belongs to someone else
+  ///
+  /// In en, this message translates to:
+  /// **'This is someone else\'s account'**
+  String get withdrawOwnershipOtherAccount;
+
+  /// Error message for unauthenticated user during withdraw
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authenticated. Please log in to continue.'**
+  String get withdrawUnauthenticatedError;
+
+  /// Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum amount is {amount} {currency}'**
+  String withdrawBelowMinAmountError(String amount, String currency);
+
+  /// Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum amount is {amount} {currency}'**
+  String withdrawAboveMaxAmountError(String amount, String currency);
+
+  /// Title for the email money transfer security question and answer screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer security details'**
+  String get withdrawInteracSecurityDetailsTitle;
+
+  /// Checkbox label for saving Interac security details on the recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Save these details as default'**
+  String get withdrawInteracSaveAsDefault;
+
+  /// Validation error for an Interac security question outside the allowed length.
+  ///
+  /// In en, this message translates to:
+  /// **'Security question must be 3-40 characters'**
+  String get withdrawInteracSecurityQuestionLengthError;
+
+  /// Validation error for an Interac security answer outside the allowed length.
+  ///
+  /// In en, this message translates to:
+  /// **'Security answer must be 3-40 characters'**
+  String get withdrawInteracSecurityAnswerLengthError;
+
+  /// Validation error for unsupported Interac security answer characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use letters, numbers, or hyphens without spaces'**
+  String get withdrawInteracSecurityAnswerFormatError;
+
+  /// Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient
+  ///
+  /// In en, this message translates to:
+  /// **'Your withdrawal could not be completed right now. Please try again or contact support.'**
+  String get withdrawUnexpectedError;
+
+  /// Shown when a Confidential SEPA withdrawal is refused because the recipient is still not activated after activation was offered
+  ///
+  /// In en, this message translates to:
+  /// **'Please activate the confidential payment option for this SEPA recipient.'**
+  String get withdrawConfidentialSepaNotActivatedError;
 }
 
 class _ExchangeLocalizationsDelegate

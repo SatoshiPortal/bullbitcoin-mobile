@@ -1857,4 +1857,104 @@ class ExchangeLocalizationsIt extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'I prelievi appaiono come un trasferimento a sé stessi con il nome del proprio conto';
+
+  @override
+  String get withdrawAmountTitle => 'Preleva valuta fiat';
+
+  @override
+  String get withdrawAmountContinue => 'Continua';
+
+  @override
+  String get withdrawConfirmTitle => 'Conferma il prelievo';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Nome destinatario';
+
+  @override
+  String get withdrawConfirmAmount => 'Importo';
+
+  @override
+  String get withdrawConfirmEmail => 'Email';
+
+  @override
+  String get withdrawConfirmPayee => 'Beneficiario';
+
+  @override
+  String get withdrawConfirmAccount => 'Account';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Telefono';
+
+  @override
+  String get withdrawConfirmCard => 'Carta';
+
+  @override
+  String get withdrawConfirmButton => 'Conferma il prelievo';
+
+  @override
+  String get withdrawSuccessTitle => 'Prelievo avviato';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Dettagli dell\'ordine';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Conto bancario';
+
+  @override
+  String get withdrawOwnershipQuestion => 'A chi appartiene questo conto?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Questo è il mio conto';
+
+  @override
+  String get withdrawOwnershipOtherAccount =>
+      'Questo è il conto di qualcun altro';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Non sei autenticato. Accedi per continuare.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'L\'importo minimo è $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'L\'importo massimo è $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Dati di sicurezza del trasferimento';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Salva questi dati come predefiniti';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'La domanda di sicurezza deve contenere 3–40 caratteri';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'La risposta di sicurezza deve contenere 3–40 caratteri';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Usa lettere, numeri o trattini senza spazi';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Il tuo prelievo non è stato completato al momento. Riprova o contatta l\'assistenza.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Attiva l\'opzione di pagamento riservato per questo destinatario SEPA.';
 }

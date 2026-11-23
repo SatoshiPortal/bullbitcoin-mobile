@@ -1836,4 +1836,103 @@ class ExchangeLocalizationsSw extends ExchangeLocalizations {
   @override
   String get recipientsTypeConfidentialSepaDescription =>
       'Uondoaji huonekana kama uhamisho kwenda kwako mwenyewe kwa jina la akaunti yako';
+
+  @override
+  String get withdrawAmountTitle => 'Ondoa fedha za kawaida';
+
+  @override
+  String get withdrawAmountContinue => 'Endelea';
+
+  @override
+  String get withdrawConfirmTitle => 'Thibitisha uondoaji';
+
+  @override
+  String get withdrawConfirmRecipientName => 'Jina la mpokeaji';
+
+  @override
+  String get withdrawConfirmAmount => 'Kiasi';
+
+  @override
+  String get withdrawConfirmEmail => 'Barua pepe';
+
+  @override
+  String get withdrawConfirmPayee => 'Mpokeaji wa Malipo';
+
+  @override
+  String get withdrawConfirmAccount => 'Akaunti';
+
+  @override
+  String get withdrawConfirmIban => 'IBAN';
+
+  @override
+  String get withdrawConfirmClabe => 'CLABE';
+
+  @override
+  String get withdrawConfirmPhone => 'Simu';
+
+  @override
+  String get withdrawConfirmCard => 'Kadi';
+
+  @override
+  String get withdrawConfirmButton => 'Thibitisha uondoaji';
+
+  @override
+  String get withdrawSuccessTitle => 'Uondoaji Umeanzishwa';
+
+  @override
+  String get withdrawSuccessOrderDetails => 'Maelezo ya agizo';
+
+  @override
+  String get withdrawConfirmBankAccount => 'Akaunti ya benki';
+
+  @override
+  String get withdrawOwnershipQuestion => 'Akaunti hii ni ya nani?';
+
+  @override
+  String get withdrawOwnershipMyAccount => 'Hii ni akaunti yangu';
+
+  @override
+  String get withdrawOwnershipOtherAccount => 'Hii ni akaunti ya mtu mwingine';
+
+  @override
+  String get withdrawUnauthenticatedError =>
+      'Hujathibitishwa. Tafadhali ingia ili kuendelea.';
+
+  @override
+  String withdrawBelowMinAmountError(String amount, String currency) {
+    return 'Kiasi cha chini ni $amount $currency';
+  }
+
+  @override
+  String withdrawAboveMaxAmountError(String amount, String currency) {
+    return 'Kiasi cha juu ni $amount $currency';
+  }
+
+  @override
+  String get withdrawInteracSecurityDetailsTitle =>
+      'Maelezo ya usalama ya uhamisho';
+
+  @override
+  String get withdrawInteracSaveAsDefault =>
+      'Hifadhi maelezo haya kama chaguo-msingi';
+
+  @override
+  String get withdrawInteracSecurityQuestionLengthError =>
+      'Swali la usalama lazima liwe na herufi 3–40';
+
+  @override
+  String get withdrawInteracSecurityAnswerLengthError =>
+      'Jibu la usalama lazima liwe na herufi 3–40';
+
+  @override
+  String get withdrawInteracSecurityAnswerFormatError =>
+      'Tumia herufi, nambari au vistari bila nafasi';
+
+  @override
+  String get withdrawUnexpectedError =>
+      'Uondoaji wako haukuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.';
+
+  @override
+  String get withdrawConfidentialSepaNotActivatedError =>
+      'Tafadhali washa chaguo la malipo ya siri kwa mpokeaji huyu wa SEPA.';
 }
