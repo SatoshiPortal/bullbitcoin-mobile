@@ -92,6 +92,8 @@ graph TD
   style secrets stroke:#07e9ae
   signers["signers"]
   style signers stroke:#5be3aa
+  swap_feature["swap_feature"]
+  style swap_feature stroke:#7988a5
   swaps["swaps"]
   style swaps stroke:#3665e3
   sync["sync"]
@@ -232,6 +234,9 @@ graph TD
   signers --> satoshifier
   signers --> screen_awake
   signers --> sync
+  swap_feature --> bull_ui
+  swap_feature --> primitives
+  swap_feature --> swaps
   swaps --> rust_bindings
   swaps --> boltz_stream
   swaps --> bull_logger
@@ -261,6 +266,7 @@ graph TD
     label_editor
     network
     signers
+    swap_feature
   end
   subgraph packages1 ["packages"]
     ark
