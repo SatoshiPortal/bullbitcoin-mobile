@@ -17,7 +17,10 @@ final class AnnouncementsStore implements AnnouncementDismissals {
 
   const AnnouncementsStore._(this._store);
 
-  static LegacyImportParticipant participant(File file) => ProjectedOwner(
+  static LegacyImportParticipant participant(
+    File file, {
+    void Function(String message)? warning,
+  }) => ProjectedOwner(
     ownerId: _owner,
     file: file,
     tables: const [
@@ -29,6 +32,8 @@ final class AnnouncementsStore implements AnnouncementDismissals {
     ],
     open: (admission, {required existing}) =>
         _open(file, admission, existing: existing),
+    onRejected: (reason) =>
+        warning?.call('storage.cutover.rejected owner=$_owner reason=$reason'),
   );
 
   static Future<Result<AnnouncementsStore, AnnouncementsFailure>> open(

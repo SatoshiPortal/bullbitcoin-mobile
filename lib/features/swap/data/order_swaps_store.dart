@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -34,7 +35,12 @@ final class OrderSwapsStore {
     ],
     open: (admission, {required existing}) =>
         _open(file, admission, existing: existing),
-    complete: (_, database) => _verifyIndices(database),
+    onRejected: _warnRejected,
+    complete: (_, database) async {
+      if (await _verifyIndices(database)) return true;
+      _warnRejected('index_verification_failed');
+      return false;
+    },
   );
 
   static Future<Result<OwnerDatabase<OrderSwapsDatabase>, LegacyImportFailure>>
@@ -54,6 +60,9 @@ final class OrderSwapsStore {
     return opened;
   }
 }
+
+void _warnRejected(String reason) =>
+    log.warning('storage.cutover.rejected owner=$_owner reason=$reason');
 
 Future<bool> _verifyIndices(OrderSwapsDatabase database) async {
   const expected = {

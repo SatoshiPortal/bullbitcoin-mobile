@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
@@ -28,6 +29,7 @@ final class RecoverBullCutover {
     tables: const <OwnerTableCopy>[],
     open: _open,
     standalone: !regtest,
+    onRejected: _warnRejected,
     complete: (_, destination) async {
       // Regtest deliberately starts with fresh settings and monitoring data.
       if (!regtest &&
@@ -35,27 +37,31 @@ final class RecoverBullCutover {
             source,
           ) async {
             if (source == null) return true;
-            if (source.userVersion != 1) return false;
+            if (source.userVersion != 1) {
+              return _reject('standalone_schema_unsupported');
+            }
             for (final table in _tables) {
               if (!await table.copyAndVerify(source, destination)) {
-                return false;
+                return _reject('standalone_projection_mismatch');
               }
             }
             for (final table in [
               'recoverbull_own_operations',
               'recoverbull_alerts',
             ]) {
-              if (!await copySequence(source, destination, table)) return false;
+              if (!await copySequence(source, destination, table)) {
+                return _reject('standalone_sequence_mismatch');
+              }
             }
             return true;
-          })) {
+          }, onRejected: _warnRejected)) {
         return false;
       }
       final states = await destination
           .select(destination.recoverbullState)
           .get();
       if (states.length > 1 || states.any((state) => state.id != 1)) {
-        return false;
+        return _reject('invalid_state');
       }
       if (states.isEmpty) {
         await destination
@@ -65,6 +71,14 @@ final class RecoverBullCutover {
       return true;
     },
   );
+
+  void _warnRejected(String reason) =>
+      log.warning('storage.cutover.rejected owner=$ownerId reason=$reason');
+
+  bool _reject(String reason) {
+    _warnRejected(reason);
+    return false;
+  }
 
   Future<Result<OwnerDatabase<RecoverBullDatabase>, LegacyImportFailure>> open(
     RuntimeAdmission admission,

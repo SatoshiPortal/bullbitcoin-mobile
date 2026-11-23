@@ -164,7 +164,7 @@ class Bull {
           File(p.join(support.path, 'databases', '$owner.sqlite')),
       ],
       participants: [
-        AnnouncementsStore.participant(announcementsFile),
+        AnnouncementsStore.participant(announcementsFile, warning: log.warning),
         OrderSwapsStore.participant(orderSwapsFile),
         boltz.participant,
         regtestBoltz.participant,
