@@ -2775,4 +2775,178 @@ class ExchangeLocalizationsZh extends ExchangeLocalizations {
 
   @override
   String get coinsKeychainChange => '找零';
+
+  @override
+  String get limitOrdersIntroTitle => 'Open a limit order';
+
+  @override
+  String get limitOrdersIntroDescription =>
+      'Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.';
+
+  @override
+  String get limitOrdersIntroBulletPrice =>
+      'Your order remains active until the target index price is reached.';
+
+  @override
+  String get limitOrdersIntroBulletBalance =>
+      'The purchase uses the selected fiat balance when the order executes.';
+
+  @override
+  String get limitOrdersIntroBulletExecution =>
+      'Bitcoin is sent to the default wallet you select.';
+
+  @override
+  String get limitOrdersTargetTitle => 'Choose your target price';
+
+  @override
+  String get limitOrdersPaymentMethod => 'Payment method';
+
+  @override
+  String get limitOrdersCurrentPrice => 'Current index price';
+
+  @override
+  String get limitOrdersDiscount => 'Discount from current price';
+
+  @override
+  String get limitOrdersAmountTitle => 'Set the amount';
+
+  @override
+  String limitOrdersAvailableBalance(String amount) {
+    return 'Available: $amount';
+  }
+
+  @override
+  String limitOrdersEstimatedBitcoin(String amount) {
+    return 'Estimated bitcoin: $amount';
+  }
+
+  @override
+  String get limitOrdersWalletTitle => 'Choose a payout wallet';
+
+  @override
+  String get limitOrdersWalletDescription =>
+      'Bitcoin will be sent to this default wallet when the order executes.';
+
+  @override
+  String get limitOrdersManageDefaultWallets => 'Manage default wallets';
+
+  @override
+  String get limitOrdersWalletBitcoin => 'Bitcoin address';
+
+  @override
+  String get limitOrdersWalletLightning => 'Lightning address';
+
+  @override
+  String get limitOrdersWalletLiquid => 'Liquid address';
+
+  @override
+  String get limitOrdersConfirmationTitle => 'Confirm limit order';
+
+  @override
+  String limitOrdersBalancePayment(String currency) {
+    return '$currency balance';
+  }
+
+  @override
+  String get limitOrdersTermsNotice =>
+      'By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.';
+
+  @override
+  String get limitOrdersConfirm => 'Confirm limit order';
+
+  @override
+  String get limitOrdersCreatedTitle => 'Limit order active';
+
+  @override
+  String limitOrdersCreatedMessage(String amount, String price) {
+    return 'Your order will buy $amount when the index price reaches $price.';
+  }
+
+  @override
+  String get limitOrdersBackToExchange => 'Back to Exchange';
+
+  @override
+  String get limitOrderInvalidTargetError =>
+      'Choose a target price below the current index price.';
+
+  @override
+  String get limitOrderInvalidAmountError =>
+      'Enter an amount greater than zero and no more than your available balance.';
+
+  @override
+  String get limitOrdersYourWalletsTitle => 'Your wallets';
+
+  @override
+  String get limitOrdersLightningAddressLabel => 'Lightning address';
+
+  @override
+  String get limitOrdersLightningAddressError =>
+      'Enter a valid lightning address, not an invoice';
+
+  @override
+  String limitOrdersAmountBelowOnchainMin(String amount) {
+    return 'Amount is below the on-chain minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountBelowLiquidMin(String amount) {
+    return 'Amount is below the Liquid minimum of $amount';
+  }
+
+  @override
+  String limitOrdersAmountAboveLightningMax(String amount) {
+    return 'Amount is above the Lightning maximum of $amount';
+  }
+
+  @override
+  String get limitOrdersViewOrder => 'View order details';
+
+  @override
+  String get limitOrdersInsufficientBalance => '结余不足';
+
+  @override
+  String get limitOrdersInsufficientBalanceMessage => '你们没有足够的平衡来建立这一秩序.';
+
+  @override
+  String get limitOrdersFundAccount => '基金';
+
+  @override
+  String get exchangeBrandName => 'BUL BITCOIN';
+
+  @override
+  String get exchangeLandingConnectAccount => '连接您的履带';
+
+  @override
+  String get exchangeLandingRecommendedExchange => '提议交换';
+
+  @override
+  String get exchangeFeatureSelfCustody => '• 自行保管';
+
+  @override
+  String get exchangeFeatureDcaOrders => '• DCA, Limit Order and Auto-buy';
+
+  @override
+  String get exchangeFeatureSellBitcoin => '• Sell, 获得有偿服务';
+
+  @override
+  String get exchangeFeatureBankTransfers => '•  • 银行转账和付款账单';
+
+  @override
+  String get exchangeFeatureCustomerSupport => '•  • 客户支持的查塔';
+
+  @override
+  String get exchangeFeatureUnifiedHistory => '• 统一交易史';
+
+  @override
+  String get exchangeLandingDisclaimerLegal =>
+      '进入交换服务将仅限于“鹿特丹”能够合法运作并且可能需要“科索沃”的国家.';
+
+  @override
+  String get exchangeLandingDisclaimerNotAvailable => '自动交换服务没有在“自动交换”申请中提供.';
+
+  @override
+  String get exchangeLoginButton => '标志';
+
+  @override
+  String get exchangeGoToWebsiteButton => 'Go to Bullchange website';
 }
